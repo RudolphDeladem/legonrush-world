@@ -19,7 +19,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Quick ride in a test browser
         run: npm run smoke
-      - name: Campus data is up to date
+      - name: Campus geography is up to date
         run: |
-          node scripts/osm-campus.mjs
-          git diff --exit-code src/data/legon-map.json
+          npm run geo
+          git diff --exit-code src/data/legon-map.json data/geography/legon-master.geojson data/geography/reconciliation-report.json

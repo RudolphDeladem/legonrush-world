@@ -1,0 +1,489 @@
+{
+ "about": "Campus zones. Zones are not defined by any official source; these outlines were drawn over the Sentinel-2 composite and the OpenStreetMap layer to group the campus by function, so they are interpretive (confidence: medium). Coordinates are game-frame metres [x east, z south] from the datum 5.6518 N, 0.1871 W (see docs/LEGON_MASTER_GEOGRAPHY.md). The build clips nothing; it reports which named places fall in each zone and how much of each outline lies outside the campus boundary.",
+ "zones": [
+  {
+   "id": "legon-hill",
+   "name": "Legon Hill and the Convocation Group",
+   "kind": "civic",
+   "anchors": [
+    "Great Hall",
+    "University of Ghana Registry",
+    "Commonwealth Hall",
+    "Amphitheatre Grounds"
+   ],
+   "rationale": "The summit (DEM high point ~150 m) carrying the Great Hall, Registry/central administration and Vice-Chancellor's residence, and Commonwealth Hall on its eastern slope at the head of the avenue.",
+   "xz": [
+    [
+     -1240,
+     -60
+    ],
+    [
+     -470,
+     -70
+    ],
+    [
+     -420,
+     60
+    ],
+    [
+     -450,
+     300
+    ],
+    [
+     -1240,
+     330
+    ]
+   ]
+  },
+  {
+   "id": "academic-core",
+   "name": "Central academic core",
+   "kind": "academic",
+   "anchors": [
+    "The Balme Library",
+    "Kuffour Quadrangle",
+    "N Block",
+    "Volta Hall"
+   ],
+   "rationale": "Departments, faculties and the library on the north side of the avenue around University Square.",
+   "xz": [
+    [
+     -420,
+     -620
+    ],
+    [
+     330,
+     -620
+    ],
+    [
+     330,
+     120
+    ],
+    [
+     -420,
+     120
+    ]
+   ]
+  },
+  {
+   "id": "gate-academic",
+   "name": "Main Gate and eastern academic strip",
+   "kind": "academic",
+   "anchors": [
+    "Legon Main Entrance",
+    "Jones Quartey Building, JQB",
+    "School of Law",
+    "School of Engineering Sciences",
+    "School of Performing Arts"
+   ],
+   "rationale": "Between the academic core and the N4: JQB, Institute of African Studies, Law, KAB, Engineering, Performing Arts and Agriculture, entered through the Main Gate.",
+   "xz": [
+    [
+     330,
+     -470
+    ],
+    [
+     860,
+     -470
+    ],
+    [
+     850,
+     450
+    ],
+    [
+     330,
+     450
+    ]
+   ]
+  },
+  {
+   "id": "traditional-halls",
+   "name": "Traditional halls and the Athletic Oval",
+   "kind": "residence",
+   "anchors": [
+    "Legon Hall",
+    "Akuafo Hall Main",
+    "Mensah Sarbah Hall",
+    "Athletic Oval",
+    "Central Cafeteria, CC",
+    "Valco Trust Hostel Phase 1"
+   ],
+   "rationale": "South of the avenue across from University Square: Legon, Akuafo and Mensah Sarbah halls with their annexes, Valco, the CC, the SRC building and the sports fields between them.",
+   "xz": [
+    [
+     -330,
+     120
+    ],
+    [
+     330,
+     120
+    ],
+    [
+     330,
+     900
+    ],
+    [
+     -330,
+     900
+    ]
+   ]
+  },
+  {
+   "id": "market-hub",
+   "name": "Night Market, Banking Square and the international hostels",
+   "kind": "commercial",
+   "anchors": [
+    "Night Market",
+    "University of Ghana banking square",
+    "International Students Hostel 1, ISH 1",
+    "Jubilee Hall"
+   ],
+   "rationale": "The commercial and social hub south of the traditional halls.",
+   "xz": [
+    [
+     -110,
+     900
+    ],
+    [
+     450,
+     900
+    ],
+    [
+     450,
+     1420
+    ],
+    [
+     -110,
+     1420
+    ]
+   ]
+  },
+  {
+   "id": "sports",
+   "name": "Sports precinct",
+   "kind": "sport",
+   "anchors": [
+    "University of Ghana Sports Stadium",
+    "University of Ghana Sports Directorate",
+    "UG Gymnasium"
+   ],
+   "rationale": "The stadium, practice pitches, gymnasium, pool and sports directorate by the Okponglo end of the N4.",
+   "xz": [
+    [
+     450,
+     1100
+    ],
+    [
+     1000,
+     1100
+    ],
+    [
+     1010,
+     1570
+    ],
+    [
+     450,
+     1570
+    ]
+   ]
+  },
+  {
+   "id": "southern-halls",
+   "name": "Southern halls and health sciences",
+   "kind": "residence",
+   "anchors": [
+    "Dr. Hilla Limann Hall",
+    "Alexander Kwapong Hall",
+    "Elizabeth Frances Sey Hall",
+    "Jean Nelson Aka Hall",
+    "Noguchi Memorial Institute for Medical Research"
+   ],
+   "rationale": "The newer halls (Limann, Kwapong, Sey, JNA), the School of Public Health, College of Health Sciences and Noguchi.",
+   "xz": [
+    [
+     -260,
+     1420
+    ],
+    [
+     450,
+     1420
+    ],
+    [
+     450,
+     1570
+    ],
+    [
+     1010,
+     1570
+    ],
+    [
+     1030,
+     2100
+    ],
+    [
+     -260,
+     2100
+    ]
+   ]
+  },
+  {
+   "id": "south-medical",
+   "name": "UG Medical Centre and the southern edge",
+   "kind": "health",
+   "anchors": [
+    "University of Ghana Medical Center Limited"
+   ],
+   "rationale": "The UG Medical Centre and the southern tip of the campus, outside the legacy map's extract.",
+   "xz": [
+    [
+     -480,
+     2100
+    ],
+    [
+     1030,
+     2100
+    ],
+    [
+     980,
+     2260
+    ],
+    [
+     700,
+     2450
+    ],
+    [
+     250,
+     2620
+    ],
+    [
+     100,
+     2700
+    ],
+    [
+     0,
+     2590
+    ],
+    [
+     -300,
+     2560
+    ],
+    [
+     -480,
+     2620
+    ]
+   ]
+  },
+  {
+   "id": "staff-residential",
+   "name": "Staff residential (Legon Hill slopes)",
+   "kind": "residential",
+   "anchors": [],
+   "rationale": "Detached staff houses on curving crescents west and south-west of the halls (Lower Hill Drive, F.K. Apaloo Crescent, Ayido Crescent and others).",
+   "xz": [
+    [
+     -1240,
+     330
+    ],
+    [
+     -450,
+     300
+    ],
+    [
+     -330,
+     120
+    ],
+    [
+     -330,
+     900
+    ],
+    [
+     -110,
+     900
+    ],
+    [
+     -110,
+     1420
+    ],
+    [
+     -260,
+     1420
+    ],
+    [
+     -260,
+     2100
+    ],
+    [
+     -480,
+     2100
+    ],
+    [
+     -1050,
+     1250
+    ],
+    [
+     -1400,
+     1050
+    ],
+    [
+     -1400,
+     330
+    ]
+   ]
+  },
+  {
+   "id": "north-hostels",
+   "name": "Northern hostels",
+   "kind": "residence",
+   "anchors": [
+    "Pentagon Block A",
+    "Bani Hostel",
+    "Evandy Hostel",
+    "James Topp Nelson Yankah Hall"
+   ],
+   "rationale": "Pentagon, Bani, Evandy and TF/James Topp Nelson Yankah hostels along the west side of the N4, north of the academic core.",
+   "xz": [
+    [
+     450,
+     -1750
+    ],
+    [
+     960,
+     -1750
+    ],
+    [
+     900,
+     -470
+    ],
+    [
+     460,
+     -470
+    ]
+   ]
+  },
+  {
+   "id": "botanical",
+   "name": "Botanical Gardens and northern woodland",
+   "kind": "open-space",
+   "anchors": [
+    "University of Ghana Botanical Gardens",
+    "Vaughan Dam"
+   ],
+   "rationale": "The 92 ha Botanical Gardens (with the Vaughan Dam) and the wooded land between them and the academic core.",
+   "xz": [
+    [
+     -330,
+     -1745
+    ],
+    [
+     450,
+     -1750
+    ],
+    [
+     460,
+     -620
+    ],
+    [
+     -420,
+     -620
+    ],
+    [
+     -420,
+     -1000
+    ]
+   ]
+  },
+  {
+   "id": "west-woodland",
+   "name": "Western woodland, farms and research plots",
+   "kind": "open-space",
+   "anchors": [],
+   "rationale": "Largely undeveloped wooded and scrub land west of Legon Hill, with the aquaculture ponds and agricultural plots in the north-west.",
+   "xz": [
+    [
+     -2180,
+     -1250
+    ],
+    [
+     -1450,
+     -1500
+    ],
+    [
+     -330,
+     -1745
+    ],
+    [
+     -420,
+     -1000
+    ],
+    [
+     -420,
+     -620
+    ],
+    [
+     -470,
+     -70
+    ],
+    [
+     -1240,
+     -60
+    ],
+    [
+     -1240,
+     330
+    ],
+    [
+     -1400,
+     330
+    ],
+    [
+     -1400,
+     1050
+    ],
+    [
+     -1700,
+     1000
+    ],
+    [
+     -2180,
+     780
+    ]
+   ]
+  },
+  {
+   "id": "east-n4",
+   "name": "East of the N4",
+   "kind": "mixed",
+   "anchors": [
+    "UGBS Graduate Campus",
+    "University of Ghana Hospital"
+   ],
+   "rationale": "University land east of J.J. Rawlings Avenue (N4): the UGBS Graduate Campus, the University Hospital and Legon police station.",
+   "xz": [
+    [
+     960,
+     -1000
+    ],
+    [
+     1540,
+     -1000
+    ],
+    [
+     1540,
+     1000
+    ],
+    [
+     1000,
+     1000
+    ],
+    [
+     880,
+     450
+    ],
+    [
+     880,
+     -470
+    ]
+   ]
+  }
+ ]
+}

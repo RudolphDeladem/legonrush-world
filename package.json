@@ -8,6 +8,7 @@
     "preview": "vite preview --host",
     "typecheck": "tsc",
     "smoke": "node scripts/smoke.mjs",
+    "geo": "node scripts/geography/build-master.mjs && node scripts/geography/master-to-game.mjs",
     "brand": "node scripts/brand-assets.mjs",
     "shots": "node scripts/marketing-shots.mjs"
   },

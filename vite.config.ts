@@ -31,7 +31,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,jpg,webp,woff2}'],
         // keep the offline install small for students on data bundles: no landing-page images,
         // no large install icons, and only the Latin font files the game uses
-        globIgnores: ['photos/**', 'art/**', 'shots/**', 'brand/**', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'assets/*-latin-ext-*', 'assets/*-vietnamese-*', 'assets/supabase-*'],
+        globIgnores: ['geo/**', 'assets/geo-*', 'photos/**', 'art/**', 'shots/**', 'brand/**', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'assets/*-latin-ext-*', 'assets/*-vietnamese-*', 'assets/supabase-*'],
         navigateFallback: null,
       },
     }),
@@ -42,6 +42,8 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         play: resolve(__dirname, 'play/index.html'),
+        // geography inspector (debug page, not linked from the game)
+        geo: resolve(__dirname, 'geo/index.html'),
       },
       output: {
         // three.js and the campus map change rarely, so they get their own long-lived files

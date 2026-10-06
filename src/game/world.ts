@@ -245,9 +245,10 @@ export function buildCampus() {
   group.add(ground);
 
   // pitches, tracks, car parks, water and woods
-  const AREA_COLOR: Record<string, string> = { pitch: '#4f9a3a', track: '#b4533a', parking: '#8d9096', water: '#4f8fbf', wood: '#2f6b2a' };
+  const AREA_COLOR: Record<string, string> = { pitch: '#4f9a3a', track: '#b4533a', parking: '#8d9096', water: '#4f8fbf', wood: '#2f6b2a', plaza: '#cfc5b2' };
   const areaBuf = new Map<string, { pos: number[]; idx: number[] }>();
   for (const a of AREAS) {
+    if (!AREA_COLOR[a.kind]) continue; // lawns and parks: the ground is already grass
     const contour: THREE.Vector2[] = [];
     for (let i = 0; i < a.pts.length; i += 2) contour.push(new THREE.Vector2(a.pts[i], a.pts[i + 1]));
     const tris = THREE.ShapeUtils.triangulateShape(contour, []);

@@ -1,0 +1,1612 @@
+{
+  "about": "Curated landmark registry for the University of Ghana, Legon. Each entry names the geometry that fixes the landmark (an OpenStreetMap feature or a derived shape), the name patterns used to find the same landmark in every other source, and checkable claims taken from written sources. scripts/geography/build-master.mjs measures every source position against the chosen geometry and runs every claim; results land in data/geography/reconciliation-report.json. Positions are never typed in by hand: they come from the referenced geometry.",
+  "citations": {
+    "ug-legon-campus": {
+      "title": "University of Ghana: the Legon campus (official university page)",
+      "url": "https://old1.ug.edu.gh/node/38",
+      "mirror": "https://lawlibrary.ug.edu.gh/node/38"
+    },
+    "univers-level100": {
+      "title": "Radio Univers (UG campus radio): Finding your way around the streets of Legon - a Level 100 guide",
+      "url": "https://univers.ug.edu.gh/finding-your-way-on-the-streets-of-legon-a-level-100-guide/"
+    },
+    "graphic-banking-square": {
+      "title": "Graphic Online: University of Ghana inaugurates banking square",
+      "url": "https://www.graphic.com.gh/business/business-news/university-of-ghana-inaugurates-banking-square.html"
+    },
+    "ug-night-market": {
+      "title": "University of Ghana: Vice-Chancellor commissions refurbished Night Market",
+      "url": "https://www.old1.ug.edu.gh/node/106064"
+    },
+    "visitghana-botanical": {
+      "title": "Visit Ghana: Legon Botanical Gardens",
+      "url": "https://visitghana.com/?p=12576"
+    },
+    "yen-botanical": {
+      "title": "YEN.com.gh: Legon Botanical Gardens - background, location, activities",
+      "url": "https://yen.com.gh/facts-lifehacks/guides/227206-legon-botanical-garden-background-location-activities-fees-opening-closing-time/"
+    },
+    "ghanaremembers-stadium": {
+      "title": "Ghana Remembers: University of Ghana Sports Stadium",
+      "url": "https://ghanaremembers.com/stories/history/university-of-ghana-sports-stadium-a-national-hub-for-athletics-and-football.html"
+    },
+    "meqasa-legon": {
+      "title": "Meqasa blog: Legon, a community within a community",
+      "url": "https://blog.meqasa.com/legon-community-within-community/"
+    },
+    "copernicus-dem": {
+      "title": "Copernicus GLO-30 DEM (data/geography/sources/copernicus-dem-30m.json)",
+      "url": "https://registry.opendata.aws/copernicus-dem/"
+    }
+  },
+  "landmarks": [
+    {
+      "id": "main-gate",
+      "name": "Legon Main Entrance",
+      "kind": "landmark",
+      "category": "gateway",
+      "importance": 1,
+      "aliases": [
+        "Main Gate",
+        "Main University Gate"
+      ],
+      "geometry": {
+        "osm": "way/320073867"
+      },
+      "match": {
+        "osm": [
+          "^Legon Main Entrance$"
+        ],
+        "overture": [
+          "main gate",
+          "main entrance"
+        ],
+        "ugmap": [
+          "main gate",
+          "main entrance"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "ug-legon-campus",
+          "text": "From the Main University Gate on the National Highway 4 (N4), the University Avenue extends to Commonwealth Hall on Legon Hill.",
+          "test": {
+            "type": "near-road",
+            "road": "^J\\.J\\. Rawlings Avenue$",
+            "within": 250
+          }
+        },
+        {
+          "cite": "ug-legon-campus",
+          "text": "The University Avenue starts at the Main Gate.",
+          "test": {
+            "type": "near-road",
+            "road": "^Dr\\. J\\.B\\. Danquah Avenue$",
+            "within": 40
+          }
+        }
+      ]
+    },
+    {
+      "id": "university-avenue",
+      "name": "Dr. J.B. Danquah Avenue",
+      "kind": null,
+      "category": "road",
+      "importance": 1,
+      "aliases": [
+        "University Avenue",
+        "Main Avenue"
+      ],
+      "geometry": {
+        "road": "^Dr\\. J\\.B\\. Danquah Avenue$"
+      },
+      "match": {},
+      "claims": [
+        {
+          "cite": "ug-legon-campus",
+          "text": "The University Avenue extends from the Main Gate to Commonwealth Hall on Legon Hill.",
+          "test": {
+            "type": "road-links",
+            "a": "main-gate",
+            "b": "commonwealth-hall",
+            "within": 150
+          }
+        }
+      ],
+      "notes": "OpenStreetMap names the campus spine Dr. J.B. Danquah Avenue; the university's own text calls it the University Avenue or Main Avenue."
+    },
+    {
+      "id": "great-hall",
+      "name": "Great Hall",
+      "kind": "landmark",
+      "category": "civic",
+      "importance": 1,
+      "aliases": [
+        "Convocation Group",
+        "Great Hall tower"
+      ],
+      "geometry": {
+        "osm": "way/720486436"
+      },
+      "match": {
+        "osm": [
+          "^Great Hall$"
+        ],
+        "overture": [
+          "^great hall"
+        ],
+        "ugmap": [
+          "^Great Hall$"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "ug-legon-campus",
+          "text": "On the summit of Legon Hill is the Convocation Group of Buildings: the central administration offices and the Great Hall with its tower.",
+          "test": {
+            "type": "near-summit",
+            "within": 150
+          }
+        },
+        {
+          "cite": "ug-legon-campus",
+          "text": "The avenue climbs to Commonwealth Hall; the Great Hall stands above it at the top.",
+          "test": {
+            "type": "higher-than",
+            "other": "commonwealth-hall",
+            "by": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "registry",
+      "name": "University of Ghana Registry",
+      "kind": "landmark",
+      "category": "civic",
+      "importance": 1,
+      "aliases": [
+        "Central Administration",
+        "Registry"
+      ],
+      "geometry": {
+        "osm": "node/4392733689",
+        "snapToBuilding": true
+      },
+      "match": {
+        "osm": [
+          "^University of Ghana Registry$"
+        ],
+        "overture": [
+          "^university of ghana registry$"
+        ],
+        "ugmap": [
+          "registry",
+          "administration"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "meqasa-legon",
+          "text": "The University of Ghana registry, Great Hall and Vice Chancellor's residence are located on top of the hill.",
+          "test": {
+            "type": "near",
+            "other": "great-hall",
+            "within": 200
+          }
+        },
+        {
+          "cite": "ug-legon-campus",
+          "text": "Central administration offices are part of the Convocation Group on the summit.",
+          "test": {
+            "type": "near-summit",
+            "within": 200
+          }
+        }
+      ],
+      "notes": "Sources do not separate the Registry from the wider Central Administration; both are recorded as this one landmark on the Convocation Group."
+    },
+    {
+      "id": "vc-residence",
+      "name": "Vice Chancellor's Residence",
+      "kind": null,
+      "category": "civic",
+      "importance": 3,
+      "geometry": {
+        "osm": "way/720486431"
+      },
+      "match": {
+        "osm": [
+          "^Vice Chancellor's Residence$"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "meqasa-legon",
+          "text": "The Vice Chancellor's residence is on top of the hill.",
+          "test": {
+            "type": "near-summit",
+            "within": 250
+          }
+        }
+      ]
+    },
+    {
+      "id": "balme-library",
+      "name": "The Balme Library",
+      "kind": "landmark",
+      "category": "academic",
+      "importance": 1,
+      "aliases": [
+        "Balme",
+        "Library"
+      ],
+      "geometry": {
+        "osm": "relation/7304886"
+      },
+      "match": {
+        "osm": [
+          "^The Balme Library$"
+        ],
+        "overture": [
+          "^balme library$"
+        ],
+        "ugmap": [
+          "^Balme Library$"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "ug-legon-campus",
+          "text": "Mid-way is an open space, the University Square, with an ornamental fountain overlooking the Balme Library.",
+          "test": {
+            "type": "direction",
+            "other": "balme-fountain",
+            "dir": "north",
+            "min": 40
+          }
+        },
+        {
+          "cite": "ug-legon-campus",
+          "text": "The library stands mid-way along the University Avenue.",
+          "test": {
+            "type": "near-road",
+            "road": "^Dr\\. J\\.B\\. Danquah Avenue$",
+            "within": 160
+          }
+        }
+      ]
+    },
+    {
+      "id": "university-square",
+      "name": "University Square",
+      "kind": "landmark",
+      "category": "open-space",
+      "importance": 1,
+      "geometry": {
+        "derived": "university-square"
+      },
+      "match": {
+        "overture": [
+          "university square"
+        ],
+        "ugmap": [
+          "university square"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "ug-legon-campus",
+          "text": "Mid-way along the avenue is an open space, the University Square, with an ornamental fountain.",
+          "test": {
+            "type": "near",
+            "other": "balme-fountain",
+            "within": 60
+          }
+        },
+        {
+          "cite": "ug-legon-campus",
+          "text": "The square overlooks the Balme Library.",
+          "test": {
+            "type": "near",
+            "other": "balme-library",
+            "within": 120
+          }
+        },
+        {
+          "cite": "ug-legon-campus",
+          "text": "Across from the University Square are sports fields and halls of residence.",
+          "test": {
+            "type": "direction",
+            "other": "athletic-oval",
+            "dir": "north",
+            "min": 150
+          }
+        }
+      ],
+      "notes": "Not mapped as a named feature in any source. The outline is the forecourt enclosed by the two service lanes (OSM ways 448104199 and 448104193), the library service road (way 278303088) and the fountain roundabout on the avenue.",
+      "maxConfidence": "medium"
+    },
+    {
+      "id": "balme-fountain",
+      "name": "Balme Library Fountain",
+      "kind": "landmark",
+      "category": "open-space",
+      "importance": 2,
+      "geometry": {
+        "osm": "way/320067568"
+      },
+      "match": {
+        "osm": [
+          "^Balme Library Fountain$"
+        ],
+        "overture": [
+          "fountain"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "ug-legon-campus",
+          "text": "The ornamental fountain is on the University Square, on the avenue.",
+          "test": {
+            "type": "near-road",
+            "road": "^Dr\\. J\\.B\\. Danquah Avenue$",
+            "within": 25
+          }
+        }
+      ],
+      "notes": "OSM also carries a stray point named 'Balme Library' tagged amenity=fountain at the same spot (node 6720686104); it is the fountain, not the library."
+    },
+    {
+      "id": "kuffour-quadrangle",
+      "name": "Kuffour Quadrangle",
+      "kind": "landmark",
+      "category": "open-space",
+      "importance": 2,
+      "aliases": [
+        "Kufuor Quadrangle",
+        "Balme Library Gardens"
+      ],
+      "geometry": {
+        "osm": "way/448104179"
+      },
+      "match": {
+        "osm": [
+          "^Kuffour Quadrangle$"
+        ],
+        "overture": [
+          "kuff?u?ou?r quad"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "univers-level100",
+          "text": "Plant and Environmental Biology is behind the Balme Library Gardens / Kuffuor Quadrangle (web search summary; wording not confirmed on the page itself).",
+          "test": {
+            "type": "near",
+            "other": "plant-biology",
+            "within": 200
+          }
+        },
+        {
+          "cite": "univers-level100",
+          "text": "The quadrangle is behind (north of) the library, away from the avenue.",
+          "test": {
+            "type": "direction",
+            "other": "balme-library",
+            "dir": "north",
+            "min": 40
+          }
+        }
+      ]
+    },
+    {
+      "id": "plant-biology",
+      "name": "Department of Plant and Environmental Biology",
+      "kind": "academic",
+      "category": "academic",
+      "importance": 3,
+      "geometry": {
+        "place": "^Department of Plant and Environmental Biology$"
+      },
+      "match": {
+        "osm": [
+          "plant and environmental biology"
+        ],
+        "overture": [
+          "plant and environmental"
+        ],
+        "ugmap": [
+          "plant and environmental"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "banking-square",
+      "name": "University of Ghana banking square",
+      "kind": "bank",
+      "category": "commercial",
+      "importance": 1,
+      "aliases": [
+        "Banking Square",
+        "UG Banking Square"
+      ],
+      "geometry": {
+        "osm": "relation/7226878"
+      },
+      "match": {
+        "osm": [
+          "banking square$"
+        ],
+        "overture": [
+          "banking square"
+        ],
+        "ugmap": [
+          "banking square"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "graphic-banking-square",
+          "text": "The Banking Square is close to the Night Market (on the old Manciples site).",
+          "test": {
+            "type": "near",
+            "other": "night-market",
+            "within": 200
+          }
+        }
+      ]
+    },
+    {
+      "id": "night-market",
+      "name": "Night Market",
+      "kind": "landmark",
+      "category": "commercial",
+      "importance": 1,
+      "geometry": {
+        "osm": "way/773864855"
+      },
+      "match": {
+        "osm": [
+          "^Night Market$"
+        ],
+        "overture": [
+          "^night market$"
+        ],
+        "ugmap": [
+          "night market"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "ug-night-market",
+          "text": "The Night Market is the campus's main marketplace (80 cubicles, 36 food stalls).",
+          "test": {
+            "type": "near",
+            "other": "banking-square",
+            "within": 200
+          }
+        }
+      ]
+    },
+    {
+      "id": "athletic-oval",
+      "name": "Athletic Oval",
+      "kind": "sport",
+      "category": "sport",
+      "importance": 1,
+      "geometry": {
+        "osm": "relation/7304443"
+      },
+      "match": {
+        "osm": [
+          "^Athletic Oval$"
+        ],
+        "overture": [
+          "athletic oval"
+        ],
+        "ugmap": [
+          "athletic oval"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "univers-level100",
+          "text": "The Central Cafeteria (CC) is right in front of Mensah Sarbah Hall and opposite the Athletic Oval.",
+          "test": {
+            "type": "near",
+            "other": "central-cafeteria",
+            "within": 200
+          }
+        },
+        {
+          "cite": "ug-legon-campus",
+          "text": "Sports fields are across the avenue from the University Square.",
+          "test": {
+            "type": "direction",
+            "other": "university-square",
+            "dir": "south",
+            "min": 150
+          }
+        }
+      ]
+    },
+    {
+      "id": "stadium",
+      "name": "University of Ghana Sports Stadium",
+      "kind": "sport",
+      "category": "sport",
+      "importance": 1,
+      "aliases": [
+        "UG Sports Stadium",
+        "Legon Stadium"
+      ],
+      "geometry": {
+        "osm": "way/1273337678"
+      },
+      "match": {
+        "osm": [
+          "^University of Ghana Sports Stadium$"
+        ],
+        "overture": [
+          "university of ghana (sports )?stadium",
+          "legon stadium"
+        ],
+        "ugmap": [
+          "stadium",
+          "sports complex"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "ghanaremembers-stadium",
+          "text": "The UG Sports Stadium is near the Okponglo traffic light on the Accra-Madina highway.",
+          "test": {
+            "type": "near-road",
+            "road": "^J\\.J\\. Rawlings Avenue$",
+            "within": 400
+          }
+        }
+      ]
+    },
+    {
+      "id": "botanical-gardens",
+      "name": "University of Ghana Botanical Gardens",
+      "kind": "landmark",
+      "category": "open-space",
+      "importance": 1,
+      "aliases": [
+        "Legon Botanical Gardens",
+        "Botanical Gardens"
+      ],
+      "geometry": {
+        "osm": "way/335456879"
+      },
+      "match": {
+        "osm": [
+          "botanical gardens$"
+        ],
+        "overture": [
+          "legon botanical",
+          "botanical garden"
+        ],
+        "ugmap": [
+          "botanical"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "visitghana-botanical",
+          "text": "The gardens are off the Atomic-Haatso main road at Agbogba junction, about 5 minutes from the Main Gate.",
+          "test": {
+            "type": "near-road",
+            "road": "^Haatso-Atomic Road$|^Agbogba",
+            "within": 150
+          }
+        },
+        {
+          "cite": "visitghana-botanical",
+          "text": "The gardens lie north of the main campus.",
+          "test": {
+            "type": "direction",
+            "other": "balme-library",
+            "dir": "north",
+            "min": 600
+          }
+        }
+      ]
+    },
+    {
+      "id": "vaughan-dam",
+      "name": "Vaughan Dam",
+      "kind": "landmark",
+      "category": "water",
+      "importance": 2,
+      "aliases": [
+        "Botanical Gardens lake"
+      ],
+      "geometry": {
+        "osm": "way/215443236"
+      },
+      "match": {
+        "osm": [
+          "vaughan"
+        ],
+        "overture": [
+          "vaughan"
+        ],
+        "ugmap": [
+          "vaughan",
+          "dam"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "yen-botanical",
+          "text": "The Garden has ... the Vaughan dam where you can have a canoe ride.",
+          "test": {
+            "type": "inside",
+            "other": "botanical-gardens"
+          }
+        }
+      ],
+      "notes": "No source names the water body. OSM has one unnamed natural=water polygon (0.76 ha) inside the Botanical Gardens and it is visible in Sentinel-2; it is identified as the Vaughan Dam because it is the only open water in the gardens.",
+      "maxConfidence": "medium"
+    },
+    {
+      "id": "engineering",
+      "name": "School of Engineering Sciences",
+      "kind": "academic",
+      "category": "academic",
+      "importance": 2,
+      "aliases": [
+        "Engineering",
+        "SES"
+      ],
+      "geometry": {
+        "osm": "relation/8404077"
+      },
+      "match": {
+        "osm": [
+          "^School of Engineering Sciences$"
+        ],
+        "overture": [
+          "school of engineering"
+        ],
+        "ugmap": [
+          "engineering sciences"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "business-school",
+      "name": "University of Ghana Business School",
+      "kind": "academic",
+      "category": "academic",
+      "importance": 2,
+      "aliases": [
+        "UGBS",
+        "Business School"
+      ],
+      "geometry": {
+        "osm": "node/9659866317",
+        "snapToBuilding": true
+      },
+      "match": {
+        "osm": [
+          "^University of Ghana Business School$"
+        ],
+        "overture": [
+          "^university of ghana business school$"
+        ],
+        "ugmap": [
+          "^Business School$"
+        ]
+      },
+      "claims": [],
+      "notes": "Two facilities share the name. OSM and Overture (Meta) put the University of Ghana Business School beside the Balme Library (UGBS car park, OSM way 715027982). The UG Campus Map's 'Business School' point (5.6587 N, 0.1777 W) is 1.3 km away on the UGBS Graduate Campus east of the N4 (OSM way 797937346, Meta 'Graduate Business School Multipurpose Building'). Both are kept, as separate places."
+    },
+    {
+      "id": "ugbs-graduate",
+      "name": "UGBS Graduate Campus",
+      "kind": "academic",
+      "category": "academic",
+      "importance": 3,
+      "geometry": {
+        "osm": "way/797937346"
+      },
+      "match": {
+        "osm": [
+          "^UGBS Graduate Campus$"
+        ],
+        "overture": [
+          "graduate business school"
+        ],
+        "ugmap": [
+          "^Business School$"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "commonwealth-hall",
+      "name": "Commonwealth Hall",
+      "kind": "hall",
+      "category": "residence",
+      "importance": 1,
+      "aliases": [
+        "Vandal City",
+        "Vandals"
+      ],
+      "geometry": {
+        "osm": "way/497853937"
+      },
+      "match": {
+        "osm": [
+          "^Commonwealth Hall$"
+        ],
+        "overture": [
+          "^commonwealth hall"
+        ],
+        "ugmap": [
+          "^Commonwealth Hall$"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "ug-legon-campus",
+          "text": "The University Avenue extends to Commonwealth Hall on Legon Hill.",
+          "test": {
+            "type": "higher-than",
+            "other": "balme-library",
+            "by": 15
+          }
+        },
+        {
+          "cite": "ug-legon-campus",
+          "text": "Behind Commonwealth Hall is an open-air theatre built into the slope of Legon Hill.",
+          "test": {
+            "type": "near",
+            "other": "amphitheatre",
+            "within": 250
+          }
+        }
+      ]
+    },
+    {
+      "id": "amphitheatre",
+      "name": "Amphitheatre Grounds",
+      "kind": null,
+      "category": "open-space",
+      "importance": 2,
+      "aliases": [
+        "Commonwealth Hall amphitheatre",
+        "Open-air theatre"
+      ],
+      "geometry": {
+        "osm": "node/9660303973"
+      },
+      "match": {
+        "osm": [
+          "^Amphitheatre Grounds$"
+        ],
+        "overture": [
+          "amphitheat"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "ug-legon-campus",
+          "text": "The open-air theatre is behind Commonwealth Hall, uphill toward the Great Hall.",
+          "test": {
+            "type": "direction",
+            "other": "commonwealth-hall",
+            "dir": "west",
+            "min": 40
+          }
+        }
+      ]
+    },
+    {
+      "id": "legon-hall",
+      "name": "Legon Hall",
+      "kind": "hall",
+      "category": "residence",
+      "importance": 1,
+      "geometry": {
+        "osm": "way/427645339"
+      },
+      "match": {
+        "osm": [
+          "^Legon Hall$"
+        ],
+        "overture": [
+          "^legon hall$"
+        ],
+        "ugmap": [
+          "^Legon Hall$"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "ug-legon-campus",
+          "text": "Halls of residence face the University Square across the avenue.",
+          "test": {
+            "type": "direction",
+            "other": "university-square",
+            "dir": "south",
+            "min": 60
+          }
+        }
+      ],
+      "notes": "OSM has a second polygon also named 'Legon Hall' (way 1548976998) around the annex blocks; it is treated as part of the Legon Hall annexe, not the main hall."
+    },
+    {
+      "id": "akuafo-hall",
+      "name": "Akuafo Hall Main",
+      "kind": "hall",
+      "category": "residence",
+      "importance": 1,
+      "aliases": [
+        "Akuafo Hall",
+        "Akuafo"
+      ],
+      "geometry": {
+        "osm": "way/421358833"
+      },
+      "match": {
+        "osm": [
+          "^Akuafo Hall Main$"
+        ],
+        "overture": [
+          "^akuafo hall$"
+        ],
+        "ugmap": [
+          "^Akuafo Hall$"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "ug-legon-campus",
+          "text": "Halls of residence face the University Square across the avenue.",
+          "test": {
+            "type": "direction",
+            "other": "university-square",
+            "dir": "south",
+            "min": 60
+          }
+        }
+      ]
+    },
+    {
+      "id": "volta-hall",
+      "name": "Volta Hall",
+      "kind": "hall",
+      "category": "residence",
+      "importance": 1,
+      "geometry": {
+        "osm": "way/320072537"
+      },
+      "match": {
+        "osm": [
+          "^Volta Hall$"
+        ],
+        "overture": [
+          "^volta hall"
+        ],
+        "ugmap": [
+          "^Volta Hall$"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "mensah-sarbah-hall",
+      "name": "Mensah Sarbah Hall",
+      "kind": "hall",
+      "category": "residence",
+      "importance": 1,
+      "aliases": [
+        "Sarbah",
+        "Vikings"
+      ],
+      "geometry": {
+        "osm": "way/497853938"
+      },
+      "match": {
+        "osm": [
+          "^Mensah Sarbah Hall$"
+        ],
+        "overture": [
+          "^mensah sarbah hall$"
+        ],
+        "ugmap": [
+          "^Mensah Sarbah Hall$"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "univers-level100",
+          "text": "The Central Cafeteria is right in front of Mensah Sarbah Hall.",
+          "test": {
+            "type": "near",
+            "other": "central-cafeteria",
+            "within": 200
+          }
+        }
+      ]
+    },
+    {
+      "id": "central-cafeteria",
+      "name": "Central Cafeteria, CC",
+      "kind": "food",
+      "category": "commercial",
+      "importance": 2,
+      "aliases": [
+        "CC"
+      ],
+      "geometry": {
+        "osm": "way/278303032"
+      },
+      "match": {
+        "osm": [
+          "^Central Cafeteria"
+        ],
+        "overture": [
+          "central cafeteria"
+        ],
+        "ugmap": [
+          "central cafeteria"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "univers-level100",
+          "text": "CC is opposite the Athletic Oval.",
+          "test": {
+            "type": "direction",
+            "other": "athletic-oval",
+            "dir": "south",
+            "min": 60
+          }
+        }
+      ]
+    },
+    {
+      "id": "src-union",
+      "name": "SRC Union Building",
+      "kind": "academic",
+      "category": "commercial",
+      "importance": 3,
+      "geometry": {
+        "osm": "relation/3697978"
+      },
+      "match": {
+        "osm": [
+          "^SRC Union Building$"
+        ],
+        "overture": [
+          "src union"
+        ],
+        "ugmap": [
+          "src"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "ish",
+      "name": "International Students Hostel 1, ISH 1",
+      "kind": "hall",
+      "category": "residence",
+      "importance": 1,
+      "aliases": [
+        "International Students Hostel",
+        "ISH"
+      ],
+      "geometry": {
+        "osm": "way/278303018"
+      },
+      "match": {
+        "osm": [
+          "^International Students Hostel 1"
+        ],
+        "overture": [
+          "^international student hostel$"
+        ],
+        "ugmap": [
+          "international student hostel"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "ish-2",
+      "name": "International Students Hostel 2, ISH 2",
+      "kind": "hall",
+      "category": "residence",
+      "importance": 3,
+      "geometry": {
+        "osm": "way/278303020"
+      },
+      "match": {
+        "osm": [
+          "^International Students Hostel 2"
+        ],
+        "overture": [
+          "^ish 2$"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "valco",
+      "name": "Valco Trust Hostel Phase 1",
+      "kind": "hall",
+      "category": "residence",
+      "importance": 1,
+      "aliases": [
+        "Valco",
+        "Valco Trust Hostel"
+      ],
+      "geometry": {
+        "osm": "way/278303038"
+      },
+      "match": {
+        "osm": [
+          "^Valco Trust Hostel Phase 1$"
+        ],
+        "overture": [
+          "^valco trust hostel$"
+        ],
+        "ugmap": [
+          "^Valco Trust Hostel$"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "jqb",
+      "name": "Jones Quartey Building, JQB",
+      "kind": "academic",
+      "category": "academic",
+      "importance": 2,
+      "aliases": [
+        "JQB",
+        "James Quartey Building"
+      ],
+      "geometry": {
+        "osm": "way/278303042"
+      },
+      "match": {
+        "osm": [
+          "Quartey Building"
+        ],
+        "overture": [
+          "^jqb"
+        ],
+        "ugmap": [
+          "^JQB"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "univers-level100",
+          "text": "JQB is close to the Main Entrance, behind the Institute of African Studies, on your right coming from the main gate.",
+          "test": {
+            "type": "near",
+            "other": "main-gate",
+            "within": 250
+          }
+        },
+        {
+          "cite": "univers-level100",
+          "text": "On your right coming in from the gate: north of the avenue.",
+          "test": {
+            "type": "side-of-road",
+            "road": "^Dr\\. J\\.B\\. Danquah Avenue$",
+            "side": "north"
+          }
+        },
+        {
+          "cite": "univers-level100",
+          "text": "Behind the Institute of African Studies (further from the avenue).",
+          "test": {
+            "type": "direction",
+            "other": "african-studies",
+            "dir": "north",
+            "min": 40
+          }
+        }
+      ],
+      "notes": "OSM spells the name 'James Quartey Building'; the university's own radio station calls it the Jones Quartey Building. The OSM spelling is corrected."
+    },
+    {
+      "id": "african-studies",
+      "name": "Institute of Africa Studies",
+      "kind": "academic",
+      "category": "academic",
+      "importance": 2,
+      "aliases": [
+        "Institute of African Studies",
+        "IAS"
+      ],
+      "geometry": {
+        "place": "^Institute of Africa Studies$"
+      },
+      "match": {
+        "osm": [
+          "african? studies"
+        ],
+        "overture": [
+          "institute of african studies"
+        ],
+        "ugmap": [
+          "african? studies"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "univers-level100",
+          "text": "JQB is behind the Institute of African Studies coming from the main gate: the institute sits between JQB and the avenue.",
+          "test": {
+            "type": "side-of-road",
+            "road": "^Dr\\. J\\.B\\. Danquah Avenue$",
+            "side": "north"
+          }
+        }
+      ],
+      "notes": "Only the UG Campus Map places the institute (north of the avenue, in front of JQB), which matches the Radio Univers description. Overture (Meta) puts it 220 m away, south of the avenue by the School of Performing Arts; that position contradicts the written description and is rejected."
+    },
+    {
+      "id": "kab",
+      "name": "K. A. Busia Building, KAB",
+      "kind": "academic",
+      "category": "academic",
+      "importance": 3,
+      "geometry": {
+        "osm": "way/394125236"
+      },
+      "match": {
+        "osm": [
+          "Busia"
+        ],
+        "overture": [
+          "busia"
+        ],
+        "ugmap": [
+          "busia"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "univers-level100",
+          "text": "K. A. Busia Lecture Theatre (KAB) is opposite the law school.",
+          "test": {
+            "type": "near",
+            "other": "law",
+            "within": 200
+          }
+        }
+      ]
+    },
+    {
+      "id": "law",
+      "name": "School of Law",
+      "kind": "academic",
+      "category": "academic",
+      "importance": 2,
+      "geometry": {
+        "osm": "way/430197431"
+      },
+      "match": {
+        "osm": [
+          "^School of Law$"
+        ],
+        "overture": [
+          "law school",
+          "faculty of law"
+        ],
+        "ugmap": [
+          "^School of Law$"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "n-block",
+      "name": "N Block",
+      "kind": "academic",
+      "category": "academic",
+      "importance": 3,
+      "geometry": {
+        "osm": "way/335456883"
+      },
+      "match": {
+        "osm": [
+          "^N Block$"
+        ],
+        "ugmap": [
+          "N Block"
+        ]
+      },
+      "claims": [
+        {
+          "cite": "univers-level100",
+          "text": "N Block is close to the Political Science, Social Work, Psychology and Information Studies departments.",
+          "test": {
+            "type": "near-place",
+            "place": "^Psychology Department$",
+            "within": 150
+          }
+        }
+      ]
+    },
+    {
+      "id": "performing-arts",
+      "name": "School of Performing Arts",
+      "kind": "academic",
+      "category": "academic",
+      "importance": 3,
+      "geometry": {
+        "osm": "way/430197435"
+      },
+      "match": {
+        "osm": [
+          "^School of Performing Arts?$"
+        ],
+        "overture": [
+          "school of performing arts"
+        ],
+        "ugmap": [
+          "performing arts"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "ug-hospital",
+      "name": "University of Ghana Hospital",
+      "kind": "health",
+      "category": "health",
+      "importance": 2,
+      "aliases": [
+        "Legon Hospital"
+      ],
+      "geometry": {
+        "osm": "way/278268702"
+      },
+      "match": {
+        "osm": [
+          "^University of Ghana Hospital$"
+        ],
+        "overture": [
+          "legon hospital",
+          "university of ghana hospital"
+        ],
+        "ugmap": [
+          "legon hospital"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "ugmc",
+      "name": "University of Ghana Medical Center Limited",
+      "kind": "health",
+      "category": "health",
+      "importance": 2,
+      "aliases": [
+        "UGMC",
+        "UG Medical Centre"
+      ],
+      "geometry": {
+        "osm": "way/464683570"
+      },
+      "match": {
+        "osm": [
+          "Medical Cent"
+        ],
+        "overture": [
+          "medical cent"
+        ],
+        "ugmap": [
+          "medical cent"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "noguchi",
+      "name": "Noguchi Memorial Institute for Medical Research",
+      "kind": "health",
+      "category": "academic",
+      "importance": 2,
+      "geometry": {
+        "osm": "relation/1434194"
+      },
+      "match": {
+        "osm": [
+          "^Noguchi"
+        ],
+        "overture": [
+          "noguchi"
+        ],
+        "ugmap": [
+          "noguchi"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "limann",
+      "name": "Dr. Hilla Limann Hall",
+      "kind": "hall",
+      "category": "residence",
+      "importance": 2,
+      "geometry": {
+        "osm": "relation/5288833"
+      },
+      "match": {
+        "osm": [
+          "Hilla Limann Hall$"
+        ],
+        "overture": [
+          "hilla limann hall",
+          "hilla liman hostel"
+        ],
+        "ugmap": [
+          "Limann"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "kwapong",
+      "name": "Alexander Kwapong Hall",
+      "kind": "hall",
+      "category": "residence",
+      "importance": 2,
+      "geometry": {
+        "osm": "relation/5288831"
+      },
+      "match": {
+        "osm": [
+          "^Alexander Kwapong Hall$"
+        ],
+        "overture": [
+          "kwapong hall"
+        ],
+        "ugmap": [
+          "Kwapong"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "sey",
+      "name": "Elizabeth Frances Sey Hall",
+      "kind": "hall",
+      "category": "residence",
+      "importance": 2,
+      "geometry": {
+        "osm": "relation/5288834"
+      },
+      "match": {
+        "osm": [
+          "^Elizabeth Frances Sey Hall$"
+        ],
+        "overture": [
+          "elizabeth frances sey"
+        ],
+        "ugmap": [
+          "Elizabeth Sey"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "jna",
+      "name": "Jean Nelson Aka Hall",
+      "kind": "hall",
+      "category": "residence",
+      "importance": 2,
+      "geometry": {
+        "osm": "relation/5288832"
+      },
+      "match": {
+        "osm": [
+          "^Jean Nelson Aka Hall$"
+        ],
+        "overture": [
+          "jean nelson aka"
+        ],
+        "ugmap": [
+          "Jean Nelson"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "jubilee",
+      "name": "Jubilee Hall",
+      "kind": "hall",
+      "category": "residence",
+      "importance": 2,
+      "geometry": {
+        "osm": "relation/3697984"
+      },
+      "match": {
+        "osm": [
+          "^Jubilee Hall$"
+        ],
+        "overture": [
+          "^jubilee hall$"
+        ],
+        "ugmap": [
+          "^Jubilee Hall$"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "pentagon",
+      "name": "Pentagon Block A",
+      "kind": "hall",
+      "category": "residence",
+      "importance": 2,
+      "aliases": [
+        "Pent",
+        "Pentagon",
+        "African Union Hall",
+        "Pent Hostel Block A"
+      ],
+      "geometry": {
+        "osm": "way/368856520"
+      },
+      "match": {
+        "osm": [
+          "^Pentagon Block A$"
+        ],
+        "overture": [
+          "block a \\(pent\\)",
+          "pent$"
+        ],
+        "ugmap": [
+          "Pent Hostel Block A"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "bani",
+      "name": "Bani Hostel",
+      "kind": "hall",
+      "category": "residence",
+      "importance": 3,
+      "geometry": {
+        "osm": "way/368856637"
+      },
+      "match": {
+        "osm": [
+          "^Bani Hostel$"
+        ],
+        "overture": [
+          "^bani hostel$"
+        ],
+        "ugmap": [
+          "^Bani Hostel$"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "evandy",
+      "name": "Evandy Hostel",
+      "kind": "hall",
+      "category": "residence",
+      "importance": 3,
+      "geometry": {
+        "osm": "node/9658883717",
+        "snapToBuilding": true
+      },
+      "match": {
+        "osm": [
+          "^Evandy Hostel$"
+        ],
+        "overture": [
+          "^evandy hostel$"
+        ],
+        "ugmap": [
+          "^Evandy Hostel$"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "jtny",
+      "name": "James Topp Nelson Yankah Hall",
+      "kind": "hall",
+      "category": "residence",
+      "importance": 3,
+      "aliases": [
+        "TF Hostel"
+      ],
+      "geometry": {
+        "osm": "way/286261174"
+      },
+      "match": {
+        "osm": [
+          "Topp Nelson Yankah"
+        ],
+        "overture": [
+          "topp nelson yankah",
+          "tf hostels"
+        ],
+        "ugmap": [
+          "^TF Hostel$"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "sports-directorate",
+      "name": "University of Ghana Sports Directorate",
+      "kind": "sport",
+      "category": "sport",
+      "importance": 3,
+      "geometry": {
+        "osm": "way/492099500"
+      },
+      "match": {
+        "osm": [
+          "Sports Directorate"
+        ],
+        "ugmap": [
+          "Sports Complex"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "police",
+      "name": "Legon Police Station",
+      "kind": "other",
+      "category": "civic",
+      "importance": 3,
+      "geometry": {
+        "osm": "node/1775844715"
+      },
+      "match": {
+        "osm": [
+          "^Legon Police Station$"
+        ],
+        "overture": [
+          "legon police"
+        ]
+      },
+      "claims": []
+    },
+    {
+      "id": "radio-univers",
+      "name": "Radio Univers",
+      "kind": "other",
+      "category": "civic",
+      "importance": 3,
+      "geometry": {
+        "osm": "node/5884226044"
+      },
+      "match": {
+        "osm": [
+          "^Radio Univers$"
+        ],
+        "overture": [
+          "^radio univers$"
+        ]
+      },
+      "claims": []
+    }
+  ]
+}

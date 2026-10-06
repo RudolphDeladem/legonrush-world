@@ -1,0 +1,26 @@
+{
+ "source": "Copernicus Sentinel-2 L2A true colour (TCI), Element 84 / AWS open data",
+ "license": "Copernicus Sentinel data, free and open; contains modified Copernicus Sentinel data 2025-2026",
+ "scenes": [
+  "S2C_30NZM_20251108_0_L2A",
+  "S2B_30NZM_20251216_0_L2A",
+  "S2C_30NZM_20251218_0_L2A",
+  "S2A_30NZM_20260109_0_L2A",
+  "S2B_30NZM_20260125_0_L2A",
+  "S2C_30NZM_20260127_0_L2A",
+  "S2B_30NZM_20260204_0_L2A"
+ ],
+ "method": "per-pixel median of clear scenes, x1.55 brightness",
+ "frame": {
+  "origin": [
+   5.6518,
+   -0.1871
+  ],
+  "x0": -2250,
+  "z0": -2000,
+  "x1": 2250,
+  "z1": 3100,
+  "metresPerPixel": 5
+ },
+ "image": "public/geo/legon-sentinel2.webp"
+}

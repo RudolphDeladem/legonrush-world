@@ -33,7 +33,7 @@ function campusCanvas() {
     ctx.beginPath();
     ring(pts);
   };
-  const AREA: Record<string, string> = { pitch: '#bfe3b4', track: '#e9b8a6', parking: '#e6e6ea', water: '#a9d3f5', wood: '#cde8c4' };
+  const AREA: Record<string, string> = { pitch: '#bfe3b4', track: '#e9b8a6', parking: '#e6e6ea', water: '#a9d3f5', wood: '#cde8c4', grass: '#d9eccf', plaza: '#ebe6dc' };
   for (const a of AREAS) { poly(a.pts); ctx.fillStyle = AREA[a.kind]; ctx.fill(); }
   ctx.fillStyle = '#e3ddd3';
   ctx.strokeStyle = '#cfc6b8';

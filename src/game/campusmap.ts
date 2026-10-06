@@ -1,6 +1,6 @@
-// The real campus: road network, building footprints and named places from
-// OpenStreetMap (see scripts/osm-campus.mjs), plus route finding and turn-by-turn
-// directions over the road network.
+// The real campus: road network, building footprints and named places from the
+// authoritative Legon geography (data/geography/, built by scripts/geography/), plus
+// route finding and turn-by-turn directions over the road network.
 import raw from '../data/legon-map.json';
 
 export type RoadClass = 0 | 1 | 2 | 3 | 4; // main, through, residential, service lane, footpath
@@ -29,7 +29,7 @@ export interface Building {
   minX: number; maxX: number; minZ: number; maxZ: number;
 }
 export interface Area {
-  kind: 'pitch' | 'track' | 'parking' | 'water' | 'wood';
+  kind: 'pitch' | 'track' | 'parking' | 'water' | 'wood' | 'grass' | 'plaza';
   pts: Float32Array;
 }
 
@@ -38,16 +38,24 @@ interface RawData {
   origin: [number, number];
   nodes: number[];
   roads: { c: number; w: number[]; n?: string }[];
-  buildings: { p: number[]; h?: number; n?: string; i?: number[][] }[];
+  /** m: footprint only seen by satellite (no OSM outline); u: OSM outline no satellite footprint matches; q: 2 low confidence */
+  buildings: { p: number[]; h?: number; n?: string; i?: number[][]; m?: 1; u?: 1; q?: 2 }[];
   areas: { k: string; p: number[] }[];
-  places: { n: string; k: string; x: number; z: number; l?: string[] }[];
+  places: { n: string; k: string; x: number; z: number; l?: string[]; q?: 1 | 2 }[];
   lines: Record<string, string[]>;
+  /** campus outline, flat x,z decimetres */
+  boundary: number[];
+  zones: { id: string; n: string; k: string; p: number[] }[];
+  /** curated landmark registry: i importance 1-3, q as above */
+  landmarks: { id: string; n: string; x: number; z: number; i: number; q?: 1 | 2 }[];
+  /** Sentinel-2 composite laid out in map metres, for the geography inspector */
+  imagery: { src: string; x0: number; z0: number; x1: number; z1: number; credit: string };
 }
 const data = raw as unknown as RawData;
 
 export const ATTRIBUTION = data.attribution;
 
-// local metres <-> latitude/longitude (same projection as scripts/osm-campus.mjs)
+// local metres <-> latitude/longitude (same projection as scripts/geography/lib.mjs)
 const [LAT0, LNG0] = data.origin;
 const M_LAT = 110574, M_LNG = 111320 * Math.cos((LAT0 * Math.PI) / 180);
 export const toLatLng = (x: number, z: number): [number, number] => [LAT0 - z / M_LAT, LNG0 + x / M_LNG];

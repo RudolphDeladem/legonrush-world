@@ -1,0 +1,281 @@
+// Geography inspector: the exact map data the 3D world is built from (src/data/legon-map.json),
+// drawn from above over a Sentinel-2 composite so it can be checked against the real campus.
+// A debug page only: it lives at /geo/ and nothing in the game links to it.
+import raw from '../data/legon-map.json';
+
+interface Data {
+  origin: [number, number];
+  nodes: number[];
+  roads: { c: number; w: number[]; n?: string }[];
+  buildings: { p: number[]; h?: number; n?: string; m?: 1; u?: 1; q?: 2 }[];
+  areas: { k: string; p: number[] }[];
+  places: { n: string; k: string; x: number; z: number; q?: 1 | 2 }[];
+  boundary: number[];
+  zones: { id: string; n: string; k: string; p: number[] }[];
+  landmarks: { id: string; n: string; x: number; z: number; i: number; q?: 1 | 2 }[];
+  imagery: { src: string; x0: number; z0: number; x1: number; z1: number; credit: string };
+}
+const D = raw as unknown as Data;
+const [LAT0, LNG0] = D.origin;
+const M_LAT = 110574, M_LNG = 111320 * Math.cos((LAT0 * Math.PI) / 180);
+const toLatLng = (x: number, z: number): [number, number] => [LAT0 - z / M_LAT, LNG0 + x / M_LNG];
+const fromLatLng = (lat: number, lng: number): [number, number] => [(lng - LNG0) * M_LNG, -(lat - LAT0) * M_LAT];
+
+const $ = <T extends HTMLElement>(s: string) => document.querySelector(s) as T;
+const canvas = $<HTMLCanvasElement>('#map');
+const ctx = canvas.getContext('2d')!;
+
+// ---------- paths in map metres, built once ----------
+const ring = (flat: number[]) => { const p = new Path2D(); for (let i = 0; i < flat.length; i += 2) (i ? p.lineTo : p.moveTo).call(p, flat[i] / 10, flat[i + 1] / 10); p.closePath(); return p; };
+const node = (i: number): [number, number] => [D.nodes[i * 2] / 10, D.nodes[i * 2 + 1] / 10];
+const ROAD_W = [12, 8, 6, 4, 2];
+const ROAD_COL = ['#ff8a3d', '#ffc94d', '#ffffff', '#c7ccd8', '#7fe0ff'];
+const roadPaths = [0, 1, 2, 3, 4].map(() => new Path2D());
+for (const r of D.roads) { const p = roadPaths[r.c]; r.w.forEach((n, i) => { const [x, z] = node(n); (i ? p.lineTo : p.moveTo).call(p, x, z); }); }
+const BCOL = { osm: '#ff7a59', osmUnconfirmed: '#ffd166', satellite: '#4cc9f0', low: '#ff4fd8' };
+const bPaths = { osm: new Path2D(), osmUnconfirmed: new Path2D(), satellite: new Path2D(), low: new Path2D() };
+const bRings = D.buildings.map((b) => ring(b.p));
+D.buildings.forEach((b, i) => bPaths[b.q === 2 ? 'low' : b.m ? 'satellite' : b.u ? 'osmUnconfirmed' : 'osm'].addPath(bRings[i]));
+const ACOL: Record<string, string> = { grass: 'rgba(120,200,110,0.35)', wood: 'rgba(40,120,50,0.5)', plaza: 'rgba(235,225,205,0.55)', parking: 'rgba(170,175,185,0.55)', pitch: 'rgba(90,190,90,0.6)', track: 'rgba(220,110,80,0.6)', water: 'rgba(70,150,230,0.75)' };
+const areaPaths = D.areas.map((a) => ({ k: a.k, p: ring(a.p) }));
+const boundary = ring(D.boundary);
+const ZCOL = ['#f94144', '#f3722c', '#f8961e', '#f9c74f', '#90be6d', '#43aa8b', '#4d908e', '#577590', '#277da1', '#9b5de5', '#f15bb5', '#00bbf9', '#00f5d4'];
+const zones = D.zones.map((z, i) => ({ ...z, path: ring(z.p), col: ZCOL[i % ZCOL.length], c: centre(z.p) }));
+function centre(flat: number[]) { let x = 0, z = 0; for (let i = 0; i < flat.length; i += 2) { x += flat[i]; z += flat[i + 1]; } return [x / (flat.length / 2) / 10, z / (flat.length / 2) / 10]; }
+const LMCOL = ['#06d6a0', '#ffd166', '#ef476f'];
+
+// ---------- the legacy map, fetched on demand for comparison ----------
+let legacy: { roads: Path2D; buildings: Path2D; places: { n: string; x: number; z: number }[] } | null = null;
+async function loadLegacy() {
+  if (legacy) return;
+  const L = (await (await fetch(`${import.meta.env.BASE_URL}geo/legacy-legon-map.json`)).json()) as Data;
+  const roads = new Path2D(), buildings = new Path2D();
+  for (const r of L.roads) r.w.forEach((n, i) => { const x = L.nodes[n * 2] / 10, z = L.nodes[n * 2 + 1] / 10; (i ? roads.lineTo : roads.moveTo).call(roads, x, z); });
+  for (const b of L.buildings) buildings.addPath(ring(b.p));
+  legacy = { roads, buildings, places: L.places.map((p) => ({ n: p.n, x: p.x / 10, z: p.z / 10 })) };
+  draw();
+}
+
+// ---------- layers ----------
+const LAYERS = [
+  { id: 'imagery', name: 'Sentinel-2 imagery (10 m)', col: '#3d5a3a', on: true },
+  { id: 'boundary', name: 'Campus boundary', col: '#ff3df5', on: true },
+  { id: 'zones', name: 'Campus zones', col: '#f8961e', on: false, n: D.zones.length },
+  { id: 'areas', name: 'Open spaces, sports, parking, water', col: '#5abe5a', on: true, n: D.areas.length },
+  { id: 'roads', name: 'Roads', col: '#ffc94d', on: true, n: D.roads.filter((r) => r.c < 4).length },
+  { id: 'paths', name: 'Footpaths', col: '#7fe0ff', on: true, n: D.roads.filter((r) => r.c === 4).length },
+  { id: 'buildings', name: 'Buildings: OpenStreetMap', col: BCOL.osm, on: true, n: D.buildings.filter((b) => !b.m && !b.u).length },
+  { id: 'bunconf', name: 'Buildings: OSM on campus, no satellite match', col: BCOL.osmUnconfirmed, on: true, n: D.buildings.filter((b) => b.u).length },
+  { id: 'bsat', name: 'Buildings: satellite-detected only', col: BCOL.satellite, on: true, n: D.buildings.filter((b) => b.m).length },
+  { id: 'landmarks', name: 'Landmark registry', col: '#06d6a0', on: true, n: D.landmarks.length },
+  { id: 'places', name: 'Place labels', col: '#c9a7ff', on: false, n: D.places.length },
+  { id: 'legacy', name: 'Legacy map (before rebuild)', col: '#ff3b3b', on: false },
+  { id: 'grid', name: '100 m grid', col: '#f5c518', on: false },
+] as const;
+type LayerId = (typeof LAYERS)[number]['id'];
+const on = new Set<LayerId>(LAYERS.filter((l) => l.on).map((l) => l.id));
+const layersEl = $('#layers');
+for (const l of LAYERS) {
+  const el = document.createElement('label');
+  el.className = 'layer';
+  el.innerHTML = `<input type="checkbox" ${l.on ? 'checked' : ''}/><i style="background:${l.col}"></i>${l.name}${'n' in l ? `<span class="n">${l.n}</span>` : ''}`;
+  el.querySelector('input')!.addEventListener('change', (e) => {
+    if ((e.target as HTMLInputElement).checked) on.add(l.id); else on.delete(l.id);
+    if (l.id === 'legacy') void loadLegacy();
+    draw(); saveHash();
+  });
+  layersEl.append(el);
+}
+let opacity = 0.85;
+$<HTMLInputElement>('#opacity').addEventListener('input', (e) => { opacity = +(e.target as HTMLInputElement).value / 100; draw(); });
+$('#credit').textContent = 'Map data © OpenStreetMap contributors (ODbL); Google Open Buildings (CC BY 4.0); Microsoft ML Buildings (ODbL); Overture Maps; UG Campus Map by enkayyy97. ' + D.imagery.credit + '. Details: docs/LEGON_MASTER_GEOGRAPHY.md';
+const img = new Image();
+img.onload = () => draw();
+img.src = `${import.meta.env.BASE_URL}${D.imagery.src}`;
+
+// ---------- view ----------
+let cx = 0, cz = 300, scale = 0.2; // pixels per metre
+let W = 0, H = 0, dpr = 1;
+function resize() {
+  dpr = Math.min(2, devicePixelRatio || 1);
+  W = innerWidth; H = innerHeight;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  draw();
+}
+const toScreen = (x: number, z: number): [number, number] => [(x - cx) * scale + W / 2, (z - cz) * scale + H / 2];
+const toWorld = (sx: number, sy: number): [number, number] => [(sx - W / 2) / scale + cx, (sy - H / 2) / scale + cz];
+function fit() {
+  let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
+  for (let i = 0; i < D.boundary.length; i += 2) { minX = Math.min(minX, D.boundary[i] / 10); maxX = Math.max(maxX, D.boundary[i] / 10); minZ = Math.min(minZ, D.boundary[i + 1] / 10); maxZ = Math.max(maxZ, D.boundary[i + 1] / 10); }
+  cx = (minX + maxX) / 2; cz = (minZ + maxZ) / 2;
+  scale = Math.min(W / (maxX - minX), H / (maxZ - minZ)) * 0.92;
+}
+
+let frame = 0;
+function draw() { if (!frame) frame = requestAnimationFrame(render); }
+function render() {
+  frame = 0;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = '#0a1020';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.setTransform(scale * dpr, 0, 0, scale * dpr, (W / 2 - cx * scale) * dpr, (H / 2 - cz * scale) * dpr);
+  const px = 1 / scale; // one screen pixel in metres
+  if (on.has('imagery') && img.complete && img.naturalWidth) {
+    ctx.globalAlpha = opacity;
+    ctx.imageSmoothingEnabled = scale < 0.6;
+    const { x0, z0, x1, z1 } = D.imagery;
+    ctx.drawImage(img, x0, z0, x1 - x0, z1 - z0);
+    ctx.globalAlpha = 1;
+  }
+  if (on.has('zones')) for (const z of zones) { ctx.fillStyle = z.col + '30'; ctx.fill(z.path); ctx.strokeStyle = z.col; ctx.lineWidth = 2 * px; ctx.setLineDash([8 * px, 5 * px]); ctx.stroke(z.path); ctx.setLineDash([]); }
+  if (on.has('areas')) for (const a of areaPaths) { ctx.fillStyle = ACOL[a.k] ?? 'rgba(255,255,255,0.3)'; ctx.fill(a.p); }
+  for (let c = 4; c >= 0; c--) {
+    if (c === 4 ? !on.has('paths') : !on.has('roads')) continue;
+    ctx.strokeStyle = ROAD_COL[c];
+    ctx.globalAlpha = 0.85;
+    ctx.lineWidth = Math.max(ROAD_W[c], (c === 4 ? 1 : 1.5) * px);
+    ctx.lineCap = ctx.lineJoin = 'round';
+    ctx.stroke(roadPaths[c]);
+    ctx.globalAlpha = 1;
+  }
+  const bLayer: [keyof typeof bPaths, LayerId][] = [['osm', 'buildings'], ['osmUnconfirmed', 'bunconf'], ['satellite', 'bsat'], ['low', 'bunconf']];
+  for (const [k, id] of bLayer) {
+    if (!on.has(id)) continue;
+    ctx.fillStyle = BCOL[k] + '55'; ctx.fill(bPaths[k]);
+    ctx.strokeStyle = BCOL[k]; ctx.lineWidth = Math.max(0.4, 1.2 * px); ctx.stroke(bPaths[k]);
+  }
+  if (on.has('boundary')) { ctx.strokeStyle = '#ff3df5'; ctx.lineWidth = 3 * px; ctx.stroke(boundary); }
+  // the legacy map on top: wherever it differs from the rebuilt one, red shows
+  if (on.has('legacy') && legacy) { ctx.strokeStyle = 'rgba(255,40,40,0.95)'; ctx.lineWidth = 1.2 * px; ctx.stroke(legacy.roads); ctx.stroke(legacy.buildings); }
+  if (on.has('grid')) {
+    ctx.strokeStyle = 'rgba(245,197,24,0.35)'; ctx.lineWidth = px;
+    const [ax, az] = toWorld(0, 0), [bx, bz] = toWorld(W, H);
+    const step = scale < 0.08 ? 500 : 100;
+    ctx.beginPath();
+    for (let x = Math.ceil(ax / step) * step; x < bx; x += step) { ctx.moveTo(x, az); ctx.lineTo(x, bz); }
+    for (let z = Math.ceil(az / step) * step; z < bz; z += step) { ctx.moveTo(ax, z); ctx.lineTo(bx, z); }
+    ctx.stroke();
+  }
+  // labels and markers in screen space
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.textBaseline = 'middle';
+  const label = (t: string, x: number, y: number, col: string, size = 12, bold = false) => {
+    ctx.font = `${bold ? 700 : 500} ${size}px system-ui, sans-serif`;
+    ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(5,8,18,0.9)'; ctx.strokeText(t, x, y);
+    ctx.fillStyle = col; ctx.fillText(t, x, y);
+  };
+  if (on.has('zones')) for (const z of zones) { const [x, y] = toScreen(z.c[0], z.c[1]); ctx.textAlign = 'center'; label(z.n, x, y, z.col, 12, true); }
+  ctx.textAlign = 'left';
+  if (on.has('places') && scale > 0.35) for (const p of D.places) { const [x, y] = toScreen(p.x / 10, p.z / 10); if (x < -50 || y < -20 || x > W + 50 || y > H + 20) continue; ctx.fillStyle = '#c9a7ff'; ctx.fillRect(x - 2, y - 2, 4, 4); label(p.n, x + 5, y, '#e4d6ff', 11); }
+  if (on.has('legacy') && legacy && scale > 0.35) for (const p of legacy.places) { const [x, y] = toScreen(p.x, p.z); ctx.strokeStyle = '#ff3b3b'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x - 3, y - 3); ctx.lineTo(x + 3, y + 3); ctx.moveTo(x + 3, y - 3); ctx.lineTo(x - 3, y + 3); ctx.stroke(); }
+  if (on.has('landmarks')) for (const l of [...D.landmarks].sort((a, b) => b.i - a.i)) {
+    const [x, y] = toScreen(l.x / 10, l.z / 10);
+    const r = l.i === 1 ? 6 : l.i === 2 ? 4.5 : 3.5;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = LMCOL[l.q ?? 0]; ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = '#05070f'; ctx.stroke();
+    if (l.i === 1 || scale > 0.5 || (l.i === 2 && scale > 0.25)) label(l.n, x + r + 4, y, '#ffffff', l.i === 1 ? 12 : 11, l.i === 1);
+  }
+  if (selected) { const [x, y] = toScreen(selected[0], selected[1]); ctx.strokeStyle = '#f5c518'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, 12, 0, Math.PI * 2); ctx.stroke(); }
+  // scale bar
+  const metres = [10, 20, 50, 100, 200, 500, 1000].find((m) => m * scale > 70) ?? 1000;
+  ctx.fillStyle = '#e8ecf5'; ctx.fillRect(W - 24 - metres * scale, H - 22, metres * scale, 3);
+  ctx.textAlign = 'right'; label(metres >= 1000 ? `${metres / 1000} km` : `${metres} m`, W - 24, H - 32, '#e8ecf5', 11);
+}
+
+// ---------- interaction ----------
+let selected: [number, number] | null = null;
+const ptrs = new Map<number, [number, number]>();
+let moved = 0;
+canvas.addEventListener('pointerdown', (e) => { canvas.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]); moved = 0; canvas.classList.add('drag'); });
+canvas.addEventListener('pointermove', (e) => {
+  const prev = ptrs.get(e.pointerId);
+  if (!prev) { hover(e.clientX, e.clientY); return; }
+  if (ptrs.size === 1) { cx -= (e.clientX - prev[0]) / scale; cz -= (e.clientY - prev[1]) / scale; moved += Math.abs(e.clientX - prev[0]) + Math.abs(e.clientY - prev[1]); }
+  else if (ptrs.size === 2) {
+    const [a, b] = [...ptrs.values()];
+    const other = a === prev ? b : a;
+    const d0 = Math.hypot(prev[0] - other[0], prev[1] - other[1]), d1 = Math.hypot(e.clientX - other[0], e.clientY - other[1]);
+    if (d0 > 0) zoomAt((e.clientX + other[0]) / 2, (e.clientY + other[1]) / 2, d1 / d0);
+    moved += 99;
+  }
+  ptrs.set(e.pointerId, [e.clientX, e.clientY]);
+  draw();
+});
+const up = (e: PointerEvent) => { ptrs.delete(e.pointerId); if (!ptrs.size) { canvas.classList.remove('drag'); if (moved < 6) pick(e.clientX, e.clientY); saveHash(); } };
+canvas.addEventListener('pointerup', up);
+canvas.addEventListener('pointercancel', up);
+function zoomAt(sx: number, sy: number, f: number) {
+  const [wx, wz] = toWorld(sx, sy);
+  scale = Math.max(0.03, Math.min(12, scale * f));
+  cx = wx - (sx - W / 2) / scale; cz = wz - (sy - H / 2) / scale;
+}
+canvas.addEventListener('wheel', (e) => { e.preventDefault(); zoomAt(e.clientX, e.clientY, Math.exp(-e.deltaY * 0.0015)); draw(); saveHash(); }, { passive: false });
+const statusEl = $('#status');
+function hover(sx: number, sy: number) {
+  const [x, z] = toWorld(sx, sy);
+  const [lat, lng] = toLatLng(x, z);
+  const b = buildingAt(x, z);
+  statusEl.innerHTML = `x <b>${x.toFixed(0)}</b> z <b>${z.toFixed(0)}</b> m · <b>${lat.toFixed(5)}, ${lng.toFixed(5)}</b>${b ? ` · ${b.n ?? 'building'}` : ''}`;
+}
+function inside(flat: number[], x: number, z: number) {
+  let c = false;
+  for (let i = 0, j = flat.length - 2; i < flat.length; j = i, i += 2) {
+    const xi = flat[i] / 10, zi = flat[i + 1] / 10, xj = flat[j] / 10, zj = flat[j + 1] / 10;
+    if (zi > z !== zj > z && x < ((xj - xi) * (z - zi)) / (zj - zi) + xi) c = !c;
+  }
+  return c;
+}
+const buildingAt = (x: number, z: number) => D.buildings.find((b) => inside(b.p, x, z));
+const CONF = ['high', 'medium', 'low'];
+const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+function pick(sx: number, sy: number) {
+  const [x, z] = toWorld(sx, sy);
+  const near = (px: number, pz: number) => Math.hypot(px - x, pz - z) * scale;
+  const lm = on.has('landmarks') ? D.landmarks.find((l) => near(l.x / 10, l.z / 10) < 10) : undefined;
+  const pl = on.has('places') ? D.places.find((p) => near(p.x / 10, p.z / 10) < 8) : undefined;
+  const b = buildingAt(x, z);
+  if (lm) return show(lm.n, lm.x / 10, lm.z / 10, `Landmark · importance ${lm.i} · confidence <b>${CONF[lm.q ?? 0]}</b>`);
+  if (pl) return show(pl.n, pl.x / 10, pl.z / 10, `Place · ${pl.k} · confidence <b>${CONF[pl.q ?? 0]}</b>`);
+  if (b) return show(b.n ?? 'Unnamed building', x, z, `${b.m ? 'Satellite-detected footprint (Google / Microsoft ML)' : b.q === 2 ? 'Flagged as erroneous' : b.u ? 'OpenStreetMap footprint; no Google Open Buildings footprint matches it' : 'OpenStreetMap footprint'}${b.h ? ` · ${b.h} m tall` : ''}`);
+  show('Point', x, z, '');
+}
+function show(name: string, x: number, z: number, detail: string) {
+  selected = [x, z];
+  const [lat, lng] = toLatLng(x, z);
+  const ll = `${lat.toFixed(6)},${lng.toFixed(6)}`;
+  $('#infobody').innerHTML = `<h3>${esc(name)}</h3><div>${detail}</div><div class="k" style="margin:6px 0">${ll} · x ${x.toFixed(0)} z ${z.toFixed(0)} m</div>
+    <div>Compare: <a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=${lat.toFixed(6)}&mlon=${lng.toFixed(6)}#map=19/${lat.toFixed(6)}/${lng.toFixed(6)}">OpenStreetMap</a><a target="_blank" rel="noopener" href="https://www.google.com/maps/@${ll},180m/data=!3m1!1e3">Google satellite</a><a target="_blank" rel="noopener" href="https://maps.apple.com/?ll=${ll}&t=k&z=18">Apple Maps</a></div>`;
+  $('#info').style.display = 'block';
+  draw();
+}
+$('#info button').addEventListener('click', () => { $('#info').style.display = 'none'; selected = null; draw(); });
+$('#toggle').addEventListener('click', () => $('#side').classList.toggle('open'));
+
+// landmark finder
+const list = $('#lm');
+function fillList(q = '') {
+  const f = q.trim().toLowerCase();
+  const items = [...D.landmarks.map((l) => ({ n: l.n, x: l.x / 10, z: l.z / 10, col: LMCOL[l.q ?? 0], d: `landmark · ${CONF[l.q ?? 0]}` })),
+    ...(f ? D.places.map((p) => ({ n: p.n, x: p.x / 10, z: p.z / 10, col: '#c9a7ff', d: `place · ${p.k}` })) : [])]
+    .filter((i) => !f || i.n.toLowerCase().includes(f)).slice(0, 80);
+  list.innerHTML = '';
+  for (const i of items) {
+    const li = document.createElement('li');
+    li.innerHTML = `<i style="background:${i.col}"></i>${esc(i.n)}`;
+    li.title = i.d;
+    li.addEventListener('click', () => { cx = i.x; cz = i.z; scale = Math.max(scale, 1.2); show(i.n, i.x, i.z, i.d); saveHash(); });
+    list.append(li);
+  }
+}
+$<HTMLInputElement>('#q').addEventListener('input', (e) => fillList((e.target as HTMLInputElement).value));
+fillList();
+
+// shareable view: #lat,lng,zoom
+function saveHash() { const [lat, lng] = toLatLng(cx, cz); history.replaceState(null, '', `#${lat.toFixed(5)},${lng.toFixed(5)},${scale.toFixed(3)}`); }
+addEventListener('resize', resize);
+addEventListener('hashchange', () => { const v = location.hash.slice(1).split(',').map(Number); if (v.length === 3 && v.every(Number.isFinite)) { [cx, cz] = fromLatLng(v[0], v[1]); scale = v[2]; draw(); } });
+resize();
+const h = location.hash.slice(1).split(',').map(Number);
+if (h.length === 3 && h.every(Number.isFinite)) { [cx, cz] = fromLatLng(h[0], h[1]); scale = h[2]; } else fit();
+statusEl.textContent = `${D.roads.length} roads · ${D.buildings.length} buildings · ${D.areas.length} areas · ${D.landmarks.length} landmarks · ${D.places.length} places`;
+draw();

@@ -102,7 +102,7 @@ function renderTile(map: CampusMap, idx: Index, style: MapStyle, level: number, 
     ctx.closePath();
   };
   // grounds
-  const AREA: Record<string, string> = { pitch: P.pitch, track: P.track, parking: P.parking, water: P.water, wood: P.wood };
+  const AREA: Record<string, string> = { pitch: P.pitch, track: P.track, parking: P.parking, water: P.water, wood: P.wood, grass: P.wood, plaza: P.parking };
   for (const i of query(idx.areas, idx.cell, ox - m, ox + size + m, oz - m, oz + size + m, seen)) {
     const a = map.areas[i];
     ctx.beginPath();

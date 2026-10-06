@@ -1,0 +1,2584 @@
+{
+ "sources": {
+  "osm": {
+   "file": "data/legon.osm",
+   "snapshot": "2026-10-04T09:27:36Z",
+   "ways": 3154,
+   "nodes": 19515,
+   "extent": "5.633-5.668 N, 0.199-0.175 W"
+  },
+  "overtureOsmSupplement": {
+   "file": "data/geography/sources/overture-osm-supplement.geojson",
+   "features": 4815,
+   "release": "Overture Maps Foundation release 2026-09-23.1"
+  },
+  "mlBuildings": {
+   "file": "data/geography/sources/overture-ml-buildings.geojson",
+   "features": 3861
+  },
+  "googleOpenBuildings": {
+   "file": "data/geography/sources/google-open-buildings.geojson",
+   "features": 6725
+  },
+  "overturePlaces": {
+   "file": "data/geography/sources/overture-places.geojson",
+   "features": 466
+  },
+  "ugCampusMap": {
+   "pois": 95,
+   "boundaryVertices": 121
+  },
+  "worldcover": {
+   "features": 329
+  },
+  "dem": {
+   "grid": "149x169 @ 30 m",
+   "summit": {
+    "x": -975,
+    "z": 105,
+    "m": 149
+   }
+  },
+  "sentinel2": {
+   "scenes": [
+    "S2C_30NZM_20251108_0_L2A",
+    "S2B_30NZM_20251216_0_L2A",
+    "S2C_30NZM_20251218_0_L2A",
+    "S2A_30NZM_20260109_0_L2A",
+    "S2B_30NZM_20260125_0_L2A",
+    "S2C_30NZM_20260127_0_L2A",
+    "S2B_30NZM_20260204_0_L2A"
+   ],
+   "image": "public/geo/legon-sentinel2.webp"
+  }
+ },
+ "boundary": {
+  "source": "OpenStreetMap way 308668766 (amenity=university, name=University of Ghana)",
+  "areaKm2": 12.629999999999999,
+  "perimeterKm": 16.21,
+  "vertices": 100,
+  "ugCampusMap": {
+   "vertices": 121,
+   "medianDistanceM": 32.5,
+   "p90DistanceM": 193.2,
+   "maxDistanceM": 313.8,
+   "areaOverlapIoU": 0.932
+  },
+  "legacyExtractCoverage": 0.717
+ },
+ "roads": {
+  "junctions": 1207,
+  "roundabouts": 18,
+  "count": 1550,
+  "kmByClass": {
+   "service": 70.6,
+   "residential": 65.6,
+   "path": 25.8,
+   "tertiary": 14.1,
+   "unclassified": 12.4,
+   "footway": 12.4,
+   "secondary": 9.2,
+   "trunk": 8.4,
+   "track": 3.8,
+   "trunk_link": 1.4,
+   "tertiary_link": 0.4,
+   "secondary_link": 0.1,
+   "steps": 0
+  },
+  "fromSupplement": 414
+ },
+ "buildings": {
+  "total": 2827,
+  "onCampus": 1761,
+  "bySource": {
+   "osm": 1603,
+   "osm-via-overture": 930,
+   "microsoft-ml-buildings": 155,
+   "google-open-buildings": 139
+  },
+  "osmOnCampusChecked": 1467,
+  "osmValidatedByGoogleOpenBuildings": 1326,
+  "validatedShare": 0.904,
+  "medianCentroidOffsetToGoogleM": {
+   "x": 0.6,
+   "z": 0.4,
+   "n": 1204
+  },
+  "mlAdded": 294,
+  "mlRejected": {
+   "offCampus": 2058,
+   "small": 1449,
+   "lowConfidence": 58,
+   "overlapsOsm": 2
+  },
+  "byCategory": {
+   "unknown": 2323,
+   "housing": 291,
+   "academic": 103,
+   "residence": 75,
+   "commercial": 18,
+   "civic": 6,
+   "religious": 5,
+   "sport": 4,
+   "health": 2
+  },
+  "byConfidence": {
+   "medium": 1501,
+   "high": 1326
+  },
+  "osmNotSeenBySatellite": [
+   {
+    "id": "osm:relation/3697984",
+    "name": "Jubilee Hall",
+    "area": 8612
+   },
+   {
+    "id": "osm:way/765261444",
+    "name": "lizalex",
+    "area": 8486
+   },
+   {
+    "id": "osm:way/1217291481",
+    "area": 7673
+   },
+   {
+    "id": "osm:way/1217291472",
+    "area": 7602
+   },
+   {
+    "id": "osm:relation/19263472",
+    "area": 4758
+   },
+   {
+    "id": "osm:relation/15583535",
+    "area": 4320
+   },
+   {
+    "id": "osm:way/1189696736",
+    "area": 2350
+   },
+   {
+    "id": "osm:way/1548976997",
+    "area": 1376
+   },
+   {
+    "id": "osm:way/440339204",
+    "name": "UGBS extention",
+    "area": 1091
+   },
+   {
+    "id": "osm:way/430197431",
+    "name": "School of Law",
+    "area": 924
+   },
+   {
+    "id": "osm:way/278303051",
+    "name": "Akuafo Hall Annex A",
+    "area": 829
+   },
+   {
+    "id": "osm:way/278303068",
+    "name": "Mensah Sarbah Annex A",
+    "area": 829
+   },
+   {
+    "id": "osm:way/394125239",
+    "name": "Legon Hall Annex B",
+    "area": 804
+   },
+   {
+    "id": "osm:way/394125240",
+    "name": "Legon Hall Annex A",
+    "area": 749
+   },
+   {
+    "id": "osm:way/665126142",
+    "area": 617
+   },
+   {
+    "id": "osm:way/137514670",
+    "area": 594
+   },
+   {
+    "id": "osm:way/278303069",
+    "name": "Akuafo Hall Annex B",
+    "area": 591
+   },
+   {
+    "id": "osm:way/1186045144",
+    "area": 352
+   },
+   {
+    "id": "osm:way/492729626",
+    "area": 343
+   },
+   {
+    "id": "osm:way/492731223",
+    "area": 343
+   },
+   {
+    "id": "osm:way/600999984",
+    "area": 336
+   },
+   {
+    "id": "osm:way/413019082",
+    "name": "Ayido Valley Flat Block A",
+    "area": 332
+   },
+   {
+    "id": "osm:way/413019083",
+    "name": "Ayido Valley Flat Block B",
+    "area": 332
+   },
+   {
+    "id": "osm:way/413019086",
+    "name": "Ayido Valley Flat Block E",
+    "area": 332
+   },
+   {
+    "id": "osm:way/744897575",
+    "name": "East Legon 21",
+    "area": 314
+   },
+   {
+    "id": "osm:way/430197435",
+    "name": "School of Performing Arts",
+    "area": 301
+   },
+   {
+    "id": "osm:way/1004793151",
+    "area": 262
+   },
+   {
+    "id": "osm:way/1184502154",
+    "area": 218
+   },
+   {
+    "id": "osm:way/696169978",
+    "area": 211
+   },
+   {
+    "id": "osm:way/1055216923",
+    "area": 195
+   },
+   {
+    "id": "osm:way/696869835",
+    "area": 184
+   }
+  ],
+  "excludedAsErroneous": [
+   "osm:way/765261444"
+  ]
+ },
+ "areas": {
+  "wood": {
+   "count": 4,
+   "ha": 488.3
+  },
+  "water": {
+   "count": 26,
+   "ha": 6.7
+  },
+  "landuse": {
+   "count": 32,
+   "ha": 1845.6
+  },
+  "grass": {
+   "count": 31,
+   "ha": 95.3
+  },
+  "pitch": {
+   "count": 32,
+   "ha": 12.8
+  },
+  "plaza": {
+   "count": 8,
+   "ha": 0.8
+  },
+  "parking": {
+   "count": 82,
+   "ha": 9.3
+  },
+  "track": {
+   "count": 3,
+   "ha": 4.6
+  }
+ },
+ "places": {
+  "total": 433,
+  "fromOsm": 392,
+  "fromUgCampusMap": 38,
+  "addedFromRegistry": 3,
+  "movedToRegistryPosition": 4,
+  "byConfidence": {
+   "high": 140,
+   "medium": 289,
+   "low": 4
+  },
+  "requiredNamesChecked": 153,
+  "moved": [
+   {
+    "name": "Pentagon Block A",
+    "from": [
+     542,
+     -600
+    ],
+    "to": [
+     562,
+     -647
+    ],
+    "distanceM": 51
+   },
+   {
+    "name": "University of Ghana Registry",
+    "from": [
+     -918,
+     174
+    ],
+    "to": [
+     -922,
+     179
+    ],
+    "distanceM": 7
+   },
+   {
+    "name": "Evandy Hostel",
+    "from": [
+     586,
+     -1251
+    ],
+    "to": [
+     573,
+     -1256
+    ],
+    "distanceM": 14
+   },
+   {
+    "name": "University of Ghana Business School",
+    "from": [
+     -169,
+     -112
+    ],
+    "to": [
+     -150,
+     -112
+    ],
+    "distanceM": 19
+   }
+  ]
+ },
+ "landmarks": [
+  {
+   "id": "main-gate",
+   "name": "Legon Main Entrance",
+   "category": "gateway",
+   "importance": 1,
+   "geometry": "osm:way/320073867",
+   "lat": 5.650642,
+   "lng": -0.181145,
+   "x": 660,
+   "z": 128,
+   "elevationM": 88,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Legon Main Entrance",
+     "distanceM": 0
+    },
+    "overture": {
+     "found": false
+    },
+    "ugCampusMap": {
+     "found": false
+    }
+   },
+   "claims": [
+    {
+     "cite": "ug-legon-campus",
+     "text": "From the Main University Gate on the National Highway 4 (N4), the University Avenue extends to Commonwealth Hall on Legon Hill.",
+     "test": "near-road",
+     "pass": true,
+     "value": 88,
+     "detail": "88 m from the road (limit 250 m)"
+    },
+    {
+     "cite": "ug-legon-campus",
+     "text": "The University Avenue starts at the Main Gate.",
+     "test": "near-road",
+     "pass": true,
+     "value": 5,
+     "detail": "5 m from the road (limit 40 m)"
+    }
+   ]
+  },
+  {
+   "id": "university-avenue",
+   "name": "Dr. J.B. Danquah Avenue",
+   "category": "road",
+   "importance": 1,
+   "geometry": "road:^Dr\\. J\\.B\\. Danquah Avenue$",
+   "lat": 5.65076,
+   "lng": -0.184971,
+   "x": 236,
+   "z": 115,
+   "elevationM": 105,
+   "confidence": "medium",
+   "sourcesAgreeingWithin150m": [],
+   "sources": {},
+   "claims": [
+    {
+     "cite": "ug-legon-campus",
+     "text": "The University Avenue extends from the Main Gate to Commonwealth Hall on Legon Hill.",
+     "test": "road-links",
+     "pass": true,
+     "detail": "Legon Main Entrance 5 m, Commonwealth Hall 139 m from the road (limit 150 m)"
+    }
+   ],
+   "notes": "OpenStreetMap names the campus spine Dr. J.B. Danquah Avenue; the university's own text calls it the University Avenue or Main Avenue."
+  },
+  {
+   "id": "great-hall",
+   "name": "Great Hall",
+   "category": "civic",
+   "importance": 1,
+   "geometry": "osm:way/720486436",
+   "lat": 5.65064,
+   "lng": -0.196217,
+   "x": -1010,
+   "z": 128,
+   "elevationM": 148,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Great Hall",
+     "distanceM": 0
+    },
+    "overture": {
+     "found": false
+    },
+    "ugCampusMap": {
+     "name": "Great Hall",
+     "distanceM": 25
+    }
+   },
+   "claims": [
+    {
+     "cite": "ug-legon-campus",
+     "text": "On the summit of Legon Hill is the Convocation Group of Buildings: the central administration offices and the Great Hall with its tower.",
+     "test": "near-summit",
+     "pass": true,
+     "value": 19,
+     "detail": "19 m from the DEM high point (149 m) (limit 150 m)"
+    },
+    {
+     "cite": "ug-legon-campus",
+     "text": "The avenue climbs to Commonwealth Hall; the Great Hall stands above it at the top.",
+     "test": "higher-than",
+     "pass": true,
+     "value": 18,
+     "detail": "148 m vs 129 m at Commonwealth Hall (need +5 m)"
+    }
+   ]
+  },
+  {
+   "id": "registry",
+   "name": "University of Ghana Registry",
+   "category": "civic",
+   "importance": 1,
+   "geometry": "osm:way/492099527",
+   "lat": 5.650179,
+   "lng": -0.195425,
+   "x": -922,
+   "z": 179,
+   "elevationM": 147,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture"
+   ],
+   "sources": {
+    "osm": {
+     "name": "University of Ghana Registry",
+     "distanceM": 7
+    },
+    "overture": {
+     "name": "University of Ghana Registry",
+     "distanceM": 19,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "found": false
+    }
+   },
+   "claims": [
+    {
+     "cite": "meqasa-legon",
+     "text": "The University of Ghana registry, Great Hall and Vice Chancellor's residence are located on top of the hill.",
+     "test": "near",
+     "pass": true,
+     "value": 81,
+     "detail": "81 m apart (limit 200 m)"
+    },
+    {
+     "cite": "ug-legon-campus",
+     "text": "Central administration offices are part of the Convocation Group on the summit.",
+     "test": "near-summit",
+     "pass": true,
+     "value": 81,
+     "detail": "81 m from the DEM high point (149 m) (limit 200 m)"
+    }
+   ],
+   "notes": "Sources do not separate the Registry from the wider Central Administration; both are recorded as this one landmark on the Convocation Group."
+  },
+  {
+   "id": "vc-residence",
+   "name": "Vice Chancellor's Residence",
+   "category": "civic",
+   "importance": 3,
+   "geometry": "osm:way/720486431",
+   "lat": 5.649576,
+   "lng": -0.197091,
+   "x": -1107,
+   "z": 246,
+   "elevationM": 141,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Vice Chancellor's Residence",
+     "distanceM": 0
+    }
+   },
+   "claims": [
+    {
+     "cite": "meqasa-legon",
+     "text": "The Vice Chancellor's residence is on top of the hill.",
+     "test": "near-summit",
+     "pass": true,
+     "value": 178,
+     "detail": "178 m from the DEM high point (149 m) (limit 250 m)"
+    }
+   ]
+  },
+  {
+   "id": "balme-library",
+   "name": "The Balme Library",
+   "category": "academic",
+   "importance": 1,
+   "geometry": "osm:relation/7304886",
+   "lat": 5.65205,
+   "lng": -0.187044,
+   "x": 6,
+   "z": -28,
+   "elevationM": 100,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "The Balme Library",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "Balme Library",
+     "distanceM": 31,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "Balme Library",
+     "distanceM": 28
+    }
+   },
+   "claims": [
+    {
+     "cite": "ug-legon-campus",
+     "text": "Mid-way is an open space, the University Square, with an ornamental fountain overlooking the Balme Library.",
+     "test": "direction",
+     "pass": true,
+     "value": 106,
+     "detail": "106 m north of Balme Library Fountain (need 40 m)"
+    },
+    {
+     "cite": "ug-legon-campus",
+     "text": "The library stands mid-way along the University Avenue.",
+     "test": "near-road",
+     "pass": true,
+     "value": 95,
+     "detail": "95 m from the road (limit 160 m)"
+    }
+   ]
+  },
+  {
+   "id": "university-square",
+   "name": "University Square",
+   "category": "open-space",
+   "importance": 1,
+   "geometry": "derived:university-square",
+   "lat": 5.651349,
+   "lng": -0.187023,
+   "x": 9,
+   "z": 50,
+   "elevationM": 95,
+   "confidence": "medium",
+   "sourcesAgreeingWithin150m": [],
+   "sources": {
+    "overture": {
+     "found": false
+    },
+    "ugCampusMap": {
+     "found": false
+    }
+   },
+   "claims": [
+    {
+     "cite": "ug-legon-campus",
+     "text": "Mid-way along the avenue is an open space, the University Square, with an ornamental fountain.",
+     "test": "near",
+     "pass": true,
+     "value": 12,
+     "detail": "12 m apart (limit 60 m)"
+    },
+    {
+     "cite": "ug-legon-campus",
+     "text": "The square overlooks the Balme Library.",
+     "test": "near",
+     "pass": true,
+     "value": 40,
+     "detail": "40 m apart (limit 120 m)"
+    },
+    {
+     "cite": "ug-legon-campus",
+     "text": "Across from the University Square are sports fields and halls of residence.",
+     "test": "direction",
+     "pass": true,
+     "value": 354,
+     "detail": "354 m north of Athletic Oval (need 150 m)"
+    }
+   ],
+   "notes": "Not mapped as a named feature in any source. The outline is the forecourt enclosed by the two service lanes (OSM ways 448104199 and 448104193), the library service road (way 278303088) and the fountain roundabout on the avenue."
+  },
+  {
+   "id": "balme-fountain",
+   "name": "Balme Library Fountain",
+   "category": "open-space",
+   "importance": 2,
+   "geometry": "osm:way/320067568",
+   "lat": 5.651095,
+   "lng": -0.187028,
+   "x": 8,
+   "z": 78,
+   "elevationM": 95,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Balme Library Fountain",
+     "distanceM": 0
+    },
+    "overture": {
+     "found": false
+    }
+   },
+   "claims": [
+    {
+     "cite": "ug-legon-campus",
+     "text": "The ornamental fountain is on the University Square, on the avenue.",
+     "test": "near-road",
+     "pass": true,
+     "value": 12,
+     "detail": "12 m from the road (limit 25 m)"
+    }
+   ],
+   "notes": "OSM also carries a stray point named 'Balme Library' tagged amenity=fountain at the same spot (node 6720686104); it is the fountain, not the library."
+  },
+  {
+   "id": "kuffour-quadrangle",
+   "name": "Kuffour Quadrangle",
+   "category": "open-space",
+   "importance": 2,
+   "geometry": "osm:way/448104179",
+   "lat": 5.652928,
+   "lng": -0.187048,
+   "x": 6,
+   "z": -125,
+   "elevationM": 95,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Kuffour Quadrangle",
+     "distanceM": 0
+    },
+    "overture": {
+     "found": false
+    }
+   },
+   "claims": [
+    {
+     "cite": "univers-level100",
+     "text": "Plant and Environmental Biology is behind the Balme Library Gardens / Kuffuor Quadrangle (web search summary; wording not confirmed on the page itself).",
+     "test": "near",
+     "pass": true,
+     "value": 77,
+     "detail": "77 m apart (limit 200 m)"
+    },
+    {
+     "cite": "univers-level100",
+     "text": "The quadrangle is behind (north of) the library, away from the avenue.",
+     "test": "direction",
+     "pass": true,
+     "value": 97,
+     "detail": "97 m north of The Balme Library (need 40 m)"
+    }
+   ]
+  },
+  {
+   "id": "plant-biology",
+   "name": "Department of Plant and Environmental Biology",
+   "category": "academic",
+   "importance": 3,
+   "geometry": "osm:node/9659847117",
+   "lat": 5.65369,
+   "lng": -0.186553,
+   "x": 61,
+   "z": -209,
+   "elevationM": 97,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Department of Plant and Environmental Biology",
+     "distanceM": 0
+    },
+    "overture": {
+     "found": false
+    },
+    "ugCampusMap": {
+     "name": "Department of Plant and Environmental Biology",
+     "distanceM": 45
+    }
+   },
+   "claims": []
+  },
+  {
+   "id": "banking-square",
+   "name": "University of Ghana banking square",
+   "category": "commercial",
+   "importance": 1,
+   "geometry": "osm:relation/7226878",
+   "lat": 5.64278,
+   "lng": -0.185666,
+   "x": 159,
+   "z": 997,
+   "elevationM": 88,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "University of Ghana banking square",
+     "distanceM": 0
+    },
+    "overture": {
+     "found": false
+    },
+    "ugCampusMap": {
+     "name": "University Banking Square",
+     "distanceM": 11
+    }
+   },
+   "claims": [
+    {
+     "cite": "graphic-banking-square",
+     "text": "The Banking Square is close to the Night Market (on the old Manciples site).",
+     "test": "near",
+     "pass": true,
+     "value": 37,
+     "detail": "37 m apart (limit 200 m)"
+    }
+   ]
+  },
+  {
+   "id": "night-market",
+   "name": "Night Market",
+   "category": "commercial",
+   "importance": 1,
+   "geometry": "osm:way/773864855",
+   "lat": 5.642112,
+   "lng": -0.185589,
+   "x": 167,
+   "z": 1071,
+   "elevationM": 85,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Night Market",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "Night Market",
+     "distanceM": 19,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "found": false
+    }
+   },
+   "overtureMatches": [
+    {
+     "name": "Night Market",
+     "dataset": "meta",
+     "distanceM": 1080
+    },
+    {
+     "name": "Night Market",
+     "dataset": "meta",
+     "distanceM": 19
+    }
+   ],
+   "claims": [
+    {
+     "cite": "ug-night-market",
+     "text": "The Night Market is the campus's main marketplace (80 cubicles, 36 food stalls).",
+     "test": "near",
+     "pass": true,
+     "value": 37,
+     "detail": "37 m apart (limit 200 m)"
+    }
+   ]
+  },
+  {
+   "id": "athletic-oval",
+   "name": "Athletic Oval",
+   "category": "sport",
+   "importance": 1,
+   "geometry": "osm:relation/7304443",
+   "lat": 5.648151,
+   "lng": -0.187042,
+   "x": 6,
+   "z": 403,
+   "elevationM": 89,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Athletic Oval",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "Legon Athletic Oval",
+     "distanceM": 16,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "found": false
+    }
+   },
+   "claims": [
+    {
+     "cite": "univers-level100",
+     "text": "The Central Cafeteria (CC) is right in front of Mensah Sarbah Hall and opposite the Athletic Oval.",
+     "test": "near",
+     "pass": true,
+     "value": 45,
+     "detail": "45 m apart (limit 200 m)"
+    },
+    {
+     "cite": "ug-legon-campus",
+     "text": "Sports fields are across the avenue from the University Square.",
+     "test": "direction",
+     "pass": true,
+     "value": 354,
+     "detail": "354 m south of University Square (need 150 m)"
+    }
+   ]
+  },
+  {
+   "id": "stadium",
+   "name": "University of Ghana Sports Stadium",
+   "category": "sport",
+   "importance": 1,
+   "geometry": "osm:way/1273337678",
+   "lat": 5.639029,
+   "lng": -0.180086,
+   "x": 777,
+   "z": 1412,
+   "elevationM": 68,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "University of Ghana Sports Stadium",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "University of Ghana Stadium",
+     "distanceM": 285,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "Sports Complex",
+     "distanceM": 116
+    }
+   },
+   "claims": [
+    {
+     "cite": "ghanaremembers-stadium",
+     "text": "The UG Sports Stadium is near the Okponglo traffic light on the Accra-Madina highway.",
+     "test": "near-road",
+     "pass": true,
+     "value": 154,
+     "detail": "154 m from the road (limit 400 m)"
+    }
+   ]
+  },
+  {
+   "id": "botanical-gardens",
+   "name": "University of Ghana Botanical Gardens",
+   "category": "open-space",
+   "importance": 1,
+   "geometry": "osm:way/335456879",
+   "lat": 5.662116,
+   "lng": -0.186263,
+   "x": 93,
+   "z": -1141,
+   "elevationM": 71,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm"
+   ],
+   "sources": {
+    "osm": {
+     "name": "University of Ghana Botanical Gardens",
+     "distanceM": 0
+    },
+    "overture": {
+     "found": false
+    },
+    "ugCampusMap": {
+     "found": false
+    }
+   },
+   "claims": [
+    {
+     "cite": "visitghana-botanical",
+     "text": "The gardens are off the Atomic-Haatso main road at Agbogba junction, about 5 minutes from the Main Gate.",
+     "test": "near-road",
+     "pass": true,
+     "value": 6,
+     "detail": "6 m from the road (limit 150 m)"
+    },
+    {
+     "cite": "visitghana-botanical",
+     "text": "The gardens lie north of the main campus.",
+     "test": "direction",
+     "pass": true,
+     "value": 1113,
+     "detail": "1113 m north of The Balme Library (need 600 m)"
+    }
+   ]
+  },
+  {
+   "id": "vaughan-dam",
+   "name": "Vaughan Dam",
+   "category": "water",
+   "importance": 2,
+   "geometry": "osm:way/215443236",
+   "lat": 5.665811,
+   "lng": -0.188036,
+   "x": -104,
+   "z": -1549,
+   "elevationM": 56,
+   "confidence": "medium",
+   "sourcesAgreeingWithin150m": [],
+   "sources": {
+    "osm": {
+     "found": false
+    },
+    "overture": {
+     "found": false
+    },
+    "ugCampusMap": {
+     "found": false
+    }
+   },
+   "claims": [
+    {
+     "cite": "yen-botanical",
+     "text": "The Garden has ... the Vaughan dam where you can have a canoe ride.",
+     "test": "inside",
+     "pass": true,
+     "detail": "inside University of Ghana Botanical Gardens"
+    }
+   ],
+   "notes": "No source names the water body. OSM has one unnamed natural=water polygon (0.76 ha) inside the Botanical Gardens and it is visible in Sentinel-2; it is identified as the Vaughan Dam because it is the only open water in the gardens."
+  },
+  {
+   "id": "engineering",
+   "name": "School of Engineering Sciences",
+   "category": "academic",
+   "importance": 2,
+   "geometry": "osm:relation/8404077",
+   "lat": 5.655617,
+   "lng": -0.183014,
+   "x": 453,
+   "z": -422,
+   "elevationM": 95,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "School of Engineering Sciences",
+     "distanceM": 0
+    },
+    "overture": {
+     "found": false
+    },
+    "ugCampusMap": {
+     "name": "School of Engineering Sciences",
+     "distanceM": 35
+    }
+   },
+   "claims": []
+  },
+  {
+   "id": "business-school",
+   "name": "University of Ghana Business School",
+   "category": "academic",
+   "importance": 2,
+   "geometry": "osm:way/130861321",
+   "lat": 5.652813,
+   "lng": -0.188454,
+   "x": -150,
+   "z": -112,
+   "elevationM": 105,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture"
+   ],
+   "sources": {
+    "osm": {
+     "name": "University of Ghana Business School",
+     "distanceM": 19
+    },
+    "overture": {
+     "name": "University of Ghana Business School",
+     "distanceM": 35,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "Business School",
+     "distanceM": 1358
+    }
+   },
+   "claims": [],
+   "notes": "Two facilities share the name. OSM and Overture (Meta) put the University of Ghana Business School beside the Balme Library (UGBS car park, OSM way 715027982). The UG Campus Map's 'Business School' point (5.6587 N, 0.1777 W) is 1.3 km away on the UGBS Graduate Campus east of the N4 (OSM way 797937346, Meta 'Graduate Business School Multipurpose Building'). Both are kept, as separate places."
+  },
+  {
+   "id": "ugbs-graduate",
+   "name": "UGBS Graduate Campus",
+   "category": "academic",
+   "importance": 3,
+   "geometry": "osm:way/797937346",
+   "lat": 5.658707,
+   "lng": -0.177594,
+   "x": 1053,
+   "z": -764,
+   "elevationM": 87,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "UGBS Graduate Campus",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "University Of Ghana Graduate Business School Multipurpose Building",
+     "distanceM": 23,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "Business School",
+     "distanceM": 12
+    }
+   },
+   "claims": []
+  },
+  {
+   "id": "commonwealth-hall",
+   "name": "Commonwealth Hall",
+   "category": "residence",
+   "importance": 1,
+   "geometry": "osm:way/497853937",
+   "lat": 5.650734,
+   "lng": -0.19255,
+   "x": -604,
+   "z": 118,
+   "elevationM": 129,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Commonwealth Hall",
+     "distanceM": 0
+    },
+    "overture": {
+     "found": false
+    },
+    "ugCampusMap": {
+     "name": "Commonwealth Hall",
+     "distanceM": 16
+    }
+   },
+   "claims": [
+    {
+     "cite": "ug-legon-campus",
+     "text": "The University Avenue extends to Commonwealth Hall on Legon Hill.",
+     "test": "higher-than",
+     "pass": true,
+     "value": 30,
+     "detail": "129 m vs 100 m at The Balme Library (need +15 m)"
+    },
+    {
+     "cite": "ug-legon-campus",
+     "text": "Behind Commonwealth Hall is an open-air theatre built into the slope of Legon Hill.",
+     "test": "near",
+     "pass": true,
+     "value": 0,
+     "detail": "0 m apart (limit 250 m)"
+    }
+   ]
+  },
+  {
+   "id": "amphitheatre",
+   "name": "Amphitheatre Grounds",
+   "category": "open-space",
+   "importance": 2,
+   "geometry": "osm:node/9660303973",
+   "lat": 5.65064,
+   "lng": -0.193711,
+   "x": -732,
+   "z": 128,
+   "elevationM": 134,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Amphitheatre Grounds",
+     "distanceM": 0
+    },
+    "overture": {
+     "found": false
+    }
+   },
+   "claims": [
+    {
+     "cite": "ug-legon-campus",
+     "text": "The open-air theatre is behind Commonwealth Hall, uphill toward the Great Hall.",
+     "test": "direction",
+     "pass": true,
+     "value": 129,
+     "detail": "129 m west of Commonwealth Hall (need 40 m)"
+    }
+   ]
+  },
+  {
+   "id": "legon-hall",
+   "name": "Legon Hall",
+   "category": "residence",
+   "importance": 1,
+   "geometry": "osm:way/427645339",
+   "lat": 5.649591,
+   "lng": -0.188209,
+   "x": -123,
+   "z": 244,
+   "elevationM": 97,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Legon Hall",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "Legon Hall",
+     "distanceM": 45,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "Legon Hall",
+     "distanceM": 71
+    }
+   },
+   "claims": [
+    {
+     "cite": "ug-legon-campus",
+     "text": "Halls of residence face the University Square across the avenue.",
+     "test": "direction",
+     "pass": true,
+     "value": 194,
+     "detail": "194 m south of University Square (need 60 m)"
+    }
+   ],
+   "notes": "OSM has a second polygon also named 'Legon Hall' (way 1548976998) around the annex blocks; it is treated as part of the Legon Hall annexe, not the main hall."
+  },
+  {
+   "id": "akuafo-hall",
+   "name": "Akuafo Hall Main",
+   "category": "residence",
+   "importance": 1,
+   "geometry": "osm:way/421358833",
+   "lat": 5.649542,
+   "lng": -0.185883,
+   "x": 135,
+   "z": 250,
+   "elevationM": 95,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Akuafo Hall Main",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "Akuafo Hall",
+     "distanceM": 103,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "Akuafo Hall",
+     "distanceM": 86
+    }
+   },
+   "claims": [
+    {
+     "cite": "ug-legon-campus",
+     "text": "Halls of residence face the University Square across the avenue.",
+     "test": "direction",
+     "pass": true,
+     "value": 200,
+     "detail": "200 m south of University Square (need 60 m)"
+    }
+   ]
+  },
+  {
+   "id": "volta-hall",
+   "name": "Volta Hall",
+   "category": "residence",
+   "importance": 1,
+   "geometry": "osm:way/320072537",
+   "lat": 5.651812,
+   "lng": -0.189498,
+   "x": -266,
+   "z": -1,
+   "elevationM": 105,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Volta Hall",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "Volta Hall, University Of Ghana",
+     "distanceM": 22,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "Volta Hall",
+     "distanceM": 33
+    }
+   },
+   "overtureMatches": [
+    {
+     "name": "Volta Hall Car Park",
+     "dataset": "meta",
+     "distanceM": 67
+    },
+    {
+     "name": "Volta Hall, University Of Ghana",
+     "dataset": "meta",
+     "distanceM": 22
+    }
+   ],
+   "claims": []
+  },
+  {
+   "id": "mensah-sarbah-hall",
+   "name": "Mensah Sarbah Hall",
+   "category": "residence",
+   "importance": 1,
+   "geometry": "osm:way/497853938",
+   "lat": 5.645824,
+   "lng": -0.186618,
+   "x": 53,
+   "z": 661,
+   "elevationM": 90,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Mensah Sarbah Hall",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "Mensah Sarbah Hall",
+     "distanceM": 19,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "Mensah Sarbah Hall",
+     "distanceM": 68
+    }
+   },
+   "claims": [
+    {
+     "cite": "univers-level100",
+     "text": "The Central Cafeteria is right in front of Mensah Sarbah Hall.",
+     "test": "near",
+     "pass": true,
+     "value": 34,
+     "detail": "34 m apart (limit 200 m)"
+    }
+   ]
+  },
+  {
+   "id": "central-cafeteria",
+   "name": "Central Cafeteria, CC",
+   "category": "commercial",
+   "importance": 2,
+   "geometry": "osm:way/278303032",
+   "lat": 5.646969,
+   "lng": -0.187085,
+   "x": 2,
+   "z": 534,
+   "elevationM": 92,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Central Cafeteria, CC",
+     "distanceM": 0
+    },
+    "overture": {
+     "found": false
+    },
+    "ugCampusMap": {
+     "name": "Central Cafeteria",
+     "distanceM": 37
+    }
+   },
+   "claims": [
+    {
+     "cite": "univers-level100",
+     "text": "CC is opposite the Athletic Oval.",
+     "test": "direction",
+     "pass": true,
+     "value": 131,
+     "detail": "131 m south of Athletic Oval (need 60 m)"
+    }
+   ]
+  },
+  {
+   "id": "src-union",
+   "name": "SRC Union Building",
+   "category": "commercial",
+   "importance": 3,
+   "geometry": "osm:relation/3697978",
+   "lat": 5.646965,
+   "lng": -0.187717,
+   "x": -68,
+   "z": 535,
+   "elevationM": 91,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture"
+   ],
+   "sources": {
+    "osm": {
+     "name": "SRC Union Building",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "SRC Union Building. UG, Legon",
+     "distanceM": 13,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "found": false
+    }
+   },
+   "claims": []
+  },
+  {
+   "id": "ish",
+   "name": "International Students Hostel 1, ISH 1",
+   "category": "residence",
+   "importance": 1,
+   "geometry": "osm:way/278303018",
+   "lat": 5.639761,
+   "lng": -0.185147,
+   "x": 216,
+   "z": 1331,
+   "elevationM": 93,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "International Students Hostel 1, ISH 1",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "International Student Hostel",
+     "distanceM": 33,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "International Student Hostel",
+     "distanceM": 16
+    }
+   },
+   "claims": []
+  },
+  {
+   "id": "ish-2",
+   "name": "International Students Hostel 2, ISH 2",
+   "category": "residence",
+   "importance": 3,
+   "geometry": "osm:way/278303020",
+   "lat": 5.64154,
+   "lng": -0.186095,
+   "x": 111,
+   "z": 1134,
+   "elevationM": 93,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture"
+   ],
+   "sources": {
+    "osm": {
+     "name": "International Students Hostel 2, ISH 2",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "ISH 2",
+     "distanceM": 33,
+     "dataset": "meta"
+    }
+   },
+   "claims": []
+  },
+  {
+   "id": "valco",
+   "name": "Valco Trust Hostel Phase 1",
+   "category": "residence",
+   "importance": 1,
+   "geometry": "osm:way/278303038",
+   "lat": 5.644756,
+   "lng": -0.186883,
+   "x": 24,
+   "z": 779,
+   "elevationM": 92,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Valco Trust Hostel Phase 1",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "Valco Trust Hostel",
+     "distanceM": 65,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "Valco Trust Hostel",
+     "distanceM": 50
+    }
+   },
+   "claims": []
+  },
+  {
+   "id": "jqb",
+   "name": "Jones Quartey Building, JQB",
+   "category": "academic",
+   "importance": 2,
+   "geometry": "osm:way/278303042",
+   "lat": 5.652324,
+   "lng": -0.181968,
+   "x": 569,
+   "z": -58,
+   "elevationM": 98,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "James Quartey Building, JQB",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "JQB",
+     "distanceM": 14,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "JQB Lecture Hall",
+     "distanceM": 8
+    }
+   },
+   "overtureMatches": [
+    {
+     "name": "JQB",
+     "dataset": "meta",
+     "distanceM": 14
+    },
+    {
+     "name": "JQB Lecture Hall",
+     "dataset": "meta",
+     "distanceM": 1462
+    }
+   ],
+   "claims": [
+    {
+     "cite": "univers-level100",
+     "text": "JQB is close to the Main Entrance, behind the Institute of African Studies, on your right coming from the main gate.",
+     "test": "near",
+     "pass": true,
+     "value": 175,
+     "detail": "175 m apart (limit 250 m)"
+    },
+    {
+     "cite": "univers-level100",
+     "text": "On your right coming in from the gate: north of the avenue.",
+     "test": "side-of-road",
+     "pass": true,
+     "detail": "north of the road by 175 m"
+    },
+    {
+     "cite": "univers-level100",
+     "text": "Behind the Institute of African Studies (further from the avenue).",
+     "test": "direction",
+     "pass": true,
+     "value": 135,
+     "detail": "135 m north of Institute of Africa Studies (need 40 m)"
+    }
+   ],
+   "notes": "OSM spells the name 'James Quartey Building'; the university's own radio station calls it the Jones Quartey Building. The OSM spelling is corrected."
+  },
+  {
+   "id": "african-studies",
+   "name": "Institute of Africa Studies",
+   "category": "academic",
+   "importance": 2,
+   "geometry": "ug-campus-map:institute-africa-studies",
+   "lat": 5.6511,
+   "lng": -0.1819,
+   "x": 576,
+   "z": 77,
+   "elevationM": 93,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "African Studies Dept",
+     "distanceM": 2
+    },
+    "overture": {
+     "name": "Institute of African Studies",
+     "distanceM": 211,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "Institute of Africa Studies",
+     "distanceM": 0
+    }
+   },
+   "claims": [
+    {
+     "cite": "univers-level100",
+     "text": "JQB is behind the Institute of African Studies coming from the main gate: the institute sits between JQB and the avenue.",
+     "test": "side-of-road",
+     "pass": true,
+     "detail": "north of the road by 39 m"
+    }
+   ],
+   "notes": "Only the UG Campus Map places the institute (north of the avenue, in front of JQB), which matches the Radio Univers description. Overture (Meta) puts it 220 m away, south of the avenue by the School of Performing Arts; that position contradicts the written description and is rejected."
+  },
+  {
+   "id": "kab",
+   "name": "K. A. Busia Building, KAB",
+   "category": "academic",
+   "importance": 3,
+   "geometry": "osm:way/394125236",
+   "lat": 5.652885,
+   "lng": -0.182953,
+   "x": 459,
+   "z": -120,
+   "elevationM": 104,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm"
+   ],
+   "sources": {
+    "osm": {
+     "name": "K. A. Busia Building, KAB",
+     "distanceM": 0
+    },
+    "overture": {
+     "found": false
+    },
+    "ugCampusMap": {
+     "found": false
+    }
+   },
+   "claims": [
+    {
+     "cite": "univers-level100",
+     "text": "K. A. Busia Lecture Theatre (KAB) is opposite the law school.",
+     "test": "near",
+     "pass": true,
+     "value": 137,
+     "detail": "137 m apart (limit 200 m)"
+    }
+   ]
+  },
+  {
+   "id": "law",
+   "name": "School of Law",
+   "category": "academic",
+   "importance": 2,
+   "geometry": "osm:way/430197431",
+   "lat": 5.654211,
+   "lng": -0.183161,
+   "x": 436,
+   "z": -267,
+   "elevationM": 108,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "School of Law",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "Faculty of Law School,University Of Ghana",
+     "distanceM": 127,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "School of Law",
+     "distanceM": 24
+    }
+   },
+   "claims": []
+  },
+  {
+   "id": "n-block",
+   "name": "N Block",
+   "category": "academic",
+   "importance": 3,
+   "geometry": "osm:way/335456883",
+   "lat": 5.654707,
+   "lng": -0.187038,
+   "x": 7,
+   "z": -321,
+   "elevationM": 94,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "N Block",
+     "distanceM": 0
+    },
+    "ugCampusMap": {
+     "name": "Mfodwo Complex/ N Block",
+     "distanceM": 13
+    }
+   },
+   "claims": [
+    {
+     "cite": "univers-level100",
+     "text": "N Block is close to the Political Science, Social Work, Psychology and Information Studies departments.",
+     "test": "near-place",
+     "pass": true,
+     "value": 53,
+     "detail": "53 m from Psychology Department (limit 150 m)"
+    }
+   ]
+  },
+  {
+   "id": "performing-arts",
+   "name": "School of Performing Arts",
+   "category": "academic",
+   "importance": 3,
+   "geometry": "osm:way/430197435",
+   "lat": 5.649726,
+   "lng": -0.181338,
+   "x": 638,
+   "z": 229,
+   "elevationM": 86,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "School of Performing Arts",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "School of Performing Arts",
+     "distanceM": 113,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "School of Performing Arts",
+     "distanceM": 75
+    }
+   },
+   "claims": []
+  },
+  {
+   "id": "ug-hospital",
+   "name": "University of Ghana Hospital",
+   "category": "health",
+   "importance": 2,
+   "geometry": "osm:way/278268702",
+   "lat": 5.651784,
+   "lng": -0.178096,
+   "x": 997,
+   "z": 2,
+   "elevationM": 83,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "University of Ghana Hospital",
+     "distanceM": 0
+    },
+    "overture": {
+     "found": false
+    },
+    "ugCampusMap": {
+     "name": "Legon Hospital",
+     "distanceM": 79
+    }
+   },
+   "claims": []
+  },
+  {
+   "id": "ugmc",
+   "name": "University of Ghana Medical Center Limited",
+   "category": "health",
+   "importance": 2,
+   "geometry": "osm:way/464683570",
+   "lat": 5.631853,
+   "lng": -0.185887,
+   "x": 134,
+   "z": 2206,
+   "elevationM": 78,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture"
+   ],
+   "sources": {
+    "osm": {
+     "name": "University of Ghana Medical Center Limited",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "University of Ghana Medical Centre",
+     "distanceM": 56,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "found": false
+    }
+   },
+   "claims": []
+  },
+  {
+   "id": "noguchi",
+   "name": "Noguchi Memorial Institute for Medical Research",
+   "category": "academic",
+   "importance": 2,
+   "geometry": "osm:relation/1434194",
+   "lat": 5.634221,
+   "lng": -0.183339,
+   "x": 417,
+   "z": 1944,
+   "elevationM": 78,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Noguchi Memorial Institute for Medical Research",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "Noguchi Memorial Institute For Medical Research",
+     "distanceM": 79,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "found": false
+    }
+   },
+   "claims": []
+  },
+  {
+   "id": "limann",
+   "name": "Dr. Hilla Limann Hall",
+   "category": "residence",
+   "importance": 2,
+   "geometry": "osm:relation/5288833",
+   "lat": 5.637486,
+   "lng": -0.184647,
+   "x": 272,
+   "z": 1583,
+   "elevationM": 85,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Dr. Hilla Limann Hall",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "Dr Hilla Liman Hostel",
+     "distanceM": 12,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "Dr. Hilla Limann Hall",
+     "distanceM": 27
+    }
+   },
+   "overtureMatches": [
+    {
+     "name": "Dr. Hilla Limann Hall",
+     "dataset": "meta",
+     "distanceM": 40
+    },
+    {
+     "name": "Dr Hilla Liman Hostel",
+     "dataset": "meta",
+     "distanceM": 12
+    }
+   ],
+   "claims": []
+  },
+  {
+   "id": "kwapong",
+   "name": "Alexander Kwapong Hall",
+   "category": "residence",
+   "importance": 2,
+   "geometry": "osm:relation/5288831",
+   "lat": 5.636875,
+   "lng": -0.185734,
+   "x": 151,
+   "z": 1650,
+   "elevationM": 88,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Alexander Kwapong Hall",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "3rd Floor, Alex Kwapong Hall",
+     "distanceM": 49,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "Alexander Kwapong Hall",
+     "distanceM": 29
+    }
+   },
+   "claims": []
+  },
+  {
+   "id": "sey",
+   "name": "Elizabeth Frances Sey Hall",
+   "category": "residence",
+   "importance": 2,
+   "geometry": "osm:relation/5288834",
+   "lat": 5.635937,
+   "lng": -0.187372,
+   "x": -30,
+   "z": 1754,
+   "elevationM": 90,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Elizabeth Frances Sey Hall",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "Elizabeth Frances Sey Hall",
+     "distanceM": 25,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "Elizabeth Sey Hall",
+     "distanceM": 39
+    }
+   },
+   "claims": []
+  },
+  {
+   "id": "jna",
+   "name": "Jean Nelson Aka Hall",
+   "category": "residence",
+   "importance": 2,
+   "geometry": "osm:relation/5288832",
+   "lat": 5.63534,
+   "lng": -0.188475,
+   "x": -152,
+   "z": 1820,
+   "elevationM": 89,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Jean Nelson Aka Hall",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "Jean Nelson Aka Hostel",
+     "distanceM": 40,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "Jean Nelson Akah Hall",
+     "distanceM": 35
+    }
+   },
+   "claims": []
+  },
+  {
+   "id": "jubilee",
+   "name": "Jubilee Hall",
+   "category": "residence",
+   "importance": 2,
+   "geometry": "osm:relation/3697984",
+   "lat": 5.640468,
+   "lng": -0.186241,
+   "x": 95,
+   "z": 1253,
+   "elevationM": 86,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Jubilee Hall",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "Jubilee Hall",
+     "distanceM": 62,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "Jubilee Hall",
+     "distanceM": 27
+    }
+   },
+   "claims": []
+  },
+  {
+   "id": "pentagon",
+   "name": "Pentagon Block A",
+   "category": "residence",
+   "importance": 2,
+   "geometry": "osm:way/368856520",
+   "lat": 5.65765,
+   "lng": -0.18203,
+   "x": 562,
+   "z": -647,
+   "elevationM": 84,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Pentagon Block A",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "Block A (Pent)",
+     "distanceM": 60,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "Pent Hostel Block A",
+     "distanceM": 50
+    }
+   },
+   "overtureMatches": [
+    {
+     "name": "African Union Hall JCR- PENT",
+     "dataset": "meta",
+     "distanceM": 78
+    },
+    {
+     "name": "Block A (Pent)",
+     "dataset": "meta",
+     "distanceM": 60
+    }
+   ],
+   "claims": []
+  },
+  {
+   "id": "bani",
+   "name": "Bani Hostel",
+   "category": "residence",
+   "importance": 3,
+   "geometry": "osm:way/368856637",
+   "lat": 5.663256,
+   "lng": -0.179997,
+   "x": 787,
+   "z": -1267,
+   "elevationM": 80,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Bani Hostel",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "Bani Hostel",
+     "distanceM": 46,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "Bani Hostel",
+     "distanceM": 43
+    }
+   },
+   "overtureMatches": [
+    {
+     "name": "Bani Hostel",
+     "dataset": "meta",
+     "distanceM": 46
+    },
+    {
+     "name": "Bani Hostel",
+     "dataset": "meta",
+     "distanceM": 3542
+    }
+   ],
+   "claims": []
+  },
+  {
+   "id": "evandy",
+   "name": "Evandy Hostel",
+   "category": "residence",
+   "importance": 3,
+   "geometry": "osm:way/719059760",
+   "lat": 5.66316,
+   "lng": -0.181926,
+   "x": 573,
+   "z": -1256,
+   "elevationM": 78,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Evandy Hostel",
+     "distanceM": 14
+    },
+    "overture": {
+     "name": "Evandy Hostel",
+     "distanceM": 80,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "Evandy Hostel",
+     "distanceM": 38
+    }
+   },
+   "claims": []
+  },
+  {
+   "id": "jtny",
+   "name": "James Topp Nelson Yankah Hall",
+   "category": "residence",
+   "importance": 3,
+   "geometry": "osm:way/286261174",
+   "lat": 5.666269,
+   "lng": -0.182086,
+   "x": 555,
+   "z": -1600,
+   "elevationM": 70,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "James Topp Nelson Yankah Hall",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "James Topp Nelson Yankah Hall, Legon",
+     "distanceM": 18,
+     "dataset": "meta"
+    },
+    "ugCampusMap": {
+     "name": "TF Hostel",
+     "distanceM": 8
+    }
+   },
+   "overtureMatches": [
+    {
+     "name": "James Topp Nelson Yankah Hall, Legon",
+     "dataset": "meta",
+     "distanceM": 18
+    },
+    {
+     "name": "TF Hostels, Legon",
+     "dataset": "meta",
+     "distanceM": 30
+    }
+   ],
+   "claims": []
+  },
+  {
+   "id": "sports-directorate",
+   "name": "University of Ghana Sports Directorate",
+   "category": "sport",
+   "importance": 3,
+   "geometry": "osm:way/492099500",
+   "lat": 5.639756,
+   "lng": -0.181526,
+   "x": 617,
+   "z": 1332,
+   "elevationM": 76,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "ugCampusMap"
+   ],
+   "sources": {
+    "osm": {
+     "name": "University of Ghana Sports Directorate",
+     "distanceM": 0
+    },
+    "ugCampusMap": {
+     "name": "Sports Complex",
+     "distanceM": 69
+    }
+   },
+   "claims": []
+  },
+  {
+   "id": "police",
+   "name": "Legon Police Station",
+   "category": "civic",
+   "importance": 3,
+   "geometry": "osm:node/1775844715",
+   "lat": 5.650671,
+   "lng": -0.179585,
+   "x": 833,
+   "z": 125,
+   "elevationM": 82,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Legon Police Station",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "Legon Police Station",
+     "distanceM": 61,
+     "dataset": "meta"
+    }
+   },
+   "claims": []
+  },
+  {
+   "id": "radio-univers",
+   "name": "Radio Univers",
+   "category": "civic",
+   "importance": 3,
+   "geometry": "osm:node/5884226044",
+   "lat": 5.651792,
+   "lng": -0.180996,
+   "x": 676,
+   "z": 1,
+   "elevationM": 92,
+   "confidence": "high",
+   "sourcesAgreeingWithin150m": [
+    "osm",
+    "overture"
+   ],
+   "sources": {
+    "osm": {
+     "name": "Radio Univers",
+     "distanceM": 0
+    },
+    "overture": {
+     "name": "Radio Univers",
+     "distanceM": 23,
+     "dataset": "meta"
+    }
+   },
+   "claims": []
+  }
+ ],
+ "zones": [
+  {
+   "id": "legon-hill",
+   "name": "Legon Hill and the Convocation Group",
+   "kind": "civic",
+   "ha": 30,
+   "shareOutsideCampus": 0,
+   "places": 14,
+   "buildings": 62,
+   "anchorsMissing": []
+  },
+  {
+   "id": "academic-core",
+   "name": "Central academic core",
+   "kind": "academic",
+   "ha": 56,
+   "shareOutsideCampus": 0,
+   "places": 75,
+   "buildings": 150,
+   "anchorsMissing": []
+  },
+  {
+   "id": "gate-academic",
+   "name": "Main Gate and eastern academic strip",
+   "kind": "academic",
+   "ha": 48,
+   "shareOutsideCampus": 0,
+   "places": 68,
+   "buildings": 177,
+   "anchorsMissing": []
+  },
+  {
+   "id": "traditional-halls",
+   "name": "Traditional halls and the Athletic Oval",
+   "kind": "residence",
+   "ha": 51,
+   "shareOutsideCampus": 0,
+   "places": 53,
+   "buildings": 163,
+   "anchorsMissing": []
+  },
+  {
+   "id": "market-hub",
+   "name": "Night Market, Banking Square and the international hostels",
+   "kind": "commercial",
+   "ha": 29,
+   "shareOutsideCampus": 0,
+   "places": 19,
+   "buildings": 39,
+   "anchorsMissing": []
+  },
+  {
+   "id": "sports",
+   "name": "Sports precinct",
+   "kind": "sport",
+   "ha": 26,
+   "shareOutsideCampus": 0.04,
+   "places": 9,
+   "buildings": 13,
+   "anchorsMissing": []
+  },
+  {
+   "id": "southern-halls",
+   "name": "Southern halls and health sciences",
+   "kind": "residence",
+   "ha": 78,
+   "shareOutsideCampus": 0,
+   "places": 17,
+   "buildings": 115,
+   "anchorsMissing": []
+  },
+  {
+   "id": "south-medical",
+   "name": "UG Medical Centre and the southern edge",
+   "kind": "health",
+   "ha": 64,
+   "shareOutsideCampus": 0.02,
+   "places": 1,
+   "buildings": 98,
+   "anchorsMissing": []
+  },
+  {
+   "id": "staff-residential",
+   "name": "Staff residential (Legon Hill slopes)",
+   "kind": "residential",
+   "ha": 151,
+   "shareOutsideCampus": 0,
+   "places": 14,
+   "buildings": 268,
+   "anchorsMissing": []
+  },
+  {
+   "id": "north-hostels",
+   "name": "Northern hostels",
+   "kind": "residence",
+   "ha": 61,
+   "shareOutsideCampus": 0.11,
+   "places": 31,
+   "buildings": 113,
+   "anchorsMissing": []
+  },
+  {
+   "id": "botanical",
+   "name": "Botanical Gardens and northern woodland",
+   "kind": "open-space",
+   "ha": 95,
+   "shareOutsideCampus": 0.04,
+   "places": 13,
+   "buildings": 35,
+   "anchorsMissing": []
+  },
+  {
+   "id": "west-woodland",
+   "name": "Western woodland, farms and research plots",
+   "kind": "open-space",
+   "ha": 342,
+   "shareOutsideCampus": 0.23,
+   "places": 2,
+   "buildings": 195,
+   "anchorsMissing": []
+  },
+  {
+   "id": "east-n4",
+   "name": "East of the N4",
+   "kind": "mixed",
+   "ha": 127,
+   "shareOutsideCampus": 0.07,
+   "places": 27,
+   "buildings": 252,
+   "anchorsMissing": []
+  }
+ ],
+ "conflicts": [
+  {
+   "place": "Shell",
+   "at": [
+    -154,
+    -1751
+   ],
+   "other": "Shell",
+   "source": "overture/Microsoft",
+   "otherAt": [
+    1069,
+    2139
+   ],
+   "distanceM": 4077
+  },
+  {
+   "place": "JQB Lecture Hall",
+   "at": [
+    576,
+    -55
+   ],
+   "other": "JQB Lecture Hall",
+   "source": "overture/meta",
+   "otherAt": [
+    535,
+    -1519
+   ],
+   "distanceM": 1465
+  },
+  {
+   "place": "Department of Geography and Resource Development, Legon",
+   "at": [
+    421,
+    91
+   ],
+   "other": "Department of Geography and Resource Development, University of Ghana",
+   "source": "overture/meta",
+   "otherAt": [
+    -121,
+    1026
+   ],
+   "distanceM": 1081
+  },
+  {
+   "place": "International House",
+   "at": [
+    571,
+    -201
+   ],
+   "other": "International House",
+   "source": "overture/meta",
+   "otherAt": [
+    152,
+    221
+   ],
+   "distanceM": 595
+  },
+  {
+   "place": "School of Public Health",
+   "at": [
+    487,
+    1681
+   ],
+   "other": "School Of Public Health",
+   "source": "overture/meta",
+   "otherAt": [
+    -20,
+    1744
+   ],
+   "distanceM": 512
+  },
+  {
+   "place": "Zoe Pharmacy",
+   "at": [
+    165,
+    -1733
+   ],
+   "other": "Zoe Pharmacy",
+   "source": "overture/meta",
+   "otherAt": [
+    607,
+    -1711
+   ],
+   "distanceM": 443
+  }
+ ]
+}

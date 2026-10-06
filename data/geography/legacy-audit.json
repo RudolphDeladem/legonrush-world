@@ -1,0 +1,443 @@
+{
+ "legacyRevision": "9b5b773",
+ "campusAreaCoveredByLegacyExtract": 0.72,
+ "legacyHadCampusBoundary": false,
+ "legacyHadZones": false,
+ "legacyHadLandmarkRegistry": false,
+ "extent": {
+  "legacy": {
+   "minX": -2011.8,
+   "maxX": 1963.6,
+   "minZ": -2547.2,
+   "maxZ": 3058
+  },
+  "now": {
+   "minX": -2204.5,
+   "maxX": 2226.7,
+   "minZ": -2547.2,
+   "maxZ": 3074
+  }
+ },
+ "roads": {
+  "legacy": {
+   "count": 1083,
+   "nodes": 6194,
+   "km": {
+    "arterial": 9.8,
+    "collector": 18.8,
+    "local": 56.2,
+    "service": 52.7,
+    "footpath": 34.1
+   }
+  },
+  "now": {
+   "count": 1496,
+   "nodes": 8132,
+   "km": {
+    "arterial": 9.8,
+    "collector": 23.8,
+    "local": 78,
+    "service": 70,
+    "footpath": 38.2
+   }
+  }
+ },
+ "buildings": {
+  "legacy": 1603,
+  "now": 2826,
+  "legacyOnCampus": 1175,
+  "nowOnCampus": 1760,
+  "legacyNotInNew": 1,
+  "newNotInLegacy": 1224,
+  "satelliteDetectedAdded": 294,
+  "footprintAreaKm2": {
+   "legacy": 0.642,
+   "now": 0.89
+  }
+ },
+ "areas": {
+  "legacy": {
+   "wood": 4,
+   "water": 22,
+   "pitch": 32,
+   "parking": 82,
+   "track": 3
+  },
+  "now": {
+   "grass": 31,
+   "wood": 4,
+   "plaza": 8,
+   "parking": 82,
+   "pitch": 32,
+   "track": 3,
+   "water": 26
+  }
+ },
+ "places": {
+  "legacy": 407,
+  "now": 433,
+  "removed": [
+   "lizalex",
+   "University of Ghana",
+   "Presbyterian Boys' Senior High School",
+   "Ghana Institute of Management and Public Administration",
+   "Block Factory"
+  ],
+  "added": [
+   {
+    "name": "University of Ghana Sports Stadium",
+    "kind": "sport",
+    "at": [
+     777,
+     1412
+    ],
+    "inCampus": true
+   },
+   {
+    "name": "University Square",
+    "kind": "landmark",
+    "at": [
+     9,
+     50
+    ],
+    "inCampus": true
+   },
+   {
+    "name": "Vaughan Dam",
+    "kind": "landmark",
+    "at": [
+     -104,
+     -1549
+    ],
+    "inCampus": true
+   },
+   {
+    "name": "SalmaRise",
+    "kind": "other",
+    "at": [
+     203,
+     -1843
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "Legon Seventh-Day Adventist Church",
+    "kind": "worship",
+    "at": [
+     1473,
+     425
+    ],
+    "inCampus": true
+   },
+   {
+    "name": "Legon Kingdom Hall",
+    "kind": "worship",
+    "at": [
+     1450,
+     382
+    ],
+    "inCampus": true
+   },
+   {
+    "name": "Legon Baptist Church",
+    "kind": "worship",
+    "at": [
+     1489,
+     381
+    ],
+    "inCampus": true
+   },
+   {
+    "name": "ahuof3 street",
+    "kind": "other",
+    "at": [
+     -1975,
+     -1011
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "Bungalow 13",
+    "kind": "other",
+    "at": [
+     1413,
+     -1019
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "bungalow 14",
+    "kind": "other",
+    "at": [
+     1418,
+     -968
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "Bungalow 18",
+    "kind": "other",
+    "at": [
+     1404,
+     -929
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "Bungalow 12",
+    "kind": "other",
+    "at": [
+     1496,
+     -1020
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "Bungalow 15",
+    "kind": "other",
+    "at": [
+     1493,
+     -962
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "National Accreditation Board",
+    "kind": "other",
+    "at": [
+     1812,
+     697
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "National Board for Professional and Technician Examinations",
+    "kind": "other",
+    "at": [
+     1867,
+     710
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "National Council for Tertiary Education",
+    "kind": "other",
+    "at": [
+     1852,
+     655
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "Conference Centre",
+    "kind": "academic",
+    "at": [
+     1808,
+     752
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "UGBS extention",
+    "kind": "other",
+    "at": [
+     -102,
+     -113
+    ],
+    "inCampus": true
+   },
+   {
+    "name": "Accountancy House",
+    "kind": "other",
+    "at": [
+     1836,
+     959
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "GM Plaza",
+    "kind": "other",
+    "at": [
+     1494,
+     1145
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "Academic Registry Public Relation Department",
+    "kind": "academic",
+    "at": [
+     -1417,
+     1756
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "Business Department",
+    "kind": "academic",
+    "at": [
+     -1369,
+     1741
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "Porter's lodge",
+    "kind": "other",
+    "at": [
+     -1342,
+     1884
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "University Staff House",
+    "kind": "other",
+    "at": [
+     1405,
+     -103
+    ],
+    "inCampus": true
+   },
+   {
+    "name": "NBlock",
+    "kind": "academic",
+    "at": [
+     -21,
+     -320
+    ],
+    "inCampus": true
+   },
+   {
+    "name": "Bungalow 9",
+    "kind": "other",
+    "at": [
+     1607,
+     -1021
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "Bungalow 11",
+    "kind": "other",
+    "at": [
+     1550,
+     -1022
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "Bungalow 8",
+    "kind": "other",
+    "at": [
+     1661,
+     -1022
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "Bungalow 17",
+    "kind": "other",
+    "at": [
+     1612,
+     -967
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "Bungalow 16",
+    "kind": "other",
+    "at": [
+     1558,
+     -966
+    ],
+    "inCampus": false
+   },
+   {
+    "name": "Alumni Centre",
+    "kind": "academic",
+    "at": [
+     1661,
+     -967
+    ],
+    "inCampus": false
+   }
+  ],
+  "changed": [
+   {
+    "name": "Soil Science",
+    "movedM": 232,
+    "from": [
+     487,
+     183
+    ],
+    "to": [
+     255,
+     185
+    ]
+   },
+   {
+    "name": "Pentagon Block A",
+    "movedM": 51,
+    "from": [
+     542,
+     -600
+    ],
+    "to": [
+     562,
+     -647
+    ]
+   },
+   {
+    "name": "University of Ghana Business School",
+    "movedM": 19,
+    "from": [
+     -169,
+     -111
+    ],
+    "to": [
+     -150,
+     -112
+    ]
+   },
+   {
+    "name": "Evandy Hostel",
+    "movedM": 14,
+    "from": [
+     586,
+     -1251
+    ],
+    "to": [
+     573,
+     -1256
+    ]
+   },
+   {
+    "name": "University of Ghana Registry",
+    "movedM": 7,
+    "from": [
+     -918,
+     174
+    ],
+    "to": [
+     -922,
+     179
+    ]
+   },
+   {
+    "name": "University of Ghana Botanical Gardens",
+    "movedM": 0,
+    "from": [
+     93,
+     -1141
+    ],
+    "to": [
+     93,
+     -1141
+    ],
+    "kind": "sport -> landmark"
+   }
+  ]
+ }
+}

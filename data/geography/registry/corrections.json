@@ -1,0 +1,9 @@
+{
+  "about": "Source features that the evidence shows are wrong. They stay in the master dataset (flagged, confidence low) but are kept out of the game map. Nothing is moved here: a feature is only excluded when independent evidence contradicts it.",
+  "exclude": [
+    {
+      "id": "osm:way/765261444",
+      "reason": "OSM building=yes + amenity=place_of_worship named 'lizalex' (8,486 m²) filling the strip between Elizabeth Sey Hall and Alexander Kwapong Hall. Google Open Buildings detects only small structures inside it and the Sentinel-2 composite shows open ground; no other source knows a church there. Treated as an erroneous edit."
+    }
+  ]
+}

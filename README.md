@@ -79,7 +79,7 @@ scripts/             brand-assets.mjs (logo -> icons), landing-photos.mjs (photo
 
 ## The campus map
 
-The campus comes from an OpenStreetMap export of Legon (`data/legon.osm`, © OpenStreetMap contributors, ODbL). `node scripts/osm-campus.mjs` turns it into `src/data/legon-map.json`: roads by class, building footprints and heights, areas, and named places, projected to metres around Balme Library. 38 extra place names come from the [UG Campus Map](https://enkayyy97.github.io/ug-campus-map/) by enkayyy97 (`data/ug-campus-map-pois.json`). To refresh the map, export the same area again from openstreetmap.org, replace `data/legon.osm` and rerun the script. Missing or misplaced buildings are best fixed on OpenStreetMap itself, which also helps everyone else.
+The campus geography is rebuilt from several independent sources and documented in [docs/LEGON_MASTER_GEOGRAPHY.md](docs/LEGON_MASTER_GEOGRAPHY.md): OpenStreetMap (`data/legon.osm` plus OSM features outside that extract via Overture Maps), Google Open Buildings and Microsoft ML footprints, Overture places, the [UG Campus Map](https://enkayyy97.github.io/ug-campus-map/) by enkayyy97, ESA WorldCover, the Copernicus DEM, a Sentinel-2 composite and the curated registries in `data/geography/registry/`. `npm run geo` builds the authoritative dataset (`data/geography/legon-master.geojson`, with a reconciliation report) and then the game's `src/data/legon-map.json`. `scripts/geography/fetch_sources.py` refreshes the source snapshots. Open `/geo/` on the dev server or the live site to compare the map with satellite imagery from above. Missing or misplaced buildings are best fixed on OpenStreetMap itself, which also helps everyone else.
 
 ## Roadmap (from the product spec)
 
