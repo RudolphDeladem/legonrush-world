@@ -3,7 +3,8 @@ import { resolve } from 'node:path';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
-  // GitHub Pages serves the site from /legonrush/; set BASE_PATH there (see .github/workflows/pages.yml)
+  // GitHub Pages serves the site from /legonrush-world/; the deploy workflow sets BASE_PATH to that
+  // (see .github/workflows/deploy-pages.yml). Local dev and Netlify keep serving from the root.
   base: process.env.BASE_PATH ?? '/',
   plugins: [
     VitePWA({
