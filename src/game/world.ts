@@ -7,6 +7,7 @@ import { asphaltTexture, billboardTexture, concreteTexture, grassMacroTexture, g
 import { buildBuildings } from './facades';
 import { buildDiasporaHalls, isDiasporaHall } from './halls';
 import { BLOCK_SITES } from './sites';
+import { RELIEF_BOXES, applyRelief, densify, reliefGround } from './relief';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, ROAD_WIDTH } from './life';
 
 export const LANES = [-2.4, 0, 2.4];
@@ -239,12 +240,27 @@ export function buildCampus() {
   const x0 = Math.floor((b.minX - PAD) / TILE) * TILE, z0 = Math.floor((b.minZ - PAD) / TILE) * TILE;
   const tx = Math.ceil((b.maxX + PAD - x0) / TILE), tz = Math.ceil((b.maxZ + PAD - z0) / TILE);
   const tiles: THREE.BufferGeometry[] = [];
-  for (let i = 0; i < tx; i++) for (let j = 0; j < tz; j++) tiles.push(new THREE.PlaneGeometry(TILE, TILE).rotateX(-Math.PI / 2).translate(x0 + i * TILE + TILE / 2, 0, z0 + j * TILE + TILE / 2));
+  /** a flat piece of ground with UVs from its tile's origin (gx, gz) */
+  const piece = (gx: number, gz: number, ax: number, bx: number, az: number, bz: number) => {
+    const g = new THREE.PlaneGeometry(bx - ax, bz - az).rotateX(-Math.PI / 2).translate((ax + bx) / 2, 0, (az + bz) / 2);
+    const p = g.attributes.position, uv = g.attributes.uv;
+    for (let k = 0; k < p.count; k++) uv.setXY(k, (p.getX(k) - gx) / TILE, (gz + TILE - p.getZ(k)) / TILE);
+    return g;
+  };
+  for (let i = 0; i < tx; i++) for (let j = 0; j < tz; j++) {
+    const gx = x0 + i * TILE, gz = z0 + j * TILE;
+    // the ground over a relief zone is its own mesh: leave a hole for it
+    const hole = RELIEF_BOXES.find((r) => r.x1 > gx && r.x0 < gx + TILE && r.z1 > gz && r.z0 < gz + TILE);
+    if (!hole) { tiles.push(new THREE.PlaneGeometry(TILE, TILE).rotateX(-Math.PI / 2).translate(gx + TILE / 2, 0, gz + TILE / 2)); continue; }
+    const hx0 = Math.max(gx, hole.x0), hx1 = Math.min(gx + TILE, hole.x1), hz0 = Math.max(gz, hole.z0), hz1 = Math.min(gz + TILE, hole.z1);
+    for (const [ax, bx, az, bz] of [[gx, gx + TILE, gz, hz0], [gx, gx + TILE, hz1, gz + TILE], [gx, hx0, hz0, hz1], [hx1, gx + TILE, hz0, hz1]]) if (bx - ax > 0.01 && bz - az > 0.01) tiles.push(piece(gx, gz, ax, bx, az, bz));
+  }
   const grassTex = grassTexture();
   grassTex.repeat.set(TILE / 8, TILE / 8);
-  const ground = new THREE.Mesh(mergeGeometries(tiles), grassMaterial(grassTex));
+  const grass = grassMaterial(grassTex);
+  const ground = new THREE.Mesh(mergeGeometries(tiles), grass);
   ground.receiveShadow = true;
-  group.add(ground);
+  group.add(ground, reliefGround(grass, TILE));
 
   // pitches, tracks, car parks, water and woods
   const AREA_COLOR: Record<string, string> = { pitch: '#4f9a3a', track: '#b4533a', parking: '#8d9096', water: '#4f8fbf', wood: '#2f6b2a', plaza: '#cfc5b2' };
@@ -284,7 +300,7 @@ export function buildCampus() {
   const caps: THREE.BufferGeometry[] = [];
   const pathCaps: THREE.BufferGeometry[] = [];
   for (const r of ROADS) {
-    const pts = r.nodes.map((i) => [NODE_XZ[i * 2], NODE_XZ[i * 2 + 1]] as [number, number]);
+    const pts = densify(r.nodes.map((i) => [NODE_XZ[i * 2], NODE_XZ[i * 2 + 1]] as [number, number]));
     const half = ROAD_WIDTH[r.cls] / 2;
     const footpath = r.cls === 4;
     const buf = footpath ? pathBuf : roadBuf;
@@ -355,6 +371,8 @@ export function buildCampus() {
   const edges = buildRoadEdges(concreteTexture());
   wettable(edges.material);
   group.add(edges.group);
+  // lower everything over a relief zone onto the ground (roads, areas, verges, props, buildings)
+  applyRelief(group);
   cullBeyondFog(group, [...(buildings.children as THREE.Mesh[]), ...(halls.userData.cullMeshes as THREE.Mesh[]), ...sites.flatMap((s) => s.userData.cullMeshes as THREE.Mesh[]), ...(life.userData.cullMeshes as THREE.Mesh[]), ...edges.meshes]);
   return group;
 }
@@ -497,6 +515,7 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
   // a little way past the start line, so it does not sit over the rider and the HUD at the countdown
   group.add(gate(o.startText, at(o.start + 16, 0), yawAt(o.start + 16)));
   group.add(gate(o.finishText, at(o.finish, 0), yawAt(o.finish), true));
+  applyRelief(group);
   return group;
 }
 

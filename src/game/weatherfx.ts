@@ -7,6 +7,7 @@
 //   wx.set(rain);                 // from Game.setWeather
 //   wx.update(dt, camera);        // every frame, after setTimeOfDay has run
 import * as THREE from 'three';
+import { groundHeight } from './relief';
 import { NODE_XZ, ROADS } from './campusmap';
 import { setWet } from './world';
 import { ROAD_WIDTH } from './life';
@@ -167,7 +168,7 @@ export function createWeatherFx(scene: THREE.Scene): WeatherFx {
     for (const [, i] of near) {
       if (n >= POOL) break;
       const s = spots[i + 3];
-      m.compose(v.set(spots[i], 0.02, spots[i + 1]), q.setFromAxisAngle(up, spots[i + 2]), sc.set(s * 1.6, 1, s));
+      m.compose(v.set(spots[i], 0.02 + groundHeight(spots[i], spots[i + 1]), spots[i + 1]), q.setFromAxisAngle(up, spots[i + 2]), sc.set(s * 1.6, 1, s));
       puddles.setMatrixAt(n++, m);
     }
     puddles.count = n;

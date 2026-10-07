@@ -38,7 +38,7 @@
       "title": "Copernicus GLO-30 DEM (data/geography/sources/copernicus-dem-30m.json)",
       "url": "https://registry.opendata.aws/copernicus-dem/"
     },
-    "owner-banking-square": "The owner's aerial of the banking square with the banks labelled (C: CBG, F: First Bank Ghana, S: Stanbic; ATMs; the car-park entrance) and photos of the CBG front and the Union Building, registered to the OSM footprints by roof colour (4.2 px/m, 1° rotation)"
+    "owner-banking-square": "The owner's aerial of the banking square with the banks labelled (C: CBG, F: UMB (first labelled First Bank Ghana, corrected by the owner), S: Stanbic; ATMs; the car-park entrance) and photos of the CBG front and the Union Building, registered to the OSM footprints by roof colour (4.2 px/m, 1° rotation)"
   },
   "landmarks": [
     {
@@ -1634,8 +1634,8 @@
       ]
     },
     {
-      "id": "bank-firstbank",
-      "name": "First Bank Ghana (Banking Square)",
+      "id": "bank-umb",
+      "name": "UMB",
       "kind": "bank",
       "category": "commercial",
       "importance": 3,
@@ -1652,10 +1652,10 @@
       },
       "claims": [],
       "maxConfidence": "medium",
-      "notes": "Owner: First Bank Ghana is the south wing of the compound (labelled F).",
+      "notes": "Owner: the bank next to CBG in the compound's south wing (labelled F) is UMB (the owner first named it First Bank Ghana and corrected it); owner photo of its front: cream walls, white pillars, a dark gable with the yellow umb logo.",
       "aliases": [
-        "First Bank",
-        "FirstBank"
+        "Universal Merchant Bank",
+        "UMB Bank"
       ]
     },
     {

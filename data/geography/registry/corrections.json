@@ -79,7 +79,7 @@
     },
     {
       "id": "osm:way/486634897",
-      "place": "Vikings Hostel",
+      "place": "Mensah Sarbah Vikings Hostel",
       "levels": 5,
       "height": 18,
       "reason": "Owner: Vikings Hostel is five storeys; owner photos of the south end and the front show five rows of windows."
@@ -97,6 +97,13 @@
       "levels": 2,
       "height": 9,
       "reason": "Owner photos: the block south of the entrance rotunda is two storeys under a tile roof."
+    },
+    {
+      "id": "osm:relation/8404077",
+      "place": "School of Engineering Sciences",
+      "levels": 4,
+      "height": 19,
+      "reason": "Owner's photos and reference render: four-storey blocks under tile roofs, the stair towers a little higher. The building stands about 4.5 m below the road on the south (src/game/relief.ts)."
     }
   ],
   "reclass": [

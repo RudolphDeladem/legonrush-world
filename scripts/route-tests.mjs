@@ -87,7 +87,7 @@ try {
     if (a.status !== 'verified') fail(`${n}: entrance status ${a.status}`);
   }
   // the banking square: doors where the owner's labelled aerial and photos put them
-  const banks = { 'University of Ghana banking square': [159.5, 975.0], 'Consolidated Bank Ghana (near Night Market)': [133.5, 1020.0], 'First Bank Ghana (Banking Square)': [160.0, 1020.1], 'Stanbic Bank': [181.6, 990.0], 'Ecobank (near Night Market)': [241.8, 1018.4], 'Union Building (Banking Square)': [257.0, 1025.7] };
+  const banks = { 'University of Ghana banking square': [159.5, 975.0], 'Consolidated Bank Ghana (near Night Market)': [133.5, 1020.0], 'UMB': [160.0, 1020.1], 'Stanbic Bank': [175.0, 971.7], 'Ecobank (near Night Market)': [241.8, 1018.4], 'Union Building (Banking Square)': [257.0, 1025.7] };
   for (const [n, [mx, mz]] of Object.entries(banks)) {
     const a = ACCESS.get(n);
     if (!a) { fail(`${n}: no access`); continue; }
@@ -96,15 +96,22 @@ try {
   // CBG's door faces the way in from the Diaspora halls and the Night Market (south)
   if (ACCESS.get('Consolidated Bank Ghana (near Night Market)')?.entrance[1] < placeByName('Consolidated Bank Ghana (near Night Market)').z) fail('CBG: the entrance is not on the south side');
   // Vikings Hostel and the School of Law: doors where the owner's photos put them
-  for (const [n, [mx, mz]] of Object.entries({ 'Vikings Hostel': [160.5, 840.5], 'School of Law': [441.0, -243.3] })) {
+  for (const [n, [mx, mz]] of Object.entries({ 'Mensah Sarbah Vikings Hostel': [160.5, 840.5], 'School of Law': [441.0, -243.3] })) {
     const a = ACCESS.get(n);
     if (!a) { fail(`${n}: no access`); continue; }
     if (Math.hypot(a.entrance[0] - mx, a.entrance[1] - mz) > 2) fail(`${n}: entrance ${a.entrance.map((v) => v.toFixed(1))} is not where the owner's photos put it`);
     if (a.status !== 'verified') fail(`${n}: entrance status ${a.status}`);
   }
-  if (!ACCESS.get('Vikings Hostel')?.secondary?.length) fail('Vikings Hostel: the second door (south end of the long wing) is missing');
+  if (!ACCESS.get('Mensah Sarbah Vikings Hostel')?.secondary?.length) fail('Vikings Hostel: the second door (south end of the long wing) is missing');
   const vlModels = (await server.ssrLoadModule('/src/game/vikingslaw.ts')).vikingsLaw.frames();
   if (vlModels.length !== 2) fail(`expected Vikings Hostel and School of Law models, found ${vlModels.length}`);
+  // the School of Engineering Sciences lies below the road (relief.ts): the hollow is there, and nowhere else
+  const { groundHeight } = await server.ssrLoadModule('/src/game/relief.ts');
+  if (!(groundHeight(452.7, -380) < -4)) fail(`engineering: the forecourt is not below the road (ground ${groundHeight(452.7, -380)})`);
+  if (groundHeight(429, -339) !== 0) fail('engineering: the main road on the south is not at ground level');
+  if (groundHeight(0, 0) !== 0 || groundHeight(160, 997) !== 0) fail('relief: the campus outside the hollow is not flat');
+  const eng = ACCESS.get('School of Engineering Sciences');
+  if (!eng || Math.hypot(eng.entrance[0] - 452.7, eng.entrance[1] + 380) > 2) fail('engineering: the entrance is not the porch on the front block');
   const bankModels = (await server.ssrLoadModule('/src/game/banking.ts')).banking.frames();
   if (bankModels.length !== 3) fail(`expected the bank compound, the Union Building and the ADB/HFC block, found ${bankModels.length}`);
   const hostels = (await server.ssrLoadModule('/src/game/hostels.ts')).hostels.frames();

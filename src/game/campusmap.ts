@@ -141,7 +141,10 @@ export const ALIASES: Record<string, string> = {
   'Africa Union Hall': 'Pent Hostel Block A',
   ISH: 'International Students Hostel 1, ISH 1',
   CBG: 'Consolidated Bank Ghana (near Night Market)',
-  'First Bank': 'First Bank Ghana (Banking Square)',
+  UMB: 'UMB',
+  'Universal Merchant Bank': 'UMB',
+  'Vikings Hostel': 'Mensah Sarbah Vikings Hostel',
+  'Sarbah Vikings Hostel': 'Mensah Sarbah Vikings Hostel',
   // HFC Bank became Republic Bank Ghana in 2019
   'HFC Bank': 'Republic Bank (near Night Market)',
   HFC: 'Republic Bank (near Night Market)',

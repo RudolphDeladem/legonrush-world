@@ -13,7 +13,8 @@
   "user-photos": "Photos of the four Diaspora halls supplied by the project owner (an aerial of all four halls, a drone view of one hall's front and courtyard, two oblique drone views of the facades, a close view of the entrance pavilion), with the owner's description of how the halls face each other",
   "user-photos-jubilee-ish": "Photos supplied by the project owner of Jubilee Hall (aerial of the entrance corner, courtyard) and the International Students Hostel (entrance facade), and a satellite layout of Jubilee Hall, ISH 1 and ISH 2 with the entrances and car parks marked, registered to the OSM footprints (2.8 px/m, 1° rotation)",
   "owner-banking-square": "The owner's labelled aerial of the banking square (banks C, F, S, the ATM bay, the car-park entrance), the owner's photos of the CBG front and the Union Building entrance, and the owner's close-up marking the Ecobank entrance; registered to the OSM footprints by roof colour (4.2 px/m, 1° rotation)",
-  "owner-vikings-law": "The owner's photos of Vikings Hostel (front with the entrances marked, the south end, an aerial with the entrances marked) and of the School of Law (two views of the entrance rotunda with the doors marked), with the earlier layout photos of both"
+  "owner-vikings-law": "The owner's photos of Mensah Sarbah Vikings Hostel (front with the entrances marked, the south end, an aerial with the entrances marked) and of the School of Law (two views of the entrance rotunda with the doors marked), with the earlier layout photos of both",
+  "owner-engineering": "The owner's satellite layout of the School of Engineering Sciences with the entrance (blue), the aeroplane enclosure (green) and the car park (red) marked, the owner's reference render with the entrance porch marked, and two photos of the front with the entrance marked"
  },
  "campusGates": [
   {
@@ -560,16 +561,22 @@
   {
    "place": "School of Engineering Sciences",
    "entrance": {
-    "side": "south"
+    "at": [
+     452.7,
+     -380.0
+    ]
    },
    "type": "public entrance",
    "status": "verified",
    "confidence": "high",
-   "cite": "user-layouts",
-   "approach": "Up the straight access road from the south that ends at the school's forecourt.",
-   "evidence": "engineering_school_layout (registered to OSM): a straight access road from the south ends at a paved forecourt in front of the south block, where Apple pins 'School of Engineering Sciences'; the car park is to the west.",
+   "cite": "owner-engineering",
+   "approach": "From the main road on the south, down the gentle hill on the access road to the forecourt, then into the porch with SCHOOL OF ENGINEERING on its band.",
+   "evidence": "Owner's layout (registered to OSM at 0.25 m/px): the entrance is the porch in the middle of the front (south) block, where OSM maps the projecting porch (447.8-457.6 x, to -379.9 z). Owner's render and photos: a porch on white columns under a tile roof, its band lettered SCHOOL OF ENGINEERING in blue capitals. The owner: the building lies below the road, reached by going down a gentle hill.",
    "refs": [
-    "engineering_school_layout_labeled.png"
+    "engineering_layout (owner, entrance marked)",
+    "engineering_render (owner, entrance marked)",
+    "engineering_front_1 (owner photo)",
+    "engineering_front_2 (owner photo)"
    ]
   },
   {
@@ -752,7 +759,7 @@
    ]
   },
   {
-   "place": "First Bank Ghana (Banking Square)",
+   "place": "UMB",
    "entrance": {
     "at": [
      160.0,
@@ -760,33 +767,33 @@
     ]
    },
    "type": "public entrance",
-   "status": "partial",
-   "confidence": "medium",
+   "status": "verified",
+   "confidence": "high",
    "cite": "owner-banking-square",
-   "approach": "From the road along the south side to the First Bank door in the south wing.",
-   "evidence": "Owner's labelled aerial: First Bank Ghana is the south wing (F). The door's side is inferred: the south facade, on the same frontage as CBG.",
+   "approach": "From the road along the south side, up the steps under UMB's dark gable.",
+   "evidence": "Owner: the bank next to CBG in the south wing (labelled F) is UMB. Owner photo of the UMB front: a porch on white pillars under a dark gable with the yellow umb logo, steps up to glass doors; like CBG's, it faces the road on the south side.",
    "refs": [
     "banking_square_labelled (owner aerial)",
-    "cbg_front (owner photo)"
+    "umb_front (owner photo)"
    ]
   },
   {
    "place": "Stanbic Bank",
    "entrance": {
     "at": [
-     181.6,
-     990.0
+     175.0,
+     971.7
     ]
    },
    "type": "public entrance",
-   "status": "partial",
-   "confidence": "medium",
+   "status": "verified",
+   "confidence": "high",
    "cite": "owner-banking-square",
-   "approach": "From the road along the east side, under the east veranda, to the Stanbic door.",
-   "evidence": "Owner's labelled aerial: Stanbic is the north-east part of the compound (S). The door's side is inferred: the east facade under the veranda, facing the road and its parking bays.",
+   "approach": "From the road along the north side to the Stanbic door in the north face of the compound's north-east corner block.",
+   "evidence": "Owner's close-up of the compound with the Stanbic entrance circled: the passage in the north face of the north-east corner block, facing the road and car park on the north (registered to the OSM footprint at 4.4 px/m).",
    "refs": [
-    "banking_square_labelled (owner aerial)",
-    "cbg_front (owner photo)"
+    "banking_square_stanbic (owner aerial, entrance circled)",
+    "banking_square_labelled (owner aerial)"
    ]
   },
   {
@@ -828,7 +835,7 @@
    ]
   },
   {
-   "place": "Vikings Hostel",
+   "place": "Mensah Sarbah Vikings Hostel",
    "entrance": {
     "at": [
      160.5,
@@ -902,10 +909,10 @@
   "Central Cafeteria, CC",
   "International Students Hostel 2, ISH 2",
   "Consolidated Bank Ghana (near Night Market)",
-  "First Bank Ghana (Banking Square)",
+  "UMB",
   "Stanbic Bank",
   "Ecobank (near Night Market)",
   "Union Building (Banking Square)",
-  "Vikings Hostel"
+  "Mensah Sarbah Vikings Hostel"
  ]
 }

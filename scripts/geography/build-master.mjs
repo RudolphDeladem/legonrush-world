@@ -546,6 +546,8 @@ for (const [name, list] of byName) {
 const seen = new Map();
 for (const p of places) { const c = (seen.get(p.n) ?? 0) + 1; seen.set(p.n, c); if (c > 1) p.n = `${p.n} ${c}`; }
 for (const p of places) if (REG.naming.rename[p.n]) p.n = REG.naming.rename[p.n];
+// the footprint keeps the same name as its place
+for (const b of buildings) if (b.name && REG.naming.rename[b.name]) b.name = REG.naming.rename[b.name];
 // names the game depends on are pinned to their source feature, so a new neighbour cannot rename them
 for (const p of places) if (REG.naming.pin?.[p.id]) p.n = REG.naming.pin[p.id];
 

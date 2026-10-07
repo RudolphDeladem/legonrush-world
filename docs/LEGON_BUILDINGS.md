@@ -10,10 +10,11 @@ the map still use it), the generic builder skips it, and its model is placed on 
 | --- | --- | --- | --- |
 | 1 | The Diaspora halls: Dr. Hilla Limann, Alexander Kwapong, Elizabeth Frances Sey, Jean Nelson Aka | `src/game/halls.ts` | owner photos (5) and description |
 | 2 | Jubilee Hall, International Students Hostels 1 and 2 | `src/game/hostels.ts` | owner's marked layout, owner photos (3), earlier reference photos (5) |
-| 3 | The banking square: bank compound (CBG, First Bank, Stanbic, ATMs), Union Building (Ecobank), ADB / HFC | `src/game/banking.ts` | owner's labelled aerial, owner photos (3) |
-| 4 | Vikings Hostel, School of Law | `src/game/vikingslaw.ts` | owner photos (5), earlier layout photos (2) |
+| 3 | The banking square: bank compound (CBG, UMB, Stanbic, ATMs), Union Building (Ecobank), ADB / HFC | `src/game/banking.ts` | owner's labelled aerial, owner photos (3) |
+| 4 | Mensah Sarbah Vikings Hostel, School of Law | `src/game/vikingslaw.ts` | owner photos (5), earlier layout photos (2) |
+| 5 | School of Engineering Sciences, and the hill it stands below | `src/game/engineering.ts`, `src/game/relief.ts` | owner's marked layout, reference render, photos (2) |
 
-Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 to 4) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
+Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 to 5) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
 
 ## 1. The Diaspora halls
 
@@ -132,9 +133,10 @@ three buildings are **single storey** (owner; master geography now records 1 lev
   of the north wing** (owner, marked red): gate pillars and a beam with the square's name.
 - **CBG** (west wing, labelled C): the door on the south side (owner), with red-tiled steps, two red pillars, a
   grey canopy with the CBG sign, the Ghana and CBG flags and an ATM kiosk, as in the owner's photo.
-- **First Bank Ghana** (south wing, F): a door with a navy and gold FIRSTBANK canopy on the south side.
-- **Stanbic** (north-east part, S): a door with a blue canopy on the east side under the veranda, and a Stanbic
-  sign on the roof edge (the veranda roof hides the canopy from the road).
+- **UMB** (south wing, F; first labelled First Bank Ghana, corrected by the owner): cream render, steps up to a porch on
+  white pillars under a dark charcoal gable with louvre lines and the yellow umb logo (owner photo).
+- **Stanbic** (north-east part, S): a door with a blue STANBIC BANK canopy in the north face of the north-east corner
+  block, toward the road and car park (owner's close-up).
 - **ATMs** (the owner's purple section): the bay that juts out at the north-west, with two ATM machines facing the
   road and an ATM sign.
 - **Facades:** white render, a dark window in each bay over a red-brown base.
@@ -155,11 +157,13 @@ three buildings are **single storey** (owner; master geography now records 1 lev
   (the northern one about 17 m × 13 m, the southern 15 m × 27 m), added from the registered aerial. White
   canopies on the south side. The banks' doors are not marked, so their entrances are unchanged.
 
-**Open points:** the First Bank and Stanbic door sides are inferred; the courtyard's parked cars are fixed props.
+**Open points:** the courtyard's parked cars are fixed props.
 
-## 4. Vikings Hostel and the School of Law
+## 4. Mensah Sarbah Vikings Hostel and the School of Law
 
-### Vikings Hostel
+### Mensah Sarbah Vikings Hostel
+
+- **Name:** renamed from *Vikings Hostel* (owner) to tell it apart from Mensah Sarbah Hall (nicknamed Vikings) and its annexes.
 
 - **Height:** five storeys (owner; master geography: 5 levels / 18 m).
 - **Plan** (OSM footprint, matches the owner's aerial): an L of a long north-south wing and an east wing, with
@@ -184,3 +188,30 @@ three buildings are **single storey** (owner; master geography now records 1 lev
   the road on the east; the steps run along the long block too.
 
 **Open points:** the rotunda's radius and the courtyard's extent are read from the layout photo.
+
+## 5. The School of Engineering Sciences
+
+- **Height:** four storeys of 3.4 m (owner photos and render); the stair towers rise a little above the eaves.
+- **Plan** (OSM footprint, matches the layout): the front block on the south (the entrance), a west block, an east
+  block and a block at the back round a light well, joined by stair towers and links.
+- **Roofs:** orange-brown tile, hipped, with black fascias; the towers have flat roofs with black water tanks.
+- **Facades:** white render with panel lines and pairs of dark windows in white frames; the towers are faced with
+  lattice breeze-block screens and have tall arched windows down their fronts.
+- **Entrance** (owner's mark): the porch on white columns under a tile roof in the middle of the front block, its
+  band lettered SCHOOL OF ENGINEERING in blue capitals; steps and glass doors behind.
+- **Aeroplane** (the owner's green mark, east of the front block): a military training aeroplane in green
+  camouflage on a concrete pad inside a metal mesh fence (posts, rails, wires with openings between them). The
+  OSM outline there is replaced by the model.
+- **Car park** (red mark): the mapped car park on the west, with parked cars.
+
+### The hill (`src/game/relief.ts`)
+
+The campus was flat. The school stands below the road: the building, its forecourt and the car park lie on a floor
+**4.5 m below** the surrounding ground, with straight slopes back up to it (28 m on the south, about 20 m on the
+other sides). The access road from the main road on the south goes down the slope.
+
+`groundHeight(x, z)` is 0 everywhere else. The ground over the zone is its own mesh (the flat ground has a hole for
+it); roads are given extra points inside the zone so they follow the slope; one pass lowers every merged mesh,
+instanced prop and placed model in the zone (roads, verges, car parks, trees, lamps, parked cars, the model);
+the rider, rivals, coins, treasures, puddles, grass tufts and the chase camera follow the ground. Route tests
+check that the forecourt is below the road, the main road is at ground level and the rest of the campus is flat.

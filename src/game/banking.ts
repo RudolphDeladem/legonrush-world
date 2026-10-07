@@ -2,8 +2,9 @@
 //
 // The bank compound: a ring of single-storey rooms round a courtyard car park, under one red roof
 // that also covers verandas along the long sides and walkways along the short ones. CBG has the
-// west wing (door on the south side, with steps, red pillars, a canopy sign and flags), First Bank
-// Ghana the south wing, Stanbic the north-east corner and the north half of the east wing. The ATM
+// west wing (door on the south side, with steps, red pillars, a canopy sign and flags), UMB the
+// south wing (a porch under a dark gable with the yellow umb logo), Stanbic the north-east corner and
+// the north half of the east wing, entered from the north side. The ATM
 // bay juts out at the north-west; the middle of the north wing is the big entrance to the
 // courtyard car park.
 //
@@ -24,6 +25,17 @@ const BANK_WIN: Style = {
   ground: [[66, 70, 124, 120]],
   draw: (g) => {
     render(g);
+    window_(g, [66, 70, 124, 120], '#4a4f56', 2, 0.32);
+    window_(g, [66, 256 + 70, 124, 120], '#4a4f56', 2, 0.32);
+    g.fillStyle = '#8e3f33'; g.fillRect(0, 490, 256, 22);
+  },
+};
+/** UMB's wing (owner photo): the same windows in cream render */
+const UMB_WIN: Style = {
+  ...BANK_WIN,
+  draw: (g) => {
+    render(g, '#efe3c4');
+    g.fillStyle = '#efe3c4'; g.fillRect(0, 0, 256, 512);
     window_(g, [66, 70, 124, 120], '#4a4f56', 2, 0.32);
     window_(g, [66, 256 + 70, 124, 120], '#4a4f56', 2, 0.32);
     g.fillStyle = '#8e3f33'; g.fillRect(0, 490, 256, 22);
@@ -137,14 +149,14 @@ const compound: Spec = {
     { x0: -20.9, x1: -10.7, z0: -14.7, z1: 14.8, floors: ONE, roof: 'none' },
     { x0: -33, x1: -10.6, z0: 14.8, z1: 23.1, floors: ONE, roof: 'none' },
     { x0: -20.9, x1: -10.6, z0: 23.1, z1: 25.3, floors: ONE, roof: 'none' },
-    // south wing (First Bank), the south-east block and its bay
-    { x0: -10.6, x1: 14.8, z0: 14.5, z1: 23.1, floors: ONE, roof: 'none' },
+    // south wing (UMB), the south-east block and its bay
+    { x0: -10.6, x1: 14.8, z0: 14.5, z1: 23.1, floors: ONE, roof: 'none', faces: { z1: UMB_WIN } },
     { x0: 13.4, x1: 33.1, z0: 14.3, z1: 23.1, floors: ONE, roof: 'none' },
     { x0: 14.8, x1: 23.9, z0: 23.1, z1: 25.6, floors: ONE, roof: 'none' },
     // east wing (Stanbic's north half)
     { x0: 13.4, x1: 23.6, z0: -14.5, z1: 14.3, floors: ONE, roof: 'none' },
   ],
-  keep: [[-33.6, 33.7, -26.2, 26.4]],
+  keep: [[-33.6, 33.7, -27.4, 27.3]],
   extras: (k) => {
     const e = eaveOf();
     // one red roof over the rooms, the verandas and the walkways (owner aerial)
@@ -152,10 +164,10 @@ const compound: Spec = {
     // verandas: slim posts along the outer roof line where OSM leaves the rooms open
     for (let z = -12.5; z <= 14; z += 4.5) {
       k.plain.push([box(-32.9, -32.6, 0, e, z - 0.15, z + 0.15), WHITE]);
-      if (Math.abs(z + 7) > 3) k.plain.push([box(32.6, 32.9, 0, e, z - 0.15, z + 0.15), WHITE]); // clear of Stanbic's door
+      k.plain.push([box(32.6, 32.9, 0, e, z - 0.15, z + 0.15), WHITE]);
     }
     for (const x of [-30, -25, -8.5, 11.5, 26, 30]) k.plain.push([box(x - 0.15, x + 0.15, 0, e, -25.3, -25.0), WHITE]); // the gate stays open
-    for (const x of [-31, -18, -7, -2, 6, 11, 27, 31]) k.plain.push([box(x - 0.15, x + 0.15, 0, e, 25.2, 25.5), WHITE]); // clear of the CBG and First Bank doors
+    for (const x of [-31, -18, -7, -2, 6, 11, 27, 31]) k.plain.push([box(x - 0.15, x + 0.15, 0, e, 25.2, 25.5), WHITE]); // clear of the CBG and UMB doors
     k.plain.push([box(-33.4, 33.4, 0, 0.2, -26, -14.5), PAVE], [box(-33.4, 33.4, 0, 0.2, 14.5, 26), PAVE]);
     k.plain.push([box(-33.4, -20.9, 0, 0.2, -14.5, 14.5), PAVE], [box(23.6, 33.4, 0, 0.2, -14.5, 14.5), PAVE]);
     // the big entrance to the courtyard car park: gate pillars and a beam with the square's name
@@ -185,11 +197,24 @@ const compound: Spec = {
       cols.forEach((c, i) => k.plain.push([box(x + 0.05, x + 1.3, 5.6 - i * 0.28, 5.88 - i * 0.28, cz + 4.48, cz + 4.52), c]));
     }
     k.plain.push([box(cx + 4.2, cx + 5.0, 0, 1.9, cz + 3.4, cz + 4.0), '#eef0f2'], [box(cx + 4.25, cx + 4.95, 1.9, 2.2, cz + 3.4, cz + 4.0), '#c8102e']);
-    // First Bank (south wing) and Stanbic (east side, under the veranda)
-    bankDoorZ(k, 2, 23.1, 1, 'FIRSTBANK', ['#0b2f5b', '#f2b705']);
-    bankDoorX(k, 23.6, -7, 1, 'STANBIC BANK', ['#0a3ea8', '#ffffff']);
-    // the veranda roof hides the door canopy from the road: a second Stanbic sign on the fascia
-    k.signs.push({ text: 'STANBIC BANK', x: 33.78, y: e - 0.15, z: -7, ry: Math.PI / 2, w: 4.6, colors: ['#0a3ea8', '#ffffff'] });
+    // UMB (south wing, owner photo): steps up to a porch on white pillars under a dark gable with the yellow umb logo
+    {
+      const ux = 2, uz = 23.1, CHAR = '#34373b', CREAM = '#efe3c4';
+      k.glass.push(box(ux - 1.5, ux + 1.5, PL, 3.0, uz, uz + 0.04));
+      k.plain.push([box(ux - 1.6, ux + 1.6, 3.0, 3.15, uz, uz + 0.1), '#5a5d62']);
+      for (const s of [-1, 1]) k.plain.push([box(ux + s * 3.2 - 0.35, ux + s * 3.2 + 0.35, 0.6, e - 0.1, uz + 2.8, uz + 3.5), WHITE]);
+      k.plain.push([box(ux - 3.7, ux + 3.7, e - 0.5, e, uz, uz + 3.6), CREAM]);
+      // the dark gable: a front-facing pediment with louvre lines and the logo, a tile roof behind it
+      const gy = e, gh = 2.4, gw = 4.2;
+      k.plain.push([new THREE.ShapeGeometry(new THREE.Shape([new THREE.Vector2(-gw, 0), new THREE.Vector2(gw, 0), new THREE.Vector2(0, gh)])).translate(ux, gy, uz + 3.62), CHAR]);
+      for (let i = 1; i < 4; i++) k.plain.push([box(ux - gw * (1 - i / 4) + 0.2, ux + gw * (1 - i / 4) - 0.2, gy + (gh * i) / 4 - 0.03, gy + (gh * i) / 4 + 0.03, uz + 3.63, uz + 3.66), '#4a4e53']);
+      k.roof.quad([ux - gw - 0.3, gy, uz + 3.8], [ux - gw - 0.3, gy, uz - 0.5], [ux, gy + gh + 0.1, uz - 0.5], [ux, gy + gh + 0.1, uz + 3.8]);
+      k.roof.quad([ux + gw + 0.3, gy, uz - 0.5], [ux + gw + 0.3, gy, uz + 3.8], [ux, gy + gh + 0.1, uz + 3.8], [ux, gy + gh + 0.1, uz - 0.5]);
+      k.signs.push({ text: 'umb', x: ux, y: gy + 0.85, z: uz + 3.68, ry: 0, w: 1.6, colors: [CHAR, '#f2c200'] });
+      for (let i = 0; i < 3; i++) k.plain.push([box(ux - 2.2 - i * 0.2, ux + 2.2 + i * 0.2, 0, 0.6 - i * 0.2, uz, uz + 3.0 + i * 0.4), '#b0623f']);
+    }
+    // Stanbic: its door in the north face of the north-east corner block, toward the road and car park (owner's mark)
+    bankDoorZ(k, 17, -25.4, -1, 'STANBIC BANK', ['#0a3ea8', '#ffffff']);
   },
 };
 

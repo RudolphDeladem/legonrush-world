@@ -1,5 +1,5 @@
 {
- "destinations": 435,
+ "destinations": 434,
  "byMethod": {
   "curated": 35,
   "osm-entrance": 1,
@@ -7,13 +7,13 @@
   "path-access": 7,
   "drive-access": 19,
   "area-entry": 9,
-  "frontage": 250,
+  "frontage": 249,
   "point": 112
  },
  "byConfidence": {
-  "medium": 158,
-  "low": 253,
-  "high": 24
+  "medium": 156,
+  "low": 252,
+  "high": 26
  },
  "campusGates": 5,
  "problems": [],
@@ -276,15 +276,15 @@
    "method": "curated"
   },
   {
-   "place": "First Bank Ghana (Banking Square)",
-   "status": "partial",
-   "confidence": "medium",
+   "place": "UMB",
+   "status": "verified",
+   "confidence": "high",
    "method": "curated"
   },
   {
    "place": "Stanbic Bank",
-   "status": "partial",
-   "confidence": "medium",
+   "status": "verified",
+   "confidence": "high",
    "method": "curated"
   },
   {
@@ -300,27 +300,20 @@
    "method": "curated"
   },
   {
-   "place": "Vikings Hostel",
+   "place": "Mensah Sarbah Vikings Hostel",
    "status": "verified",
    "confidence": "high",
    "method": "curated"
   }
  ],
  "byStatus": {
-  "partial": 14,
+  "partial": 12,
   "unverified": 11,
-  "inferred": 243,
+  "inferred": 242,
   "mapped": 146,
-  "verified": 21
+  "verified": 23
  },
  "curated": [
-  {
-   "place": "First Bank Ghana (Banking Square)",
-   "type": "public entrance",
-   "arrivalOn": "service",
-   "arrivalDistance": 3.5,
-   "facing": 360
-  },
   {
    "place": "University of Ghana Sports Stadium",
    "type": "public entrance",
@@ -364,11 +357,18 @@
    "facing": 360
   },
   {
+   "place": "UMB",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 3.5,
+   "facing": 360
+  },
+  {
    "place": "Stanbic Bank",
    "type": "public entrance",
    "arrivalOn": "service",
    "arrivalDistance": 8.8,
-   "facing": 269
+   "facing": 180
   },
   {
    "place": "University of Ghana Business School",
@@ -525,7 +525,7 @@
    "facing": 0
   },
   {
-   "place": "Vikings Hostel",
+   "place": "Mensah Sarbah Vikings Hostel",
    "type": "hall entrance",
    "arrivalOn": "residential",
    "arrivalDistance": 5.5,

@@ -6,6 +6,7 @@ import { sfx } from '../audio';
 import { buildCoin, buildObstacle, buildRider, OBSTACLES, taxi, trotro, type BikeStyle, type ObstacleKind, type ObstacleSpec, type RiderLook, type RiderRig } from './models';
 import type { Track } from './track';
 import { buildLandmarks } from './landmarks';
+import { groundHeight } from './relief';
 import { Tufts } from './tufts';
 import { buildCampus, buildRouteLayer, buildSky, disposeLayer, lampGlow, LANES, ROAD_HALF } from './world';
 import { buildingAt } from './campusmap';
@@ -942,7 +943,7 @@ export class Game {
   /** Puts an object on the road at ride distance d, lateral x, facing along the road. */
   private place(obj: THREE.Object3D, d: number, x: number, y = 0, yaw = 0) {
     const p = this.pose(d, x);
-    obj.position.set(p.x, y, p.z);
+    obj.position.set(p.x, y + groundHeight(p.x, p.z), p.z);
     obj.rotation.y = p.yaw + yaw;
   }
 
@@ -985,7 +986,7 @@ export class Game {
       if (!this.paused) this.guest.update(dt, cam);
       this.sky.position.copy(cam.position);
       const f = this.guest.focus;
-      this.rider.root.position.set(f.x, 0, f.z);
+      this.rider.root.position.set(f.x, groundHeight(f.x, f.z), f.z);
       this.sun.position.set(f.x + this.sunOffset.x, this.sunOffset.y, f.z + this.sunOffset.z);
       this.sun.target.position.set(f.x, 0, f.z);
       this.wfx?.update(dt, cam);
@@ -1268,7 +1269,7 @@ export class Game {
         vx = (gx - px) / 0.2;
       }
       const p = this.pose(gd, gx);
-      rig.root.position.set(p.x, y, p.z);
+      rig.root.position.set(p.x, y + groundHeight(p.x, p.z), p.z);
       rig.root.rotation.y = p.yaw;
       r.crank += dt * v * 0.9;
       for (const w of rig.wheels) w.rotation.x -= (v / 0.38) * dt;
@@ -1686,7 +1687,7 @@ export class Game {
       if (c.taken) {
         c.t += dt;
         const p = this.pose(this.d, this.x);
-        c.mesh.position.set(p.x, this.y + 1.2 + c.t * 6, p.z);
+        c.mesh.position.set(p.x, this.y + groundHeight(p.x, p.z) + 1.2 + c.t * 6, p.z);
         c.mesh.scale.setScalar(Math.max(0.01, 1 - c.t * 4));
       }
       if (c.d < behind || c.t > 0.25) {
@@ -1706,7 +1707,7 @@ export class Game {
         t.t += dt;
         t.mesh.position.y += dt * 5;
         t.mesh.scale.setScalar(Math.max(0.01, 1 + t.t * 2 - t.t * t.t * 8));
-      } else if (Math.abs(t.d - this.d) < 120) t.mesh.position.y = 1.0 + Math.sin(this.time * 3 + t.d) * 0.12;
+      } else if (Math.abs(t.d - this.d) < 120) t.mesh.position.y = groundHeight(t.mesh.position.x, t.mesh.position.z) + 1.0 + Math.sin(this.time * 3 + t.d) * 0.12;
       if (t.d < behind || t.t > 0.5) {
         this.dynamic.remove(t.mesh);
         return false;
@@ -1765,14 +1766,17 @@ export class Game {
       const a = this.orbit;
       const p = this.pose(this.d);
       const r = this.dressing ? 3.3 : 5.5;
-      cam.position.set(p.x + Math.sin(a) * r, this.dressing ? 1.7 : 2.1, p.z + Math.cos(a) * r);
-      cam.lookAt(p.x, this.dressing ? -0.15 : 0.9, p.z);
+      const gy = groundHeight(p.x, p.z);
+      cam.position.set(p.x + Math.sin(a) * r, gy + (this.dressing ? 1.7 : 2.1), p.z + Math.cos(a) * r);
+      cam.lookAt(p.x, gy + (this.dressing ? -0.15 : 0.9), p.z);
     } else {
       const boosting = this.boostTime > 0;
       const [vBack, vUp] = VEHICLE_CAM[this.vehicle];
       const back = (boosting ? 7.2 : 6.2) + vBack;
       const behind = this.pose(this.d - back, this.x * 0.6);
-      this.camTarget.set(behind.x, 3.1 + vUp + this.y * 0.4 + this.guideLook * 1.4, behind.z);
+      // the camera follows the ground (a hollow such as the engineering school's), never below the rider's
+      const gRide = this.rider.root.position.y - this.y;
+      this.camTarget.set(behind.x, Math.max(groundHeight(behind.x, behind.z), gRide) + 3.1 + vUp + this.y * 0.4 + this.guideLook * 1.4, behind.z);
       cam.position.lerp(this.camTarget, Math.min(1, dt * 8));
       if (this.shake > 0 && !this.reducedMotion) {
         cam.position.x += (Math.random() - 0.5) * this.shake;
@@ -1785,8 +1789,8 @@ export class Game {
       this.guideLook += ((this.guideWait ? 1 : 0) - this.guideLook) * Math.min(1, dt * 1.6);
       if (stop && this.guideLook > 0.001) {
         const k = this.guideLook * 0.75;
-        cam.lookAt(ahead.x + (stop.x - ahead.x) * k, 1.1 + 2.5 * k, ahead.z + (stop.z - ahead.z) * k);
-      } else cam.lookAt(ahead.x, 1.1, ahead.z);
+        cam.lookAt(ahead.x + (stop.x - ahead.x) * k, groundHeight(ahead.x, ahead.z) + 1.1 + 2.5 * k, ahead.z + (stop.z - ahead.z) * k);
+      } else cam.lookAt(ahead.x, groundHeight(ahead.x, ahead.z) + 1.1, ahead.z);
       // the camera banks a little with the bike
       if (!this.reducedMotion) cam.rotateZ(this.lean * 0.18);
       const fovBase = innerWidth < innerHeight ? 72 : 60;

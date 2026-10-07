@@ -2,6 +2,7 @@
 // laid out on a fixed grid (the same tuft is always in the same place, so nothing pops as
 // you ride) and only where there is grass: never on roads, paths or inside buildings.
 import * as THREE from 'three';
+import { groundHeight } from './relief';
 import { roadClearance } from './life';
 import { buildingAt } from './campusmap';
 
@@ -121,7 +122,7 @@ export class Tufts {
       const mesh = this.meshes[c[4]];
       const n = count[c[4]];
       if (n >= mesh.instanceMatrix.count) continue;
-      m4.compose(v.set(c[0], 0, c[1]), q.setFromAxisAngle(up, c[2]), s.set(c[3], c[3] * (0.8 + c[5] * 0.4), c[3]));
+      m4.compose(v.set(c[0], groundHeight(c[0], c[1]), c[1]), q.setFromAxisAngle(up, c[2]), s.set(c[3], c[3] * (0.8 + c[5] * 0.4), c[3]));
       mesh.setMatrixAt(n, m4);
       mesh.setColorAt(n, col.setRGB(c[5], c[5] * 0.98, c[5] * 0.85));
       count[c[4]]++;

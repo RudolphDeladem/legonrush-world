@@ -1,7 +1,8 @@
 {
- "about": "Naming rules for places in the game map. 'required' lists every place name the game code looks up by its exact text (collected from src/ when the reconstruction was made); the build fails if one goes missing, so a rename here never silently breaks a race, mission, event or hall. 'rename' corrects source spellings. 'exclude' drops candidate places that are not real point destinations. 'kind' overrides a place's map category. 'pin' fixes the disambiguated name of a place the game references to its source feature id, so a newly mapped neighbour cannot rename it.",
+ "about": "Naming rules for places in the game map. 'required' lists every place name the game code looks up by its exact text (collected from src/ when the reconstruction was made); the build fails if one goes missing, so a rename here never silently breaks a race, mission, event or hall. 'rename' corrects source spellings. 'exclude' drops candidate places that are not real point destinations. 'kind' overrides a place's map category. 'pin' fixes the disambiguated name of a place the game references to its source feature id, so a newly mapped neighbour cannot rename it. 'Vikings Hostel' is renamed 'Mensah Sarbah Vikings Hostel' (owner) to tell it apart from Mensah Sarbah Hall (nicknamed Vikings) and its annexes.",
  "rename": {
-  "James Quartey Building, JQB": "Jones Quartey Building, JQB"
+  "James Quartey Building, JQB": "Jones Quartey Building, JQB",
+  "Vikings Hostel": "Mensah Sarbah Vikings Hostel"
  },
  "exclude": [
   "^University of Ghana$",
@@ -114,7 +115,7 @@
   "Supermarket",
   "Chambers Forex Bureau",
   "Rapidwash Laundry",
-  "Volta Caf\u00e9",
+  "Volta Café",
   "GCB Bank (near SRC Union Building)",
   "Radio Univers",
   "School of Communication Studies",

@@ -1,4 +1,4 @@
-// Vikings Hostel and the School of Law, modelled from the owner's photos (block engine: blocks.ts).
+// Mensah Sarbah Vikings Hostel and the School of Law, modelled from the owner's photos (block engine: blocks.ts).
 //
 // Vikings Hostel: an L of two five-storey wings with balcony corridors along their long sides, plain
 // end walls with square windows and a column of glass-block stair windows, a terracotta base, and a
@@ -50,7 +50,7 @@ const VIK_END: Style = {
 };
 
 const vikings: Spec = {
-  name: 'Vikings Hostel',
+  name: 'Mensah Sarbah Vikings Hostel',
   axis: [1, 0], origin: [160, 817], storey: 3.0, style: VIK_BAL, roofColor: '#b0453c', fascia: '#4a3a35', pitch: 0.3,
   blocks: [
     { x0: -21.9, x1: -4, z0: -26, z1: 26.1, floors: 5, faces: { z0: VIK_END, z1: VIK_END } },

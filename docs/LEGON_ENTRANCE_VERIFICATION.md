@@ -41,7 +41,7 @@ BUILDING → ENTRANCE → FORECOURT → ACCESS PATH → ARRIVAL POINT (road/path
 `npm run test:routes` fails if a priority destination is left as mapped/inferred, if a verified entrance is
 not high confidence, or if any non-verified, non-mapped entrance claims high confidence.
 
-**Priority destinations: 46 — verified 21, partial 14, unverified 11.** (The four Diaspora halls moved from partial to verified with the owner's photos; ISH 1 moved to verified and ISH 2 was added with the owner's marked layout; the banking square's banks were added with the owner's labelled aerial and photos; the School of Law and Vikings Hostel were verified with the owner's photos; see below.)
+**Priority destinations: 46 — verified 23, partial 12, unverified 11.** (The four Diaspora halls moved from partial to verified with the owner's photos; ISH 1 moved to verified and ISH 2 was added with the owner's marked layout; the banking square's banks were added with the owner's labelled aerial and photos; the School of Law and Vikings Hostel were verified with the owner's photos; see below.)
 
 ## Entrance verification table (BEFORE → AFTER)
 
@@ -58,8 +58,8 @@ Coordinates are game-frame metres (x east, z south of the datum 5.6518 N, 0.1871
 | Kuffour Quadrangle | frontage at (-11, -142), arriving on footway | low | public open space at (6, -107) | footway | (6, -104), facing 0° | **partial** · medium | 39 m |
 | University of Ghana banking square | partial: (157, 975), arriving on service | medium | public entrance at (160, 975) | service | (160, 961), facing 180° | **verified** · high | 3 m |
 | Consolidated Bank Ghana (near Night Market) | mapped point north of the compound (on the road) | medium | public entrance at (134, 1020) | service | (132, 1026), facing 360° | **verified** · high | — |
-| First Bank Ghana (Banking Square) | not on the map | — | public entrance at (160, 1020) | service | (160, 1026), facing 360° | **partial** · medium | — |
-| Stanbic Bank | inferred frontage at the compound's south-east corner | low | public entrance at (181, 990) | service | (192, 989), facing 269° | **partial** · medium | — |
+| UMB | (labelled First Bank Ghana until the owner corrected it) | medium | public entrance at (160, 1020) | service | (160, 1026), facing 360° | **verified** · high | 0 m |
+| Stanbic Bank | partial: east side under the veranda (182, 990) | medium | public entrance at (175, 972) | service (north road) | (176, 961), facing 180° | **verified** · high | 19 m |
 | Ecobank (near Night Market) | mapped OSM entrance in the east notch | high | public entrance at (242, 1018) | service | (240, 1004), facing 174° | **verified** · high | — |
 | Union Building (Banking Square) | not on the map | — | public entrance at (257, 1026) | service | (260, 1026), facing 342° | **partial** · medium | — |
 | Night Market | frontage at (126, 1034), arriving on Jubilee Link | low | public entrance at (167, 1034) | service | (167, 1026), facing 180° | **partial** · medium | 41 m |
@@ -80,7 +80,7 @@ Coordinates are game-frame metres (x east, z south of the datum 5.6518 N, 0.1871
 | Jones Quartey Building, JQB | frontage at (593, -82), arriving on service | low | public entrance at (569, -29) | footway | (589, -21), facing 287° | **verified** · high | 58 m |
 | K. A. Busia Building, KAB | frontage at (478, -130), arriving on Annie Jiagge Road | low | inferred frontage at (478, -130) | Annie Jiagge Road | (510, -131), facing 270° | **unverified** · low | 0 m |
 | School of Law | partial: (469, -267), arriving on service | medium | public entrance at (441, -243) | service via the courtyard | (486, -243), facing 270° | **verified** · high | 37 m |
-| Vikings Hostel | inferred frontage at (189, 816) (east end), arriving on service | low | hall entrance at (161, 841), second door at (152, 843) | service (car park) | (162, 848), facing 0° | **verified** · high | 39 m |
+| Mensah Sarbah Vikings Hostel | inferred frontage at (189, 816) (east end), arriving on service | low | hall entrance at (161, 841), second door at (152, 843) | service (car park) | (162, 848), facing 0° | **verified** · high | 39 m |
 | N Block | frontage at (-34, -311), arriving on service | low | inferred frontage at (-34, -311) | service | (-44, -310), facing 90° | **unverified** · low | 0 m |
 | University of Ghana Sports Stadium | frontage at (853, 1381), arriving on service | low | public entrance at (701, 1412) | service | (679, 1412), facing 90° | **partial** · medium | 155 m |
 | Athletic Oval | frontage at (52, 355), arriving on service | low | public open space at (6, 489) | residential | (6, 503), facing 0° | **partial** · medium | 142 m |
@@ -156,15 +156,14 @@ Coordinates are game-frame metres (x east, z south of the datum 5.6518 N, 0.1871
 The owner's labelled aerial (banks C, F and S circled, the ATM bay, the car-park entrance) was registered to the OSM
 footprints by roof colour (4.2 px/m, 1° rotation); the compound, the star-shaped Union Building and the ADB block
 land on their roofs, so the labels became map positions. Bank places were moved into the wings the owner labels
-(registry landmarks with measured points; First Bank Ghana and the Union Building were added).
+(registry landmarks with measured points; UMB was moved into the south wing and the Union Building was added).
 
 - **University of Ghana banking square — VERIFIED.** The big entrance to the courtyard car park in the middle of
   the compound's north wing (owner: the section marked in red), from the road along the north side.
 - **Consolidated Bank Ghana (CBG) — VERIFIED.** The west wing (C); the door on the south side with steps, red
   pillars, a canopy sign and flags (owner photo), facing the way in from the Diaspora halls and the Night Market.
-- **First Bank Ghana — PARTIAL.** The south wing (F); the door's side (south, on CBG's frontage) is inferred.
-- **Stanbic Bank — PARTIAL.** The north-east part of the compound (S); the door's side (east, under the veranda,
-  facing the road and its parking bays) is inferred.
+- **UMB — VERIFIED.** The south wing (F). The owner first named it First Bank Ghana and corrected it to UMB; the owner's photo of the UMB front (steps up to a porch on white pillars under a dark gable with the yellow umb logo) faces the south road, on CBG's frontage.
+- **Stanbic Bank — VERIFIED.** The door in the north face of the compound's north-east corner block, facing the road and car park on the north: the owner's close-up of the compound with the entrance circled, registered to the OSM footprint (4.4 px/m). Previously inferred on the east side.
 - **Ecobank — VERIFIED.** The notch between the Union Building's two north wings (the owner's marked close-up);
   previously the OSM entrance node in the east notch.
 - **Union Building — PARTIAL.** The east notch (OSM entrance node), matching the owner's photo of the entrance with
@@ -251,10 +250,9 @@ land on their roofs, so the labels became map positions. Bank places were moved 
 
 ### School of Engineering Sciences — VERIFIED
 
-- **Entrance:** public entrance; Up the straight access road from the south that ends at the school's forecourt.
-- **Evidence:** engineering_school_layout (registered to OSM): a straight access road from the south ends at a paved forecourt in front of the south block, where Apple pins 'School of Engineering Sciences'; the car park is to the west.
-- **References:** `engineering_school_layout_labeled.png`
-- **Correction:** moved 5 m from the previous frontage entrance (low confidence).
+- **Entrance:** the porch in the middle of the front (south) block, its band lettered SCHOOL OF ENGINEERING in blue capitals, at the foot of the access road that comes down a gentle hill from the main road on the south.
+- **Evidence:** the owner's layout (entrance, aeroplane enclosure and car park marked), reference render (porch marked) and two photos of the front; OSM maps the projecting porch (447.8-457.6 x, to -379.9 z).
+- **Ground:** the building, forecourt and car park lie 4.5 m below the road (`src/game/relief.ts`); rides go down the slope.
 
 ### University of Ghana Business School — PARTIAL
 
@@ -285,7 +283,10 @@ land on their roofs, so the labels became map positions. Bank places were moved 
 - **Geometry correction:** the OSM outline of the School of Law sat about 10 m north-west of the building (Google's footprint overlapped it by 13%); it is replaced by Google's footprint, which matches the layout photo (`corrections.json → reshape`). The south block was shifted the same way.
 - **Correction:** the door moved 37 m, from the east end of the old outline to the rotunda; status partial → verified.
 
-### Vikings Hostel — VERIFIED
+### Mensah Sarbah Vikings Hostel — VERIFIED
+
+Renamed from *Vikings Hostel* (owner) to tell it apart from Mensah Sarbah Hall (nicknamed Vikings) and its annexes; "Vikings Hostel" and "Sarbah Vikings Hostel" still find it.
+
 
 - **Entrance:** the single-storey VIKINGS HOSTEL block in the inner corner of the L, facing the car park on the south; a **second door** at the foot of the long wing's south end (shown on `/geo/`, not routed to).
 - **Evidence:** the owner's front photo (the big entrance area and its door, and the second door, marked) and aerial (both marked): the entrance block lies south of the east wing and east of the long wing, as OSM maps it.
