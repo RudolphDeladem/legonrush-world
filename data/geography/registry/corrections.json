@@ -1,5 +1,5 @@
 {
-  "about": "Source features that the evidence shows are wrong. 'exclude': they stay in the master dataset (flagged, confidence low) but are kept out of the game map; a feature is only excluded when independent evidence contradicts it. 'heights': storey counts and heights that reference photos contradict (the footprint is not touched). 'reclass': ground areas whose mapped use the reference photos and the owner contradict (the outline is kept). 'reshape': an outline that sits off the building Google Open Buildings and the owner's imagery show is replaced by a measured ring (game metres); the OSM id and tags stay. 'addAreas': ground areas the owner's imagery shows and the sources lack (woods round the School of Law and International House), measured on the registered imagery. 'addWays': ways the owner's photos show and the sources lack (Commonwealth's stairway from the gate houses to the forecourt); their ends are inserted into the way they meet so the network stays connected.",
+  "about": "Source features that the evidence shows are wrong. 'exclude': they stay in the master dataset (flagged, confidence low) but are kept out of the game map; a feature is only excluded when independent evidence contradicts it. 'heights': storey counts and heights that reference photos contradict (the footprint is not touched). 'reclass': ground areas whose mapped use the reference photos and the owner contradict (the outline is kept). 'reshape': an outline that sits off the building Google Open Buildings and the owner's imagery show is replaced by a measured ring (game metres); the OSM id and tags stay. 'addAreas': ground areas the owner's imagery shows and the sources lack (woods round the School of Law and International House), measured on the registered imagery. 'addWays': ways the owner's photos show and the sources lack (Commonwealth's stairway from the gate houses to the forecourt, Volta's forecourt); their ends are inserted into the way they meet so the network stays connected, except an end marked 'open' (at the foot of a flight of steps up to a door).",
   "exclude": [
     {
       "id": "osm:way/765261444",
@@ -473,6 +473,90 @@
       "levels": 2,
       "height": 9,
       "reason": "Owner: the front of Commonwealth, the entrance included, is two storeys."
+    },
+    {
+      "id": "osm:way/320072523",
+      "place": "Volta Hall",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner: every part of Volta Hall is two storeys except the Annex to the north (four); the owner's aerial of the hall, registered to the OSM footprints (0.27 m/px, north up)."
+    },
+    {
+      "id": "osm:way/320072524",
+      "place": "Volta Hall",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner: every part of Volta Hall is two storeys except the Annex to the north (four); the owner's aerial of the hall, registered to the OSM footprints (0.27 m/px, north up)."
+    },
+    {
+      "id": "osm:way/320072525",
+      "place": "Volta Hall",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner: every part of Volta Hall is two storeys except the Annex to the north (four); the owner's aerial of the hall, registered to the OSM footprints (0.27 m/px, north up)."
+    },
+    {
+      "id": "osm:way/320072527",
+      "place": "Volta Hall",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner: every part of Volta Hall is two storeys except the Annex to the north (four); the owner's aerial of the hall, registered to the OSM footprints (0.27 m/px, north up)."
+    },
+    {
+      "id": "osm:way/320072530",
+      "place": "Volta Hall",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner: every part of Volta Hall is two storeys except the Annex to the north (four); the owner's aerial of the hall, registered to the OSM footprints (0.27 m/px, north up)."
+    },
+    {
+      "id": "osm:way/320072531",
+      "place": "Volta Hall",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner: every part of Volta Hall is two storeys except the Annex to the north (four); the owner's aerial of the hall, registered to the OSM footprints (0.27 m/px, north up)."
+    },
+    {
+      "id": "osm:way/320072533",
+      "place": "Volta Hall",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner: every part of Volta Hall is two storeys except the Annex to the north (four); the owner's aerial of the hall, registered to the OSM footprints (0.27 m/px, north up)."
+    },
+    {
+      "id": "osm:way/320072534",
+      "place": "Volta Hall",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner: every part of Volta Hall is two storeys except the Annex to the north (four); the owner's aerial of the hall, registered to the OSM footprints (0.27 m/px, north up)."
+    },
+    {
+      "id": "osm:way/320072536",
+      "place": "Volta Hall",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner: every part of Volta Hall is two storeys except the Annex to the north (four); the owner's aerial of the hall, registered to the OSM footprints (0.27 m/px, north up)."
+    },
+    {
+      "id": "osm:way/320072537",
+      "place": "Volta Hall",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner: every part of Volta Hall is two storeys except the Annex to the north (four); the owner's aerial of the hall, registered to the OSM footprints (0.27 m/px, north up)."
+    },
+    {
+      "id": "osm:way/320072538",
+      "place": "Volta Hall",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner: every part of Volta Hall is two storeys except the Annex to the north (four); the owner's aerial of the hall, registered to the OSM footprints (0.27 m/px, north up)."
+    },
+    {
+      "id": "osm:relation/3697982",
+      "place": "Volta Hall Annex",
+      "levels": 4,
+      "height": 15,
+      "reason": "Owner: the Annex north of Volta Hall (circled in yellow on the owner's aerial) has four storeys; owner's photo of it from the hall."
     }
   ],
   "reclass": [
@@ -563,6 +647,66 @@
         ]
       ],
       "reason": "The OSM outline sits about 5 m west of Google's footprint, which matches the south block in the owner's layout photo."
+    },
+    {
+      "id": "osm:relation/3697982",
+      "place": "Volta Hall Annex",
+      "source": "OSM outline moved onto the roof in the owner's aerial",
+      "ring": [
+        [
+          -317.3,
+          -73.1
+        ],
+        [
+          -317.3,
+          -86.0
+        ],
+        [
+          -255.7,
+          -86.0
+        ],
+        [
+          -255.7,
+          -39.0
+        ],
+        [
+          -317.4,
+          -38.9
+        ],
+        [
+          -317.4,
+          -51.4
+        ],
+        [
+          -302.0,
+          -51.4
+        ],
+        [
+          -302.1,
+          -73.1
+        ]
+      ],
+      "holes": [
+        [
+          [
+            -288.7,
+            -74.7
+          ],
+          [
+            -267.4,
+            -74.8
+          ],
+          [
+            -267.2,
+            -49.0
+          ],
+          [
+            -288.4,
+            -48.8
+          ]
+        ]
+      ],
+      "reason": "The owner's aerial of Volta Hall, registered to the hall's OSM footprints (which land on their roofs), shows the Annex's roof 12.4 m west of its OSM outline; the outline's shape (a C open to the west round a second, closed court) matches the roof, so it is moved, not redrawn."
     }
   ],
   "addAreas": [
@@ -752,6 +896,23 @@
         ]
       ],
       "reason": "Owner's photos: from the two gate houses on the road at the end of the avenue, a long stairway climbs Legon Hill to the drive in front of Commonwealth Hall's main entrance; near the top it passes either side of a stone structure with three arches."
+    },
+    {
+      "id": "owner:volta-forecourt",
+      "highway": "footway",
+      "name": "Volta Hall forecourt",
+      "pts": [
+        [
+          -219,
+          66
+        ],
+        [
+          -243.5,
+          66
+        ]
+      ],
+      "reason": "Owner's aerial and photos: a paved forecourt between the two front buildings runs from Volta Hall Road to the foot of the short flight of steps (between stone walls) up to the arched entrance; rides stop at the foot of the steps.",
+      "open": "end"
     }
   ]
 }

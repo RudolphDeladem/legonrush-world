@@ -15,6 +15,7 @@ import { HALLS, HALL_PLACE } from '../data/campus';
 import { buildingMaterials, setWindowLights } from './facades';
 import { inDiasporaHall, setHallLights } from './halls';
 import { setBlockLights } from './blocks';
+import { SOLIDS } from './solids';
 import { BLOCK_SITES } from './sites';
 
 /** real road widths by class: main, through, residential, service lane, footpath */
@@ -669,6 +670,7 @@ export function buildCampusLife() {
   const tree = (x: number, z: number, sp: Species, sc = 1) => {
     const leaf = pick(rand, LEAF[sp]).map(C);
     cells.p(x, z).add(T[sp], yawM(x, 0, z, rand() * 6.28, sc), leaf, 0.9 + rand() * 0.18);
+    SOLIDS.add(x, z, 0.35 * sc);
   };
   const person = (b: Batch, x: number, z: number, yaw: number, sitting: boolean, shirt?: THREE.Color | null) => {
     const s = shirt ?? pick(rand, SHIRTS);

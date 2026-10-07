@@ -67,7 +67,7 @@ Coordinates are game-frame metres (x east, z south of the datum 5.6518 N, 0.1871
 | Commonwealth Hall | curated at (-485, 118), arriving on service | medium | hall entrance at (-491, 127) | service | (-475, 128), facing 270° | **verified** · high | 11 m |
 | Akuafo Hall Main | area-entry at (204, 224), arriving on service | medium | hall entrance at (160, 156) | footway | (160, 146), facing 176° | **verified** · high | 81 m |
 | Mensah Sarbah Hall | curated at (11, 609), arriving on service | medium | hall entrance (porters' lodge) at (11, 609) | service | (5, 598), facing 153° | **verified** · high | 0 m |
-| Volta Hall | frontage at (-259, -4), arriving on service | low | hall entrance at (-259, 0) | service | (-248, 0), facing 266° | **partial** · medium | 4 m |
+| Volta Hall | frontage at (-259, -4), arriving on service | low | hall entrance at (-259, 66) | footway | (-243.5, 66), facing 270° | **verified** · high | 66 m |
 | Elizabeth Frances Sey Hall | partial: (-66, 1770), arriving on service | medium | hall entrance at (-64, 1774), back entrance at (4, 1734) | service | (-93, 1789), facing 61° | **verified** · high | 4 m |
 | Alexander Kwapong Hall | partial: (180, 1621), arriving on service | medium | hall entrance at (186, 1631), back entrance at (117, 1670) | service | (210, 1616), facing 240° | **verified** · high | 11 m |
 | Dr. Hilla Limann Hall | partial: (243, 1612), arriving on service | medium | hall entrance at (238, 1602), back entrance at (306, 1563) | service | (211, 1618), facing 60° | **verified** · high | 11 m |
@@ -218,12 +218,12 @@ land on their roofs, so the labels became map positions. Bank places were moved 
 - **Stop:** outside the building
 - **Correction:** confirmed (no move).
 
-### Volta Hall — PARTIAL
+### Volta Hall — VERIFIED
 
-- **Entrance:** hall entrance; Along Volta Hall Road into the semicircular drop-off loop in front of the east wing.
-- **Evidence:** volta_hall_layout (registered to OSM): OSM maps a semicircular drop-off loop (way 1535119978) off Volta Hall Road directly in front of the east wing; volta_hall_entrance: an arched doorway at the top of a flight of steps up from a drive. The photo cannot be tied to the loop with certainty.
-- **References:** `volta_hall_layout_labeled.png`, `volta_hall_entrance_labeled.png`
-- **Correction:** moved 4 m from the previous frontage entrance (low confidence).
+- **Entrance:** the arched doorway on the east face of the front block (the owner's blue mark), up a short flight of steps from the paved forecourt between the two front buildings; rides stop at the foot of the steps, on the forecourt footway from Volta Hall Road (`corrections.json → addWays`).
+- **Evidence:** the owner's aerial with the entrance marked, registered to the OSM footprints (0.27 m/px, north up), and the owner's photos of the entrance with its gate marked at the top of its steps and of the front with the entrance and the building either side of the climb marked.
+- **References:** owner's aerial and photos (3), `volta_hall_layout_labeled.png`, `volta_hall_entrance_labeled.png`
+- **Correction:** the door moved 66 m south from the drop-off loop in front of the east lane to the front block the owner marks.
 
 ### The Diaspora halls (Dr. Hilla Limann, Alexander Kwapong, Elizabeth Frances Sey, Jean Nelson Aka) — VERIFIED
 

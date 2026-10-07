@@ -812,6 +812,8 @@ const finishReward = (r: Route) => (isExplore(r) ? 50 + Math.round(r.length / 20
 let keyHandler: ((e: KeyboardEvent) => void) | null = null;
 let brakeDown: ((e: KeyboardEvent) => void) | null = null;
 let brakeUp: ((e: KeyboardEvent) => void) | null = null;
+/** Explore's free ride: held keys steer, pedal and brake */
+let freeKeys: ((e: KeyboardEvent) => void) | null = null;
 
 interface PlayOpts {
   /** bots for Quick Match */
@@ -919,6 +921,12 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
       <div class="guide-card" id="guideCard" role="dialog" aria-live="polite" hidden></div>
       ${isExplore(route) || opts.live?.kind === 'vibe' ? `<label class="pace-box${isExplore(route) ? ' tour' : ''}" id="paceBox"><span>${isExplore(route) ? 'Tour speed' : 'Speed'}</span><b id="paceVal"></b><input type="range" id="pace" step="1" aria-label="${isExplore(route) ? 'Tour speed' : 'Riding speed'}"><small>Slow</small><small>Fast</small></label>` : ''}
       ${isExplore(route) ? '<div class="xp-say" id="xpSay" hidden></div>' : ''}
+      ${isExplore(route) ? `<div class="free-pad" id="freePad" hidden>
+        <p class="fp-hint">${isTouch ? 'Hold the arrows to steer, Pedal to go, Brake to stop' : 'Steer ← → (A / D) · pedal ↑ (W) · brake ↓ (S)'}</p>
+        <button class="fp-btn fp-end" id="fpEnd">Finish ride</button>
+        <div class="fp-steer"><button class="fp-btn" id="fpLeft" aria-label="Steer left">◀</button><button class="fp-btn" id="fpRight" aria-label="Steer right">▶</button></div>
+        <div class="fp-feet"><button class="fp-btn fp-brake" id="fpBrake">Brake</button><button class="fp-btn fp-go" id="fpGo">Pedal</button></div>
+      </div>` : ''}
       <div class="hud-bottom">
         ${brakes && !isExplore(route) ? `<button class="brake-btn" id="brakeBtn" aria-label="Brake">${icons.brake}<span>${isTouch ? 'BRAKE' : 'S / ↓'}</span></button>` : '<span class="hud-slot"></span>'}
         <div class="speedo" id="speedo">
@@ -1356,6 +1364,42 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
   const leaveSolo = () => (opts.eventPlay ? opts.eventPlay.leave() : opts.mission ? fx.missionsScreen() : route.id === 'explore' ? explorePicker(route.from.name, route.to.name) : route.id === 'freshers-tour' ? explorePicker() : home(opts.event ? 'events' : opts.rivals || opts.challenge ? 'race' : route.kind === 'race' ? 'ride' : 'home'));
   $('pause').addEventListener('click', togglePause);
   app.querySelector('#endTour')?.addEventListener('click', () => { cleanup(); explorePicker(route.from.name, route.to.name); });
+  // Explore's free ride: the arrived card hands the bike over; held buttons or keys steer, pedal and brake
+  function startFreeRide() {
+    const pad = app.querySelector<HTMLElement>('#freePad');
+    if (!pad || game.freeRiding) return;
+    game.freeRide();
+    guideCard.hidden = true;
+    pad.hidden = false;
+    app.querySelector<HTMLElement>('#paceBox')?.setAttribute('hidden', '');
+    const held = { left: false, right: false };
+    const steer = () => { game.freeInput.steer = (held.right ? 1 : 0) - (held.left ? 1 : 0); };
+    const hold = (id: string, set: (on: boolean) => void) => {
+      const b = pad.querySelector<HTMLElement>('#' + id)!;
+      const on = (v: boolean) => (e: Event) => { e.stopPropagation(); e.preventDefault(); set(v); b.classList.toggle('on', v); };
+      b.addEventListener('pointerdown', on(true));
+      for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) b.addEventListener(ev, on(false));
+    };
+    hold('fpLeft', (v) => { held.left = v; steer(); });
+    hold('fpRight', (v) => { held.right = v; steer(); });
+    hold('fpGo', (v) => { game.freeInput.pedal = v; });
+    hold('fpBrake', (v) => { game.freeInput.brake = v; });
+    pad.querySelector('#fpEnd')!.addEventListener('click', () => { pad.hidden = true; game.endFreeRide(); });
+    for (const ev of ['pointerdown', 'touchstart'] as const) pad.addEventListener(ev, (e) => e.stopPropagation());
+    freeKeys = (e) => {
+      if (e.target instanceof HTMLInputElement || !game.freeRiding) return;
+      const on = e.type === 'keydown';
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA') held.left = on;
+      else if (e.code === 'ArrowRight' || e.code === 'KeyD') held.right = on;
+      else if (e.code === 'ArrowUp' || e.code === 'KeyW' || e.code === 'Space') game.freeInput.pedal = on;
+      else if (e.code === 'ArrowDown' || e.code === 'KeyS') game.freeInput.brake = on;
+      else return;
+      e.preventDefault();
+      steer();
+    };
+    addEventListener('keydown', freeKeys);
+    addEventListener('keyup', freeKeys);
+  }
   const onHidden = () => { if (document.hidden && game.isRiding && !game.paused) togglePause(); };
   document.addEventListener('visibilitychange', onHidden);
 
@@ -1374,6 +1418,8 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     if (brakeDown) removeEventListener('keydown', brakeDown);
     if (brakeUp) removeEventListener('keyup', brakeUp);
     brakeDown = brakeUp = null;
+    if (freeKeys) { removeEventListener('keydown', freeKeys); removeEventListener('keyup', freeKeys); }
+    freeKeys = null;
     game.setBrake(false);
     document.removeEventListener('visibilitychange', onHidden);
     game.onHud = () => {};
@@ -1512,6 +1558,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
             ${canSpeak ? `<button class="btn btn-ghost btn-sm" id="gcSay">${icons.megaphone} Read aloud</button>` : ''}
             ${full ? '' : '<button class="btn btn-ghost" id="gcMore">Learn more</button>'}
             <button class="btn btn-ghost" id="gcDrone" aria-pressed="false">Drone view</button>
+            ${game.vehicle === 'bike' ? '<button class="btn btn-ghost" id="gcFree">Ride it yourself</button>' : ''}
             <button class="btn btn-primary" id="gcGo">Done</button>
           </div>`
         : `<p class="kicker">Stop ${i + 1} of ${guide.length} · ${i === 0 ? 'You start at' : 'Now passing'}</p>
@@ -1527,6 +1574,8 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
       guideCard.querySelector('#gcMore')?.addEventListener('click', () => { full = true; draw(); });
       // arrived: the rider can send a drone up for a view of the place from above
       guideCard.querySelector('#gcDrone')?.addEventListener('click', () => { game.droneView(game.droning ? null : g.place); draw(); });
+      // arrived on a bike: hand the bike over to the rider, to go wherever a bike can go
+      guideCard.querySelector('#gcFree')?.addEventListener('click', () => startFreeRide());
       guideCard.querySelector('#gcGo')!.addEventListener('click', () => game.continueTour());
     };
     draw();

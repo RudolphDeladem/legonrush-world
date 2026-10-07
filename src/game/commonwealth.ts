@@ -19,9 +19,9 @@
 // Every block stands on the ground under it (Spec.onGround): the lanes are built in short lengths
 // that step up the hill.
 import * as THREE from 'three';
-import { NODE_XZ, ROADS, buildingAt } from './campusmap';
 import { PAVE, WHITE, box, flat } from './modelkit';
 import { PL, createSite, render, slab, window_, type Block, type Kit, type Spec, type Style } from './blocks';
+import { garden } from './gardens';
 import { groundHeight, stairsOf } from './relief';
 
 const ROOF = '#c4613a', FASCIA = '#fbf9f3', FRAME = '#5a3b28', STONE = '#9b8a72', STONE_DARK = '#7d6d58';
@@ -130,63 +130,8 @@ function hip(k: Kit, x0: number, x1: number, z0: number, z1: number, eave: numbe
   return top;
 }
 
-// ---------- gardens: trees, palms and bushes as plain geometry ----------
-let seed = 7;
-const rand = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
-const LEAVES = ['#3a6b28', '#447a2e', '#355f24', '#2f5e22', '#4a7f30'];
-function tree(k: Kit, x: number, z: number, s = 1) {
-  const y = k.ground(x, z), h = (2.6 + rand() * 2.2) * s, r = (1.8 + rand() * 1.3) * s;
-  k.plain.push([new THREE.CylinderGeometry(0.14 * s + 0.08, 0.26 * s + 0.08, h + 0.4, 5).translate(x, y + h / 2 - 0.2, z), '#5b4636']);
-  const leaf = LEAVES[(rand() * LEAVES.length) | 0];
-  k.plain.push([new THREE.IcosahedronGeometry(r, 1).scale(1, 0.72, 1).translate(x, y + h + r * 0.45, z), leaf]);
-  k.plain.push([new THREE.IcosahedronGeometry(r * 0.62, 0).scale(1, 0.8, 1).translate(x + r * 0.5, y + h + r * 0.15, z - r * 0.3), leaf]);
-}
-function palm(k: Kit, x: number, z: number, h = 7) {
-  const y = k.ground(x, z);
-  k.plain.push([new THREE.CylinderGeometry(0.17, 0.26, h, 6).translate(x, y + h / 2, z), '#a39886']);
-  k.plain.push([new THREE.CylinderGeometry(0.2, 0.21, 1.1, 5).translate(x, y + h + 0.55, z), '#6a8f3c']);
-  for (let i = 0; i < 7; i++) {
-    const f = new THREE.ConeGeometry(0.42, 3.2, 3, 1).rotateX(Math.PI / 2).translate(0, 0, 1.6).scale(1, 0.22, 1);
-    f.rotateX(0.3 + (i % 3) * 0.2).rotateY((i / 7) * Math.PI * 2 + rand() * 0.3);
-    k.plain.push([f.translate(x, y + h + 1.1, z), '#4f8a2f']);
-  }
-}
-function bush(k: Kit, x: number, z: number, r = 0.9) {
-  const flower = rand() < 0.3;
-  k.plain.push([new THREE.IcosahedronGeometry(r, 0).scale(1.2, 0.7, 1).translate(x, k.ground(x, z) + r * 0.45, z), flower ? ['#c2185b', '#e65100', '#f9a825'][(rand() * 3) | 0] : LEAVES[(rand() * LEAVES.length) | 0]]);
-}
-/** a hedge along x or z from (x0, z0) to (x1, z1), following the ground */
-function hedge(k: Kit, x0: number, z0: number, x1: number, z1: number) {
-  const len = Math.hypot(x1 - x0, z1 - z0), n = Math.max(1, Math.ceil(len / 3));
-  for (let i = 0; i < n; i++) {
-    const ax = x0 + ((x1 - x0) * i) / n, az = z0 + ((z1 - z0) * i) / n, bx = x0 + ((x1 - x0) * (i + 1)) / n, bz = z0 + ((z1 - z0) * (i + 1)) / n;
-    const y = k.ground((ax + bx) / 2, (az + bz) / 2);
-    k.plain.push([box(Math.min(ax, bx) - 0.45, Math.max(ax, bx) + 0.45, y - 0.2, y + 0.9, Math.min(az, bz) - 0.45, Math.max(az, bz) + 0.45), '#3d6e2a']);
-  }
-}
-
-/** world-space segments of the campus roads near Legon Hill (trees keep off them) */
-const ROAD_SEGS: [number, number, number, number, number][] = [];
-for (const r of ROADS) for (let i = 0; i < r.nodes.length - 1; i++) {
-  const ax = NODE_XZ[r.nodes[i] * 2], az = NODE_XZ[r.nodes[i] * 2 + 1], bx = NODE_XZ[r.nodes[i + 1] * 2], bz = NODE_XZ[r.nodes[i + 1] * 2 + 1];
-  if (Math.max(ax, bx) < -820 || Math.min(ax, bx) > -330 || Math.max(az, bz) < 0 || Math.min(az, bz) > 260) continue;
-  ROAD_SEGS.push([ax, az, bx, bz, r.cls === 4 ? 2 : 6]);
-}
-const nearRoad = (x: number, z: number) => ROAD_SEGS.some(([ax, az, bx, bz, w]) => {
-  const dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
-  return Math.hypot(x - ax - dx * t, z - az - dz * t) < w;
-});
-
-/** world rectangles kept clear of planting: the blocks, the walk, the forecourt, the stairway */
-const CLEAR: [number, number, number, number][] = [];
-const clearOf = (x: number, z: number) => !CLEAR.some(([x0, x1, z0, z1]) => x > x0 && x < x1 && z > z0 && z < z1) && !buildingAt(x, z, 2) && !nearRoad(x, z);
-/** scatter: n tries in a world rectangle, each kept if clear */
-function scatter(x0: number, x1: number, z0: number, z1: number, n: number, put: (x: number, z: number) => void) {
-  for (let i = 0; i < n; i++) {
-    const x = x0 + rand() * (x1 - x0), z = z0 + rand() * (z1 - z0);
-    if (clearOf(x, z)) put(x, z);
-  }
-}
+// ---------- gardens (gardens.ts): the hall, the hill round it and the stairway's slopes ----------
+const g = garden([-820, -330, 0, 260]);
 
 const hall: Spec = {
   name: 'Commonwealth Hall',
@@ -196,9 +141,9 @@ const hall: Spec = {
   blocks: [...LANES, ...BARS, ...FRONT, ...ENDS.map(([x0, x1, z0, z1]) => W(x0, x1, z0, z1, 2, { roof: 'none' as const }))],
   keep: [[L(-735), L(-484), -6, 6], [L(-760), L(-730), -18, 18]],
   extras: (k) => {
-    seed = 7;
-    for (const b of [...LANES, ...BARS, ...FRONT]) CLEAR.push([b.x0 + O[0] - 2, b.x1 + O[0] + 2, b.z0 + O[1] - 2, b.z1 + O[1] + 2]);
-    CLEAR.push([-760, -484, 122, 134], [-760, -728, 108, 148]);
+    g.reseed(7);
+    for (const b of [...LANES, ...BARS, ...FRONT]) g.clear.push([b.x0 + O[0] - 2, b.x1 + O[0] + 2, b.z0 + O[1] - 2, b.z1 + O[1] + 2]);
+    g.clear.push([-760, -484, 122, 134], [-760, -728, 108, 148]);
 
     // the lanes' gabled ends facing the forecourt
     for (const [x0, x1, z0, z1] of ENDS) {
@@ -263,10 +208,10 @@ const hall: Spec = {
     // the courts: lawns with hedges along the walk, flower bushes and palms
     for (const [x0, x1] of [[-700, -682], [-670, -636], [-624, -583], [-571, -536], [-524, -503]] as [number, number][]) {
       for (const s of [-1, 1]) {
-        hedge(k, L(x0) + 1, s * 4.5, L(x1) - 1, s * 4.5);
-        for (let x = x0 + 4; x < x1 - 2; x += 8) palm(k, L(x), s * 7.5, 6 + rand() * 2);
+        g.hedge(k, L(x0) + 1, s * 4.5, L(x1) - 1, s * 4.5);
+        for (let x = x0 + 4; x < x1 - 2; x += 8) g.palm(k, L(x), s * 7.5, 6 + g.rand() * 2);
       }
-      scatter(x0, x1, 108, 145, 10, (x, z) => bush(k, L(x), Lz(z), 0.7 + rand() * 0.5));
+      g.scatter(x0, x1, 108, 145, 10, (x, z) => g.bush(k, L(x), Lz(z), 0.7 + g.rand() * 0.5));
     }
 
     // the amphitheatre west of the end building: stepped seats rising west round a stage
@@ -282,10 +227,10 @@ const hall: Spec = {
     }
 
     // gardens all round: trees on the slopes, bushes along the blocks
-    scatter(-745, -480, 50, 93, 70, (x, z) => (rand() < 0.75 ? tree(k, L(x), Lz(z), 0.9 + rand() * 0.5) : bush(k, L(x), Lz(z))));
-    scatter(-745, -480, 162, 210, 80, (x, z) => (rand() < 0.75 ? tree(k, L(x), Lz(z), 0.9 + rand() * 0.5) : bush(k, L(x), Lz(z))));
-    scatter(-800, -745, 70, 190, 60, (x, z) => tree(k, L(x), Lz(z), 1 + rand() * 0.6));
-    scatter(-740, -505, 92, 164, 60, (x, z) => bush(k, L(x), Lz(z), 0.6 + rand() * 0.4));
+    g.scatter(-745, -480, 50, 93, 70, (x, z) => (g.rand() < 0.75 ? g.tree(k, L(x), Lz(z), 0.9 + g.rand() * 0.5) : g.bush(k, L(x), Lz(z))));
+    g.scatter(-745, -480, 162, 210, 80, (x, z) => (g.rand() < 0.75 ? g.tree(k, L(x), Lz(z), 0.9 + g.rand() * 0.5) : g.bush(k, L(x), Lz(z))));
+    g.scatter(-800, -745, 70, 190, 60, (x, z) => g.tree(k, L(x), Lz(z), 1 + g.rand() * 0.6));
+    g.scatter(-740, -505, 92, 164, 60, (x, z) => g.bush(k, L(x), Lz(z), 0.6 + g.rand() * 0.4));
   },
 };
 
@@ -301,10 +246,10 @@ const approach: Spec = {
   blocks: [gateHouse(104, 114), gateHouse(142, 152)],
   keep: [[-464 - A[0], -360 - A[0], -14, 14], [-490 - A[0], -464 - A[0], -22, 22], [-374 - A[0], -362 - A[0], -26, 26]],
   extras: (k) => {
-    seed = 11;
+    g.reseed(11);
     const X = (x: number) => x - A[0], Z = (z: number) => z - A[1];
     const z0 = Z(stair.z0), z1 = Z(stair.z1);
-    CLEAR.push([-492, -360, 112, 144], [-375, -361, 100, 156]);
+    g.clear.push([-492, -360, 112, 144], [-375, -361, 100, 156]);
     // the stairway: each step and landing a solid block down into the hill
     const dir = Math.sign(stair.x1 - stair.x0), len = Math.abs(stair.x1 - stair.x0), seg = len / stair.flights;
     for (let f = 0; f < stair.flights; f++) {
@@ -333,7 +278,7 @@ const approach: Spec = {
     }
     for (let f = 0; f < stair.flights; f++) {
       const x = stair.x0 + dir * (f * seg + stair.steps * stair.tread + 2);
-      for (const z of [stair.z0 - 3, stair.z1 + 3]) palm(k, X(x), Z(z), 6.5 + rand() * 2);
+      for (const z of [stair.z0 - 3, stair.z1 + 3]) g.palm(k, X(x), Z(z), 6.5 + g.rand() * 2);
     }
     // the stone arches below the forecourt at the top of the stairs (owner photos): the walk passes north of them
     const ax0 = X(-457), ax1 = X(-448), az0 = Z(124), az1 = Z(stair.z1), aTop = stair.top;
@@ -360,9 +305,9 @@ const approach: Spec = {
       k.plain.push([box(X(-363.5), X(-363.4), 0.4, 2.6, Z(zc) - 4, Z(zc) - 2.6), '#3a3f47']);
     }
     // trees and bushes on the slopes either side of the stairway
-    scatter(-464, -378, 40, 112, 90, (x, z) => (rand() < 0.7 ? tree(k, X(x), Z(z), 0.9 + rand() * 0.6) : bush(k, X(x), Z(z))));
-    scatter(-464, -378, 144, 216, 90, (x, z) => (rand() < 0.7 ? tree(k, X(x), Z(z), 0.9 + rand() * 0.6) : bush(k, X(x), Z(z))));
-    for (let x = -460; x < -380; x += 7) for (const z of [stair.z0 - 6, stair.z1 + 6]) if (clearOf(x, z)) bush(k, X(x), Z(z), 0.8);
+    g.scatter(-464, -378, 40, 112, 90, (x, z) => (g.rand() < 0.7 ? g.tree(k, X(x), Z(z), 0.9 + g.rand() * 0.6) : g.bush(k, X(x), Z(z))));
+    g.scatter(-464, -378, 144, 216, 90, (x, z) => (g.rand() < 0.7 ? g.tree(k, X(x), Z(z), 0.9 + g.rand() * 0.6) : g.bush(k, X(x), Z(z))));
+    for (let x = -460; x < -380; x += 7) for (const z of [stair.z0 - 6, stair.z1 + 6]) if (g.clearOf(x, z)) g.bush(k, X(x), Z(z), 0.8);
   },
 };
 

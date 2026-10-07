@@ -11,13 +11,14 @@
   "user-layouts": "UG_BUILDINGS__LAYOUTS_AND_THEIR_STRUCTURES.zip supplied by the project owner: labelled layouts and entrance photos",
   "legon-porters-lodge": "https://gh.near-place.com/legon-hall-porters-lodge-j-b-danquah-road-accra",
   "user-photos": "Photos of the four Diaspora halls supplied by the project owner (an aerial of all four halls, a drone view of one hall's front and courtyard, two oblique drone views of the facades, a close view of the entrance pavilion), with the owner's description of how the halls face each other",
-  "user-photos-jubilee-ish": "Photos supplied by the project owner of Jubilee Hall (aerial of the entrance corner, courtyard) and the International Students Hostel (entrance facade), and a satellite layout of Jubilee Hall, ISH 1 and ISH 2 with the entrances and car parks marked, registered to the OSM footprints (2.8 px/m, 1° rotation)",
-  "owner-banking-square": "The owner's labelled aerial of the banking square (banks C, F, S, the ATM bay, the car-park entrance), the owner's photos of the CBG front and the Union Building entrance, and the owner's close-up marking the Ecobank entrance; registered to the OSM footprints by roof colour (4.2 px/m, 1° rotation)",
+  "user-photos-jubilee-ish": "Photos supplied by the project owner of Jubilee Hall (aerial of the entrance corner, courtyard) and the International Students Hostel (entrance facade), and a satellite layout of Jubilee Hall, ISH 1 and ISH 2 with the entrances and car parks marked, registered to the OSM footprints (2.8 px/m, 1\u00b0 rotation)",
+  "owner-banking-square": "The owner's labelled aerial of the banking square (banks C, F, S, the ATM bay, the car-park entrance), the owner's photos of the CBG front and the Union Building entrance, and the owner's close-up marking the Ecobank entrance; registered to the OSM footprints by roof colour (4.2 px/m, 1\u00b0 rotation)",
   "owner-vikings-law": "The owner's photos of Mensah Sarbah Vikings Hostel (front with the entrances marked, the south end, an aerial with the entrances marked) and of the School of Law (two views of the entrance rotunda with the doors marked), with the earlier layout photos of both",
   "owner-engineering": "The owner's satellite layout of the School of Engineering Sciences with the entrance (blue), the aeroplane enclosure (green) and the car park (red) marked, the owner's reference render with the entrance porch marked, and two photos of the front with the entrance marked",
   "owner-intl-house": "The owner's photo of International House (entrance marked) and aerial of it with the School of Law (entrance and the wooded zones marked), registered to the OSM footprints at 4.4 px/m",
   "owner-pentagon": "The owner's aerial of Pentagon with the New Pent blocks (A, B, C), the Old Pent courts (D, K, AA, N) and the admin block (AD) labelled and their entrances marked, registered to the OSM footprints (2.5 px/m), and photos of a New Pent block, an Old Pent court and the admin block (entrances marked)",
-  "owner-commonwealth": "The owner's photos of Commonwealth Hall (the gate houses and stairway from the road, the stairs, the main entrance with its gate marked, the front from above) and its aerial with the two- and three-storey parts marked, registered to the OSM footprints (1 px/m, front to the east)"
+  "owner-commonwealth": "The owner's photos of Commonwealth Hall (the gate houses and stairway from the road, the stairs, the main entrance with its gate marked, the front from above) and its aerial with the two- and three-storey parts marked, registered to the OSM footprints (1 px/m, front to the east)",
+  "owner-volta": "The owner's aerial of Volta Hall with the entrance marked (blue) and the storeys described, registered to the OSM footprints (0.27 m/px, north up), and photos of the entrance up its steps (marked), the front buildings either side of the climb, and the Annex."
  },
  "campusGates": [
   {
@@ -383,29 +384,31 @@
   },
   {
    "place": "Volta Hall",
-   "footprint": "osm:way/320072537",
+   "footprint": "osm:way/320072524",
    "entrance": {
     "at": [
-     -259,
-     0
+     -258.9,
+     66
     ]
    },
    "type": "hall entrance",
    "arrival": {
-    "way": "way/1535119978",
+    "way": "owner:volta-forecourt",
     "near": [
-     -248,
-     0
+     -243.5,
+     66
     ]
    },
-   "status": "partial",
-   "confidence": "medium",
-   "cite": "user-layouts",
-   "approach": "Along Volta Hall Road into the semicircular drop-off loop in front of the east wing.",
-   "evidence": "volta_hall_layout (registered to OSM): OSM maps a semicircular drop-off loop (way 1535119978) off Volta Hall Road directly in front of the east wing; volta_hall_entrance: an arched doorway at the top of a flight of steps up from a drive. The photo cannot be tied to the loop with certainty.",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-volta",
+   "approach": "From Volta Hall Road across the forecourt between the two front buildings, then up the steps to the arched entrance on the east face.",
+   "evidence": "Owner: the entrance is the section marked blue on the aerial, on the east face of the front block; the photos show the arched doorway with its gate at the top of a short flight of steps between stone walls, with a two-storey building either side of the climb.",
    "refs": [
-    "volta_hall_layout_labeled.png",
-    "volta_hall_entrance_labeled.png"
+    "volta_aerial (owner, entrance marked)",
+    "volta_entrance (owner photo, gate marked)",
+    "volta_front (owner photo, entrance and front building marked)",
+    "volta_annex (owner photo)"
    ]
   },
   {

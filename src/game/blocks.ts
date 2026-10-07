@@ -134,7 +134,9 @@ export interface Spec {
 }
 export interface Kit { plain: Part[]; glass: THREE.BufferGeometry[]; roof: Roof; signs: { text: string; x: number; y: number; z: number; ry: number; w: number; colors?: [string, string] }[]; meshes: THREE.Mesh[]; wallTop: (floors: number) => number; storey: number;
   /** the height of the ground at a point of the model frame (0 unless the site stands on relief) */
-  ground: (x: number, z: number) => number }
+  ground: (x: number, z: number) => number;
+  /** a point of the model frame in world coordinates */
+  world: (x: number, z: number) => [number, number] }
 
 export const PL = 0.4, BAND = 0.4, OV = 0.8;
 const MIRROR_Z = new THREE.Matrix4().makeScale(1, 1, -1);
@@ -225,7 +227,8 @@ const inRing = (pts: Float32Array, x: number, z: number) => {
 // ---------- geometry ----------
 function buildSpec(f: Frame) {
   const spec = f.spec;
-  const ground = (x: number, z: number) => groundHeight(f.cx + x * f.ux - z * f.uz, f.cz + x * f.uz + z * f.ux);
+  const world = (x: number, z: number): [number, number] => [f.cx + x * f.ux - z * f.uz, f.cz + x * f.uz + z * f.ux];
+  const ground = (x: number, z: number) => groundHeight(...world(x, z));
   const facades = new Map<Style, Facade>();
   const fac = (k: Style) => { let f = facades.get(k); if (!f) facades.set(k, (f = new Facade())); return f; };
   const plain: Part[] = [];
@@ -233,7 +236,7 @@ function buildSpec(f: Frame) {
   const roof = new Roof(new THREE.Color(spec.roofColor));
   const st = spec.storey;
   const wallTop = (floors: number) => PL + floors * st + BAND;
-  const k: Kit = { plain, glass, roof, signs: [], meshes: [], wallTop, storey: st, ground };
+  const k: Kit = { plain, glass, roof, signs: [], meshes: [], wallTop, storey: st, ground, world };
 
   /** one face of a block: window bays storey by storey, then plinth and eave band */
   const run = (ax: number, az: number, bx: number, bz: number, floors: number, style: Style, floorStyle: Record<number, Style> | undefined, yb: number) => {

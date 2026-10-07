@@ -7,6 +7,7 @@ import { asphaltTexture, billboardTexture, concreteTexture, grassMacroTexture, g
 import { buildBuildings } from './facades';
 import { buildDiasporaHalls, isDiasporaHall } from './halls';
 import { BLOCK_SITES } from './sites';
+import { ROUTE_SOLIDS } from './solids';
 import { newPentStyle } from './pentagon';
 import { RELIEF_BOXES, applyRelief, densify, inStairs, reliefGround } from './relief';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, ROAD_WIDTH } from './life';
@@ -409,6 +410,8 @@ export interface RouteLayerOptions {
  */
 export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
   const group = new THREE.Group();
+  // the route's trees are solid for a free ride (solids.ts): the last route's go
+  ROUTE_SOLIDS.clear();
   const rand = rng(7);
   const L = track.length;
   const at = (d: number, lateral: number, y = 0) => {
@@ -463,6 +466,7 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
       const sc = 0.8 + rand() * 0.6, spin = rand() * 6.28;
       if (!clear(p, 1.2)) continue;
       spots.push(new THREE.Matrix4().compose(p, new THREE.Quaternion().setFromAxisAngle(up, spin), new THREE.Vector3(sc, sc, sc)));
+      ROUTE_SOLIDS.add(p.x, p.z, 0.35 * sc);
     }
   }
   addRouteTrees(group, spots, rand);

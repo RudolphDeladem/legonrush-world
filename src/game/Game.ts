@@ -6,10 +6,11 @@ import { sfx } from '../audio';
 import { buildCoin, buildObstacle, buildRider, OBSTACLES, taxi, trotro, type BikeStyle, type ObstacleKind, type ObstacleSpec, type RiderLook, type RiderRig } from './models';
 import type { Track } from './track';
 import { buildLandmarks } from './landmarks';
-import { groundHeight } from './relief';
+import { groundHeight, inStairs } from './relief';
 import { Tufts } from './tufts';
 import { buildCampus, buildRouteLayer, buildSky, disposeLayer, lampGlow, LANES, ROAD_HALF } from './world';
-import { buildingAt } from './campusmap';
+import { AREAS, buildingAt, mapBounds } from './campusmap';
+import { solidAt } from './solids';
 import { setNightLights } from './life';
 import { createWeatherFx, type WeatherFx } from './weatherfx';
 
@@ -241,6 +242,30 @@ const SKIES: Record<TimeOfDay, { lamps: number; top: string; bottom: string; fog
   sunset: { lamps: 0.5, top: '#2b3f7a', bottom: '#ff9a4a', fog: [60, 300], sun: '#ffb070', sunI: 2.4, sunPos: [-40, 14, -60], hemiSky: '#ffc59a', hemiGround: '#4a3a2a', hemiI: 0.8, env: 0.3, exposure: 1.0, cloud: 0.6, cloudCol: '#ffc49e' },
   night: { lamps: 1, top: '#03060f', bottom: '#1b2650', fog: [40, 220], sun: '#9fb6ff', sunI: 0.55, sunPos: [20, 40, 10], hemiSky: '#3a4f8a', hemiGround: '#10131c', hemiI: 0.45, env: 0.12, exposure: 1.15, cloud: 0.4, cloudCol: '#26324f' },
 };
+
+/** Explore's free ride: woods and water a bike can't go into (with their bounding boxes) */
+let wilds: { pts: Float32Array; x0: number; x1: number; z0: number; z1: number }[] | null = null;
+const inPts = (pts: Float32Array, x: number, z: number) => {
+  let c = false;
+  for (let i = 0, j = pts.length - 2; i < pts.length; j = i, i += 2) {
+    const zi = pts[i + 1], zj = pts[j + 1];
+    if ((zi > z) !== (zj > z) && x < ((pts[j] - pts[i]) * (z - zi)) / (zj - zi) + pts[i]) c = !c;
+  }
+  return c;
+};
+/** where a free-ridden bike can't go: buildings, trees, woods, water, stairs, and off the map */
+function freeBlocked(x: number, z: number) {
+  if (buildingAt(x, z, 0.35) || solidAt(x, z, 0.3) || inStairs(x, z)) return true;
+  if (!wilds) {
+    wilds = AREAS.filter((a) => a.kind === 'wood' || a.kind === 'water').map((a) => {
+      let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
+      for (let i = 0; i < a.pts.length; i += 2) { x0 = Math.min(x0, a.pts[i]); x1 = Math.max(x1, a.pts[i]); z0 = Math.min(z0, a.pts[i + 1]); z1 = Math.max(z1, a.pts[i + 1]); }
+      return { pts: a.pts, x0, x1, z0, z1 };
+    });
+  }
+  return wilds.some((w) => x > w.x0 && x < w.x1 && z > w.z0 && z < w.z1 && inPts(w.pts, x, z));
+}
+let bounds: ReturnType<typeof mapBounds> | null = null;
 
 const GRAVITY = 22;
 const JUMP_V = 7;
@@ -873,7 +898,7 @@ export class Game {
   }
 
   action(a: Action) {
-    if (this.phase !== 'riding' || this.paused) return;
+    if (this.phase !== 'riding' || this.paused || this.free) return;
     if (a === 'left' && this.lane > 0) { this.lane--; sfx.lane(); }
     else if (a === 'right' && this.lane < 2) { this.lane++; sfx.lane(); }
     else if (a === 'jump') {
@@ -902,6 +927,81 @@ export class Game {
     this.drone = { x: at.x, z: at.z, a: Math.atan2(r.x - at.x, r.z - at.z) };
   }
   get droning() { return !!this.drone; }
+
+  /**
+   * Explore, on a bike: after arriving, the rider takes the bike wherever a bike can go. Nothing drives
+   * it any more: steer with freeInput.steer (-1 left .. 1 right), pedal and brake; buildings, trees,
+   * woods, water, stairs and walls stop it. endFreeRide() ends the ride.
+   */
+  freeRide() {
+    if (this.phase !== 'riding' || this.free) return;
+    const r = this.rider.root;
+    this.drone = null;
+    this.free = { x: r.position.x, z: r.position.z, yaw: r.rotation.y, v: 0, steer: 0, bumpT: 0 };
+    this.freeInput = { steer: 0, pedal: false, brake: false };
+    this.speed = 0;
+  }
+  get freeRiding() { return !!this.free; }
+  /** the end of a free ride: the ride is over, as when a route is finished */
+  endFreeRide() {
+    if (!this.free) return;
+    this.free = null;
+    this.phase = 'finished';
+    this.endTimer = 0.01;
+  }
+  /** held controls during a free ride */
+  freeInput = { steer: 0, pedal: false, brake: false };
+  private free: { x: number; z: number; yaw: number; v: number; steer: number; bumpT: number } | null = null;
+
+  /** a free ride: bike physics on open ground, stopped by whatever a bike can't go through */
+  private updateFree(dt: number) {
+    const f = this.free!, inp = this.freeInput;
+    this.time += dt;
+    const top = 8 + (this.bike?.speed ?? 3) * 0.5;
+    if (inp.brake) f.v = Math.max(0, f.v - 10 * dt);
+    else if (inp.pedal) f.v = Math.min(top, f.v + (2.6 + (this.bike?.acceleration ?? 3) * 0.3) * dt);
+    else f.v = Math.max(0, f.v - 0.8 * dt);
+    // steering: the bars turn quickly, the bike turns more tightly when slow (and can be turned when stopped)
+    f.steer += (inp.steer - f.steer) * Math.min(1, dt * 7);
+    const rate = 1.7 * (f.v < 0.5 ? 0.6 : Math.min(1, 0.45 + 4 / (f.v + 3)));
+    f.yaw -= f.steer * rate * dt;
+    const fx = -Math.sin(f.yaw), fz = -Math.cos(f.yaw), step = f.v * dt;
+    // uphill slows, downhill rolls on
+    const g0 = groundHeight(f.x, f.z);
+    if (f.v > 0.2) f.v = Math.max(0, Math.min(top * 1.3, f.v - 9.8 * 0.6 * ((groundHeight(f.x + fx, f.z + fz) - g0) / 1) * dt));
+    // move, sliding along whatever is in the way; a wall or a bank too steep to ride stops the bike
+    if (!bounds) bounds = mapBounds();
+    // (a bank steeper than about 1 in 1.5 just ahead counts as a wall)
+    const ok = (x: number, z: number) => !freeBlocked(x + fx * 0.7, z + fz * 0.7) && !freeBlocked(x, z)
+      && Math.abs(groundHeight(x + fx * 0.6, z + fz * 0.6) - groundHeight(x, z)) < 0.4
+      && x > bounds!.minX && x < bounds!.maxX && z > bounds!.minZ && z < bounds!.maxZ;
+    const nx = f.x + fx * step, nz = f.z + fz * step;
+    if (step > 0) {
+      if (ok(nx, nz)) { f.x = nx; f.z = nz; }
+      else if (ok(nx, f.z)) { f.x = nx; f.v *= 0.92; }
+      else if (ok(f.x, nz)) { f.z = nz; f.v *= 0.92; }
+      else {
+        if (f.v > 2.5 && f.bumpT <= 0) { sfx.bump(); this.shake = Math.max(this.shake, Math.min(0.3, f.v * 0.03)); f.bumpT = 0.6; }
+        f.v = 0;
+      }
+    }
+    if (f.bumpT > 0) f.bumpT -= dt;
+    this.speed = f.v;
+    // the rider on the bike, leaning into the turn
+    const r = this.rider;
+    r.root.position.set(f.x, groundHeight(f.x, f.z), f.z);
+    r.root.rotation.y = f.yaw;
+    this.lean += (-f.steer * Math.min(1, f.v / 6) * 0.4 - this.lean) * Math.min(1, dt * 6);
+    this.crank += dt * f.v * 0.9 * (inp.pedal ? 1 : 0.15);
+    for (const w of r.wheels) w.rotation.x -= (f.v / 0.38) * dt;
+    r.crank.rotation.x = -this.crank;
+    r.legs[0].rotation.x = Math.sin(this.crank) * 0.55;
+    r.legs[1].rotation.x = Math.sin(this.crank + Math.PI) * 0.55;
+    r.body.rotation.z = this.lean;
+    r.body.rotation.x = 0;
+    r.body.position.y = 0;
+    this.emitHud(null);
+  }
   private drone: { x: number; z: number; a: number } | null = null;
 
   /** Guided ride: move on from the place it stopped at. */
@@ -940,6 +1040,8 @@ export class Game {
     this.guideIdx = this.guideLook = 0;
     this.guideWait = false;
     this.drone = null;
+    this.free = null;
+    this.freeInput = { steer: 0, pedal: false, brake: false };
     this.lane = 1;
     this.paused = false;
     this.rec = { step: GHOST_STEP, d: [], x: [] };
@@ -1040,6 +1142,7 @@ export class Game {
       return;
     }
 
+    if (this.phase === 'riding' && this.free) return this.updateFree(dt);
     if (this.phase === 'riding') {
       this.time += dt;
       const progress = this.d / this.route.length;
@@ -1458,7 +1561,7 @@ export class Game {
       place: this.standing(),
       helmets: this.helmets,
       braking: this.braking,
-      next: this.route.kind === 'explore' ? (() => { const n = this.nextStep(); return n && { text: n.step.text, turn: n.step.turn, dist: n.dist }; })() : null,
+      next: this.route.kind === 'explore' && !this.free ? (() => { const n = this.nextStep(); return n && { text: n.step.text, turn: n.step.turn, dist: n.dist }; })() : null,
       kmh: Math.round(this.speed * 1.6),
       stamina: this.stamina,
       drafting: this.drafting,
@@ -1784,6 +1887,21 @@ export class Game {
       cam.lookAt(dr.x, gy + 4, dr.z);
       const fov = innerWidth < innerHeight ? 66 : 52;
       cam.fov += (fov - cam.fov) * Math.min(1, dt * 3);
+      cam.updateProjectionMatrix();
+    } else if (this.free) {
+      // free ride: the chase camera sits behind the bike wherever it heads
+      const f = this.free, fx = -Math.sin(f.yaw), fz = -Math.cos(f.yaw);
+      const gy = groundHeight(f.x, f.z), bx = f.x - fx * 6.4, bz = f.z - fz * 6.4;
+      this.camTarget.set(bx, Math.max(groundHeight(bx, bz), gy) + 3.2, bz);
+      cam.position.lerp(this.camTarget, Math.min(1, dt * 5));
+      if (this.shake > 0 && !this.reducedMotion) {
+        cam.position.x += (Math.random() - 0.5) * this.shake;
+        cam.position.y += (Math.random() - 0.5) * this.shake;
+        this.shake = Math.max(0, this.shake - dt);
+      }
+      cam.lookAt(f.x + fx * 10, groundHeight(f.x + fx * 10, f.z + fz * 10) + 1.1, f.z + fz * 10);
+      const fov = (innerWidth < innerHeight ? 72 : 60) + f.v * 0.25;
+      cam.fov += (fov - cam.fov) * Math.min(1, dt * 4);
       cam.updateProjectionMatrix();
     } else if (this.phase === 'showcase' && this.bikeView) {
       this.garageCamera(this.bikeView, dt);

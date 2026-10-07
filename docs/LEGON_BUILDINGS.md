@@ -16,8 +16,9 @@ the map still use it), the generic builder skips it, and its model is placed on 
 | 6 | Diaspora Dome, International House, woods round the School of Law; no building between Kwapong and Sey | `src/game/dome.ts` | owner aerials (2, registered), photos (3) |
 | 7 | Pentagon: Old Pent courts, the admin block, New Pent blocks A, B, C | `src/game/pentagon.ts` | owner's labelled aerial (registered), photos (3) |
 | 8 | Commonwealth Hall, its stairway and gate houses, and Legon Hill | `src/game/commonwealth.ts`, `src/game/relief.ts` | owner's labelled aerial (registered), photos (4) |
+| 9 | Volta Hall and the Volta Hall Annex | `src/game/volta.ts`, `src/game/relief.ts` | owner's marked aerial (registered), photos (3) |
 
-Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 to 8) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
+Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 to 9) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
 
 ## 1. The Diaspora halls
 
@@ -344,9 +345,45 @@ hall and on to the Great Hall, and that the avenue below the stairs and the camp
 
 **Open points:** the dining hall and the chapel keep the generic builder; the amphitheatre is drawn from the aerial only.
 
+## 9. Volta Hall and the Volta Hall Annex
+
+The owner's aerial (north up) was registered to the OSM footprints (0.27 m/px); the hall's outlines land on their
+roofs.
+
+- **Heights** (owner): every part of the hall is **two storeys**, the green-marked blocks included; only the
+  **Annex** (circled yellow, north of the hall) has **four** (`corrections.json → heights`).
+- **The Annex's outline** sat 12.4 m east of its roof on the aerial (the rest of the hall fits); it is moved onto the
+  roof with its shape unchanged (`corrections.json → reshape`, which now takes the holes too). Modelled as four
+  storeys of white render with long bands of windows (owner photo), balconies along the court sides, low tile roofs;
+  a court open to the west and a closed one; a door on the south face where the hall's walk arrives.
+- **Plan:** two lanes north-south round the central court with bars across their north ends, blocks across their
+  south ends either side of the walk, the front block with the entrance, the blocks closing the south court, and the
+  west block with its wings; white render, dark windows in white frames, terracotta hip roofs with dark fascias.
+- **On a terrace** (`relief.ts`, the new terrace kind of zone): the hall stands **2.4 m above Volta Hall Road**, its
+  east front over a stone retaining wall with a hedge along the top; the Annex to the north is at road level.
+- **Entrance** (owner's blue marks, pictures 1 to 3): on the east face of the front block: an arched doorway with its
+  gate under a small tile canopy, round windows either side above it and the hall's name board, at the top of a
+  **short flight of steps** (three flights of five) between stone walls with planters and palms at the foot.
+- **The climb** (picture 3): a two-storey building stands either side of it (the owner's purple mark) on the paved
+  forecourt, which runs from Volta Hall Road to the foot of the steps (`corrections.json → addWays`, a footway whose
+  end at the steps is open). Rides stop at the foot of the steps.
+- **Courts** (picture 4): a paved walk lined with white pots runs north through the courts toward the Annex, with
+  lawns, palms and bushes either side; trees round the hall.
+
+The garden pieces (trees, palms, bushes, hedges, pots) are shared with Commonwealth Hall in `src/game/gardens.ts`.
+
 ## Explore: drone view
 
 When an Explore ride arrives, the arrived card offers **Drone view**: the camera climbs from behind the rider and
 circles 95 m out and 60 m above the destination, looking down at it (it turns more slowly with reduced motion).
 **Back to street view** returns to the rider; **Done** ends the tour as before.
+
+## Explore: ride it yourself
+
+When an Explore ride **on a bike** arrives, the arrived card also offers **Ride it yourself**: the route lets go of the
+bike and the rider steers it anywhere a bike can go (`Game.freeRide`). Hold ◀ / ▶ (or ← → / A D) to steer, **Pedal**
+(↑ / W / Space) to go and **Brake** (↓ / S) to stop; the bike coasts when you stop pedalling, slows uphill and turns
+more tightly when slow. Buildings, trees and palms (campus, gardens and the route's own; `src/game/solids.ts`),
+woods, water, stairways, and walls or banks too steep to ride stop it; it slides along an edge it meets at an angle.
+The chase camera follows. **Finish ride** ends the ride as arriving does.
 

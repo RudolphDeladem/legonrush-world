@@ -69,14 +69,14 @@
  "roads": {
   "junctions": 1207,
   "roundabouts": 18,
-  "count": 1551,
+  "count": 1552,
   "kmByClass": {
    "service": 70.6,
    "residential": 65.6,
    "path": 25.8,
    "tertiary": 14.1,
-   "unclassified": 12.4,
    "footway": 12.4,
+   "unclassified": 12.4,
    "secondary": 9.2,
    "trunk": 8.4,
    "track": 3.8,

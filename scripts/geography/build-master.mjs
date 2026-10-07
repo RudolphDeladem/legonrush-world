@@ -145,6 +145,8 @@ for (const w of REG.corrections.addWays ?? []) {
         if (!best || dist < best.dist) best = { f, i, t, q, dist };
       }
     }
+    // an open end (a stair top at a door) needs no way to meet
+    if ((!best || best.dist > 4) && w.open === (end ? 'end' : 'start')) continue;
     if (!best || best.dist > 4) throw new Error(`addWays ${w.id}: end ${end} meets no way within 4 m`);
     if (best.t <= 1e-6) pts[end] = best.f.line[best.i];
     else if (best.t >= 1 - 1e-6) pts[end] = best.f.line[best.i + 1];
@@ -267,7 +269,7 @@ function buildingHeight(t, pts) {
 const buildings = [];
 function addBuilding(id, rings, t, src) {
   const reshape = RESHAPE.get(id);
-  const [outer, ...holes] = reshape ? [reshape.ring.map(([x, z]) => [x, z]), ...rings.slice(1)] : rings;
+  const [outer, ...holes] = reshape ? [reshape.ring.map(([x, z]) => [x, z]), ...(reshape.holes ?? rings.slice(1))] : rings;
   if (outer.length < 3) return;
   const c = centroid(outer);
   if (!anyInContext(outer)) return; // like the legacy extract: anything reaching into the study area

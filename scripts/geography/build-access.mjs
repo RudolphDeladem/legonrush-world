@@ -322,7 +322,7 @@ for (const place of places) {
   const outside = fp?.layer === 'building' ? stepOut(fp.ring, ent.p, outward) : ent.p;
   let arr = null;
   if (cur?.arrival?.way) {
-    arr = nearestOnNetwork(cur.arrival.near ?? viaPts[0] ?? outside, { maxDist: 200, filter: (w) => w.id === `osm:${cur.arrival.way}` });
+    arr = nearestOnNetwork(cur.arrival.near ?? viaPts[0] ?? outside, { maxDist: 200, filter: (w) => w.id === cur.arrival.way || w.id === `osm:${cur.arrival.way}` });
     if (!arr) throw new Error(`access ${name}: arrival way ${cur.arrival.way} not reachable`);
   }
   arr ??= nearestOnNetwork(outside, { maxDist: 200, visibleFrom: outside, filter: (w) => w.hw !== 'steps' });

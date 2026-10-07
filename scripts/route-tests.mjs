@@ -137,6 +137,13 @@ try {
   if (!(foot === 0 && forecourt > 8 && hallEnd > forecourt + 4 && summit > hallEnd)) fail(`Legon Hill: the ground does not rise from the avenue (${foot}) up the stairs (${forecourt}) through the hall (${hallEnd}) to the Great Hall (${summit})`);
   if (groundHeight(-340, 128) !== 0 || groundHeight(-600, 600) !== 0) fail('Legon Hill: the avenue below the stairs or the campus beside the hill is not flat');
   if ((await server.ssrLoadModule('/src/game/commonwealth.ts')).commonwealth.frames().length !== 2) fail('expected the Commonwealth Hall and stairway models');
+  // Volta Hall (owner): the entrance on the front block's east face up its steps; the hall on its terrace,
+  // the Annex at road level on its roof in the owner's aerial
+  const vh = ACCESS.get('Volta Hall');
+  if (!vh || Math.hypot(vh.entrance[0] + 258.9, vh.entrance[1] - 66) > 2) fail('Volta Hall: the entrance is not the blue mark on the front block');
+  if (!(Math.abs(groundHeight(-290, 40) - 2.4) < 0.01 && groundHeight(-235, 66) === 0 && groundHeight(-219, 66) === 0)) fail('Volta Hall: the hall is not on its terrace above the forecourt and Volta Hall Road');
+  if (buildingAt(-310, -80)?.name !== 'Volta Hall Annex') fail('Volta Hall Annex: the outline is not on its roof in the owner\'s aerial');
+  if ((await server.ssrLoadModule('/src/game/volta.ts')).volta.frames().length !== 2) fail('expected the Volta Hall and Annex models');
   const bankModels = (await server.ssrLoadModule('/src/game/banking.ts')).banking.frames();
   if (bankModels.length !== 3) fail(`expected the bank compound, the Union Building and the ADB/HFC block, found ${bankModels.length}`);
   const hostels = (await server.ssrLoadModule('/src/game/hostels.ts')).hostels.frames();
