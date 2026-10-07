@@ -251,11 +251,17 @@ export function buildCampus() {
   };
   for (let i = 0; i < tx; i++) for (let j = 0; j < tz; j++) {
     const gx = x0 + i * TILE, gz = z0 + j * TILE;
-    // the ground over a relief zone is its own mesh: leave a hole for it
-    const hole = RELIEF_BOXES.find((r) => r.x1 > gx && r.x0 < gx + TILE && r.z1 > gz && r.z0 < gz + TILE);
-    if (!hole) { tiles.push(new THREE.PlaneGeometry(TILE, TILE).rotateX(-Math.PI / 2).translate(gx + TILE / 2, 0, gz + TILE / 2)); continue; }
-    const hx0 = Math.max(gx, hole.x0), hx1 = Math.min(gx + TILE, hole.x1), hz0 = Math.max(gz, hole.z0), hz1 = Math.min(gz + TILE, hole.z1);
-    for (const [ax, bx, az, bz] of [[gx, gx + TILE, gz, hz0], [gx, gx + TILE, hz1, gz + TILE], [gx, hx0, hz0, hz1], [hx1, gx + TILE, hz0, hz1]]) if (bx - ax > 0.01 && bz - az > 0.01) tiles.push(piece(gx, gz, ax, bx, az, bz));
+    // the ground over a relief zone is its own mesh: leave a hole for every zone the tile meets
+    const holes = RELIEF_BOXES.filter((r) => r.x1 > gx && r.x0 < gx + TILE && r.z1 > gz && r.z0 < gz + TILE);
+    if (!holes.length) { tiles.push(new THREE.PlaneGeometry(TILE, TILE).rotateX(-Math.PI / 2).translate(gx + TILE / 2, 0, gz + TILE / 2)); continue; }
+    // the tile cut along every hole's edges; the cells outside all holes are kept
+    const cuts = (lo: number, keys: number[]) => [...new Set([lo, lo + TILE, ...keys.filter((v) => v > lo && v < lo + TILE)])].sort((a, b) => a - b);
+    const xs = cuts(gx, holes.flatMap((h) => [h.x0, h.x1])), zs = cuts(gz, holes.flatMap((h) => [h.z0, h.z1]));
+    for (let a = 0; a < xs.length - 1; a++) for (let c = 0; c < zs.length - 1; c++) {
+      const mx = (xs[a] + xs[a + 1]) / 2, mz = (zs[c] + zs[c + 1]) / 2;
+      if (holes.some((h) => mx > h.x0 && mx < h.x1 && mz > h.z0 && mz < h.z1)) continue;
+      tiles.push(piece(gx, gz, xs[a], xs[a + 1], zs[c], zs[c + 1]));
+    }
   }
   const grassTex = grassTexture();
   grassTex.repeat.set(TILE / 8, TILE / 8);

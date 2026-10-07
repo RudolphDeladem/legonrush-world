@@ -237,19 +237,20 @@ const hall: Spec = {
 // ---------- the approach (frame: map axes, origin at the middle of the stairway) ----------
 const A: [number, number] = [-420, 128];
 const stair = stairsOf()[0];
-const gateHouse = (z0: number, z1: number): Block => ({ x0: -373 - A[0], x1: -363.5 - A[0], z0: z0 - A[1], z1: z1 - A[1], floors: 1 });
+// (set back from the road loop at the end of the avenue, either side of the foot of the stairs: x -382 to -373)
+const gateHouse = (z0: number, z1: number): Block => ({ x0: -382 - A[0], x1: -373 - A[0], z0: z0 - A[1], z1: z1 - A[1], floors: 1 });
 const approach: Spec = {
   name: 'Commonwealth Hall stairway',
   axis: [1, 0], origin: A, storey: 3.2, style: CW_WIN, roofColor: '#4e3b30', fascia: '#4e3b30', pitch: 0.45,
   onGround: true,
   replaces: [[-452.4, 131.5]],
-  blocks: [gateHouse(104, 114), gateHouse(142, 152)],
-  keep: [[-464 - A[0], -360 - A[0], -14, 14], [-490 - A[0], -464 - A[0], -22, 22], [-374 - A[0], -362 - A[0], -26, 26]],
+  blocks: [gateHouse(106.5, 116), gateHouse(140, 149.5)],
+  keep: [[-464 - A[0], -360 - A[0], -14, 14], [-490 - A[0], -464 - A[0], -22, 22], [-383 - A[0], -363 - A[0], -23, 23]],
   extras: (k) => {
     g.reseed(11);
     const X = (x: number) => x - A[0], Z = (z: number) => z - A[1];
     const z0 = Z(stair.z0), z1 = Z(stair.z1);
-    g.clear.push([-492, -360, 112, 144], [-375, -361, 100, 156]);
+    g.clear.push([-492, -360, 112, 144], [-384, -361, 104, 152]);
     // the stairway: each step and landing a solid block down into the hill
     const dir = Math.sign(stair.x1 - stair.x0), len = Math.abs(stair.x1 - stair.x0), seg = len / stair.flights;
     for (let f = 0; f < stair.flights; f++) {
@@ -297,12 +298,13 @@ const approach: Spec = {
     // a low wall along the forecourt's edge above the slope, open to the stairs
     for (const [za, zb] of [[108, stair.z0 - 0.4], [stair.z1 + 0.4, 148]]) k.plain.push([box(X(-465), X(-464), fy, fy + 0.9, Z(za), Z(zb)), STONE]);
     // landing at the foot: paving from the road to the first step, and the low stone walls by the gate houses (owner photo)
-    k.plain.push([box(X(-372), X(-362), -0.2, 0.08, Z(116), Z(140)), '#c9b9a0']);
-    for (const z of [116, 140]) k.plain.push([box(X(-372), X(-363), 0, 0.8, Z(z) - 0.35, Z(z) + 0.35), STONE]);
+    k.plain.push([box(X(-372), X(-363.5), -0.2, 0.08, Z(116), Z(140)), '#c9b9a0']);
+    for (const z of [116.3, 139.7]) k.plain.push([box(X(-372.8), X(-364), 0, 0.8, Z(z) - 0.35, Z(z) + 0.35), STONE]);
     // the gate houses: blue signs toward the road
-    for (const [zc, text] of [[109, 'UNIVERSITY OF GHANA'], [147, 'COMMONWEALTH HALL']] as [number, string][]) {
-      k.signs.push({ text, x: X(-363.5) + 0.03, y: 2.1, z: Z(zc), ry: Math.PI / 2, w: 3.8, colors: ['#1f4f9a', '#ffffff'] });
-      k.plain.push([box(X(-363.5), X(-363.4), 0.4, 2.6, Z(zc) - 4, Z(zc) - 2.6), '#3a3f47']);
+    for (const [zc, text] of [[111, 'UNIVERSITY OF GHANA'], [145, 'COMMONWEALTH HALL']] as [number, string][]) {
+      const gy = k.ground(X(-373), Z(zc));
+      k.signs.push({ text, x: X(-373) + 0.03, y: gy + 2.1, z: Z(zc), ry: Math.PI / 2, w: 3.8, colors: ['#1f4f9a', '#ffffff'] });
+      k.plain.push([box(X(-373), X(-372.9), gy + 0.4, gy + 2.6, Z(zc) - 4, Z(zc) - 2.6), '#3a3f47']);
     }
     // trees and bushes on the slopes either side of the stairway
     g.scatter(-464, -378, 40, 112, 90, (x, z) => (g.rand() < 0.7 ? g.tree(k, X(x), Z(z), 0.9 + g.rand() * 0.6) : g.bush(k, X(x), Z(z))));

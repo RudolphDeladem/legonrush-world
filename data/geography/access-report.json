@@ -1,5 +1,5 @@
 {
- "destinations": 436,
+ "destinations": 435,
  "byMethod": {
   "curated": 56,
   "osm-entrance": 1,
@@ -8,12 +8,12 @@
   "drive-access": 18,
   "area-entry": 8,
   "frontage": 236,
-  "point": 112
+  "point": 111
  },
  "byConfidence": {
-  "low": 239,
   "high": 50,
-  "medium": 147
+  "low": 239,
+  "medium": 146
  },
  "campusGates": 5,
  "problems": [],
@@ -360,13 +360,20 @@
   }
  ],
  "byStatus": {
-  "inferred": 230,
   "verified": 47,
+  "inferred": 230,
   "partial": 9,
   "unverified": 10,
-  "mapped": 140
+  "mapped": 139
  },
  "curated": [
+  {
+   "place": "Consolidated Bank Ghana (near Night Market)",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 4.6,
+   "facing": 360
+  },
   {
    "place": "Diaspora Dome",
    "type": "public open space",
@@ -408,13 +415,6 @@
    "arrivalOn": "service",
    "arrivalDistance": 17.4,
    "facing": 329
-  },
-  {
-   "place": "Consolidated Bank Ghana (near Night Market)",
-   "type": "public entrance",
-   "arrivalOn": "service",
-   "arrivalDistance": 4.6,
-   "facing": 360
   },
   {
    "place": "UMB",

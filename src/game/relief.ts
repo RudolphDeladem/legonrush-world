@@ -47,8 +47,11 @@ const ZONES: Zone[] = [
     profile: [[-1260, 0], [-1160, 11], [-1060, 21], [-960, 21], [-900, 19.5], [-780, 16.5], [-740, 15.5], [-500, 9.3], [-488, 9], [-464, 9], [-372, 0], [-362, 0]],
   },
   // Volta Hall: the hall stands 2.4 m above Volta Hall Road, its east front over a stone retaining
-  // wall; the Annex to the north is at road level
-  { kind: 'terrace', x0: -365, x1: -258.6, z0: -27, z1: 99.6, depth: 2.4, w: 8, e: 2, n: 10, s: 5 },
+  // wall; the Annex to the north is at road level. Two rectangles over the hall's blocks only (the courts
+  // and the east front; the west block), so the lawn corner south-west of the hall and the road round it
+  // stay at road level
+  { kind: 'terrace', x0: -336, x1: -258.6, z0: -27, z1: 99.6, depth: 2.4, w: 6, e: 2, n: 10, s: 4 },
+  { kind: 'terrace', x0: -365, x1: -336, z0: 44, z1: 86, depth: 2.4, w: 5, e: 0.1, n: 5, s: 4 },
 ];
 const STAIRS: Stairs[] = [
   // Commonwealth: from the gate houses up Legon Hill to the drive
@@ -101,8 +104,10 @@ function zoneHeight(x: number, z: number) {
       const tx = x < q.x0 ? (q.x0 - x) / q.w : x > q.x1 ? (x - q.x1) / q.e : 0;
       const tz = z < q.z0 ? (q.z0 - z) / q.n : z > q.z1 ? (z - q.z1) / q.s : 0;
       const t = Math.min(1, Math.max(tx, tz));
-      if (q.kind === 'hollow') low = Math.min(low, -q.depth * (1 - t));
-      else high = Math.max(high, q.depth * (1 - t));
+      // eased at the top and the foot of the slope: no sharp edge for a road or the ground mesh to cut across
+      const e = 1 - t * t * (3 - 2 * t);
+      if (q.kind === 'hollow') low = Math.min(low, -q.depth * e);
+      else high = Math.max(high, q.depth * e);
     } else {
       const d = Math.abs(z - q.zc), t = d <= q.full ? 1 : d >= q.full + q.fall ? 0 : 1 - (d - q.full) / q.fall;
       hill += profileAt(q.profile, x) * t * t * (3 - 2 * t);
@@ -182,11 +187,17 @@ export function applyRelief(root: THREE.Object3D) {
 /**
  * The ground over the relief zones: a grid that follows groundHeight, in the campus grass
  * material (its UVs line up with the flat ground tiles: u = x / tile, v = -z / tile).
+ * Each patch of ground is drawn by one grid only: where a small zone (a terrace, a hollow) lies inside a
+ * big one (the hill), the big grid leaves its cells to the small zone's finer grid (two surfaces sampled
+ * differently disagree across a slope's edge by up to a metre: grass over the road, a rider half sunk).
  */
 export function reliefGround(material: THREE.Material, tile: number) {
   const geos: THREE.BufferGeometry[] = [];
-  for (const b of RELIEF_BOXES) {
-    const cell = (b.x1 - b.x0) * (b.z1 - b.z0) > 200000 ? 4 : 2;
+  const area = (b: (typeof RELIEF_BOXES)[number]) => (b.x1 - b.x0) * (b.z1 - b.z0);
+  RELIEF_BOXES.forEach((b, bi) => {
+    const big = area(b) > 200000, cell = big ? 2 : 1;
+    // the smaller zones overlapping this one draw their own ground
+    const others = RELIEF_BOXES.filter((o, oi) => oi !== bi && area(o) < area(b) && o.x1 > b.x0 && o.x0 < b.x1 && o.z1 > b.z0 && o.z0 < b.z1);
     const nx = Math.ceil((b.x1 - b.x0) / cell), nz = Math.ceil((b.z1 - b.z0) / cell);
     const pos: number[] = [], uv: number[] = [], idx: number[] = [];
     for (let j = 0; j <= nz; j++) for (let i = 0; i <= nx; i++) {
@@ -195,6 +206,8 @@ export function reliefGround(material: THREE.Material, tile: number) {
       uv.push(x / tile, -z / tile);
     }
     for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
+      const cx = b.x0 + ((b.x1 - b.x0) * (i + 0.5)) / nx, cz = b.z0 + ((b.z1 - b.z0) * (j + 0.5)) / nz;
+      if (others.some((o) => cx > o.x0 && cx < o.x1 && cz > o.z0 && cz < o.z1)) continue;
       const a = j * (nx + 1) + i, c = a + nx + 1;
       idx.push(a, c, a + 1, a + 1, c, c + 1);
     }
@@ -204,7 +217,7 @@ export function reliefGround(material: THREE.Material, tile: number) {
     g.setIndex(idx);
     g.computeVertexNormals();
     geos.push(g);
-  }
+  });
   const mesh = new THREE.Mesh(geos.length > 1 ? mergeGeometries(geos) : geos[0], material);
   mesh.receiveShadow = true;
   mesh.name = 'relief-ground';

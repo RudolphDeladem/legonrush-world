@@ -1,0 +1,10 @@
+import { chromium } from 'playwright';
+import { writeFileSync } from 'node:fs';
+const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+const p = await b.newPage();
+p.on('pageerror', (e) => console.log('err', e.message));
+await p.goto('http://localhost:5299/.preview/groundcheck.html', { waitUntil: 'commit', timeout: 120000 });
+await p.waitForFunction(() => window.__done, null, { timeout: 900000, polling: 2000 });
+const r = await p.evaluate(() => window.__result);
+writeFileSync(process.argv[2], JSON.stringify(r)); console.log(r.n);
+await b.close();

@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # a hung step (it has happened in the browser download) fails the run instead of holding it for hours
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -16,7 +18,12 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: npx playwright install --with-deps chromium
+      # the runner image comes with Google Chrome: the test ride uses it; the Playwright download (which has hung
+      # for 30+ minutes on the runner) is only the fallback, and gives up after 10 minutes
+      - name: Browser for the test ride
+        run: |
+          if command -v google-chrome >/dev/null; then echo "CHROMIUM_PATH=$(command -v google-chrome)" >> "$GITHUB_ENV"
+          else timeout 600 npx playwright install --with-deps chromium; fi
       - name: Quick ride in a test browser
         run: npm run smoke
       - name: Campus geography is up to date

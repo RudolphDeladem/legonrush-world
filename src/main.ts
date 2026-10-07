@@ -1280,6 +1280,8 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
   const togglePause = () => {
     if (!game.isRiding) return onBack(togglePause);
     if (game.paused) return resume();
+    // only one pause menu at a time (a second one, left behind, stayed on screen after Continue)
+    if (app.querySelector('#pauseOverlay')) return;
     game.paused = true;
     music(false);
     stopAmbience();
@@ -1345,7 +1347,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     game.paused = false;
     music(true);
     startAmbience(ambience());
-    app.querySelector('#pauseOverlay')?.remove();
+    app.querySelectorAll('#pauseOverlay').forEach((o) => o.remove());
     onBack(togglePause);
   };
   const leave = () => {
@@ -1411,7 +1413,9 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     addEventListener('keydown', freeKeys);
     addEventListener('keyup', freeKeys);
   }
-  const onHidden = () => { if (document.hidden && game.isRiding && !game.paused) togglePause(); };
+  // leaving the tab pauses the ride, but not in photo mode: the ride is already frozen there (it is not
+  // marked paused), and pausing then put a pause menu behind the photo screen that stayed after Continue
+  const onHidden = () => { if (document.hidden && game.isRiding && !game.paused && !game.photoMode) togglePause(); };
   document.addEventListener('visibilitychange', onHidden);
 
   function cleanup() {

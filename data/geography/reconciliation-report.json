@@ -309,14 +309,14 @@
   }
  },
  "places": {
-  "total": 436,
-  "fromOsm": 392,
+  "total": 435,
+  "fromOsm": 390,
   "fromUgCampusMap": 38,
-  "addedFromRegistry": 6,
-  "movedToRegistryPosition": 7,
+  "addedFromRegistry": 7,
+  "movedToRegistryPosition": 6,
   "byConfidence": {
-   "high": 143,
-   "medium": 289,
+   "high": 144,
+   "medium": 287,
    "low": 4
   },
   "requiredNamesChecked": 152,
@@ -344,18 +344,6 @@
      179
     ],
     "distanceM": 7
-   },
-   {
-    "name": "Consolidated Bank Ghana (near Night Market)",
-    "from": [
-     159,
-     967
-    ],
-    "to": [
-     142,
-     997
-    ],
-    "distanceM": 34
    },
    {
     "name": "UMB",
@@ -2609,7 +2597,7 @@
    "kind": "residence",
    "ha": 61,
    "shareOutsideCampus": 0.11,
-   "places": 31,
+   "places": 30,
    "buildings": 113,
    "anchorsMissing": []
   },
