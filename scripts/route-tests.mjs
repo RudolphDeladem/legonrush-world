@@ -147,8 +147,7 @@ try {
   // Mensah Sarbah (owner): the gate in the middle of the lodge's front on the drive, the court-side doors either end
   const ms = ACCESS.get('Mensah Sarbah Hall');
   if (!ms || Math.hypot(ms.entrance[0] - 4.9, ms.entrance[1] - 609.1) > 2) fail('Mensah Sarbah Hall: the entrance is not the gate in the middle of the lodge');
-  if ((ms?.secondary?.length ?? 0) < 2) fail('Mensah Sarbah Hall: the doorways at the ends of the entrance building are missing');
-  if ((await server.ssrLoadModule('/src/game/greathalls.ts')).greatHalls.frames().length !== 4) fail('expected the Mensah Sarbah, lodge, Akuafo and Legon models');
+  if ((await server.ssrLoadModule('/src/game/greathalls.ts')).greatHalls.frames().length !== 3) fail('expected the Mensah Sarbah, Akuafo and Legon models');
   // Explore: every destination ends the guided ride with its own stop (the arrived card: drone view, riding it yourself)
   const { guideFor } = await server.ssrLoadModule('/src/data/guide.ts');
   const balme = placeByName('The Balme Library');

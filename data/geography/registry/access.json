@@ -380,35 +380,14 @@
    "cite": "owner-sarbah-akuafo-legon",
    "stop": "outside",
    "approach": "Along Mensah Sarbah Crescent into the semicircular drive in front of the porters' lodge archway.",
-   "evidence": "Owner: the entrance building is the Administration and Porters' Lodge on the north side (red mark on the owner's aerial), its gate in the middle of the front toward the semicircular drive (blue mark); the owner's photo from the court shows the same building's court side, with the lantern on its roof and a doorway at each end. OSM: the drive is way 1540994843 and the building way 300288063. (An earlier note took the lantern building for the dining hall; the owner corrected it.)",
+   "evidence": "Owner: the entrance is the Administration and Porters' Lodge on the north side, its gate in the middle of the front toward the semicircular drive (owner's aerial photo with the building and gate marked, and the owner's panorama of the hall with the entrance marked: a two-storey building with a small lantern, joined to the wings either side). OSM: the drive is way 1540994843 and the building way 300288063. The building with the tall gold lantern, seven tall louvred windows and the stone terrace (the owner's court photo) is the dining hall across the court on the south, as the panorama shows.",
    "refs": [
     "sarbah_front_aerial (owner, entrance and gate marked)",
-    "sarbah_court (owner, entrance building and side doors marked)",
+    "sarbah_panorama (owner, entrance marked)",
+    "sarbah_court (owner: the dining hall's court side)",
     "mensah_sarbah_hall_layout_labeled.png"
    ],
-   "footprint": "osm:way/300288063",
-   "secondary": [
-    {
-     "label": "the doorway at the west end of the entrance building, on the court side",
-     "type": "pedestrian",
-     "at": [
-      -3.4,
-      622.7
-     ],
-     "evidence": "Owner's photo from the court: a doorway at each end of the entrance building (blue marks).",
-     "free": true
-    },
-    {
-     "label": "the doorway at the east end of the entrance building, on the court side",
-     "type": "pedestrian",
-     "at": [
-      13.2,
-      622.7
-     ],
-     "evidence": "Owner's photo from the court: a doorway at each end of the entrance building (blue marks).",
-     "free": true
-    }
-   ]
+   "footprint": "osm:way/300288063"
   },
   {
    "place": "Volta Hall",
