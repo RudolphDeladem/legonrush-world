@@ -186,7 +186,10 @@ try {
     const b = BUILDINGS.find((x) => x.name === n);
     if (!b || (floors === 1 ? b.height > 5 : b.height < 7 || b.height > 10)) fail(`${n}: not ${floors === 1 ? 'a ground floor only' : 'two floors'} (owner's aerial)`);
   }
-  if ((await server.ssrLoadModule('/src/game/balme.ts')).balmeSite.frames().length !== 2) fail('expected the CEDI Conference Centre and the Standard Chartered and Absa models');
+  const balmeModels = (await server.ssrLoadModule('/src/game/balme.ts')).balmeSite.frames().map((f) => f.name);
+  for (const n of ['Cedi Conference Centre', 'Standard Chartered and Absa', 'The Balme Library', 'Balme Library wings', 'Balme Library pool', 'Kuffour Quadrangle fountain']) if (!balmeModels.includes(n)) fail(`missing the ${n} model`);
+  // the Balme Library (owner's photos): entered by the arched door in the middle of the south front
+  { const e = ann('The Balme Library'); if (!e || Math.hypot(e[0] - 5.2, e[1] - 6.9) > 2) fail('The Balme Library: the entrance is not the arched door on the south front'); }
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)
   for (const [x, z] of [[95, 1573], [-88, 1676], [210, 1509], [200, 1500]]) if (cm.buildingNear(x, z, 0.35)) fail(`free ride: the road at ${x},${z} is blocked by ${cm.buildingNear(x, z, 0.35).name ?? 'a building'}`);

@@ -85,23 +85,6 @@ const clocks = (g: THREE.Group, size: number, half: number, y: number, tex: THRE
   }
 };
 
-/** Balme Library, from DELA's photos: stepped hip roofs rising to a slim clock tower and a red spire. */
-function balmeTower(tex: THREE.Texture) {
-  const g = new THREE.Group();
-  g.add(facadeBox(14, 9, 12, '#f6f1e6'));
-  g.add(tiledHip(17, 3.2, 9));
-  g.add(at(facadeBox(8, 3.5, 8, '#f6f1e6', 2.7), 0, 11.5, 0));
-  g.add(tiledHip(10, 2.4, 14.6));
-  g.add(box(3, 6, 3, white, 19.5));
-  clocks(g, 1.15, 1.5, 19.8, tex);
-  g.add(hip(4.2, 1.4, 22.5));
-  g.add(box(1.6, 1.8, 1.6, white, 24.6));
-  const spire = new THREE.Mesh(new THREE.ConeGeometry(0.55, 3, 8), new THREE.MeshStandardMaterial({ color: '#b3262b', roughness: 0.6 }));
-  spire.position.y = 27;
-  g.add(spire);
-  return g;
-}
-
 /**
  * Great Hall, from DELA's photo: a very tall, slim white tower with a clock near the top.
  * Detail added without photos: a stepped podium, string courses, an open belfry under
@@ -291,7 +274,6 @@ export function buildLandmarks() {
     } else obj.position.set(p.x + dx, 0, p.z + dz);
     group.add(obj);
   };
-  put('The Balme Library', balmeTower(tex));
   put('Great Hall', greatHallTower(tex));
   put('Legon Main Entrance', mainGate(16), true);
   put('Night Market', nightMarket());

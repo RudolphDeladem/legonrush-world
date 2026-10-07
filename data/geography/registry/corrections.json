@@ -1064,6 +1064,13 @@
       "levels": 2,
       "height": 13,
       "reason": "Owner's photos (west and east faces, top view): two tall storeys of white wall under a pink hipped roof inside a white parapet; modelled in src/game/balme.ts."
+    },
+    {
+      "id": "osm:relation/7304886",
+      "place": "The Balme Library",
+      "levels": 4,
+      "height": 15,
+      "reason": "Owner's photos: the heights vary. Four floors in the outer wings and their arms, two in the inner wings and the ranges across the middle and along the north, one in the entrance range; the centre block rises to about 14 m under the stack of hipped roofs, and the clock tower and spire to about 34 m. Modelled in src/game/balme.ts; 15 m stands for the tallest wings."
     }
   ],
   "reclass": [

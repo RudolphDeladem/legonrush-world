@@ -22,7 +22,8 @@
   "owner-sarbah-akuafo-legon": "The owner's photos of Mensah Sarbah Hall (the front from above with the entrance building and its gate marked, the entrance building from the court with its two side doors marked), of the Akuafo Hall entrance (gate marked) and of the Legon Hall entrance (gate marked).",
   "owner-annexes": "The owner's photos and top views of the Legon Hall annexes (Annex B's gallery face with the entrance marked; the top view of Annex A, B and C with the entrances marked and Annex C circled) and the Akuafo Hall annexes (an aerial of the four with A and B, C and D circled and C's entrance marked; a photo of a tall annex's gallery face; Annex A with its entrance marked).",
   "owner-sarbah-annexes-cc": "The owner's aerial of Mensah Sarbah's annexes (the same as Akuafo's), and photos and aerials of the CC (its terrace and doors marked), the SRC Union Building opposite and the Standard Chartered ATM building between them.",
-  "owner-balme": "The owner's marked aerial of the Balme Library surroundings (the CEDI Conference Centre in yellow, UGCS in purple, two-floor blocks circled red, ground-floor blocks circled black, entrances marked blue), the owner's photos of CEDI from the west (the entrance porch marked), from the east and from above, and the owner's account of the Standard Chartered and Absa building; the marks placed proportionally on the OSM footprints (Google Open Buildings agrees with the OSM positions)."
+  "owner-balme": "The owner's marked aerial of the Balme Library surroundings (the CEDI Conference Centre in yellow, UGCS in purple, two-floor blocks circled red, ground-floor blocks circled black, entrances marked blue), the owner's photos of CEDI from the west (the entrance porch marked), from the east and from above, and the owner's account of the Standard Chartered and Absa building; the marks placed proportionally on the OSM footprints (Google Open Buildings agrees with the OSM positions).",
+  "owner-balme-library": "The owner's photos of the Balme Library: the front from the south (the arched door 'THE BALME LIBRARY' up a flight of steps, and from the far end of the long pool), a top view from the south, the north-west corner, and the north side from the round fountain in the Kuffour Quadrangle."
  },
  "campusGates": [
   {
@@ -107,15 +108,19 @@
   {
    "place": "The Balme Library",
    "entrance": {
-    "axisFrom": "osm:way/320067568"
+    "at": [
+     5.2,
+     6.9
+    ]
    },
    "type": "public entrance",
    "status": "verified",
    "confidence": "high",
-   "cite": "ug-legon-campus",
+   "cite": "owner-balme-library",
    "approach": "Along the avenue to the fountain roundabout, then north up the forecourt lanes to the library's south front.",
-   "evidence": "UG: the fountain on the University Square 'overlooking the Balme Library'. Reference atlas (sheet 2): a paved forecourt runs on the fountain axis from the roundabout to the library's south facade; OSM forecourt lanes (ways 448104199, 448104193) frame it. The north side faces the Kuffour Quadrangle gardens.",
+   "evidence": "Owner's photos: the round-arched door 'THE BALME LIBRARY' in the middle of the one-floor entrance range on the south front, up a flight of steps, on the axis of the long pool (OSM way 320067568) and the forecourt lanes (ways 448104199, 448104193). The back (north) faces the Kuffour Quadrangle and its round fountain.",
    "refs": [
+    "owner's photos of the Balme Library",
     "atlas sheet 2"
    ]
   },

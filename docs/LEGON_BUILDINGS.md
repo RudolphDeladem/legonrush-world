@@ -482,6 +482,26 @@ marks are placed in proportion on them.
 - The Economic Policy Management Programme Office is entered in the notch in the middle of its south face, reached
   along the gap between it and the Faculty of Arts.
 
+## 15. The Balme Library
+
+From the owner's photos: the front from the south (close up, and from the far end of the long pool), a top view
+from the south, the north-west corner, and the back from the round fountain in the Kuffour Quadrangle. The model
+follows the OSM outline (relation 7304886) and its five courtyards, which match the roof plan on the owner's
+aerial. The heights vary from part to part:
+
+- **Front (south):** a **one-floor entrance range** with the **round-arched door** under "THE BALME LIBRARY",
+  windows and notice boards either side, up a flight of steps (the Explore entrance). Either side, the **two-floor
+  inner wings** run the whole depth of the library and end in hipped pavilions just forward of the entrance.
+- **Centre:** a tall **centre block** with tall narrow windows under a broad hipped roof. A square stage with three
+  windows a side rises from it, then the **clock tower** with a railed balcony and four clock faces, a small hipped
+  cap, an open lantern and the **red spire**, about 34 m up.
+- **Two-floor ranges** across the middle and along the north close the courtyards.
+- **Four-floor outer wings** east and west, with arms reaching out at the middle (the owner's photo of the
+  north-west corner); small one-floor pavilions stand at the corners.
+- **In front:** the long pool on the library's axis, in a dark stone kerb with white planters along both sides.
+- **Behind (north), in the Kuffour Quadrangle:** the round fountain with a blue-banded rim, a blue-and-white pedestal
+  and the blue sculpture of interlocking rings.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain
