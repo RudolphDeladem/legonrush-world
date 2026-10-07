@@ -95,6 +95,16 @@ try {
   }
   // CBG's door faces the way in from the Diaspora halls and the Night Market (south)
   if (ACCESS.get('Consolidated Bank Ghana (near Night Market)')?.entrance[1] < placeByName('Consolidated Bank Ghana (near Night Market)').z) fail('CBG: the entrance is not on the south side');
+  // Vikings Hostel and the School of Law: doors where the owner's photos put them
+  for (const [n, [mx, mz]] of Object.entries({ 'Vikings Hostel': [160.5, 840.5], 'School of Law': [441.0, -243.3] })) {
+    const a = ACCESS.get(n);
+    if (!a) { fail(`${n}: no access`); continue; }
+    if (Math.hypot(a.entrance[0] - mx, a.entrance[1] - mz) > 2) fail(`${n}: entrance ${a.entrance.map((v) => v.toFixed(1))} is not where the owner's photos put it`);
+    if (a.status !== 'verified') fail(`${n}: entrance status ${a.status}`);
+  }
+  if (!ACCESS.get('Vikings Hostel')?.secondary?.length) fail('Vikings Hostel: the second door (south end of the long wing) is missing');
+  const vlModels = (await server.ssrLoadModule('/src/game/vikingslaw.ts')).vikingsLaw.frames();
+  if (vlModels.length !== 2) fail(`expected Vikings Hostel and School of Law models, found ${vlModels.length}`);
   const bankModels = (await server.ssrLoadModule('/src/game/banking.ts')).banking.frames();
   if (bankModels.length !== 3) fail(`expected the bank compound, the Union Building and the ADB/HFC block, found ${bankModels.length}`);
   const hostels = (await server.ssrLoadModule('/src/game/hostels.ts')).hostels.frames();

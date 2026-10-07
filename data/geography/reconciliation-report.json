@@ -97,12 +97,12 @@
    "google-open-buildings": 139
   },
   "osmOnCampusChecked": 1467,
-  "osmValidatedByGoogleOpenBuildings": 1326,
-  "validatedShare": 0.904,
+  "osmValidatedByGoogleOpenBuildings": 1327,
+  "validatedShare": 0.905,
   "medianCentroidOffsetToGoogleM": {
    "x": 0.6,
    "z": 0.4,
-   "n": 1204
+   "n": 1205
   },
   "mlAdded": 294,
   "mlRejected": {
@@ -123,8 +123,8 @@
    "health": 2
   },
   "byConfidence": {
-   "medium": 1501,
-   "high": 1326
+   "medium": 1500,
+   "high": 1327
   },
   "osmNotSeenBySatellite": [
    {
@@ -165,11 +165,6 @@
     "id": "osm:way/440339204",
     "name": "UGBS extention",
     "area": 1091
-   },
-   {
-    "id": "osm:way/430197431",
-    "name": "School of Law",
-    "area": 924
    },
    {
     "id": "osm:way/278303051",
@@ -1741,8 +1736,8 @@
      "text": "K. A. Busia Lecture Theatre (KAB) is opposite the law school.",
      "test": "near",
      "pass": true,
-     "value": 137,
-     "detail": "137 m apart (limit 200 m)"
+     "value": 117,
+     "detail": "117 m apart (limit 200 m)"
     }
    ]
   },
@@ -1752,11 +1747,11 @@
    "category": "academic",
    "importance": 2,
    "geometry": "osm:way/430197431",
-   "lat": 5.654211,
-   "lng": -0.183161,
-   "x": 436,
-   "z": -267,
-   "elevationM": 108,
+   "lat": 5.654092,
+   "lng": -0.183107,
+   "x": 442,
+   "z": -253,
+   "elevationM": 110,
    "confidence": "high",
    "sourcesAgreeingWithin150m": [
     "osm",
@@ -1770,12 +1765,12 @@
     },
     "overture": {
      "name": "Faculty of Law School,University Of Ghana",
-     "distanceM": 127,
+     "distanceM": 115,
      "dataset": "meta"
     },
     "ugCampusMap": {
      "name": "School of Law",
-     "distanceM": 24
+     "distanceM": 14
     }
    },
    "claims": []

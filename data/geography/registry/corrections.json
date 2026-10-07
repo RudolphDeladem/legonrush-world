@@ -1,5 +1,5 @@
 {
-  "about": "Source features that the evidence shows are wrong. 'exclude': they stay in the master dataset (flagged, confidence low) but are kept out of the game map; a feature is only excluded when independent evidence contradicts it. 'heights': storey counts and heights that reference photos contradict (the footprint is not touched). 'reclass': ground areas whose mapped use the reference photos and the owner contradict (the outline is kept).",
+  "about": "Source features that the evidence shows are wrong. 'exclude': they stay in the master dataset (flagged, confidence low) but are kept out of the game map; a feature is only excluded when independent evidence contradicts it. 'heights': storey counts and heights that reference photos contradict (the footprint is not touched). 'reclass': ground areas whose mapped use the reference photos and the owner contradict (the outline is kept). 'reshape': an outline that sits off the building Google Open Buildings and the owner's imagery show is replaced by a measured ring (game metres); the OSM id and tags stay.",
   "exclude": [
     {
       "id": "osm:way/765261444",
@@ -76,6 +76,27 @@
       "levels": 1,
       "height": 7,
       "reason": "Owner: every building on the banking square is a single storey (owner's photo of the CBG front shows the whole compound's height)."
+    },
+    {
+      "id": "osm:way/486634897",
+      "place": "Vikings Hostel",
+      "levels": 5,
+      "height": 18,
+      "reason": "Owner: Vikings Hostel is five storeys; owner photos of the south end and the front show five rows of windows."
+    },
+    {
+      "id": "osm:way/430197431",
+      "place": "School of Law (long block and entrance rotunda)",
+      "levels": 4,
+      "height": 17,
+      "reason": "Owner photos of the School of Law: the long block is four storeys (a tall ground floor, a floor of small square windows, two more) under a deep eave; the round entrance building beside it is two."
+    },
+    {
+      "id": "osm:way/452706257",
+      "place": "School of Law (south block)",
+      "levels": 2,
+      "height": 9,
+      "reason": "Owner photos: the block south of the entrance rotunda is two storeys under a tile roof."
     }
   ],
   "reclass": [
@@ -92,6 +113,80 @@
       "class": "plaza",
       "subclass": "forecourt",
       "reason": "Owner: each Diaspora hall's back entrance has no car park; the car parks are in front, between the facing halls. The owner's aerial of all four halls shows a paved forecourt behind the hall, not parking bays."
+    }
+  ],
+  "reshape": [
+    {
+      "id": "osm:way/430197431",
+      "place": "School of Law",
+      "source": "google-open-buildings (confidence 0.92) and the owner-supplied law_school_layout",
+      "ring": [
+        [
+          414.6,
+          -244.4
+        ],
+        [
+          414.9,
+          -262.5
+        ],
+        [
+          426.5,
+          -262.4
+        ],
+        [
+          426.5,
+          -264.8
+        ],
+        [
+          480.4,
+          -264.3
+        ],
+        [
+          480.3,
+          -250.7
+        ],
+        [
+          441.1,
+          -251.1
+        ],
+        [
+          441.0,
+          -235.9
+        ],
+        [
+          417.3,
+          -236.1
+        ],
+        [
+          417.4,
+          -244.4
+        ]
+      ],
+      "reason": "The OSM outline (a 65 m x 15 m rectangle) sits about 10 m north-west of the building: Google Open Buildings overlaps it by only 13%. Google's footprint (the 54 m long block with the round entrance building at its west end) matches the owner's layout photo of the school, scaled at 4.3 px/m: long block, rotunda and the south block land on their roofs."
+    },
+    {
+      "id": "osm:way/452706257",
+      "place": "School of Law (south block)",
+      "source": "google-open-buildings (confidence 0.95)",
+      "ring": [
+        [
+          423.0,
+          -211.4
+        ],
+        [
+          423.2,
+          -235.2
+        ],
+        [
+          441.2,
+          -235.0
+        ],
+        [
+          441.0,
+          -211.2
+        ]
+      ],
+      "reason": "The OSM outline sits about 5 m west of Google's footprint, which matches the south block in the owner's layout photo."
     }
   ]
 }

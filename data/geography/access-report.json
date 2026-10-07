@@ -1,19 +1,19 @@
 {
  "destinations": 435,
  "byMethod": {
-  "curated": 34,
+  "curated": 35,
   "osm-entrance": 1,
   "gate": 2,
   "path-access": 7,
   "drive-access": 19,
   "area-entry": 9,
-  "frontage": 251,
+  "frontage": 250,
   "point": 112
  },
  "byConfidence": {
-  "medium": 159,
-  "low": 254,
-  "high": 22
+  "medium": 158,
+  "low": 253,
+  "high": 24
  },
  "campusGates": 5,
  "problems": [],
@@ -181,8 +181,8 @@
   },
   {
    "place": "School of Law",
-   "status": "partial",
-   "confidence": "medium",
+   "status": "verified",
+   "confidence": "high",
    "method": "curated"
   },
   {
@@ -298,14 +298,20 @@
    "status": "partial",
    "confidence": "medium",
    "method": "curated"
+  },
+  {
+   "place": "Vikings Hostel",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
   }
  ],
  "byStatus": {
-  "partial": 15,
+  "partial": 14,
   "unverified": 11,
-  "inferred": 244,
+  "inferred": 243,
   "mapped": 146,
-  "verified": 19
+  "verified": 21
  },
  "curated": [
   {
@@ -508,8 +514,8 @@
    "place": "School of Law",
    "type": "public entrance",
    "arrivalOn": "service",
-   "arrivalDistance": 15,
-   "facing": 278
+   "arrivalDistance": 0.1,
+   "facing": 270
   },
   {
    "place": "Kuffour Quadrangle",
@@ -517,6 +523,13 @@
    "arrivalOn": "footway",
    "arrivalDistance": 3.1,
    "facing": 0
+  },
+  {
+   "place": "Vikings Hostel",
+   "type": "hall entrance",
+   "arrivalOn": "residential",
+   "arrivalDistance": 5.5,
+   "facing": 353
   },
   {
    "place": "Commonwealth Hall",

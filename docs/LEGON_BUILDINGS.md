@@ -11,8 +11,9 @@ the map still use it), the generic builder skips it, and its model is placed on 
 | 1 | The Diaspora halls: Dr. Hilla Limann, Alexander Kwapong, Elizabeth Frances Sey, Jean Nelson Aka | `src/game/halls.ts` | owner photos (5) and description |
 | 2 | Jubilee Hall, International Students Hostels 1 and 2 | `src/game/hostels.ts` | owner's marked layout, owner photos (3), earlier reference photos (5) |
 | 3 | The banking square: bank compound (CBG, First Bank, Stanbic, ATMs), Union Building (Ecobank), ADB / HFC | `src/game/banking.ts` | owner's labelled aerial, owner photos (3) |
+| 4 | Vikings Hostel, School of Law | `src/game/vikingslaw.ts` | owner photos (5), earlier layout photos (2) |
 
-Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 and 3) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
+Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 to 4) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
 
 ## 1. The Diaspora halls
 
@@ -155,3 +156,31 @@ three buildings are **single storey** (owner; master geography now records 1 lev
   canopies on the south side. The banks' doors are not marked, so their entrances are unchanged.
 
 **Open points:** the First Bank and Stanbic door sides are inferred; the courtyard's parked cars are fixed props.
+
+## 4. Vikings Hostel and the School of Law
+
+### Vikings Hostel
+
+- **Height:** five storeys (owner; master geography: 5 levels / 18 m).
+- **Plan** (OSM footprint, matches the owner's aerial): an L of a long north-south wing and an east wing, with
+  the single-storey entrance block in the inner corner.
+- **Facades:** the long sides have corridor balconies behind solid white parapets with beige back walls (owner
+  photos); the end walls are plain white with square windows and a column of glass-block stair windows; a
+  terracotta base runs round the building; hipped red roof with a dark fascia.
+- **Entrances** (owner's marks): the VIKINGS HOSTEL block (sign board, door at its left) facing the car park; a
+  second door at the foot of the long wing's south end.
+
+### School of Law
+
+- **Height** (owner photos): the long block is **four storeys** (a tall glazed ground floor, a floor of small
+  square windows, two floors of gridded windows) under a deep eave; the round entrance building is **two** (a
+  glass ground floor between white columns, a white band with the LAW crest, a ribbon of windows); the south
+  block is **two** under a tile roof.
+- **Footprint:** OSM's outline sat about 10 m off; it is replaced by Google Open Buildings' footprint, which
+  matches the owner's layout photo (long block, rotunda at its west end, south block); `corrections.json →
+  reshape`.
+- **Finish:** peach render in large panels, dark-framed windows, AC units on the courtyard front.
+- **Entrance** (owner's marks): the rotunda's glass doors, up wide steps from the paved courtyard that opens to
+  the road on the east; the steps run along the long block too.
+
+**Open points:** the rotunda's radius and the courtyard's extent are read from the layout photo.

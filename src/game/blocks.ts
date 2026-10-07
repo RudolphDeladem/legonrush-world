@@ -101,6 +101,8 @@ export interface Block {
   roofColor?: string;
   /** roof pitch of this block (default: the building's) */
   pitch?: number;
+  /** facade style of a whole storey on every face (0 = ground), overriding the face styles */
+  floorStyle?: Record<number, Style>;
   /** facade style per face (default: the building's) */
   faces?: Partial<Record<Face, Style>>;
 }
@@ -204,16 +206,16 @@ function buildSpec(spec: Spec) {
   const k: Kit = { plain, glass, roof, signs: [], meshes: [], wallTop, storey: st };
 
   /** one face of a block: window bays storey by storey, then plinth and eave band */
-  const run = (ax: number, az: number, bx: number, bz: number, floors: number, style: Style) => {
+  const run = (ax: number, az: number, bx: number, bz: number, floors: number, style: Style, floorStyle?: Record<number, Style>) => {
     const len = Math.hypot(bx - ax, bz - az);
     if (len < 0.5) return;
-    const S = style, f = fac(style);
-    const bays = Math.max(1, Math.round(len / S.bay));
     for (let s = 0; s < floors; s++) {
+      const S = floorStyle?.[s] ?? style, f = fac(S);
+      const bays = Math.max(1, Math.round(len / S.bay));
       const y0 = PL + s * st;
       f.quad(ax, az, bx, bz, y0, y0 + st, bays, s === 0 ? 0 : 0.5, s === 0 ? 0.5 : 1, f.bays, f.bays + bays, s);
+      f.bays += bays;
     }
-    f.bays += bays;
     const ang = -Math.atan2(bz - az, bx - ax), mx = (ax + bx) / 2, mz = (az + bz) / 2, top = wallTop(floors);
     plain.push([new THREE.BoxGeometry(len + 0.1, PL, 0.2).rotateY(ang).translate(mx, PL / 2, mz), PLINTH]);
     plain.push([new THREE.BoxGeometry(len + 0.1, BAND, 0.12).rotateY(ang).translate(mx, top - BAND / 2, mz), WHITE]);
@@ -221,10 +223,10 @@ function buildSpec(spec: Spec) {
 
   for (const b of spec.blocks) {
     const sty = (face: Face) => b.faces?.[face] ?? spec.style;
-    run(b.x0, b.z0, b.x1, b.z0, b.floors, sty('z0'));
-    run(b.x0, b.z1, b.x1, b.z1, b.floors, sty('z1'));
-    run(b.x0, b.z0, b.x0, b.z1, b.floors, sty('x0'));
-    run(b.x1, b.z0, b.x1, b.z1, b.floors, sty('x1'));
+    run(b.x0, b.z0, b.x1, b.z0, b.floors, sty('z0'), b.floorStyle);
+    run(b.x0, b.z1, b.x1, b.z1, b.floors, sty('z1'), b.floorStyle);
+    run(b.x0, b.z0, b.x0, b.z1, b.floors, sty('x0'), b.floorStyle);
+    run(b.x1, b.z0, b.x1, b.z1, b.floors, sty('x1'), b.floorStyle);
     const eave = wallTop(b.floors);
     roof.c = new THREE.Color(b.roofColor ?? spec.roofColor);
     const pitchB = b.pitch ?? spec.pitch;

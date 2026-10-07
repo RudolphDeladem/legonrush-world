@@ -12,7 +12,8 @@
   "legon-porters-lodge": "https://gh.near-place.com/legon-hall-porters-lodge-j-b-danquah-road-accra",
   "user-photos": "Photos of the four Diaspora halls supplied by the project owner (an aerial of all four halls, a drone view of one hall's front and courtyard, two oblique drone views of the facades, a close view of the entrance pavilion), with the owner's description of how the halls face each other",
   "user-photos-jubilee-ish": "Photos supplied by the project owner of Jubilee Hall (aerial of the entrance corner, courtyard) and the International Students Hostel (entrance facade), and a satellite layout of Jubilee Hall, ISH 1 and ISH 2 with the entrances and car parks marked, registered to the OSM footprints (2.8 px/m, 1° rotation)",
-  "owner-banking-square": "The owner's labelled aerial of the banking square (banks C, F, S, the ATM bay, the car-park entrance), the owner's photos of the CBG front and the Union Building entrance, and the owner's close-up marking the Ecobank entrance; registered to the OSM footprints by roof colour (4.2 px/m, 1° rotation)"
+  "owner-banking-square": "The owner's labelled aerial of the banking square (banks C, F, S, the ATM bay, the car-park entrance), the owner's photos of the CBG front and the Union Building entrance, and the owner's close-up marking the Ecobank entrance; registered to the OSM footprints by roof colour (4.2 px/m, 1° rotation)",
+  "owner-vikings-law": "The owner's photos of Vikings Hostel (front with the entrances marked, the south end, an aerial with the entrances marked) and of the School of Law (two views of the entrance rotunda with the doors marked), with the earlier layout photos of both"
  },
  "campusGates": [
   {
@@ -604,16 +605,34 @@
   {
    "place": "School of Law",
    "entrance": {
-    "side": "east"
+    "at": [
+     439.6,
+     -243.3
+    ]
    },
    "type": "public entrance",
-   "status": "partial",
-   "confidence": "medium",
-   "cite": "user-layouts",
-   "approach": "From the road on the east into the paved courtyard enclosed by the law buildings.",
-   "evidence": "law_school_layout (registered to OSM): the buildings wrap a paved courtyard that opens to the road on the east (a vehicle is parked in it).",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-vikings-law",
+   "approach": "From the road on the east into the paved courtyard, then up the steps to the glass doors of the round entrance building.",
+   "evidence": "Owner photos: the entrance is the glass doors at the foot of the round entrance building (the LAW crest above), reached up wide steps from the courtyard, with the long four-storey block to its right and the tiled south block to its left. Placed on the layout photo registered to Google's footprint: the rotunda's face toward the courtyard, which opens to the road on the east.",
    "refs": [
+    "law_entrance_1 (owner photo, doors marked)",
+    "law_entrance_2 (owner photo, doors marked)",
     "law_school_layout_labeled.png"
+   ],
+   "arrival": {
+    "way": "way/600999967",
+    "near": [
+     486,
+     -243.3
+    ]
+   },
+   "via": [
+    [
+     462,
+     -243.3
+    ]
    ]
   },
   {
@@ -807,6 +826,38 @@
     "union_building_entrance (owner photo)",
     "union_building_aerial (owner)"
    ]
+  },
+  {
+   "place": "Vikings Hostel",
+   "entrance": {
+    "at": [
+     160.5,
+     840.5
+    ]
+   },
+   "type": "hall entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-vikings-law",
+   "approach": "From the car park south of the hostel to the single-storey VIKINGS HOSTEL entrance block in the inner corner of the L.",
+   "evidence": "Owner's front photo: the big entrance area is the single-storey block with the VIKINGS HOSTEL sign, its door at the left of the block; owner's aerial: the same block in the inner corner of the L (south of the east wing, east of the long wing), facing the car park. OSM maps the block as the extension at 156-171.5 x, 832.5-840.5 z.",
+   "refs": [
+    "vikings_front (owner photo, entrances marked)",
+    "vikings_aerial (owner, entrances marked)",
+    "vikings_south_end (owner photo)",
+    "vikings_hostel_layout_labeled.png"
+   ],
+   "secondary": [
+    {
+     "label": "door at the foot of the long wing's south end",
+     "type": "hall entrance",
+     "at": [
+      151.5,
+      843.1
+     ],
+     "evidence": "Owner's front photo and aerial: a second door at the south end of the long wing (the small mark on the left)."
+    }
+   ]
   }
  ],
  "priority": [
@@ -854,6 +905,7 @@
   "First Bank Ghana (Banking Square)",
   "Stanbic Bank",
   "Ecobank (near Night Market)",
-  "Union Building (Banking Square)"
+  "Union Building (Banking Square)",
+  "Vikings Hostel"
  ]
 }

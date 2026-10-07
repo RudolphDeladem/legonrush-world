@@ -31,6 +31,8 @@ const SUSPECT = new Map(REG.corrections.exclude.map((e) => [e.id, e.reason]));
 const HEIGHT_FIX = new Map((REG.corrections.heights ?? []).map((e) => [e.id, e]));
 /** ground areas the reference photos show as something else (a hall's paved back forecourt mapped as a car park) */
 const RECLASS = new Map((REG.corrections.reclass ?? []).map((e) => [e.id, e]));
+/** outlines that sit off the building the satellite footprints and owner imagery show: replaced by the measured ring */
+const RESHAPE = new Map((REG.corrections.reshape ?? []).map((e) => [e.id, e]));
 const r1 = (v) => Math.round(v * 10) / 10;
 const features = [];
 const report = { sources: {}, boundary: {}, roads: {}, buildings: {}, areas: {}, places: {}, landmarks: [], zones: [], conflicts: [] };
@@ -242,7 +244,8 @@ function buildingHeight(t, pts) {
 }
 const buildings = [];
 function addBuilding(id, rings, t, src) {
-  const [outer, ...holes] = rings;
+  const reshape = RESHAPE.get(id);
+  const [outer, ...holes] = reshape ? [reshape.ring.map(([x, z]) => [x, z]), ...rings.slice(1)] : rings;
   if (outer.length < 3) return;
   const c = centroid(outer);
   if (!anyInContext(outer)) return; // like the legacy extract: anything reaching into the study area

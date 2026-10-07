@@ -97,7 +97,7 @@ names from S1, S6 and S7/S8; S5 last.
    evidence contradicts them; nothing is moved. `heights` overrides a building's storeys and height where
    reference photos contradict the source (the Diaspora halls: 4 storeys); `reclass` changes a ground
    area's use where the photos and the owner contradict it (the paved forecourts behind Limann and
-   Kwapong, mapped as car parks). See [LEGON_BUILDINGS.md](LEGON_BUILDINGS.md). Registry landmarks can also be placed at a point measured on owner imagery registered to the footprints (`geometry: { at: [x, z] }`), used for the banks on the banking square.
+   Kwapong, mapped as car parks). See [LEGON_BUILDINGS.md](LEGON_BUILDINGS.md). Registry landmarks can also be placed at a point measured on owner imagery registered to the footprints (`geometry: { at: [x, z] }`), used for the banks on the banking square. `reshape` replaces an OSM outline that sits off the building with a measured ring (the School of Law, moved onto Google Open Buildings' footprint).
 9. **Export**: `master-to-game.mjs` produces the compact game JSON. The build fails if any place name
    the game code looks up disappears (`registry/naming.json` → `required`, 153 names).
 

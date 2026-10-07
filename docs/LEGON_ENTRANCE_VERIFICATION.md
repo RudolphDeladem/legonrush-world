@@ -41,7 +41,7 @@ BUILDING → ENTRANCE → FORECOURT → ACCESS PATH → ARRIVAL POINT (road/path
 `npm run test:routes` fails if a priority destination is left as mapped/inferred, if a verified entrance is
 not high confidence, or if any non-verified, non-mapped entrance claims high confidence.
 
-**Priority destinations: 45 — verified 19, partial 15, unverified 11.** (The four Diaspora halls moved from partial to verified with the owner's photos; ISH 1 moved to verified and ISH 2 was added with the owner's marked layout; the banking square's banks were added with the owner's labelled aerial and photos; see below.)
+**Priority destinations: 46 — verified 21, partial 14, unverified 11.** (The four Diaspora halls moved from partial to verified with the owner's photos; ISH 1 moved to verified and ISH 2 was added with the owner's marked layout; the banking square's banks were added with the owner's labelled aerial and photos; the School of Law and Vikings Hostel were verified with the owner's photos; see below.)
 
 ## Entrance verification table (BEFORE → AFTER)
 
@@ -79,7 +79,8 @@ Coordinates are game-frame metres (x east, z south of the datum 5.6518 N, 0.1871
 | Institute of Africa Studies | frontage at (557, 79), arriving on service | low | inferred frontage at (557, 79) | service | (546, 80), facing 88° | **unverified** · low | 0 m |
 | Jones Quartey Building, JQB | frontage at (593, -82), arriving on service | low | public entrance at (569, -29) | footway | (589, -21), facing 287° | **verified** · high | 58 m |
 | K. A. Busia Building, KAB | frontage at (478, -130), arriving on Annie Jiagge Road | low | inferred frontage at (478, -130) | Annie Jiagge Road | (510, -131), facing 270° | **unverified** · low | 0 m |
-| School of Law | frontage at (404, -260), arriving on Annie Jiagge Road | low | public entrance at (469, -267) | service | (486, -265), facing 278° | **partial** · medium | 65 m |
+| School of Law | partial: (469, -267), arriving on service | medium | public entrance at (441, -243) | service via the courtyard | (486, -243), facing 270° | **verified** · high | 37 m |
+| Vikings Hostel | inferred frontage at (189, 816) (east end), arriving on service | low | hall entrance at (161, 841), second door at (152, 843) | service (car park) | (162, 848), facing 0° | **verified** · high | 39 m |
 | N Block | frontage at (-34, -311), arriving on service | low | inferred frontage at (-34, -311) | service | (-44, -310), facing 90° | **unverified** · low | 0 m |
 | University of Ghana Sports Stadium | frontage at (853, 1381), arriving on service | low | public entrance at (701, 1412) | service | (679, 1412), facing 90° | **partial** · medium | 155 m |
 | Athletic Oval | frontage at (52, 355), arriving on service | low | public open space at (6, 489) | residential | (6, 503), facing 0° | **partial** · medium | 142 m |
@@ -277,12 +278,18 @@ land on their roofs, so the labels became map positions. Bank places were moved 
 
 - **UNVERIFIED.** No reference image, written source or mapped access identifies this entrance. The previous automatic result is kept: frontage at (478, -130), arriving on Annie Jiagge Road, confidence low. It needs a photo or site check.
 
-### School of Law — PARTIAL
+### School of Law — VERIFIED
 
-- **Entrance:** public entrance; From the road on the east into the paved courtyard enclosed by the law buildings.
-- **Evidence:** law_school_layout (registered to OSM): the buildings wrap a paved courtyard that opens to the road on the east (a vehicle is parked in it).
-- **References:** `law_school_layout_labeled.png`
-- **Correction:** moved 65 m from the previous frontage entrance (low confidence).
+- **Entrance:** the glass doors at the foot of the round entrance building (the LAW crest above them), up wide steps from the paved courtyard, which opens to the road on the east.
+- **Evidence:** the owner's two photos of the entrance (doors marked): the rotunda with the long four-storey block to its right and the tiled south block to its left. The law_school_layout photo, registered to Google Open Buildings' footprint (2 px/m), places the rotunda at the west end of the long block facing the courtyard.
+- **Geometry correction:** the OSM outline of the School of Law sat about 10 m north-west of the building (Google's footprint overlapped it by 13%); it is replaced by Google's footprint, which matches the layout photo (`corrections.json → reshape`). The south block was shifted the same way.
+- **Correction:** the door moved 37 m, from the east end of the old outline to the rotunda; status partial → verified.
+
+### Vikings Hostel — VERIFIED
+
+- **Entrance:** the single-storey VIKINGS HOSTEL block in the inner corner of the L, facing the car park on the south; a **second door** at the foot of the long wing's south end (shown on `/geo/`, not routed to).
+- **Evidence:** the owner's front photo (the big entrance area and its door, and the second door, marked) and aerial (both marked): the entrance block lies south of the east wing and east of the long wing, as OSM maps it.
+- **Correction:** moved 39 m from an inferred frontage at the east end of the east wing.
 
 ### N Block — UNVERIFIED
 
