@@ -18,7 +18,8 @@
   "owner-intl-house": "The owner's photo of International House (entrance marked) and aerial of it with the School of Law (entrance and the wooded zones marked), registered to the OSM footprints at 4.4 px/m",
   "owner-pentagon": "The owner's aerial of Pentagon with the New Pent blocks (A, B, C), the Old Pent courts (D, K, AA, N) and the admin block (AD) labelled and their entrances marked, registered to the OSM footprints (2.5 px/m), and photos of a New Pent block, an Old Pent court and the admin block (entrances marked)",
   "owner-commonwealth": "The owner's photos of Commonwealth Hall (the gate houses and stairway from the road, the stairs, the main entrance with its gate marked, the front from above) and its aerial with the two- and three-storey parts marked, registered to the OSM footprints (1 px/m, front to the east)",
-  "owner-volta": "The owner's aerial of Volta Hall with the entrance marked (blue) and the storeys described, registered to the OSM footprints (0.27 m/px, north up), and photos of the entrance up its steps (marked), the front buildings either side of the climb, and the Annex."
+  "owner-volta": "The owner's aerial of Volta Hall with the entrance marked (blue) and the storeys described, registered to the OSM footprints (0.27 m/px, north up), and photos of the entrance up its steps (marked), the front buildings either side of the climb, and the Annex.",
+  "owner-sarbah-akuafo-legon": "The owner's photos of Mensah Sarbah Hall (the front from above with the entrance building and its gate marked, the entrance building from the court with its two side doors marked), of the Akuafo Hall entrance (gate marked) and of the Legon Hall entrance (gate marked)."
  },
  "campusGates": [
   {
@@ -302,11 +303,12 @@
    "cite": "legon-porters-lodge",
    "stop": "outside",
    "approach": "Along the avenue's southern carriageway, turn into the paved forecourt on the hall's axis and stop at the north front.",
-   "evidence": "Business listings place the Legon Hall Porters Lodge on J. B. Danquah Road (the avenue). legon_hall_layout (registered to OSM): the hall's spine footway (OSM 1186587902/614159986) runs north to this block; atlas sheet 2 shows a paved forecourt from the avenue to its north face. legon_hall_entrance photo: arched front with a paved forecourt. Note: Apple's 'Legon Hall' pin sits on OSM 'Maison Francais' to the east, which is a different building.",
+   "evidence": "Business listings place the Legon Hall Porters Lodge on J. B. Danquah Road (the avenue). legon_hall_layout (registered to OSM): the hall's spine footway (OSM 1186587902/614159986) runs north to this block; atlas sheet 2 shows a paved forecourt from the avenue to its north face. legon_hall_entrance photo: arched front with a paved forecourt. Note: Apple's 'Legon Hall' pin sits on OSM 'Maison Francais' to the east, which is a different building. Owner's photo of the entrance with the gate marked agrees.",
    "refs": [
     "legon_hall_layout_labeled.png",
     "legon_hall_entrance_labeled.png",
-    "atlas sheet 2"
+    "atlas sheet 2",
+    "legon_entrance (owner photo, gate marked)"
    ],
    "secondary": [
     {
@@ -349,17 +351,21 @@
    "cite": "user-layouts",
    "stop": "outside",
    "approach": "Off the avenue's southern carriageway onto the forecourt footway, to the arched gatehouse that leads into the fountain court.",
-   "evidence": "akuafo_hall_layout (registered to OSM): the forecourt footway (OSM 606687250 / 603522802) leaves the avenue and passes through the arch of this north block into the circular fountain court; akuafo_hall_entrance: stone-paved forecourt with curved paths and circular planters at the entrance. Previous entrance was an inferred point on the service road east of the hall.",
+   "evidence": "akuafo_hall_layout (registered to OSM): the forecourt footway (OSM 606687250 / 603522802) leaves the avenue and passes through the arch of this north block into the circular fountain court; akuafo_hall_entrance: stone-paved forecourt with curved paths and circular planters at the entrance. Previous entrance was an inferred point on the service road east of the hall. Owner's photo of the entrance with the gate marked agrees.",
    "refs": [
     "akuafo_hall_layout_labeled.png",
     "akuafo_hall_entrance_labeled.png",
-    "atlas sheet 2"
+    "atlas sheet 2",
+    "akuafo_entrance (owner photo, gate marked)"
    ]
   },
   {
    "place": "Mensah Sarbah Hall",
    "entrance": {
-    "building": "way/300288063"
+    "at": [
+     4.9,
+     609.1
+    ]
    },
    "type": "hall entrance (porters' lodge)",
    "arrival": {
@@ -371,15 +377,37 @@
    },
    "status": "verified",
    "confidence": "high",
-   "cite": "user-layouts",
+   "cite": "owner-sarbah-akuafo-legon",
    "stop": "outside",
    "approach": "Along Mensah Sarbah Crescent into the semicircular drive in front of the porters' lodge archway.",
-   "evidence": "mensah_sarbah_hall_main_2 (aerial): the gate building with its central archway faces a semicircular drive; mensah_sarbah_hall_layout (registered): that drive is OSM way 1540994843 and the gate building is OSM 'Administration and Porters' Lodge' (way 300288063). The large block with the cupola in main_1/main_3 is across the courtyard (the dining hall), not the entrance.",
+   "evidence": "Owner: the entrance building is the Administration and Porters' Lodge on the north side (red mark on the owner's aerial), its gate in the middle of the front toward the semicircular drive (blue mark); the owner's photo from the court shows the same building's court side, with the lantern on its roof and a doorway at each end. OSM: the drive is way 1540994843 and the building way 300288063. (An earlier note took the lantern building for the dining hall; the owner corrected it.)",
    "refs": [
-    "mensah_sarbah_hall_layout_labeled.png",
-    "mensah_sarbah_hall_main_1_labeled.png",
-    "mensah_sarbah_hall_main_2_labeled.png",
-    "mensah_sarbah_hall_main_3_labeled.png"
+    "sarbah_front_aerial (owner, entrance and gate marked)",
+    "sarbah_court (owner, entrance building and side doors marked)",
+    "mensah_sarbah_hall_layout_labeled.png"
+   ],
+   "footprint": "osm:way/300288063",
+   "secondary": [
+    {
+     "label": "the doorway at the west end of the entrance building, on the court side",
+     "type": "pedestrian",
+     "at": [
+      -3.4,
+      622.7
+     ],
+     "evidence": "Owner's photo from the court: a doorway at each end of the entrance building (blue marks).",
+     "free": true
+    },
+    {
+     "label": "the doorway at the east end of the entrance building, on the court side",
+     "type": "pedestrian",
+     "at": [
+      13.2,
+      622.7
+     ],
+     "evidence": "Owner's photo from the court: a doorway at each end of the entrance building (blue marks).",
+     "free": true
+    }
    ]
   },
   {

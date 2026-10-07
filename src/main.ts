@@ -1523,9 +1523,10 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     speechSynthesis.speak(u);
   };
   // what the tour says about a place: About, History, What you can do here, Did you know, and hall life for halls
+  const aboutOf = (pl: Place) => guideFor(pl.name)?.intro ?? PLACE_INFO.find(([re]) => re.test(pl.name))?.[1] ?? `${KIND_ICON[pl.kind][1]} on the University of Ghana campus.`;
   const infoHtml = (pl: Place, full: boolean) => {
     const g = guideFor(pl.name);
-    const about = g?.intro ?? PLACE_INFO.find(([re]) => re.test(pl.name))?.[1] ?? `${KIND_ICON[pl.kind][1]} on the University of Ghana campus.`;
+    const about = aboutOf(pl);
     const sec = (h: string, body: string) => `<p class="kicker">${h}</p>${body}`;
     let html = sec('About', `<p>${esc(about)}</p>`);
     if (g?.doHere.length) html += sec('What you can do here', `<ul>${g.doHere.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>`);
@@ -1564,7 +1565,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
         : arrived
         ? `<p class="gc-arrived">${icons.check} Arrived</p>
           <div class="row gc-head"><span class="kind-icon" title="${esc(label)}">${icon}</span><div><h2>${esc(g.entry.title)}</h2><small class="muted">University of Ghana · ${esc(label)}</small></div></div>
-          ${full ? infoHtml(g.place, true) : `<p>${esc(g.entry.intro)}</p>`}
+          ${full ? infoHtml(g.place, true) : `<p>${esc(aboutOf(g.place))}</p>`}
           <div class="row gc-actions">
             ${canSpeak ? `<button class="btn btn-ghost btn-sm" id="gcSay">${icons.megaphone} Read aloud</button>` : ''}
             ${full ? '' : '<button class="btn btn-ghost" id="gcMore">Learn more</button>'}

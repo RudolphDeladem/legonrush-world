@@ -17,8 +17,9 @@ the map still use it), the generic builder skips it, and its model is placed on 
 | 7 | Pentagon: Old Pent courts, the admin block, New Pent blocks A, B, C | `src/game/pentagon.ts` | owner's labelled aerial (registered), photos (3) |
 | 8 | Commonwealth Hall, its stairway and gate houses, and Legon Hill | `src/game/commonwealth.ts`, `src/game/relief.ts` | owner's labelled aerial (registered), photos (4) |
 | 9 | Volta Hall and the Volta Hall Annex | `src/game/volta.ts`, `src/game/relief.ts` | owner's marked aerial (registered), photos (3) |
+| 10 | Mensah Sarbah Hall, Akuafo Hall, Legon Hall | `src/game/greathalls.ts`, `src/game/rectilinear.ts` | owner's photos (4, entrances marked), UG layout aerials |
 
-Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 to 9) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
+Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 to 10) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
 
 ## 1. The Diaspora halls
 
@@ -372,15 +373,36 @@ roofs.
 
 The garden pieces (trees, palms, bushes, hedges, pots) are shared with Commonwealth Hall in `src/game/gardens.ts`.
 
+## 10. Mensah Sarbah Hall, Akuafo Hall and Legon Hall
+
+These halls' blocks are their mapped footprints, cut into rectangles (`src/game/rectilinear.ts`: the ring's
+coordinates are lined up, the grid between them kept where the ring covers it, and cells merged into rectangles),
+each under its own tile hip roof.
+
+- **Mensah Sarbah Hall:** the four cross-shaped blocks round the court have **three floors** (owner); white with
+  maroon window frames; the fountain in the middle of the court with walks to it, palms and bushes. The entrance is
+  the **Administration and Porters' Lodge** on the north side (owner's red mark): toward the semicircular drive, two
+  rows of small windows and the **gate** in the middle (blue); on the court side one tall storey of seven louvred
+  windows over a stone wall and steps, a raised roof with the **lantern** on it, and a **doorway at each end** (the
+  owner's two blue marks, recorded as side entrances). An earlier note took the lantern building for the dining
+  hall; the owner's photos put it on the entrance building. The dining hall (south) keeps the generic builder.
+- **Akuafo Hall and Legon Hall** (twins either side of the avenue): **two-storey** blocks, as both entrance photos
+  show (the source heights were estimates from footprint size), in lanes and bars round long courts with a walk
+  down the middle, palms and bushes. **Akuafo's** entrance is the gatehouse on the north: square windows under the
+  eaves, dark doors between white piers over a teal base, the gate (owner's blue mark) into the round fountain
+  court. **Legon's** is its north block: three arches on the ground floor with the entrance in the middle one (blue),
+  a recessed balcony above, banners.
+
 ## Explore: drone view
 
-When an Explore ride arrives, the arrived card offers **Drone view**: the camera climbs from behind the rider and
+When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain
+description from the map), the arrived card offers **Drone view**: the camera climbs from behind the rider and
 circles 95 m out and 60 m above the destination, looking down at it (it turns more slowly with reduced motion).
 **Back to street view** returns to the rider; **Done** ends the tour as before.
 
 ## Explore: ride it yourself
 
-When an Explore ride **on a bike** arrives, the arrived card also offers **Ride it yourself**: the route lets go of the
+When an Explore ride **on a bike** arrives, at any destination, the arrived card also offers **Ride it yourself**: the route lets go of the
 bike and the rider steers it anywhere a bike can go (`Game.freeRide`).
 
 - **Pedal** (↑ / W / Space): **one tap** and the rider keeps pedalling, with no need to tap again; the Pedal button

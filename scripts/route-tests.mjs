@@ -144,6 +144,18 @@ try {
   if (!(Math.abs(groundHeight(-290, 40) - 2.4) < 0.01 && groundHeight(-235, 66) === 0 && groundHeight(-219, 66) === 0)) fail('Volta Hall: the hall is not on its terrace above the forecourt and Volta Hall Road');
   if (buildingAt(-310, -80)?.name !== 'Volta Hall Annex') fail('Volta Hall Annex: the outline is not on its roof in the owner\'s aerial');
   if ((await server.ssrLoadModule('/src/game/volta.ts')).volta.frames().length !== 2) fail('expected the Volta Hall and Annex models');
+  // Mensah Sarbah (owner): the gate in the middle of the lodge's front on the drive, the court-side doors either end
+  const ms = ACCESS.get('Mensah Sarbah Hall');
+  if (!ms || Math.hypot(ms.entrance[0] - 4.9, ms.entrance[1] - 609.1) > 2) fail('Mensah Sarbah Hall: the entrance is not the gate in the middle of the lodge');
+  if ((ms?.secondary?.length ?? 0) < 2) fail('Mensah Sarbah Hall: the doorways at the ends of the entrance building are missing');
+  if ((await server.ssrLoadModule('/src/game/greathalls.ts')).greatHalls.frames().length !== 4) fail('expected the Mensah Sarbah, lodge, Akuafo and Legon models');
+  // Explore: every destination ends the guided ride with its own stop (the arrived card: drone view, riding it yourself)
+  const { guideFor } = await server.ssrLoadModule('/src/data/guide.ts');
+  const balme = placeByName('The Balme Library');
+  for (const to of PLACES.filter((p) => !guideFor(p.name) && p !== balme).slice(0, 25)) {
+    const r = rt.exploreRoute(balme, to, 'cycle'), g = r && rt.guideStops(r);
+    if (r && g[g.length - 1]?.place !== to) fail(`Explore: the ride to ${to.name} has no arrival stop`);
+  }
   const bankModels = (await server.ssrLoadModule('/src/game/banking.ts')).banking.frames();
   if (bankModels.length !== 3) fail(`expected the bank compound, the Union Building and the ADB/HFC block, found ${bankModels.length}`);
   const hostels = (await server.ssrLoadModule('/src/game/hostels.ts')).hostels.frames();

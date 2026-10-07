@@ -213,10 +213,11 @@ land on their roofs, so the labels became map positions. Bank places were moved 
 ### Mensah Sarbah Hall — VERIFIED
 
 - **Entrance:** hall entrance (porters' lodge); Along Mensah Sarbah Crescent into the semicircular drive in front of the porters' lodge archway.
-- **Evidence:** mensah_sarbah_hall_main_2 (aerial): the gate building with its central archway faces a semicircular drive; mensah_sarbah_hall_layout (registered): that drive is OSM way 1540994843 and the gate building is OSM 'Administration and Porters' Lodge' (way 300288063). The large block with the cupola in main_1/main_3 is across the courtyard (the dining hall), not the entrance.
-- **References:** `mensah_sarbah_hall_layout_labeled.png`, `mensah_sarbah_hall_main_1_labeled.png`, `mensah_sarbah_hall_main_2_labeled.png`, `mensah_sarbah_hall_main_3_labeled.png`
+- **Evidence:** the owner's photos: the entrance building from above with the building (red) and its gate (blue) marked, in the middle of its front toward the semicircular drive; and the same building from the court, with the lantern on its roof and a doorway at each end (blue). mensah_sarbah_hall_layout (registered): the drive is OSM way 1540994843 and the building OSM 'Administration and Porters' Lodge' (way 300288063). The lantern building is the entrance building, not the dining hall as an earlier note had it (the owner corrected it).
+- **References:** owner's photos (2, marked), `mensah_sarbah_hall_layout_labeled.png`, `mensah_sarbah_hall_main_1_labeled.png`, `mensah_sarbah_hall_main_2_labeled.png`, `mensah_sarbah_hall_main_3_labeled.png`
+- **Secondary:** the doorways at each end of the entrance building on the court side.
 - **Stop:** outside the building
-- **Correction:** confirmed (no move).
+- **Correction:** the gate moved 6 m to the middle of the lodge's front.
 
 ### Volta Hall — VERIFIED
 

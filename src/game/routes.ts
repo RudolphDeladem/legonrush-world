@@ -246,6 +246,14 @@ export function raceRoute(def: RaceDef) {
   return races.get(def.id)!;
 }
 
+const KIND_WORD: Record<PlaceKind, string> = {
+  hall: 'A hall of residence', academic: 'A teaching and research building', landmark: 'A landmark', food: 'A place to eat', bank: 'A bank',
+  transport: 'A transport stop', worship: 'A place of worship', sport: 'A sports facility', health: 'A health facility', other: 'A place',
+};
+/** what the guide says about a place: its entry, or for a place it has no entry for, a plain one from the map */
+export const guideOrPlain = (place: Place): GuideEntry =>
+  guideFor(place.name) ?? { place: place.name, title: place.name, intro: `${KIND_WORD[place.kind]} on the University of Ghana campus.`, doHere: [] };
+
 /** A place the guided Explore ride stops at, with what the guide says there. */
 export interface GuideStop {
   /** ride distance where the rider stops */
@@ -256,8 +264,10 @@ export interface GuideStop {
 
 /**
  * Explore's guided ride: the places along the way the ride pauses at to introduce.
- * The start, every tour stop and the destination when the guide knows them, plus guide
- * places close to the road on the way, spaced out so the ride isn't stop-start.
+ * The start and every tour stop when the guide knows them, plus guide places close to the road on
+ * the way, spaced out so the ride isn't stop-start; and always the destination, last (the arrived
+ * card, with the drone view and riding it yourself, is shown there whatever the place: one the guide
+ * has no entry for gets a plain one, see guideOrPlain).
  */
 export function guideStops(route: Route): GuideStop[] {
   const out: GuideStop[] = [];
@@ -267,7 +277,9 @@ export function guideStops(route: Route): GuideStop[] {
   };
   add(route.from, 2);
   for (const s of route.steps) if (s.turn === 'stop') { const p = PLACES.find((q) => q.x === s.x && q.z === s.z); if (p) add(p, s.d); }
-  add(route.to, route.length);
+  const dest = guideOrPlain(route.to);
+  // a destination sharing a guide entry with the start keeps its own arrival stop
+  if (route.to !== route.from) out.push({ d: Math.max(2, route.length - 2), place: route.to, entry: dest });
   for (const g of GUIDE) {
     const place = placeByName(g.place);
     if (!place || out.some((s) => s.entry === g)) continue;
