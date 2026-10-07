@@ -116,7 +116,10 @@ try {
   for (const [x, z] of [[105, 1685], [118, 1708], [-26, 1581]]) if (buildingAt(x, z)) fail(`a building stands between Kwapong and Sey at ${x},${z}`);
   const ih = ACCESS.get('International House');
   if (!ih || Math.hypot(ih.entrance[0] - 544, ih.entrance[1] + 202.5) > 2) fail('International House: the entrance is not the west porch');
-  if (!placeByName('Diaspora Dome')) fail('Diaspora Dome is not a place');
+  // the Diaspora Dome is north-west of the Lizalex Quadrangle (beside Kwapong, across the road), entered through its open front
+  const dome = placeByName('Diaspora Dome'), domeA = ACCESS.get('Diaspora Dome');
+  if (!dome || Math.hypot(dome.x - 0.2, dome.z - 1582.2) > 3) fail('Diaspora Dome is not beside Kwapong, north-west of the Lizalex Quadrangle');
+  if (!domeA || Math.hypot(domeA.entrance[0] - 10.2, domeA.entrance[1] - 1601.4) > 2) fail('Diaspora Dome: the way in is not its open front');
   const bankModels = (await server.ssrLoadModule('/src/game/banking.ts')).banking.frames();
   if (bankModels.length !== 3) fail(`expected the bank compound, the Union Building and the ADB/HFC block, found ${bankModels.length}`);
   const hostels = (await server.ssrLoadModule('/src/game/hostels.ts')).hostels.frames();

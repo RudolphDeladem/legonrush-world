@@ -265,7 +265,6 @@
    "osm:way/765261444",
    "ml:45cf2ff1-cd9f-4df7-a5bf-20b077c452fc",
    "ml:edb17d32-6f00-4474-ad3a-0dc8048bc6b0",
-   "ml:588d1cea-c2dd-483f-8502-2501bb7ee8ab",
    "ml:0c8802e6-d3c2-41c2-bbe9-257930c8404c"
   ]
  },
@@ -2471,11 +2470,11 @@
    "category": "civic",
    "importance": 2,
    "geometry": "measured:diaspora-dome",
-   "lat": 5.635955,
-   "lng": -0.18984,
-   "x": -303,
-   "z": 1752,
-   "elevationM": 87,
+   "lat": 5.637491,
+   "lng": -0.187098,
+   "x": 0,
+   "z": 1582,
+   "elevationM": 85,
    "confidence": "medium",
    "sourcesAgreeingWithin150m": [],
    "sources": {
@@ -2487,7 +2486,7 @@
     }
    },
    "claims": [],
-   "notes": "Owner: the Diaspora Dome, west of Jean Nelson Aka Hall across the road: single-storey white marquee halls round a lawn with a round paved plaza (owner's aerial, registered to the hall footprints at 2.6 px/m, and photos)."
+   "notes": "Owner: the Diaspora Dome, across the road north-west of the Lizalex Quadrangle (between Alexander Kwapong and Elizabeth Sey halls): single-storey white marquee halls round a lawn with a round plaza. Placed from the owner's labelled map and aerial (the halls are identical, so the aerial is tied to Kwapong, the hall the map shows beside it)."
   }
  ],
  "zones": [
@@ -2557,7 +2556,7 @@
    "kind": "residence",
    "ha": 78,
    "shareOutsideCampus": 0,
-   "places": 17,
+   "places": 18,
    "buildings": 115,
    "anchorsMissing": []
   },
@@ -2577,7 +2576,7 @@
    "kind": "residential",
    "ha": 151,
    "shareOutsideCampus": 0,
-   "places": 15,
+   "places": 14,
    "buildings": 268,
    "anchorsMissing": []
   },

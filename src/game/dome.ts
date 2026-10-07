@@ -1,4 +1,4 @@
-// The Diaspora Dome, west of Jean Nelson Aka Hall, and International House opposite the School of
+// The Diaspora Dome, north-west of the Lizalex Quadrangle (between Kwapong and Sey halls), and International House opposite the School of
 // Law, modelled from the owner's photos and registered aerials (block engine: blocks.ts).
 //
 // Diaspora Dome: not a storey building but single-storey white marquee halls (a pitched white
@@ -58,24 +58,27 @@ function cabin(k: Kit, x0: number, x1: number, z0: number, z1: number) {
 const TENT_EAVE = PL + 3.6 + 0.4;
 const TENTS: [number, number, number, number, number][] = [
   // x0, x1, z0, z1, ridge rise (the owner's aerial, registered: model frame, ridge along z)
-  [-40, -15, -15, 23, 4.2],
+  [-40, -14, -15, 23, 4.2],
   [-15.5, 3, -31.5, -17.5, 3.4],
-  [11, 36, -21, 18, 4.2],
+  [12, 36, -21, 18, 4.2],
   [38, 55, -36, -21, 3.4],
 ];
 
 const dome: Spec = {
   name: 'Diaspora Dome',
-  axis: [0.905, -0.43], origin: [-303.5, 1752], storey: 3.6, style: TENT_WALL, roofColor: '#f4f5f4', fascia: '#c9cbcc', pitch: 0.3,
+  axis: [0.864, -0.503], origin: [0.2, 1582.2], storey: 3.6, style: TENT_WALL, roofColor: '#f4f5f4', fascia: '#c9cbcc', pitch: 0.3,
   blocks: TENTS.map(([x0, x1, z0, z1]) => ({ x0, x1, z0, z1, floors: 1, roof: 'none' as const })),
-  keep: [[-49, 65, -50, 29]],
+  keep: [[-49, 39, -50, 29], [49, 65, -50, 29], [39, 49, -50, -21]],
   extras: (k) => {
-    for (const [x0, x1, z0, z1, rise] of TENTS) {
-      tentRoof(k, x0, x1, z0, z1, TENT_EAVE, rise);
-      // glass doors in the middle of the long sides facing the lawn
-      const zm = (z0 + z1) / 2;
-      for (const x of [x0, x1]) k.glass.push(box(x - 0.03, x + 0.03, PL, 3.0, zm - 1.4, zm + 1.4));
-    }
+    for (const [x0, x1, z0, z1, rise] of TENTS) tentRoof(k, x0, x1, z0, z1, TENT_EAVE, rise);
+    // the halls' doors onto the lawn (owner's marks): glass doors in a grey frame
+    const door = (x: number, z: number, alongZ: boolean) => {
+      if (alongZ) { k.glass.push(box(x - 0.04, x + 0.04, PL, 2.6, z - 1.1, z + 1.1)); k.plain.push([box(x - 0.08, x + 0.08, 2.6, 2.8, z - 1.25, z + 1.25), '#8f9396']); }
+      else { k.glass.push(box(x - 1.1, x + 1.1, PL, 2.6, z - 0.04, z + 0.04)); k.plain.push([box(x - 1.25, x + 1.25, 2.6, 2.8, z - 0.08, z + 0.08), '#8f9396']); }
+    };
+    for (const z of [-12.7, -2.7, 7, 15.7]) door(-14, z, true);
+    for (const z of [-13.7, -2.2, 7.5, 16.7]) door(12, z, true);
+    door(-1.5, -17.5, false);
     // the lawn: paved paths in an X and a cross, and the round plaza with its cross (aerial)
     const P = '#d8d0bd', y = 0.05;
     const path = (ax: number, az: number, bx: number, bz: number, w = 2.4) => {
@@ -88,17 +91,15 @@ const dome: Spec = {
     k.plain.push([box(-6.2, 6.2, 0, 0.12, -0.9, 0.9), P], [box(-0.9, 0.9, 0, 0.12, -6.2, 6.2), P]);
     k.plain.push([new THREE.CylinderGeometry(1.6, 1.6, 0.14, 24).translate(0, 0.08, 0), P]);
     // green-roofed cabins beside the halls (owner photo)
-    cabin(k, -40, -28, -21, -18.5); cabin(k, 36.5, 39, 2, 14); cabin(k, -13, -1, 19, 21.5);
-    // the dark green fence round the site, open at the front for the way in
+    cabin(k, -40, -28, -21, -18.5); cabin(k, 36.5, 39, 2, 14);
+    // the dark green fence round the site; the front of the lawn is open (no gate), and the service road comes in on the east
     const FENCE = '#1f3d2c', h = 2.3;
     const fence = (ax: number, az: number, bx: number, bz: number) => {
       const len = Math.hypot(bx - ax, bz - az);
       k.plain.push([new THREE.BoxGeometry(len, h, 0.12).rotateY(-Math.atan2(bz - az, bx - ax)).translate((ax + bx) / 2, h / 2, (az + bz) / 2), FENCE]);
     };
-    fence(-49, -50, 65, -50); fence(65, -50, 65, 29); fence(-49, -50, -49, 29); fence(-49, 29, -4, 29); fence(4, 29, 65, 29);
-    for (const x of [-4, 4]) k.plain.push([box(x - 0.3, x + 0.3, 0, 2.6, 28.7, 29.3), '#2b2e31']);
-    k.signs.push({ text: 'DIASPORA DOME', x: 0, y: 3.0, z: 29.3, ry: 0, w: 4.4, colors: ['#1f3d2c', '#ffffff'] });
-    k.plain.push([box(-3.2, 3.2, 2.7, 3.3, 29.2, 29.3), '#1f3d2c']);
+    fence(-49, -50, 65, -50); fence(65, -50, 65, 29); fence(-49, -50, -49, 29);
+    fence(-49, 29, -40, 29); fence(-40, 23, -40, 29); fence(36, 18, 36, 29); fence(36, 29, 39, 29); fence(49, 29, 65, 29);
   },
 };
 

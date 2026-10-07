@@ -885,6 +885,25 @@
     "international_house_front (owner photo, entrance marked)",
     "international_house_aerial (owner, entrance and woods marked)"
    ]
+  },
+  {
+   "place": "Diaspora Dome",
+   "entrance": {
+    "at": [
+     10.2,
+     1601.4
+    ]
+   },
+   "type": "public open space",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-dome",
+   "approach": "From the road along the halls into the open front of the dome site (no gate), across the lawn to the halls' doors.",
+   "evidence": "Owner's aerial: the front of the lawn between the two big halls, facing the road, is open (no gate); the halls have several doors onto the lawn (marked). Owner's map: the dome lies north-west of the Lizalex Quadrangle.",
+   "refs": [
+    "diaspora_dome_aerial (owner, open front and gates marked)",
+    "diaspora_dome_map (owner)"
+   ]
   }
  ],
  "priority": [
@@ -934,6 +953,7 @@
   "Ecobank (near Night Market)",
   "Union Building (Banking Square)",
   "Mensah Sarbah Vikings Hostel",
-  "International House"
+  "International House",
+  "Diaspora Dome"
  ]
 }

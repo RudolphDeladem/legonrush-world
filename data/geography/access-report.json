@@ -1,19 +1,19 @@
 {
  "destinations": 435,
  "byMethod": {
-  "curated": 36,
+  "curated": 37,
   "osm-entrance": 1,
   "gate": 2,
   "path-access": 7,
   "drive-access": 19,
   "area-entry": 9,
   "frontage": 248,
-  "point": 113
+  "point": 112
  },
  "byConfidence": {
-  "medium": 157,
-  "low": 251,
-  "high": 27
+  "high": 28,
+  "medium": 156,
+  "low": 251
  },
  "campusGates": 5,
  "problems": [],
@@ -310,16 +310,29 @@
    "status": "verified",
    "confidence": "high",
    "method": "curated"
+  },
+  {
+   "place": "Diaspora Dome",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
   }
  ],
  "byStatus": {
-  "mapped": 147,
+  "verified": 25,
   "partial": 12,
   "unverified": 11,
   "inferred": 241,
-  "verified": 24
+  "mapped": 146
  },
  "curated": [
+  {
+   "place": "Diaspora Dome",
+   "type": "public open space",
+   "arrivalOn": "Jubilee Link",
+   "arrivalDistance": 16.8,
+   "facing": 331
+  },
   {
    "place": "University of Ghana Sports Stadium",
    "type": "public entrance",
@@ -640,13 +653,13 @@
    "arrivalDistance": 46.5
   },
   {
-   "place": "Diaspora Dome",
-   "method": "point",
-   "arrivalDistance": 45.4
-  },
-  {
    "place": "Dep't of Sociology",
    "method": "frontage",
+   "arrivalDistance": 45.2
+  },
+  {
+   "place": "Centre for International Affairs",
+   "method": "point",
    "arrivalDistance": 45.2
   }
  ],

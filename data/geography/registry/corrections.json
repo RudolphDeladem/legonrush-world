@@ -14,12 +14,8 @@
       "reason": "Satellite-detected (Microsoft ML) footprint in the same open ground between Kwapong and Sey (owner: no building there)."
     },
     {
-      "id": "ml:588d1cea-c2dd-483f-8502-2501bb7ee8ab",
-      "reason": "Satellite-detected footprint inside the Diaspora Dome site west of Jean Nelson Aka Hall, drawn as a two-storey block; the owner's photos show the site is single-storey marquee halls (src/game/dome.ts)."
-    },
-    {
       "id": "ml:0c8802e6-d3c2-41c2-bbe9-257930c8404c",
-      "reason": "Google Open Buildings footprint (confidence 0.82, 2,297 m\u00b2) at the end of the field between Elizabeth Sey Hall and Alexander Kwapong Hall, drawn as a two-storey block. The owner: there is no storey building between Kwapong and Sey; the owner's aerial of the four halls shows the field, a road and parked buses."
+      "reason": "Google Open Buildings footprint (confidence 0.82, 2,297 m\u00b2) of the Diaspora Dome's marquee halls, north-west of the field between Kwapong and Sey, drawn as a two-storey block. The dome is single storey and modelled from the owner's photos (src/game/dome.ts)."
     }
   ],
   "heights": [

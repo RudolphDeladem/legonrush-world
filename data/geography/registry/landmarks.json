@@ -39,7 +39,7 @@
       "url": "https://registry.opendata.aws/copernicus-dem/"
     },
     "owner-banking-square": "The owner's aerial of the banking square with the banks labelled (C: CBG, F: UMB (first labelled First Bank Ghana, corrected by the owner), S: Stanbic; ATMs; the car-park entrance) and photos of the CBG front and the Union Building, registered to the OSM footprints by roof colour (4.2 px/m, 1° rotation)",
-    "owner-dome": "The owner's aerial of the Diaspora Dome site west of Jean Nelson Aka Hall and two photos of its marquee halls"
+    "owner-dome": "The owner's aerial of the Diaspora Dome (open front and gates marked), a labelled map placing it north-west of the Lizalex Quadrangle, and two photos of its marquee halls"
   },
   "landmarks": [
     {
@@ -1716,8 +1716,8 @@
       ],
       "geometry": {
         "at": [
-          -303.5,
-          1752.0
+          0.2,
+          1582.2
         ]
       },
       "match": {
@@ -1731,7 +1731,7 @@
       },
       "claims": [],
       "maxConfidence": "medium",
-      "notes": "Owner: the Diaspora Dome, west of Jean Nelson Aka Hall across the road: single-storey white marquee halls round a lawn with a round paved plaza (owner's aerial, registered to the hall footprints at 2.6 px/m, and photos)."
+      "notes": "Owner: the Diaspora Dome, across the road north-west of the Lizalex Quadrangle (between Alexander Kwapong and Elizabeth Sey halls): single-storey white marquee halls round a lawn with a round plaza. Placed from the owner's labelled map and aerial (the halls are identical, so the aerial is tied to Kwapong, the hall the map shows beside it)."
     }
   ]
 }

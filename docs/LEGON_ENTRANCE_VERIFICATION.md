@@ -284,6 +284,11 @@ land on their roofs, so the labels became map positions. Bank places were moved 
 - **Geometry correction:** the OSM outline of the School of Law sat about 10 m north-west of the building (Google's footprint overlapped it by 13%); it is replaced by Google's footprint, which matches the layout photo (`corrections.json → reshape`). The south block was shifted the same way.
 - **Correction:** the door moved 37 m, from the east end of the old outline to the rotunda; status partial → verified.
 
+### Diaspora Dome — VERIFIED
+
+- **Entrance:** the open front of the lawn between the two big marquee halls, facing the road (no gate); the halls' doors open onto the lawn.
+- **Evidence:** the owner's aerial (open front and doors marked) and labelled map: the dome is across the road north-west of the Lizalex Quadrangle, beside Alexander Kwapong Hall.
+
 ### International House — VERIFIED
 
 - **Entrance:** the single-storey porch on the west face (tile roof and a white arched gable), toward the car park and the law-school road opposite the School of Law.

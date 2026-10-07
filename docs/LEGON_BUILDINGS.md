@@ -221,12 +221,19 @@ check that the forecourt is below the road, the main road is at ground level and
 
 ### Diaspora Dome
 
-West of Jean Nelson Aka Hall across the road (the owner's aerial, registered to the hall footprints at 2.6 px/m).
+Across the road **north-west of the Lizalex Quadrangle** (the open ground between Alexander Kwapong and Elizabeth Sey
+halls), beside Kwapong. The four Diaspora halls are identical, so the owner's aerial was first tied to the wrong hall
+(the dome was drawn west of Jean Nelson Aka); the owner's labelled map fixed it, and the model moved by the exact
+Jean Nelson Aka-to-Kwapong offset. The Google footprint there, drawn as a two-storey block, is the dome itself and stays
+replaced by the model; the outline west of Jean Nelson Aka, wrongly removed before, is back.
+
 **Not a storey building**: four single-storey white marquee halls (pitched white membrane roofs with grey ribs and
-white gable ends, white walls with a row of windows over a grey skirt), round a lawn with paved paths in an X and a
-cross and a round plaza with a cross in it; green-roofed cabins beside the halls; a dark green fence round the site
-with the way in from the road. A satellite-detected outline inside the site, drawn as a two-storey block, is
-removed. It is a new destination, *Diaspora Dome*.
+white gable ends, white walls with a row of windows over a grey skirt) round a lawn with paved paths in an X and a
+cross and a round plaza with a cross in it; green-roofed cabins; a dark green fence along the sides and back.
+
+**Entrances** (owner's marks): the front of the lawn between the two big halls is **open to the road, no gate**; the
+halls have **several doors onto the lawn**: four on each big hall's lawn side and one on the small hall at the back.
+The service road on the east comes in through a gap in the fence. Rides end in the open front.
 
 ### No building between Kwapong and Sey
 
