@@ -347,7 +347,9 @@ for (const f of SRC.ml.features) {
     let hit = false;
     for (const i of bGrid.query(box)) if (overlap(ring, buildings[i].ring, 1).inter > 0) { hit = true; break; }
     if (hit) { mlRejected.overlapsOsm++; continue; }
-    buildings.push({ id: `ml:${p.id}`, layer: 'building', class: 'unknown', area: Math.round(a), orient: orientation(ring), onCampus: true, src: [p.dataset === 'Google Open Buildings' ? 'google-open-buildings' : 'microsoft-ml-buildings'], conf: 'medium', mlConfidence: p.confidence ?? undefined, ring, holes: [], c, box });
+    // a satellite-detected footprint can have its height set from the owner's photos too (corrections: heights)
+    const fix = HEIGHT_FIX.get(`ml:${p.id}`);
+    buildings.push({ id: `ml:${p.id}`, layer: 'building', class: 'unknown', area: Math.round(a), orient: orientation(ring), onCampus: true, src: [p.dataset === 'Google Open Buildings' ? 'google-open-buildings' : 'microsoft-ml-buildings'], conf: 'medium', mlConfidence: p.confidence ?? undefined, ring, holes: [], c, box, ...(fix && { height: fix.height, heightSrc: 'reference-photos', levels: fix.levels }) });
     mlAdded++;
   }
 }

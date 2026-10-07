@@ -17,9 +17,10 @@ the map still use it), the generic builder skips it, and its model is placed on 
 | 7 | Pentagon: Old Pent courts, the admin block, New Pent blocks A, B, C | `src/game/pentagon.ts` | owner's labelled aerial (registered), photos (3) |
 | 8 | Commonwealth Hall, its stairway and gate houses, and Legon Hill | `src/game/commonwealth.ts`, `src/game/relief.ts` | owner's labelled aerial (registered), photos (4) |
 | 9 | Volta Hall and the Volta Hall Annex | `src/game/volta.ts`, `src/game/relief.ts` | owner's marked aerial (registered), photos (3) |
-| 10 | Mensah Sarbah Hall, Akuafo Hall, Legon Hall | `src/game/greathalls.ts`, `src/game/rectilinear.ts` | owner's photos (4, entrances marked), UG layout aerials |
+| 10 | Mensah Sarbah Hall, Akuafo Hall, Legon Hall | `src/game/greathalls.ts`, `src/game/rectilinear.ts` | owner's photos (4, entrances marked), owner's panoramas (3), UG layout aerials |
+| 11 | The Athletic Oval and its courts; Maison Française one floor | `src/game/athletics.ts` | owner's panoramas (2), registered atlas |
 
-Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 to 10) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
+Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 to 11) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
 
 ## 1. The Diaspora halls
 
@@ -379,19 +380,39 @@ These halls' blocks are their mapped footprints, cut into rectangles (`src/game/
 coordinates are lined up, the grid between them kept where the ring covers it, and cells merged into rectangles),
 each under its own tile hip roof.
 
+**Closed rings** (owner's panoramas): every block of these halls is joined to the next, north, east, south and
+west. The mapped footprints leave gaps between them, so each gap of up to 15 m between two facing blocks gets a
+joining block of the lower of the two heights; where a path runs through the gap, the join is a gateway raised over
+an open passage. The wide openings in the middle of the long courts stay open, as the panoramas show.
+
 - **Mensah Sarbah Hall:** the four cross-shaped blocks round the court have **three floors** (owner); white with
-  maroon window frames; the fountain in the middle of the court with walks to it, palms and bushes. The entrance is
-  the **Administration and Porters' Lodge** on the north side (owner's red mark): toward the semicircular drive, two
-  rows of small windows and the **gate** in the middle (blue); on the court side one tall storey of seven louvred
-  windows over a stone wall and steps, a raised roof with the **lantern** on it, and a **doorway at each end** (the
-  owner's two blue marks, recorded as side entrances). An earlier note took the lantern building for the dining
-  hall; the owner's photos put it on the entrance building. The dining hall (south) keeps the generic builder.
-- **Akuafo Hall and Legon Hall** (twins either side of the avenue): **two-storey** blocks, as both entrance photos
-  show (the source heights were estimates from footprint size), in lanes and bars round long courts with a walk
-  down the middle, palms and bushes. **Akuafo's** entrance is the gatehouse on the north: square windows under the
-  eaves, dark doors between white piers over a teal base, the gate (owner's blue mark) into the round fountain
-  court. **Legon's** is its north block: three arches on the ground floor with the entrance in the middle one (blue),
-  a recessed balcony above, banners.
+  maroon window frames; the fountain in the middle of the court with walks to it, palms and bushes.
+  - **Entrance** (owner's blue mark on the aerial and the panorama): the **Administration and Porters' Lodge** on the
+    north, two storeys with a small lantern on its hip roof, the **gate** in the middle of its front toward the
+    semicircular drive, joined to the wings either side.
+  - **Dining hall**, across the court on the south: one tall storey of seven tall louvred windows over a stone
+    terrace and steps, a raised clerestory roof with the tall **gold lantern**, a doorway at each end, and lower
+    two-storey wings either side joined to the south arms (owner's court photo and panorama). An earlier version
+    put this building's look on the lodge; the panorama shows the two apart.
+- **Akuafo Hall and Legon Hall** (twins either side of the avenue): **two-storey** blocks (owner), in lanes and bars
+  round long courts with a walk down the middle, palms and bushes, all joined into one ring. **Akuafo's** entrance is
+  the gatehouse on the north (the owner's blue mark on the panorama): square windows under the eaves, dark doors
+  between white piers over a teal base, the gate into the round fountain court. **Legon's** is its north block:
+  three arches on the ground floor with the entrance in the middle one (blue), a recessed balcony above, banners.
+
+## 11. The Athletic Oval
+
+Between Legon Hall and Akuafo Hall, south of Maison Française (owner's panoramas; the mapped track and pitches are
+drawn by the model instead of as flat areas, `Spec.covers`).
+
+- **The oval:** a worn earth running track round a dry grass **football pitch** with its markings and two goals;
+  tiered concrete **seating** along the east side and round the south-east bend; trees along the north and west.
+- **West of it**, north to south: the **sand volleyball** court below Maison Française, the two fenced **tennis**
+  courts, a small single-storey shed, and the big **handball** court (blue on green, goal areas at both ends).
+- **East**, along the road: two **basketball** courts; **north-east**, by Akuafo, the fenced basketball court.
+- **Maison Française**, the building on the oval's north side (circled yellow by the owner), is **one floor**.
+- Five satellite-detected outlines drawn as buildings on the pitch, the courts and the strip between them are
+  excluded (`corrections.json → exclude`); satellite-detected outlines can now take a height from the owner too.
 
 ## Explore: drone view
 

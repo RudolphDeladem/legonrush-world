@@ -155,6 +155,11 @@ try {
     const r = rt.exploreRoute(balme, to, 'cycle'), g = r && rt.guideStops(r);
     if (r && g[g.length - 1]?.place !== to) fail(`Explore: the ride to ${to.name} has no arrival stop`);
   }
+  // the Athletic Oval (owner): open ground round the track and courts, and Maison Française north of it is one floor
+  for (const [x, z] of [[0, 351], [-82, 378], [-75, 427], [66, 280]]) if (buildingAt(x, z)) fail(`Athletic Oval: a building stands on its fields at ${x},${z}`);
+  const maison = BUILDINGS.find((b) => b.name === 'Maison Francais');
+  if (!maison || maison.height > 5) fail('Maison Française (north of the Athletic Oval) is not one floor');
+  if ((await server.ssrLoadModule('/src/game/athletics.ts')).athletics.frames().length !== 1) fail('expected the Athletic Oval model');
   const bankModels = (await server.ssrLoadModule('/src/game/banking.ts')).banking.frames();
   if (bankModels.length !== 3) fail(`expected the bank compound, the Union Building and the ADB/HFC block, found ${bankModels.length}`);
   const hostels = (await server.ssrLoadModule('/src/game/hostels.ts')).hostels.frames();

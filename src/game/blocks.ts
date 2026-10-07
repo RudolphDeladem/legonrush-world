@@ -131,6 +131,8 @@ export interface Spec {
   /** on sloping ground (relief.ts): each block stands on the lowest ground under its corners, and the
    *  extras place things with Kit.ground; the model is not lifted as a whole */
   onGround?: boolean;
+  /** world points inside mapped ground areas (pitches, tracks) the model draws itself: the flat area is not drawn */
+  covers?: [number, number][];
 }
 export interface Kit { plain: Part[]; glass: THREE.BufferGeometry[]; roof: Roof; signs: { text: string; x: number; y: number; z: number; ry: number; w: number; colors?: [string, string] }[]; meshes: THREE.Mesh[]; wallTop: (floors: number) => number; storey: number;
   /** the height of the ground at a point of the model frame (0 unless the site stands on relief) */
@@ -318,6 +320,10 @@ export function createSite(name: string, specs: Spec[]) {
         for (const [x0, x1, z0, z1] of f.spec.keep) if (lx > x0 - pad && lx < x1 + pad && lz > z0 - pad && lz < z1 + pad) return true;
       }
       return false;
+    },
+    /** a mapped ground area the models draw themselves (Spec.covers) */
+    coversArea(pts: Float32Array) {
+      return specs.some((s) => (s.covers ?? []).some(([x, z]) => inRing(pts, x, z)));
     },
     /** where each model stands (model frame: x along the axis) */
     frames: () => frames.map((f) => ({ name: f.spec.name, cx: f.cx, cz: f.cz, ux: f.ux, uz: f.uz })),

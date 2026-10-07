@@ -269,6 +269,7 @@ export function buildCampus() {
   const areaBuf = new Map<string, { pos: number[]; idx: number[] }>();
   for (const a of AREAS) {
     if (!AREA_COLOR[a.kind]) continue; // lawns and parks: the ground is already grass
+    if (BLOCK_SITES.some((s) => s.coversArea(a.pts))) continue; // drawn by a model (the athletic oval's track and courts)
     const contour: THREE.Vector2[] = [];
     for (let i = 0; i < a.pts.length; i += 2) contour.push(new THREE.Vector2(a.pts[i], a.pts[i + 1]));
     const tris = THREE.ShapeUtils.triangulateShape(contour, []);
