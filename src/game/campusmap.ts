@@ -257,6 +257,31 @@ export function buildingAt(x: number, z: number, pad = 0): Building | undefined 
   }
   return undefined;
 }
+/** distance from (x, z) to a ring's nearest edge */
+function ringDist(pts: Float32Array, x: number, z: number) {
+  let best = Infinity;
+  for (let i = 0, j = pts.length - 2; i < pts.length; j = i, i += 2) {
+    const ax = pts[j], az = pts[j + 1], dx = pts[i] - ax, dz = pts[i + 1] - az, l2 = dx * dx + dz * dz || 1;
+    const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+    best = Math.min(best, Math.hypot(x - ax - dx * t, z - az - dz * t));
+  }
+  return best;
+}
+/**
+ * The building whose actual outline (x, z) is inside or within `pad` metres of, courtyards excepted.
+ * buildingAt's pad widens the whole bounding box, which for a building set at an angle (the Diaspora
+ * halls) covers the roads round it; this is the check for something moving (Explore's free ride).
+ */
+export function buildingNear(x: number, z: number, pad = 0): Building | undefined {
+  for (const i of bgrid.get(`${Math.floor(x / BCELL)},${Math.floor(z / BCELL)}`) ?? []) {
+    const b = BUILDINGS[i];
+    if (x < b.minX - pad || x > b.maxX + pad || z < b.minZ - pad || z > b.maxZ + pad) continue;
+    const hole = b.holes.find((h) => inside(h, x, z));
+    if (hole) { if (ringDist(hole, x, z) < pad) return b; continue; }
+    if (inside(b.pts, x, z) || ringDist(b.pts, x, z) < pad) return b;
+  }
+  return undefined;
+}
 
 // ---------- road graph ----------
 export type TravelMode = 'cycle' | 'walk' | 'drive';

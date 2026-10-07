@@ -9,9 +9,9 @@ import { buildLandmarks } from './landmarks';
 import { groundHeight, inStairs } from './relief';
 import { Tufts } from './tufts';
 import { buildCampus, buildRouteLayer, buildSky, disposeLayer, lampGlow, LANES, ROAD_HALF } from './world';
-import { AREAS, buildingAt, mapBounds } from './campusmap';
+import { AREAS, buildingAt, buildingNear, mapBounds } from './campusmap';
 import { solidAt } from './solids';
-import { setNightLights } from './life';
+import { roadClearance, setNightLights } from './life';
 import { createWeatherFx, type WeatherFx } from './weatherfx';
 
 /** 'pedal' is one tap of the pedal; see Game.pedal() for press/release */
@@ -253,9 +253,16 @@ const inPts = (pts: Float32Array, x: number, z: number) => {
   }
   return c;
 };
-/** where a free-ridden bike can't go: buildings, trees, woods, water, stairs, and off the map */
+/**
+ * Where a free-ridden bike can't go: stairs; and off the roads, buildings (their real outlines, not
+ * their bounding boxes), trees, woods and water. Every mapped road and path is rideable end to end: a
+ * tree at its edge, a wood or water area mapped across it, or a building outline it runs through (an
+ * archway, a gate canopy, a passage) doesn't close it.
+ */
 function freeBlocked(x: number, z: number) {
-  if (buildingAt(x, z, 0.35) || solidAt(x, z, 0.3) || inStairs(x, z)) return true;
+  if (inStairs(x, z)) return true;
+  if (roadClearance(x, z, 6, -1, true) <= 0) return false;
+  if (buildingNear(x, z, 0.35) || solidAt(x, z, 0.3)) return true;
   if (!wilds) {
     wilds = AREAS.filter((a) => a.kind === 'wood' || a.kind === 'water').map((a) => {
       let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;

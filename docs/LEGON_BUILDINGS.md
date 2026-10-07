@@ -453,7 +453,11 @@ bike and the rider steers it anywhere a bike can go (`Game.freeRide`).
 - **Brake** (↓ / S): **a tap** stops pedalling and brings the bike to a stop; **holding** it on once stopped rolls the
   bike **backwards** (the button reads Reverse; steering swings the bike the other way, as when walking it back);
   letting go stops it. Pedalling only ends with the brake.
-- The bike slows uphill and rolls on downhill. Buildings, trees and palms (campus, gardens and the route's own;
-  `src/game/solids.ts`), woods, water, stairways, and walls or banks too steep to ride stop it, forwards or
-  backwards; it slides along an edge it meets at an angle. The chase camera follows.
+- The bike slows uphill and rolls on downhill. **Every mapped road and path is rideable end to end**: only a
+  stairway closes it (a tree at its edge, a wood or water area mapped across it, or a building outline it runs
+  through, such as an archway or a gate canopy, doesn't). Off the roads, buildings (by their real outlines,
+  `buildingNear`; their bounding boxes, used for placing props, cover the roads round a building set at an angle
+  such as the Diaspora halls), trees and palms (campus, gardens and the route's own; `src/game/solids.ts`), woods,
+  water and banks too steep to ride stop it, forwards or backwards; it slides along an edge it meets at an angle.
+  The chase camera follows.
 - **Finish ride** ends the ride as arriving does.

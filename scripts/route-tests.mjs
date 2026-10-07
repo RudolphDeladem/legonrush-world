@@ -168,6 +168,10 @@ try {
   }
   if (buildingAt(-124, 492)) fail('Legon Hall annexes: a building stands on the lawns east of Annex C (the owner: there is none)');
   if ((await server.ssrLoadModule('/src/game/annexes.ts')).annexes.frames().length !== 7) fail('expected the seven annex models');
+  // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
+  // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)
+  for (const [x, z] of [[95, 1573], [-88, 1676], [210, 1509], [200, 1500]]) if (cm.buildingNear(x, z, 0.35)) fail(`free ride: the road at ${x},${z} is blocked by ${cm.buildingNear(x, z, 0.35).name ?? 'a building'}`);
+  if (!cm.buildingNear(182.5, 1632.5, 0.35)) fail('free ride: a Diaspora hall (the east wing of Kwapong) does not block the bike');
   const bankModels = (await server.ssrLoadModule('/src/game/banking.ts')).banking.frames();
   if (bankModels.length !== 3) fail(`expected the bank compound, the Union Building and the ADB/HFC block, found ${bankModels.length}`);
   const hostels = (await server.ssrLoadModule('/src/game/hostels.ts')).hostels.frames();
