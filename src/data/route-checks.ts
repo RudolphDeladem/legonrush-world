@@ -21,6 +21,7 @@ export const ROUTE_CHECKS: RouteCheck[] = [
   { from: 'University Square', to: 'Night Market', maxLength: 1400, expect: 'South across the avenue past the halls to the market frontage on Jubilee Link.' },
   { from: 'Great Hall', to: 'University of Ghana banking square', maxLength: 2400, expect: 'Down Legon Hill and south to the Banking Square car park, arriving facing the banks.' },
   { from: 'School of Engineering Sciences', to: 'The Balme Library', maxLength: 1000, expect: 'From the engineering school to the library front, not the road behind it.' },
+  { from: 'The Balme Library', to: 'Commonwealth Hall', maxLength: 1200, expect: 'West along the avenue to the foot of Legon Hill; on foot between the gate houses and up the stairway to the gate in the front block (riders and taxis take the drive round to the forecourt).' },
   { from: 'Commonwealth Hall', to: 'Great Hall', maxLength: 1200, expect: 'From the hall up the axial road to the Convocation courtyard and the Great Hall\'s east front.' },
   { from: 'Akuafo Hall Main', to: 'Night Market', maxLength: 1100, expect: 'Out of the Akuafo gatehouse forecourt onto the avenue, then south past Sarbah and Valco to the north end of the market.' },
   { from: 'University of Ghana Botanical Gardens', to: 'University Square', maxLength: 2600, expect: 'Out of the gardens by their main entrance road, through the gardens on the paved drive, not the woodland trails.' },

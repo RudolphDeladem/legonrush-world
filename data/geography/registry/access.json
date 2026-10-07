@@ -16,7 +16,8 @@
   "owner-vikings-law": "The owner's photos of Mensah Sarbah Vikings Hostel (front with the entrances marked, the south end, an aerial with the entrances marked) and of the School of Law (two views of the entrance rotunda with the doors marked), with the earlier layout photos of both",
   "owner-engineering": "The owner's satellite layout of the School of Engineering Sciences with the entrance (blue), the aeroplane enclosure (green) and the car park (red) marked, the owner's reference render with the entrance porch marked, and two photos of the front with the entrance marked",
   "owner-intl-house": "The owner's photo of International House (entrance marked) and aerial of it with the School of Law (entrance and the wooded zones marked), registered to the OSM footprints at 4.4 px/m",
-  "owner-pentagon": "The owner's aerial of Pentagon with the New Pent blocks (A, B, C), the Old Pent courts (D, K, AA, N) and the admin block (AD) labelled and their entrances marked, registered to the OSM footprints (2.5 px/m), and photos of a New Pent block, an Old Pent court and the admin block (entrances marked)"
+  "owner-pentagon": "The owner's aerial of Pentagon with the New Pent blocks (A, B, C), the Old Pent courts (D, K, AA, N) and the admin block (AD) labelled and their entrances marked, registered to the OSM footprints (2.5 px/m), and photos of a New Pent block, an Old Pent court and the admin block (entrances marked)",
+  "owner-commonwealth": "The owner's photos of Commonwealth Hall (the gate houses and stairway from the road, the stairs, the main entrance with its gate marked, the front from above) and its aerial with the two- and three-storey parts marked, registered to the OSM footprints (1 px/m, front to the east)"
  },
  "campusGates": [
   {
@@ -410,21 +411,44 @@
   {
    "place": "Commonwealth Hall",
    "entrance": {
-    "side": "east"
+    "at": [
+     -490.0,
+     127.4
+    ]
    },
    "type": "hall entrance",
-   "status": "partial",
-   "confidence": "medium",
-   "cite": "ug-legon-campus",
-   "approach": "Up the avenue to its western end at the hall.",
-   "evidence": "UG: 'the University Avenue extends to Commonwealth Hall on Legon Hill'. commonwealth_hall_entrance_1-3: a porch at the top of wide steps from a drive where cars park. The oblique layout photos are not north-up, so which end they show cannot be fixed; the east end on the avenue axis is kept.",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-commonwealth",
+   "arrival": {
+    "way": "way/492729895",
+    "near": [
+     -475.2,
+     128
+    ]
+   },
+   "approach": "On foot: between the two gate houses at the end of the avenue and up the long stairway to the drive, then into the main entrance (the gate in the middle of the front block). By road: the drive round the front.",
+   "evidence": "Owner: the two single-storey gate houses mark the way into the Commonwealth grounds; between them the stairway climbs the hill to the main entrance, whose gate is in the middle of the two-storey front block (owner's photos, gate marked). The aerial (registered) puts the front block across the east end, on the avenue axis.",
    "refs": [
-    "commonwealth_hall_entrance_1_labeled.png",
-    "commonwealth_hall_entrance_2_labeled.png",
-    "commonwealth_hall_entrance_3_labeled.png",
-    "commonwealth_hall_building_layout_1_labeled.png",
-    "commonwealth_hall_building_layout_2_labeled.png"
-   ]
+    "commonwealth_gatehouses_and_stairs (owner photo)",
+    "commonwealth_stairs (owner photo)",
+    "commonwealth_main_entrance (owner photo, gate marked)",
+    "commonwealth_aerial (owner, storeys marked)",
+    "commonwealth_front_from_above (owner photo)"
+   ],
+   "secondary": [
+    {
+     "label": "the gate houses at the foot of the stairway",
+     "type": "pedestrian",
+     "at": [
+      -366,
+      128
+     ],
+     "evidence": "Owner's photo: two small single-storey buildings either side of the foot of the stairway, by the road at the end of the avenue.",
+     "free": true
+    }
+   ],
+   "footprint": "osm:way/603511025"
   },
   {
    "place": "Elizabeth Frances Sey Hall",

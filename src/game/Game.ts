@@ -892,9 +892,22 @@ export class Game {
     this.onAction(a);
   }
 
+  /**
+   * Explore: a drone's view of the place the ride arrived at. The camera climbs from behind the rider
+   * and circles high over the place, looking down at it, until droneView(null) brings it back down.
+   */
+  droneView(at: { x: number; z: number } | null) {
+    if (!at) { this.drone = null; return; }
+    const r = this.rider.root.position;
+    this.drone = { x: at.x, z: at.z, a: Math.atan2(r.x - at.x, r.z - at.z) };
+  }
+  get droning() { return !!this.drone; }
+  private drone: { x: number; z: number; a: number } | null = null;
+
   /** Guided ride: move on from the place it stopped at. */
   continueTour() {
     if (!this.guideWait) return;
+    this.drone = null;
     this.guideWait = false;
     this.guideIdx++;
     this.onGuide(null);
@@ -926,6 +939,7 @@ export class Game {
     this.braking = false;
     this.guideIdx = this.guideLook = 0;
     this.guideWait = false;
+    this.drone = null;
     this.lane = 1;
     this.paused = false;
     this.rec = { step: GHOST_STEP, d: [], x: [] };
@@ -1760,6 +1774,17 @@ export class Game {
     } else if (this.phase === 'cinematic') {
       cam.position.copy(this.cine.pos);
       cam.lookAt(this.cine.look);
+    } else if (this.drone && this.phase !== 'showcase') {
+      // drone view: circle the place 95 m out and 60 m up, looking down at it
+      const dr = this.drone;
+      if (!this.reducedMotion) dr.a += dt * 0.09;
+      const gy = groundHeight(dr.x, dr.z);
+      this.camTarget.set(dr.x + Math.sin(dr.a) * 95, gy + 60, dr.z + Math.cos(dr.a) * 95);
+      cam.position.lerp(this.camTarget, Math.min(1, dt * 1.2));
+      cam.lookAt(dr.x, gy + 4, dr.z);
+      const fov = innerWidth < innerHeight ? 66 : 52;
+      cam.fov += (fov - cam.fov) * Math.min(1, dt * 3);
+      cam.updateProjectionMatrix();
     } else if (this.phase === 'showcase' && this.bikeView) {
       this.garageCamera(this.bikeView, dt);
     } else if (this.phase === 'showcase') {

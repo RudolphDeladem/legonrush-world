@@ -15,8 +15,9 @@ the map still use it), the generic builder skips it, and its model is placed on 
 | 5 | School of Engineering Sciences, and the hill it stands below | `src/game/engineering.ts`, `src/game/relief.ts` | owner's marked layout, reference render, photos (2) |
 | 6 | Diaspora Dome, International House, woods round the School of Law; no building between Kwapong and Sey | `src/game/dome.ts` | owner aerials (2, registered), photos (3) |
 | 7 | Pentagon: Old Pent courts, the admin block, New Pent blocks A, B, C | `src/game/pentagon.ts` | owner's labelled aerial (registered), photos (3) |
+| 8 | Commonwealth Hall, its stairway and gate houses, and Legon Hill | `src/game/commonwealth.ts`, `src/game/relief.ts` | owner's labelled aerial (registered), photos (4) |
 
-Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 to 7) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
+Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 to 8) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
 
 ## 1. The Diaspora halls
 
@@ -292,3 +293,60 @@ corrected in `naming.json`; the code's references and aliases follow.
 
 **Open points:** the New Pent wings keep the generic window pattern (cream render, brown-framed windows); the
 brick-red panels on some walls are not modelled.
+
+## 8. Commonwealth Hall and Legon Hill
+
+The owner's aerial (the purple-marked layout) was registered to the OSM and Google footprints by roof colour
+(IoU 0.47; the image's bottom is east, toward the stairs).
+
+### The hill (`src/game/relief.ts`)
+
+Commonwealth stands on **Legon Hill**, which rises west from the end of University Avenue (x = -362, still level
+with the campus) through the hall to the Great Hall at the top (the shape of the Copernicus DEM, eased): about
+**9 m** at the drive in front of the gate, **15.5 m** at the hall's west end, **21 m** at the Great Hall, then down
+behind it; it falls away to the sides over 140 m. The **stairway** from the gate houses to the drive climbs the
+9 m in **seven flights of nine steps** with landings between (the ground there is the stair surface, so the rider
+walking up climbs step by step; the ground mesh keeps just under the modelled steps). The Great Hall's tower and
+everything else on the hill stand on it. Route tests check the rise from the avenue to the forecourt, through the
+hall and on to the Great Hall, and that the avenue below the stairs and the campus beside the hill stay flat.
+
+### The approach
+
+- **Gate houses** (owner photo, picture 1): two single-storey white houses with dark hip roofs and blue signs either
+  side of the foot of the stairway, by the road; low stone walls and paving between them. The way in between them is
+  a secondary entrance of the hall (`access.json → secondary`, `free`: it stays where the owner marks it rather than
+  snapping to the hall's outline).
+- **Stairway** (owner photos): mapped as a footway of steps (`corrections.json → addWays`, snapped onto the road at
+  the foot and the drive at the top); modelled step by step between stone walls that step with it, palms either
+  side, two pools on the first landing, and the **stone arches** under the forecourt at the top, which the walk
+  passes on the north.
+- **Forecourt:** red paving in front of the gate with the crest ring, a low stone wall along its edge; the drive
+  crosses it.
+
+### The hall
+
+- **Heights** (owner): the **front** row, entrance included, is **two storeys**; inside, the **horizontal** blocks
+  on the owner's aerial (the purple lines: the crossbars either side of the central court and the shorter stubs
+  further along) are **three storeys**, one floor above the **vertical lanes**, which are **two storeys**
+  (`corrections.json → heights`).
+- **Plan** (registered aerial): two pairs of lanes run west from the front row, a long crossbar either side of the
+  central court, stubs across the lanes further along, two-storey pavilions on the central walk (a passage through
+  each), the library across the walk at the top of the court, the amphitheatre beyond it.
+- **On the hill:** every block stands on the ground under it; the lanes are built in lengths between the bars that
+  cross them, so they step up the slope (`Spec.onGround` in `blocks.ts`).
+- **Entrance** (owner's red and blue marks, pictures 1 to 3): the gate in the middle of the two-storey entrance
+  block, facing east down the stairs: a portico of two white columns under a lattice frieze, stone plinths with the
+  hall crest either side of the steps; on the court side tall narrow windows through the upper floor over a canopy
+  slab; a lantern and a brick stack on the roof. The lanes end either side of it in gables facing the forecourt.
+- **Look:** white render, dark windows in brown frames, orange tile hip roofs with white eaves.
+- **Gardens:** lawns, hedges, flowering bushes and palms along the walk through the courts; trees and bushes all
+  round the hall and on the slopes either side of the stairway.
+
+**Open points:** the dining hall and the chapel keep the generic builder; the amphitheatre is drawn from the aerial only.
+
+## Explore: drone view
+
+When an Explore ride arrives, the arrived card offers **Drone view**: the camera climbs from behind the rider and
+circles 95 m out and 60 m above the destination, looking down at it (it turns more slowly with reduced motion).
+**Back to street view** returns to the rider; **Done** ends the tour as before.
+

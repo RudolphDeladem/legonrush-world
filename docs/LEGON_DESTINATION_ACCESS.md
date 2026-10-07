@@ -94,7 +94,7 @@ upgrade them automatically.
 | University Square | south edge, on the avenue | the square's footways | UG: "mid-way [along the avenue] is an open space, the University Square" |
 | Banking Square | façade facing "Banking Square Parking" | the car park drive | OSM car park named for the bank complex |
 | Great Hall | west façade at the two turning circles | summit loop | OSM vehicle turning circles at the west façade (drop-off). Unresolved alternative: a ceremonial east front on the avenue axis |
-| Commonwealth Hall | east side, facing down the avenue | service road | UG: "the University Avenue extends to Commonwealth Hall" |
+| Commonwealth Hall | the gate in the entrance block at the top of the stairway, facing down the avenue | the drive in front of it; on foot, the stairway from the gate houses | owner's marked photos and aerial; UG: "the University Avenue extends to Commonwealth Hall" |
 | Mensah Sarbah Hall | its "Administration and Porters' Lodge" | hall service loop | OSM building of that name; Radio Univers: the CC is "right in front of Mensah Sarbah Hall" |
 | Elizabeth Sey Hall | façade facing "Sey frontage" | service road | OSM forecourt car park named "Sey frontage" |
 

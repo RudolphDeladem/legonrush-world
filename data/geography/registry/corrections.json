@@ -1,5 +1,5 @@
 {
-  "about": "Source features that the evidence shows are wrong. 'exclude': they stay in the master dataset (flagged, confidence low) but are kept out of the game map; a feature is only excluded when independent evidence contradicts it. 'heights': storey counts and heights that reference photos contradict (the footprint is not touched). 'reclass': ground areas whose mapped use the reference photos and the owner contradict (the outline is kept). 'reshape': an outline that sits off the building Google Open Buildings and the owner's imagery show is replaced by a measured ring (game metres); the OSM id and tags stay. 'addAreas': ground areas the owner's imagery shows and the sources lack (woods round the School of Law and International House), measured on the registered imagery.",
+  "about": "Source features that the evidence shows are wrong. 'exclude': they stay in the master dataset (flagged, confidence low) but are kept out of the game map; a feature is only excluded when independent evidence contradicts it. 'heights': storey counts and heights that reference photos contradict (the footprint is not touched). 'reclass': ground areas whose mapped use the reference photos and the owner contradict (the outline is kept). 'reshape': an outline that sits off the building Google Open Buildings and the owner's imagery show is replaced by a measured ring (game metres); the OSM id and tags stay. 'addAreas': ground areas the owner's imagery shows and the sources lack (woods round the School of Law and International House), measured on the registered imagery. 'addWays': ways the owner's photos show and the sources lack (Commonwealth's stairway from the gate houses to the forecourt); their ends are inserted into the way they meet so the network stays connected.",
   "exclude": [
     {
       "id": "osm:way/765261444",
@@ -410,6 +410,69 @@
       "levels": 4,
       "height": 16,
       "reason": "Owner's photo of the Pent admin block: a ground-floor veranda and three floors above, two gabled towers either side of a recessed centre."
+    },
+    {
+      "id": "osm:way/320072519",
+      "place": "Commonwealth Hall (wings with their cross blocks)",
+      "levels": 3,
+      "height": 12,
+      "reason": "Owner: Commonwealth's long east-west lanes are two storeys and the north-south cross blocks three (one floor above); these outlines hold both, so they carry the higher. The hall steps up the hill (src/game/relief.ts, src/game/commonwealth.ts)."
+    },
+    {
+      "id": "osm:way/320072522",
+      "place": "Commonwealth Hall (wings with their cross blocks)",
+      "levels": 3,
+      "height": 12,
+      "reason": "Owner: Commonwealth's long east-west lanes are two storeys and the north-south cross blocks three (one floor above); these outlines hold both, so they carry the higher. The hall steps up the hill (src/game/relief.ts, src/game/commonwealth.ts)."
+    },
+    {
+      "id": "osm:way/565872083",
+      "place": "Commonwealth Hall (wings with their cross blocks)",
+      "levels": 3,
+      "height": 12,
+      "reason": "Owner: Commonwealth's long east-west lanes are two storeys and the north-south cross blocks three (one floor above); these outlines hold both, so they carry the higher. The hall steps up the hill (src/game/relief.ts, src/game/commonwealth.ts)."
+    },
+    {
+      "id": "osm:way/603511029",
+      "place": "Commonwealth Hall (wings with their cross blocks)",
+      "levels": 3,
+      "height": 12,
+      "reason": "Owner: Commonwealth's long east-west lanes are two storeys and the north-south cross blocks three (one floor above); these outlines hold both, so they carry the higher. The hall steps up the hill (src/game/relief.ts, src/game/commonwealth.ts)."
+    },
+    {
+      "id": "osm:way/565872085",
+      "place": "Commonwealth Hall (front block, entrance, links, end building)",
+      "levels": 2,
+      "height": 9,
+      "reason": "Owner: the front of Commonwealth, the entrance included, is two storeys."
+    },
+    {
+      "id": "osm:way/603511023",
+      "place": "Commonwealth Hall (front block, entrance, links, end building)",
+      "levels": 2,
+      "height": 9,
+      "reason": "Owner: the front of Commonwealth, the entrance included, is two storeys."
+    },
+    {
+      "id": "osm:way/603511025",
+      "place": "Commonwealth Hall (front block, entrance, links, end building)",
+      "levels": 2,
+      "height": 9,
+      "reason": "Owner: the front of Commonwealth, the entrance included, is two storeys."
+    },
+    {
+      "id": "osm:way/603511027",
+      "place": "Commonwealth Hall (front block, entrance, links, end building)",
+      "levels": 2,
+      "height": 9,
+      "reason": "Owner: the front of Commonwealth, the entrance included, is two storeys."
+    },
+    {
+      "id": "osm:way/320072526",
+      "place": "Commonwealth Hall (front block, entrance, links, end building)",
+      "levels": 2,
+      "height": 9,
+      "reason": "Owner: the front of Commonwealth, the entrance included, is two storeys."
     }
   ],
   "reclass": [
@@ -651,6 +714,44 @@
         ]
       ],
       "reason": "Owner's aerial of the School of Law and International House with the wooded zones circled (registered to the OSM footprints at 4.4 px/m)."
+    }
+  ],
+  "addWays": [
+    {
+      "id": "owner:commonwealth-stairs",
+      "highway": "steps",
+      "name": "Commonwealth Hall stairs",
+      "pts": [
+        [
+          -358.8,
+          128
+        ],
+        [
+          -372,
+          128
+        ],
+        [
+          -440,
+          128
+        ],
+        [
+          -446,
+          121
+        ],
+        [
+          -458,
+          121
+        ],
+        [
+          -464,
+          128
+        ],
+        [
+          -475.2,
+          128
+        ]
+      ],
+      "reason": "Owner's photos: from the two gate houses on the road at the end of the avenue, a long stairway climbs Legon Hill to the drive in front of Commonwealth Hall's main entrance; near the top it passes either side of a stone structure with three arches."
     }
   ]
 }

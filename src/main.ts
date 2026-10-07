@@ -1495,13 +1495,23 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     let full = false;
     const draw = () => {
       guideCard.classList.toggle('arrived', arrived);
-      guideCard.innerHTML = arrived
+      // in the drone view the card folds down to a bar, so the view stays clear
+      const droning = arrived && game.droning;
+      guideCard.classList.toggle('droning', droning);
+      guideCard.innerHTML = droning
+        ? `<p class="kicker">Drone view · ${esc(g.entry.title)}</p>
+          <div class="row gc-actions">
+            <button class="btn btn-ghost" id="gcDrone" aria-pressed="true">Back to street view</button>
+            <button class="btn btn-primary" id="gcGo">Done</button>
+          </div>`
+        : arrived
         ? `<p class="gc-arrived">${icons.check} Arrived</p>
           <div class="row gc-head"><span class="kind-icon" title="${esc(label)}">${icon}</span><div><h2>${esc(g.entry.title)}</h2><small class="muted">University of Ghana · ${esc(label)}</small></div></div>
           ${full ? infoHtml(g.place, true) : `<p>${esc(g.entry.intro)}</p>`}
           <div class="row gc-actions">
             ${canSpeak ? `<button class="btn btn-ghost btn-sm" id="gcSay">${icons.megaphone} Read aloud</button>` : ''}
             ${full ? '' : '<button class="btn btn-ghost" id="gcMore">Learn more</button>'}
+            <button class="btn btn-ghost" id="gcDrone" aria-pressed="false">Drone view</button>
             <button class="btn btn-primary" id="gcGo">Done</button>
           </div>`
         : `<p class="kicker">Stop ${i + 1} of ${guide.length} · ${i === 0 ? 'You start at' : 'Now passing'}</p>
@@ -1515,6 +1525,8 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
       guideCard.scrollTop = 0;
       guideCard.querySelector('#gcSay')?.addEventListener('click', () => say(sayText(g.place)));
       guideCard.querySelector('#gcMore')?.addEventListener('click', () => { full = true; draw(); });
+      // arrived: the rider can send a drone up for a view of the place from above
+      guideCard.querySelector('#gcDrone')?.addEventListener('click', () => { game.droneView(game.droning ? null : g.place); draw(); });
       guideCard.querySelector('#gcGo')!.addEventListener('click', () => game.continueTour());
     };
     draw();

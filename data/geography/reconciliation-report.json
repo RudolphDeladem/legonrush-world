@@ -69,7 +69,7 @@
  "roads": {
   "junctions": 1207,
   "roundabouts": 18,
-  "count": 1550,
+  "count": 1551,
   "kmByClass": {
    "service": 70.6,
    "residential": 65.6,
@@ -82,8 +82,8 @@
    "track": 3.8,
    "trunk_link": 1.4,
    "tertiary_link": 0.4,
-   "secondary_link": 0.1,
-   "steps": 0
+   "steps": 0.1,
+   "secondary_link": 0.1
   },
   "fromSupplement": 414
  },

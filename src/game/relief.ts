@@ -1,40 +1,100 @@
-// Local ground relief on an otherwise flat campus. Each zone is a flat floor sunk below the
-// surrounding ground, with straight slopes rising back to ground level round it. Only the
-// School of Engineering Sciences has one for now: the owner's photos and reference render
-// show the building below the road, reached by going down a gentle hill from the road on
-// the south.
+// Local ground relief on an otherwise flat campus. Everything that stands on the ground asks
+// groundHeight(x, z): the ground patch, roads, verges, areas, props, the ridden route, the rider,
+// rivals, coins and the camera. It is 0 everywhere outside the zones, so the rest of the campus is
+// untouched.
 //
-// Everything that stands on the ground asks groundHeight(x, z): the ground patch, roads,
-// verges, areas, props, the ridden route, the rider, rivals, coins and the camera. It is 0
-// everywhere outside the zones, so the rest of the campus is untouched.
+// Two kinds of zone:
+// - a hollow: a flat floor sunk below the surrounding ground with straight slopes back up (the
+//   School of Engineering Sciences, below the road on its south);
+// - Legon Hill: a ridge along the University Avenue axis rising west from the end of the avenue,
+//   gently through Commonwealth Hall and on to the Great Hall at the top (the shape of the
+//   Copernicus DEM, eased), falling away to the sides. Commonwealth's stairway from the gate
+//   houses to the drive climbs it in terraced flights (the ground there is the stair surface).
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-interface Zone {
+interface Hollow {
+  kind: 'hollow';
   /** the sunken floor: x0..x1, z0..z1 (game metres) and how far below ground it is */
   x0: number; x1: number; z0: number; z1: number; depth: number;
   /** length of the slope on each side: west, east, north (z0 side), south (z1 side) */
   w: number; e: number; n: number; s: number;
 }
+interface Hill {
+  kind: 'hill';
+  /** height along x (piecewise linear, 0 at both ends) */
+  profile: [number, number][];
+  /** the ridge line, how far either side it keeps its full height, and how far it then falls away */
+  zc: number; full: number; fall: number;
+  /** stairs: x from the foot (x0) up to the top (x1), z0..z1, in flights of `steps` steps of `tread` m */
+  stairs?: { x0: number; x1: number; z0: number; z1: number; flights: number; steps: number; tread: number };
+}
+type Zone = Hollow | Hill;
 
 const ZONES: Zone[] = [
   // School of Engineering Sciences: the building, its forecourt and the car park on the floor;
   // the access road from the main road on the south comes down the 28 m slope
-  { x0: 372, x1: 498, z0: -458, z1: -372, depth: 4.5, w: 22, e: 20, n: 20, s: 28 },
+  { kind: 'hollow', x0: 372, x1: 498, z0: -458, z1: -372, depth: 4.5, w: 22, e: 20, n: 20, s: 28 },
+  // Legon Hill: the end of the avenue (x -362) at 0; Commonwealth's stairway climbs 9 m to the drive and
+  // the front block (x -464 to -500); the hall rises 6 m more to its west end; the Great Hall's summit
+  // about 21 m up; then down again behind it
+  {
+    kind: 'hill', zc: 128, full: 150, fall: 140,
+    profile: [[-1260, 0], [-1160, 11], [-1060, 21], [-960, 21], [-900, 19.5], [-780, 16.5], [-740, 15.5], [-500, 9.3], [-488, 9], [-464, 9], [-372, 0], [-362, 0]],
+    stairs: { x0: -372, x1: -464, z0: 118, z1: 138, flights: 7, steps: 9, tread: 0.4 },
+  },
 ];
 
-/** the area each zone touches, floor and slopes */
-export const RELIEF_BOXES = ZONES.map((z) => ({ x0: z.x0 - z.w, x1: z.x1 + z.e, z0: z.z0 - z.n, z1: z.z1 + z.s }));
+const boxOf = (q: Zone) => q.kind === 'hollow'
+  ? { x0: q.x0 - q.w, x1: q.x1 + q.e, z0: q.z0 - q.n, z1: q.z1 + q.s }
+  : { x0: Math.min(...q.profile.map((p) => p[0])), x1: Math.max(...q.profile.map((p) => p[0])), z0: q.zc - q.full - q.fall, z1: q.zc + q.full + q.fall };
+/** the area each zone touches */
+export const RELIEF_BOXES = ZONES.map(boxOf);
 
-/** Height of the ground at a point (0 on the flat campus, negative in a hollow). */
+/** a hill's height along its axis */
+function profileAt(p: [number, number][], x: number) {
+  for (let i = 0; i < p.length - 1; i++) {
+    const [ax, ah] = p[i], [bx, bh] = p[i + 1];
+    if (x >= ax && x <= bx) return ah + ((bh - ah) * (x - ax)) / (bx - ax || 1);
+  }
+  return 0;
+}
+/** the top of a stairway's tread at x: flights of steps going up from x0 toward x1, landings between */
+function stairAt(s: NonNullable<Hill['stairs']>, top: number, x: number) {
+  const dir = Math.sign(s.x1 - s.x0), len = Math.abs(s.x1 - s.x0), u = (x - s.x0) * dir;
+  if (u <= 0) return 0;
+  if (u >= len) return top;
+  const seg = len / s.flights, rise = top / s.flights, r = rise / s.steps, k = Math.floor(u / seg), w = u - k * seg;
+  return k * rise + Math.min(s.steps, Math.floor(w / s.tread) + 1) * r;
+}
+/** where the stairs of a hill are, and the height of their top */
+export function stairsOf() {
+  return ZONES.flatMap((q) => (q.kind === 'hill' && q.stairs ? [{ ...q.stairs, top: profileAt(q.profile, q.stairs.x1), at: (x: number) => stairAt(q.stairs!, profileAt(q.profile, q.stairs!.x1), x) }] : []));
+}
+
+/** inside a stairway of the hill (its steps are modelled: the ground mesh keeps below them) */
+export function inStairs(x: number, z: number) {
+  return ZONES.some((q) => q.kind === 'hill' && !!q.stairs && z > q.stairs.z0 && z < q.stairs.z1 && x < Math.max(q.stairs.x0, q.stairs.x1) && x > Math.min(q.stairs.x0, q.stairs.x1));
+}
+
+/** Height of the ground at a point (0 on the flat campus, negative in a hollow, positive on the hill). */
 export function groundHeight(x: number, z: number) {
   let h = 0;
-  for (const q of ZONES) {
-    if (x < q.x0 - q.w || x > q.x1 + q.e || z < q.z0 - q.n || z > q.z1 + q.s) continue;
-    // how far up the slope, 0 on the floor, 1 at its top: the steeper of the two directions wins
-    const tx = x < q.x0 ? (q.x0 - x) / q.w : x > q.x1 ? (x - q.x1) / q.e : 0;
-    const tz = z < q.z0 ? (q.z0 - z) / q.n : z > q.z1 ? (z - q.z1) / q.s : 0;
-    const t = Math.min(1, Math.max(tx, tz));
-    h = Math.min(h, -q.depth * (1 - t));
+  for (let i = 0; i < ZONES.length; i++) {
+    const q = ZONES[i], bx = RELIEF_BOXES[i];
+    if (x < bx.x0 || x > bx.x1 || z < bx.z0 || z > bx.z1) continue;
+    if (q.kind === 'hollow') {
+      // how far up the slope, 0 on the floor, 1 at its top: the steeper of the two directions wins
+      const tx = x < q.x0 ? (q.x0 - x) / q.w : x > q.x1 ? (x - q.x1) / q.e : 0;
+      const tz = z < q.z0 ? (q.z0 - z) / q.n : z > q.z1 ? (z - q.z1) / q.s : 0;
+      const t = Math.min(1, Math.max(tx, tz));
+      h = Math.min(h, -q.depth * (1 - t));
+    } else {
+      const s = q.stairs;
+      if (s && z > s.z0 && z < s.z1 && x <= Math.max(s.x0, s.x1) && x >= Math.min(s.x0, s.x1)) { h += stairAt(s, profileAt(q.profile, s.x1), x); continue; }
+      const d = Math.abs(z - q.zc), t = d <= q.full ? 1 : d >= q.full + q.fall ? 0 : 1 - (d - q.full) / q.fall;
+      h += profileAt(q.profile, x) * t * t * (3 - 2 * t);
+    }
   }
   return h;
 }
@@ -63,7 +123,7 @@ export function applyRelief(root: THREE.Object3D) {
   root.updateMatrixWorld(true);
   const m = new THREE.Matrix4(), v = new THREE.Vector3(), I = new THREE.Matrix4();
   const visit = (o: THREE.Object3D) => {
-    if (o.name === 'relief-ground') return;
+    if (o.name === 'relief-ground' || o.userData.noRelief) return;
     if (o !== root && !o.matrix.equals(I)) {
       // a placed object: it stands where its origin is
       o.getWorldPosition(v);
@@ -105,14 +165,15 @@ export function applyRelief(root: THREE.Object3D) {
  * The ground over the relief zones: a grid that follows groundHeight, in the campus grass
  * material (its UVs line up with the flat ground tiles: u = x / tile, v = -z / tile).
  */
-export function reliefGround(material: THREE.Material, tile: number, cell = 2) {
+export function reliefGround(material: THREE.Material, tile: number) {
   const geos: THREE.BufferGeometry[] = [];
   for (const b of RELIEF_BOXES) {
+    const cell = (b.x1 - b.x0) * (b.z1 - b.z0) > 200000 ? 4 : 2;
     const nx = Math.ceil((b.x1 - b.x0) / cell), nz = Math.ceil((b.z1 - b.z0) / cell);
     const pos: number[] = [], uv: number[] = [], idx: number[] = [];
     for (let j = 0; j <= nz; j++) for (let i = 0; i <= nx; i++) {
       const x = b.x0 + ((b.x1 - b.x0) * i) / nx, z = b.z0 + ((b.z1 - b.z0) * j) / nz;
-      pos.push(x, groundHeight(x, z), z);
+      pos.push(x, groundHeight(x, z) - (inStairs(x, z) ? 0.6 : 0), z);
       uv.push(x / tile, -z / tile);
     }
     for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
@@ -126,7 +187,7 @@ export function reliefGround(material: THREE.Material, tile: number, cell = 2) {
     g.computeVertexNormals();
     geos.push(g);
   }
-  const mesh = new THREE.Mesh(geos[0], material);
+  const mesh = new THREE.Mesh(geos.length > 1 ? mergeGeometries(geos) : geos[0], material);
   mesh.receiveShadow = true;
   mesh.name = 'relief-ground';
   return mesh;

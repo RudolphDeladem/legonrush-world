@@ -127,6 +127,16 @@ try {
   const pentMarks = { 'New Pent Block A': [575.6, -628], 'New Pent Block B': [568.4, -766], 'New Pent Block C': [686.8, -698], 'Addis Ababa Court': [671.6, -538.8], 'Nairobi Court': [720.4, -544.4] };
   for (const [n, [mx, mz]] of Object.entries(pentMarks)) { const a = ACCESS.get(n); if (!a || Math.hypot(a.entrance[0] - mx, a.entrance[1] - mz) > 5) fail(`${n}: the entrance is not where the owner marks it`); }
   for (const n of ['Pent Admin Block', 'Dar es Salaam Court', 'Kampala Court', 'Addis Ababa Court', 'Nairobi Court']) { const a = ACCESS.get(n), p = placeByName(n); if (a && p && a.entrance[1] > p.z) fail(`${n}: the entrance is not on the north face`); }
+  // Commonwealth Hall on Legon Hill (owner): the gate in the front block at the top of the stairway,
+  // the gate houses at its foot; the hill rises from the avenue's end through the hall to the Great Hall
+  const cw = ACCESS.get('Commonwealth Hall');
+  if (!cw || Math.hypot(cw.entrance[0] + 491.1, cw.entrance[1] - 127.4) > 2) fail('Commonwealth Hall: the entrance is not the gate in the front block');
+  if (!cw?.secondary?.some(([x, z]) => Math.hypot(x + 366, z - 128) < 3)) fail('Commonwealth Hall: the way in between the gate houses at the foot of the stairs is missing');
+  if (!ROADS.some((r) => r.surface === 'steps' && r.name === 'Commonwealth Hall stairs')) fail('Commonwealth Hall: the stairway is not on the network');
+  const [foot, forecourt, hallEnd, summit] = [groundHeight(-365, 128), groundHeight(-478, 128), groundHeight(-715, 128), groundHeight(-1010, 128)];
+  if (!(foot === 0 && forecourt > 8 && hallEnd > forecourt + 4 && summit > hallEnd)) fail(`Legon Hill: the ground does not rise from the avenue (${foot}) up the stairs (${forecourt}) through the hall (${hallEnd}) to the Great Hall (${summit})`);
+  if (groundHeight(-340, 128) !== 0 || groundHeight(-600, 600) !== 0) fail('Legon Hill: the avenue below the stairs or the campus beside the hill is not flat');
+  if ((await server.ssrLoadModule('/src/game/commonwealth.ts')).commonwealth.frames().length !== 2) fail('expected the Commonwealth Hall and stairway models');
   const bankModels = (await server.ssrLoadModule('/src/game/banking.ts')).banking.frames();
   if (bankModels.length !== 3) fail(`expected the bank compound, the Union Building and the ADB/HFC block, found ${bankModels.length}`);
   const hostels = (await server.ssrLoadModule('/src/game/hostels.ts')).hostels.frames();

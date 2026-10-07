@@ -11,8 +11,8 @@
   "point": 112
  },
  "byConfidence": {
-  "high": 36,
-  "medium": 155,
+  "high": 37,
+  "medium": 154,
   "low": 244
  },
  "campusGates": 5,
@@ -90,8 +90,8 @@
   },
   {
    "place": "Commonwealth Hall",
-   "status": "partial",
-   "confidence": "medium",
+   "status": "verified",
+   "confidence": "high",
    "method": "curated"
   },
   {
@@ -360,8 +360,8 @@
   }
  ],
  "byStatus": {
-  "verified": 33,
-  "partial": 12,
+  "verified": 34,
+  "partial": 11,
   "unverified": 10,
   "inferred": 235,
   "mapped": 145
@@ -644,8 +644,8 @@
    "place": "Commonwealth Hall",
    "type": "hall entrance",
    "arrivalOn": "service",
-   "arrivalDistance": 9.9,
-   "facing": 270
+   "arrivalDistance": 0,
+   "facing": 273
   },
   {
    "place": "Mensah Sarbah Hall",

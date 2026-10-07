@@ -64,7 +64,7 @@ Coordinates are game-frame metres (x east, z south of the datum 5.6518 N, 0.1871
 | Union Building (Banking Square) | not on the map | — | public entrance at (257, 1026) | service | (260, 1026), facing 342° | **partial** · medium | — |
 | Night Market | frontage at (126, 1034), arriving on Jubilee Link | low | public entrance at (167, 1034) | service | (167, 1026), facing 180° | **partial** · medium | 41 m |
 | Legon Hall | area-entry at (-14, 189), arriving on footway | medium | hall entrance at (-147, 157) | Dr. J.B. Danquah Avenue | (-145, 137), facing 187° | **verified** · high | 137 m |
-| Commonwealth Hall | curated at (-485, 118), arriving on service | medium | hall entrance at (-485, 118) | service | (-475, 118), facing 270° | **partial** · medium | 0 m |
+| Commonwealth Hall | curated at (-485, 118), arriving on service | medium | hall entrance at (-491, 127) | service | (-475, 128), facing 270° | **verified** · high | 11 m |
 | Akuafo Hall Main | area-entry at (204, 224), arriving on service | medium | hall entrance at (160, 156) | footway | (160, 146), facing 176° | **verified** · high | 81 m |
 | Mensah Sarbah Hall | curated at (11, 609), arriving on service | medium | hall entrance (porters' lodge) at (11, 609) | service | (5, 598), facing 153° | **verified** · high | 0 m |
 | Volta Hall | frontage at (-259, -4), arriving on service | low | hall entrance at (-259, 0) | service | (-248, 0), facing 266° | **partial** · medium | 4 m |
@@ -195,12 +195,12 @@ land on their roofs, so the labels became map positions. Bank places were moved 
 - **Secondary:** Legon Hall Southern Gate (pedestrian): Apple label 'Legon Hall Southern Gate' in legon_hall_layout
 - **Correction:** moved 137 m from the previous area-entry entrance (medium confidence).
 
-### Commonwealth Hall — PARTIAL
+### Commonwealth Hall — VERIFIED
 
-- **Entrance:** hall entrance; Up the avenue to its western end at the hall.
-- **Evidence:** UG: 'the University Avenue extends to Commonwealth Hall on Legon Hill'. commonwealth_hall_entrance_1-3: a porch at the top of wide steps from a drive where cars park. The oblique layout photos are not north-up, so which end they show cannot be fixed; the east end on the avenue axis is kept.
-- **References:** `commonwealth_hall_entrance_1_labeled.png`, `commonwealth_hall_entrance_2_labeled.png`, `commonwealth_hall_entrance_3_labeled.png`, `commonwealth_hall_building_layout_1_labeled.png`, `commonwealth_hall_building_layout_2_labeled.png`
-- **Correction:** confirmed (no move).
+- **Entrance:** the gate in the middle of the two-storey entrance block at the top of the stairway, facing east down the avenue; arriving on the drive in front of it (way 492729895). Secondary: the way in between the two gate houses at the foot of the stairway, by the road.
+- **Evidence:** the owner's photos with the hall's main entrance circled (red) from the foot of the stairs, the stairs rising to it, and the gate circled (blue) from the top; the owner's purple-marked layout aerial, registered to the footprints (IoU 0.47, image bottom = east). The stairway is added to the network as steps (`corrections.json → addWays`): walkers climb it, riders and taxis take the drive round.
+- **References:** owner's photos (4) and marked aerial, `commonwealth_hall_entrance_1_labeled.png`, `commonwealth_hall_entrance_2_labeled.png`, `commonwealth_hall_entrance_3_labeled.png`, `commonwealth_hall_building_layout_1_labeled.png`, `commonwealth_hall_building_layout_2_labeled.png`
+- **Correction:** the door moved 11 m from the north wing's end to the gate in the entrance block. The new journey The Balme Library → Commonwealth Hall walks up the stairway (82 m of steps) to the gate.
 
 ### Akuafo Hall Main — VERIFIED
 

@@ -367,7 +367,8 @@ for (const place of places) {
     secondary: cur?.secondary?.map((x) => {
       // 'awayFrom': the middle of the facade turned away from another destination (a back entrance)
       if (x.awayFrom) { const d = toward(fp, x.awayFrom); return { ...x, at: sideFacing(fp.ring, [-d[0], -d[1]]) }; }
-      return { ...x, at: fp ? nearestOnRing(fp.ring, x.at).p : x.at };
+      // 'free': a point away from the building (a gate on the grounds) keeps its place
+      return { ...x, at: fp && !x.free ? nearestOnRing(fp.ring, x.at).p : x.at };
     }),
   };
   if (legBlocked && ent.method === 'curated') problems.push(`${name}: the curated access leg crosses ${legBlocked.name ?? legBlocked.id}`);

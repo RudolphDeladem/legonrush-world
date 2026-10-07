@@ -8,7 +8,7 @@ import { buildBuildings } from './facades';
 import { buildDiasporaHalls, isDiasporaHall } from './halls';
 import { BLOCK_SITES } from './sites';
 import { newPentStyle } from './pentagon';
-import { RELIEF_BOXES, applyRelief, densify, reliefGround } from './relief';
+import { RELIEF_BOXES, applyRelief, densify, inStairs, reliefGround } from './relief';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, ROAD_WIDTH } from './life';
 
 export const LANES = [-2.4, 0, 2.4];
@@ -301,12 +301,20 @@ export function buildCampus() {
   const caps: THREE.BufferGeometry[] = [];
   const pathCaps: THREE.BufferGeometry[] = [];
   for (const r of ROADS) {
-    const pts = densify(r.nodes.map((i) => [NODE_XZ[i * 2], NODE_XZ[i * 2 + 1]] as [number, number]));
+    const all = densify(r.nodes.map((i) => [NODE_XZ[i * 2], NODE_XZ[i * 2 + 1]] as [number, number]));
+    // the stairway up to Commonwealth Hall is modelled step by step (commonwealth.ts): no flat path over it
+    const runs: [number, number][][] = [[]];
+    for (const p of all) {
+      if (r.surface === 'steps' && inStairs(p[0], p[1])) { if (runs[runs.length - 1].length) runs.push([]); } else runs[runs.length - 1].push(p);
+    }
     const half = ROAD_WIDTH[r.cls] / 2;
     const footpath = r.cls === 4;
     const buf = footpath ? pathBuf : roadBuf;
-    polyStrip(pts, half, buf.pos, buf.idx);
-    for (const [x, z] of [pts[0], pts[pts.length - 1]]) (footpath ? pathCaps : caps).push(new THREE.CircleGeometry(half, 10).rotateX(-Math.PI / 2).translate(x, 0, z));
+    for (const pts of runs) {
+      if (pts.length < 2) continue;
+      polyStrip(pts, half, buf.pos, buf.idx);
+      for (const [x, z] of [pts[0], pts[pts.length - 1]]) (footpath ? pathCaps : caps).push(new THREE.CircleGeometry(half, 10).rotateX(-Math.PI / 2).translate(x, 0, z));
+    }
   }
   const campusAsphalt = asphaltTexture(false);
   const asphalt = weathering(wettable(groundMat('#f2f2f2', 3, campusAsphalt)), 'ground', 34, 0.35);

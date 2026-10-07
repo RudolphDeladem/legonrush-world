@@ -97,3 +97,5 @@
 .guide-card .gc-dl dt { font-weight: 700; margin-top: 6px; }
 .guide-card .gc-dl dd { margin: 0; }
 .guide-card .gc-actions { position: sticky; bottom: -14px; background: #fff; margin: 0 -16px -14px; padding: 10px 16px 14px; border-top: 1px solid rgba(16, 33, 63, 0.08); }
+.guide-card.droning { padding: 10px 14px; }
+.guide-card.droning .gc-actions { position: static; margin: 8px 0 0; padding: 0; border-top: 0; background: none; }

@@ -10,6 +10,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { BUILDINGS, type Building } from './campusmap';
 import { buildingMaterials } from './facades';
+import { groundHeight } from './relief';
 import { groundShade, weathering } from './shading';
 import { Facade, PLINTH, Roof, TANK, TRIM, WHITE, box, canvas, flat, flipWinding, merge, rnd, signTexture, speckle, type Part } from './modelkit';
 
@@ -105,6 +106,8 @@ export interface Block {
   floorStyle?: Record<number, Style>;
   /** facade style per face (default: the building's) */
   faces?: Partial<Record<Face, Style>>;
+  /** height of the block's base (on a site standing on sloping ground: the lowest ground under its corners) */
+  y?: number;
 }
 export interface Spec {
   name: string;
@@ -125,8 +128,13 @@ export interface Spec {
   extras: (k: Kit) => void;
   /** areas kept clear of generated props (porches, annexes outside the footprint), model frame [x0, x1, z0, z1] */
   keep: [number, number, number, number][];
+  /** on sloping ground (relief.ts): each block stands on the lowest ground under its corners, and the
+   *  extras place things with Kit.ground; the model is not lifted as a whole */
+  onGround?: boolean;
 }
-export interface Kit { plain: Part[]; glass: THREE.BufferGeometry[]; roof: Roof; signs: { text: string; x: number; y: number; z: number; ry: number; w: number; colors?: [string, string] }[]; meshes: THREE.Mesh[]; wallTop: (floors: number) => number; storey: number }
+export interface Kit { plain: Part[]; glass: THREE.BufferGeometry[]; roof: Roof; signs: { text: string; x: number; y: number; z: number; ry: number; w: number; colors?: [string, string] }[]; meshes: THREE.Mesh[]; wallTop: (floors: number) => number; storey: number;
+  /** the height of the ground at a point of the model frame (0 unless the site stands on relief) */
+  ground: (x: number, z: number) => number }
 
 export const PL = 0.4, BAND = 0.4, OV = 0.8;
 const MIRROR_Z = new THREE.Matrix4().makeScale(1, 1, -1);
@@ -215,7 +223,9 @@ const inRing = (pts: Float32Array, x: number, z: number) => {
 };
 
 // ---------- geometry ----------
-function buildSpec(spec: Spec) {
+function buildSpec(f: Frame) {
+  const spec = f.spec;
+  const ground = (x: number, z: number) => groundHeight(f.cx + x * f.ux - z * f.uz, f.cz + x * f.uz + z * f.ux);
   const facades = new Map<Style, Facade>();
   const fac = (k: Style) => { let f = facades.get(k); if (!f) facades.set(k, (f = new Facade())); return f; };
   const plain: Part[] = [];
@@ -223,31 +233,34 @@ function buildSpec(spec: Spec) {
   const roof = new Roof(new THREE.Color(spec.roofColor));
   const st = spec.storey;
   const wallTop = (floors: number) => PL + floors * st + BAND;
-  const k: Kit = { plain, glass, roof, signs: [], meshes: [], wallTop, storey: st };
+  const k: Kit = { plain, glass, roof, signs: [], meshes: [], wallTop, storey: st, ground };
 
   /** one face of a block: window bays storey by storey, then plinth and eave band */
-  const run = (ax: number, az: number, bx: number, bz: number, floors: number, style: Style, floorStyle?: Record<number, Style>) => {
+  const run = (ax: number, az: number, bx: number, bz: number, floors: number, style: Style, floorStyle: Record<number, Style> | undefined, yb: number) => {
     const len = Math.hypot(bx - ax, bz - az);
     if (len < 0.5) return;
     for (let s = 0; s < floors; s++) {
       const S = floorStyle?.[s] ?? style, f = fac(S);
       const bays = Math.max(1, Math.round(len / S.bay));
-      const y0 = PL + s * st;
+      const y0 = yb + PL + s * st;
       f.quad(ax, az, bx, bz, y0, y0 + st, bays, s === 0 ? 0 : 0.5, s === 0 ? 0.5 : 1, f.bays, f.bays + bays, s);
       f.bays += bays;
     }
-    const ang = -Math.atan2(bz - az, bx - ax), mx = (ax + bx) / 2, mz = (az + bz) / 2, top = wallTop(floors);
-    plain.push([new THREE.BoxGeometry(len + 0.1, PL, 0.2).rotateY(ang).translate(mx, PL / 2, mz), PLINTH]);
+    const ang = -Math.atan2(bz - az, bx - ax), mx = (ax + bx) / 2, mz = (az + bz) / 2, top = yb + wallTop(floors);
+    // the plinth reaches down to the ground at the low end of a block on a slope
+    const drop = spec.onGround ? Math.max(0, yb - Math.min(ground(ax, az), ground(bx, bz))) + 0.6 : 0;
+    plain.push([new THREE.BoxGeometry(len + 0.1, PL + drop, 0.2).rotateY(ang).translate(mx, yb + (PL - drop) / 2, mz), PLINTH]);
     plain.push([new THREE.BoxGeometry(len + 0.1, BAND, 0.12).rotateY(ang).translate(mx, top - BAND / 2, mz), WHITE]);
   };
 
   for (const b of spec.blocks) {
     const sty = (face: Face) => b.faces?.[face] ?? spec.style;
-    run(b.x0, b.z0, b.x1, b.z0, b.floors, sty('z0'), b.floorStyle);
-    run(b.x0, b.z1, b.x1, b.z1, b.floors, sty('z1'), b.floorStyle);
-    run(b.x0, b.z0, b.x0, b.z1, b.floors, sty('x0'), b.floorStyle);
-    run(b.x1, b.z0, b.x1, b.z1, b.floors, sty('x1'), b.floorStyle);
-    const eave = wallTop(b.floors);
+    const yb = b.y ?? (spec.onGround ? Math.min(ground(b.x0, b.z0), ground(b.x1, b.z0), ground(b.x0, b.z1), ground(b.x1, b.z1)) : 0);
+    run(b.x0, b.z0, b.x1, b.z0, b.floors, sty('z0'), b.floorStyle, yb);
+    run(b.x0, b.z1, b.x1, b.z1, b.floors, sty('z1'), b.floorStyle, yb);
+    run(b.x0, b.z0, b.x0, b.z1, b.floors, sty('x0'), b.floorStyle, yb);
+    run(b.x1, b.z0, b.x1, b.z1, b.floors, sty('x1'), b.floorStyle, yb);
+    const eave = yb + wallTop(b.floors);
     roof.c = new THREE.Color(b.roofColor ?? spec.roofColor);
     const pitchB = b.pitch ?? spec.pitch;
     const X0 = b.x0 - OV, X1 = b.x1 + OV, Z0 = b.z0 - OV, Z1 = b.z1 + OV;
@@ -313,11 +326,13 @@ export function createSite(name: string, specs: Spec[]) {
       const roofMat = buildingMaterials().roof;
       const cull: THREE.Mesh[] = [];
       for (const f of frames) {
-        const g = buildSpec(f.spec);
+        const g = buildSpec(f);
         const node = new THREE.Group();
         node.name = f.spec.name;
         node.position.set(f.cx, 0, f.cz);
         node.rotation.y = f.yaw;
+        // a model on sloping ground carries its own heights: relief must not lift it as a whole
+        if (f.spec.onGround) node.userData.noRelief = true;
         const add = (geo: THREE.BufferGeometry, m: THREE.Material, cast = true) => {
           const mesh = new THREE.Mesh(geo, m);
           mesh.castShadow = cast;

@@ -130,6 +130,28 @@ function addRoad(id, pts, t, src) {
   roadCount++;
 }
 for (const w of osm.ways.values()) if (w.t.highway && w.refs.length >= 2) addRoad(`osm:way/${w.id}`, refsToLine(osm, w.refs), w.t, 'osm');
+// ways the owner's photos show and the sources lack (corrections.json: addWays); each end is
+// inserted into the way it meets (within 4 m) so the network stays connected
+for (const w of REG.corrections.addWays ?? []) {
+  const pts = w.pts.map(([x, z]) => [x, z]);
+  for (const end of [0, pts.length - 1]) {
+    let best = null;
+    for (const f of features) {
+      if ((f.layer !== 'road' && f.layer !== 'path') || !f.game) continue;
+      for (let i = 0; i < f.line.length - 1; i++) {
+        const [ax, az] = f.line[i], [bx, bz] = f.line[i + 1], dx = bx - ax, dz = bz - az, L = dx * dx + dz * dz;
+        const t = L ? Math.max(0, Math.min(1, ((pts[end][0] - ax) * dx + (pts[end][1] - az) * dz) / L)) : 0;
+        const q = [ax + t * dx, az + t * dz], dist = Math.hypot(q[0] - pts[end][0], q[1] - pts[end][1]);
+        if (!best || dist < best.dist) best = { f, i, t, q, dist };
+      }
+    }
+    if (!best || best.dist > 4) throw new Error(`addWays ${w.id}: end ${end} meets no way within 4 m`);
+    if (best.t <= 1e-6) pts[end] = best.f.line[best.i];
+    else if (best.t >= 1 - 1e-6) pts[end] = best.f.line[best.i + 1];
+    else { best.f.line.splice(best.i + 1, 0, best.q); pts[end] = best.q; }
+  }
+  addRoad(w.id, pts, { highway: w.highway, name: w.name }, 'owner-imagery');
+}
 // Overture segments: OSM ways missing from the extract (legacy clipping)
 const OV_HIGHWAY = (p) => {
   const c = p.class;

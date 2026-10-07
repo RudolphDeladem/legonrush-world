@@ -6,6 +6,7 @@ import { labelTexture } from './textures';
 import { facadeBox, hipRoof } from './facades';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { nightHooks } from './life';
+import { applyRelief } from './relief';
 
 const white = new THREE.MeshStandardMaterial({ color: '#f1ece2', roughness: 0.85 });
 const cream = new THREE.MeshStandardMaterial({ color: '#e3d6bd', roughness: 0.9 });
@@ -294,5 +295,7 @@ export function buildLandmarks() {
   put('Great Hall', greatHallTower(tex));
   put('Legon Main Entrance', mainGate(16), true);
   put('Night Market', nightMarket());
+  // the Great Hall's tower stands on Legon Hill
+  applyRelief(group);
   return group;
 }
