@@ -324,6 +324,8 @@ export class Game {
   private time = 0;
   private endTimer = 0;
   private countdownT = 0;
+  /** set by start(): the first frame puts the camera straight behind the rider */
+  private snapCam = false;
   private lastCount = '';
   private bike: BikeSpec | null = null;
   private crank = 0;
@@ -744,6 +746,7 @@ export class Game {
     this.nextSpawn = tutorial ? 200 : 90;
     this.phase = 'countdown';
     this.countdownT = tutorial ? 0.01 : 2.4;
+    this.snapCam = true;
     this.lastCount = '';
     this.setTimeOfDay(this.route.time ?? 'day');
     this.repairKits = this.items.repairKits;
@@ -1955,11 +1958,27 @@ export class Game {
     } else {
       const boosting = this.boostTime > 0;
       const [vBack, vUp] = VEHICLE_CAM[this.vehicle];
-      const back = (boosting ? 7.2 : 6.2) + vBack;
-      const behind = this.pose(this.d - back, this.x * 0.6);
+      let back = (boosting ? 7.2 : 6.2) + vBack;
+      let behind = this.pose(this.d - back, this.x * 0.6);
+      // never inside a building: leaving a destination, the way behind the rider runs back to the door, so the
+      // camera comes in closer and higher until it is clear of every wall
+      let lift = 0;
+      while (back > 1.6 && buildingNear(behind.x, behind.z, 1.2)) {
+        back -= 0.8; lift += 0.45;
+        behind = this.pose(this.d - back, this.x * 0.6);
+      }
+      // a door right on the road (or a gateway): look on from one side instead
+      if (buildingNear(behind.x, behind.z, 0.3)) {
+        for (const [db, side] of [[3, 5], [3, -5], [-2, 7], [-2, -7]]) {
+          const c = this.pose(this.d - db, side);
+          if (!buildingNear(c.x, c.z, 0.3)) { behind = c; lift = 1.5; break; }
+        }
+      }
       // the camera follows the ground (a hollow such as the engineering school's), never below the rider's
       const gRide = this.rider.root.position.y - this.y;
-      this.camTarget.set(behind.x, Math.max(groundHeight(behind.x, behind.z), gRide) + 3.1 + vUp + this.y * 0.4 + this.guideLook * 1.4, behind.z);
+      this.camTarget.set(behind.x, Math.max(groundHeight(behind.x, behind.z), gRide) + 3.1 + vUp + lift + this.y * 0.4 + this.guideLook * 1.4, behind.z);
+      // a new ride starts with the camera already behind the rider, not sweeping in from where it was
+      if (this.snapCam) { cam.position.copy(this.camTarget); this.snapCam = false; }
       cam.position.lerp(this.camTarget, Math.min(1, dt * 8));
       if (this.shake > 0 && !this.reducedMotion) {
         cam.position.x += (Math.random() - 0.5) * this.shake;

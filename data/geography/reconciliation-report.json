@@ -271,7 +271,12 @@
    "ml:c1505567-e020-476c-9146-3bcb8a330166",
    "ml:f0d00c56-eb5c-4ff7-b8e3-a6e45a699295",
    "ml:f9c444ed-7afb-46e7-a596-438c4a451fb0",
-   "osm:way/1548976997"
+   "osm:way/1548976997",
+   "osm:way/773864854",
+   "ml:ca2c9c6b-df5b-4089-83cf-58f6c2520e32",
+   "ml:601cbe85-1fce-4588-9e5d-3ea488aaf994",
+   "ml:706c5a32-3d25-4cfa-b723-55f8884cf84b",
+   "ml:f7509632-b50a-4182-b545-95537b938076"
   ]
  },
  "areas": {
@@ -288,8 +293,8 @@
    "ha": 1845.6
   },
   "grass": {
-   "count": 31,
-   "ha": 95.3
+   "count": 32,
+   "ha": 95.6
   },
   "pitch": {
    "count": 32,
@@ -309,13 +314,13 @@
   }
  },
  "places": {
-  "total": 435,
+  "total": 436,
   "fromOsm": 390,
   "fromUgCampusMap": 38,
-  "addedFromRegistry": 7,
-  "movedToRegistryPosition": 6,
+  "addedFromRegistry": 8,
+  "movedToRegistryPosition": 7,
   "byConfidence": {
-   "high": 144,
+   "high": 145,
    "medium": 287,
    "low": 4
   },
@@ -332,6 +337,18 @@
      -647
     ],
     "distanceM": 51
+   },
+   {
+    "name": "Night Market",
+    "from": [
+     167,
+     1071
+    ],
+    "to": [
+     99,
+     1016
+    ],
+    "distanceM": 87
    },
    {
     "name": "University of Ghana Registry",
@@ -842,8 +859,8 @@
      "text": "The Banking Square is close to the Night Market (on the old Manciples site).",
      "test": "near",
      "pass": true,
-     "value": 37,
-     "detail": "37 m apart (limit 200 m)"
+     "value": 26,
+     "detail": "26 m apart (limit 200 m)"
     }
    ]
   },
@@ -852,12 +869,12 @@
    "name": "Night Market",
    "category": "commercial",
    "importance": 1,
-   "geometry": "osm:way/773864855",
-   "lat": 5.642112,
-   "lng": -0.185589,
-   "x": 167,
-   "z": 1071,
-   "elevationM": 85,
+   "geometry": "owner:night-market",
+   "lat": 5.642611,
+   "lng": -0.186204,
+   "x": 99,
+   "z": 1016,
+   "elevationM": 87,
    "confidence": "high",
    "sourcesAgreeingWithin150m": [
     "osm",
@@ -866,11 +883,11 @@
    "sources": {
     "osm": {
      "name": "Night Market",
-     "distanceM": 0
+     "distanceM": 15
     },
     "overture": {
      "name": "Night Market",
-     "distanceM": 19,
+     "distanceM": 87,
      "dataset": "meta"
     },
     "ugCampusMap": {
@@ -881,12 +898,12 @@
     {
      "name": "Night Market",
      "dataset": "meta",
-     "distanceM": 1080
+     "distanceM": 1071
     },
     {
      "name": "Night Market",
      "dataset": "meta",
-     "distanceM": 19
+     "distanceM": 87
     }
    ],
    "claims": [
@@ -895,10 +912,11 @@
      "text": "The Night Market is the campus's main marketplace (80 cubicles, 36 food stalls).",
      "test": "near",
      "pass": true,
-     "value": 37,
-     "detail": "37 m apart (limit 200 m)"
+     "value": 26,
+     "detail": "26 m apart (limit 200 m)"
     }
-   ]
+   ],
+   "notes": "Owner: the market moved back west of the banking square after the construction; the old site south of the banking square is grass, trees and soil. The area is drawn from the owner's aerial (corrections.json addAreas)."
   },
   {
    "id": "athletic-oval",
@@ -2498,6 +2516,23 @@
    "sources": {},
    "claims": [],
    "notes": "Owner: the small one-floor building between the CC and the SRC Union Building houses Standard Chartered's ATMs."
+  },
+  {
+   "id": "supermart",
+   "name": "Supermart (Night Market)",
+   "category": "commercial",
+   "importance": 3,
+   "geometry": "measured:supermart",
+   "lat": 5.642804,
+   "lng": -0.186102,
+   "x": 111,
+   "z": 995,
+   "elevationM": 88,
+   "confidence": "medium",
+   "sourcesAgreeingWithin150m": [],
+   "sources": {},
+   "claims": [],
+   "notes": "Owner: the one-floor supermarket on the east side of the Night Market (circled black on the owner's aerial)."
   }
  ],
  "zones": [
@@ -2547,7 +2582,7 @@
    "kind": "commercial",
    "ha": 29,
    "shareOutsideCampus": 0,
-   "places": 20,
+   "places": 21,
    "buildings": 39,
    "anchorsMissing": []
   },

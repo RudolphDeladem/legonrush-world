@@ -1,19 +1,19 @@
 {
- "destinations": 435,
+ "destinations": 436,
  "byMethod": {
-  "curated": 67,
+  "curated": 70,
   "osm-entrance": 0,
   "gate": 2,
-  "path-access": 3,
+  "path-access": 2,
   "drive-access": 18,
   "area-entry": 8,
-  "frontage": 226,
-  "point": 111
+  "frontage": 224,
+  "point": 112
  },
  "byConfidence": {
-  "high": 60,
-  "low": 229,
-  "medium": 146
+  "high": 64,
+  "low": 227,
+  "medium": 145
  },
  "campusGates": 5,
  "problems": [],
@@ -78,8 +78,8 @@
   },
   {
    "place": "Night Market",
-   "status": "partial",
-   "confidence": "medium",
+   "status": "verified",
+   "confidence": "high",
    "method": "curated"
   },
   {
@@ -222,9 +222,9 @@
   },
   {
    "place": "Valco Trust Hostel Phase 1",
-   "status": "unverified",
-   "confidence": "low",
-   "method": "frontage"
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
   },
   {
    "place": "Bani Hostel",
@@ -360,10 +360,10 @@
   }
  ],
  "byStatus": {
-  "verified": 58,
-  "inferred": 220,
-  "partial": 9,
-  "unverified": 10,
+  "verified": 62,
+  "inferred": 219,
+  "partial": 8,
+  "unverified": 9,
   "mapped": 138
  },
  "curated": [
@@ -387,6 +387,13 @@
    "arrivalOn": "service",
    "arrivalDistance": 22.5,
    "facing": 90
+  },
+  {
+   "place": "Supermart (Night Market)",
+   "type": "public entrance",
+   "arrivalOn": "Jubilee Link",
+   "arrivalDistance": 1.8,
+   "facing": 272
   },
   {
    "place": "Union Building (Banking Square)",
@@ -603,6 +610,20 @@
    "type": "public entrance",
    "arrivalOn": "residential",
    "arrivalDistance": 11.4,
+   "facing": 180
+  },
+  {
+   "place": "Valco Trust Hostel Phase 2",
+   "type": "hall entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 18.9,
+   "facing": 1
+  },
+  {
+   "place": "Valco Trust Hostel Phase 1",
+   "type": "hall entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 5.5,
    "facing": 180
   },
   {
@@ -825,9 +846,9 @@
   {
    "place": "Night Market",
    "type": "public entrance",
-   "arrivalOn": "service",
-   "arrivalDistance": 8.2,
-   "facing": 180
+   "arrivalOn": "Jubilee Link",
+   "arrivalDistance": 1,
+   "facing": 272
   },
   {
    "place": "Economic Policy Management Programme Office",

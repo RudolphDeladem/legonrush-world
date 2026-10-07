@@ -8,7 +8,7 @@
 // court; east of it, the two basketball courts along the road; north-east, the fenced basketball court
 // by Akuafo.
 import * as THREE from 'three';
-import { box } from './modelkit';
+import { box, canvas } from './modelkit';
 import { createSite, render, type Kit, type Spec, type Style } from './blocks';
 import { garden } from './gardens';
 
@@ -165,6 +165,8 @@ const oval: Spec = {
       arc(k, cx, cz, 1.8, 0, Math.PI * 2, 0.08, 0.08);
       hoop(k, cx, Z(z0) + 0.8, 1);
       hoop(k, cx, Z(z1) - 0.8, -1);
+      // the wire fence round each court (owner)
+      fence(k, X(77), X(94), Z(z0), Z(z1), 3.5);
     }
     // ---------- north-east, by Akuafo: the fenced basketball court ----------
     court(k, [X(47.5), X(91.5), Z(256.5), Z(293.5)], [X(55.5), X(83.5), Z(267.5), Z(282.5)], GREEN, '#5d9ccc');
@@ -184,12 +186,29 @@ const oval: Spec = {
   },
 };
 
-/** a wire fence round a rectangle: posts every 3 m and a faint mesh */
+/** chain-link wire: a diamond mesh on a transparent ground, one diamond about 6 cm across */
+let wireMat: THREE.MeshStandardMaterial | null = null;
+const wire = () => (wireMat ??= (() => {
+  const t = canvas(64, 64, (g) => {
+    g.clearRect(0, 0, 64, 64);
+    g.strokeStyle = 'rgba(205,208,206,0.95)'; g.lineWidth = 3;
+    g.beginPath(); g.moveTo(0, 32); g.lineTo(32, 0); g.lineTo(64, 32); g.lineTo(32, 64); g.closePath(); g.stroke();
+  });
+  return new THREE.MeshStandardMaterial({ map: t, transparent: true, alphaTest: 0.25, side: THREE.DoubleSide, roughness: 0.6, metalness: 0.4 });
+})());
+/** a chain-link wire fence round a rectangle: galvanised posts every 3 m, a top rail and the wire mesh */
 function fence(k: Kit, x0: number, x1: number, z0: number, z1: number, h: number) {
   const side = (ax: number, az: number, bx: number, bz: number) => {
     const len = Math.hypot(bx - ax, bz - az), n = Math.max(1, Math.round(len / 3));
     for (let i = 0; i <= n; i++) k.plain.push([new THREE.CylinderGeometry(0.04, 0.04, h, 6).translate(ax + ((bx - ax) * i) / n, h / 2, az + ((bz - az) * i) / n), '#e8e8e4']);
     k.plain.push([box(Math.min(ax, bx), Math.max(ax, bx) + 0.02, h - 0.06, h, Math.min(az, bz), Math.max(az, bz) + 0.02), '#d6d6d2']);
+    const geo = new THREE.PlaneGeometry(len, h - 0.05);
+    const uv = geo.attributes.uv as THREE.BufferAttribute;
+    for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * len / 0.12, uv.getY(i) * (h - 0.05) / 0.12);
+    const mesh = new THREE.Mesh(geo, wire());
+    mesh.position.set((ax + bx) / 2, (h - 0.05) / 2, (az + bz) / 2);
+    mesh.rotation.y = -Math.atan2(bz - az, bx - ax);
+    k.meshes.push(mesh);
   };
   side(x0, z0, x1, z0); side(x0, z1, x1, z1); side(x0, z0, x0, z1); side(x1, z0, x1, z1);
 }

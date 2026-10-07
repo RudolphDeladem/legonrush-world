@@ -171,8 +171,8 @@ export const CH_ROUTES: ChallengeRoute[] = [
 export const chRoute = (id: string) => CH_ROUTES.find((r) => r.id === id);
 /** route lengths in metres, so cards don't build a route just to show its length (checked by the dev test) */
 export const ROUTE_LENGTH: Record<string, number> = {
-  'limann-great-hall': 2576, 'engineering-run': 2422, 'balme-sprint': 1491, 'hall-loop': 1773, 'legon-hill': 1950, 'sunset-route': 2643, 'night-circuit': 2945,
-  'library-explorer': 4897, 'grand-tour': 3795, 'skills-course': 2494, 'hunt-koko': 2181, 'hunt-pub': 1208, 'hunt-fountain': 946, 'hunt-oval': 718,
+  'limann-great-hall': 2576, 'engineering-run': 2422, 'balme-sprint': 1416, 'hall-loop': 1773, 'legon-hill': 1950, 'sunset-route': 2632, 'night-circuit': 2933,
+  'library-explorer': 3724, 'grand-tour': 3795, 'skills-course': 2463, 'hunt-koko': 2181, 'hunt-pub': 1250, 'hunt-fountain': 946, 'hunt-oval': 718,
 };
 export const kmOf = (route: string) => `${((ROUTE_LENGTH[route] ?? chRoute(route)?.build().length ?? 0) / 1000).toFixed(1)} km`;
 

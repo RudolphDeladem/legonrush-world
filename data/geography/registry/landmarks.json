@@ -467,7 +467,7 @@
    "category": "commercial",
    "importance": 1,
    "geometry": {
-    "osm": "way/773864855"
+    "area": "owner:night-market"
    },
    "match": {
     "osm": [
@@ -490,7 +490,8 @@
       "within": 200
      }
     }
-   ]
+   ],
+   "notes": "Owner: the market moved back west of the banking square after the construction; the old site south of the banking square is grass, trees and soil. The area is drawn from the owner's aerial (corrections.json addAreas)."
   },
   {
    "id": "athletic-oval",
@@ -1759,6 +1760,27 @@
     "Stanchart ATM",
     "Standard Chartered ATM"
    ]
+  },
+  {
+   "id": "supermart",
+   "name": "Supermart (Night Market)",
+   "kind": "food",
+   "category": "commercial",
+   "importance": 3,
+   "geometry": {
+    "at": [
+     110.6,
+     994.7
+    ]
+   },
+   "match": {
+    "osm": [],
+    "overture": [],
+    "ugmap": []
+   },
+   "claims": [],
+   "maxConfidence": "medium",
+   "notes": "Owner: the one-floor supermarket on the east side of the Night Market (circled black on the owner's aerial)."
   }
  ]
 }

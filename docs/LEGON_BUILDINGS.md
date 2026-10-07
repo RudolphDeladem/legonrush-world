@@ -417,7 +417,9 @@ drawn by the model instead of as flat areas, `Spec.covers`).
   tiered concrete **seating** along the east side and round the south-east bend; trees along the north and west.
 - **West of it**, north to south: the **sand volleyball** court below Maison Française, the two fenced **tennis**
   courts, a small single-storey shed, and the big **handball** court (blue on green, goal areas at both ends).
-- **East**, along the road: two **basketball** courts; **north-east**, by Akuafo, the fenced basketball court.
+- **East**, along the road: two **basketball** courts; **north-east**, by Akuafo, the third basketball court. Each
+  basketball court (and the tennis courts) has a **chain-link wire fence** round it: galvanised posts every 3 m, a top
+  rail and the diamond wire mesh (owner).
 - **Maison Française**, the building on the oval's north side (circled yellow by the owner), is **one floor**.
 - Five satellite-detected outlines drawn as buildings on the pitch, the courts and the strip between them are
   excluded (`corrections.json → exclude`); satellite-detected outlines can now take a height from the owner too.
@@ -502,12 +504,61 @@ aerial. The heights vary from part to part:
 - **Behind (north), in the Kuffour Quadrangle:** the round fountain with a blue-banded rim, a blue-and-white pedestal
   and the blue sculpture of interlocking rings.
 
+## 16. The Night Market, the supermarket and the one-floor buildings round them
+
+From the owner's aerials of the current market (circled blue, the supermarket circled black) and of the area round it
+(circled yellow), registered to the OSM footprints (the bank compound at 4.9 px/m, the wider area at 3.6 px/m).
+
+- **Where:** **west of the banking square**, across the road from the bank compound (`owner:night-market`). The earlier
+  map placed it **south of the banking square**, where the market stood only while it was relocated for construction:
+  that ground is now **grass, trees and bare soil**, and its five buildings are excluded.
+- **The market:** **one floor**, not buildings of rooms but **market zones**: rows of stall cubicles under sheet roofs
+  on posts (red, blue, purple and grey-blue, and three orange sheds along the lane by the supermarket), counters and
+  goods at the open fronts, a few shutters down, lanes between the rows and a shade tree with benches in the middle.
+  Explore enters it from the road on its east side, between the supermarket and the stall rows.
+- **Supermart:** the long one-floor **supermarket** on the market's east side, by the road: a glass shopfront with the
+  week's offers, glazed sliding doors under a green canopy, and **SUPERMART** in **raised red letters** standing out
+  from the wall (and again on the north end over the car park). It is a destination of its own,
+  *Supermart (Night Market)*, entered by those doors. Its satellite-detected outline was 3 m off the roof and is
+  moved (`corrections.json → reshape` now also corrects satellite-detected outlines).
+- **Round the market (circled yellow):** every building is **one floor**, a ground floor only, under a roof the
+  **colour the aerial shows**, sampled roof by roof: rusty brown sheets, faded tan sheets or terracotta tiles.
+
+## 17. Valco Trust Hostel, Phase 1 and Phase 2
+
+From the owner's photo (Phase 1's entrance marked blue): two long slabs of **five floors** under low hipped roofs of
+orange tiles, white walls with pilasters between pairs of wide dark windows and small square vents, a maroon base, and
+a stair bay with tall narrow windows over a flat entrance porch.
+
+- **Phase 1** is entered on its **north face**, through the porch under the stair bay a little east of the middle.
+- **Phase 2** stands **back to back** with Phase 1 (owner), so it is entered on its **south face**, the same block
+  turned round.
+
+## 18. The football park between the Akuafo and Mensah Sarbah annexes
+
+The open ground between the two sets of annexes (owner): **mainly bare soil**, worn by play, with **patches of grass**
+left round the edges and in the corners, faded lines, and a pair of **goalposts** at either end. It replaces the flat
+green pitch that was drawn there.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain
 description from the map), the arrived card offers **Drone view**: the camera climbs from behind the rider and
 circles 95 m out and 60 m above the destination, looking down at it (it turns more slowly with reduced motion).
 **Back to street view** returns to the rider; **Done** ends the tour as before.
+
+## Explore: leaving a destination
+
+Riding on from a destination (choose the next place on the arrived card), the countdown starts with the rider on the
+bike at the start line on the road. The chase camera is never inside a building: where the way behind the rider runs
+back to the door it comes in closer and higher, and where the door opens right onto the road it looks on from one side
+(`Game.ts`, checked for every destination on the map).
+
+## Route pavements at junctions
+
+The ridden route's raised pavements **stop wherever another road joins or crosses the route**, with a kerb face closing
+each end, so no kerb runs across the mouth of a side road or the road ahead where the route turns
+(`junctions.ts → walkGaps`; footpaths that meet the pavement keep it).
 
 ## Explore: ride it yourself
 

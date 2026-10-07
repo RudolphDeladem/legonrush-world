@@ -9,8 +9,11 @@ import { domeHouse } from './dome';
 import { engineeringSite } from './engineering';
 import { greatHalls } from './greathalls';
 import { hostels } from './hostels';
+import { nightMarket } from './nightmarket';
+import { parks } from './parks';
 import { pentagon } from './pentagon';
 import { vikingsLaw } from './vikingslaw';
+import { valco } from './valco';
 import { volta } from './volta';
 
-export const BLOCK_SITES = [hostels, banking, vikingsLaw, engineeringSite, domeHouse, pentagon, commonwealth, volta, greatHalls, athletics, annexes, ccSite, balmeSite];
+export const BLOCK_SITES = [hostels, banking, vikingsLaw, engineeringSite, domeHouse, pentagon, commonwealth, volta, greatHalls, athletics, annexes, ccSite, balmeSite, parks, nightMarket, valco];

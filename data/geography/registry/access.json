@@ -23,7 +23,9 @@
   "owner-annexes": "The owner's photos and top views of the Legon Hall annexes (Annex B's gallery face with the entrance marked; the top view of Annex A, B and C with the entrances marked and Annex C circled) and the Akuafo Hall annexes (an aerial of the four with A and B, C and D circled and C's entrance marked; a photo of a tall annex's gallery face; Annex A with its entrance marked).",
   "owner-sarbah-annexes-cc": "The owner's aerial of Mensah Sarbah's annexes (the same as Akuafo's), and photos and aerials of the CC (its terrace and doors marked), the SRC Union Building opposite and the Standard Chartered ATM building between them.",
   "owner-balme": "The owner's marked aerial of the Balme Library surroundings (the CEDI Conference Centre in yellow, UGCS in purple, two-floor blocks circled red, ground-floor blocks circled black, entrances marked blue), the owner's photos of CEDI from the west (the entrance porch marked), from the east and from above, and the owner's account of the Standard Chartered and Absa building; the marks placed proportionally on the OSM footprints (Google Open Buildings agrees with the OSM positions).",
-  "owner-balme-library": "The owner's photos of the Balme Library: the front from the south (the arched door 'THE BALME LIBRARY' up a flight of steps, and from the far end of the long pool), a top view from the south, the north-west corner, and the north side from the round fountain in the Kuffour Quadrangle."
+  "owner-balme-library": "The owner's photos of the Balme Library: the front from the south (the arched door 'THE BALME LIBRARY' up a flight of steps, and from the far end of the long pool), a top view from the south, the north-west corner, and the north side from the round fountain in the Kuffour Quadrangle.",
+  "owner-night-market": "The owner's aerials of the current Night Market (circled blue, the supermarket circled black) and of the buildings round it (circled yellow), registered to the OSM footprints (the bank compound at 4.9 px/m, the wider area at 3.6 px/m).",
+  "owner-valco": "The owner's photo of Valco Trust Hostel Phase 1 and Phase 2 (Phase 1's entrance marked in blue) and the owner's account: the back of Phase 1 faces the back of Phase 2."
  },
  "campusGates": [
   {
@@ -269,18 +271,21 @@
   {
    "place": "Night Market",
    "entrance": {
-    "side": "north"
+    "at": [
+     118.6,
+     1016.5
+    ]
    },
    "type": "public entrance",
-   "status": "partial",
-   "confidence": "medium",
-   "cite": "user-atlas",
-   "approach": "From the Banking Square side, into the north end of the stall rows.",
-   "evidence": "Reference atlas sheet 1: the market is the angled rows of stall sheds south of the bank courtyard (OSM food court way 773864855); the rows open toward the Banking Square car park at their north end.",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-night-market",
+   "approach": "From the road along the east side of the market, between the supermarket and the stall rows.",
+   "evidence": "Owner's aerial: the market lies west of the banking square, its lanes open onto the road on the east side between the supermarket (north) and the stall sheds (south).",
    "refs": [
-    "atlas sheet 1",
-    "banking_square_layout_labeled.png"
-   ]
+    "owner's aerial of the Night Market"
+   ],
+   "footprint": "owner:night-market"
   },
   {
    "place": "Legon Hall",
@@ -1588,6 +1593,63 @@
    "evidence": "Owner: Standard Chartered's ATM is on the other side of the building, facing Legon Hall and Akuafo Hall.",
    "refs": [
     "owner's marked aerial of the Balme Library surroundings"
+   ]
+  },
+  {
+   "place": "Supermart (Night Market)",
+   "footprint": "ml:277d59b2-0047-401d-bf87-17917a45b798",
+   "entrance": {
+    "at": [
+     116.2,
+     994.7
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-night-market",
+   "approach": "From the road on the east side to the supermarket's glazed doors under the SUPERMART lettering.",
+   "evidence": "Owner's aerial: the long one-floor supermarket (circled black) fronts the road on its east side, opposite the banking square.",
+   "refs": [
+    "owner's aerial of the Night Market"
+   ]
+  },
+  {
+   "place": "Valco Trust Hostel Phase 1",
+   "footprint": "osm:way/278303038",
+   "entrance": {
+    "at": [
+     27.3,
+     770.7
+    ]
+   },
+   "type": "hall entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-valco",
+   "approach": "To the porch under the stair bay on the north face, a little east of the middle.",
+   "evidence": "Owner's photo: the entrance porch (marked blue) under the stair bay on the front of Phase 1, the face turned away from Phase 2.",
+   "refs": [
+    "owner's photo of Valco"
+   ]
+  },
+  {
+   "place": "Valco Trust Hostel Phase 2",
+   "footprint": "osm:way/278303034",
+   "entrance": {
+    "at": [
+     24.2,
+     847.0
+    ]
+   },
+   "type": "hall entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-valco",
+   "approach": "To the porch under the stair bay on the south face, a little west of the middle.",
+   "evidence": "Owner: the back of Phase 1 faces the back of Phase 2, so Phase 2 is entered on its south face; the same block as Phase 1 turned round, its porch under the stair bay.",
+   "refs": [
+    "owner's photo of Valco"
    ]
   }
  ],

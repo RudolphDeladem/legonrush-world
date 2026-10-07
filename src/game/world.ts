@@ -8,6 +8,7 @@ import { buildBuildings } from './facades';
 import { buildDiasporaHalls, isDiasporaHall } from './halls';
 import { BLOCK_SITES } from './sites';
 import { ROUTE_SOLIDS } from './solids';
+import { walkGaps } from './junctions';
 import { newPentStyle } from './pentagon';
 import { RELIEF_BOXES, applyRelief, densify, inStairs, reliefGround } from './relief';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, ROAD_WIDTH } from './life';
@@ -410,6 +411,19 @@ export interface RouteLayerOptions {
   destination?: Place;
 }
 
+/** the stretches of [0, length] left between the gaps */
+function openRuns(gaps: [number, number][], length: number): [number, number][] {
+  const out: [number, number][] = [];
+  let at = 0;
+  for (const [a, b] of [...gaps].sort((u, v) => u[0] - v[0])) {
+    if (a > at + 0.5) out.push([at, Math.min(a, length)]);
+    at = Math.max(at, b);
+    if (at >= length) break;
+  }
+  if (at < length - 0.5) out.push([at, length]);
+  return out;
+}
+
 /**
  * The ridden route on top of the campus: a three-lane road with kerbs and lane
  * markings along the real road line, street trees and lamps, labels for the
@@ -440,13 +454,25 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
   const conc = concreteTexture();
   conc.repeat.set(1, 4);
   const walkMat = wettable(new THREE.MeshStandardMaterial({ map: conc, roughness: 0.95, side: THREE.DoubleSide }));
+  // the pavements stop where another road joins or crosses the route: a kerb across its mouth would block it
+  const gaps = walkGaps(track, ROAD_HALF, ROAD_WIDTH);
   for (const s of [-1, 1]) {
     const a = s * ROAD_HALF, c = s * (ROAD_HALF + 1.6);
-    const top = s > 0 ? ribbon(track, a, 0.12, c, 0.12, 0, L) : ribbon(track, c, 0.12, a, 0.12, 0, L);
-    const curb = s > 0 ? ribbon(track, a, 0, a, 0.12, 0, L) : ribbon(track, a, 0.12, a, 0, 0, L);
-    const walk = new THREE.Mesh(top, walkMat);
-    walk.receiveShadow = true;
-    group.add(walk, new THREE.Mesh(curb, walkMat));
+    for (const [d0, d1] of openRuns(gaps[s > 0 ? 1 : 0], L)) {
+      const top = s > 0 ? ribbon(track, a, 0.12, c, 0.12, d0, d1) : ribbon(track, c, 0.12, a, 0.12, d0, d1);
+      const curb = s > 0 ? ribbon(track, a, 0, a, 0.12, d0, d1) : ribbon(track, a, 0.12, a, 0, d0, d1);
+      const walk = new THREE.Mesh(top, walkMat);
+      walk.receiveShadow = true;
+      group.add(walk, new THREE.Mesh(curb, walkMat));
+      // a kerb face closes each end of the pavement at a gap
+      for (const d of [d0, d1]) if (d > 0 && d < L) {
+        const p = track.pose(d, s * (ROAD_HALF + 0.8));
+        const cap = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.12, 0.04), walkMat);
+        cap.position.set(p.x, 0.06, p.z);
+        cap.rotation.y = p.yaw;
+        group.add(cap);
+      }
+    }
   }
   const dashCount = Math.floor(L / 9);
   const dashes = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.14, 3).rotateX(-Math.PI / 2), white, dashCount * 2);

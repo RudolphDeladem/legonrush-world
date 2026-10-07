@@ -40,6 +40,26 @@
     {
       "id": "osm:way/1548976997",
       "reason": "OSM outline of a long rectangular building east of Legon Hall Annex C, between Annex A and B. The owner: there is no building there; the owner's top view shows lawns, paths and a small kiosk."
+    },
+    {
+      "id": "osm:way/773864854",
+      "reason": "Owner: the Night Market moved (it stood here only while the market was relocated for construction); the owner's aerial of the current market shows this ground as grass, trees and bare soil with no buildings."
+    },
+    {
+      "id": "ml:ca2c9c6b-df5b-4089-83cf-58f6c2520e32",
+      "reason": "Owner: the Night Market moved (it stood here only while the market was relocated for construction); the owner's aerial of the current market shows this ground as grass, trees and bare soil with no buildings."
+    },
+    {
+      "id": "ml:601cbe85-1fce-4588-9e5d-3ea488aaf994",
+      "reason": "Owner: the Night Market moved (it stood here only while the market was relocated for construction); the owner's aerial of the current market shows this ground as grass, trees and bare soil with no buildings."
+    },
+    {
+      "id": "ml:706c5a32-3d25-4cfa-b723-55f8884cf84b",
+      "reason": "Owner: the Night Market moved (it stood here only while the market was relocated for construction); the owner's aerial of the current market shows this ground as grass, trees and bare soil with no buildings."
+    },
+    {
+      "id": "ml:f7509632-b50a-4182-b545-95537b938076",
+      "reason": "Owner: the Night Market moved (it stood here only while the market was relocated for construction); the owner's aerial of the current market shows this ground as grass, trees and bare soil with no buildings."
     }
   ],
   "heights": [
@@ -1071,6 +1091,216 @@
       "levels": 4,
       "height": 15,
       "reason": "Owner's photos: the heights vary. Four floors in the outer wings and their arms, two in the inner wings and the ranges across the middle and along the north, one in the entrance range; the centre block rises to about 14 m under the stack of hipped roofs, and the clock tower and spire to about 34 m. Modelled in src/game/balme.ts; 15 m stands for the tallest wings."
+    },
+    {
+      "id": "ml:69ab5c5b-fe55-4448-8aa0-e5a4fe4e91e0",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "ml:7f6d90c8-ed53-4517-bcff-bd2e260d4c30",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "ml:f3ead4b6-6f26-4091-9a5e-b76f96a67f13",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/1184490337",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/570550186",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/572423839",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/572423840",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/572423842",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/572423843",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/572423845",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/572423846",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/572423848",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/572423850",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/572423853",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/572423854",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/572423855",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/572423857",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/715088041",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/715088042",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/715088044",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/715088049",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/773864850",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/773864851",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/773864852",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "ml:0f17a945-55ed-4590-a04a-e81c6ad5cf5c",
+      "place": "Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner: the Night Market's buildings are one floor: market zones and stall rows, not buildings of rooms."
+    },
+    {
+      "id": "ml:54e8a8a9-9cdc-4e98-903e-abe45bd27b27",
+      "place": "Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner: the Night Market's buildings are one floor: market zones and stall rows, not buildings of rooms."
+    },
+    {
+      "id": "ml:277d59b2-0047-401d-bf87-17917a45b798",
+      "place": "Night Market",
+      "levels": 1,
+      "height": 5,
+      "reason": "Owner: the supermarket in the Night Market is one floor."
+    },
+    {
+      "id": "osm:way/572423841",
+      "place": "round the Night Market",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's aerial of the buildings round the Night Market (circled yellow): one floor, a ground floor only."
+    },
+    {
+      "id": "osm:way/278303038",
+      "place": "Valco Trust Hostel Phase 1",
+      "levels": 5,
+      "height": 19,
+      "reason": "Owner's photo of Phase 1 and Phase 2: five floors (ground and four) under a low hipped roof of orange tiles; modelled in src/game/valco.ts."
+    },
+    {
+      "id": "osm:way/278303034",
+      "place": "Valco Trust Hostel Phase 2",
+      "levels": 5,
+      "height": 19,
+      "reason": "Owner's photo of Phase 1 and Phase 2: five floors (ground and four) under a low hipped roof of orange tiles; modelled in src/game/valco.ts."
     }
   ],
   "reclass": [
@@ -1087,6 +1317,13 @@
       "class": "plaza",
       "subclass": "forecourt",
       "reason": "Owner: each Diaspora hall's back entrance has no car park; the car parks are in front, between the facing halls. The owner's aerial of all four halls shows a paved forecourt behind the hall, not parking bays."
+    },
+    {
+      "id": "osm:way/773864855",
+      "place": "old Night Market site",
+      "class": "grass",
+      "subclass": "grass",
+      "reason": "Owner: the Night Market moved (it stood here only while the market was relocated for construction); the owner's aerial of the current market shows this ground as grass, trees and bare soil with no buildings."
     }
   ],
   "reshape": [
@@ -1221,6 +1458,30 @@
         ]
       ],
       "reason": "The owner's aerial of Volta Hall, registered to the hall's OSM footprints (which land on their roofs), shows the Annex's roof 12.4 m west of its OSM outline; the outline's shape (a C open to the west round a second, closed court) matches the roof, so it is moved, not redrawn."
+    },
+    {
+      "id": "ml:277d59b2-0047-401d-bf87-17917a45b798",
+      "place": "Supermart (Night Market)",
+      "source": "the owner's aerial of the Night Market (registered to the bank compound's footprint at 4.9 px/m)",
+      "ring": [
+        [
+          105.0,
+          975.5
+        ],
+        [
+          116.2,
+          975.5
+        ],
+        [
+          116.2,
+          1014.0
+        ],
+        [
+          105.0,
+          1014.0
+        ]
+      ],
+      "reason": "Owner: the long one-floor building on the east side of the Night Market (circled black) is a supermarket. The satellite-detected outline sits about 3 m west of the roof on the owner's aerial."
     }
   ],
   "addAreas": [
@@ -1395,6 +1656,41 @@
         ]
       ],
       "reason": "Owner's aerial of the CC and the SRC Union Building: a few cars park between the two buildings, north of the Standard Chartered ATM building."
+    },
+    {
+      "id": "owner:night-market",
+      "class": "plaza",
+      "ring": [
+        [
+          77.5,
+          983.0
+        ],
+        [
+          103.5,
+          975.0
+        ],
+        [
+          119.0,
+          975.0
+        ],
+        [
+          118.8,
+          1022.0
+        ],
+        [
+          118.5,
+          1057.0
+        ],
+        [
+          84.0,
+          1057.0
+        ],
+        [
+          78.0,
+          1023.0
+        ]
+      ],
+      "reason": "Owner's aerial of the current Night Market (circled blue), west of the banking square: market zones and stall rows, one floor, with the supermarket on its east side; registered to the bank compound's footprint at 4.9 px/m."
     }
   ],
   "addWays": [

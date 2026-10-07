@@ -341,7 +341,8 @@ const mlRejected = { offCampus: 0, small: 0, lowConfidence: 0, overlapsOsm: 0 };
 for (const f of SRC.ml.features) {
   const p = f.properties;
   for (const poly of polysOf(f.geometry)) {
-    const ring = ringLocal(dropClosing(poly[0]));
+    // the owner's imagery can correct a satellite-detected outline too (corrections: reshape)
+    const ring = RESHAPE.get(`ml:${p.id}`)?.ring.map(([x, z]) => [x, z]) ?? ringLocal(dropClosing(poly[0]));
     const c = centroid(ring), a = area(ring), box = bbox(ring);
     if (!inCampus(c)) { mlRejected.offCampus++; continue; }
     if (a < 60) { mlRejected.small++; continue; }
@@ -619,6 +620,11 @@ for (const l of REG.landmarks.landmarks) {
     line = ls; geomId = `road:${g.road}`;
     const all = ls.flat();
     pos = all[Math.floor(all.length / 2)];
+  } else if (g.area) {
+    // an area drawn from the owner's imagery (corrections.json addAreas)
+    const f = featureById.get(g.area) ?? features.find((q) => q.id === g.area);
+    if (!f?.ring) throw new Error(`landmark ${l.id}: area ${g.area} not found`);
+    ring = f.ring; pos = centroid(ring); geomId = f.id;
   } else if (g.at) {
     // a point measured on owner-supplied imagery registered to the OSM footprints
     pos = g.at; geomId = `measured:${l.id}`;

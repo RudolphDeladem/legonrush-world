@@ -190,6 +190,23 @@ try {
   for (const n of ['Cedi Conference Centre', 'Standard Chartered and Absa', 'The Balme Library', 'Balme Library wings', 'Balme Library pool', 'Kuffour Quadrangle fountain']) if (!balmeModels.includes(n)) fail(`missing the ${n} model`);
   // the Balme Library (owner's photos): entered by the arched door in the middle of the south front
   { const e = ann('The Balme Library'); if (!e || Math.hypot(e[0] - 5.2, e[1] - 6.9) > 2) fail('The Balme Library: the entrance is not the arched door on the south front'); }
+  // the Night Market (owner): west of the banking square, entered from the road on its east side; the supermarket on
+  // that side; the old site south of the banking square is grass, trees and soil with no building
+  for (const [n, x, z] of [['Night Market', 118.6, 1016.5], ['Supermart (Night Market)', 116.2, 994.7], ['Valco Trust Hostel Phase 1', 27.3, 770.7], ['Valco Trust Hostel Phase 2', 24.2, 847.0]]) {
+    const e = ann(n);
+    if (!e || Math.hypot(e[0] - x, e[1] - z) > 2) fail(`${n}: the entrance is not where the owner marks it`);
+  }
+  for (const [x, z] of [[145, 1050], [160, 1072], [176, 1078], [140, 1045]]) if (buildingAt(x, z)) fail(`the old Night Market site (${x},${z}) still has a building (the owner: grass, trees and soil)`);
+  const nmModels = (await server.ssrLoadModule('/src/game/nightmarket.ts')).nightMarket.frames().map((f) => f.name);
+  if (!nmModels.includes('Night Market') || !nmModels.includes('Supermart (Night Market)') || nmModels.length < 25) fail(`expected the market, the supermarket and the one-floor buildings round them, found ${nmModels.length} models`);
+  if ((await server.ssrLoadModule('/src/game/valco.ts')).valco.frames().length !== 2) fail('expected the two Valco Trust Hostel models');
+  // the route's pavements stop where other roads join (a kerb across a road's mouth blocks it)
+  {
+    const { walkGaps } = await server.ssrLoadModule('/src/game/junctions.ts');
+    const r = rt.exploreRoute(placeByName('Volta Hall'), placeByName('Great Hall'), 'cycle');
+    const g = walkGaps(r.track, 3.8, [9, 7.4, 6.2, 4.6, 2.6]);
+    if (g[0].length + g[1].length < 6) fail(`the route's pavements cross the roads that join it (only ${g[0].length + g[1].length} gaps from Volta Hall to the Great Hall)`);
+  }
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)
   for (const [x, z] of [[95, 1573], [-88, 1676], [210, 1509], [200, 1500]]) if (cm.buildingNear(x, z, 0.35)) fail(`free ride: the road at ${x},${z} is blocked by ${cm.buildingNear(x, z, 0.35).name ?? 'a building'}`);
