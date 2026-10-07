@@ -1,13 +1,22 @@
 {
- "about": "Naming rules for places in the game map. 'required' lists every place name the game code looks up by its exact text (collected from src/ when the reconstruction was made); the build fails if one goes missing, so a rename here never silently breaks a race, mission, event or hall. 'rename' corrects source spellings. 'exclude' drops candidate places that are not real point destinations. 'kind' overrides a place's map category. 'pin' fixes the disambiguated name of a place the game references to its source feature id, so a newly mapped neighbour cannot rename it. 'Vikings Hostel' is renamed 'Mensah Sarbah Vikings Hostel' (owner) to tell it apart from Mensah Sarbah Hall (nicknamed Vikings) and its annexes.",
+ "about": "Naming rules for places in the game map. 'required' lists every place name the game code looks up by its exact text (collected from src/ when the reconstruction was made); the build fails if one goes missing, so a rename here never silently breaks a race, mission, event or hall. 'rename' corrects source spellings. 'exclude' drops candidate places that are not real point destinations. 'kind' overrides a place's map category. 'pin' fixes the disambiguated name of a place the game references to its source feature id, so a newly mapped neighbour cannot rename it. 'Vikings Hostel' is renamed 'Mensah Sarbah Vikings Hostel' (owner) to tell it apart from Mensah Sarbah Hall (nicknamed Vikings) and its annexes. Pentagon (owner): the new blocks are 'New Pent Block A/B/C'; the Old Pent courts west to east are Dar es Salaam, Kampala, the admin block, Addis Ababa and Nairobi (the source names had them in a different order); 'Pent Hostel Block A' was a duplicate point of New Pent Block A.",
  "rename": {
   "James Quartey Building, JQB": "Jones Quartey Building, JQB",
-  "Vikings Hostel": "Mensah Sarbah Vikings Hostel"
+  "Vikings Hostel": "Mensah Sarbah Vikings Hostel",
+  "Pentagon Block A": "New Pent Block A",
+  "Pentagon Block B": "New Pent Block B",
+  "Pentagon Block C": "New Pent Block C",
+  "Addis Ababa Courts": "Dar es Salaam Court",
+  "Dar es Salaam Courts": "Kampala Court",
+  "Kampala Courts": "Addis Ababa Court",
+  "Nairobi Courts": "Nairobi Court",
+  "Pentagon GHL Admin Office": "Pent Admin Block"
  },
  "exclude": [
   "^University of Ghana$",
   "^Legon Hall$@way/1548976998",
-  "^Balme Library$@node/6720686104"
+  "^Balme Library$@node/6720686104",
+  "^Pent Hostel Block A$"
  ],
  "kind": {
   "University of Ghana Botanical Gardens": "landmark",
@@ -68,7 +77,7 @@
   "School of Performing Arts",
   "Statistics",
   "J.H. Kwabena Nketia Archives",
-  "Pentagon Block A",
+  "New Pent Block A",
   "Distance Education Center",
   "Dep't of Sociology",
   "Cash office",
@@ -165,7 +174,6 @@
   "Department for the Study of Religions",
   "Department Of Philosophy and Classics",
   "School of Public Health",
-  "Pent Hostel Block A",
   "TF Hostel",
   "Sports Complex"
  ],

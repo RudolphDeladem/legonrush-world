@@ -309,14 +309,14 @@
   "addedFromRegistry": 5,
   "movedToRegistryPosition": 7,
   "byConfidence": {
-   "high": 141,
-   "medium": 290,
+   "high": 143,
+   "medium": 288,
    "low": 4
   },
-  "requiredNamesChecked": 153,
+  "requiredNamesChecked": 152,
   "moved": [
    {
-    "name": "Pentagon Block A",
+    "name": "New Pent Block A",
     "from": [
      542,
      -600
@@ -2140,7 +2140,7 @@
   },
   {
    "id": "pentagon",
-   "name": "Pentagon Block A",
+   "name": "New Pent Block A",
    "category": "residence",
    "importance": 2,
    "geometry": "osm:way/368856520",

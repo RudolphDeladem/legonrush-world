@@ -1,19 +1,19 @@
 {
  "destinations": 435,
  "byMethod": {
-  "curated": 37,
+  "curated": 45,
   "osm-entrance": 1,
   "gate": 2,
   "path-access": 7,
   "drive-access": 19,
-  "area-entry": 9,
-  "frontage": 248,
+  "area-entry": 8,
+  "frontage": 241,
   "point": 112
  },
  "byConfidence": {
-  "high": 28,
-  "medium": 156,
-  "low": 251
+  "high": 36,
+  "medium": 155,
+  "low": 244
  },
  "campusGates": 5,
  "problems": [],
@@ -21,7 +21,6 @@
   "Cirrus Networks: the last few metres from the network to the entrance cross osm:way/1184505256 (an enclosed courtyard or a mapping gap)",
   "Hotel Obama: the last few metres from the network to the entrance cross osm:way/1244062166 (an enclosed courtyard or a mapping gap)",
   "Oak Plaza Hotel: the last few metres from the network to the entrance cross osm:way/1333949613 (an enclosed courtyard or a mapping gap)",
-  "Dar es Salaam Courts: the last few metres from the network to the entrance cross osm:way/1189695654 (an enclosed courtyard or a mapping gap)",
   "Muslim Prayer Lounge: the last few metres from the network to the entrance cross osm:way/320072522 (an enclosed courtyard or a mapping gap)",
   "Mensah Sarbah Main Hall Females' Laundromat: the last few metres from the network to the entrance cross Block F (an enclosed courtyard or a mapping gap)",
   "SalmaRise: the last few metres from the network to the entrance cross osm:way/1137230518 (an enclosed courtyard or a mapping gap)",
@@ -138,10 +137,10 @@
    "method": "curated"
   },
   {
-   "place": "Pentagon Block A",
-   "status": "unverified",
-   "confidence": "low",
-   "method": "frontage"
+   "place": "New Pent Block A",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
   },
   {
    "place": "Jubilee Hall",
@@ -316,14 +315,56 @@
    "status": "verified",
    "confidence": "high",
    "method": "curated"
+  },
+  {
+   "place": "New Pent Block B",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
+  },
+  {
+   "place": "New Pent Block C",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
+  },
+  {
+   "place": "Dar es Salaam Court",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
+  },
+  {
+   "place": "Kampala Court",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
+  },
+  {
+   "place": "Addis Ababa Court",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
+  },
+  {
+   "place": "Nairobi Court",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
+  },
+  {
+   "place": "Pent Admin Block",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
   }
  ],
  "byStatus": {
-  "verified": 25,
+  "verified": 33,
   "partial": 12,
-  "unverified": 11,
-  "inferred": 241,
-  "mapped": 146
+  "unverified": 10,
+  "inferred": 235,
+  "mapped": 145
  },
  "curated": [
   {
@@ -388,6 +429,20 @@
    "arrivalOn": "service",
    "arrivalDistance": 8.8,
    "facing": 180
+  },
+  {
+   "place": "Kampala Court",
+   "type": "hall entrance",
+   "arrivalOn": "residential",
+   "arrivalDistance": 12.8,
+   "facing": 176
+  },
+  {
+   "place": "Pent Admin Block",
+   "type": "public entrance",
+   "arrivalOn": "residential",
+   "arrivalDistance": 16.5,
+   "facing": 176
   },
   {
    "place": "University of Ghana Business School",
@@ -465,6 +520,27 @@
    "arrivalOn": "service",
    "arrivalDistance": 0.4,
    "facing": 358
+  },
+  {
+   "place": "Nairobi Court",
+   "type": "hall entrance",
+   "arrivalOn": "residential",
+   "arrivalDistance": 12.8,
+   "facing": 174
+  },
+  {
+   "place": "Addis Ababa Court",
+   "type": "hall entrance",
+   "arrivalOn": "residential",
+   "arrivalDistance": 11.8,
+   "facing": 174
+  },
+  {
+   "place": "Dar es Salaam Court",
+   "type": "hall entrance",
+   "arrivalOn": "residential",
+   "arrivalDistance": 13.2,
+   "facing": 176
   },
   {
    "place": "International Students Hostel 1, ISH 1",
@@ -551,6 +627,13 @@
    "facing": 0
   },
   {
+   "place": "New Pent Block C",
+   "type": "hall entrance",
+   "arrivalOn": "residential",
+   "arrivalDistance": 49,
+   "facing": 358
+  },
+  {
    "place": "Mensah Sarbah Vikings Hostel",
    "type": "hall entrance",
    "arrivalOn": "residential",
@@ -579,6 +662,20 @@
    "facing": 328
   },
   {
+   "place": "New Pent Block B",
+   "type": "hall entrance",
+   "arrivalOn": "residential",
+   "arrivalDistance": 48.7,
+   "facing": 304
+  },
+  {
+   "place": "New Pent Block A",
+   "type": "hall entrance",
+   "arrivalOn": "residential",
+   "arrivalDistance": 45.7,
+   "facing": 319
+  },
+  {
    "place": "Night Market",
    "type": "public entrance",
    "arrivalOn": "service",
@@ -596,11 +693,6 @@
    "place": "SalmaRise",
    "method": "frontage",
    "arrivalDistance": 100.3
-  },
-  {
-   "place": "Pentagon Block B",
-   "method": "frontage",
-   "arrivalDistance": 99
   },
   {
    "place": "Radio Univers",
@@ -638,6 +730,16 @@
    "arrivalDistance": 50.4
   },
   {
+   "place": "New Pent Block C",
+   "method": "curated",
+   "arrivalDistance": 49
+  },
+  {
+   "place": "New Pent Block B",
+   "method": "curated",
+   "arrivalDistance": 48.7
+  },
+  {
    "place": "Food vendors",
    "method": "point",
    "arrivalDistance": 47.7
@@ -653,14 +755,9 @@
    "arrivalDistance": 46.5
   },
   {
-   "place": "Dep't of Sociology",
-   "method": "frontage",
-   "arrivalDistance": 45.2
-  },
-  {
-   "place": "Centre for International Affairs",
-   "method": "point",
-   "arrivalDistance": 45.2
+   "place": "New Pent Block A",
+   "method": "curated",
+   "arrivalDistance": 45.7
   }
  ],
  "networkPassagesThroughBuildings": [

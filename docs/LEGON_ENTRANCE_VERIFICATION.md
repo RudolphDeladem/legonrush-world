@@ -41,7 +41,7 @@ BUILDING → ENTRANCE → FORECOURT → ACCESS PATH → ARRIVAL POINT (road/path
 `npm run test:routes` fails if a priority destination is left as mapped/inferred, if a verified entrance is
 not high confidence, or if any non-verified, non-mapped entrance claims high confidence.
 
-**Priority destinations: 47 — verified 24, partial 12, unverified 11.** (The four Diaspora halls moved from partial to verified with the owner's photos; ISH 1 moved to verified and ISH 2 was added with the owner's marked layout; the banking square's banks were added with the owner's labelled aerial and photos; the School of Law and Vikings Hostel were verified with the owner's photos; see below.)
+**Priority destinations: 55 — verified 33, partial 12, unverified 10.** (The four Diaspora halls moved from partial to verified with the owner's photos; ISH 1 moved to verified and ISH 2 was added with the owner's marked layout; the banking square's banks were added with the owner's labelled aerial and photos; the School of Law and Vikings Hostel were verified with the owner's photos; see below.)
 
 ## Entrance verification table (BEFORE → AFTER)
 
@@ -72,7 +72,14 @@ Coordinates are game-frame metres (x east, z south of the datum 5.6518 N, 0.1871
 | Alexander Kwapong Hall | partial: (180, 1621), arriving on service | medium | hall entrance at (186, 1631), back entrance at (117, 1670) | service | (210, 1616), facing 240° | **verified** · high | 11 m |
 | Dr. Hilla Limann Hall | partial: (243, 1612), arriving on service | medium | hall entrance at (238, 1602), back entrance at (306, 1563) | service | (211, 1618), facing 60° | **verified** · high | 11 m |
 | Jean Nelson Aka Hall | partial: (-116, 1803), arriving on service | medium | hall entrance at (-118, 1800), back entrance at (-186, 1840) | service | (-94, 1787), facing 241° | **verified** · high | 3 m |
-| Pentagon Block A | frontage at (505, -612), arriving on Annie Jiagge Road | low | inferred frontage at (505, -612) | Annie Jiagge Road | (500, -612), facing 91° | **unverified** · low | 0 m |
+| New Pent Block A | inferred (no evidence) | low | hall entrance at (576, -628) | service | (576, -582), facing 319° | **verified** · high | — |
+| New Pent Block B | inferred (no evidence) | low | hall entrance at (568, -768) | service | (568, -717), facing 304° | **verified** · high | — |
+| New Pent Block C | inferred (no evidence) | low | hall entrance at (687, -701) | service | (691, -652), facing 358° | **verified** · high | — |
+| Dar es Salaam Court | inferred (no evidence) | low | hall entrance at (543, -525) | service | (540, -540), facing 176° | **verified** · high | — |
+| Kampala Court | inferred (no evidence) | low | hall entrance at (592, -529) | service | (589, -543), facing 176° | **verified** · high | — |
+| Pent Admin Block | inferred (no evidence) | low | public entrance at (629, -527) | service | (628, -546), facing 176° | **verified** · high | — |
+| Addis Ababa Court | inferred (no evidence) | low | hall entrance at (672, -536) | service | (671, -550), facing 174° | **verified** · high | — |
+| Nairobi Court | inferred (no evidence) | low | hall entrance at (721, -540) | service | (719, -555), facing 174° | **verified** · high | — |
 | Jubilee Hall | verified: (134, 1301), arriving on Diaspora Path | high | hall entrance at (137, 1293) | footway via the portico | (162, 1288), facing 253° | **verified** · high | 8 m |
 | School of Engineering Sciences | frontage at (458, -380), arriving on service | low | public entrance at (453, -380) | service | (453, -377), facing 358° | **verified** · high | 5 m |
 | University of Ghana Business School | frontage at (-141, -132), arriving on service | low | public entrance at (-150, -132) | service | (-150, -137), facing 178° | **partial** · medium | 9 m |
@@ -238,9 +245,10 @@ land on their roofs, so the labels became map positions. Bank places were moved 
   back door the middle of the opposite facade, the pairs face each other, and rides Limann ⇄ Kwapong and
   JNA ⇄ Sey door to door.
 
-### Pentagon Block A — UNVERIFIED
+### Pentagon (New Pent blocks A, B, C; Old Pent courts; the admin block) — VERIFIED
 
-- **UNVERIFIED.** No reference image, written source or mapped access identifies this entrance. The previous automatic result is kept: frontage at (505, -612), arriving on Annie Jiagge Road, confidence low. It needs a photo or site check.
+- **Names** (owner): the new blocks are *New Pent Block A, B, C*; the Old Pent courts west to east are *Dar es Salaam, Kampala*, the **admin block** (Ghana Hostels), *Addis Ababa* and *Nairobi* (the source names had the courts in a different order). *Pent Hostel Block A* was a duplicate point of New Pent Block A and is gone; "Pent", "Pentagon", "Pent Hostel Block A" and "Pentagon Block A" find New Pent Block A.
+- **Entrances:** the owner's aerial with every entrance marked, registered to the OSM footprints (2.5 px/m): the New Pent blocks are entered by the pavilion in the middle of each block's central wing, facing the car park on the south; the Old Pent courts by the porch at the foot of the stair core on the north face, toward the road; the admin block by the gabled porch between its towers, also on the north. Forecourt paths are given where a wing stands between a door and the road (Blocks A and B).
 
 ### Jubilee Hall — VERIFIED
 
@@ -381,7 +389,7 @@ Renamed from *Vikings Hostel* (owner) to tell it apart from Mensah Sarbah Hall (
 
 | Destination | What is missing | Kept for now |
 | --- | --- | --- |
-| Pentagon Block A | Which of the Pentagon blocks/receptions students enter; OSM has a "Pentagon GHL Admin Office" on Pent Road but no door. | frontage (low) |
+| ~~Pentagon Block A~~ | Resolved: the owner's marked aerial (see Pentagon above). | frontage (low) |
 | Institute of Africa Studies | No footprint in OSM (a UG Campus Map point only); the building and its door cannot be identified on the atlas. | frontage (low) |
 | K. A. Busia Building, KAB | No reference; KAB faces a lawn opposite the Law school, door side unknown. | frontage (low) |
 | N Block | No reference; several access paths reach it. | frontage (low) |

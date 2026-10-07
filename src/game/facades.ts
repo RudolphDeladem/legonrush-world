@@ -286,7 +286,10 @@ function slopes(rb: Batch, outer: V[], inner: V[], eave: number, top: number, c:
 }
 
 /** Builds every building footprint into merged, per-cell meshes. */
-export function buildBuildings(buildings: Building[]) {
+/** colours that override the random palette for a building (buildings modelled after photos) */
+export type BuildingStyle = (b: Building) => { wall?: string; roof?: string } | undefined;
+
+export function buildBuildings(buildings: Building[], styleOf?: BuildingStyle) {
   const group = new THREE.Group();
   const { wall, roof } = buildingMaterials();
   const rand = seeded(23);
@@ -304,8 +307,9 @@ export function buildBuildings(buildings: Building[]) {
     const h = bd.height ?? (footprint < 60 ? 3.6 : footprint < 350 ? 7 : r1 < 0.5 ? 7 : 10.5);
     const storeys = Math.max(1, Math.round((h - PLINTH) / STOREY));
     const bay = 2.9 + r2 * 0.8;
-    const wallC = tint(WALL_COLORS[(r3 * WALL_COLORS.length) | 0], rand);
-    const roofC = tint(ROOF_COLORS[(r4 * ROOF_COLORS.length) | 0], rand, 0.05);
+    const st = styleOf?.(bd);
+    const wallC = tint(st?.wall ?? WALL_COLORS[(r3 * WALL_COLORS.length) | 0], rand);
+    const roofC = tint(st?.roof ?? ROOF_COLORS[(r4 * ROOF_COLORS.length) | 0], rand, 0.05);
     const plinthC = tint(PLINTH_COLORS[(rand() * PLINTH_COLORS.length) | 0], rand);
     const trimC = trimBase.clone().multiplyScalar(0.97 + rand() * 0.03);
     const soffitC = soffitBase.clone().multiplyScalar(0.95 + rand() * 0.05);

@@ -120,6 +120,13 @@ try {
   const dome = placeByName('Diaspora Dome'), domeA = ACCESS.get('Diaspora Dome');
   if (!dome || Math.hypot(dome.x - 0.2, dome.z - 1582.2) > 3) fail('Diaspora Dome is not beside Kwapong, north-west of the Lizalex Quadrangle');
   if (!domeA || Math.hypot(domeA.entrance[0] - 10.2, domeA.entrance[1] - 1601.4) > 2) fail('Diaspora Dome: the way in is not its open front');
+  // Pentagon (owner): Old Pent courts west to east, the admin block in the middle, entrances on the marks
+  const order = ['Dar es Salaam Court', 'Kampala Court', 'Pent Admin Block', 'Addis Ababa Court', 'Nairobi Court'].map((n) => placeByName(n));
+  if (order.some((p) => !p)) fail('Pentagon: an Old Pent court or the admin block is missing');
+  else for (let i = 1; i < order.length; i++) if (order[i].x <= order[i - 1].x) fail(`Pentagon: ${order[i].name} is not east of ${order[i - 1].name}`);
+  const pentMarks = { 'New Pent Block A': [575.6, -628], 'New Pent Block B': [568.4, -766], 'New Pent Block C': [686.8, -698], 'Addis Ababa Court': [671.6, -538.8], 'Nairobi Court': [720.4, -544.4] };
+  for (const [n, [mx, mz]] of Object.entries(pentMarks)) { const a = ACCESS.get(n); if (!a || Math.hypot(a.entrance[0] - mx, a.entrance[1] - mz) > 5) fail(`${n}: the entrance is not where the owner marks it`); }
+  for (const n of ['Pent Admin Block', 'Dar es Salaam Court', 'Kampala Court', 'Addis Ababa Court', 'Nairobi Court']) { const a = ACCESS.get(n), p = placeByName(n); if (a && p && a.entrance[1] > p.z) fail(`${n}: the entrance is not on the north face`); }
   const bankModels = (await server.ssrLoadModule('/src/game/banking.ts')).banking.frames();
   if (bankModels.length !== 3) fail(`expected the bank compound, the Union Building and the ADB/HFC block, found ${bankModels.length}`);
   const hostels = (await server.ssrLoadModule('/src/game/hostels.ts')).hostels.frames();

@@ -14,8 +14,9 @@ the map still use it), the generic builder skips it, and its model is placed on 
 | 4 | Mensah Sarbah Vikings Hostel, School of Law | `src/game/vikingslaw.ts` | owner photos (5), earlier layout photos (2) |
 | 5 | School of Engineering Sciences, and the hill it stands below | `src/game/engineering.ts`, `src/game/relief.ts` | owner's marked layout, reference render, photos (2) |
 | 6 | Diaspora Dome, International House, woods round the School of Law; no building between Kwapong and Sey | `src/game/dome.ts` | owner aerials (2, registered), photos (3) |
+| 7 | Pentagon: Old Pent courts, the admin block, New Pent blocks A, B, C | `src/game/pentagon.ts` | owner's labelled aerial (registered), photos (3) |
 
-Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 to 6) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
+Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 to 7) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
 
 ## 1. The Diaspora halls
 
@@ -256,3 +257,38 @@ road and parked buses. They are excluded (`corrections.json → exclude`).
 The owner's aerial circles three wooded zones (west and south of the School of Law, east of International House).
 They are added as wood areas measured on the registered aerial (`corrections.json → addAreas`); woods are planted
 more densely than before so they read as woodland.
+
+## 7. Pentagon (Pent)
+
+The owner's labelled aerial was registered to the OSM footprints (2.5 px/m).
+
+**Names** (owner): New Pent *Block A, B, C*; Old Pent courts west to east (coming from Engineering) *Dar es Salaam,
+Kampala*, the admin block, *Addis Ababa, Nairobi*. The source names had the courts in a different order and are
+corrected in `naming.json`; the code's references and aliases follow.
+
+### Old Pent courts (one design)
+
+- **Height:** three storeys (owner photo).
+- **Plan:** four white blocks (about 17 m × 15 m) round a cross of open gaps, joined by a central stair core; the
+  courts are turned about 5° like the row. Dar es Salaam and Kampala are mapped as four squares and a core,
+  Addis Ababa and Nairobi as one outline each; all four use the same model.
+- **Look:** white render, pairs of dark windows in brown frames, a red base, terracotta hipped roofs with dark
+  fascias; the core rises into a tower with a front gable and an arched window.
+- **Entrance:** a small tiled porch on white posts at the foot of the core, on the north face toward the road.
+
+### The admin block (Ghana Hostels)
+
+- Four storeys: two towers with front gables and brick-red corner panels either side of a recessed centre with a
+  railed balcony; a tiled veranda along the ground floor; the gabled porch with a sunburst gable and the GHANA
+  HOSTELS LTD sign, on the north face (owner photo and mark).
+
+### New Pent blocks A, B, C (one design)
+
+- **Wings:** the mapped footprints, now four storeys (master geography 4 levels / 15 m) in cream render with
+  terracotta roofs (`newPentStyle`).
+- **Entrance pavilion** (owner photo and marks): a projecting tower the height of the block with an arched window
+  under a front gable and a balcony row, over a columned porch with an arched opening and a small tile gable,
+  facing the car park on the south.
+
+**Open points:** the New Pent wings keep the generic window pattern (cream render, brown-framed windows); the
+brick-red panels on some walls are not modelled.

@@ -3633,7 +3633,7 @@ function settingsScreen() {
 
 // ---------- explore ----------
 
-const POPULAR = ['School of Law', 'Pent Hostel Block A', 'The Balme Library', 'Great Hall', 'Night Market', 'Jones Quartey Building, JQB', 'University of Ghana Hospital', 'Legon Main Entrance'];
+const POPULAR = ['School of Law', 'New Pent Block A', 'The Balme Library', 'Great Hall', 'Night Market', 'Jones Quartey Building, JQB', 'University of Ghana Hospital', 'Legon Main Entrance'];
 
 function stepsList(route: Route) {
   return `<ol class="steps">${route.steps.map((s, i) => `
@@ -3903,7 +3903,7 @@ interface SpeechRec { lang: string; onresult: (e: { results: { 0: { 0: { transcr
 const QUIZ_POOL = [
   'The Balme Library', 'Great Hall', 'University of Ghana Registry', 'Legon Main Entrance', 'Night Market', 'Central Cafeteria, CC',
   'Jones Quartey Building, JQB', 'New N Block, NNB', 'School of Law', 'University of Ghana Business School', 'University of Ghana Hospital',
-  'Athletic Oval', 'Pent Hostel Block A', 'Legon Hall', 'Akuafo Hall Main', 'Commonwealth Hall', 'Volta Hall', 'Mensah Sarbah Hall',
+  'Athletic Oval', 'New Pent Block A', 'Legon Hall', 'Akuafo Hall Main', 'Commonwealth Hall', 'Volta Hall', 'Mensah Sarbah Hall',
   'Jean Nelson Aka Hall', 'Alexander Kwapong Hall', 'Elizabeth Frances Sey Hall', 'Dr. Hilla Limann Hall', 'International Students Hostel 1, ISH 1',
   'Valco Trust Hostel Phase 1', 'SRC Union Building',
 ];

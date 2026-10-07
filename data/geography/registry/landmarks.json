@@ -1455,22 +1455,24 @@
     },
     {
       "id": "pentagon",
-      "name": "Pentagon Block A",
+      "name": "New Pent Block A",
       "kind": "hall",
       "category": "residence",
       "importance": 2,
       "aliases": [
-        "Pent",
-        "Pentagon",
         "African Union Hall",
-        "Pent Hostel Block A"
+        "Pent",
+        "Pent Hostel Block A",
+        "Pentagon",
+        "Pentagon Block A"
       ],
       "geometry": {
         "osm": "way/368856520"
       },
       "match": {
         "osm": [
-          "^Pentagon Block A$"
+          "^Pentagon Block A$",
+          "^New Pent Block A$"
         ],
         "overture": [
           "block a \\(pent\\)",
