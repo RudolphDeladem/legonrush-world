@@ -930,18 +930,40 @@ export class Game {
 
   /**
    * Explore, on a bike: after arriving, the rider takes the bike wherever a bike can go. Nothing drives
-   * it any more: steer with freeInput.steer (-1 left .. 1 right), pedal and brake; buildings, trees,
-   * woods, water, stairs and walls stop it. endFreeRide() ends the ride.
+   * it any more: steer with freeInput.steer (-1 left .. 1 right); one freePedal() and the rider keeps
+   * pedalling until the brake; a tap on the brake stops the bike, holding it rolls the bike backwards.
+   * Buildings, trees, woods, water, stairs and walls stop it. endFreeRide() ends the ride.
    */
   freeRide() {
     if (this.phase !== 'riding' || this.free) return;
     const r = this.rider.root;
     this.drone = null;
-    this.free = { x: r.position.x, z: r.position.z, yaw: r.rotation.y, v: 0, steer: 0, bumpT: 0 };
-    this.freeInput = { steer: 0, pedal: false, brake: false };
+    this.free = { x: r.position.x, z: r.position.z, yaw: r.rotation.y, v: 0, steer: 0, bumpT: 0, cruise: false, stopping: false, held: 0 };
+    this.freeInput = { steer: 0, brake: false };
     this.speed = 0;
   }
   get freeRiding() { return !!this.free; }
+  /** pedalling (on until the brake) and rolling backwards, for the free-ride buttons */
+  get freeState() { return { pedalling: !!this.free?.cruise, reversing: (this.free?.v ?? 0) < -0.05 }; }
+  /** one press: start pedalling, and keep pedalling */
+  freePedal() {
+    const f = this.free;
+    if (!f) return;
+    f.cruise = true;
+    f.stopping = false;
+  }
+  /** press (true) and release (false) the brake: a press stops pedalling and brings the bike to a stop; held on, it rolls backwards */
+  freeBrake(on: boolean) {
+    const f = this.free;
+    if (!f || on === this.freeInput.brake) return;
+    this.freeInput.brake = on;
+    if (on) {
+      f.cruise = false;
+      f.stopping = true;
+      f.held = 0;
+      sfx.lane();
+    }
+  }
   /** the end of a free ride: the ride is over, as when a route is finished */
   endFreeRide() {
     if (!this.free) return;
@@ -949,50 +971,61 @@ export class Game {
     this.phase = 'finished';
     this.endTimer = 0.01;
   }
-  /** held controls during a free ride */
-  freeInput = { steer: 0, pedal: false, brake: false };
-  private free: { x: number; z: number; yaw: number; v: number; steer: number; bumpT: number } | null = null;
+  /** held controls during a free ride: steering, and the brake (freeBrake) */
+  freeInput = { steer: 0, brake: false };
+  private free: { x: number; z: number; yaw: number; v: number; steer: number; bumpT: number; cruise: boolean; stopping: boolean; held: number } | null = null;
 
   /** a free ride: bike physics on open ground, stopped by whatever a bike can't go through */
   private updateFree(dt: number) {
     const f = this.free!, inp = this.freeInput;
     this.time += dt;
-    const top = 8 + (this.bike?.speed ?? 3) * 0.5;
-    if (inp.brake) f.v = Math.max(0, f.v - 10 * dt);
-    else if (inp.pedal) f.v = Math.min(top, f.v + (2.6 + (this.bike?.acceleration ?? 3) * 0.3) * dt);
-    else f.v = Math.max(0, f.v - 0.8 * dt);
+    const top = 8 + (this.bike?.speed ?? 3) * 0.5, back = 2.4;
+    if (inp.brake) f.held += dt;
+    if (f.cruise) f.v = Math.min(top, f.v + (2.6 + (this.bike?.acceleration ?? 3) * 0.3) * dt);
+    else if (inp.brake && f.held > 0.45 && f.v <= 0.05) {
+      // held on once stopped: walk the bike backwards
+      f.v = Math.max(-back, f.v - 2.2 * dt);
+      f.stopping = false;
+    } else if (f.stopping || (!inp.brake && f.v < 0)) {
+      // braking to a stop (a tap is enough), or letting go of the brake while rolling back
+      f.v = f.v > 0 ? Math.max(0, f.v - 10 * dt) : Math.min(0, f.v + 6 * dt);
+      if (f.v === 0) f.stopping = false;
+    } else f.v = Math.max(0, f.v - 0.8 * dt);
     // steering: the bars turn quickly, the bike turns more tightly when slow (and can be turned when stopped)
     f.steer += (inp.steer - f.steer) * Math.min(1, dt * 7);
     const rate = 1.7 * (f.v < 0.5 ? 0.6 : Math.min(1, 0.45 + 4 / (f.v + 3)));
-    f.yaw -= f.steer * rate * dt;
-    const fx = -Math.sin(f.yaw), fz = -Math.cos(f.yaw), step = f.v * dt;
+    // going backwards the bike swings the other way, as it would being walked back
+    f.yaw -= f.steer * rate * dt * (f.v < -0.05 ? -1 : 1);
+    const hx = -Math.sin(f.yaw), hz = -Math.cos(f.yaw), step = f.v * dt;
+    // the way it is moving (backwards when reversing): obstacles and banks are checked that way
+    const sgn = f.v < 0 ? -1 : 1, fx = hx * sgn, fz = hz * sgn;
     // uphill slows, downhill rolls on
     const g0 = groundHeight(f.x, f.z);
-    if (f.v > 0.2) f.v = Math.max(0, Math.min(top * 1.3, f.v - 9.8 * 0.6 * ((groundHeight(f.x + fx, f.z + fz) - g0) / 1) * dt));
+    if (f.v > 0.2) f.v = Math.max(0, Math.min(top * 1.3, f.v - 9.8 * 0.6 * ((groundHeight(f.x + hx, f.z + hz) - g0) / 1) * dt));
     // move, sliding along whatever is in the way; a wall or a bank too steep to ride stops the bike
     if (!bounds) bounds = mapBounds();
     // (a bank steeper than about 1 in 1.5 just ahead counts as a wall)
     const ok = (x: number, z: number) => !freeBlocked(x + fx * 0.7, z + fz * 0.7) && !freeBlocked(x, z)
       && Math.abs(groundHeight(x + fx * 0.6, z + fz * 0.6) - groundHeight(x, z)) < 0.4
       && x > bounds!.minX && x < bounds!.maxX && z > bounds!.minZ && z < bounds!.maxZ;
-    const nx = f.x + fx * step, nz = f.z + fz * step;
-    if (step > 0) {
+    const nx = f.x + hx * step, nz = f.z + hz * step;
+    if (step !== 0) {
       if (ok(nx, nz)) { f.x = nx; f.z = nz; }
       else if (ok(nx, f.z)) { f.x = nx; f.v *= 0.92; }
       else if (ok(f.x, nz)) { f.z = nz; f.v *= 0.92; }
       else {
-        if (f.v > 2.5 && f.bumpT <= 0) { sfx.bump(); this.shake = Math.max(this.shake, Math.min(0.3, f.v * 0.03)); f.bumpT = 0.6; }
+        if (Math.abs(f.v) > 2.5 && f.bumpT <= 0) { sfx.bump(); this.shake = Math.max(this.shake, Math.min(0.3, f.v * 0.03)); f.bumpT = 0.6; }
         f.v = 0;
       }
     }
     if (f.bumpT > 0) f.bumpT -= dt;
-    this.speed = f.v;
+    this.speed = Math.abs(f.v);
     // the rider on the bike, leaning into the turn
     const r = this.rider;
     r.root.position.set(f.x, groundHeight(f.x, f.z), f.z);
     r.root.rotation.y = f.yaw;
-    this.lean += (-f.steer * Math.min(1, f.v / 6) * 0.4 - this.lean) * Math.min(1, dt * 6);
-    this.crank += dt * f.v * 0.9 * (inp.pedal ? 1 : 0.15);
+    this.lean += (-f.steer * Math.min(1, Math.max(0, f.v) / 6) * 0.4 - this.lean) * Math.min(1, dt * 6);
+    this.crank += dt * Math.max(0, f.v) * 0.9 * (f.cruise ? 1 : 0.15);
     for (const w of r.wheels) w.rotation.x -= (f.v / 0.38) * dt;
     r.crank.rotation.x = -this.crank;
     r.legs[0].rotation.x = Math.sin(this.crank) * 0.55;
@@ -1041,7 +1074,7 @@ export class Game {
     this.guideWait = false;
     this.drone = null;
     this.free = null;
-    this.freeInput = { steer: 0, pedal: false, brake: false };
+    this.freeInput = { steer: 0, brake: false };
     this.lane = 1;
     this.paused = false;
     this.rec = { step: GHOST_STEP, d: [], x: [] };

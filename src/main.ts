@@ -922,7 +922,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
       ${isExplore(route) || opts.live?.kind === 'vibe' ? `<label class="pace-box${isExplore(route) ? ' tour' : ''}" id="paceBox"><span>${isExplore(route) ? 'Tour speed' : 'Speed'}</span><b id="paceVal"></b><input type="range" id="pace" step="1" aria-label="${isExplore(route) ? 'Tour speed' : 'Riding speed'}"><small>Slow</small><small>Fast</small></label>` : ''}
       ${isExplore(route) ? '<div class="xp-say" id="xpSay" hidden></div>' : ''}
       ${isExplore(route) ? `<div class="free-pad" id="freePad" hidden>
-        <p class="fp-hint">${isTouch ? 'Hold the arrows to steer, Pedal to go, Brake to stop' : 'Steer ← → (A / D) · pedal ↑ (W) · brake ↓ (S)'}</p>
+        <p class="fp-hint">${isTouch ? 'Hold the arrows to steer · tap Pedal to ride · tap Brake to stop, hold it to reverse' : 'Steer ← → (A / D) · ↑ (W) pedal · ↓ (S) brake, hold to reverse'}</p>
         <button class="fp-btn fp-end" id="fpEnd">Finish ride</button>
         <div class="fp-steer"><button class="fp-btn" id="fpLeft" aria-label="Steer left">◀</button><button class="fp-btn" id="fpRight" aria-label="Steer right">▶</button></div>
         <div class="fp-feet"><button class="fp-btn fp-brake" id="fpBrake">Brake</button><button class="fp-btn fp-go" id="fpGo">Pedal</button></div>
@@ -1382,8 +1382,19 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     };
     hold('fpLeft', (v) => { held.left = v; steer(); });
     hold('fpRight', (v) => { held.right = v; steer(); });
-    hold('fpGo', (v) => { game.freeInput.pedal = v; });
-    hold('fpBrake', (v) => { game.freeInput.brake = v; });
+    // Pedal: one press and the rider keeps pedalling; Brake: a tap stops the bike, held on it rolls back
+    const goBtn = pad.querySelector<HTMLElement>('#fpGo')!, brakeEl = pad.querySelector<HTMLElement>('#fpBrake')!;
+    const show = () => {
+      const st = game.freeState;
+      goBtn.classList.toggle('on', st.pedalling);
+      brakeEl.classList.toggle('on', game.freeInput.brake);
+      brakeEl.textContent = st.reversing ? 'Reverse' : 'Brake';
+      if (game.freeRiding) requestAnimationFrame(show);
+    };
+    requestAnimationFrame(show);
+    goBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); e.preventDefault(); game.freePedal(); });
+    brakeEl.addEventListener('pointerdown', (e) => { e.stopPropagation(); e.preventDefault(); game.freeBrake(true); });
+    for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) brakeEl.addEventListener(ev, () => game.freeBrake(false));
     pad.querySelector('#fpEnd')!.addEventListener('click', () => { pad.hidden = true; game.endFreeRide(); });
     for (const ev of ['pointerdown', 'touchstart'] as const) pad.addEventListener(ev, (e) => e.stopPropagation());
     freeKeys = (e) => {
@@ -1391,8 +1402,8 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
       const on = e.type === 'keydown';
       if (e.code === 'ArrowLeft' || e.code === 'KeyA') held.left = on;
       else if (e.code === 'ArrowRight' || e.code === 'KeyD') held.right = on;
-      else if (e.code === 'ArrowUp' || e.code === 'KeyW' || e.code === 'Space') game.freeInput.pedal = on;
-      else if (e.code === 'ArrowDown' || e.code === 'KeyS') game.freeInput.brake = on;
+      else if (e.code === 'ArrowUp' || e.code === 'KeyW' || e.code === 'Space') { if (on) game.freePedal(); }
+      else if (e.code === 'ArrowDown' || e.code === 'KeyS') game.freeBrake(on);
       else return;
       e.preventDefault();
       steer();
