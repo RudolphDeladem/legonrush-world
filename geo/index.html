@@ -55,6 +55,14 @@
       <h2>Layers</h2>
       <div id="layers"></div>
       <label class="layer" style="display:block;margin-top:6px">Imagery opacity <input id="opacity" type="range" min="0" max="100" value="85" /></label>
+      <h2>Route tester</h2>
+      <div class="legend">The game's own routing. <i style="background:#ffffff"></i>start <i style="background:#2ee66b"></i>arrival <i style="background:#ff3df5"></i>entrance <i style="background:#f5c518"></i>turns</div>
+      <select id="rtPreset" style="width:100%;margin:6px 0;padding:6px;border-radius:6px;background:#0d1529;color:var(--text);border:1px solid var(--line)"><option value="">Representative routes…</option></select>
+      <input id="rtFrom" list="rtPlaces" type="search" placeholder="From" style="margin-bottom:4px" />
+      <input id="rtTo" list="rtPlaces" type="search" placeholder="To" style="margin-bottom:4px" />
+      <datalist id="rtPlaces"></datalist>
+      <div style="display:flex;gap:6px;align-items:center"><select id="rtMode" style="flex:1;padding:6px;border-radius:6px;background:#0d1529;color:var(--text);border:1px solid var(--line)"><option value="cycle">Ride</option><option value="walk">Walk</option><option value="drive">Taxi / shuttle</option></select><button id="rtGo" type="button" style="padding:6px 12px;border-radius:6px;border:0;background:var(--accent);font-weight:700;cursor:pointer">Route</button></div>
+      <div id="rtOut" class="legend" style="margin-top:6px"></div>
       <h2>Landmarks</h2>
       <div class="legend">confidence <i style="background:#06d6a0"></i>high <i style="background:#ffd166"></i>medium <i style="background:#ef476f"></i>low</div>
       <input id="q" type="search" placeholder="Find a landmark or place" style="margin-top:6px" />

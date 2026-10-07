@@ -746,7 +746,7 @@ export function bindMap(root: HTMLElement): () => void {
       ${nearbyHtml(pl.x, pl.z, pl.name)}`, (b) => {
       bindActs(b, {
         ride: () => rideTo(pl),
-        dir: () => directionsTo(pl.x, pl.z, pl.name, b.querySelector('#mpDir')!),
+        dir: () => directionsTo(pl.x, pl.z, pl.name, b.querySelector('#mpDir')!, pl),
         fav: () => { toggleFavourite(p, pl.name); openPlace(pl); },
         opts: () => h.explore(fromPlace().name, pl.name),
       });
@@ -765,8 +765,8 @@ export function bindMap(root: HTMLElement): () => void {
     if (covered || sx < 0 || sy < 0 || sx > view.w || sy > view.h) view.focus(x, z, view.scale, sheetOffset());
   };
 
-  const directionsTo = (x: number, z: number, name: string, box: HTMLElement) => {
-    const r = map.path([you.x, you.z], [x, z], 'cycle', shortName(name));
+  const directionsTo = (x: number, z: number, name: string, box: HTMLElement, place?: Place) => {
+    const r = map.path([you.x, you.z], [x, z], 'cycle', shortName(name), place);
     if (!r || r.length < 15) {
       box.innerHTML = `<p class="muted small">You're right there.</p>`;
       return;
@@ -779,8 +779,8 @@ export function bindMap(root: HTMLElement): () => void {
       <p class="small"><b>${distText(r.length)}</b> · about ${rideMins(r.length)} min by bike · ${Math.max(1, Math.round(r.length / 80))} min on foot</p>
       <ol class="mp-steps">${r.steps.map((s, i) => `<li><span class="mp-turn">${ARROW[s.turn] ?? '↑'}</span><span class="grow">${esc(s.text)}</span>${i < r.steps.length - 1 ? `<small>${distText(r.steps[i + 1].at - s.at)}</small>` : ''}</li>`).join('')}</ol>
     </div>`;
-    // from you to the road, and from the road to the door
-    path = [[you.x, you.z], ...r.points, [x, z]];
+    // from you to the road, and from the road to the door (the place's entrance when it is known)
+    path = [[you.x, you.z], ...r.points, r.entrance ?? [x, z]];
     body.scrollTo({ top: Math.max(0, box.offsetTop - 70), behavior: reduced ? 'auto' : 'smooth' });
     redraw();
   };

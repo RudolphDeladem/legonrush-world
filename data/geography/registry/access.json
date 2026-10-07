@@ -1,0 +1,157 @@
+{
+ "about": "Curated destination access for Legon. An entry here overrides the automatic evidence chain in scripts/geography/build-access.mjs and must say why. Entrances are never placed freely: each one is an OpenStreetMap node or gate, the point where a mapped way meets the footprint, or the side of the footprint met by a mapped axis. 'campusGates' names the university's gates from written sources.",
+ "citations": {
+  "ug-legon-campus": "https://old1.ug.edu.gh/node/38",
+  "ug-gates": "https://www.graphic.com.gh/news/general-news/univ-of-ghana-blocks-access-routes-to-public.html",
+  "ug-gates-2": "https://citifmonline.com/2014/03/chaos-at-ug-over-blocked-roads/",
+  "ug-stadium-gate": "https://old1.ug.edu.gh/node/70293",
+  "univers-level100": "https://univers.ug.edu.gh/finding-your-way-on-the-streets-of-legon-a-level-100-guide/",
+  "visitghana-botanical": "https://visitghana.com/?p=12576"
+ },
+ "campusGates": [
+  {
+   "id": "main-gate",
+   "name": "Main Gate",
+   "osm": [
+    "node/5813545126",
+    "node/5813545127"
+   ],
+   "access": "vehicles with a UG permit; pedestrians and cyclists",
+   "cite": "ug-gates",
+   "evidence": "Written: 'the Main gate (opposite the Legon Police Station)'. OSM: two permit lift gates across Dr. J.B. Danquah Avenue at the gatehouse, 175 m west of the police station across the N4.",
+   "confidence": "high"
+  },
+  {
+   "id": "north-gate",
+   "name": "North Gate",
+   "osm": [
+    "node/5020636345",
+    "node/5713101589"
+   ],
+   "access": "permit (UG sticker) for vehicles",
+   "cite": "ug-gates",
+   "evidence": "Written: 'the North gate (close to the James Topp-Nelson Yankah Hall, Haatso Road)'. OSM: two permit lift gates 100 m north-west of the hall on the road to the Haatso road.",
+   "confidence": "high"
+  },
+  {
+   "id": "link-gate",
+   "name": "Link Gate",
+   "osm": [
+    "node/6012830263",
+    "node/6343193979"
+   ],
+   "access": "permit (UG sticker) for vehicles",
+   "cite": "ug-gates",
+   "evidence": "Written: 'the Link Gate' from the Achimota-Legon road. OSM: permit lift gates on the tertiary road beside the road named 'Link Gate'.",
+   "confidence": "high"
+  },
+  {
+   "id": "okponglo-gate",
+   "name": "Okponglo (Stadium Road) entrance",
+   "osm": [
+    "node/10649363065",
+    "node/1269621500"
+   ],
+   "access": "open to the public 24 hours (2014 directive)",
+   "cite": "ug-gates",
+   "evidence": "Written: 'the Stadium Road entrance at the Okponglo intersection ... remains open 24 hours to the general public'; a security access gate building was commissioned on the road near the stadium. OSM: a public lift gate and a permissive swing gate on the road from the Okponglo junction past the stadium.",
+   "confidence": "medium"
+  },
+  {
+   "id": "south-gate",
+   "name": "South Gate",
+   "osm": [
+    "node/2581150632"
+   ],
+   "access": "permit",
+   "cite": "ug-gates",
+   "evidence": "Written: 'the South gate (from Noguchi Memorial Institute for Medical Research to National Highway 4)'. OSM: a permit gate on the road running east from the Noguchi area to the N4. Which of the two permit gates in the south-east is the named South Gate is not stated; this is the one on the Noguchi road.",
+   "confidence": "medium"
+  }
+ ],
+ "destinations": [
+  {
+   "place": "Legon Main Entrance",
+   "entrance": {
+    "osm": "node/5813545127"
+   },
+   "type": "campus gate",
+   "arrival": {
+    "way": "way/448225218"
+   },
+   "confidence": "high",
+   "cite": "ug-gates",
+   "evidence": "The Main Gate is the permit lift gate across the inbound (northern, right-hand) carriageway of Dr. J.B. Danquah Avenue at the gatehouse (OSM node 5813545127); written: 'the Main gate (opposite the Legon Police Station)'."
+  },
+  {
+   "place": "The Balme Library",
+   "entrance": {
+    "axisFrom": "osm:way/320067568"
+   },
+   "type": "public entrance",
+   "confidence": "medium",
+   "cite": "ug-legon-campus",
+   "evidence": "Written: an ornamental fountain on the University Square 'overlooking the Balme Library'. OSM: the forecourt lanes (ways 448104199, 448104193) run from the fountain roundabout straight to the library's south front, so the public front is the fa\u00e7ade facing the fountain. Previously the ride ended on the road behind (north of) the library."
+  },
+  {
+   "place": "University Square",
+   "entrance": {
+    "side": "south"
+   },
+   "type": "public open space",
+   "confidence": "medium",
+   "cite": "ug-legon-campus",
+   "evidence": "Written: 'mid-way [along the avenue] is an open space, the University Square, with an ornamental fountain'. The square opens onto the avenue at the fountain roundabout, its south edge."
+  },
+  {
+   "place": "University of Ghana banking square",
+   "entrance": {
+    "axisFrom": "osm:way/492099498"
+   },
+   "type": "public entrance",
+   "confidence": "medium",
+   "cite": "ug-legon-campus",
+   "evidence": "OSM: the bank complex (relation 7226878) is served by the car park named 'Banking Square Parking' (way 492099498) on its north side; the banks face their customers' car park."
+  },
+  {
+   "place": "Great Hall",
+   "entrance": {
+    "side": "west"
+   },
+   "type": "public entrance",
+   "confidence": "medium",
+   "cite": "ug-legon-campus",
+   "evidence": "OSM maps two vehicle turning circles on the summit loop road directly at the Great Hall's west fa\u00e7ade (master roundabouts at -1046,157 and -1032,102): the drop-off. The east side faces the enclosed courtyard of the Convocation Group with no mapped access. Unresolved alternative: a ceremonial east front on the avenue axis (Commonwealth Hall and the Great Hall share an east-west line)."
+  },
+  {
+   "place": "Commonwealth Hall",
+   "entrance": {
+    "side": "east"
+   },
+   "type": "hall entrance",
+   "confidence": "medium",
+   "cite": "ug-legon-campus",
+   "evidence": "Written: 'the University Avenue extends to Commonwealth Hall on Legon Hill'. The hall is approached from the avenue end, its east side facing down the avenue toward the Balme Library."
+  },
+  {
+   "place": "Mensah Sarbah Hall",
+   "entrance": {
+    "building": "way/300288063"
+   },
+   "type": "hall entrance (porters' lodge)",
+   "confidence": "medium",
+   "cite": "ug-legon-campus",
+   "evidence": "OSM: the hall's 'Administration and Porters' Lodge' (way 300288063) stands at the north edge of the Sarbah precinct; halls are entered at the porters' lodge. Radio Univers: the Central Cafeteria is 'right in front of Mensah Sarbah Hall', on the same side."
+  },
+  {
+   "place": "Elizabeth Frances Sey Hall",
+   "entrance": {
+    "axisFrom": "osm:way/765261438"
+   },
+   "type": "hall entrance",
+   "confidence": "medium",
+   "cite": "ug-legon-campus",
+   "evidence": "OSM: the hall's forecourt car park is mapped and named 'Sey frontage' (way 765261438); the entrance is the fa\u00e7ade facing it."
+  }
+ ]
+}

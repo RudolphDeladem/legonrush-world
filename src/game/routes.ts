@@ -1,5 +1,5 @@
 // Rideable routes over the real campus road network.
-import { PLACES, directions, findPath, nodeXZ, placeByName, ROADS, type Place, type PlaceKind, type RoadClass, type Step, type TravelMode } from './campusmap';
+import { PLACES, accessFor, directions, findPath, findPathBetween, isAccessNode, nearestNode, nodeEdges, nodeXZ, placeByName, ROADS, type Place, type PlaceKind, type RoadClass, type Step, type TravelMode } from './campusmap';
 import { Track } from './track';
 import type { RouteLabel } from './world';
 import type { TimeOfDay } from './Game';
@@ -32,22 +32,51 @@ export interface Route {
   to: Place;
   /** road class under ride distance d */
   classAt: (d: number) => RoadClass;
+  /** destination journeys: where the ride starts and ends relative to the places' entrances */
+  access?: { start: [number, number]; end: [number, number]; fromEntrance?: [number, number]; toEntrance?: [number, number] };
 }
 
 const LEAD = 25;
 const TAIL = 40;
 const LABEL_PRIORITY: Record<PlaceKind, number> = { landmark: 0, hall: 1, academic: 2, food: 3, sport: 3, health: 4, bank: 5, worship: 5, transport: 6, other: 7 };
 
-/** Builds a ride along the shortest real way through the given places, in order. */
+type XZ = [number, number];
+const dist2 = (a: XZ, b: XZ) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+
+/**
+ * Builds a ride through the given places, in order.
+ * Races keep their original construction (shortest way between the nodes nearest each place, straight
+ * run-up and run-out), so race lengths, best times and ghosts stay comparable. Every other ride is a
+ * destination journey: it leaves from the origin's access point and stops at the destination's (the
+ * network point in front of its entrance, from data/geography/legon-access.geojson), keeps bikes off
+ * trails and steps where it can, and runs out toward the destination's entrance.
+ */
 export function routeThrough(stops: Place[], opts: { id: string; name: string; kind: RouteKind; difficulty?: number; mode?: TravelMode; time?: TimeOfDay }): Route | null {
-  const nodes: number[] = [];
-  const roads: number[] = [];
-  for (let k = 0; k < stops.length - 1; k++) {
-    const path = findPath([stops[k].x, stops[k].z], [stops[k + 1].x, stops[k + 1].z], opts.mode);
-    if (!path || path.nodes.length < 2) return null;
-    nodes.push(...(nodes.length ? path.nodes.slice(1) : path.nodes)); // legs share their end node
-    roads.push(...path.roads);
-  }
+  const mode = opts.mode ?? 'cycle';
+  let campus = opts.kind !== 'race';
+  const nodeOf = (p: Place) => {
+    const a = accessFor(p);
+    if (!a) return nearestNode(p.x, p.z, mode);
+    return mode === 'drive' ? a.dropNode : a.node;
+  };
+  const legs = (byAccess: boolean) => {
+    const nodes: number[] = [], roads: number[] = [];
+    for (let k = 0; k < stops.length - 1; k++) {
+      const path = byAccess
+        ? findPathBetween(nodeOf(stops[k]), nodeOf(stops[k + 1]), mode)
+        : findPath([stops[k].x, stops[k].z], [stops[k + 1].x, stops[k + 1].z], opts.mode);
+      if (!path) return null;
+      if (path.nodes.length < 2) continue; // two stops at the same access point
+      nodes.push(...(nodes.length ? path.nodes.slice(1) : path.nodes)); // legs share their end node
+      roads.push(...path.roads);
+    }
+    return { nodes, roads };
+  };
+  let way = legs(campus);
+  // neighbours that share one frontage (the banks on Banking Square): fall back to the nearest-node way
+  if (campus && way && way.nodes.length < 2) { way = legs(false); campus = false; }
+  if (!way || way.nodes.length < 2) return null;
+  const { nodes, roads } = way;
   // a stop at the end of a side road would mean riding in and turning back: ride past it instead
   for (let i = 1; i < nodes.length - 1; ) {
     if (nodes[i - 1] === nodes[i + 1]) {
@@ -57,22 +86,70 @@ export function routeThrough(stops: Place[], opts: { id: string; name: string; k
     } else i++;
   }
   if (nodes.length < 2) return null;
+  // races ride the original road geometry: drop access points split onto a road segment, so the track is unchanged
+  if (!campus) for (let i = nodes.length - 2; i > 0; i--) if (isAccessNode(nodes[i]) && roads[i - 1] === roads[i]) { nodes.splice(i, 1); roads.splice(i, 1); }
   const pts = nodes.map(nodeXZ);
-  const tags = roads;
   let pathLength = 0;
-  for (let k = 0; k < pts.length - 1; k++) pathLength += Math.hypot(pts[k + 1][0] - pts[k][0], pts[k + 1][1] - pts[k][1]);
+  for (let k = 0; k < pts.length - 1; k++) pathLength += dist2(pts[k + 1], pts[k]);
   const steps: Step[] = directions({ nodes, roads, length: pathLength }, stops[stops.length - 1].name);
-  // straight run-up before the start line and run-out after the finish line
-  const ext = (a: [number, number], b: [number, number], len: number): [number, number] => {
+  const ext = (a: XZ, b: XZ, len: number): XZ => {
     const dx = a[0] - b[0], dz = a[1] - b[1], l = Math.hypot(dx, dz) || 1;
     return [a[0] + (dx / l) * len, a[1] + (dz / l) * len];
   };
   const first = pts[0], last = pts[pts.length - 1];
-  const all = [ext(first, pts[1], LEAD), ...pts, ext(last, pts[pts.length - 2], TAIL)];
-  const allTags = [tags[0], ...tags, tags[tags.length - 1], tags[tags.length - 1]];
-  const track = new Track(all, allTags);
-  const length = Math.round(track.length - LEAD - TAIL);
-  const rideD = (x: number, z: number) => Math.max(0, Math.min(length, track.project(x, z).d - LEAD));
+  let leadPts: XZ[], tailPts: XZ[], leadRoad = roads[0], tailRoad = roads[roads.length - 1];
+  let fromEntrance: XZ | undefined, toEntrance: XZ | undefined;
+  if (!campus) {
+    // straight run-up before the start line and run-out after the finish line
+    leadPts = [ext(first, pts[1], LEAD)];
+    tailPts = [ext(last, pts[pts.length - 2], TAIL)];
+  } else {
+    const fa = accessFor(stops[0]), ta = accessFor(stops[stops.length - 1]);
+    fromEntrance = fa?.entrance;
+    toEntrance = ta?.entrance;
+    // run-up: out of the origin's entrance when it is a few metres off the road, else back along the road
+    const outOf = (e: XZ | undefined, at: XZ) => (e && dist2(e, at) >= 4 ? [ext(e, at, -1.5)] : null);
+    const along = (from: number, avoid: number, want: number): { pts: XZ[]; road: number } | null => {
+      // follow the network away from `avoid`, always taking the straightest way on, up to `want` metres
+      const out: XZ[] = [];
+      let prev = avoid, cur = from, len = 0, road = -1;
+      for (let guard = 0; guard < 20 && len < want; guard++) {
+        const [px, pz] = nodeXZ(prev), [cx, cz] = nodeXZ(cur);
+        const hx = cx - px, hz = cz - pz, hl = Math.hypot(hx, hz) || 1;
+        let best: { to: number; road: number; len: number } | null = null, bestDot = -0.3;
+        for (const e of nodeEdges(cur)) {
+          if (e.to === prev) continue;
+          const [nx, nz] = nodeXZ(e.to);
+          const d = ((nx - cx) * hx + (nz - cz) * hz) / ((Math.hypot(nx - cx, nz - cz) || 1) * hl);
+          if (d > bestDot) { bestDot = d; best = e; }
+        }
+        if (!best) break;
+        out.push(nodeXZ(best.to));
+        if (road < 0) road = best.road;
+        len += best.len;
+        prev = cur; cur = best.to;
+      }
+      return out.length ? { pts: out, road } : null;
+    };
+    const runUp = outOf(fromEntrance, first);
+    const back = runUp ? null : along(nodes[0], nodes[1], LEAD);
+    leadPts = runUp ?? back?.pts.reverse() ?? [ext(first, pts[1], LEAD)];
+    if (back) leadRoad = back.road;
+    const runOut = outOf(toEntrance, last);
+    const on = runOut ? null : along(nodes[nodes.length - 1], nodes[nodes.length - 2], TAIL);
+    tailPts = runOut ?? on?.pts ?? [ext(last, pts[pts.length - 2], TAIL)];
+    if (on) tailRoad = on.road;
+  }
+  const all = [...leadPts, ...pts, ...tailPts];
+  const allTags = [...leadPts.map(() => leadRoad), ...roads, ...tailPts.map(() => tailRoad), tailRoad];
+  // destination journeys pass exactly through the start and arrival points (no corner rounding there)
+  const track = new Track(all, allTags, 14, campus ? [first, last] : []);
+  // the start and finish lines sit on the first and last network points of the way
+  const lead = campus ? Math.max(0, Math.round(track.project(first[0], first[1]).d)) : LEAD;
+  const finish = campus ? Math.round(track.project(last[0], last[1]).d) : track.length - TAIL;
+  const length = Math.round(finish - lead);
+  const tail = campus ? Math.max(0, track.length - lead - length) : TAIL;
+  const rideD = (x: number, z: number) => Math.max(0, Math.min(length, track.project(x, z).d - lead));
   const rideSteps: RideStep[] = steps.map((s) => ({ ...s, d: s.turn === 'start' ? 0 : s.turn === 'arrive' ? length : rideD(s.x, s.z) }));
   // tours: announce each stop on the way
   stops.slice(1, -1).forEach((stop, k) => {
@@ -86,7 +163,7 @@ export function routeThrough(stops: Place[], opts: { id: string; name: string; k
   for (const place of PLACES) {
     if (place.kind === 'transport' || place.kind === 'other' && !/hall|library|registry|mall/i.test(place.name)) continue;
     const pr = track.project(place.x, place.z);
-    if (pr.dist > 55 || pr.d < LEAD + 5 || pr.d > track.length - TAIL) continue;
+    if (pr.dist > 55 || pr.d < lead + 5 || pr.d > lead + length) continue;
     near.push({ place, d: pr.d, pr: LABEL_PRIORITY[place.kind], dist: pr.dist });
   }
   near.sort((a, b) => a.pr - b.pr || a.dist - b.dist);
@@ -100,17 +177,18 @@ export function routeThrough(stops: Place[], opts: { id: string; name: string; k
 
   return {
     ...opts,
-    mode: opts.mode ?? 'cycle',
+    mode,
     difficulty: opts.difficulty ?? 2,
     length,
     track,
-    lead: LEAD,
-    tail: TAIL,
+    lead,
+    tail,
     steps: rideSteps,
     labels,
     from: stops[0],
     to: stops[stops.length - 1],
-    classAt: (d: number) => ROADS[track.tagAt(d + LEAD)]?.cls ?? 2,
+    classAt: (d: number) => ROADS[track.tagAt(d + lead)]?.cls ?? 2,
+    ...(campus && { access: { start: first, end: last, fromEntrance, toEntrance } }),
   };
 }
 

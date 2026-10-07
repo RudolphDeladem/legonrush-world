@@ -17,6 +17,8 @@ export interface Place {
 export interface Road {
   name?: string;
   cls: RoadClass;
+  /** informal trail (path, track) or steps: campus routing keeps bikes off them where it can */
+  surface?: 'trail' | 'steps';
   nodes: number[];
 }
 export interface Building {
@@ -37,12 +39,18 @@ interface RawData {
   attribution: string;
   origin: [number, number];
   nodes: number[];
-  roads: { c: number; w: number[]; n?: string }[];
+  roads: { c: number; w: number[]; n?: string; k?: 1 | 2 }[];
   /** m: footprint only seen by satellite (no OSM outline); u: OSM outline no satellite footprint matches; q: 2 low confidence */
   buildings: { p: number[]; h?: number; n?: string; i?: number[][]; m?: 1; u?: 1; q?: 2 }[];
   areas: { k: string; p: number[] }[];
   places: { n: string; k: string; x: number; z: number; l?: string[]; q?: 1 | 2 }[];
   lines: Record<string, string[]>;
+  /** destination access registry (data/geography/legon-access.geojson): e entrance (dm), a arrival node, d drop-off node, t type, f facing (deg), q confidence */
+  access: { n: string; e: [number, number]; a: number; d?: number; t: string; f: number; q?: 1 | 2 }[];
+  /** nodes that exist only as access points; legacy race routing ignores them */
+  accessNodes: number[];
+  /** the university's named gates */
+  gates: { id: string; n: string; x: number; z: number }[];
   /** campus outline, flat x,z decimetres */
   boundary: number[];
   zones: { id: string; n: string; k: string; p: number[] }[];
@@ -61,7 +69,7 @@ const M_LAT = 110574, M_LNG = 111320 * Math.cos((LAT0 * Math.PI) / 180);
 export const toLatLng = (x: number, z: number): [number, number] => [LAT0 - z / M_LAT, LNG0 + x / M_LNG];
 /** road graph node positions: x, z pairs in metres */
 export const NODE_XZ = Float32Array.from(data.nodes, (v) => v / 10);
-export const ROADS: Road[] = data.roads.map((r) => ({ name: r.n, cls: r.c as RoadClass, nodes: r.w }));
+export const ROADS: Road[] = data.roads.map((r) => ({ name: r.n, cls: r.c as RoadClass, nodes: r.w, ...(r.k && { surface: r.k === 2 ? 'steps' as const : 'trail' as const }) }));
 export const BUILDINGS: Building[] = data.buildings.map((b) => {
   const pts = Float32Array.from(b.p, (v) => v / 10);
   let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
@@ -77,6 +85,29 @@ export const PLACES: Place[] = data.places.map((p) => ({ name: p.n, kind: p.k as
 export const LINE_ENDS = data.lines;
 
 export const placeByName = (name: string) => PLACES.find((p) => p.name === name);
+
+// ---------- destination access ----------
+export type AccessType = 'public entrance' | 'campus gate' | 'pedestrian' | 'vehicle' | 'path access' | 'inferred frontage' | 'point' | 'open space' | 'hall entrance';
+const ACCESS_TYPE: Record<string, AccessType> = { e: 'public entrance', g: 'campus gate', p: 'pedestrian', v: 'vehicle', i: 'inferred frontage', o: 'point', s: 'open space', h: 'hall entrance' };
+export interface Access {
+  /** where you get in: a door, a gate, the edge of an open space (metres) */
+  entrance: [number, number];
+  /** graph node a rider or walker stops at, in sight of the entrance */
+  node: number;
+  /** graph node a taxi or the shuttle stops at (a proper road) */
+  dropNode: number;
+  type: AccessType;
+  /** compass bearing from the arrival point to the entrance, degrees */
+  facing: number;
+  confidence: 'high' | 'medium' | 'low';
+}
+export const ACCESS = new Map<string, Access>(data.access.map((a) => [a.n, {
+  entrance: [a.e[0] / 10, a.e[1] / 10], node: a.a, dropNode: a.d ?? a.a, type: ACCESS_TYPE[a.t] ?? 'point', facing: a.f, confidence: a.q === 2 ? 'low' : a.q === 1 ? 'medium' : 'high',
+}]));
+/** How a place is reached: its entrance and the network nodes to stop at. */
+export const accessFor = (place: Place) => ACCESS.get(place.name);
+/** the university's named gates (Main Gate, North Gate, Link Gate, ...) */
+export const GATES = data.gates.map((g) => ({ id: g.id, name: g.n, x: g.x / 10, z: g.z / 10 }));
 
 /** Names students use for places, mapped to the place's map name. */
 export const ALIASES: Record<string, string> = {
@@ -222,6 +253,8 @@ ROADS.forEach((r, ri) => {
   }
 });
 export const nodeDegree = (i: number) => adj[i].length;
+/** the network edges at a node */
+export const nodeEdges = (i: number) => adj[i].map((e) => ({ to: e.to, road: e.road, len: e.len }));
 
 // keep only the largest connected network, so every pair of places has a route
 const comp = new Int32Array(adj.length).fill(-1);
@@ -241,8 +274,11 @@ for (let s = 0, c = 0; s < adj.length; s++) {
 }
 const NCELL = 40;
 const ngrid = new Map<string, number[]>();
+const ACCESS_ONLY = new Set(data.accessNodes);
+/** a node that exists only as a destination access point (a split on an existing road segment) */
+export const isAccessNode = (i: number) => ACCESS_ONLY.has(i);
 for (let i = 0; i < adj.length; i++) {
-  if (comp[i] !== best) continue;
+  if (comp[i] !== best || ACCESS_ONLY.has(i)) continue;
   const k = `${Math.floor(nx(i) / NCELL)},${Math.floor(nz(i) / NCELL)}`;
   let l = ngrid.get(k);
   if (!l) ngrid.set(k, (l = []));
@@ -273,10 +309,27 @@ export interface PathResult {
   length: number;
 }
 
-/** Shortest way between two points along the road network (A*). */
+/** Shortest way between two points along the road network (A*), snapping each point to its nearest node. Races use this. */
 export function findPath(from: [number, number], to: [number, number], mode: TravelMode = 'cycle'): PathResult | null {
-  const s = nearestNode(from[0], from[1], mode), t = nearestNode(to[0], to[1], mode);
+  return search(nearestNode(from[0], from[1], mode), nearestNode(to[0], to[1], mode), mode, false);
+}
+
+/**
+ * Campus routing between two graph nodes (normally access points): like findPath, but bikes keep
+ * off informal trails and steps unless there is no other way, and taxis never use footpaths.
+ */
+export function findPathBetween(s: number, t: number, mode: TravelMode = 'cycle'): PathResult | null {
+  return search(s, t, mode, true);
+}
+const SURFACE: Record<TravelMode, Record<'trail' | 'steps', number>> = {
+  cycle: { trail: 2.2, steps: 25 },
+  walk: { trail: 1.05, steps: 1.3 },
+  drive: { trail: 60, steps: 1000 },
+};
+
+function search(s: number, t: number, mode: TravelMode, campus: boolean): PathResult | null {
   const cost = COST[mode];
+  const edgeCost = (road: number) => { const r = ROADS[road]; return cost[r.cls] * (campus && r.surface ? SURFACE[mode][r.surface] : 1); };
   if (s < 0 || t < 0) return null;
   const n = adj.length;
   const g = new Float64Array(n).fill(Infinity);
@@ -319,7 +372,7 @@ export function findPath(from: [number, number], to: [number, number], mode: Tra
     done[v] = 1;
     if (v === t) break;
     for (const e of adj[v]) {
-      const c = g[v] + e.len * cost[ROADS[e.road].cls];
+      const c = g[v] + e.len * edgeCost(e.road);
       if (c < g[e.to]) {
         g[e.to] = c;
         prev[e.to] = v;

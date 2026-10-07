@@ -22,4 +22,6 @@ jobs:
       - name: Campus geography is up to date
         run: |
           npm run geo
-          git diff --exit-code src/data/legon-map.json data/geography/legon-master.geojson data/geography/reconciliation-report.json
+          git diff --exit-code src/data/legon-map.json data/geography/legon-master.geojson data/geography/reconciliation-report.json data/geography/legon-access.geojson data/geography/access-report.json
+      - name: Destination access and routes
+        run: npm run test:routes

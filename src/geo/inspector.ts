@@ -2,6 +2,9 @@
 // drawn from above over a Sentinel-2 composite so it can be checked against the real campus.
 // A debug page only: it lives at /geo/ and nothing in the game links to it.
 import raw from '../data/legon-map.json';
+import { ACCESS, GATES, PLACES, placeByName, type TravelMode } from '../game/campusmap';
+import { exploreRoute, type Route } from '../game/routes';
+import { ROUTE_CHECKS } from '../data/route-checks';
 
 interface Data {
   origin: [number, number];
@@ -31,6 +34,12 @@ const node = (i: number): [number, number] => [D.nodes[i * 2] / 10, D.nodes[i * 
 const ROAD_W = [12, 8, 6, 4, 2];
 const ROAD_COL = ['#ff8a3d', '#ffc94d', '#ffffff', '#c7ccd8', '#7fe0ff'];
 const roadPaths = [0, 1, 2, 3, 4].map(() => new Path2D());
+const trailPath = new Path2D(), stepsPath = new Path2D();
+for (const r of D.roads as { c: number; w: number[]; k?: number }[]) {
+  if (!r.k) continue;
+  const p = r.k === 2 ? stepsPath : trailPath;
+  r.w.forEach((n, i) => { const [x, z] = node(n); (i ? p.lineTo : p.moveTo).call(p, x, z); });
+}
 for (const r of D.roads) { const p = roadPaths[r.c]; r.w.forEach((n, i) => { const [x, z] = node(n); (i ? p.lineTo : p.moveTo).call(p, x, z); }); }
 const BCOL = { osm: '#ff7a59', osmUnconfirmed: '#ffd166', satellite: '#4cc9f0', low: '#ff4fd8' };
 const bPaths = { osm: new Path2D(), osmUnconfirmed: new Path2D(), satellite: new Path2D(), low: new Path2D() };
@@ -70,6 +79,9 @@ const LAYERS = [
   { id: 'landmarks', name: 'Landmark registry', col: '#06d6a0', on: true, n: D.landmarks.length },
   { id: 'places', name: 'Place labels', col: '#c9a7ff', on: false, n: D.places.length },
   { id: 'legacy', name: 'Legacy map (before rebuild)', col: '#ff3b3b', on: false },
+  { id: 'access', name: 'Destination access (entrance → arrival)', col: '#ff3df5', on: false, n: ACCESS.size },
+  { id: 'gates', name: 'Campus gates', col: '#ffffff', on: true, n: GATES.length },
+  { id: 'surface', name: 'Network: trails and steps', col: '#ff9f1c', on: false, n: D.roads.filter((r) => (r as { k?: number }).k).length },
   { id: 'grid', name: '100 m grid', col: '#f5c518', on: false },
 ] as const;
 type LayerId = (typeof LAYERS)[number]['id'];
@@ -175,6 +187,7 @@ function render() {
     ctx.fillStyle = LMCOL[l.q ?? 0]; ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = '#05070f'; ctx.stroke();
     if (l.i === 1 || scale > 0.5 || (l.i === 2 && scale > 0.25)) label(l.n, x + r + 4, y, '#ffffff', l.i === 1 ? 12 : 11, l.i === 1);
   }
+  drawRouting(label);
   if (selected) { const [x, y] = toScreen(selected[0], selected[1]); ctx.strokeStyle = '#f5c518'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, 12, 0, Math.PI * 2); ctx.stroke(); }
   // scale bar
   const metres = [10, 20, 50, 100, 200, 500, 1000].find((m) => m * scale > 70) ?? 1000;
@@ -279,3 +292,76 @@ const h = location.hash.slice(1).split(',').map(Number);
 if (h.length === 3 && h.every(Number.isFinite)) { [cx, cz] = fromLatLng(h[0], h[1]); scale = h[2]; } else fit();
 statusEl.textContent = `${D.roads.length} roads · ${D.buildings.length} buildings · ${D.areas.length} areas · ${D.landmarks.length} landmarks · ${D.places.length} places`;
 draw();
+
+// ---------- routing debug: access points, gates, trails and the route tester ----------
+const ACOLOR = { high: '#06d6a0', medium: '#ffd166', low: '#ef476f' };
+let route: Route | null = null;
+function drawRouting(label: (t: string, x: number, y: number, col: string, size?: number, bold?: boolean) => void) {
+  const S = (x: number, z: number) => toScreen(x, z);
+  if (on.has('surface')) {
+    ctx.save();
+    ctx.setTransform(scale * dpr, 0, 0, scale * dpr, (W / 2 - cx * scale) * dpr, (H / 2 - cz * scale) * dpr);
+    ctx.lineWidth = Math.max(2, 3 / scale); ctx.lineCap = 'round';
+    ctx.strokeStyle = '#ff9f1c'; ctx.stroke(trailPath);
+    ctx.strokeStyle = '#ff2e2e'; ctx.stroke(stepsPath);
+    ctx.restore();
+  }
+  if (on.has('access') && scale > 0.25) for (const [name, a] of ACCESS) {
+    const [ex, ey] = S(a.entrance[0], a.entrance[1]);
+    const [ax, ay] = S(D.nodes[a.node * 2] / 10, D.nodes[a.node * 2 + 1] / 10);
+    if (Math.max(ex, ax) < -20 || Math.min(ex, ax) > W + 20 || Math.max(ey, ay) < -20 || Math.min(ey, ay) > H + 20) continue;
+    ctx.strokeStyle = '#ff3df5'; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ex, ey); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = ACOLOR[a.confidence]; ctx.beginPath(); ctx.arc(ex, ey, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#2ee66b'; ctx.fillRect(ax - 3, ay - 3, 6, 6);
+    if (scale > 1.4) label(`${name} · ${a.type}`, ex + 6, ey - 8, '#ffd9fb', 10);
+  }
+  if (on.has('gates')) for (const g of GATES) {
+    const [x, y] = S(g.x, g.z);
+    ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#05070f'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.rect(x - 5, y - 5, 10, 10); ctx.fill(); ctx.stroke();
+    label(g.name, x + 8, y, '#ffffff', 11, true);
+  }
+  if (route) {
+    const r = route;
+    const pts = (from: number, to: number) => { const out: [number, number][] = []; for (let d = from; d <= to; d += 2) { const p = r.track.pose(d, 0); out.push(S(p.x, p.z)); } return out; };
+    const line = (p: [number, number][], col: string, w: number, dash: number[] = []) => { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.setLineDash(dash); ctx.beginPath(); p.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke(); ctx.setLineDash([]); };
+    line(pts(0, r.lead), '#ffffff', 2, [5, 4]);
+    line(pts(r.lead + r.length, r.track.length), '#ff3df5', 2, [5, 4]);
+    line(pts(r.lead, r.lead + r.length), '#05070f', 7);
+    line(pts(r.lead, r.lead + r.length), '#ff4f81', 4);
+    for (const st of r.steps) {
+      if (st.turn === 'start' || st.turn === 'arrive') continue;
+      const p = r.track.pose(r.lead + st.d, 0), [x, y] = S(p.x, p.z);
+      ctx.fillStyle = '#f5c518'; ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
+      if (scale > 0.5) label(st.text, x + 6, y, '#fff3c4', 10);
+    }
+    const s0 = r.track.pose(r.lead, 0), e0 = r.track.pose(r.lead + r.length, 0);
+    const dot = (x: number, z: number, col: string, t: string) => { const [px, py] = S(x, z); ctx.fillStyle = col; ctx.strokeStyle = '#05070f'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); label(t, px + 8, py, col, 11, true); };
+    dot(s0.x, s0.z, '#ffffff', 'start');
+    dot(e0.x, e0.z, '#2ee66b', 'arrival');
+    if (r.access?.toEntrance) dot(r.access.toEntrance[0], r.access.toEntrance[1], '#ff3df5', 'entrance');
+    if (r.access?.fromEntrance) dot(r.access.fromEntrance[0], r.access.fromEntrance[1], '#c9c9ff', 'exit');
+  }
+}
+const rtFrom = $<HTMLInputElement>('#rtFrom'), rtTo = $<HTMLInputElement>('#rtTo'), rtMode = $<HTMLSelectElement>('#rtMode'), rtOut = $('#rtOut');
+$('#rtPlaces').innerHTML = [...PLACES].sort((a, b) => a.name.localeCompare(b.name)).map((p) => `<option value="${esc(p.name)}"></option>`).join('');
+const preset = $<HTMLSelectElement>('#rtPreset');
+ROUTE_CHECKS.forEach((c, i) => preset.insertAdjacentHTML('beforeend', `<option value="${i}">${esc(c.from)} → ${esc(c.to)}</option>`));
+preset.addEventListener('change', () => { const c = ROUTE_CHECKS[+preset.value]; if (!c) return; rtFrom.value = c.from; rtTo.value = c.to; runRoute(c.expect); });
+$('#rtGo').addEventListener('click', () => runRoute());
+function runRoute(expect?: string) {
+  const a = placeByName(rtFrom.value), b = placeByName(rtTo.value);
+  if (!a || !b) { rtOut.textContent = 'Pick two places from the list.'; return; }
+  route = exploreRoute(a, b, rtMode.value as TravelMode);
+  if (!route) { rtOut.textContent = 'No route.'; draw(); return; }
+  const fa = ACCESS.get(a.name), ta = ACCESS.get(b.name);
+  rtOut.innerHTML = `<b>${route.length} m</b>, ${route.steps.filter((s) => s.turn !== 'start' && s.turn !== 'arrive').length} turns.<br>Leaves from: ${esc(fa?.type ?? 'nearest road')} (${fa?.confidence ?? '-'}).<br>Arrives at: ${esc(ta?.type ?? 'nearest road')} (${ta?.confidence ?? '-'}).${expect ? `<br><i>Expected: ${esc(expect)}</i>` : ''}`;
+  // frame the route
+  let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
+  for (let d = 0; d <= route.track.length; d += 5) { const p = route.track.pose(d, 0); minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x); minZ = Math.min(minZ, p.z); maxZ = Math.max(maxZ, p.z); }
+  cx = (minX + maxX) / 2; cz = (minZ + maxZ) / 2;
+  scale = Math.min(12, Math.min((W - 340) / Math.max(60, maxX - minX), H / Math.max(60, maxZ - minZ)) * 0.8);
+  cx -= 150 / scale;
+  draw(); saveHash();
+}

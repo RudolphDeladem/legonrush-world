@@ -31,8 +31,9 @@ export class Track {
    * @param waypoints road centreline points
    * @param segTags optional tag for each segment (waypoints[i] -> waypoints[i+1])
    * @param radius corners are rounded with arcs of up to this radius, so the road keeps its real line
+   * @param sharp waypoints the line must pass through exactly (e.g. a destination's arrival point): not rounded
    */
-  constructor(waypoints: [number, number][], segTags?: number[], radius = 14) {
+  constructor(waypoints: [number, number][], segTags?: number[], radius = 14, sharp: [number, number][] = []) {
     // drop points closer than 1.5 m, they only add kinks
     const wp: { p: [number, number]; tag: number }[] = [];
     waypoints.forEach((p, i) => {
@@ -47,7 +48,7 @@ export class Track {
       const l1 = Math.hypot(bx - ax, bz - az), l2 = Math.hypot(cx - bx, cz - bz);
       const d1x = (bx - ax) / l1, d1z = (bz - az) / l1, d2x = (cx - bx) / l2, d2z = (cz - bz) / l2;
       const turn = Math.acos(Math.max(-1, Math.min(1, d1x * d2x + d1z * d2z)));
-      if (turn < 0.03) { pts.push(wp[i].p); ptTags.push(wp[i].tag); continue; }
+      if (turn < 0.03 || sharp.some(([x, z]) => Math.abs(x - bx) < 1e-6 && Math.abs(z - bz) < 1e-6)) { pts.push(wp[i].p); ptTags.push(wp[i].tag); continue; }
       const t = Math.min(radius * Math.tan(turn / 2), l1 * 0.45, l2 * 0.45);
       const p1: [number, number] = [bx - d1x * t, bz - d1z * t], p2: [number, number] = [bx + d2x * t, bz + d2z * t];
       const k = Math.max(2, Math.ceil(turn * 6));

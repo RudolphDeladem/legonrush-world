@@ -2,7 +2,7 @@
 // its search, collection and routes only ever talk to this interface, so adding KNUST or UCC
 // later means adding their map data and one entry in MAPS below, not rewriting the tab.
 import {
-  ALIASES, AREAS, ATTRIBUTION, BUILDINGS, NODE_XZ, PLACES, ROADS, directions, findPath, mapBounds, placeByName, searchPlaces, toLatLng,
+  ALIASES, AREAS, ATTRIBUTION, BUILDINGS, NODE_XZ, PLACES, ROADS, accessFor, directions, findPath, findPathBetween, mapBounds, nearestNode, placeByName, searchPlaces, toLatLng,
   type Area, type Building, type Place, type PlaceKind, type PlaceMatch, type Road, type Step, type TravelMode,
 } from '../../game/campusmap';
 import { HALLS, HALL_PLACE } from '../../data/campus';
@@ -50,8 +50,11 @@ export interface CampusMap {
   /** a photo in public/photos for the place, if there is one */
   photo: (place: string) => string | undefined;
   collection: CollectionGroup[];
-  /** shortest way and turn-by-turn steps between two points */
-  path: (from: [number, number], to: [number, number], mode?: TravelMode, destination?: string) => { points: [number, number][]; length: number; steps: Step[] } | null;
+  /**
+   * shortest way and turn-by-turn steps between two points; with `place`, the way ends at the
+   * place's access point (in front of its entrance) and `entrance` says where its door is
+   */
+  path: (from: [number, number], to: [number, number], mode?: TravelMode, destination?: string, place?: Place) => { points: [number, number][]; length: number; steps: Step[]; entrance?: [number, number] } | null;
 }
 
 // ---------- Legon ----------
@@ -106,11 +109,12 @@ function legonMap(): CampusMap {
     fact: (name) => FACTS.find((f) => f.place === name),
     photo: (name) => (PHOTOS[name] ? `${import.meta.env.BASE_URL}photos/${PHOTOS[name]}.webp` : undefined),
     collection: LEGON_COLLECTION.map(({ names, ...g }) => ({ ...g, places: must(names) })),
-    path: (from, to, mode = 'cycle', dest = '') => {
-      const r = findPath(from, to, mode);
+    path: (from, to, mode = 'cycle', dest = '', place) => {
+      const a = place && accessFor(place);
+      const r = a ? findPathBetween(nearestNode(from[0], from[1], mode), mode === 'drive' ? a.dropNode : a.node, mode) : findPath(from, to, mode);
       if (!r) return null;
       const points = r.nodes.map((i): [number, number] => [NODE_XZ[i * 2], NODE_XZ[i * 2 + 1]]);
-      return { points, length: r.length, steps: directions(r, dest) };
+      return { points, length: r.length, steps: directions(r, dest), ...(a && { entrance: a.entrance }) };
     },
   };
   return legon;

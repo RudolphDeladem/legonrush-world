@@ -1,0 +1,232 @@
+{
+ "destinations": 433,
+ "byMethod": {
+  "curated": 8,
+  "osm-entrance": 2,
+  "gate": 2,
+  "path-access": 8,
+  "drive-access": 19,
+  "area-entry": 11,
+  "frontage": 270,
+  "point": 113
+ },
+ "byConfidence": {
+  "low": 273,
+  "medium": 155,
+  "high": 5
+ },
+ "campusGates": 5,
+ "problems": [],
+ "warnings": [
+  "Cirrus Networks: the last few metres from the network to the entrance cross osm:way/1184505256 (an enclosed courtyard or a mapping gap)",
+  "Hotel Obama: the last few metres from the network to the entrance cross osm:way/1244062166 (an enclosed courtyard or a mapping gap)",
+  "Oak Plaza Hotel: the last few metres from the network to the entrance cross osm:way/1333949613 (an enclosed courtyard or a mapping gap)",
+  "Dar es Salaam Courts: the last few metres from the network to the entrance cross osm:way/1189695654 (an enclosed courtyard or a mapping gap)",
+  "Muslim Prayer Lounge: the last few metres from the network to the entrance cross osm:way/320072522 (an enclosed courtyard or a mapping gap)",
+  "Mensah Sarbah Main Hall Females' Laundromat: the last few metres from the network to the entrance cross ml:d7ba2696-15b7-4ec8-90f0-8689e070e149 (an enclosed courtyard or a mapping gap)",
+  "SalmaRise: the last few metres from the network to the entrance cross osm:way/1137230518 (an enclosed courtyard or a mapping gap)",
+  "Didi Jollof: the last few metres from the network to the entrance cross Jubilee Hall (an enclosed courtyard or a mapping gap)",
+  "Information Studies Department: the last few metres from the network to the entrance cross Information Studies Labs (an enclosed courtyard or a mapping gap)"
+ ],
+ "curated": [
+  {
+   "place": "University Square",
+   "type": "public open space",
+   "arrivalOn": "footway",
+   "arrivalDistance": 3.2,
+   "facing": 180
+  },
+  {
+   "place": "Elizabeth Frances Sey Hall",
+   "type": "hall entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 29.8,
+   "facing": 61
+  },
+  {
+   "place": "University of Ghana banking square",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 11.6,
+   "facing": 179
+  },
+  {
+   "place": "The Balme Library",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 28.7,
+   "facing": 359
+  },
+  {
+   "place": "Legon Main Entrance",
+   "type": "campus gate",
+   "arrivalOn": "Dr. J.B. Danquah Avenue",
+   "arrivalDistance": 2.5,
+   "facing": 269
+  },
+  {
+   "place": "Commonwealth Hall",
+   "type": "hall entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 9.9,
+   "facing": 270
+  },
+  {
+   "place": "Mensah Sarbah Hall",
+   "type": "hall entrance (porters' lodge)",
+   "arrivalOn": "service",
+   "arrivalDistance": 11.3,
+   "facing": 166
+  },
+  {
+   "place": "Great Hall",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 22.4,
+   "facing": 21
+  }
+ ],
+ "furthestArrivals": [
+  {
+   "place": "Department of Adult Education",
+   "method": "point",
+   "arrivalDistance": 164.8
+  },
+  {
+   "place": "SalmaRise",
+   "method": "frontage",
+   "arrivalDistance": 100.3
+  },
+  {
+   "place": "Pentagon Block B",
+   "method": "frontage",
+   "arrivalDistance": 99
+  },
+  {
+   "place": "Radio Univers",
+   "method": "frontage",
+   "arrivalDistance": 90.6
+  },
+  {
+   "place": "Muslim Prayer Lounge",
+   "method": "frontage",
+   "arrivalDistance": 72.3
+  },
+  {
+   "place": "Department of Music",
+   "method": "point",
+   "arrivalDistance": 65.4
+  },
+  {
+   "place": "Mensah Sarbah Main Hall Females' Laundromat",
+   "method": "point",
+   "arrivalDistance": 65
+  },
+  {
+   "place": "Internal Audit Directorate",
+   "method": "frontage",
+   "arrivalDistance": 64
+  },
+  {
+   "place": "Academic Registry Public Relation Department",
+   "method": "frontage",
+   "arrivalDistance": 55.4
+  },
+  {
+   "place": "Department of Geology",
+   "method": "point",
+   "arrivalDistance": 50.4
+  },
+  {
+   "place": "Food vendors",
+   "method": "point",
+   "arrivalDistance": 47.7
+  },
+  {
+   "place": "Erata Hotel",
+   "method": "frontage",
+   "arrivalDistance": 47.2
+  },
+  {
+   "place": "Commonwealth Hall Library",
+   "method": "frontage",
+   "arrivalDistance": 46.5
+  },
+  {
+   "place": "Dep't of Sociology",
+   "method": "frontage",
+   "arrivalDistance": 45.2
+  },
+  {
+   "place": "Centre for International Affairs",
+   "method": "point",
+   "arrivalDistance": 45.2
+  }
+ ],
+ "networkPassagesThroughBuildings": [
+  {
+   "way": "osm:way/1443694526",
+   "building": "osm:way/1217291481"
+  },
+  {
+   "way": "osm:way/1443694528",
+   "building": "osm:way/1217291481"
+  },
+  {
+   "way": "osm:way/1443694529",
+   "building": "osm:way/1217291481"
+  },
+  {
+   "way": "osm:way/1443694530",
+   "building": "osm:way/1217291481"
+  },
+  {
+   "way": "osm:way/1443694532",
+   "building": "osm:way/1217291481"
+  },
+  {
+   "way": "osm:way/1561770166",
+   "building": "ml:51446ba2-5c02-4155-84d0-dd58f6f6041a"
+  },
+  {
+   "way": "osm:way/1562029247",
+   "building": "osm:way/1124772550",
+   "buildingName": "Center Point Mall"
+  },
+  {
+   "way": "osm:way/394125243",
+   "wayName": "Vice Chancellor's Crescent",
+   "building": "ml:e8d980c4-af2e-4b8e-9c3d-27529c7e68d0"
+  },
+  {
+   "way": "osm:way/958782146",
+   "building": "osm:way/1244062160"
+  },
+  {
+   "way": "osm:way/958782147",
+   "building": "osm:way/1417035955"
+  },
+  {
+   "way": "osm:way/1540994850",
+   "building": "osm:way/278303069",
+   "buildingName": "Akuafo Hall Annex B"
+  },
+  {
+   "way": "osm:way/1558328887",
+   "building": "ml:f39562e2-5d9b-4c75-ad24-78a11c0b74f9"
+  },
+  {
+   "way": "osm:way/603522802",
+   "building": "osm:way/394125203"
+  },
+  {
+   "way": "osm:way/606687246",
+   "building": "osm:way/606687248"
+  },
+  {
+   "way": "osm:way/637507501",
+   "building": "osm:way/320073867",
+   "buildingName": "Legon Main Entrance"
+  }
+ ]
+}
