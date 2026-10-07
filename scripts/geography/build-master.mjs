@@ -148,8 +148,10 @@ for (const w of REG.corrections.addWays ?? []) {
     // an open end (a stair top at a door) needs no way to meet
     if ((!best || best.dist > 4) && w.open === (end ? 'end' : 'start')) continue;
     if (!best || best.dist > 4) throw new Error(`addWays ${w.id}: end ${end} meets no way within 4 m`);
-    if (best.t <= 1e-6) pts[end] = best.f.line[best.i];
-    else if (best.t >= 1 - 1e-6) pts[end] = best.f.line[best.i + 1];
+    // an end at (or within half a metre of) a vertex takes the vertex: the way it meets keeps its shape
+    const seg = Math.hypot(best.f.line[best.i + 1][0] - best.f.line[best.i][0], best.f.line[best.i + 1][1] - best.f.line[best.i][1]) || 1;
+    if (best.t * seg <= 0.5) pts[end] = best.f.line[best.i];
+    else if ((1 - best.t) * seg <= 0.5) pts[end] = best.f.line[best.i + 1];
     else { best.f.line.splice(best.i + 1, 0, best.q); pts[end] = best.q; }
   }
   addRoad(w.id, pts, { highway: w.highway, name: w.name }, 'owner-imagery');

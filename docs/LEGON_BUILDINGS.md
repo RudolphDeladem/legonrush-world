@@ -19,8 +19,9 @@ the map still use it), the generic builder skips it, and its model is placed on 
 | 9 | Volta Hall and the Volta Hall Annex | `src/game/volta.ts`, `src/game/relief.ts` | owner's marked aerial (registered), photos (3) |
 | 10 | Mensah Sarbah Hall, Akuafo Hall, Legon Hall | `src/game/greathalls.ts`, `src/game/rectilinear.ts` | owner's photos (4, entrances marked), owner's panoramas (3), UG layout aerials |
 | 11 | The Athletic Oval and its courts; Maison Française one floor | `src/game/athletics.ts` | owner's panoramas (2), registered atlas |
+| 12 | Legon Hall Annex A, B, C and Akuafo Hall Annex A, B, C, D | `src/game/annexes.ts` | owner's photos (4) and top views (2), entrances marked |
 
-Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 to 11) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
+Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 to 12) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
 
 ## 1. The Diaspora halls
 
@@ -413,6 +414,26 @@ drawn by the model instead of as flat areas, `Spec.covers`).
 - **Maison Française**, the building on the oval's north side (circled yellow by the owner), is **one floor**.
 - Five satellite-detected outlines drawn as buildings on the pitch, the courts and the strip between them are
   excluded (`corrections.json → exclude`); satellite-detected outlines can now take a height from the owner too.
+
+## 12. The Legon Hall and Akuafo Hall annexes
+
+Either side of the Athletic Oval (owner's photos and top views, entrances marked).
+
+- **Legon Annex A and B** and **Akuafo Annex A and B** share one design: **six floors**, a long slab with open
+  galleries (walkways with railings, floors 2 to 6) along its north face, and a shorter stair tower of the same
+  height against that face, plain with slit windows; flat roofs.
+  - **Legon A and B** face the same way: the entrance is on the ground floor at the **east end of the north
+    (gallery) face** (owner's marks); dark grey railings. Walks added from the road reach them
+    (`corrections.json → addWays`).
+  - **Akuafo A and B** face each other: A's entrance on its **south face**, B's at the **foot of its stair tower on
+    the north face**, both in line with the tower (owner's photo); white with blue piers and teal railings, the
+    slab's **ground floor shops**, billboards on the west ends.
+- **Akuafo Annex C and D**: **four floors**, facing each other across a lawn, cream with blue window panels and white
+  gallery slabs on the court side, red tile hip roofs, a wing on the outer side of each (D's with water tanks). Their
+  **entrances face each other** in the middle of the court sides (owner's mark on C).
+- **Legon Annex C** (the Graduate Hostel, circled by the owner): the long block west of A and B with its wings,
+  **two floors**, dark roofs; its gate on the long block's east face (owner's mark).
+- The long rectangular building mapped on the lawns east of Annex C does not exist (owner) and is excluded.
 
 ## Explore: drone view
 

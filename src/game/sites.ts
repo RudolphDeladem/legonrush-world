@@ -1,4 +1,5 @@
 // Every building modelled from photos as blocks (see blocks.ts), site by site.
+import { annexes } from './annexes';
 import { athletics } from './athletics';
 import { banking } from './banking';
 import { commonwealth } from './commonwealth';
@@ -10,4 +11,4 @@ import { pentagon } from './pentagon';
 import { vikingsLaw } from './vikingslaw';
 import { volta } from './volta';
 
-export const BLOCK_SITES = [hostels, banking, vikingsLaw, engineeringSite, domeHouse, pentagon, commonwealth, volta, greatHalls, athletics];
+export const BLOCK_SITES = [hostels, banking, vikingsLaw, engineeringSite, domeHouse, pentagon, commonwealth, volta, greatHalls, athletics, annexes];

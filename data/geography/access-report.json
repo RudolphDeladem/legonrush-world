@@ -1,19 +1,19 @@
 {
  "destinations": 435,
  "byMethod": {
-  "curated": 45,
+  "curated": 52,
   "osm-entrance": 1,
   "gate": 2,
-  "path-access": 7,
+  "path-access": 4,
   "drive-access": 19,
   "area-entry": 8,
-  "frontage": 241,
+  "frontage": 237,
   "point": 112
  },
  "byConfidence": {
-  "high": 38,
-  "medium": 153,
-  "low": 244
+  "high": 45,
+  "medium": 150,
+  "low": 240
  },
  "campusGates": 5,
  "problems": [],
@@ -360,11 +360,11 @@
   }
  ],
  "byStatus": {
-  "verified": 35,
+  "verified": 42,
   "partial": 10,
   "unverified": 10,
-  "inferred": 235,
-  "mapped": 145
+  "inferred": 231,
+  "mapped": 142
  },
  "curated": [
   {
@@ -571,6 +571,34 @@
    "facing": 287
   },
   {
+   "place": "Akuafo Hall Annex A",
+   "type": "hall entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 4.1,
+   "facing": 0
+  },
+  {
+   "place": "Akuafo Hall Annex C",
+   "type": "hall entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 1.5,
+   "facing": 270
+  },
+  {
+   "place": "Akuafo Hall Annex D",
+   "type": "hall entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 1.4,
+   "facing": 271
+  },
+  {
+   "place": "Akuafo Hall Annex B",
+   "type": "hall entrance",
+   "arrivalOn": "footway",
+   "arrivalDistance": 13.5,
+   "facing": 100
+  },
+  {
    "place": "Balme Library Fountain",
    "type": "public open space",
    "arrivalOn": "footway",
@@ -597,6 +625,27 @@
    "arrivalOn": "service",
    "arrivalDistance": 0,
    "facing": 180
+  },
+  {
+   "place": "Legon Hall Annex C (Graduate Hostel)",
+   "type": "hall entrance",
+   "arrivalOn": "Legon Hall Annex walk",
+   "arrivalDistance": 0,
+   "facing": 140
+  },
+  {
+   "place": "Legon Hall Annex B",
+   "type": "hall entrance",
+   "arrivalOn": "Legon Hall Annex B walk",
+   "arrivalDistance": 0,
+   "facing": 110
+  },
+  {
+   "place": "Legon Hall Annex A",
+   "type": "hall entrance",
+   "arrivalOn": "E.A. Boateng Road",
+   "arrivalDistance": 0.4,
+   "facing": 167
   },
   {
    "place": "Akuafo Hall Main",

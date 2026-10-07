@@ -19,7 +19,8 @@
   "owner-pentagon": "The owner's aerial of Pentagon with the New Pent blocks (A, B, C), the Old Pent courts (D, K, AA, N) and the admin block (AD) labelled and their entrances marked, registered to the OSM footprints (2.5 px/m), and photos of a New Pent block, an Old Pent court and the admin block (entrances marked)",
   "owner-commonwealth": "The owner's photos of Commonwealth Hall (the gate houses and stairway from the road, the stairs, the main entrance with its gate marked, the front from above) and its aerial with the two- and three-storey parts marked, registered to the OSM footprints (1 px/m, front to the east)",
   "owner-volta": "The owner's aerial of Volta Hall with the entrance marked (blue) and the storeys described, registered to the OSM footprints (0.27 m/px, north up), and photos of the entrance up its steps (marked), the front buildings either side of the climb, and the Annex.",
-  "owner-sarbah-akuafo-legon": "The owner's photos of Mensah Sarbah Hall (the front from above with the entrance building and its gate marked, the entrance building from the court with its two side doors marked), of the Akuafo Hall entrance (gate marked) and of the Legon Hall entrance (gate marked)."
+  "owner-sarbah-akuafo-legon": "The owner's photos of Mensah Sarbah Hall (the front from above with the entrance building and its gate marked, the entrance building from the court with its two side doors marked), of the Akuafo Hall entrance (gate marked) and of the Legon Hall entrance (gate marked).",
+  "owner-annexes": "The owner's photos and top views of the Legon Hall annexes (Annex B's gallery face with the entrance marked; the top view of Annex A, B and C with the entrances marked and Annex C circled) and the Akuafo Hall annexes (an aerial of the four with A and B, C and D circled and C's entrance marked; a photo of a tall annex's gallery face; Annex A with its entrance marked)."
  },
  "campusGates": [
   {
@@ -1115,6 +1116,160 @@
    "refs": [
     "pentagon_layout (owner, entrances marked)",
     "pent_admin_block (owner photo)"
+   ]
+  },
+  {
+   "place": "Legon Hall Annex A",
+   "footprint": "osm:way/394125240",
+   "entrance": {
+    "at": [
+     -120.5,
+     424.8
+    ]
+   },
+   "type": "hall entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-annexes",
+   "approach": "To the ground-floor entrance at the east end of the north (gallery) face.",
+   "evidence": "Owner: Legon Hall Annex A and B are one design and face the same way; the entrance is on the ground floor at the east end of the gallery face (north), marked on the owner's photo of Annex B and the top view.",
+   "refs": [
+    "owner's annex photos and top views (entrances marked)"
+   ],
+   "arrival": {
+    "way": "way/300288071",
+    "near": [
+     -120.5,
+     401
+    ]
+   }
+  },
+  {
+   "place": "Legon Hall Annex B",
+   "footprint": "osm:way/394125239",
+   "entrance": {
+    "at": [
+     -120.5,
+     538.1
+    ]
+   },
+   "type": "hall entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-annexes",
+   "approach": "To the ground-floor entrance at the east end of the north (gallery) face.",
+   "evidence": "Owner's photo of Annex B (entrance marked): the entrance is on the ground floor at the east end of the gallery face, the north face with the stair tower; the top view marks it there too.",
+   "refs": [
+    "owner's annex photos and top views (entrances marked)"
+   ],
+   "arrival": {
+    "way": "owner:legon-annex-b-walk",
+    "near": [
+     -123.6,
+     536
+    ]
+   }
+  },
+  {
+   "place": "Legon Hall Annex C (Graduate Hostel)",
+   "footprint": "osm:way/394125229",
+   "entrance": {
+    "at": [
+     -173,
+     497
+    ]
+   },
+   "type": "hall entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-annexes",
+   "approach": "To the gate on the east face of the long block.",
+   "evidence": "Owner's top view: Annex C is the long block west of Annex A and B with its wings (circled), its gate on the long block's east face (marked).",
+   "refs": [
+    "owner's annex photos and top views (entrances marked)"
+   ],
+   "arrival": {
+    "way": "owner:legon-annex-walk",
+    "near": [
+     -172.9,
+     497
+    ]
+   }
+  },
+  {
+   "place": "Akuafo Hall Annex A",
+   "footprint": "osm:way/278303051",
+   "entrance": {
+    "at": [
+     156.6,
+     437.6
+    ]
+   },
+   "type": "hall entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-annexes",
+   "approach": "To the ground-floor entrance on the south face, in line with the stair tower.",
+   "evidence": "Owner's photo of Annex A (entrance marked): the entrance is on the ground floor of the long block, in line with the stair tower, on the face toward Annex B (south); A and B face each other.",
+   "refs": [
+    "owner's annex photos and top views (entrances marked)"
+   ]
+  },
+  {
+   "place": "Akuafo Hall Annex B",
+   "footprint": "osm:way/278303069",
+   "entrance": {
+    "at": [
+     158.2,
+     524.5
+    ]
+   },
+   "type": "hall entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-annexes",
+   "approach": "To the entrance at the foot of the stair tower, on the north face toward Annex A.",
+   "evidence": "Owner: Annex A and B face each other, the entrance in line with the stair tower; B's is at the foot of its tower on the north face, toward Annex A.",
+   "refs": [
+    "owner's annex photos and top views (entrances marked)"
+   ]
+  },
+  {
+   "place": "Akuafo Hall Annex C",
+   "footprint": "osm:way/278303060",
+   "entrance": {
+    "at": [
+     196.6,
+     483.5
+    ]
+   },
+   "type": "hall entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-annexes",
+   "approach": "Across the lawn between C and D to the middle of C's west face.",
+   "evidence": "Owner's aerial (entrance marked): C's entrance is in the middle of its west face, toward Annex D across the lawn; C and D face each other.",
+   "refs": [
+    "owner's annex photos and top views (entrances marked)"
+   ]
+  },
+  {
+   "place": "Akuafo Hall Annex D",
+   "footprint": "osm:way/278303061",
+   "entrance": {
+    "at": [
+     142,
+     488
+    ]
+   },
+   "type": "hall entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-annexes",
+   "approach": "Across the lawn between C and D to the middle of D's east face.",
+   "evidence": "Owner: Annex C and D face each other, so D's entrance is in the middle of its east face, opposite C's (marked on the owner's aerial).",
+   "refs": [
+    "owner's annex photos and top views (entrances marked)"
    ]
   }
  ],

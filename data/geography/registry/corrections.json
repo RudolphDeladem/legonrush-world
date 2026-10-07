@@ -36,6 +36,10 @@
     {
       "id": "ml:f9c444ed-7afb-46e7-a596-438c4a451fb0",
       "reason": "Satellite-detected (Microsoft ML) footprint on the basketball court north-east of the oval, by Akuafo Hall at the Athletic Oval, drawn as a building. The owner's panoramas of the oval and its courts (and the registered atlas) show open ground there."
+    },
+    {
+      "id": "osm:way/1548976997",
+      "reason": "OSM outline of a long rectangular building east of Legon Hall Annex C, between Annex A and B. The owner: there is no building there; the owner's top view shows lawns, paths and a small kiosk."
     }
   ],
   "heights": [
@@ -906,6 +910,76 @@
       "levels": 1,
       "height": 3.5,
       "reason": "The owner's panorama of the oval: the small building west of the oval, between the tennis courts and the handball court, is a single-storey shed."
+    },
+    {
+      "id": "osm:way/394125240",
+      "place": "Legon Hall Annex A",
+      "levels": 6,
+      "height": 20,
+      "reason": "Owner: Legon Hall Annex A and B are one design, six floors, galleries with railings on floors 2 to 6 (owner's photo and top view)."
+    },
+    {
+      "id": "osm:way/394125239",
+      "place": "Legon Hall Annex B",
+      "levels": 6,
+      "height": 20,
+      "reason": "Owner: Legon Hall Annex A and B are one design, six floors, galleries with railings on floors 2 to 6 (owner's photo and top view)."
+    },
+    {
+      "id": "osm:way/278303051",
+      "place": "Akuafo Hall Annex A",
+      "levels": 6,
+      "height": 20,
+      "reason": "Owner: Akuafo Hall Annex A and B have six floors, shops on the ground floor of the long block (owner's photos)."
+    },
+    {
+      "id": "osm:way/278303069",
+      "place": "Akuafo Hall Annex B",
+      "levels": 6,
+      "height": 20,
+      "reason": "Owner: Akuafo Hall Annex A and B have six floors, shops on the ground floor of the long block (owner's photos)."
+    },
+    {
+      "id": "osm:way/278303060",
+      "place": "Akuafo Hall Annex C",
+      "levels": 4,
+      "height": 14,
+      "reason": "Owner: Akuafo Hall Annex C and D have four floors (owner's photo)."
+    },
+    {
+      "id": "osm:way/278303061",
+      "place": "Akuafo Hall Annex D",
+      "levels": 4,
+      "height": 14,
+      "reason": "Owner: Akuafo Hall Annex C and D have four floors (owner's photo)."
+    },
+    {
+      "id": "osm:way/394125207",
+      "place": "Legon Hall Annex C (Graduate Hostel)",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner: Legon Hall Annex C, the long block and its wings west of Annex A and B (circled on the owner's top view), has two floors."
+    },
+    {
+      "id": "osm:way/394125213",
+      "place": "Legon Hall Annex C (Graduate Hostel)",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner: Legon Hall Annex C, the long block and its wings west of Annex A and B (circled on the owner's top view), has two floors."
+    },
+    {
+      "id": "osm:way/394125229",
+      "place": "Legon Hall Annex C (Graduate Hostel)",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner: Legon Hall Annex C, the long block and its wings west of Annex A and B (circled on the owner's top view), has two floors."
+    },
+    {
+      "id": "osm:way/744968941",
+      "place": "Legon Hall Annex C (Graduate Hostel)",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner: Legon Hall Annex C, the long block and its wings west of Annex A and B (circled on the owner's top view), has two floors."
     }
   ],
   "reclass": [
@@ -1262,6 +1336,44 @@
       ],
       "reason": "Owner's aerial and photos: a paved forecourt between the two front buildings runs from Volta Hall Road to the foot of the short flight of steps (between stone walls) up to the arched entrance; rides stop at the foot of the steps.",
       "open": "end"
+    },
+    {
+      "id": "owner:legon-annex-walk",
+      "highway": "footway",
+      "name": "Legon Hall Annex walk",
+      "pts": [
+        [
+          -93.91,
+          502.57
+        ],
+        [
+          -123.6,
+          500
+        ],
+        [
+          -172.9,
+          497
+        ]
+      ],
+      "open": "end",
+      "reason": "Owner's top view of the Legon Hall annexes: a paved walk runs west across the lawns from Agyei Bart Crescent (leaving it at its bend) to Annex C's gate (marked) on the east face of its long block."
+    },
+    {
+      "id": "owner:legon-annex-b-walk",
+      "highway": "footway",
+      "name": "Legon Hall Annex B walk",
+      "pts": [
+        [
+          -123.6,
+          500
+        ],
+        [
+          -123.6,
+          536
+        ]
+      ],
+      "open": "end",
+      "reason": "Owner's top view: a paved walk runs south from the cross walk to Annex B's entrance (marked) at the east end of its north face."
     }
   ]
 }

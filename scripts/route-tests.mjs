@@ -160,6 +160,14 @@ try {
   const maison = BUILDINGS.find((b) => b.name === 'Maison Francais');
   if (!maison || maison.height > 5) fail('Maison Française (north of the Athletic Oval) is not one floor');
   if ((await server.ssrLoadModule('/src/game/athletics.ts')).athletics.frames().length !== 1) fail('expected the Athletic Oval model');
+  // the Legon and Akuafo annexes (owner): Legon A and B entered on the north, Akuafo A and B face each other, C and D face each other
+  const ann = (n) => ACCESS.get(n)?.entrance;
+  for (const [n, x, z] of [['Legon Hall Annex A', -120.5, 424.8], ['Legon Hall Annex B', -120.5, 538.1], ['Legon Hall Annex C (Graduate Hostel)', -173, 497], ['Akuafo Hall Annex A', 156.6, 437.6], ['Akuafo Hall Annex B', 158.2, 524.5], ['Akuafo Hall Annex C', 196.6, 483.5], ['Akuafo Hall Annex D', 142, 488]]) {
+    const e = ann(n);
+    if (!e || Math.hypot(e[0] - x, e[1] - z) > 2) fail(`${n}: the entrance is not where the owner marks it`);
+  }
+  if (buildingAt(-124, 492)) fail('Legon Hall annexes: a building stands on the lawns east of Annex C (the owner: there is none)');
+  if ((await server.ssrLoadModule('/src/game/annexes.ts')).annexes.frames().length !== 7) fail('expected the seven annex models');
   const bankModels = (await server.ssrLoadModule('/src/game/banking.ts')).banking.frames();
   if (bankModels.length !== 3) fail(`expected the bank compound, the Union Building and the ADB/HFC block, found ${bankModels.length}`);
   const hostels = (await server.ssrLoadModule('/src/game/hostels.ts')).hostels.frames();
