@@ -41,7 +41,7 @@ BUILDING → ENTRANCE → FORECOURT → ACCESS PATH → ARRIVAL POINT (road/path
 `npm run test:routes` fails if a priority destination is left as mapped/inferred, if a verified entrance is
 not high confidence, or if any non-verified, non-mapped entrance claims high confidence.
 
-**Priority destinations: 46 — verified 23, partial 12, unverified 11.** (The four Diaspora halls moved from partial to verified with the owner's photos; ISH 1 moved to verified and ISH 2 was added with the owner's marked layout; the banking square's banks were added with the owner's labelled aerial and photos; the School of Law and Vikings Hostel were verified with the owner's photos; see below.)
+**Priority destinations: 47 — verified 24, partial 12, unverified 11.** (The four Diaspora halls moved from partial to verified with the owner's photos; ISH 1 moved to verified and ISH 2 was added with the owner's marked layout; the banking square's banks were added with the owner's labelled aerial and photos; the School of Law and Vikings Hostel were verified with the owner's photos; see below.)
 
 ## Entrance verification table (BEFORE → AFTER)
 
@@ -80,6 +80,7 @@ Coordinates are game-frame metres (x east, z south of the datum 5.6518 N, 0.1871
 | Jones Quartey Building, JQB | frontage at (593, -82), arriving on service | low | public entrance at (569, -29) | footway | (589, -21), facing 287° | **verified** · high | 58 m |
 | K. A. Busia Building, KAB | frontage at (478, -130), arriving on Annie Jiagge Road | low | inferred frontage at (478, -130) | Annie Jiagge Road | (510, -131), facing 270° | **unverified** · low | 0 m |
 | School of Law | partial: (469, -267), arriving on service | medium | public entrance at (441, -243) | service via the courtyard | (486, -243), facing 270° | **verified** · high | 37 m |
+| International House | inferred frontage at the north-east corner (592, -221) | low | public entrance at (544, -203) | the law-school road via the car park | (536, -203), facing 270° | **verified** · high | 51 m |
 | Mensah Sarbah Vikings Hostel | inferred frontage at (189, 816) (east end), arriving on service | low | hall entrance at (161, 841), second door at (152, 843) | service (car park) | (162, 848), facing 0° | **verified** · high | 39 m |
 | N Block | frontage at (-34, -311), arriving on service | low | inferred frontage at (-34, -311) | service | (-44, -310), facing 90° | **unverified** · low | 0 m |
 | University of Ghana Sports Stadium | frontage at (853, 1381), arriving on service | low | public entrance at (701, 1412) | service | (679, 1412), facing 90° | **partial** · medium | 155 m |
@@ -282,6 +283,12 @@ land on their roofs, so the labels became map positions. Bank places were moved 
 - **Evidence:** the owner's two photos of the entrance (doors marked): the rotunda with the long four-storey block to its right and the tiled south block to its left. The law_school_layout photo, registered to Google Open Buildings' footprint (2 px/m), places the rotunda at the west end of the long block facing the courtyard.
 - **Geometry correction:** the OSM outline of the School of Law sat about 10 m north-west of the building (Google's footprint overlapped it by 13%); it is replaced by Google's footprint, which matches the layout photo (`corrections.json → reshape`). The south block was shifted the same way.
 - **Correction:** the door moved 37 m, from the east end of the old outline to the rotunda; status partial → verified.
+
+### International House — VERIFIED
+
+- **Entrance:** the single-storey porch on the west face (tile roof and a white arched gable), toward the car park and the law-school road opposite the School of Law.
+- **Evidence:** the owner's aerial with the entrance marked, registered to the OSM footprints of International House and the School of Law (4.4 px/m); OSM maps the porch there. The owner's photo shows the porch in front of the four-storey block.
+- **Correction:** moved 51 m from an inferred frontage at the building's north-east corner.
 
 ### Mensah Sarbah Vikings Hostel — VERIFIED
 

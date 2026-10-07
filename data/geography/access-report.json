@@ -1,19 +1,19 @@
 {
- "destinations": 434,
+ "destinations": 435,
  "byMethod": {
-  "curated": 35,
+  "curated": 36,
   "osm-entrance": 1,
   "gate": 2,
   "path-access": 7,
   "drive-access": 19,
   "area-entry": 9,
-  "frontage": 249,
-  "point": 112
+  "frontage": 248,
+  "point": 113
  },
  "byConfidence": {
-  "medium": 156,
-  "low": 252,
-  "high": 26
+  "medium": 157,
+  "low": 251,
+  "high": 27
  },
  "campusGates": 5,
  "problems": [],
@@ -304,14 +304,20 @@
    "status": "verified",
    "confidence": "high",
    "method": "curated"
+  },
+  {
+   "place": "International House",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
   }
  ],
  "byStatus": {
+  "mapped": 147,
   "partial": 12,
   "unverified": 11,
-  "inferred": 242,
-  "mapped": 146,
-  "verified": 23
+  "inferred": 241,
+  "verified": 24
  },
  "curated": [
   {
@@ -411,6 +417,13 @@
    "arrivalOn": "service",
    "arrivalDistance": 29.9,
    "facing": 61
+  },
+  {
+   "place": "International House",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 5.5,
+   "facing": 91
   },
   {
    "place": "University of Ghana banking square",
@@ -627,13 +640,13 @@
    "arrivalDistance": 46.5
   },
   {
-   "place": "Dep't of Sociology",
-   "method": "frontage",
-   "arrivalDistance": 45.2
+   "place": "Diaspora Dome",
+   "method": "point",
+   "arrivalDistance": 45.4
   },
   {
-   "place": "Centre for International Affairs",
-   "method": "point",
+   "place": "Dep't of Sociology",
+   "method": "frontage",
    "arrivalDistance": 45.2
   }
  ],

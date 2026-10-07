@@ -13,8 +13,9 @@ the map still use it), the generic builder skips it, and its model is placed on 
 | 3 | The banking square: bank compound (CBG, UMB, Stanbic, ATMs), Union Building (Ecobank), ADB / HFC | `src/game/banking.ts` | owner's labelled aerial, owner photos (3) |
 | 4 | Mensah Sarbah Vikings Hostel, School of Law | `src/game/vikingslaw.ts` | owner photos (5), earlier layout photos (2) |
 | 5 | School of Engineering Sciences, and the hill it stands below | `src/game/engineering.ts`, `src/game/relief.ts` | owner's marked layout, reference render, photos (2) |
+| 6 | Diaspora Dome, International House, woods round the School of Law; no building between Kwapong and Sey | `src/game/dome.ts` | owner aerials (2, registered), photos (3) |
 
-Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 to 5) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
+Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 to 6) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
 
 ## 1. The Diaspora halls
 
@@ -215,3 +216,36 @@ it); roads are given extra points inside the zone so they follow the slope; one 
 instanced prop and placed model in the zone (roads, verges, car parks, trees, lamps, parked cars, the model);
 the rider, rivals, coins, treasures, puddles, grass tufts and the chase camera follow the ground. Route tests
 check that the forecourt is below the road, the main road is at ground level and the rest of the campus is flat.
+
+## 6. Diaspora Dome, International House, and corrections round them
+
+### Diaspora Dome
+
+West of Jean Nelson Aka Hall across the road (the owner's aerial, registered to the hall footprints at 2.6 px/m).
+**Not a storey building**: four single-storey white marquee halls (pitched white membrane roofs with grey ribs and
+white gable ends, white walls with a row of windows over a grey skirt), round a lawn with paved paths in an X and a
+cross and a round plaza with a cross in it; green-roofed cabins beside the halls; a dark green fence round the site
+with the way in from the road. A satellite-detected outline inside the site, drawn as a two-storey block, is
+removed. It is a new destination, *Diaspora Dome*.
+
+### No building between Kwapong and Sey
+
+Three satellite-detected outlines in the field between Alexander Kwapong Hall and Elizabeth Sey Hall were drawn as
+two-storey blocks; the owner says there is no building there and the aerial of the four halls shows the field, a
+road and parked buses. They are excluded (`corrections.json → exclude`).
+
+### International House
+
+- **Height:** four storeys (owner photo; master geography 4 levels / 15 m).
+- **Plan** (OSM footprint, matches the registered aerial): a square block round an off-centre courtyard.
+- **Roof:** one low dark-brown hipped roof over the ring, valleys round the courtyard.
+- **Facades:** white, recessed bays of brown louvred windows on the upper floors, a strip of dark glazing on the
+  ground floor, AC units.
+- **Entrance** (owner's mark): the porch on the west face toward the law-school road: a tile hipped roof, a white
+  arched gable with a dark brown arch, glass doors, the name board.
+
+### Woods round the School of Law and International House
+
+The owner's aerial circles three wooded zones (west and south of the School of Law, east of International House).
+They are added as wood areas measured on the registered aerial (`corrections.json → addAreas`); woods are planted
+more densely than before so they read as woodland.

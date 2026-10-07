@@ -15,7 +15,7 @@
 // ADB and HFC (now Republic Bank): two red-roofed blocks beside the brown-roofed block OSM maps.
 import * as THREE from 'three';
 import { PAVE, TRIM, WHITE, box, canvas, speckle } from './modelkit';
-import { BAND, OV, PL, createSite, render, window_, type Block, type Face, type Kit, type Spec, type Style } from './blocks';
+import { BAND, OV, PL, createSite, render, ringRoof, window_, type Block, type Face, type Kit, type Spec, type Style } from './blocks';
 
 // ---------- facades ----------
 /** the compound's rooms: white render, a dark window in each bay over a red-brown base (owner's CBG photo) */
@@ -88,26 +88,6 @@ function carPark(k: Kit, x0: number, x1: number, z0: number, z1: number) {
     new THREE.MeshStandardMaterial({ map: tex, roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
   m.receiveShadow = true;
   k.meshes.push(m);
-}
-
-/** one roof over a ring of rooms: hips at the outer corners, valleys round the courtyard */
-function ringRoof(k: Kit, o: [number, number, number, number], i: [number, number, number, number], eave: number, rise: number) {
-  const [ox0, ox1, oz0, oz1] = o, [ix0, ix1, iz0, iz1] = i;
-  const rx0 = (ox0 + ix0) / 2, rx1 = (ox1 + ix1) / 2, rz0 = (oz0 + iz0) / 2, rz1 = (oz1 + iz1) / 2, top = eave + rise;
-  const O = (x: number, z: number) => [x, eave, z], R = (x: number, z: number) => [x, top, z];
-  k.roof.quad(O(ox0, oz0), O(ox1, oz0), R(rx1, rz0), R(rx0, rz0));
-  k.roof.quad(O(ox1, oz1), O(ox0, oz1), R(rx0, rz1), R(rx1, rz1));
-  k.roof.quad(O(ox1, oz0), O(ox1, oz1), R(rx1, rz1), R(rx1, rz0));
-  k.roof.quad(O(ox0, oz1), O(ox0, oz0), R(rx0, rz0), R(rx0, rz1));
-  k.roof.quad(O(ix0, iz0), O(ix1, iz0), R(rx1, rz0), R(rx0, rz0));
-  k.roof.quad(O(ix1, iz1), O(ix0, iz1), R(rx0, rz1), R(rx1, rz1));
-  k.roof.quad(O(ix1, iz0), O(ix1, iz1), R(rx1, rz1), R(rx1, rz0));
-  k.roof.quad(O(ix0, iz1), O(ix0, iz0), R(rx0, rz0), R(rx0, rz1));
-  // fascia boards round both eaves
-  for (const [x0, x1, z0, z1] of [o, i]) {
-    k.plain.push([box(x0, x1, eave - 0.3, eave + 0.03, z0 - 0.06, z0 + 0.06), TRIM], [box(x0, x1, eave - 0.3, eave + 0.03, z1 - 0.06, z1 + 0.06), TRIM]);
-    k.plain.push([box(x0 - 0.06, x0 + 0.06, eave - 0.3, eave + 0.03, z0, z1), TRIM], [box(x1 - 0.06, x1 + 0.06, eave - 0.3, eave + 0.03, z0, z1), TRIM]);
-  }
 }
 
 /** a door with a canopy sign over it, on a wall facing +z (dir 1) or -z (dir -1) at z, centred on x */

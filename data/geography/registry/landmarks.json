@@ -38,7 +38,8 @@
       "title": "Copernicus GLO-30 DEM (data/geography/sources/copernicus-dem-30m.json)",
       "url": "https://registry.opendata.aws/copernicus-dem/"
     },
-    "owner-banking-square": "The owner's aerial of the banking square with the banks labelled (C: CBG, F: UMB (first labelled First Bank Ghana, corrected by the owner), S: Stanbic; ATMs; the car-park entrance) and photos of the CBG front and the Union Building, registered to the OSM footprints by roof colour (4.2 px/m, 1° rotation)"
+    "owner-banking-square": "The owner's aerial of the banking square with the banks labelled (C: CBG, F: UMB (first labelled First Bank Ghana, corrected by the owner), S: Stanbic; ATMs; the car-park entrance) and photos of the CBG front and the Union Building, registered to the OSM footprints by roof colour (4.2 px/m, 1° rotation)",
+    "owner-dome": "The owner's aerial of the Diaspora Dome site west of Jean Nelson Aka Hall and two photos of its marquee halls"
   },
   "landmarks": [
     {
@@ -1702,6 +1703,35 @@
       "aliases": [
         "Alumni Building"
       ]
+    },
+    {
+      "id": "diaspora-dome",
+      "name": "Diaspora Dome",
+      "kind": "landmark",
+      "category": "civic",
+      "importance": 2,
+      "aliases": [
+        "The Dome",
+        "Diaspora Dome Halls"
+      ],
+      "geometry": {
+        "at": [
+          -303.5,
+          1752.0
+        ]
+      },
+      "match": {
+        "osm": [],
+        "overture": [
+          "diaspora dome"
+        ],
+        "ugmap": [
+          "dome"
+        ]
+      },
+      "claims": [],
+      "maxConfidence": "medium",
+      "notes": "Owner: the Diaspora Dome, west of Jean Nelson Aka Hall across the road: single-storey white marquee halls round a lawn with a round paved plaza (owner's aerial, registered to the hall footprints at 2.6 px/m, and photos)."
     }
   ]
 }

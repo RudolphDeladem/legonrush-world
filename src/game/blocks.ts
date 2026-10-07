@@ -167,6 +167,26 @@ export function gableZ(k: Kit, x0: number, x1: number, z0: number, z1: number, e
   }
 }
 
+/** one roof over a ring of rooms: hips at the outer corners, valleys round the courtyard */
+export function ringRoof(k: Kit, o: [number, number, number, number], i: [number, number, number, number], eave: number, rise: number, fc = TRIM) {
+  const [ox0, ox1, oz0, oz1] = o, [ix0, ix1, iz0, iz1] = i;
+  const rx0 = (ox0 + ix0) / 2, rx1 = (ox1 + ix1) / 2, rz0 = (oz0 + iz0) / 2, rz1 = (oz1 + iz1) / 2, top = eave + rise;
+  const O = (x: number, z: number) => [x, eave, z], R = (x: number, z: number) => [x, top, z];
+  k.roof.quad(O(ox0, oz0), O(ox1, oz0), R(rx1, rz0), R(rx0, rz0));
+  k.roof.quad(O(ox1, oz1), O(ox0, oz1), R(rx0, rz1), R(rx1, rz1));
+  k.roof.quad(O(ox1, oz0), O(ox1, oz1), R(rx1, rz1), R(rx1, rz0));
+  k.roof.quad(O(ox0, oz1), O(ox0, oz0), R(rx0, rz0), R(rx0, rz1));
+  k.roof.quad(O(ix0, iz0), O(ix1, iz0), R(rx1, rz0), R(rx0, rz0));
+  k.roof.quad(O(ix1, iz1), O(ix0, iz1), R(rx0, rz1), R(rx1, rz1));
+  k.roof.quad(O(ix1, iz0), O(ix1, iz1), R(rx1, rz1), R(rx1, rz0));
+  k.roof.quad(O(ix0, iz1), O(ix0, iz0), R(rx0, rz0), R(rx0, rz1));
+  // fascia boards round both eaves
+  for (const [x0, x1, z0, z1] of [o, i]) {
+    k.plain.push([box(x0, x1, eave - 0.3, eave + 0.03, z0 - 0.06, z0 + 0.06), fc], [box(x0, x1, eave - 0.3, eave + 0.03, z1 - 0.06, z1 + 0.06), fc]);
+    k.plain.push([box(x0 - 0.06, x0 + 0.06, eave - 0.3, eave + 0.03, z0, z1), fc], [box(x1 - 0.06, x1 + 0.06, eave - 0.3, eave + 0.03, z0, z1), fc]);
+  }
+}
+
 // ---------- frames ----------
 interface Frame { spec: Spec; cx: number; cz: number; ux: number; uz: number; yaw: number }
 function frameOf(spec: Spec): Frame | null {

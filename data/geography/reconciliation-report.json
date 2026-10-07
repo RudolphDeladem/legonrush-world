@@ -262,13 +262,17 @@
    }
   ],
   "excludedAsErroneous": [
-   "osm:way/765261444"
+   "osm:way/765261444",
+   "ml:45cf2ff1-cd9f-4df7-a5bf-20b077c452fc",
+   "ml:edb17d32-6f00-4474-ad3a-0dc8048bc6b0",
+   "ml:588d1cea-c2dd-483f-8502-2501bb7ee8ab",
+   "ml:0c8802e6-d3c2-41c2-bbe9-257930c8404c"
   ]
  },
  "areas": {
   "wood": {
-   "count": 4,
-   "ha": 488.3
+   "count": 7,
+   "ha": 488.9
   },
   "water": {
    "count": 26,
@@ -300,14 +304,14 @@
   }
  },
  "places": {
-  "total": 434,
+  "total": 435,
   "fromOsm": 392,
   "fromUgCampusMap": 38,
-  "addedFromRegistry": 4,
+  "addedFromRegistry": 5,
   "movedToRegistryPosition": 7,
   "byConfidence": {
    "high": 141,
-   "medium": 289,
+   "medium": 290,
    "low": 4
   },
   "requiredNamesChecked": 153,
@@ -2460,6 +2464,30 @@
    "sources": {},
    "claims": [],
    "notes": "Owner: the star-shaped single-storey building east of the compound is the Union Building and houses Ecobank; its sign reads ALUMNI BUILDING (owner photo)."
+  },
+  {
+   "id": "diaspora-dome",
+   "name": "Diaspora Dome",
+   "category": "civic",
+   "importance": 2,
+   "geometry": "measured:diaspora-dome",
+   "lat": 5.635955,
+   "lng": -0.18984,
+   "x": -303,
+   "z": 1752,
+   "elevationM": 87,
+   "confidence": "medium",
+   "sourcesAgreeingWithin150m": [],
+   "sources": {
+    "overture": {
+     "found": false
+    },
+    "ugCampusMap": {
+     "found": false
+    }
+   },
+   "claims": [],
+   "notes": "Owner: the Diaspora Dome, west of Jean Nelson Aka Hall across the road: single-storey white marquee halls round a lawn with a round paved plaza (owner's aerial, registered to the hall footprints at 2.6 px/m, and photos)."
   }
  ],
  "zones": [
@@ -2549,7 +2577,7 @@
    "kind": "residential",
    "ha": 151,
    "shareOutsideCampus": 0,
-   "places": 14,
+   "places": 15,
    "buildings": 268,
    "anchorsMissing": []
   },

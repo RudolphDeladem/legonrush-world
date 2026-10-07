@@ -37,5 +37,6 @@ export const ROUTE_CHECKS: RouteCheck[] = [
   { from: 'Mensah Sarbah Hall', to: 'Mensah Sarbah Vikings Hostel', maxLength: 700, expect: 'From the Sarbah porters\' lodge to the VIKINGS HOSTEL entrance block in the inner corner of the L, from the car park.' },
   { from: 'The Balme Library', to: 'School of Law', maxLength: 1200, expect: 'Into the law courtyard from the road on the east, ending at the steps up to the round entrance building.' },
   { from: 'School of Law', to: 'School of Engineering Sciences', maxLength: 600, expect: 'Along the road south of the engineering school, then down the hill on the access road to the porch.' },
+  { from: 'School of Law', to: 'International House', maxLength: 400, expect: 'Across the law-school road to the car park west of International House and its entrance porch.' },
   { from: 'Elizabeth Frances Sey Hall', to: 'Jones Quartey Building, JQB', maxLength: 3200, expect: 'From the southern halls (leaving by the Sey frontage) north to JQB by the Main Gate.' },
 ];

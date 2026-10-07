@@ -1,9 +1,25 @@
 {
-  "about": "Source features that the evidence shows are wrong. 'exclude': they stay in the master dataset (flagged, confidence low) but are kept out of the game map; a feature is only excluded when independent evidence contradicts it. 'heights': storey counts and heights that reference photos contradict (the footprint is not touched). 'reclass': ground areas whose mapped use the reference photos and the owner contradict (the outline is kept). 'reshape': an outline that sits off the building Google Open Buildings and the owner's imagery show is replaced by a measured ring (game metres); the OSM id and tags stay.",
+  "about": "Source features that the evidence shows are wrong. 'exclude': they stay in the master dataset (flagged, confidence low) but are kept out of the game map; a feature is only excluded when independent evidence contradicts it. 'heights': storey counts and heights that reference photos contradict (the footprint is not touched). 'reclass': ground areas whose mapped use the reference photos and the owner contradict (the outline is kept). 'reshape': an outline that sits off the building Google Open Buildings and the owner's imagery show is replaced by a measured ring (game metres); the OSM id and tags stay. 'addAreas': ground areas the owner's imagery shows and the sources lack (woods round the School of Law and International House), measured on the registered imagery.",
   "exclude": [
     {
       "id": "osm:way/765261444",
       "reason": "OSM building=yes + amenity=place_of_worship named 'lizalex' (8,486 m\u00b2) filling the strip between Elizabeth Sey Hall and Alexander Kwapong Hall. Google Open Buildings detects only small structures inside it and the Sentinel-2 composite shows open ground; no other source knows a church there. Treated as an erroneous edit."
+    },
+    {
+      "id": "ml:45cf2ff1-cd9f-4df7-a5bf-20b077c452fc",
+      "reason": "Satellite-detected (Microsoft ML) footprint in the open ground between Alexander Kwapong Hall and Elizabeth Sey Hall, drawn as a two-storey block. The owner: there is no building there; the owner's aerial of the four halls shows a field, a road and parked buses."
+    },
+    {
+      "id": "ml:edb17d32-6f00-4474-ad3a-0dc8048bc6b0",
+      "reason": "Satellite-detected (Microsoft ML) footprint in the same open ground between Kwapong and Sey (owner: no building there)."
+    },
+    {
+      "id": "ml:588d1cea-c2dd-483f-8502-2501bb7ee8ab",
+      "reason": "Satellite-detected footprint inside the Diaspora Dome site west of Jean Nelson Aka Hall, drawn as a two-storey block; the owner's photos show the site is single-storey marquee halls (src/game/dome.ts)."
+    },
+    {
+      "id": "ml:0c8802e6-d3c2-41c2-bbe9-257930c8404c",
+      "reason": "Google Open Buildings footprint (confidence 0.82, 2,297 m\u00b2) at the end of the field between Elizabeth Sey Hall and Alexander Kwapong Hall, drawn as a two-storey block. The owner: there is no storey building between Kwapong and Sey; the owner's aerial of the four halls shows the field, a road and parked buses."
     }
   ],
   "heights": [
@@ -104,6 +120,13 @@
       "levels": 4,
       "height": 19,
       "reason": "Owner's photos and reference render: four-storey blocks under tile roofs, the stair towers a little higher. The building stands about 4.5 m below the road on the south (src/game/relief.ts)."
+    },
+    {
+      "id": "osm:relation/5912384",
+      "place": "International House",
+      "levels": 4,
+      "height": 15,
+      "reason": "Owner's photo: International House is four storeys under a low hipped roof."
     }
   ],
   "reclass": [
@@ -194,6 +217,157 @@
         ]
       ],
       "reason": "The OSM outline sits about 5 m west of Google's footprint, which matches the south block in the owner's layout photo."
+    }
+  ],
+  "addAreas": [
+    {
+      "id": "owner:woods-law-west",
+      "class": "wood",
+      "ring": [
+        [
+          410.7,
+          -215.8
+        ],
+        [
+          424.4,
+          -218.7
+        ],
+        [
+          442.5,
+          -222.6
+        ],
+        [
+          447.1,
+          -226.0
+        ],
+        [
+          467.5,
+          -227.1
+        ],
+        [
+          475.5,
+          -220.3
+        ],
+        [
+          476.2,
+          -205.5
+        ],
+        [
+          473.2,
+          -203.3
+        ],
+        [
+          460.7,
+          -202.1
+        ],
+        [
+          447.1,
+          -198.3
+        ],
+        [
+          444.8,
+          -195.3
+        ],
+        [
+          422.1,
+          -194.2
+        ],
+        [
+          410.7,
+          -196.5
+        ]
+      ],
+      "reason": "Owner's aerial of the School of Law and International House with the wooded zones circled (registered to the OSM footprints at 4.4 px/m)."
+    },
+    {
+      "id": "owner:woods-law-south",
+      "class": "wood",
+      "ring": [
+        [
+          409.6,
+          -191.5
+        ],
+        [
+          442.5,
+          -191.9
+        ],
+        [
+          473.2,
+          -192.8
+        ],
+        [
+          476.6,
+          -189.6
+        ],
+        [
+          494.8,
+          -190.5
+        ],
+        [
+          499.4,
+          -186.2
+        ],
+        [
+          503.9,
+          -176.0
+        ],
+        [
+          503.9,
+          -171.0
+        ],
+        [
+          409.6,
+          -171.0
+        ]
+      ],
+      "reason": "Owner's aerial of the School of Law and International House with the wooded zones circled (registered to the OSM footprints at 4.4 px/m)."
+    },
+    {
+      "id": "owner:woods-ih-east",
+      "class": "wood",
+      "ring": [
+        [
+          576.6,
+          -271.5
+        ],
+        [
+          607.8,
+          -271.5
+        ],
+        [
+          607.8,
+          -169.9
+        ],
+        [
+          588.0,
+          -169.9
+        ],
+        [
+          594.8,
+          -176.0
+        ],
+        [
+          596.6,
+          -196.5
+        ],
+        [
+          597.1,
+          -228.3
+        ],
+        [
+          590.3,
+          -237.8
+        ],
+        [
+          574.4,
+          -240.8
+        ],
+        [
+          572.5,
+          -257.8
+        ]
+      ],
+      "reason": "Owner's aerial of the School of Law and International House with the wooded zones circled (registered to the OSM footprints at 4.4 px/m)."
     }
   ]
 }

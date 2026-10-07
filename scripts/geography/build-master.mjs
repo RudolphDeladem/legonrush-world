@@ -404,6 +404,11 @@ for (const f of SRC.supplement.features) {
   if (!t) continue;
   polysOf(f.geometry).forEach((poly, i) => addArea(`osm:${p.osm.startsWith('w') ? 'way' : 'relation'}/${p.osm.slice(1)}${i ? `#${i + 1}` : ''}`, poly.map((r) => ringLocal(dropClosing(r))), { ...t, name: p.name ?? undefined }, 'osm-via-overture'));
 }
+// areas the owner's imagery shows and the sources lack (corrections.json: addAreas)
+for (const a of REG.corrections.addAreas ?? []) {
+  const ring = a.ring.map(([x, z]) => [x, z]);
+  areas.push({ id: a.id, layer: 'area', class: a.class, subclass: a.class, area: Math.round(area(ring)), conf: 'medium', src: ['owner-imagery'], ring, holes: [], c: centroid(ring), note: a.reason });
+}
 // University Square: the forecourt between the Balme Library and the avenue fountain, bounded by mapped lanes
 {
   const lanes = ['448104199', '448104193', '278303088'].map((id) => osm.ways.get(id));

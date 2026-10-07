@@ -773,7 +773,8 @@ export function buildCampusLife() {
     if (a.kind !== 'wood') continue;
     let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
     for (let i = 0; i < a.pts.length; i += 2) { minX = Math.min(minX, a.pts[i]); maxX = Math.max(maxX, a.pts[i]); minZ = Math.min(minZ, a.pts[i + 1]); maxZ = Math.max(maxZ, a.pts[i + 1]); }
-    const n = Math.min(220, ((maxX - minX) * (maxZ - minZ)) / 260);
+    // dense enough to read as woodland (the owner's photos of the woods round the School of Law)
+    const n = Math.min(280, ((maxX - minX) * (maxZ - minZ)) / 75);
     for (let i = 0; i < n; i++) {
       const x = minX + rand() * (maxX - minX), z = minZ + rand() * (maxZ - minZ);
       if (inPoly(a.pts, x, z) && freeSpot(x, z, 1.5)) tree(x, z, rand() < 0.6 ? 'mahogany' : 'neem', 0.8 + rand() * 0.6);

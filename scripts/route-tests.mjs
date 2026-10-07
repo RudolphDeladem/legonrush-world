@@ -112,6 +112,11 @@ try {
   if (groundHeight(0, 0) !== 0 || groundHeight(160, 997) !== 0) fail('relief: the campus outside the hollow is not flat');
   const eng = ACCESS.get('School of Engineering Sciences');
   if (!eng || Math.hypot(eng.entrance[0] - 452.7, eng.entrance[1] + 380) > 2) fail('engineering: the entrance is not the porch on the front block');
+  // no building in the field between Kwapong and Sey (owner); International House entered from the law-school road
+  for (const [x, z] of [[105, 1685], [118, 1708], [-26, 1581]]) if (buildingAt(x, z)) fail(`a building stands between Kwapong and Sey at ${x},${z}`);
+  const ih = ACCESS.get('International House');
+  if (!ih || Math.hypot(ih.entrance[0] - 544, ih.entrance[1] + 202.5) > 2) fail('International House: the entrance is not the west porch');
+  if (!placeByName('Diaspora Dome')) fail('Diaspora Dome is not a place');
   const bankModels = (await server.ssrLoadModule('/src/game/banking.ts')).banking.frames();
   if (bankModels.length !== 3) fail(`expected the bank compound, the Union Building and the ADB/HFC block, found ${bankModels.length}`);
   const hostels = (await server.ssrLoadModule('/src/game/hostels.ts')).hostels.frames();

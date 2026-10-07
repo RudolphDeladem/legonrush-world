@@ -14,7 +14,8 @@
   "user-photos-jubilee-ish": "Photos supplied by the project owner of Jubilee Hall (aerial of the entrance corner, courtyard) and the International Students Hostel (entrance facade), and a satellite layout of Jubilee Hall, ISH 1 and ISH 2 with the entrances and car parks marked, registered to the OSM footprints (2.8 px/m, 1° rotation)",
   "owner-banking-square": "The owner's labelled aerial of the banking square (banks C, F, S, the ATM bay, the car-park entrance), the owner's photos of the CBG front and the Union Building entrance, and the owner's close-up marking the Ecobank entrance; registered to the OSM footprints by roof colour (4.2 px/m, 1° rotation)",
   "owner-vikings-law": "The owner's photos of Mensah Sarbah Vikings Hostel (front with the entrances marked, the south end, an aerial with the entrances marked) and of the School of Law (two views of the entrance rotunda with the doors marked), with the earlier layout photos of both",
-  "owner-engineering": "The owner's satellite layout of the School of Engineering Sciences with the entrance (blue), the aeroplane enclosure (green) and the car park (red) marked, the owner's reference render with the entrance porch marked, and two photos of the front with the entrance marked"
+  "owner-engineering": "The owner's satellite layout of the School of Engineering Sciences with the entrance (blue), the aeroplane enclosure (green) and the car park (red) marked, the owner's reference render with the entrance porch marked, and two photos of the front with the entrance marked",
+  "owner-intl-house": "The owner's photo of International House (entrance marked) and aerial of it with the School of Law (entrance and the wooded zones marked), registered to the OSM footprints at 4.4 px/m"
  },
  "campusGates": [
   {
@@ -865,6 +866,25 @@
      "evidence": "Owner's front photo and aerial: a second door at the south end of the long wing (the small mark on the left)."
     }
    ]
+  },
+  {
+   "place": "International House",
+   "entrance": {
+    "at": [
+     544.0,
+     -202.5
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-intl-house",
+   "approach": "From the law-school road (Annie Jiagge Road) through the car park on the west to the entrance porch with the white arch.",
+   "evidence": "Owner's aerial (registered): the entrance is the porch on the west face, toward the car park and the road opposite the School of Law; OSM maps the porch there (544-551 x, -205.6 to -198.3 z). Owner's photo: a single-storey porch with a tile roof and a white arched gable in front of the four-storey block.",
+   "refs": [
+    "international_house_front (owner photo, entrance marked)",
+    "international_house_aerial (owner, entrance and woods marked)"
+   ]
   }
  ],
  "priority": [
@@ -913,6 +933,7 @@
   "Stanbic Bank",
   "Ecobank (near Night Market)",
   "Union Building (Banking Square)",
-  "Mensah Sarbah Vikings Hostel"
+  "Mensah Sarbah Vikings Hostel",
+  "International House"
  ]
 }
