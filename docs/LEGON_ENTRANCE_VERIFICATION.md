@@ -41,7 +41,7 @@ BUILDING → ENTRANCE → FORECOURT → ACCESS PATH → ARRIVAL POINT (road/path
 `npm run test:routes` fails if a priority destination is left as mapped/inferred, if a verified entrance is
 not high confidence, or if any non-verified, non-mapped entrance claims high confidence.
 
-**Priority destinations: 39 — verified 14, partial 14, unverified 11.** (The four Diaspora halls moved from partial to verified with the owner's photos; see below.)
+**Priority destinations: 40 — verified 16, partial 13, unverified 11.** (The four Diaspora halls moved from partial to verified with the owner's photos; ISH 1 moved to verified and ISH 2 was added with the owner's marked layout; see below.)
 
 ## Entrance verification table (BEFORE → AFTER)
 
@@ -68,7 +68,7 @@ Coordinates are game-frame metres (x east, z south of the datum 5.6518 N, 0.1871
 | Dr. Hilla Limann Hall | partial: (243, 1612), arriving on service | medium | hall entrance at (238, 1602), back entrance at (306, 1563) | service | (211, 1618), facing 60° | **verified** · high | 11 m |
 | Jean Nelson Aka Hall | partial: (-116, 1803), arriving on service | medium | hall entrance at (-118, 1800), back entrance at (-186, 1840) | service | (-94, 1787), facing 241° | **verified** · high | 3 m |
 | Pentagon Block A | frontage at (505, -612), arriving on Annie Jiagge Road | low | inferred frontage at (505, -612) | Annie Jiagge Road | (500, -612), facing 91° | **unverified** · low | 0 m |
-| Jubilee Hall | frontage at (38, 1204), arriving on Diaspora Path | low | hall entrance at (134, 1301) | Diaspora Path | (164, 1301), facing 267° | **verified** · high | 136 m |
+| Jubilee Hall | verified: (134, 1301), arriving on Diaspora Path | high | hall entrance at (137, 1293) | footway via the portico | (162, 1288), facing 253° | **verified** · high | 8 m |
 | School of Engineering Sciences | frontage at (458, -380), arriving on service | low | public entrance at (453, -380) | service | (453, -377), facing 358° | **verified** · high | 5 m |
 | University of Ghana Business School | frontage at (-141, -132), arriving on service | low | public entrance at (-150, -132) | service | (-150, -137), facing 178° | **partial** · medium | 9 m |
 | Institute of Africa Studies | frontage at (557, 79), arriving on service | low | inferred frontage at (557, 79) | service | (546, 80), facing 88° | **unverified** · low | 0 m |
@@ -80,7 +80,8 @@ Coordinates are game-frame metres (x east, z south of the datum 5.6518 N, 0.1871
 | Athletic Oval | frontage at (52, 355), arriving on service | low | public open space at (6, 489) | residential | (6, 503), facing 0° | **partial** · medium | 142 m |
 | University of Ghana Botanical Gardens | osm-entrance at (-85, -1696), arriving on service | high | public entrance at (-85, -1696) | service | (-85, -1696), facing 180° | **verified** · high | 0 m |
 | Vaughan Dam | frontage at (-145, -1572), arriving on path | low | inferred frontage at (-145, -1572) | path | (-147, -1575), facing 144° | **unverified** · low | 0 m |
-| International Students Hostel 1, ISH 1 | frontage at (180, 1317), arriving on service | low | hall entrance at (210, 1307) | service | (207, 1298), facing 160° | **partial** · medium | 32 m |
+| International Students Hostel 1, ISH 1 | partial: (210, 1307), arriving on service | medium | hall entrance at (214, 1305) | service | (212, 1296), facing 160° | **verified** · high | 5 m |
+| International Students Hostel 2, ISH 2 | inferred frontage at (74, 1121) (NW corner), arriving on service | low | hall entrance at (127, 1155) | service | (143, 1167), facing 305° | **verified** · high | 63 m |
 | Valco Trust Hostel Phase 1 | frontage at (63, 771), arriving on service | low | inferred frontage at (63, 771) | service | (64, 761), facing 173° | **unverified** · low | 0 m |
 | Bani Hostel | area-entry at (816, -1240), arriving on service | medium | vehicle at (816, -1240) | service | (816, -1240), facing 180° | **unverified** · medium | 0 m |
 | Evandy Hostel | frontage at (556, -1266), arriving on service | low | inferred frontage at (556, -1266) | service | (553, -1275), facing 173° | **unverified** · low | 0 m |
@@ -223,10 +224,10 @@ Coordinates are game-frame metres (x east, z south of the datum 5.6518 N, 0.1871
 
 ### Jubilee Hall — VERIFIED
 
-- **Entrance:** hall entrance; From Jubilee Link to the porch at the hall's southern corner, beside the round stair tower.
-- **Evidence:** jubilee_hall_4: the entrance porch with the hall sign beside a rounded white stair tower at a corner, with a road below; jubilee_hall_3 shows the same corner nearest the road. jubilee_hall_layout (registered to OSM): the rounded tower and porch are at the southern corner (the notch in OSM relation 3697984) next to the road.
-- **References:** `jubilee_hall_layout_labeled.png`, `jubilee_hall_3_labeled.png`, `jubilee_hall_4_labeled.png`, atlas sheet 1
-- **Correction:** moved 136 m from the previous frontage entrance (low confidence).
+- **Entrance:** hall entrance in the re-entrant corner at the south-east end (the notch in OSM relation 3697984), reached from the car park east of the hall through the portico beside the round white tower.
+- **Evidence:** the owner's satellite layout of Jubilee, ISH 1 and ISH 2 with the entrances and car parks marked, registered to the OSM footprints by roof colour (2.8 px/m, 1° rotation; the ISH outlines land on their roofs): the Jubilee mark is in that corner. The owner's aerial photo shows the entrance block there (portico, round tower, flat roof with water tanks); jubilee_hall_4 and the earlier layout agree.
+- **References:** owner's marked layout, owner's aerial and courtyard photos, `jubilee_hall_4_labeled.png`, `jubilee_hall_layout_labeled.png`
+- **Correction:** the door moved 8 m into the corner from the previous point on the notch edge.
 
 ### School of Engineering Sciences — VERIFIED
 
@@ -292,12 +293,19 @@ Coordinates are game-frame metres (x east, z south of the datum 5.6518 N, 0.1871
 
 - **UNVERIFIED.** No reference image, written source or mapped access identifies this entrance. The previous automatic result is kept: frontage at (-145, -1572), arriving on path, confidence low. It needs a photo or site check.
 
-### International Students Hostel 1, ISH 1 — PARTIAL
+### International Students Hostel 1, ISH 1 — VERIFIED
 
-- **Entrance:** hall entrance; From Jubilee Link through the car park on the north-west side to the porch in the middle of the long facade.
-- **Evidence:** international_students_hostel_2: the gabled entrance porch in the middle of the long facade behind a large car park; atlas sheet 1: that car park is on the north-west side toward Jubilee Link.
-- **References:** `international_students_hostel_layout_labeled.png`, `international_students_hostel_1_labeled.png`, `international_students_hostel_2_labeled.png`, atlas sheet 1
-- **Correction:** moved 32 m from the previous frontage entrance (low confidence).
+- **Entrance:** the small gabled porch on the north facade, a little east of the middle, facing the car park shared with Jubilee Hall.
+- **Evidence:** the owner's marked layout (registered as above) puts the entrance on ISH 1's north facade at 5.7 m east of its middle; the owner's photo of the hostel shows the gabled porch a little off-centre on the long four-storey facade behind the car park.
+- **References:** owner's marked layout, owner's ISH photo, `international_students_hostel_2_labeled.png`
+- **Correction:** moved 2 m along the facade; status partial → verified.
+
+### International Students Hostel 2, ISH 2 — VERIFIED
+
+- **Entrance:** a flat canopy on the south facade, east of the middle, at the corner of the car park between ISH 2 and Jubilee Hall.
+- **Evidence:** the owner's marked layout (registered as above): the ISH 2 mark is on its south facade 7 m east of the middle. The owner: ISH 2 has the same structure as ISH 1. `international_students_hostel_1_labeled.png` shows the balconied facade with the flat entrance canopy and a car park in front.
+- **References:** owner's marked layout, `international_students_hostel_1_labeled.png`
+- **Correction:** new curated entry (added to the priority list); previously an inferred frontage at the hostel's north-west corner, 63 m away on the other side of the building.
 
 ### Valco Trust Hostel Phase 1 — UNVERIFIED
 

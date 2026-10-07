@@ -30,5 +30,7 @@ export const ROUTE_CHECKS: RouteCheck[] = [
   { from: 'International Students Hostel 1, ISH 1', to: 'Night Market', maxLength: 600, expect: 'The hostel and the market are neighbours.' },
   { from: 'Dr. Hilla Limann Hall', to: 'Alexander Kwapong Hall', maxLength: 250, expect: 'Front door to front door: Limann and Kwapong face each other across their car parks.' },
   { from: 'Jean Nelson Aka Hall', to: 'Elizabeth Frances Sey Hall', maxLength: 250, expect: 'Front door to front door: JNA and Sey face each other across their car parks.' },
+  { from: 'International Students Hostel 2, ISH 2', to: 'Jubilee Hall', maxLength: 400, expect: 'From the canopy on ISH 2\'s south facade past the car park to Jubilee\'s portico in its south-east corner.' },
+  { from: 'Jubilee Hall', to: 'International Students Hostel 1, ISH 1', maxLength: 300, expect: 'From Jubilee\'s portico across the car park to the gabled porch on ISH 1\'s north facade.' },
   { from: 'Elizabeth Frances Sey Hall', to: 'Jones Quartey Building, JQB', maxLength: 3200, expect: 'From the southern halls (leaving by the Sey frontage) north to JQB by the Main Gate.' },
 ];

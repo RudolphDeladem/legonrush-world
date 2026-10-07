@@ -9,6 +9,9 @@ the map still use it), the generic builder skips it, and its model is placed on 
 | Step | Buildings | Model | Evidence |
 | --- | --- | --- | --- |
 | 1 | The Diaspora halls: Dr. Hilla Limann, Alexander Kwapong, Elizabeth Frances Sey, Jean Nelson Aka | `src/game/halls.ts` | owner photos (5) and description |
+| 2 | Jubilee Hall, International Students Hostels 1 and 2 | `src/game/hostels.ts` | owner's marked layout, owner photos (3), earlier reference photos (5) |
+
+Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`.
 
 ## 1. The Diaspora halls
 
@@ -57,9 +60,56 @@ and people (`inDiasporaHall` in `life.ts`).
 sign planes; the four halls share one set of geometry, and each mesh is skipped beyond the fog like the
 other buildings.
 
-**Not modelled yet / open points**
+**Not modelled yet / open points (Diaspora halls)**
 
 - The swimming pool the aerial shows in one courtyard, and the exact layout of planting and paths in each
   courtyard (all four use the same layout).
 - The paved walkway across the car parks between facing portals.
 - Window counts per bay are approximated (a 3.6 m bay).
+
+## 2. Jubilee Hall and the International Students Hostels
+
+The owner's satellite layout marks the three buildings, their entrances and the two car parks (between
+ISH 2 and Jubilee, and between Jubilee and ISH 1). It was registered to the OSM footprints by roof colour
+(2.8 px/m, 1° rotation); the ISH outlines land on their roofs, so the marks become map coordinates.
+Each building is modelled as rectangular blocks measured from its footprint, with storeys, roof and a
+facade style per face, plus the details below.
+
+### ISH 1 and ISH 2 (one design)
+
+- **Height:** four storeys of 3.1 m under a terracotta hipped roof with a dark fascia (photos; OSM had
+  ISH 2 at 3 levels, ISH 1 was estimated). Master geography: 4 levels / 17 m.
+- **Plan** (from the footprints, confirmed by the layout): two long bars joined by a spine near the east
+  end, a short west wing on the south bar, and a courtyard between them. The spine's roof runs through
+  between the bars' roofs, as the layout shows.
+- **Annex:** a one-storey flat-roofed block fills the space between the bars at the east end, with water
+  tanks and AC units on it (the light flat roof the layout shows there; not in OSM).
+- **Facades:** north side a plain grid of wide dark windows between white piers and slab bands (owner's
+  photo); south side recessed balconies with beige back walls and white parapets alternating with narrow
+  stair windows, over a brown base (`international_students_hostel_1`).
+- **Entrances** (owner's marks): ISH 1, the small gabled porch (cream walls, tile gable, white pediment)
+  on the north facade, facing the car park it shares with Jubilee; ISH 2, the flat entrance canopy on the
+  south facade, facing the car park between it and Jubilee. Signs on both.
+
+### Jubilee Hall
+
+- **Height:** three storeys of 3.2 m, except the **east wing along the car park, which has two** (owner).
+  Master geography: 3 levels / 14 m (OSM had 2 levels for the whole hall).
+- **Plan:** wings round a long courtyard, from the footprint: east wing, north wing with its north-east
+  and north-west corner blocks, west wing, south wing and the south-west jog.
+- **Roofs:** brown-orange tiles, hipped per block, as the photos show.
+- **East wing:** two storeys; on the courtyard side four gabled balcony bays (white gables with a
+  round-headed opening, recessed balconies with tan stone parapets), owner photos.
+- **North wing, courtyard side:** round-headed windows over an open arcade (owner's courtyard photo).
+- **Other faces:** dark windows in white render, wider on the ground floor.
+- **Entrance corner** (owner's mark and aerial photo): the doors in the re-entrant corner at the south
+  end of the east wing under a flat brown porch roof on white columns; a portico from the car park
+  (white posts and beams with a brown band, the hall's sign); the round white tower beside it, open at the
+  top; and a flat-roofed block with roof railings and two black water tanks against the east wing.
+- **Courtyard:** two tank stands, a tree, a covered walk with a red roof along the west wing; the hut in
+  the courtyard is the mapped Didi Jollof.
+
+**Kept clear:** porches, the portico and the annexes are kept free of generated props (`inHostelModel`).
+
+**Open points:** the 2-storey/3-storey split of the north wing's corner blocks is read from the courtyard
+photo; the hostels' annex height (one storey) is read from the layout only.

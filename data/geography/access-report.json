@@ -1,19 +1,19 @@
 {
  "destinations": 433,
  "byMethod": {
-  "curated": 28,
+  "curated": 29,
   "osm-entrance": 1,
   "gate": 2,
   "path-access": 8,
   "drive-access": 19,
   "area-entry": 9,
-  "frontage": 253,
+  "frontage": 252,
   "point": 113
  },
  "byConfidence": {
-  "medium": 160,
-  "low": 256,
-  "high": 17
+  "medium": 159,
+  "low": 255,
+  "high": 19
  },
  "campusGates": 5,
  "problems": [],
@@ -217,8 +217,8 @@
   },
   {
    "place": "International Students Hostel 1, ISH 1",
-   "status": "partial",
-   "confidence": "medium",
+   "status": "verified",
+   "confidence": "high",
    "method": "curated"
   },
   {
@@ -262,14 +262,20 @@
    "status": "partial",
    "confidence": "medium",
    "method": "curated"
+  },
+  {
+   "place": "International Students Hostel 2, ISH 2",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
   }
  ],
  "byStatus": {
-  "partial": 14,
+  "partial": 13,
   "unverified": 11,
-  "inferred": 246,
+  "inferred": 245,
   "mapped": 148,
-  "verified": 14
+  "verified": 16
  },
  "curated": [
   {
@@ -304,8 +310,8 @@
    "place": "Jubilee Hall",
    "type": "hall entrance",
    "arrivalOn": "Diaspora Path",
-   "arrivalDistance": 28.3,
-   "facing": 267
+   "arrivalDistance": 23.7,
+   "facing": 253
   },
   {
    "place": "Alexander Kwapong Hall",
@@ -367,8 +373,15 @@
    "place": "International Students Hostel 1, ISH 1",
    "type": "hall entrance",
    "arrivalOn": "service",
-   "arrivalDistance": 6.7,
+   "arrivalDistance": 6.8,
    "facing": 160
+  },
+  {
+   "place": "International Students Hostel 2, ISH 2",
+   "type": "hall entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 18,
+   "facing": 305
   },
   {
    "place": "Central Cafeteria, CC",

@@ -14,6 +14,7 @@
 // generic footprint builder skips these four. Courtyard and porches are kept clear of props.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { BRONZE, DARK, Facade, PAVE, PLINTH, Roof, SOFFIT, TANK, TRIM, WHITE, box, canvas, flat, flipWinding, merge, rnd, signTexture, speckle, type Part } from './modelkit';
 import { BUILDINGS, type Building } from './campusmap';
 import { buildingMaterials } from './facades';
 import { groundShade, weathering } from './shading';
@@ -98,22 +99,6 @@ export function inDiasporaHall(x: number, z: number, pad = 0) {
 }
 
 // ---------- textures ----------
-function canvas(w: number, h: number, draw: (g: CanvasRenderingContext2D) => void, srgb = true) {
-  const c = document.createElement('canvas');
-  c.width = w; c.height = h;
-  draw(c.getContext('2d')!);
-  const t = new THREE.CanvasTexture(c);
-  t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
-  t.wrapS = t.wrapT = THREE.RepeatWrapping;
-  t.anisotropy = 4;
-  return t;
-}
-let seed = 9137;
-const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
-const speckle = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, n: number, cols: string[]) => {
-  for (let i = 0; i < n; i++) { g.fillStyle = cols[(rnd() * cols.length) | 0]; g.fillRect(x + rnd() * w, y + rnd() * h, 1 + rnd(), 1 + rnd()); }
-};
-
 /** window glass in a 256 x 256 storey cell (upper floors), and the ground floor's louvred windows */
 const UP_WIN = [50, 32, 156, 122] as const, GROUND_WIN = [40, 34, 176, 176] as const;
 
@@ -278,25 +263,6 @@ function courtyardTexture(ix: number, iz: number) {
   return t;
 }
 
-/** the hall's name on the porch canopy: white letters on blue */
-function signTexture(text: string) {
-  const c = document.createElement('canvas');
-  const g = c.getContext('2d')!;
-  const font = '700 44px Sora, system-ui, sans-serif';
-  g.font = font;
-  c.width = Math.ceil(g.measureText(text).width) + 48;
-  c.height = 64;
-  g.fillStyle = '#1f4f9a';
-  g.fillRect(0, 0, c.width, 64);
-  g.font = font;
-  g.fillStyle = '#ffffff';
-  g.textBaseline = 'middle';
-  g.fillText(text, 24, 34);
-  const t = new THREE.CanvasTexture(c);
-  t.colorSpace = THREE.SRGBColorSpace;
-  return { tex: t, aspect: c.width / 64 };
-}
-
 // ---------- materials ----------
 let mats: { wall: THREE.MeshStandardMaterial; plain: THREE.MeshStandardMaterial; glass: THREE.MeshStandardMaterial } | null = null;
 function materials() {
@@ -320,81 +286,6 @@ export function setHallLights(on: boolean) {
 }
 
 // ---------- geometry ----------
-/** textured facade quads: uv into the facade atlas, uv1 counts bays and storeys for the night lights */
-class Facade {
-  pos: number[] = []; uv: number[] = []; uv1: number[] = []; idx: number[] = [];
-  bays = 0;
-  quad(x0: number, z0: number, x1: number, z1: number, y0: number, y1: number, u1: number, v0: number, v1: number, l0: number, l1: number, s: number) {
-    const b = this.pos.length / 3;
-    this.pos.push(x0, y0, z0, x1, y0, z1, x1, y1, z1, x0, y1, z0);
-    this.uv.push(0, v0, u1, v0, u1, v1, 0, v1);
-    this.uv1.push(l0, s, l1, s, l1, s + 1, l0, s + 1);
-    this.idx.push(b, b + 1, b + 2, b, b + 2, b + 3);
-  }
-  geometry() {
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.Float32BufferAttribute(this.pos, 3));
-    g.setAttribute('uv', new THREE.Float32BufferAttribute(this.uv, 2));
-    g.setAttribute('uv1', new THREE.Float32BufferAttribute(this.uv1, 2));
-    g.setIndex(this.idx);
-    g.computeVertexNormals();
-    return g;
-  }
-}
-
-/** coloured parts merged into one geometry (position, normal, color) */
-type Part = [THREE.BufferGeometry, string];
-function merge(parts: Part[]) {
-  const geos = parts.map(([g, c]) => {
-    const n = g.index ? g.toNonIndexed() : g;
-    for (const k of Object.keys(n.attributes)) if (k !== 'position' && k !== 'normal') n.deleteAttribute(k);
-    if (!n.attributes.normal) n.computeVertexNormals();
-    const col = new THREE.Color(c);
-    const arr = new Float32Array(n.attributes.position.count * 3);
-    for (let i = 0; i < arr.length; i += 3) { arr[i] = col.r; arr[i + 1] = col.g; arr[i + 2] = col.b; }
-    n.setAttribute('color', new THREE.BufferAttribute(arr, 3));
-    return n;
-  });
-  return mergeGeometries(geos);
-}
-const box = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) =>
-  new THREE.BoxGeometry(Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0)).translate((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
-/** a flat polygon in a vertical plane facing +z at depth z */
-const flat = (pts: [number, number][], z: number) => {
-  const s = new THREE.Shape(pts.map(([x, y]) => new THREE.Vector2(x, y)));
-  return new THREE.ShapeGeometry(s).translate(0, 0, z);
-};
-
-const WHITE = '#f7f4ec', TRIM = '#fbf9f3', SOFFIT = '#d8cfbf', PLINTH = '#8c8174', DARK = '#2a2d33', TANK = '#1b1c1f', PAVE = '#d2ccc0', BRONZE = '#5e4a38';
-
-/** Roof slopes: quads from an eave edge (a, b) up to a ridge edge (c, d), tiles laid by metres. */
-class Roof {
-  pos: number[] = []; uv: number[] = []; col: number[] = []; idx: number[] = [];
-  constructor(private c: THREE.Color) {}
-  quad(a: number[], b: number[], c: number[], d: number[]) {
-    const ex = b[0] - a[0], ez = b[2] - a[2], el = Math.hypot(ex, ez) || 1;
-    const ux = ex / el, uz = ez / el;
-    const base = this.pos.length / 3;
-    for (const p of [a, b, c, d]) {
-      const dx = p[0] - a[0], dz = p[2] - a[2];
-      const along = dx * ux + dz * uz, across = Math.abs(-dx * uz + dz * ux), up = p[1] - a[1];
-      this.pos.push(p[0], p[1], p[2]);
-      this.uv.push(along / 2, Math.hypot(across, up) / 2);
-      this.col.push(this.c.r, this.c.g, this.c.b);
-    }
-    this.idx.push(base, base + 1, base + 2, base, base + 2, base + 3);
-  }
-  geometry() {
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.Float32BufferAttribute(this.pos, 3));
-    g.setAttribute('uv', new THREE.Float32BufferAttribute(this.uv, 2));
-    g.setAttribute('color', new THREE.Float32BufferAttribute(this.col, 3));
-    g.setIndex(this.idx);
-    g.computeVertexNormals();
-    return g;
-  }
-}
-
 /** One hall in its local frame: length along x, front facing +z, ground at y = 0. */
 function hallGeometry(hx: number, hz: number, ix: number, iz: number) {
   const fac = new Facade();
@@ -607,14 +498,6 @@ function hallGeometry(hx: number, hz: number, ix: number, iz: number) {
     plain.push([new THREE.IcosahedronGeometry(r, 1).scale(1, 0.82, 1).translate(x, 2.4 + r * 0.7, z), r > 3.1 ? '#2f5d27' : '#3d7030']);
   }
   return { fac, plain, glass, roof };
-}
-
-/** reverses triangle winding after a mirror so faces still point outward (applyMatrix4 mirrors the normals) */
-function flipWinding(g: THREE.BufferGeometry) {
-  if (!g.index) return;
-  const a = g.index.array as Uint16Array | Uint32Array;
-  for (let i = 0; i < a.length; i += 3) { const t = a[i + 1]; a[i + 1] = a[i + 2]; a[i + 2] = t; }
-  g.index.needsUpdate = true;
 }
 
 /** Every Diaspora hall, placed on its footprint; meshes listed in userData.cullMeshes for fog culling. */

@@ -10,7 +10,8 @@
   "user-atlas": "Satellite campus reference atlas supplied by the project owner (2 sheets, Apple Maps imagery), registered to OSM footprints",
   "user-layouts": "UG_BUILDINGS__LAYOUTS_AND_THEIR_STRUCTURES.zip supplied by the project owner: labelled layouts and entrance photos",
   "legon-porters-lodge": "https://gh.near-place.com/legon-hall-porters-lodge-j-b-danquah-road-accra",
-  "user-photos": "Photos of the four Diaspora halls supplied by the project owner (an aerial of all four halls, a drone view of one hall's front and courtyard, two oblique drone views of the facades, a close view of the entrance pavilion), with the owner's description of how the halls face each other"
+  "user-photos": "Photos of the four Diaspora halls supplied by the project owner (an aerial of all four halls, a drone view of one hall's front and courtyard, two oblique drone views of the facades, a close view of the entrance pavilion), with the owner's description of how the halls face each other",
+  "user-photos-jubilee-ish": "Photos supplied by the project owner of Jubilee Hall (aerial of the entrance corner, courtyard) and the International Students Hostel (entrance facade), and a satellite layout of Jubilee Hall, ISH 1 and ISH 2 with the entrances and car parks marked, registered to the OSM footprints (2.8 px/m, 1° rotation)"
  },
  "campusGates": [
   {
@@ -532,21 +533,22 @@
    "place": "Jubilee Hall",
    "entrance": {
     "at": [
-     136,
-     1300
+     137.4,
+     1293.0
     ]
    },
    "type": "hall entrance",
    "status": "verified",
    "confidence": "high",
-   "cite": "user-layouts",
-   "approach": "From Jubilee Link to the porch at the hall's southern corner, beside the round stair tower.",
-   "evidence": "jubilee_hall_4: the entrance porch with the hall sign beside a rounded white stair tower at a corner, with a road below; jubilee_hall_3 shows the same corner nearest the road. jubilee_hall_layout (registered to OSM): the rounded tower and porch are at the southern corner (the notch in OSM relation 3697984) next to the road.",
+   "cite": "user-photos-jubilee-ish",
+   "approach": "From the car park east of the hall to the entrance in the south-east corner, beside the white entrance block with the round tower.",
+   "evidence": "Owner's marked layout (registered to OSM): the entrance is in the re-entrant corner at the hall's south-east end (the notch in OSM relation 3697984), beside the car park between Jubilee and ISH 1. Owner's aerial photo: the entrance block there, white with a flat roof, a round white tower, a portico and water tanks. Earlier evidence (jubilee_hall_4, jubilee_hall_layout) puts the porch at the same corner.",
    "refs": [
-    "jubilee_hall_layout_labeled.png",
-    "jubilee_hall_3_labeled.png",
+    "jubilee_ish_layout (owner satellite layout with entrances and car parks marked)",
+    "jubilee_aerial_entrance (owner photo)",
+    "jubilee_courtyard (owner photo)",
     "jubilee_hall_4_labeled.png",
-    "atlas sheet 1"
+    "jubilee_hall_layout_labeled.png"
    ]
   },
   {
@@ -658,21 +660,20 @@
    "place": "International Students Hostel 1, ISH 1",
    "entrance": {
     "at": [
-     210,
-     1308
+     214.0,
+     1305.4
     ]
    },
    "type": "hall entrance",
-   "status": "partial",
-   "confidence": "medium",
-   "cite": "user-layouts",
-   "approach": "From Jubilee Link through the car park on the north-west side to the porch in the middle of the long facade.",
-   "evidence": "international_students_hostel_2: the gabled entrance porch in the middle of the long facade behind a large car park; atlas sheet 1: that car park is on the north-west side toward Jubilee Link.",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "user-photos-jubilee-ish",
+   "approach": "From the car park between Jubilee Hall and ISH 1 to the gabled porch on the hostel's north facade.",
+   "evidence": "Owner's marked layout (registered to OSM): the entrance is on ISH 1's north facade, a little east of its middle, facing the car park it shares with Jubilee Hall. Owner photo of the hostel: a small gabled porch on the long four-storey facade, behind the car park, a little off-centre.",
    "refs": [
-    "international_students_hostel_layout_labeled.png",
-    "international_students_hostel_1_labeled.png",
-    "international_students_hostel_2_labeled.png",
-    "atlas sheet 1"
+    "jubilee_ish_layout (owner satellite layout with entrances and car parks marked)",
+    "ish_entrance_facade (owner photo)",
+    "international_students_hostel_2_labeled.png"
    ]
   },
   {
@@ -687,6 +688,25 @@
    "approach": "From the Haatso-Atomic road side into the gardens' main entrance.",
    "evidence": "OSM entrance=main (node 2248903579) on the gardens' boundary; Visit Ghana: the gardens are 'off Atomic Haatso Main Road at Agbogba Junction'.",
    "refs": []
+  },
+  {
+   "place": "International Students Hostel 2, ISH 2",
+   "entrance": {
+    "at": [
+     126.7,
+     1154.8
+    ]
+   },
+   "type": "hall entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "user-photos-jubilee-ish",
+   "approach": "From the car park between ISH 2 and Jubilee Hall to the entrance canopy on the hostel's south facade.",
+   "evidence": "Owner's marked layout (registered to OSM): the entrance is on ISH 2's south facade, east of its middle, at the corner of the car park between ISH 2 and Jubilee Hall. Owner: ISH 2 has the same structure as ISH 1. international_students_hostel_1: the balconied facade with a flat entrance canopy and a car park in front.",
+   "refs": [
+    "jubilee_ish_layout (owner satellite layout with entrances and car parks marked)",
+    "international_students_hostel_1_labeled.png"
+   ]
   }
  ],
  "priority": [
@@ -728,6 +748,7 @@
   "James Topp Nelson Yankah Hall",
   "University of Ghana Hospital",
   "University of Ghana Medical Center Limited",
-  "Central Cafeteria, CC"
+  "Central Cafeteria, CC",
+  "International Students Hostel 2, ISH 2"
  ]
 }

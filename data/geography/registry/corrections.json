@@ -34,6 +34,27 @@
       "levels": 4,
       "height": 18,
       "reason": "The four Diaspora halls share one design: four storeys (ground + three) of rooms under a hipped tile roof, about 18 m to the ridge. Owner-supplied photos (aerial of all four halls, drone views of the facades and the entrance pavilion). OSM tags Limann building:levels=3; the others had no height and were estimated."
+    },
+    {
+      "id": "osm:relation/3697984",
+      "place": "Jubilee Hall",
+      "levels": 3,
+      "height": 14,
+      "reason": "Owner photos and description: Jubilee Hall is three storeys on three sides of its courtyard; the east wing along the car park has two (OSM tags building:levels=2 for the whole hall)."
+    },
+    {
+      "id": "osm:way/278303018",
+      "place": "International Students Hostel 1, ISH 1",
+      "levels": 4,
+      "height": 17,
+      "reason": "Owner photos: the International Students Hostels are four storeys under a hipped tile roof (ISH 1 had no height and was estimated)."
+    },
+    {
+      "id": "osm:way/278303020",
+      "place": "International Students Hostel 2, ISH 2",
+      "levels": 4,
+      "height": 17,
+      "reason": "Owner photos: the International Students Hostels are four storeys under a hipped tile roof; ISH 2 has the same structure as ISH 1 (OSM tags building:levels=3)."
     }
   ],
   "reclass": [

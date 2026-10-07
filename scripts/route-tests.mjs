@@ -78,6 +78,16 @@ try {
     // fronts face each other: each hall's front axis points at the other hall
     if (fx && fy && ((fy.cx - fx.cx) * fx.fx + (fy.cz - fx.cz) * fx.fz <= 0 || (fx.cx - fy.cx) * fy.fx + (fx.cz - fy.cz) * fy.fz <= 0)) fail(`${x} and ${y} do not face each other`);
   }
+  // Jubilee Hall and the International Students Hostels: entrances where the owner's layout marks them
+  const marked = { 'Jubilee Hall': [137.4, 1293.0], 'International Students Hostel 1, ISH 1': [214.0, 1305.4], 'International Students Hostel 2, ISH 2': [126.7, 1154.8] };
+  for (const [n, [mx, mz]] of Object.entries(marked)) {
+    const a = ACCESS.get(n);
+    if (!a) { fail(`${n}: no access`); continue; }
+    if (Math.hypot(a.entrance[0] - mx, a.entrance[1] - mz) > 2) fail(`${n}: entrance ${a.entrance.map((v) => v.toFixed(1))} is not where the owner's layout marks it`);
+    if (a.status !== 'verified') fail(`${n}: entrance status ${a.status}`);
+  }
+  const hostels = (await server.ssrLoadModule('/src/game/hostels.ts')).hostelFrames();
+  if (hostels.length !== 3) fail(`expected Jubilee Hall, ISH 1 and ISH 2 models, found ${hostels.length}`);
   if (lowLegs) notes.push(`${lowLegs} low-confidence destinations have a building between the network and the entrance (enclosed courtyards / mapping gaps; listed in data/geography/access-report.json)`);
 
   // ---------- representative journeys ----------
