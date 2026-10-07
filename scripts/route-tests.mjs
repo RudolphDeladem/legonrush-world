@@ -176,6 +176,17 @@ try {
   const cc = BUILDINGS.find((b) => b.name === 'Central Cafeteria, CC'), src = BUILDINGS.find((b) => b.name === 'SRC Union Building');
   if (!cc || cc.height > 11 || !src || src.height > 5) fail('the CC is not two floors or the SRC Union Building not one');
   if (!placeByName('Standard Chartered ATM (near SRC Union Building)')) fail('the Standard Chartered ATM building between the CC and the Union Building is missing');
+  // round the Balme Library (owner's marked aerial): CEDI entered on the west under the red canopy, Standard Chartered
+  // (west) and Absa (east, by the road) doors on the north face of their one-floor building, the ATMs on its south face
+  for (const [n, x, z] of [['Cedi Conference Centre', -152.5, 10.6], ['University of Ghana Computing Systems (UGCS)', -111.8, -32.8], ['Department of Economics, University of Ghana', -43.8, 75.7], ['University of Ghana Bookshop', 58.7, 74.7], ['Faculty of Arts, Languages', -161, 98.5], ['Office of The Dean of Students', -55.6, 58.9], ['Legon Post Office', -58.6, 93.8], ['Standard Chartered', 70.2, 94.7], ['Absa (near Balme Library Fountain)', 78, 94.7], ['Standard Chartered ATM (near Balme Library Fountain)', 70.2, 106.3]]) {
+    const e = ann(n);
+    if (!e || Math.hypot(e[0] - x, e[1] - z) > 2) fail(`${n}: the entrance is not where the owner marks it`);
+  }
+  for (const [n, floors] of [['Department of Economics, University of Ghana', 2], ['Faculty of Arts, Languages', 2], ['University of Ghana Bookshop', 2], ['Office of The Dean of Students', 1], ['Legon Post Office', 1]]) {
+    const b = BUILDINGS.find((x) => x.name === n);
+    if (!b || (floors === 1 ? b.height > 5 : b.height < 7 || b.height > 10)) fail(`${n}: not ${floors === 1 ? 'a ground floor only' : 'two floors'} (owner's aerial)`);
+  }
+  if ((await server.ssrLoadModule('/src/game/balme.ts')).balmeSite.frames().length !== 2) fail('expected the CEDI Conference Centre and the Standard Chartered and Absa models');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)
   for (const [x, z] of [[95, 1573], [-88, 1676], [210, 1509], [200, 1500]]) if (cm.buildingNear(x, z, 0.35)) fail(`free ride: the road at ${x},${z} is blocked by ${cm.buildingNear(x, z, 0.35).name ?? 'a building'}`);

@@ -460,6 +460,28 @@ South of the Athletic Oval (owner's photos and aerials).
 - Between them, **a few parked cars** and the small one-floor **Standard Chartered ATM** building (a new place on the
   map), its ATMs facing the CC.
 
+## 14. Round the Balme Library: CEDI, UGCS and the blocks by the square
+
+From the owner's marked aerial (CEDI in yellow, UGCS in purple, two-floor blocks circled red, ground-floor blocks
+circled black, entrances in blue) and photos of CEDI from the west, the east and above. The aerial is not evenly
+scaled, and Google Open Buildings agrees with the OSM footprints, so the footprints stay where they are and the blue
+marks are placed in proportion on them.
+
+- **CEDI Conference Centre:** a big white hall of **two tall storeys**, rows of tall narrow windows in pairs, a
+  **pink hipped roof** inside a white parapet, and a raked white stage tower at the north end. The **main entrance is
+  on the west face toward Volta Hall**, a porch under a red canopy (owner's photo, marked); the east face toward the
+  Balme Library carries the name over a second set of doors.
+- **UGCS:** entered on its south face, toward CEDI.
+- **Two floors** (red): the Department of Economics (entered on the west), the University of Ghana Bookshop
+  (entered on the east, on the road) and the Faculty of Arts.
+- **Ground floor only** (black): the Office of the Dean of Students (entered on the south) and the Legon Post Office
+  opposite it (entered on the north).
+- **Standard Chartered and Absa** share one **one-floor** building south of the Bookshop: Standard Chartered on the
+  west, Absa on the east by Cruise O'Brien Road, both doors on the north face (owner's marks). **Standard
+  Chartered's ATMs** are on the south face, toward Legon Hall and Akuafo Hall.
+- The Economic Policy Management Programme Office is entered in the notch in the middle of its south face, reached
+  along the gap between it and the Faculty of Arts.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

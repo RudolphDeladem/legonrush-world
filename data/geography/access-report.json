@@ -1,18 +1,18 @@
 {
  "destinations": 435,
  "byMethod": {
-  "curated": 56,
-  "osm-entrance": 1,
+  "curated": 67,
+  "osm-entrance": 0,
   "gate": 2,
   "path-access": 3,
   "drive-access": 18,
   "area-entry": 8,
-  "frontage": 236,
+  "frontage": 226,
   "point": 111
  },
  "byConfidence": {
-  "high": 50,
-  "low": 239,
+  "high": 60,
+  "low": 229,
   "medium": 146
  },
  "campusGates": 5,
@@ -360,11 +360,11 @@
   }
  ],
  "byStatus": {
-  "verified": 47,
-  "inferred": 230,
+  "verified": 58,
+  "inferred": 220,
   "partial": 9,
   "unverified": 10,
-  "mapped": 139
+  "mapped": 138
  },
  "curated": [
   {
@@ -403,6 +403,13 @@
    "facing": 0
   },
   {
+   "place": "Standard Chartered ATM (near Balme Library Fountain)",
+   "type": "atm",
+   "arrivalOn": "footway",
+   "arrivalDistance": 4.8,
+   "facing": 2
+  },
+  {
    "place": "Ecobank (near Night Market)",
    "type": "public entrance",
    "arrivalOn": "service",
@@ -429,6 +436,20 @@
    "arrivalOn": "service",
    "arrivalDistance": 8.8,
    "facing": 180
+  },
+  {
+   "place": "Standard Chartered",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 5.1,
+   "facing": 250
+  },
+  {
+   "place": "Absa (near Balme Library Fountain)",
+   "type": "public entrance",
+   "arrivalOn": "footway",
+   "arrivalDistance": 1.5,
+   "facing": 182
   },
   {
    "place": "Kampala Court",
@@ -541,6 +562,27 @@
    "arrivalOn": "residential",
    "arrivalDistance": 13.2,
    "facing": 176
+  },
+  {
+   "place": "University of Ghana Computing Systems (UGCS)",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 25.6,
+   "facing": 2
+  },
+  {
+   "place": "Department of Economics, University of Ghana",
+   "type": "public entrance",
+   "arrivalOn": "W.E.B. Dubois Road",
+   "arrivalDistance": 36.1,
+   "facing": 90
+  },
+  {
+   "place": "University of Ghana Bookshop",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 13.5,
+   "facing": 281
   },
   {
    "place": "International Students Hostel 1, ISH 1",
@@ -697,11 +739,32 @@
    "facing": 270
   },
   {
+   "place": "Faculty of Arts, Languages",
+   "type": "public entrance",
+   "arrivalOn": "footway",
+   "arrivalDistance": 24.1,
+   "facing": 308
+  },
+  {
    "place": "Kuffour Quadrangle",
    "type": "public open space",
    "arrivalOn": "footway",
    "arrivalDistance": 3.1,
    "facing": 0
+  },
+  {
+   "place": "Office of The Dean of Students",
+   "type": "public entrance",
+   "arrivalOn": "W.E.B. Dubois Road",
+   "arrivalDistance": 26.9,
+   "facing": 90
+  },
+  {
+   "place": "Legon Post Office",
+   "type": "public entrance",
+   "arrivalOn": "W.E.B. Dubois Road",
+   "arrivalDistance": 24.1,
+   "facing": 90
   },
   {
    "place": "New Pent Block C",
@@ -732,6 +795,13 @@
    "facing": 181
   },
   {
+   "place": "Cedi Conference Centre",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 14.5,
+   "facing": 180
+  },
+  {
    "place": "Great Hall",
    "type": "public entrance",
    "arrivalOn": "service",
@@ -758,6 +828,13 @@
    "arrivalOn": "service",
    "arrivalDistance": 8.2,
    "facing": 180
+  },
+  {
+   "place": "Economic Policy Management Programme Office",
+   "type": "public entrance",
+   "arrivalOn": "W.E.B. Dubois Road",
+   "arrivalDistance": 42.2,
+   "facing": 266
   }
  ],
  "furthestArrivals": [

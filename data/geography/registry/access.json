@@ -21,7 +21,8 @@
   "owner-volta": "The owner's aerial of Volta Hall with the entrance marked (blue) and the storeys described, registered to the OSM footprints (0.27 m/px, north up), and photos of the entrance up its steps (marked), the front buildings either side of the climb, and the Annex.",
   "owner-sarbah-akuafo-legon": "The owner's photos of Mensah Sarbah Hall (the front from above with the entrance building and its gate marked, the entrance building from the court with its two side doors marked), of the Akuafo Hall entrance (gate marked) and of the Legon Hall entrance (gate marked).",
   "owner-annexes": "The owner's photos and top views of the Legon Hall annexes (Annex B's gallery face with the entrance marked; the top view of Annex A, B and C with the entrances marked and Annex C circled) and the Akuafo Hall annexes (an aerial of the four with A and B, C and D circled and C's entrance marked; a photo of a tall annex's gallery face; Annex A with its entrance marked).",
-  "owner-sarbah-annexes-cc": "The owner's aerial of Mensah Sarbah's annexes (the same as Akuafo's), and photos and aerials of the CC (its terrace and doors marked), the SRC Union Building opposite and the Standard Chartered ATM building between them."
+  "owner-sarbah-annexes-cc": "The owner's aerial of Mensah Sarbah's annexes (the same as Akuafo's), and photos and aerials of the CC (its terrace and doors marked), the SRC Union Building opposite and the Standard Chartered ATM building between them.",
+  "owner-balme": "The owner's marked aerial of the Balme Library surroundings (the CEDI Conference Centre in yellow, UGCS in purple, two-floor blocks circled red, ground-floor blocks circled black, entrances marked blue), the owner's photos of CEDI from the west (the entrance porch marked), from the east and from above, and the owner's account of the Standard Chartered and Absa building; the marks placed proportionally on the OSM footprints (Google Open Buildings agrees with the OSM positions)."
  },
  "campusGates": [
   {
@@ -1351,6 +1352,237 @@
    "evidence": "Owner's aerial (entrance marked) and photo (the doors marked): the stepped terrace along the north side climbs to the main floor, with many doors along the top of it; the ground floor below is half sunk.",
    "refs": [
     "owner's photos and aerials"
+   ]
+  },
+  {
+   "place": "Cedi Conference Centre",
+   "footprint": "osm:way/670708229",
+   "entrance": {
+    "at": [
+     -153.4,
+     10.6
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-balme",
+   "approach": "From the road on the Volta Hall side to the porch under the red canopy near the north end of the west face.",
+   "evidence": "Owner's photo of CEDI from the Volta side (the entrance porch with its red canopy marked) and the blue mark on the owner's aerial.",
+   "refs": [
+    "owner's marked aerial of the Balme Library surroundings",
+    "owner's photos of CEDI"
+   ],
+   "secondary": [
+    {
+     "label": "east doors under the name, toward the Balme Library",
+     "type": "pedestrian",
+     "at": [
+      -106.4,
+      25.7
+     ],
+     "evidence": "Owner's photo of CEDI from the Balme Library side: the name across the top over the doors."
+    }
+   ]
+  },
+  {
+   "place": "University of Ghana Computing Systems (UGCS)",
+   "footprint": "osm:way/130857930",
+   "entrance": {
+    "at": [
+     -111.8,
+     -32.4
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-balme",
+   "approach": "To the south face of UGCS, toward CEDI.",
+   "evidence": "Blue mark on the owner's aerial (UGCS circled purple).",
+   "refs": [
+    "owner's marked aerial of the Balme Library surroundings"
+   ]
+  },
+  {
+   "place": "Economic Policy Management Programme Office",
+   "footprint": "osm:way/492099503",
+   "entrance": {
+    "at": [
+     -124.6,
+     67.5
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-balme",
+   "approach": "Along the gap between the office and the Faculty of Arts to the notch in the middle of the office's south face.",
+   "evidence": "Blue mark on the owner's aerial.",
+   "refs": [
+    "owner's marked aerial of the Balme Library surroundings"
+   ],
+   "via": [
+    [
+     -147,
+     74.5
+    ],
+    [
+     -124.6,
+     74.5
+    ]
+   ]
+  },
+  {
+   "place": "Faculty of Arts, Languages",
+   "footprint": "osm:way/440338448",
+   "entrance": {
+    "at": [
+     -161,
+     98.3
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-balme",
+   "approach": "To the west end of the north face.",
+   "evidence": "Blue mark on the owner's aerial (circled red: two floors).",
+   "refs": [
+    "owner's marked aerial of the Balme Library surroundings"
+   ]
+  },
+  {
+   "place": "Office of The Dean of Students",
+   "footprint": "osm:way/448104181",
+   "entrance": {
+    "at": [
+     -55.6,
+     58.9
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-balme",
+   "approach": "To the middle of the south face.",
+   "evidence": "Blue mark on the owner's aerial (circled black: a ground floor only).",
+   "refs": [
+    "owner's marked aerial of the Balme Library surroundings"
+   ]
+  },
+  {
+   "place": "Legon Post Office",
+   "footprint": "osm:way/448104184",
+   "entrance": {
+    "at": [
+     -58.6,
+     93.7
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-balme",
+   "approach": "To the middle of the north face, across from the Dean of Students.",
+   "evidence": "Blue mark on the owner's aerial (circled black: a ground floor only).",
+   "refs": [
+    "owner's marked aerial of the Balme Library surroundings"
+   ]
+  },
+  {
+   "place": "Department of Economics, University of Ghana",
+   "footprint": "osm:way/278303013",
+   "entrance": {
+    "at": [
+     -44,
+     75.7
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-balme",
+   "approach": "To the middle of the west face.",
+   "evidence": "Blue mark on the owner's aerial (circled red: two floors).",
+   "refs": [
+    "owner's marked aerial of the Balme Library surroundings"
+   ]
+  },
+  {
+   "place": "University of Ghana Bookshop",
+   "footprint": "osm:way/278303014",
+   "entrance": {
+    "at": [
+     58.9,
+     74.7
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-balme",
+   "approach": "To the middle of the east face, on the road.",
+   "evidence": "Blue mark on the owner's aerial (circled red: two floors).",
+   "refs": [
+    "owner's marked aerial of the Balme Library surroundings"
+   ]
+  },
+  {
+   "place": "Standard Chartered",
+   "footprint": "osm:way/448104189",
+   "entrance": {
+    "at": [
+     70.2,
+     94.7
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-balme",
+   "approach": "To the west door on the north face of the bank building south of the Bookshop.",
+   "evidence": "Owner: one-floor building with Standard Chartered on the left (west) and Absa on the right by the road; the doors marked blue on the north face.",
+   "refs": [
+    "owner's marked aerial of the Balme Library surroundings"
+   ]
+  },
+  {
+   "place": "Absa (near Balme Library Fountain)",
+   "footprint": "osm:way/448104189",
+   "entrance": {
+    "at": [
+     78,
+     94.7
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-balme",
+   "approach": "To the east door on the north face, by the road.",
+   "evidence": "Owner: Absa is on the right, close to the road; its door marked blue on the north face.",
+   "refs": [
+    "owner's marked aerial of the Balme Library surroundings"
+   ]
+  },
+  {
+   "place": "Standard Chartered ATM (near Balme Library Fountain)",
+   "footprint": "osm:way/448104189",
+   "entrance": {
+    "at": [
+     70.2,
+     106.3
+    ]
+   },
+   "type": "atm",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-balme",
+   "approach": "To the ATMs on the south face of the bank building, toward Legon Hall and Akuafo Hall.",
+   "evidence": "Owner: Standard Chartered's ATM is on the other side of the building, facing Legon Hall and Akuafo Hall.",
+   "refs": [
+    "owner's marked aerial of the Balme Library surroundings"
    ]
   }
  ],

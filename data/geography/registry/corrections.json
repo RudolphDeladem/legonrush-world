@@ -1029,6 +1029,41 @@
       "levels": 1,
       "height": 3.5,
       "reason": "Owner: the small one-floor building between the CC and the SRC Union Building houses Standard Chartered's ATMs."
+    },
+    {
+      "id": "osm:way/278303013",
+      "place": "Department of Economics, University of Ghana",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner's marked aerial of the Balme Library surroundings: circled red, two floors."
+    },
+    {
+      "id": "osm:way/440338448",
+      "place": "Faculty of Arts, Languages",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner's marked aerial of the Balme Library surroundings: circled red, two floors."
+    },
+    {
+      "id": "osm:way/448104181",
+      "place": "Office of The Dean of Students",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's marked aerial of the Balme Library surroundings: circled black, a ground floor only."
+    },
+    {
+      "id": "osm:way/448104184",
+      "place": "Legon Post Office",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's marked aerial of the Balme Library surroundings: circled black, a ground floor only."
+    },
+    {
+      "id": "osm:way/670708229",
+      "place": "Cedi Conference Centre",
+      "levels": 2,
+      "height": 13,
+      "reason": "Owner's photos (west and east faces, top view): two tall storeys of white wall under a pink hipped roof inside a white parapet; modelled in src/game/balme.ts."
     }
   ],
   "reclass": [
