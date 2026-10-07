@@ -300,7 +300,7 @@
    "ha": 1.2
   },
   "parking": {
-   "count": 80,
+   "count": 81,
    "ha": 8.9
   },
   "track": {
@@ -309,14 +309,14 @@
   }
  },
  "places": {
-  "total": 435,
+  "total": 436,
   "fromOsm": 392,
   "fromUgCampusMap": 38,
-  "addedFromRegistry": 5,
+  "addedFromRegistry": 6,
   "movedToRegistryPosition": 7,
   "byConfidence": {
    "high": 143,
-   "medium": 288,
+   "medium": 289,
    "low": 4
   },
   "requiredNamesChecked": 152,
@@ -2493,6 +2493,23 @@
    },
    "claims": [],
    "notes": "Owner: the Diaspora Dome, across the road north-west of the Lizalex Quadrangle (between Alexander Kwapong and Elizabeth Sey halls): single-storey white marquee halls round a lawn with a round plaza. Placed from the owner's labelled map and aerial (the halls are identical, so the aerial is tied to Kwapong, the hall the map shows beside it)."
+  },
+  {
+   "id": "bank-stanchart-src",
+   "name": "Standard Chartered ATM (near SRC Union Building)",
+   "category": "commercial",
+   "importance": 3,
+   "geometry": "measured:bank-stanchart-src",
+   "lat": 5.646928,
+   "lng": -0.187518,
+   "x": -46,
+   "z": 539,
+   "elevationM": 89,
+   "confidence": "medium",
+   "sourcesAgreeingWithin150m": [],
+   "sources": {},
+   "claims": [],
+   "notes": "Owner: the small one-floor building between the CC and the SRC Union Building houses Standard Chartered's ATMs."
   }
  ],
  "zones": [
@@ -2532,7 +2549,7 @@
    "kind": "residence",
    "ha": 51,
    "shareOutsideCampus": 0,
-   "places": 53,
+   "places": 54,
    "buildings": 163,
    "anchorsMissing": []
   },

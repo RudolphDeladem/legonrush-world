@@ -980,6 +980,55 @@
       "levels": 2,
       "height": 8,
       "reason": "Owner: Legon Hall Annex C, the long block and its wings west of Annex A and B (circled on the owner's top view), has two floors."
+    },
+    {
+      "id": "osm:way/278303068",
+      "place": "Mensah Sarbah Annex A",
+      "levels": 6,
+      "height": 20,
+      "reason": "Owner: Mensah Sarbah's annexes are the same as Akuafo's; A and B have six floors with shops on the ground floor of the long block."
+    },
+    {
+      "id": "osm:way/278303049",
+      "place": "Mensah Sarbah Annex B",
+      "levels": 6,
+      "height": 20,
+      "reason": "Owner: Mensah Sarbah's annexes are the same as Akuafo's; A and B have six floors with shops on the ground floor of the long block."
+    },
+    {
+      "id": "osm:way/278303055",
+      "place": "Mensah Sarbah Annex C",
+      "levels": 4,
+      "height": 14,
+      "reason": "Owner: Mensah Sarbah's annexes are the same as Akuafo's; C and D have four floors."
+    },
+    {
+      "id": "osm:way/278303047",
+      "place": "Mensah Sarbah Annex D",
+      "levels": 4,
+      "height": 14,
+      "reason": "Owner: Mensah Sarbah's annexes are the same as Akuafo's; C and D have four floors."
+    },
+    {
+      "id": "osm:way/278303032",
+      "place": "Central Cafeteria, CC",
+      "levels": 2,
+      "height": 10,
+      "reason": "Owner: the CC has two floors, the ground floor half sunk (shops, a clinic, eating places) and the main floor above, reached up the stepped terrace and the stair."
+    },
+    {
+      "id": "osm:relation/3697978",
+      "place": "SRC Union Building",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner: the SRC Union Building opposite the CC has one floor."
+    },
+    {
+      "id": "osm:way/744967425",
+      "place": "Standard Chartered ATM (near SRC Union Building)",
+      "levels": 1,
+      "height": 3.5,
+      "reason": "Owner: the small one-floor building between the CC and the SRC Union Building houses Standard Chartered's ATMs."
     }
   ],
   "reclass": [
@@ -1281,6 +1330,29 @@
         ]
       ],
       "reason": "Owner's aerial of the School of Law and International House with the wooded zones circled (registered to the OSM footprints at 4.4 px/m)."
+    },
+    {
+      "id": "owner:cc-union-parking",
+      "class": "parking",
+      "ring": [
+        [
+          -51.5,
+          519.6
+        ],
+        [
+          -38.6,
+          519.6
+        ],
+        [
+          -38.6,
+          531.8
+        ],
+        [
+          -51.5,
+          531.8
+        ]
+      ],
+      "reason": "Owner's aerial of the CC and the SRC Union Building: a few cars park between the two buildings, north of the Standard Chartered ATM building."
     }
   ],
   "addWays": [

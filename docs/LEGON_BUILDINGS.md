@@ -19,9 +19,10 @@ the map still use it), the generic builder skips it, and its model is placed on 
 | 9 | Volta Hall and the Volta Hall Annex | `src/game/volta.ts`, `src/game/relief.ts` | owner's marked aerial (registered), photos (3) |
 | 10 | Mensah Sarbah Hall, Akuafo Hall, Legon Hall | `src/game/greathalls.ts`, `src/game/rectilinear.ts` | owner's photos (4, entrances marked), owner's panoramas (3), UG layout aerials |
 | 11 | The Athletic Oval and its courts; Maison Française one floor | `src/game/athletics.ts` | owner's panoramas (2), registered atlas |
-| 12 | Legon Hall Annex A, B, C and Akuafo Hall Annex A, B, C, D | `src/game/annexes.ts` | owner's photos (4) and top views (2), entrances marked |
+| 12 | Legon Hall Annex A, B, C, Akuafo Hall Annex A, B, C, D and Mensah Sarbah Annex A, B, C, D | `src/game/annexes.ts` | owner's photos (5) and top views (2), entrances marked |
+| 13 | Central Cafeteria (CC), SRC Union Building, Standard Chartered ATM building | `src/game/cc.ts` | owner's photos and aerials (4), entrances marked |
 
-Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 to 12) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
+Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 to 13) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
 
 ## 1. The Diaspora halls
 
@@ -415,7 +416,7 @@ drawn by the model instead of as flat areas, `Spec.covers`).
 - Five satellite-detected outlines drawn as buildings on the pitch, the courts and the strip between them are
   excluded (`corrections.json → exclude`); satellite-detected outlines can now take a height from the owner too.
 
-## 12. The Legon Hall and Akuafo Hall annexes
+## 12. The Legon Hall, Akuafo Hall and Mensah Sarbah Hall annexes
 
 Either side of the Athletic Oval (owner's photos and top views, entrances marked).
 
@@ -434,6 +435,24 @@ Either side of the Athletic Oval (owner's photos and top views, entrances marked
 - **Legon Annex C** (the Graduate Hostel, circled by the owner): the long block west of A and B with its wings,
   **two floors**, dark roofs; its gate on the long block's east face (owner's mark).
 - The long rectangular building mapped on the lawns east of Annex C does not exist (owner) and is excluded.
+
+- **Mensah Sarbah Annex A, B, C and D** (east of the hall, just past Akuafo's): the same four buildings as Akuafo's,
+  laid out, labelled, painted and entered the same way (owner): A and B six floors facing each other, C and D four
+  floors facing each other across the lawn.
+
+## 13. The Central Cafeteria (CC), the SRC Union Building and the Standard Chartered ATM
+
+South of the Athletic Oval (owner's photos and aerials).
+
+- **CC:** **two floors**. The ground floor is half sunk, like a basement, with shops, a clinic and eating places;
+  the main floor above is reached up the broad **stepped terrace** along the north side (toward the oval road),
+  with **many doors** along the top of it (owner's marks; the CC's entrance is there), and by the straight stair on
+  the west end beside a green canopy. Tall dark windows under a deep overhanging shallow roof of faded pink sheeting
+  on V-shaped concrete brackets.
+- **SRC Union Building**, opposite the CC on the west: **one floor** round a planted courtyard, red tile roof, its
+  door toward the CC.
+- Between them, **a few parked cars** and the small one-floor **Standard Chartered ATM** building (a new place on the
+  map), its ATMs facing the CC.
 
 ## Explore: drone view
 

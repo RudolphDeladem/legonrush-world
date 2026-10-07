@@ -15,6 +15,9 @@
 // side (D's has a plain white front and water tanks). Their entrances face each other in the middle of
 // the court sides (owner's blue mark on C).
 //
+// Mensah Sarbah's annexes A, B, C and D (east of the hall) are the same four buildings as Akuafo's, laid
+// out and labelled the same way (owner).
+//
 // Legon Annex C (the Graduate Hostel) west of Legon's A and B: two storeys, a long block with wings on
 // its west side, dark roofs; its gate on the east face (owner's blue mark).
 import * as THREE from 'three';
@@ -218,7 +221,7 @@ const legonC = (() => {
   return spec;
 })();
 
-/** Legon Hall's and Akuafo Hall's annexes */
+/** Legon Hall's, Akuafo Hall's and Mensah Sarbah Hall's annexes */
 export const annexes = createSite('annexes', [
   tall({ name: 'Legon Hall Annex A', slab: [-174.3, -115.9, 424.8, 432.9], tower: [-150, -130.1, 411.7, 424.8], door: [-120.5, 424.8], doorFace: 'north', rail: '#3e4248', piers: '#e8e7e2', gallery: LEGON_GALLERY, shops: false }),
   tall({ name: 'Legon Hall Annex B', slab: [-175.9, -115.4, 538.1, 547.1], tower: [-161, -142.6, 524, 538.1], door: [-120.5, 538.1], doorFace: 'north', rail: '#3e4248', piers: '#e8e7e2', gallery: LEGON_GALLERY, shops: false }),
@@ -227,4 +230,9 @@ export const annexes = createSite('annexes', [
   courtBlock('Akuafo Hall Annex C', [196.6, 207.2, 452.7, 514.3], [207.2, 220.9, 480.2, 499.5], [196.6, 483.5], 'x0', false),
   courtBlock('Akuafo Hall Annex D', [130.6, 142, 458.4, 518.1], [118.3, 130.6, 474.7, 494.3], [142, 488], 'x1', true),
   legonC,
+  // Mensah Sarbah's annexes, east of the hall: the same four buildings as Akuafo's, labelled the same way (owner)
+  tall({ name: 'Mensah Sarbah Annex A', slab: [148.8, 211, 652.3, 662.9], tower: [175.4, 185.7, 635.6, 652.3], door: [180.5, 662.9], doorFace: 'south', rail: '#2f8a86', piers: '#2d5fa8', gallery: AKUAFO_GALLERY, shops: true }),
+  tall({ name: 'Mensah Sarbah Annex B', slab: [149.5, 211.7, 765.9, 776.5], tower: [176.1, 186.4, 749.3, 765.9], door: [181.2, 749.3], doorFace: 'north', rail: '#2f8a86', piers: '#2d5fa8', gallery: AKUAFO_GALLERY, shops: true }),
+  courtBlock('Mensah Sarbah Annex C', [191.9, 202.8, 678, 741.7], [202.8, 216.1, 705, 726.2], [191.9, 709.8], 'x0', false),
+  courtBlock('Mensah Sarbah Annex D', [155.5, 166.9, 678.4, 738.2], [143.1, 155.5, 694.7, 714.3], [166.9, 708.3], 'x1', true),
 ]);

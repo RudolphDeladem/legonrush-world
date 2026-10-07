@@ -20,7 +20,8 @@
   "owner-commonwealth": "The owner's photos of Commonwealth Hall (the gate houses and stairway from the road, the stairs, the main entrance with its gate marked, the front from above) and its aerial with the two- and three-storey parts marked, registered to the OSM footprints (1 px/m, front to the east)",
   "owner-volta": "The owner's aerial of Volta Hall with the entrance marked (blue) and the storeys described, registered to the OSM footprints (0.27 m/px, north up), and photos of the entrance up its steps (marked), the front buildings either side of the climb, and the Annex.",
   "owner-sarbah-akuafo-legon": "The owner's photos of Mensah Sarbah Hall (the front from above with the entrance building and its gate marked, the entrance building from the court with its two side doors marked), of the Akuafo Hall entrance (gate marked) and of the Legon Hall entrance (gate marked).",
-  "owner-annexes": "The owner's photos and top views of the Legon Hall annexes (Annex B's gallery face with the entrance marked; the top view of Annex A, B and C with the entrances marked and Annex C circled) and the Akuafo Hall annexes (an aerial of the four with A and B, C and D circled and C's entrance marked; a photo of a tall annex's gallery face; Annex A with its entrance marked)."
+  "owner-annexes": "The owner's photos and top views of the Legon Hall annexes (Annex B's gallery face with the entrance marked; the top view of Annex A, B and C with the entrances marked and Annex C circled) and the Akuafo Hall annexes (an aerial of the four with A and B, C and D circled and C's entrance marked; a photo of a tall annex's gallery face; Annex A with its entrance marked).",
+  "owner-sarbah-annexes-cc": "The owner's aerial of Mensah Sarbah's annexes (the same as Akuafo's), and photos and aerials of the CC (its terrace and doors marked), the SRC Union Building opposite and the Standard Chartered ATM building between them."
  },
  "campusGates": [
   {
@@ -710,21 +711,6 @@
    ]
   },
   {
-   "place": "Central Cafeteria, CC",
-   "entrance": {
-    "side": "south"
-   },
-   "type": "public entrance",
-   "status": "partial",
-   "confidence": "medium",
-   "cite": "univers-level100",
-   "approach": "From the road between the CC and Mensah Sarbah Hall.",
-   "evidence": "Radio Univers: CC is 'right in front of Mensah Sarbah Hall and opposite Athletic Oval' (Sarbah lies south). Door not visible.",
-   "refs": [
-    "atlas sheet 2"
-   ]
-  },
-  {
    "place": "International Students Hostel 1, ISH 1",
    "entrance": {
     "at": [
@@ -1270,6 +1256,101 @@
    "evidence": "Owner: Annex C and D face each other, so D's entrance is in the middle of its east face, opposite C's (marked on the owner's aerial).",
    "refs": [
     "owner's annex photos and top views (entrances marked)"
+   ]
+  },
+  {
+   "place": "Mensah Sarbah Annex A",
+   "footprint": "osm:way/278303068",
+   "entrance": {
+    "at": [
+     180.5,
+     662.9
+    ]
+   },
+   "type": "hall entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-sarbah-annexes-cc",
+   "approach": "To the ground-floor entrance on the south face, in line with the stair tower.",
+   "evidence": "Owner: Mensah Sarbah's annexes are laid out and labelled like Akuafo's: A and B face each other, entered in line with the stair tower; A's entrance on the south face, toward B.",
+   "refs": [
+    "owner's photos and aerials"
+   ]
+  },
+  {
+   "place": "Mensah Sarbah Annex B",
+   "footprint": "osm:way/278303049",
+   "entrance": {
+    "at": [
+     181.2,
+     749.3
+    ]
+   },
+   "type": "hall entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-sarbah-annexes-cc",
+   "approach": "To the entrance at the foot of the stair tower, on the north face.",
+   "evidence": "Owner: as at Akuafo, B's entrance is at the foot of its stair tower on the north face, toward A.",
+   "refs": [
+    "owner's photos and aerials"
+   ]
+  },
+  {
+   "place": "Mensah Sarbah Annex C",
+   "footprint": "osm:way/278303055",
+   "entrance": {
+    "at": [
+     191.9,
+     709.8
+    ]
+   },
+   "type": "hall entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-sarbah-annexes-cc",
+   "approach": "Across the lawn between C and D to the middle of C's west face.",
+   "evidence": "Owner: as at Akuafo, C and D face each other across the lawn; C's entrance in the middle of its west face.",
+   "refs": [
+    "owner's photos and aerials"
+   ]
+  },
+  {
+   "place": "Mensah Sarbah Annex D",
+   "footprint": "osm:way/278303047",
+   "entrance": {
+    "at": [
+     166.9,
+     708.3
+    ]
+   },
+   "type": "hall entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-sarbah-annexes-cc",
+   "approach": "Across the lawn between C and D to the middle of D's east face.",
+   "evidence": "Owner: as at Akuafo, D's entrance in the middle of its east face, opposite C's.",
+   "refs": [
+    "owner's photos and aerials"
+   ]
+  },
+  {
+   "place": "Central Cafeteria, CC",
+   "footprint": "osm:way/278303032",
+   "entrance": {
+    "at": [
+     -14,
+     515.7
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-sarbah-annexes-cc",
+   "approach": "From the road along the oval up the stepped terrace to the doors of the main floor.",
+   "evidence": "Owner's aerial (entrance marked) and photo (the doors marked): the stepped terrace along the north side climbs to the main floor, with many doors along the top of it; the ground floor below is half sunk.",
+   "refs": [
+    "owner's photos and aerials"
    ]
   }
  ],

@@ -167,7 +167,15 @@ try {
     if (!e || Math.hypot(e[0] - x, e[1] - z) > 2) fail(`${n}: the entrance is not where the owner marks it`);
   }
   if (buildingAt(-124, 492)) fail('Legon Hall annexes: a building stands on the lawns east of Annex C (the owner: there is none)');
-  if ((await server.ssrLoadModule('/src/game/annexes.ts')).annexes.frames().length !== 7) fail('expected the seven annex models');
+  if ((await server.ssrLoadModule('/src/game/annexes.ts')).annexes.frames().length !== 11) fail('expected the eleven annex models (Legon, Akuafo, Mensah Sarbah)');
+  for (const [n, x, z] of [['Mensah Sarbah Annex A', 180.5, 662.9], ['Mensah Sarbah Annex B', 181.2, 749.3], ['Mensah Sarbah Annex C', 191.9, 709.8], ['Mensah Sarbah Annex D', 166.9, 708.3], ['Central Cafeteria, CC', -14, 515.7]]) {
+    const e = ann(n);
+    if (!e || Math.hypot(e[0] - x, e[1] - z) > 2) fail(`${n}: the entrance is not where the owner marks it`);
+  }
+  // the CC (two floors), the SRC Union Building (one) and the Standard Chartered ATM building between them (owner)
+  const cc = BUILDINGS.find((b) => b.name === 'Central Cafeteria, CC'), src = BUILDINGS.find((b) => b.name === 'SRC Union Building');
+  if (!cc || cc.height > 11 || !src || src.height > 5) fail('the CC is not two floors or the SRC Union Building not one');
+  if (!placeByName('Standard Chartered ATM (near SRC Union Building)')) fail('the Standard Chartered ATM building between the CC and the Union Building is missing');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)
   for (const [x, z] of [[95, 1573], [-88, 1676], [210, 1509], [200, 1500]]) if (cm.buildingNear(x, z, 0.35)) fail(`free ride: the road at ${x},${z} is blocked by ${cm.buildingNear(x, z, 0.35).name ?? 'a building'}`);

@@ -1,19 +1,19 @@
 {
- "destinations": 435,
+ "destinations": 436,
  "byMethod": {
-  "curated": 52,
+  "curated": 56,
   "osm-entrance": 1,
   "gate": 2,
-  "path-access": 4,
-  "drive-access": 19,
+  "path-access": 3,
+  "drive-access": 18,
   "area-entry": 8,
-  "frontage": 237,
+  "frontage": 236,
   "point": 112
  },
  "byConfidence": {
-  "high": 45,
-  "medium": 150,
-  "low": 240
+  "low": 239,
+  "high": 50,
+  "medium": 147
  },
  "campusGates": 5,
  "problems": [],
@@ -258,8 +258,8 @@
   },
   {
    "place": "Central Cafeteria, CC",
-   "status": "partial",
-   "confidence": "medium",
+   "status": "verified",
+   "confidence": "high",
    "method": "curated"
   },
   {
@@ -360,11 +360,11 @@
   }
  ],
  "byStatus": {
-  "verified": 42,
-  "partial": 10,
+  "inferred": 230,
+  "verified": 47,
+  "partial": 9,
   "unverified": 10,
-  "inferred": 231,
-  "mapped": 142
+  "mapped": 140
  },
  "curated": [
   {
@@ -560,8 +560,8 @@
    "place": "Central Cafeteria, CC",
    "type": "public entrance",
    "arrivalOn": "residential",
-   "arrivalDistance": 9,
-   "facing": 0
+   "arrivalDistance": 11.4,
+   "facing": 180
   },
   {
    "place": "Jones Quartey Building, JQB",
@@ -571,11 +571,32 @@
    "facing": 287
   },
   {
+   "place": "Mensah Sarbah Annex D",
+   "type": "hall entrance",
+   "arrivalOn": "path",
+   "arrivalDistance": 3.9,
+   "facing": 267
+  },
+  {
+   "place": "Mensah Sarbah Annex B",
+   "type": "hall entrance",
+   "arrivalOn": "footway",
+   "arrivalDistance": 2.5,
+   "facing": 199
+  },
+  {
    "place": "Akuafo Hall Annex A",
    "type": "hall entrance",
    "arrivalOn": "service",
    "arrivalDistance": 4.1,
    "facing": 0
+  },
+  {
+   "place": "Mensah Sarbah Annex C",
+   "type": "hall entrance",
+   "arrivalOn": "path",
+   "arrivalDistance": 16.4,
+   "facing": 87
   },
   {
    "place": "Akuafo Hall Annex C",
@@ -590,6 +611,13 @@
    "arrivalOn": "service",
    "arrivalDistance": 1.4,
    "facing": 271
+  },
+  {
+   "place": "Mensah Sarbah Annex A",
+   "type": "hall entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 1,
+   "facing": 360
   },
   {
    "place": "Akuafo Hall Annex B",
