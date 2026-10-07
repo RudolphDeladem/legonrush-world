@@ -74,6 +74,13 @@ const PRIORITY_FP = (p) => {
   const f = fpById.get(p.footprint);
   return f ? flat(open(f.geometry.coordinates[0])) : null;
 };
+// secondary entrances (a hall's back entrance, service doors): shown, not routed to
+const SECONDARY = new Map();
+for (const f of accessFc.features.filter((g) => g.properties.role === 'secondary-entrance')) {
+  const list = SECONDARY.get(f.properties.place) ?? [];
+  list.push(...pt(f.geometry.coordinates).map(dm));
+  SECONDARY.set(f.properties.place, list);
+}
 const access = ACCESS.map((f) => {
   const p = f.properties;
   const a = nodeAt(p.arrival), d = p.dropoff ? nodeAt(p.dropoff) : a;
@@ -85,6 +92,7 @@ const access = ACCESS.map((f) => {
     // forecourt waypoints from the arrival point to the entrance
     ...(p.via && { v: p.via.flatMap((c) => pt(c).map(dm)) }),
     ...(fpRing && { fp: fpRing }),
+    ...(SECONDARY.has(p.place) && { b: SECONDARY.get(p.place) }),
   };
 }).sort((x, y) => (x.n < y.n ? -1 : 1));
 const accessNodes = [...accessKeys].map((k) => nodeIndex.get(k)).filter((i) => i !== undefined).sort((x, y) => x - y);

@@ -41,7 +41,7 @@ BUILDING → ENTRANCE → FORECOURT → ACCESS PATH → ARRIVAL POINT (road/path
 `npm run test:routes` fails if a priority destination is left as mapped/inferred, if a verified entrance is
 not high confidence, or if any non-verified, non-mapped entrance claims high confidence.
 
-**Priority destinations: 39 — verified 10, partial 18, unverified 11.**
+**Priority destinations: 39 — verified 14, partial 14, unverified 11.** (The four Diaspora halls moved from partial to verified with the owner's photos; see below.)
 
 ## Entrance verification table (BEFORE → AFTER)
 
@@ -63,10 +63,10 @@ Coordinates are game-frame metres (x east, z south of the datum 5.6518 N, 0.1871
 | Akuafo Hall Main | area-entry at (204, 224), arriving on service | medium | hall entrance at (160, 156) | footway | (160, 146), facing 176° | **verified** · high | 81 m |
 | Mensah Sarbah Hall | curated at (11, 609), arriving on service | medium | hall entrance (porters' lodge) at (11, 609) | service | (5, 598), facing 153° | **verified** · high | 0 m |
 | Volta Hall | frontage at (-259, -4), arriving on service | low | hall entrance at (-259, 0) | service | (-248, 0), facing 266° | **partial** · medium | 4 m |
-| Elizabeth Frances Sey Hall | curated at (-66, 1770), arriving on service | medium | hall entrance at (-66, 1770) | service | (-95, 1785), facing 61° | **partial** · medium | 0 m |
-| Alexander Kwapong Hall | frontage at (146, 1563), arriving on Jubilee Link | low | hall entrance at (180, 1621) | service | (205, 1607), facing 240° | **partial** · medium | 67 m |
-| Dr. Hilla Limann Hall | frontage at (266, 1495), arriving on Jubilee Link | low | hall entrance at (243, 1612) | service | (217, 1627), facing 60° | **partial** · medium | 119 m |
-| Jean Nelson Aka Hall | frontage at (-158, 1733), arriving on Jubilee Link | low | hall entrance at (-116, 1803) | service | (-92, 1790), facing 241° | **partial** · medium | 82 m |
+| Elizabeth Frances Sey Hall | partial: (-66, 1770), arriving on service | medium | hall entrance at (-64, 1774), back entrance at (4, 1734) | service | (-93, 1789), facing 61° | **verified** · high | 4 m |
+| Alexander Kwapong Hall | partial: (180, 1621), arriving on service | medium | hall entrance at (186, 1631), back entrance at (117, 1670) | service | (210, 1616), facing 240° | **verified** · high | 11 m |
+| Dr. Hilla Limann Hall | partial: (243, 1612), arriving on service | medium | hall entrance at (238, 1602), back entrance at (306, 1563) | service | (211, 1618), facing 60° | **verified** · high | 11 m |
+| Jean Nelson Aka Hall | partial: (-116, 1803), arriving on service | medium | hall entrance at (-118, 1800), back entrance at (-186, 1840) | service | (-94, 1787), facing 241° | **verified** · high | 3 m |
 | Pentagon Block A | frontage at (505, -612), arriving on Annie Jiagge Road | low | inferred frontage at (505, -612) | Annie Jiagge Road | (500, -612), facing 91° | **unverified** · low | 0 m |
 | Jubilee Hall | frontage at (38, 1204), arriving on Diaspora Path | low | hall entrance at (134, 1301) | Diaspora Path | (164, 1301), facing 267° | **verified** · high | 136 m |
 | School of Engineering Sciences | frontage at (458, -380), arriving on service | low | public entrance at (453, -380) | service | (453, -377), facing 358° | **verified** · high | 5 m |
@@ -197,33 +197,25 @@ Coordinates are game-frame metres (x east, z south of the datum 5.6518 N, 0.1871
 - **References:** `volta_hall_layout_labeled.png`, `volta_hall_entrance_labeled.png`
 - **Correction:** moved 4 m from the previous frontage entrance (low confidence).
 
-### Elizabeth Frances Sey Hall — PARTIAL
+### The Diaspora halls (Dr. Hilla Limann, Alexander Kwapong, Elizabeth Frances Sey, Jean Nelson Aka) — VERIFIED
 
-- **Entrance:** hall entrance; From Jubilee Link into the car park shared with Jean Nelson Aka Hall.
-- **Evidence:** OSM names the car park on the hall's south-west side 'Sey frontage' (way 765261438); atlas sheet 1 shows it shared with JNA. The door's position along the facade is not visible.
-- **References:** atlas sheet 1
-- **Correction:** confirmed (no move).
-
-### Alexander Kwapong Hall — PARTIAL
-
-- **Entrance:** hall entrance; Into the car parks shared with Hilla Limann Hall.
-- **Evidence:** Atlas sheet 1: Kwapong and Limann face each other across shared car parks (OSM ways 758589789-792). Kwapong also has a car park on its south-west side (765261445), so the main door side is not certain.
-- **References:** atlas sheet 1
-- **Correction:** moved 67 m from the previous frontage entrance (low confidence).
-
-### Dr. Hilla Limann Hall — PARTIAL
-
-- **Entrance:** hall entrance; Into the car parks shared with Alexander Kwapong Hall.
-- **Evidence:** Atlas sheet 1: Limann and Kwapong face each other across shared car parks (OSM ways 758589789-792). Door position not visible.
-- **References:** atlas sheet 1
-- **Correction:** moved 119 m from the previous frontage entrance (low confidence).
-
-### Jean Nelson Aka Hall — PARTIAL
-
-- **Entrance:** hall entrance; Into the car park shared with Elizabeth Sey Hall.
-- **Evidence:** Atlas sheet 1: JNA and Sey face each other across shared car parks (OSM ways 765261438, 765261442). Door position not visible.
-- **References:** atlas sheet 1
-- **Correction:** moved 82 m from the previous frontage entrance (low confidence).
+- **Entrances:** front entrance in the middle of the long facade that faces the partner hall (Limann ⇄ Kwapong,
+  Sey ⇄ Jean Nelson Aka), arriving on the service road between their car parks; **back entrance** in the
+  middle of the opposite facade (shown on `/geo/` as BACK / SECONDARY ENTRANCE; not routed to).
+- **Evidence:** the owner: the four halls are one design built in facing pairs; each pair's front entrances face
+  each other with car parks in front; Limann is the first hall on the way in and faces Kwapong; every hall also
+  has a back entrance without a car park. Owner photos (an aerial of all four halls, a drone view of one hall's
+  front and courtyard, two oblique drone views, a close view of the entrance): the entrance is the projecting
+  gabled pavilion at the centre of each long facade, the fronts of a pair sit on one axis with a walkway across
+  the car parks. Atlas sheet 1 shows the shared car parks (OSM ways 758589789-792, 765261438, 765261442).
+- **Registry:** `entrance: { faces: <partner> }` and `secondary: [{ awayFrom: <partner> }]`, resolved by
+  `scripts/geography/build-access.mjs` to the middle of the matching footprint side (no hand-placed points).
+- **Correction:** the doors moved to the centre of the facade (3-11 m along the facade from the previous
+  axis-based points). The two OSM "car parks" behind Limann (way 765262747) and Kwapong (way 765261445) are now
+  paved forecourts (`registry/corrections.json → reclass`), so no parked cars stand at the back entrances.
+- **Tests:** `npm run test:routes` checks the front door is the middle of the facade facing the partner, the
+  back door the middle of the opposite facade, the pairs face each other, and rides Limann ⇄ Kwapong and
+  JNA ⇄ Sey door to door.
 
 ### Pentagon Block A — UNVERIFIED
 

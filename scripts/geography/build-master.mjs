@@ -27,6 +27,10 @@ const SRC = {
 };
 const REG = { landmarks: json(`${G}/registry/landmarks.json`), zones: json(`${G}/registry/zones.json`), naming: json(`${G}/registry/naming.json`), corrections: json(`${G}/registry/corrections.json`) };
 const SUSPECT = new Map(REG.corrections.exclude.map((e) => [e.id, e.reason]));
+/** storey counts and heights the reference photos contradict */
+const HEIGHT_FIX = new Map((REG.corrections.heights ?? []).map((e) => [e.id, e]));
+/** ground areas the reference photos show as something else (a hall's paved back forecourt mapped as a car park) */
+const RECLASS = new Map((REG.corrections.reclass ?? []).map((e) => [e.id, e]));
 const r1 = (v) => Math.round(v * 10) / 10;
 const features = [];
 const report = { sources: {}, boundary: {}, roads: {}, buildings: {}, areas: {}, places: {}, landmarks: [], zones: [], conflicts: [] };
@@ -242,9 +246,10 @@ function addBuilding(id, rings, t, src) {
   if (outer.length < 3) return;
   const c = centroid(outer);
   if (!anyInContext(outer)) return; // like the legacy extract: anything reaching into the study area
-  const [h, hSrc] = buildingHeight(t, outer);
+  const fix = HEIGHT_FIX.get(id);
+  const [h, hSrc] = fix ? [fix.height, 'reference-photos'] : buildingHeight(t, outer);
   const b = {
-    id, layer: 'building', class: buildingCategory(t), osmBuilding: t.building, name: t.name, levels: t['building:levels'] ? +t['building:levels'] : undefined,
+    id, layer: 'building', class: buildingCategory(t), osmBuilding: t.building, name: t.name, levels: fix?.levels ?? (t['building:levels'] ? +t['building:levels'] : undefined),
     height: h, heightSrc: hSrc, area: Math.round(area(outer)), orient: orientation(outer), onCampus: inCampus(c),
     src: [src], ring: outer, holes, c, box: bbox(outer),
   };
@@ -358,13 +363,14 @@ function areaClass(t) {
 }
 const areas = [];
 function addArea(id, rings, t, src) {
-  const cls = areaClass(t);
+  const fix = RECLASS.get(id);
+  const cls = fix ? [fix.class, fix.subclass] : areaClass(t);
   if (!cls || rings[0].length < 3) return;
   if (id === `osm:way/${BOUNDARY_WAY}`) return;
   const [outer, ...holes] = rings;
   const c = centroid(outer);
   if (!anyInContext(outer)) return;
-  areas.push({ id, layer: 'area', class: cls[0], subclass: cls[1], name: t.name, area: Math.round(area(outer)), conf: 'high', src: [src], ring: outer, holes, c });
+  areas.push({ id, layer: 'area', class: cls[0], subclass: cls[1], name: t.name, area: Math.round(area(outer)), conf: fix ? 'medium' : 'high', src: [src], ring: outer, holes, c, ...(fix && { note: `mapped as ${areaClass(t)?.[0] ?? 'unclassified'}; ${fix.reason}` }) });
 }
 for (const w of osm.ways.values()) {
   if (w.t.building || w.refs.length < 4 || w.refs[0] !== w.refs[w.refs.length - 1]) continue;

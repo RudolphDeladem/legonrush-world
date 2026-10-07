@@ -57,6 +57,27 @@ try {
     if (a.status === 'verified' && a.confidence !== 'high') fail(`${n}: verified but confidence ${a.confidence}`);
     if (a.status !== 'verified' && a.confidence === 'high' && !['mapped'].includes(a.status)) fail(`${n}: ${a.status} but confidence high`);
   }
+  // the Diaspora halls: front door in the middle of the facade facing the partner hall, back door in the middle of the opposite facade
+  const halls = await server.ssrLoadModule('/src/game/halls.ts');
+  const frames = halls.diasporaFrames();
+  if (frames.length !== 4) fail(`expected 4 Diaspora halls, found ${frames.length}`);
+  for (const f of frames) {
+    const a = ACCESS.get(f.name);
+    if (!a) { fail(`${f.name}: no access`); continue; }
+    const loc = ([x, z]) => [(x - f.cx) * f.ax + (z - f.cz) * f.az, (x - f.cx) * f.fx + (z - f.cz) * f.fz];
+    const [ex, ez] = loc(a.entrance);
+    if (Math.abs(ex) > 1 || Math.abs(ez - f.hz) > 1) fail(`${f.name}: front entrance is not the middle of the front facade (${ex.toFixed(1)}, ${ez.toFixed(1)})`);
+    const back = a.secondary?.[0];
+    if (!back) fail(`${f.name}: no back entrance`);
+    else { const [bx, bz] = loc(back); if (Math.abs(bx) > 1 || Math.abs(bz + f.hz) > 1) fail(`${f.name}: back entrance is not the middle of the back facade (${bx.toFixed(1)}, ${bz.toFixed(1)})`); }
+    if (a.status !== 'verified') fail(`${f.name}: entrance status ${a.status}`);
+  }
+  const partner = { 'Dr. Hilla Limann Hall': 'Alexander Kwapong Hall', 'Elizabeth Frances Sey Hall': 'Jean Nelson Aka Hall' };
+  for (const [x, y] of Object.entries(partner)) {
+    const fx = frames.find((f) => f.name === x), fy = frames.find((f) => f.name === y);
+    // fronts face each other: each hall's front axis points at the other hall
+    if (fx && fy && ((fy.cx - fx.cx) * fx.fx + (fy.cz - fx.cz) * fx.fz <= 0 || (fx.cx - fy.cx) * fy.fx + (fx.cz - fy.cz) * fy.fz <= 0)) fail(`${x} and ${y} do not face each other`);
+  }
   if (lowLegs) notes.push(`${lowLegs} low-confidence destinations have a building between the network and the entrance (enclosed courtyards / mapping gaps; listed in data/geography/access-report.json)`);
 
   // ---------- representative journeys ----------

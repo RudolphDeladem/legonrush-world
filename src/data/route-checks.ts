@@ -28,5 +28,7 @@ export const ROUTE_CHECKS: RouteCheck[] = [
   { from: 'Volta Hall', to: 'The Balme Library', maxLength: 600, expect: 'A short ride east to the library front.' },
   { from: 'Legon Main Entrance', to: 'University of Ghana Sports Stadium', maxLength: 2200, expect: 'Through campus to the stadium in the south-east.' },
   { from: 'International Students Hostel 1, ISH 1', to: 'Night Market', maxLength: 600, expect: 'The hostel and the market are neighbours.' },
+  { from: 'Dr. Hilla Limann Hall', to: 'Alexander Kwapong Hall', maxLength: 250, expect: 'Front door to front door: Limann and Kwapong face each other across their car parks.' },
+  { from: 'Jean Nelson Aka Hall', to: 'Elizabeth Frances Sey Hall', maxLength: 250, expect: 'Front door to front door: JNA and Sey face each other across their car parks.' },
   { from: 'Elizabeth Frances Sey Hall', to: 'Jones Quartey Building, JQB', maxLength: 3200, expect: 'From the southern halls (leaving by the Sey frontage) north to JQB by the Main Gate.' },
 ];

@@ -369,6 +369,12 @@ function drawAccess(name: string, label: (t: string, x: number, y: number, col: 
   ctx.fillStyle = STATUS_COL[a.status]; ctx.strokeStyle = '#05070f'; ctx.lineWidth = 2;
   ctx.beginPath(); ctx.moveTo(ex, ey - 8); ctx.lineTo(ex + 8, ey); ctx.lineTo(ex, ey + 8); ctx.lineTo(ex - 8, ey); ctx.closePath(); ctx.fill(); ctx.stroke();
   label(`ENTRANCE · ${a.type} · ${a.status}`, ex + 10, ey - 10, STATUS_COL[a.status], 11, true);
+  for (const [sx, sz] of a.secondary ?? []) {
+    const [px, py] = S(sx, sz);
+    ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#05070f'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(px, py - 7); ctx.lineTo(px + 7, py); ctx.lineTo(px, py + 7); ctx.lineTo(px - 7, py); ctx.closePath(); ctx.fill(); ctx.stroke();
+    label('BACK / SECONDARY ENTRANCE', px + 10, py - 10, '#ffffff', 10, true);
+  }
   // arrival, with an arrow along the approach (arrival -> first leg point)
   const [ax, ay] = leg[0], [bx, by] = leg[1];
   ctx.fillStyle = '#2ee66b'; ctx.strokeStyle = '#05070f'; ctx.beginPath(); ctx.rect(ax - 6, ay - 6, 12, 12); ctx.fill(); ctx.stroke();

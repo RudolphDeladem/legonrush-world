@@ -45,8 +45,8 @@ interface RawData {
   areas: { k: string; p: number[] }[];
   places: { n: string; k: string; x: number; z: number; l?: string[]; q?: 1 | 2 }[];
   lines: Record<string, string[]>;
-  /** destination access registry (data/geography/legon-access.geojson): e entrance (dm), a arrival node, d drop-off node, t type, f facing (deg), q confidence */
-  access: { n: string; e: [number, number]; a: number; d?: number; t: string; f: number; q?: 1 | 2; s: string; v?: number[]; fp?: number[] }[];
+  /** destination access registry (data/geography/legon-access.geojson): e entrance (dm), a arrival node, d drop-off node, t type, f facing (deg), q confidence, b secondary entrances (dm) */
+  access: { n: string; e: [number, number]; a: number; d?: number; t: string; f: number; q?: 1 | 2; s: string; v?: number[]; fp?: number[]; b?: number[] }[];
   /** nodes that exist only as access points; legacy race routing ignores them */
   accessNodes: number[];
   /** the university's named gates */
@@ -106,12 +106,14 @@ export interface Access {
   via?: [number, number][];
   /** outline of the building or area the entrance belongs to (priority destinations) */
   footprint?: [number, number][];
+  /** other entrances (a hall's back entrance): shown on the map, never routed to */
+  secondary?: [number, number][];
 }
 const STATUS = { v: 'verified', p: 'partial', u: 'unverified', m: 'mapped', i: 'inferred' } as const;
 const pairs = (f: number[]) => { const o: [number, number][] = []; for (let i = 0; i < f.length; i += 2) o.push([f[i] / 10, f[i + 1] / 10]); return o; };
 export const ACCESS = new Map<string, Access>(data.access.map((a) => [a.n, {
   entrance: [a.e[0] / 10, a.e[1] / 10], node: a.a, dropNode: a.d ?? a.a, type: ACCESS_TYPE[a.t] ?? 'point', facing: a.f, confidence: a.q === 2 ? 'low' : a.q === 1 ? 'medium' : 'high',
-  status: STATUS[a.s as keyof typeof STATUS] ?? 'inferred', ...(a.v && { via: pairs(a.v) }), ...(a.fp && { footprint: pairs(a.fp) }),
+  status: STATUS[a.s as keyof typeof STATUS] ?? 'inferred', ...(a.v && { via: pairs(a.v) }), ...(a.fp && { footprint: pairs(a.fp) }), ...(a.b && { secondary: pairs(a.b) }),
 }]));
 /** How a place is reached: its entrance and the network nodes to stop at. */
 export const accessFor = (place: Place) => ACCESS.get(place.name);

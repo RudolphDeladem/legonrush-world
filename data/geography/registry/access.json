@@ -1,5 +1,5 @@
 {
- "about": "Evidence-verified destination access for Legon. An entry here overrides the automatic evidence chain in scripts/geography/build-access.mjs and must say why. Entrances are an OSM node or gate, a point measured on the georeferenced reference atlas ('at', snapped onto the named footprint), the side of a footprint met by a mapped axis or facing a direction, or where a mapped way meets the footprint. 'status': verified (direct visual or written evidence of the entrance), partial (evidence for the side/approach but not the exact door), unverified (listed in 'priority' with no entry here: the automatic result is kept and reported, never presented as verified). 'refs' name the user-supplied reference images (UG_BUILDINGS__LAYOUTS_AND_THEIR_STRUCTURES.zip and the two satellite atlas sheets) used as evidence; coordinates are game-frame metres measured on those images after registering them to the OSM footprints (docs/LEGON_ENTRANCE_VERIFICATION.md).",
+ "about": "Evidence-verified destination access for Legon. An entry here overrides the automatic evidence chain in scripts/geography/build-access.mjs and must say why. Entrances are an OSM node or gate, a point measured on the georeferenced reference atlas ('at', snapped onto the named footprint), the side of a footprint met by a mapped axis or facing a direction, or where a mapped way meets the footprint, or the middle of the facade facing (or, for a back entrance, turned away from) another destination ('faces', 'awayFrom'). 'status': verified (direct visual or written evidence of the entrance), partial (evidence for the side/approach but not the exact door), unverified (listed in 'priority' with no entry here: the automatic result is kept and reported, never presented as verified). 'refs' name the user-supplied reference images (UG_BUILDINGS__LAYOUTS_AND_THEIR_STRUCTURES.zip and the two satellite atlas sheets) used as evidence; coordinates are game-frame metres measured on those images after registering them to the OSM footprints (docs/LEGON_ENTRANCE_VERIFICATION.md).",
  "citations": {
   "ug-legon-campus": "https://old1.ug.edu.gh/node/38",
   "ug-gates": "https://www.graphic.com.gh/news/general-news/univ-of-ghana-blocks-access-routes-to-public.html",
@@ -9,7 +9,8 @@
   "visitghana-botanical": "https://visitghana.com/?p=12576",
   "user-atlas": "Satellite campus reference atlas supplied by the project owner (2 sheets, Apple Maps imagery), registered to OSM footprints",
   "user-layouts": "UG_BUILDINGS__LAYOUTS_AND_THEIR_STRUCTURES.zip supplied by the project owner: labelled layouts and entrance photos",
-  "legon-porters-lodge": "https://gh.near-place.com/legon-hall-porters-lodge-j-b-danquah-road-accra"
+  "legon-porters-lodge": "https://gh.near-place.com/legon-hall-porters-lodge-j-b-danquah-road-accra",
+  "user-photos": "Photos of the four Diaspora halls supplied by the project owner (an aerial of all four halls, a drone view of one hall's front and courtyard, two oblique drone views of the facades, a close view of the entrance pavilion), with the owner's description of how the halls face each other"
  },
  "campusGates": [
   {
@@ -418,61 +419,113 @@
   {
    "place": "Elizabeth Frances Sey Hall",
    "entrance": {
-    "axisFrom": "osm:way/765261438"
+    "faces": "Jean Nelson Aka Hall"
    },
    "type": "hall entrance",
-   "status": "partial",
-   "confidence": "medium",
-   "cite": "user-atlas",
-   "approach": "From Jubilee Link into the car park shared with Jean Nelson Aka Hall.",
-   "evidence": "OSM names the car park on the hall's south-west side 'Sey frontage' (way 765261438); atlas sheet 1 shows it shared with JNA. The door's position along the facade is not visible.",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "user-photos",
+   "approach": "Into the car park between Sey and JNA; the front entrance is the gabled pavilion in the middle of the facade facing JNA.",
+   "evidence": "Owner: the four Diaspora halls are one design and are built in facing pairs (Limann and Kwapong, Sey and Jean Nelson); each pair's front entrances face each other across their car parks. Owner photos: the front entrance is a projecting gabled pavilion at the centre of the long facade (tall arched window above a columned porch), on the axis of the car park; the aerial of all four halls shows the facing fronts on one axis with a walkway between them.",
    "refs": [
+    "diaspora_halls_aerial_all_four (owner photo 5)",
+    "diaspora_hall_front_aerial (owner photo 1)",
+    "diaspora_halls_oblique_1 (owner photo 2)",
+    "diaspora_halls_oblique_2 (owner photo 3)",
+    "diaspora_hall_entrance_pavilion (owner photo 4)",
     "atlas sheet 1"
+   ],
+   "secondary": [
+    {
+     "label": "back entrance (no car park)",
+     "type": "hall entrance",
+     "awayFrom": "Jean Nelson Aka Hall",
+     "evidence": "Owner: every hall also has a back entrance, without a car park. Owner photos: the same gabled pavilion sits at the centre of the opposite long facade."
+    }
    ]
   },
   {
    "place": "Jean Nelson Aka Hall",
    "entrance": {
-    "axisFrom": "osm:way/765261442"
+    "faces": "Elizabeth Frances Sey Hall"
    },
    "type": "hall entrance",
-   "status": "partial",
-   "confidence": "medium",
-   "cite": "user-atlas",
-   "approach": "Into the car park shared with Elizabeth Sey Hall.",
-   "evidence": "Atlas sheet 1: JNA and Sey face each other across shared car parks (OSM ways 765261438, 765261442). Door position not visible.",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "user-photos",
+   "approach": "Into the car park between JNA and Sey; the front entrance is the gabled pavilion in the middle of the facade facing Sey.",
+   "evidence": "Owner: the four Diaspora halls are one design and are built in facing pairs (Limann and Kwapong, Sey and Jean Nelson); each pair's front entrances face each other across their car parks. Owner photos: the front entrance is a projecting gabled pavilion at the centre of the long facade (tall arched window above a columned porch), on the axis of the car park; the aerial of all four halls shows the facing fronts on one axis with a walkway between them.",
    "refs": [
+    "diaspora_halls_aerial_all_four (owner photo 5)",
+    "diaspora_hall_front_aerial (owner photo 1)",
+    "diaspora_halls_oblique_1 (owner photo 2)",
+    "diaspora_halls_oblique_2 (owner photo 3)",
+    "diaspora_hall_entrance_pavilion (owner photo 4)",
     "atlas sheet 1"
+   ],
+   "secondary": [
+    {
+     "label": "back entrance (no car park)",
+     "type": "hall entrance",
+     "awayFrom": "Elizabeth Frances Sey Hall",
+     "evidence": "Owner: every hall also has a back entrance, without a car park. Owner photos: the same gabled pavilion sits at the centre of the opposite long facade."
+    }
    ]
   },
   {
    "place": "Alexander Kwapong Hall",
    "entrance": {
-    "side": "northeast"
+    "faces": "Dr. Hilla Limann Hall"
    },
    "type": "hall entrance",
-   "status": "partial",
-   "confidence": "medium",
-   "cite": "user-atlas",
-   "approach": "Into the car parks shared with Hilla Limann Hall.",
-   "evidence": "Atlas sheet 1: Kwapong and Limann face each other across shared car parks (OSM ways 758589789-792). Kwapong also has a car park on its south-west side (765261445), so the main door side is not certain.",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "user-photos",
+   "approach": "Into the car park between Kwapong and Limann; the front entrance is the gabled pavilion in the middle of the facade facing Limann.",
+   "evidence": "Owner: the four Diaspora halls are one design and are built in facing pairs (Limann and Kwapong, Sey and Jean Nelson); each pair's front entrances face each other across their car parks. Owner photos: the front entrance is a projecting gabled pavilion at the centre of the long facade (tall arched window above a columned porch), on the axis of the car park; the aerial of all four halls shows the facing fronts on one axis with a walkway between them.",
    "refs": [
+    "diaspora_halls_aerial_all_four (owner photo 5)",
+    "diaspora_hall_front_aerial (owner photo 1)",
+    "diaspora_halls_oblique_1 (owner photo 2)",
+    "diaspora_halls_oblique_2 (owner photo 3)",
+    "diaspora_hall_entrance_pavilion (owner photo 4)",
     "atlas sheet 1"
+   ],
+   "secondary": [
+    {
+     "label": "back entrance (no car park)",
+     "type": "hall entrance",
+     "awayFrom": "Dr. Hilla Limann Hall",
+     "evidence": "Owner: every hall also has a back entrance, without a car park. Owner photos: the same gabled pavilion sits at the centre of the opposite long facade."
+    }
    ]
   },
   {
    "place": "Dr. Hilla Limann Hall",
    "entrance": {
-    "side": "southwest"
+    "faces": "Alexander Kwapong Hall"
    },
    "type": "hall entrance",
-   "status": "partial",
-   "confidence": "medium",
-   "cite": "user-atlas",
-   "approach": "Into the car parks shared with Alexander Kwapong Hall.",
-   "evidence": "Atlas sheet 1: Limann and Kwapong face each other across shared car parks (OSM ways 758589789-792). Door position not visible.",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "user-photos",
+   "approach": "Into the car park between Limann and Kwapong; the front entrance is the gabled pavilion in the middle of the facade facing Kwapong.",
+   "evidence": "Owner: the four Diaspora halls are one design and are built in facing pairs (Limann and Kwapong, Sey and Jean Nelson); each pair's front entrances face each other across their car parks. Limann is the first of the four halls on the way in from Jubilee Link. Owner photos: the front entrance is a projecting gabled pavilion at the centre of the long facade (tall arched window above a columned porch), on the axis of the car park; the aerial of all four halls shows the facing fronts on one axis with a walkway between them.",
    "refs": [
+    "diaspora_halls_aerial_all_four (owner photo 5)",
+    "diaspora_hall_front_aerial (owner photo 1)",
+    "diaspora_halls_oblique_1 (owner photo 2)",
+    "diaspora_halls_oblique_2 (owner photo 3)",
+    "diaspora_hall_entrance_pavilion (owner photo 4)",
     "atlas sheet 1"
+   ],
+   "secondary": [
+    {
+     "label": "back entrance (no car park)",
+     "type": "hall entrance",
+     "awayFrom": "Alexander Kwapong Hall",
+     "evidence": "Owner: every hall also has a back entrance, without a car park. Owner photos: the same gabled pavilion sits at the centre of the opposite long facade."
+    }
    ]
   },
   {

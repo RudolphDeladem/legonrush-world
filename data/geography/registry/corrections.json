@@ -1,9 +1,55 @@
 {
-  "about": "Source features that the evidence shows are wrong. They stay in the master dataset (flagged, confidence low) but are kept out of the game map. Nothing is moved here: a feature is only excluded when independent evidence contradicts it.",
+  "about": "Source features that the evidence shows are wrong. 'exclude': they stay in the master dataset (flagged, confidence low) but are kept out of the game map; a feature is only excluded when independent evidence contradicts it. 'heights': storey counts and heights that reference photos contradict (the footprint is not touched). 'reclass': ground areas whose mapped use the reference photos and the owner contradict (the outline is kept).",
   "exclude": [
     {
       "id": "osm:way/765261444",
-      "reason": "OSM building=yes + amenity=place_of_worship named 'lizalex' (8,486 m²) filling the strip between Elizabeth Sey Hall and Alexander Kwapong Hall. Google Open Buildings detects only small structures inside it and the Sentinel-2 composite shows open ground; no other source knows a church there. Treated as an erroneous edit."
+      "reason": "OSM building=yes + amenity=place_of_worship named 'lizalex' (8,486 m\u00b2) filling the strip between Elizabeth Sey Hall and Alexander Kwapong Hall. Google Open Buildings detects only small structures inside it and the Sentinel-2 composite shows open ground; no other source knows a church there. Treated as an erroneous edit."
+    }
+  ],
+  "heights": [
+    {
+      "id": "osm:relation/5288833",
+      "place": "Dr. Hilla Limann Hall",
+      "levels": 4,
+      "height": 18,
+      "reason": "The four Diaspora halls share one design: four storeys (ground + three) of rooms under a hipped tile roof, about 18 m to the ridge. Owner-supplied photos (aerial of all four halls, drone views of the facades and the entrance pavilion). OSM tags Limann building:levels=3; the others had no height and were estimated."
+    },
+    {
+      "id": "osm:relation/5288831",
+      "place": "Alexander Kwapong Hall",
+      "levels": 4,
+      "height": 18,
+      "reason": "The four Diaspora halls share one design: four storeys (ground + three) of rooms under a hipped tile roof, about 18 m to the ridge. Owner-supplied photos (aerial of all four halls, drone views of the facades and the entrance pavilion). OSM tags Limann building:levels=3; the others had no height and were estimated."
+    },
+    {
+      "id": "osm:relation/5288834",
+      "place": "Elizabeth Frances Sey Hall",
+      "levels": 4,
+      "height": 18,
+      "reason": "The four Diaspora halls share one design: four storeys (ground + three) of rooms under a hipped tile roof, about 18 m to the ridge. Owner-supplied photos (aerial of all four halls, drone views of the facades and the entrance pavilion). OSM tags Limann building:levels=3; the others had no height and were estimated."
+    },
+    {
+      "id": "osm:relation/5288832",
+      "place": "Jean Nelson Aka Hall",
+      "levels": 4,
+      "height": 18,
+      "reason": "The four Diaspora halls share one design: four storeys (ground + three) of rooms under a hipped tile roof, about 18 m to the ridge. Owner-supplied photos (aerial of all four halls, drone views of the facades and the entrance pavilion). OSM tags Limann building:levels=3; the others had no height and were estimated."
+    }
+  ],
+  "reclass": [
+    {
+      "id": "osm:way/765262747",
+      "place": "Dr. Hilla Limann Hall (back)",
+      "class": "plaza",
+      "subclass": "forecourt",
+      "reason": "Owner: each Diaspora hall's back entrance has no car park; the car parks are in front, between the facing halls. The owner's aerial of all four halls shows a paved forecourt behind the hall, not parking bays."
+    },
+    {
+      "id": "osm:way/765261445",
+      "place": "Alexander Kwapong Hall (back)",
+      "class": "plaza",
+      "subclass": "forecourt",
+      "reason": "Owner: each Diaspora hall's back entrance has no car park; the car parks are in front, between the facing halls. The owner's aerial of all four halls shows a paved forecourt behind the hall, not parking bays."
     }
   ]
 }

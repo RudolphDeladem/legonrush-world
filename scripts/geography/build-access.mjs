@@ -169,6 +169,31 @@ const stepOut = (ring, e, toward, off = 2.5) => {
 // ---------- resolve every destination ----------
 const places = master.features.filter((f) => f.properties.layer === 'place');
 const curatedByName = new Map(CURATED.destinations.map((d) => [d.place, d]));
+/** the middle of the footprint side whose outward normal points most along dir (a rectangular block's facade) */
+function sideFacing(ring, dir) {
+  const c = centroid(ring);
+  let best = null;
+  for (let i = 0; i < ring.length; i++) {
+    const a = ring[i], b = ring[(i + 1) % ring.length];
+    const mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+    const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    // outward normal: perpendicular to the side, away from the centroid
+    let nx = -(b[1] - a[1]) / len, nz = (b[0] - a[0]) / len;
+    if ((mid[0] - c[0]) * nx + (mid[1] - c[1]) * nz < 0) { nx = -nx; nz = -nz; }
+    const score = (nx * dir[0] + nz * dir[1]) * Math.min(1, len / 20); // ignore short jogs
+    if (!best || score > best.score) best = { score, mid };
+  }
+  return best.mid;
+}
+/** unit vector from a footprint toward another destination's footprint */
+function toward(fp, otherName) {
+  const other = places.find((q) => q.properties.name === otherName);
+  if (!other) throw new Error(`access: ${otherName} is not a place`);
+  const ofp = footprintOf(other);
+  const a = centroid(fp.ring), b = ofp ? centroid(ofp.ring) : pt(other.geometry.coordinates);
+  const l = Math.hypot(b[0] - a[0], b[1] - a[1]);
+  return [(b[0] - a[0]) / l, (b[1] - a[1]) / l];
+}
 const PRIORITY = new Set(CURATED.priority ?? []);
 for (const n of PRIORITY) if (!places.some((p) => p.properties.name === n)) throw new Error(`priority destination ${n} is not a place`);
 const CAMPUS_GATE_NODES = new Set(CURATED.campusGates.flatMap((g) => g.osm.map((o) => `osm:${o}`)));
@@ -223,6 +248,9 @@ for (const place of places) {
       let best = null;
       for (const v of lodge.ring) { const q = nearestOnNetwork(v, { maxDist: 120 }); if (q && (!best || q.dist < best.dist)) best = q; }
       p = best && nearestOnRing(lodge.ring, best.p).p;
+    } else if (e.faces) {
+      // the middle of the facade that faces another destination (halls built in facing pairs)
+      p = sideFacing(fp.ring, toward(fp, e.faces));
     } else if (e.side) {
       // the middle of the footprint's side that faces a direction (compass), from mapped geometry
       const r = Math.SQRT1_2;
@@ -336,7 +364,11 @@ for (const place of places) {
     via: viaPts.length ? viaPts : undefined,
     status: ent.status ?? (PRIORITY.has(name) ? 'unverified' : ent.conf === 'low' ? 'inferred' : 'mapped'),
     refs: ent.refs, stop: cur?.stop, approachText: cur?.approach,
-    secondary: cur?.secondary?.map((x) => ({ ...x, at: fp ? nearestOnRing(fp.ring, x.at).p : x.at })),
+    secondary: cur?.secondary?.map((x) => {
+      // 'awayFrom': the middle of the facade turned away from another destination (a back entrance)
+      if (x.awayFrom) { const d = toward(fp, x.awayFrom); return { ...x, at: sideFacing(fp.ring, [-d[0], -d[1]]) }; }
+      return { ...x, at: fp ? nearestOnRing(fp.ring, x.at).p : x.at };
+    }),
   };
   if (legBlocked && ent.method === 'curated') problems.push(`${name}: the curated access leg crosses ${legBlocked.name ?? legBlocked.id}`);
   if (legBlocked) { rec.confidence = 'low'; rec.note = `the last few metres from the network to the entrance cross ${legBlocked.name ?? legBlocked.id} (an enclosed courtyard or a mapping gap)`; warnings.push(`${name}: ${rec.note}`); }

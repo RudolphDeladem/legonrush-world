@@ -94,7 +94,10 @@ names from S1, S6 and S7/S8; S5 last.
 7. **Zones** are drawn by hand over S10 + S1 (no source defines them) and checked against their
    anchor places.
 8. **Corrections** (`registry/corrections.json`) exclude source features only where independent
-   evidence contradicts them; nothing is moved.
+   evidence contradicts them; nothing is moved. `heights` overrides a building's storeys and height where
+   reference photos contradict the source (the Diaspora halls: 4 storeys); `reclass` changes a ground
+   area's use where the photos and the owner contradict it (the paved forecourts behind Limann and
+   Kwapong, mapped as car parks). See [LEGON_BUILDINGS.md](LEGON_BUILDINGS.md).
 9. **Export**: `master-to-game.mjs` produces the compact game JSON. The build fails if any place name
    the game code looks up disappears (`registry/naming.json` → `required`, 153 names).
 

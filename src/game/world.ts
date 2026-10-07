@@ -5,6 +5,7 @@ import { AREAS, BUILDINGS, NODE_XZ, ROADS, buildingAt, mapBounds, type Place, ty
 import type { Track } from './track';
 import { asphaltTexture, billboardTexture, concreteTexture, grassMacroTexture, grassTexture, labelTexture, pitchTexture } from './textures';
 import { buildBuildings } from './facades';
+import { buildDiasporaHalls, isDiasporaHall } from './halls';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, ROAD_WIDTH } from './life';
 
 export const LANES = [-2.4, 0, 2.4];
@@ -338,8 +339,11 @@ export function buildCampus() {
   if (dashPos.length) group.add(new THREE.Mesh(flatGeometry(dashPos, dashIdx), groundMat('#e9e6dc', 4)));
 
   // every building: cream walls with window bays, a plinth, and terracotta tile roofs
-  const buildings = buildBuildings(BUILDINGS);
+  // (the Diaspora halls are modelled from photos, see halls.ts)
+  const buildings = buildBuildings(BUILDINGS.filter((b) => !isDiasporaHall(b)));
   group.add(buildings);
+  const halls = buildDiasporaHalls();
+  group.add(halls);
 
   // trees, kerbs, lamps, stops, signs, cars, kiosks and people (see life.ts)
   const life = buildCampusLife();
@@ -349,7 +353,7 @@ export function buildCampus() {
   const edges = buildRoadEdges(concreteTexture());
   wettable(edges.material);
   group.add(edges.group);
-  cullBeyondFog(group, [...(buildings.children as THREE.Mesh[]), ...(life.userData.cullMeshes as THREE.Mesh[]), ...edges.meshes]);
+  cullBeyondFog(group, [...(buildings.children as THREE.Mesh[]), ...(halls.userData.cullMeshes as THREE.Mesh[]), ...(life.userData.cullMeshes as THREE.Mesh[]), ...edges.meshes]);
   return group;
 }
 

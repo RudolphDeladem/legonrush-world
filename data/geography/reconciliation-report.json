@@ -292,12 +292,12 @@
    "ha": 12.8
   },
   "plaza": {
-   "count": 8,
-   "ha": 0.8
+   "count": 10,
+   "ha": 1.2
   },
   "parking": {
-   "count": 82,
-   "ha": 9.3
+   "count": 80,
+   "ha": 8.9
   },
   "track": {
    "count": 3,

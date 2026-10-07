@@ -11,9 +11,9 @@
   "point": 113
  },
  "byConfidence": {
-  "medium": 164,
+  "medium": 160,
   "low": 256,
-  "high": 13
+  "high": 17
  },
  "campusGates": 5,
  "problems": [],
@@ -115,26 +115,26 @@
   },
   {
    "place": "Elizabeth Frances Sey Hall",
-   "status": "partial",
-   "confidence": "medium",
+   "status": "verified",
+   "confidence": "high",
    "method": "curated"
   },
   {
    "place": "Alexander Kwapong Hall",
-   "status": "partial",
-   "confidence": "medium",
+   "status": "verified",
+   "confidence": "high",
    "method": "curated"
   },
   {
    "place": "Dr. Hilla Limann Hall",
-   "status": "partial",
-   "confidence": "medium",
+   "status": "verified",
+   "confidence": "high",
    "method": "curated"
   },
   {
    "place": "Jean Nelson Aka Hall",
-   "status": "partial",
-   "confidence": "medium",
+   "status": "verified",
+   "confidence": "high",
    "method": "curated"
   },
   {
@@ -265,11 +265,11 @@
   }
  ],
  "byStatus": {
-  "partial": 18,
+  "partial": 14,
   "unverified": 11,
   "inferred": 246,
   "mapped": 148,
-  "verified": 10
+  "verified": 14
  },
  "curated": [
   {
@@ -311,28 +311,28 @@
    "place": "Alexander Kwapong Hall",
    "type": "hall entrance",
    "arrivalOn": "service",
-   "arrivalDistance": 26.3,
+   "arrivalDistance": 26.1,
    "facing": 240
   },
   {
    "place": "Jean Nelson Aka Hall",
    "type": "hall entrance",
    "arrivalOn": "service",
-   "arrivalDistance": 25.1,
+   "arrivalDistance": 25.2,
    "facing": 241
   },
   {
    "place": "Dr. Hilla Limann Hall",
    "type": "hall entrance",
    "arrivalOn": "service",
-   "arrivalDistance": 28.2,
+   "arrivalDistance": 28,
    "facing": 60
   },
   {
    "place": "Elizabeth Frances Sey Hall",
    "type": "hall entrance",
    "arrivalOn": "service",
-   "arrivalDistance": 29.8,
+   "arrivalDistance": 29.9,
    "facing": 61
   },
   {
