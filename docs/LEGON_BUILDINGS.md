@@ -381,9 +381,15 @@ circles 95 m out and 60 m above the destination, looking down at it (it turns mo
 ## Explore: ride it yourself
 
 When an Explore ride **on a bike** arrives, the arrived card also offers **Ride it yourself**: the route lets go of the
-bike and the rider steers it anywhere a bike can go (`Game.freeRide`). Hold ◀ / ▶ (or ← → / A D) to steer, **Pedal**
-(↑ / W / Space) to go and **Brake** (↓ / S) to stop; the bike coasts when you stop pedalling, slows uphill and turns
-more tightly when slow. Buildings, trees and palms (campus, gardens and the route's own; `src/game/solids.ts`),
-woods, water, stairways, and walls or banks too steep to ride stop it; it slides along an edge it meets at an angle.
-The chase camera follows. **Finish ride** ends the ride as arriving does.
+bike and the rider steers it anywhere a bike can go (`Game.freeRide`).
 
+- **Pedal** (↑ / W / Space): **one tap** and the rider keeps pedalling, with no need to tap again; the Pedal button
+  stays lit while pedalling.
+- **Steer** by holding ◀ / ▶ (or ← → / A D) while riding; the bike turns more tightly when slow.
+- **Brake** (↓ / S): **a tap** stops pedalling and brings the bike to a stop; **holding** it on once stopped rolls the
+  bike **backwards** (the button reads Reverse; steering swings the bike the other way, as when walking it back);
+  letting go stops it. Pedalling only ends with the brake.
+- The bike slows uphill and rolls on downhill. Buildings, trees and palms (campus, gardens and the route's own;
+  `src/game/solids.ts`), woods, water, stairways, and walls or banks too steep to ride stop it, forwards or
+  backwards; it slides along an edge it meets at an angle. The chase camera follows.
+- **Finish ride** ends the ride as arriving does.
