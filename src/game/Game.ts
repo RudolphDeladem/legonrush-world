@@ -396,8 +396,11 @@ export class Game {
   constructor(canvas: HTMLCanvasElement) {
     const lowEnd = (navigator.hardwareConcurrency ?? 4) <= 4 || Math.min(screen.width, screen.height) < 500;
     this.lowEnd = lowEnd;
-    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: !lowEnd || devicePixelRatio < 2, powerPreference: 'high-performance' });
-    this.renderer.setPixelRatio(Math.min(devicePixelRatio, lowEnd ? 1.5 : 2));
+    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: !lowEnd || devicePixelRatio < 2 });
+    this.renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+    // GPU resets: log context loss/restore so driver resets show up in the console (three.js handles the restore itself)
+    canvas.addEventListener('webglcontextlost', () => console.warn('LEGONRUSH: WebGL context lost (GPU reset or driver timeout)'));
+    canvas.addEventListener('webglcontextrestored', () => console.info('LEGONRUSH: WebGL context restored'));
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.05;
     this.renderer.shadowMap.enabled = true;
@@ -449,7 +452,7 @@ export class Game {
     this.renderer.shadowMap.enabled = q === 'high';
     this.sun.castShadow = q === 'high';
     this.tufts.setLow(q === 'low');
-    this.renderer.setPixelRatio(q === 'low' ? Math.min(devicePixelRatio, 1) : Math.min(devicePixelRatio, this.lowEnd ? 1.5 : 2));
+    this.renderer.setPixelRatio(q === 'low' ? Math.min(devicePixelRatio, 1) : Math.min(devicePixelRatio, 1.5));
     this.resize();
     // materials compiled with shadows must be rebuilt
     this.scene.traverse((o) => {
