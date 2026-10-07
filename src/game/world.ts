@@ -6,7 +6,7 @@ import type { Track } from './track';
 import { asphaltTexture, billboardTexture, concreteTexture, grassMacroTexture, grassTexture, labelTexture, pitchTexture } from './textures';
 import { buildBuildings } from './facades';
 import { buildDiasporaHalls, isDiasporaHall } from './halls';
-import { buildHostels, isHostelModel } from './hostels';
+import { BLOCK_SITES } from './sites';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, ROAD_WIDTH } from './life';
 
 export const LANES = [-2.4, 0, 2.4];
@@ -340,12 +340,12 @@ export function buildCampus() {
   if (dashPos.length) group.add(new THREE.Mesh(flatGeometry(dashPos, dashIdx), groundMat('#e9e6dc', 4)));
 
   // every building: cream walls with window bays, a plinth, and terracotta tile roofs
-  // (buildings modelled from photos are built by halls.ts and hostels.ts instead)
-  const buildings = buildBuildings(BUILDINGS.filter((b) => !isDiasporaHall(b) && !isHostelModel(b)));
+  // (buildings modelled from photos are built by halls.ts and the block-model sites instead)
+  const buildings = buildBuildings(BUILDINGS.filter((b) => !isDiasporaHall(b) && !BLOCK_SITES.some((s) => s.replaces(b))));
   group.add(buildings);
   const halls = buildDiasporaHalls();
-  const hostels = buildHostels();
-  group.add(halls, hostels);
+  const sites = BLOCK_SITES.map((s) => s.build());
+  group.add(halls, ...sites);
 
   // trees, kerbs, lamps, stops, signs, cars, kiosks and people (see life.ts)
   const life = buildCampusLife();
@@ -355,7 +355,7 @@ export function buildCampus() {
   const edges = buildRoadEdges(concreteTexture());
   wettable(edges.material);
   group.add(edges.group);
-  cullBeyondFog(group, [...(buildings.children as THREE.Mesh[]), ...(halls.userData.cullMeshes as THREE.Mesh[]), ...(hostels.userData.cullMeshes as THREE.Mesh[]), ...(life.userData.cullMeshes as THREE.Mesh[]), ...edges.meshes]);
+  cullBeyondFog(group, [...(buildings.children as THREE.Mesh[]), ...(halls.userData.cullMeshes as THREE.Mesh[]), ...sites.flatMap((s) => s.userData.cullMeshes as THREE.Mesh[]), ...(life.userData.cullMeshes as THREE.Mesh[]), ...edges.meshes]);
   return group;
 }
 

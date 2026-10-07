@@ -11,7 +11,8 @@
   "user-layouts": "UG_BUILDINGS__LAYOUTS_AND_THEIR_STRUCTURES.zip supplied by the project owner: labelled layouts and entrance photos",
   "legon-porters-lodge": "https://gh.near-place.com/legon-hall-porters-lodge-j-b-danquah-road-accra",
   "user-photos": "Photos of the four Diaspora halls supplied by the project owner (an aerial of all four halls, a drone view of one hall's front and courtyard, two oblique drone views of the facades, a close view of the entrance pavilion), with the owner's description of how the halls face each other",
-  "user-photos-jubilee-ish": "Photos supplied by the project owner of Jubilee Hall (aerial of the entrance corner, courtyard) and the International Students Hostel (entrance facade), and a satellite layout of Jubilee Hall, ISH 1 and ISH 2 with the entrances and car parks marked, registered to the OSM footprints (2.8 px/m, 1° rotation)"
+  "user-photos-jubilee-ish": "Photos supplied by the project owner of Jubilee Hall (aerial of the entrance corner, courtyard) and the International Students Hostel (entrance facade), and a satellite layout of Jubilee Hall, ISH 1 and ISH 2 with the entrances and car parks marked, registered to the OSM footprints (2.8 px/m, 1° rotation)",
+  "owner-banking-square": "The owner's labelled aerial of the banking square (banks C, F, S, the ATM bay, the car-park entrance), the owner's photos of the CBG front and the Union Building entrance, and the owner's close-up marking the Ecobank entrance; registered to the OSM footprints by roof colour (4.2 px/m, 1° rotation)"
  },
  "campusGates": [
   {
@@ -234,16 +235,20 @@
   {
    "place": "University of Ghana banking square",
    "entrance": {
-    "axisFrom": "osm:way/492099498"
+    "at": [
+     159.5,
+     975.0
+    ]
    },
    "type": "public entrance",
-   "status": "partial",
-   "confidence": "medium",
-   "cite": "user-layouts",
-   "approach": "Into the Banking Square car park on the north side of the bank courtyard building.",
-   "evidence": "banking_square_layout: the bank courtyard building (Prudential Bank) with its customer car park along the north facade and access road; OSM car park 'Banking Square Parking'. Individual bank doors are not visible.",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-banking-square",
+   "approach": "From the road along the north side through the big entrance in the middle of the compound's north wing into the courtyard car park.",
+   "evidence": "Owner's labelled aerial: the middle of the north wing (marked in red) is the big entrance to the courtyard car park (marked yellow); registered to the OSM footprint, it is the north wing between the ATM bay and the Stanbic corner.",
    "refs": [
-    "banking_square_layout_labeled.png"
+    "banking_square_labelled (owner aerial)",
+    "cbg_front (owner photo)"
    ]
   },
   {
@@ -707,6 +712,101 @@
     "jubilee_ish_layout (owner satellite layout with entrances and car parks marked)",
     "international_students_hostel_1_labeled.png"
    ]
+  },
+  {
+   "place": "Consolidated Bank Ghana (near Night Market)",
+   "entrance": {
+    "at": [
+     133.5,
+     1020.0
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-banking-square",
+   "approach": "From the road along the south side (the way in from the Diaspora halls and the Night Market) to the CBG door with its steps and red pillars.",
+   "evidence": "Owner: CBG is the west wing (C) and its entrance is on the south side, facing you as you come from the Diaspora route or the Night Market. Owner photo: the CBG front with steps, red pillars, a canopy sign and flags.",
+   "refs": [
+    "banking_square_labelled (owner aerial)",
+    "cbg_front (owner photo)"
+   ]
+  },
+  {
+   "place": "First Bank Ghana (Banking Square)",
+   "entrance": {
+    "at": [
+     160.0,
+     1020.1
+    ]
+   },
+   "type": "public entrance",
+   "status": "partial",
+   "confidence": "medium",
+   "cite": "owner-banking-square",
+   "approach": "From the road along the south side to the First Bank door in the south wing.",
+   "evidence": "Owner's labelled aerial: First Bank Ghana is the south wing (F). The door's side is inferred: the south facade, on the same frontage as CBG.",
+   "refs": [
+    "banking_square_labelled (owner aerial)",
+    "cbg_front (owner photo)"
+   ]
+  },
+  {
+   "place": "Stanbic Bank",
+   "entrance": {
+    "at": [
+     181.6,
+     990.0
+    ]
+   },
+   "type": "public entrance",
+   "status": "partial",
+   "confidence": "medium",
+   "cite": "owner-banking-square",
+   "approach": "From the road along the east side, under the east veranda, to the Stanbic door.",
+   "evidence": "Owner's labelled aerial: Stanbic is the north-east part of the compound (S). The door's side is inferred: the east facade under the veranda, facing the road and its parking bays.",
+   "refs": [
+    "banking_square_labelled (owner aerial)",
+    "cbg_front (owner photo)"
+   ]
+  },
+  {
+   "place": "Ecobank (near Night Market)",
+   "entrance": {
+    "at": [
+     241.8,
+     1018.4
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-banking-square",
+   "approach": "To the north notch of the Union Building, between its two north wings.",
+   "evidence": "Owner: the Ecobank entrance is the blue-circled spot in the owner's close-up of the Union Building (the notch between the two north wings) and looks like the Union Building entrance in the owner's photo.",
+   "refs": [
+    "union_building_aerial (owner, entrance marked)",
+    "union_building_entrance (owner photo)"
+   ]
+  },
+  {
+   "place": "Union Building (Banking Square)",
+   "entrance": {
+    "at": [
+     257.0,
+     1025.7
+    ]
+   },
+   "type": "public entrance",
+   "status": "partial",
+   "confidence": "medium",
+   "cite": "owner-banking-square",
+   "approach": "To the east notch of the Union Building, facing the car park and the loop road.",
+   "evidence": "Owner's photo: the Union Building entrance (sign 'ALUMNI BUILDING') across a block-paved forecourt, with the Ecobank-blue wing beside it. OSM maps an entrance node in the east notch; the photo's angle is not fixed, so the side is partial.",
+   "refs": [
+    "union_building_entrance (owner photo)",
+    "union_building_aerial (owner)"
+   ]
   }
  ],
  "priority": [
@@ -749,6 +849,11 @@
   "University of Ghana Hospital",
   "University of Ghana Medical Center Limited",
   "Central Cafeteria, CC",
-  "International Students Hostel 2, ISH 2"
+  "International Students Hostel 2, ISH 2",
+  "Consolidated Bank Ghana (near Night Market)",
+  "First Bank Ghana (Banking Square)",
+  "Stanbic Bank",
+  "Ecobank (near Night Market)",
+  "Union Building (Banking Square)"
  ]
 }

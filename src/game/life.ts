@@ -14,7 +14,8 @@ import { AREAS, BUILDINGS, NODE_XZ, PLACES, ROADS, buildingAt, nodeDegree, place
 import { HALLS, HALL_PLACE } from '../data/campus';
 import { buildingMaterials, setWindowLights } from './facades';
 import { inDiasporaHall, setHallLights } from './halls';
-import { inHostelModel, setHostelLights } from './hostels';
+import { setBlockLights } from './blocks';
+import { BLOCK_SITES } from './sites';
 
 /** real road widths by class: main, through, residential, service lane, footpath */
 export const ROAD_WIDTH = [9, 7.4, 6.2, 4.6, 2.6];
@@ -100,8 +101,8 @@ for (const [name, hx, hz, dz] of [['Night Market', 22, 22, -6], ['Great Hall', 8
   const p = placeByName(name);
   if (p) keepOut.push([p.x, p.z + dz, hx, hz]);
 }
-const inKeepOut = (x: number, z: number, pad = 0) => keepOut.some(([kx, kz, hx, hz]) => Math.abs(x - kx) < hx + pad && Math.abs(z - kz) < hz + pad) || inDiasporaHall(x, z, pad) || inHostelModel(x, z, pad);
-/** inside a landmark model's footprint (Night Market roofs, Great Hall, Balme Library, the Diaspora halls' courtyards and porches, the hostels' porches and annexes) */
+const inKeepOut = (x: number, z: number, pad = 0) => keepOut.some(([kx, kz, hx, hz]) => Math.abs(x - kx) < hx + pad && Math.abs(z - kz) < hz + pad) || inDiasporaHall(x, z, pad) || BLOCK_SITES.some((s) => s.keepsOut(x, z, pad));
+/** inside a landmark model's footprint (Night Market roofs, Great Hall, Balme Library, the Diaspora halls' courtyards and porches, porches and annexes of the block-modelled buildings) */
 export const inLandmark = (x: number, z: number, pad = 0) => inKeepOut(x, z, pad);
 const freeSpot = (x: number, z: number, r: number) => roadClearance(x, z, r + 6) > r && !buildingAt(x, z, r) && !inKeepOut(x, z, r);
 
@@ -575,7 +576,7 @@ export function setNightLights(on: boolean) {
   glowMat.visible = on;
   setWindowLights(on ? 1 : 0);
   setHallLights(on);
-  setHostelLights(on);
+  setBlockLights(on);
   for (const fn of nightHooks) fn(on);
 }
 /** other night lights (landmarks) register here */

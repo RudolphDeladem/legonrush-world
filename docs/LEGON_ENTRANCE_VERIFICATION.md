@@ -41,7 +41,7 @@ BUILDING → ENTRANCE → FORECOURT → ACCESS PATH → ARRIVAL POINT (road/path
 `npm run test:routes` fails if a priority destination is left as mapped/inferred, if a verified entrance is
 not high confidence, or if any non-verified, non-mapped entrance claims high confidence.
 
-**Priority destinations: 40 — verified 16, partial 13, unverified 11.** (The four Diaspora halls moved from partial to verified with the owner's photos; ISH 1 moved to verified and ISH 2 was added with the owner's marked layout; see below.)
+**Priority destinations: 45 — verified 19, partial 15, unverified 11.** (The four Diaspora halls moved from partial to verified with the owner's photos; ISH 1 moved to verified and ISH 2 was added with the owner's marked layout; the banking square's banks were added with the owner's labelled aerial and photos; see below.)
 
 ## Entrance verification table (BEFORE → AFTER)
 
@@ -56,7 +56,12 @@ Coordinates are game-frame metres (x east, z south of the datum 5.6518 N, 0.1871
 | Balme Library Fountain | frontage at (14, 95), arriving on footway | low | public open space at (8, 61) | footway | (8, 58), facing 180° | **partial** · medium | 35 m |
 | University of Ghana Registry | frontage at (-913, 184), arriving on service | low | public entrance at (-922, 184) | service | (-913, 202), facing 329° | **partial** · medium | 9 m |
 | Kuffour Quadrangle | frontage at (-11, -142), arriving on footway | low | public open space at (6, -107) | footway | (6, -104), facing 0° | **partial** · medium | 39 m |
-| University of Ghana banking square | curated at (157, 975), arriving on service | medium | public entrance at (157, 975) | service | (157, 961), facing 180° | **partial** · medium | 0 m |
+| University of Ghana banking square | partial: (157, 975), arriving on service | medium | public entrance at (160, 975) | service | (160, 961), facing 180° | **verified** · high | 3 m |
+| Consolidated Bank Ghana (near Night Market) | mapped point north of the compound (on the road) | medium | public entrance at (134, 1020) | service | (132, 1026), facing 360° | **verified** · high | — |
+| First Bank Ghana (Banking Square) | not on the map | — | public entrance at (160, 1020) | service | (160, 1026), facing 360° | **partial** · medium | — |
+| Stanbic Bank | inferred frontage at the compound's south-east corner | low | public entrance at (181, 990) | service | (192, 989), facing 269° | **partial** · medium | — |
+| Ecobank (near Night Market) | mapped OSM entrance in the east notch | high | public entrance at (242, 1018) | service | (240, 1004), facing 174° | **verified** · high | — |
+| Union Building (Banking Square) | not on the map | — | public entrance at (257, 1026) | service | (260, 1026), facing 342° | **partial** · medium | — |
 | Night Market | frontage at (126, 1034), arriving on Jubilee Link | low | public entrance at (167, 1034) | service | (167, 1026), facing 180° | **partial** · medium | 41 m |
 | Legon Hall | area-entry at (-14, 189), arriving on footway | medium | hall entrance at (-147, 157) | Dr. J.B. Danquah Avenue | (-145, 137), facing 187° | **verified** · high | 137 m |
 | Commonwealth Hall | curated at (-485, 118), arriving on service | medium | hall entrance at (-485, 118) | service | (-475, 118), facing 270° | **partial** · medium | 0 m |
@@ -145,12 +150,26 @@ Coordinates are game-frame metres (x east, z south of the datum 5.6518 N, 0.1871
 - **References:** atlas sheet 2
 - **Correction:** moved 39 m from the previous frontage entrance (low confidence).
 
-### University of Ghana banking square — PARTIAL
+### The banking square — VERIFIED / PARTIAL
 
-- **Entrance:** public entrance; Into the Banking Square car park on the north side of the bank courtyard building.
-- **Evidence:** banking_square_layout: the bank courtyard building (Prudential Bank) with its customer car park along the north facade and access road; OSM car park 'Banking Square Parking'. Individual bank doors are not visible.
-- **References:** `banking_square_layout_labeled.png`
-- **Correction:** confirmed (no move).
+The owner's labelled aerial (banks C, F and S circled, the ATM bay, the car-park entrance) was registered to the OSM
+footprints by roof colour (4.2 px/m, 1° rotation); the compound, the star-shaped Union Building and the ADB block
+land on their roofs, so the labels became map positions. Bank places were moved into the wings the owner labels
+(registry landmarks with measured points; First Bank Ghana and the Union Building were added).
+
+- **University of Ghana banking square — VERIFIED.** The big entrance to the courtyard car park in the middle of
+  the compound's north wing (owner: the section marked in red), from the road along the north side.
+- **Consolidated Bank Ghana (CBG) — VERIFIED.** The west wing (C); the door on the south side with steps, red
+  pillars, a canopy sign and flags (owner photo), facing the way in from the Diaspora halls and the Night Market.
+- **First Bank Ghana — PARTIAL.** The south wing (F); the door's side (south, on CBG's frontage) is inferred.
+- **Stanbic Bank — PARTIAL.** The north-east part of the compound (S); the door's side (east, under the veranda,
+  facing the road and its parking bays) is inferred.
+- **Ecobank — VERIFIED.** The notch between the Union Building's two north wings (the owner's marked close-up);
+  previously the OSM entrance node in the east notch.
+- **Union Building — PARTIAL.** The east notch (OSM entrance node), matching the owner's photo of the entrance with
+  the ALUMNI BUILDING sign beside the Ecobank-blue wing; the photo's angle cannot be fixed on the map.
+- **Not marked:** ADB and HFC (now Republic Bank) keep their previous entrances; Prudential, Access Bank, CalBank
+  and UMB, which other sources place in the compound, are unchanged.
 
 ### Night Market — PARTIAL
 

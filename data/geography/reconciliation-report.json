@@ -305,13 +305,13 @@
   }
  },
  "places": {
-  "total": 433,
+  "total": 435,
   "fromOsm": 392,
   "fromUgCampusMap": 38,
-  "addedFromRegistry": 3,
-  "movedToRegistryPosition": 4,
+  "addedFromRegistry": 5,
+  "movedToRegistryPosition": 6,
   "byConfidence": {
-   "high": 140,
+   "high": 142,
    "medium": 289,
    "low": 4
   },
@@ -340,6 +340,30 @@
      179
     ],
     "distanceM": 7
+   },
+   {
+    "name": "Consolidated Bank Ghana (near Night Market)",
+    "from": [
+     159,
+     967
+    ],
+    "to": [
+     142,
+     997
+    ],
+    "distanceM": 34
+   },
+   {
+    "name": "Stanbic Bank",
+    "from": [
+     175,
+     978
+    ],
+    "to": [
+     177,
+     990
+    ],
+    "distanceM": 12
    },
    {
     "name": "Evandy Hostel",
@@ -2361,6 +2385,74 @@
     }
    },
    "claims": []
+  },
+  {
+   "id": "bank-cbg",
+   "name": "Consolidated Bank Ghana (near Night Market)",
+   "category": "commercial",
+   "importance": 3,
+   "geometry": "measured:bank-cbg",
+   "lat": 5.642783,
+   "lng": -0.185816,
+   "x": 142,
+   "z": 997,
+   "elevationM": 88,
+   "confidence": "medium",
+   "sourcesAgreeingWithin150m": [],
+   "sources": {},
+   "claims": [],
+   "notes": "Owner: CBG occupies the west wing of the banking-square compound (labelled C); its door is on the south side."
+  },
+  {
+   "id": "bank-firstbank",
+   "name": "First Bank Ghana (Banking Square)",
+   "category": "commercial",
+   "importance": 3,
+   "geometry": "measured:bank-firstbank",
+   "lat": 5.642607,
+   "lng": -0.185656,
+   "x": 160,
+   "z": 1017,
+   "elevationM": 87,
+   "confidence": "medium",
+   "sourcesAgreeingWithin150m": [],
+   "sources": {},
+   "claims": [],
+   "notes": "Owner: First Bank Ghana is the south wing of the compound (labelled F)."
+  },
+  {
+   "id": "bank-stanbic",
+   "name": "Stanbic Bank",
+   "category": "commercial",
+   "importance": 3,
+   "geometry": "measured:bank-stanbic",
+   "lat": 5.642847,
+   "lng": -0.185507,
+   "x": 177,
+   "z": 990,
+   "elevationM": 88,
+   "confidence": "medium",
+   "sourcesAgreeingWithin150m": [],
+   "sources": {},
+   "claims": [],
+   "notes": "Owner: Stanbic occupies the north-east corner and the north half of the east wing (labelled S)."
+  },
+  {
+   "id": "union-building",
+   "name": "Union Building (Banking Square)",
+   "category": "commercial",
+   "importance": 3,
+   "geometry": "measured:union-building",
+   "lat": 5.642448,
+   "lng": -0.184816,
+   "x": 253,
+   "z": 1034,
+   "elevationM": 86,
+   "confidence": "medium",
+   "sourcesAgreeingWithin150m": [],
+   "sources": {},
+   "claims": [],
+   "notes": "Owner: the star-shaped single-storey building east of the compound is the Union Building and houses Ecobank; its sign reads ALUMNI BUILDING (owner photo)."
   }
  ],
  "zones": [
@@ -2410,7 +2502,7 @@
    "kind": "commercial",
    "ha": 29,
    "shareOutsideCampus": 0,
-   "places": 19,
+   "places": 21,
    "buildings": 39,
    "anchorsMissing": []
   },

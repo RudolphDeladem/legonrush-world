@@ -19,18 +19,18 @@ export const speckle = (g: CanvasRenderingContext2D, x: number, y: number, w: nu
   for (let i = 0; i < n; i++) { g.fillStyle = cols[(rnd() * cols.length) | 0]; g.fillRect(x + rnd() * w, y + rnd() * h, 1 + rnd(), 1 + rnd()); }
 };
 
-export /** the hall's name on the porch canopy: white letters on blue */
-function signTexture(text: string) {
+/** a building's name on a sign board: white letters on blue unless colours are given */
+export function signTexture(text: string, [bg, fg]: [string, string] = ['#1f4f9a', '#ffffff']) {
   const c = document.createElement('canvas');
   const g = c.getContext('2d')!;
   const font = '700 44px Sora, system-ui, sans-serif';
   g.font = font;
   c.width = Math.ceil(g.measureText(text).width) + 48;
   c.height = 64;
-  g.fillStyle = '#1f4f9a';
+  g.fillStyle = bg;
   g.fillRect(0, 0, c.width, 64);
   g.font = font;
-  g.fillStyle = '#ffffff';
+  g.fillStyle = fg;
   g.textBaseline = 'middle';
   g.fillText(text, 24, 34);
   const t = new THREE.CanvasTexture(c);
@@ -88,7 +88,8 @@ export const WHITE = '#f7f4ec', TRIM = '#fbf9f3', SOFFIT = '#d8cfbf', PLINTH = '
 /** Roof slopes: quads from an eave edge (a, b) up to a ridge edge (c, d), tiles laid by metres. */
 export class Roof {
   pos: number[] = []; uv: number[] = []; col: number[] = []; idx: number[] = [];
-  constructor(private c: THREE.Color) {}
+  /** colour of the slopes added next (a site can switch it per block) */
+  constructor(public c: THREE.Color) {}
   quad(a: number[], b: number[], c: number[], d: number[]) {
     const ex = b[0] - a[0], ez = b[2] - a[2], el = Math.hypot(ex, ez) || 1;
     const ux = ex / el, uz = ez / el;

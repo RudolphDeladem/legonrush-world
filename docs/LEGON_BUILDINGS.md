@@ -10,8 +10,9 @@ the map still use it), the generic builder skips it, and its model is placed on 
 | --- | --- | --- | --- |
 | 1 | The Diaspora halls: Dr. Hilla Limann, Alexander Kwapong, Elizabeth Frances Sey, Jean Nelson Aka | `src/game/halls.ts` | owner photos (5) and description |
 | 2 | Jubilee Hall, International Students Hostels 1 and 2 | `src/game/hostels.ts` | owner's marked layout, owner photos (3), earlier reference photos (5) |
+| 3 | The banking square: bank compound (CBG, First Bank, Stanbic, ATMs), Union Building (Ecobank), ADB / HFC | `src/game/banking.ts` | owner's labelled aerial, owner photos (3) |
 
-Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`.
+Shared pieces (facade runs, roofs, merged parts, signs) are in `src/game/modelkit.ts`; buildings made of rectangular blocks (steps 2 and 3) use the engine in `src/game/blocks.ts` (each site lists its specs; `src/game/sites.ts` collects them).
 
 ## 1. The Diaspora halls
 
@@ -113,3 +114,44 @@ facade style per face, plus the details below.
 
 **Open points:** the 2-storey/3-storey split of the north wing's corner blocks is read from the courtyard
 photo; the hostels' annex height (one storey) is read from the layout only.
+
+## 3. The banking square
+
+The owner's labelled aerial was registered to the OSM footprints by roof colour (4.2 px/m, 1° rotation). All
+three buildings are **single storey** (owner; master geography now records 1 level for each).
+
+### The bank compound
+
+- **Plan:** a ring of rooms round a courtyard, from the OSM footprint (a ring with notches). Where the footprint
+  leaves the long sides open, the aerial shows the roof carrying on: they are **verandas** (posts along the roof
+  line); the short sides have covered walkways between projecting bays.
+- **Roof:** one red roof over everything, hipped at the outer corners, valleys round the courtyard (aerial; the
+  owner's CBG photo shows the red roof and white render).
+- **Courtyard:** the car park (asphalt, bays, parked cars, a tree), reached through the **big entrance in the middle
+  of the north wing** (owner, marked red): gate pillars and a beam with the square's name.
+- **CBG** (west wing, labelled C): the door on the south side (owner), with red-tiled steps, two red pillars, a
+  grey canopy with the CBG sign, the Ghana and CBG flags and an ATM kiosk, as in the owner's photo.
+- **First Bank Ghana** (south wing, F): a door with a navy and gold FIRSTBANK canopy on the south side.
+- **Stanbic** (north-east part, S): a door with a blue canopy on the east side under the veranda, and a Stanbic
+  sign on the roof edge (the veranda roof hides the canopy from the road).
+- **ATMs** (the owner's purple section): the bay that juts out at the north-west, with two ATM machines facing the
+  road and an ATM sign.
+- **Facades:** white render, a dark window in each bay over a red-brown base.
+
+### The Union Building (Ecobank)
+
+- **Plan** (OSM footprint, matches the aerial): a square core with two short wings on each side and notches
+  between them; a lantern over the middle (OSM maps it as a small round courtyard).
+- **Roofs:** light terracotta, hipped per wing, with solar panels; the lantern is an octagonal drum with a gold cap.
+- **Facades:** white walls with wide blue-tinted windows in blue frames (owner photo).
+- **Entrances:** Ecobank in the north notch (owner's marked close-up), glass doors under a blue canopy with the
+  ECOBANK sign; the Union Building in the east notch, glass doors in blue frames, the ALUMNI BUILDING sign, a
+  block-paved forecourt (owner photo).
+
+### ADB and HFC (Republic Bank)
+
+- OSM maps only the brown-roofed block on the east side; the aerial shows **two red-roofed blocks** beside it
+  (the northern one about 17 m × 13 m, the southern 15 m × 27 m), added from the registered aerial. White
+  canopies on the south side. The banks' doors are not marked, so their entrances are unchanged.
+
+**Open points:** the First Bank and Stanbic door sides are inferred; the courtyard's parked cars are fixed props.

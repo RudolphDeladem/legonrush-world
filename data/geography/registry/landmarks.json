@@ -37,7 +37,8 @@
     "copernicus-dem": {
       "title": "Copernicus GLO-30 DEM (data/geography/sources/copernicus-dem-30m.json)",
       "url": "https://registry.opendata.aws/copernicus-dem/"
-    }
+    },
+    "owner-banking-square": "The owner's aerial of the banking square with the banks labelled (C: CBG, F: First Bank Ghana, S: Stanbic; ATMs; the car-park entrance) and photos of the CBG front and the Union Building, registered to the OSM footprints by roof colour (4.2 px/m, 1° rotation)"
   },
   "landmarks": [
     {
@@ -1607,6 +1608,100 @@
         ]
       },
       "claims": []
+    },
+    {
+      "id": "bank-cbg",
+      "name": "Consolidated Bank Ghana (near Night Market)",
+      "kind": "bank",
+      "category": "commercial",
+      "importance": 3,
+      "geometry": {
+        "at": [
+          142.2,
+          997.0
+        ]
+      },
+      "match": {
+        "osm": [],
+        "overture": [],
+        "ugmap": []
+      },
+      "claims": [],
+      "maxConfidence": "medium",
+      "notes": "Owner: CBG occupies the west wing of the banking-square compound (labelled C); its door is on the south side.",
+      "aliases": [
+        "CBG"
+      ]
+    },
+    {
+      "id": "bank-firstbank",
+      "name": "First Bank Ghana (Banking Square)",
+      "kind": "bank",
+      "category": "commercial",
+      "importance": 3,
+      "geometry": {
+        "at": [
+          160.0,
+          1016.5
+        ]
+      },
+      "match": {
+        "osm": [],
+        "overture": [],
+        "ugmap": []
+      },
+      "claims": [],
+      "maxConfidence": "medium",
+      "notes": "Owner: First Bank Ghana is the south wing of the compound (labelled F).",
+      "aliases": [
+        "First Bank",
+        "FirstBank"
+      ]
+    },
+    {
+      "id": "bank-stanbic",
+      "name": "Stanbic Bank",
+      "kind": "bank",
+      "category": "commercial",
+      "importance": 3,
+      "geometry": {
+        "at": [
+          176.5,
+          990.0
+        ]
+      },
+      "match": {
+        "osm": [],
+        "overture": [],
+        "ugmap": []
+      },
+      "claims": [],
+      "maxConfidence": "medium",
+      "notes": "Owner: Stanbic occupies the north-east corner and the north half of the east wing (labelled S)."
+    },
+    {
+      "id": "union-building",
+      "name": "Union Building (Banking Square)",
+      "kind": "bank",
+      "category": "commercial",
+      "importance": 3,
+      "geometry": {
+        "at": [
+          253.0,
+          1034.1
+        ]
+      },
+      "match": {
+        "osm": [],
+        "overture": [],
+        "ugmap": []
+      },
+      "claims": [],
+      "maxConfidence": "medium",
+      "notes": "Owner: the star-shaped single-storey building east of the compound is the Union Building and houses Ecobank; its sign reads ALUMNI BUILDING (owner photo).",
+      "aliases": [
+        "Alumni Building"
+      ]
     }
   ]
 }

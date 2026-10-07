@@ -55,6 +55,27 @@
       "levels": 4,
       "height": 17,
       "reason": "Owner photos: the International Students Hostels are four storeys under a hipped tile roof; ISH 2 has the same structure as ISH 1 (OSM tags building:levels=3)."
+    },
+    {
+      "id": "osm:relation/7226878",
+      "place": "University of Ghana banking square (bank compound)",
+      "levels": 1,
+      "height": 7,
+      "reason": "Owner: every building on the banking square is a single storey (owner's photo of the CBG front shows the whole compound's height)."
+    },
+    {
+      "id": "osm:relation/6703886",
+      "place": "Union Building (Ecobank)",
+      "levels": 1,
+      "height": 8,
+      "reason": "Owner: every building on the banking square is a single storey (owner's photo of the CBG front shows the whole compound's height). OSM tags it building=apartments."
+    },
+    {
+      "id": "osm:way/496464180",
+      "place": "ADB / HFC (Republic Bank) block",
+      "levels": 1,
+      "height": 7,
+      "reason": "Owner: every building on the banking square is a single storey (owner's photo of the CBG front shows the whole compound's height)."
     }
   ],
   "reclass": [

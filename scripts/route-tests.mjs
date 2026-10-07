@@ -86,7 +86,18 @@ try {
     if (Math.hypot(a.entrance[0] - mx, a.entrance[1] - mz) > 2) fail(`${n}: entrance ${a.entrance.map((v) => v.toFixed(1))} is not where the owner's layout marks it`);
     if (a.status !== 'verified') fail(`${n}: entrance status ${a.status}`);
   }
-  const hostels = (await server.ssrLoadModule('/src/game/hostels.ts')).hostelFrames();
+  // the banking square: doors where the owner's labelled aerial and photos put them
+  const banks = { 'University of Ghana banking square': [159.5, 975.0], 'Consolidated Bank Ghana (near Night Market)': [133.5, 1020.0], 'First Bank Ghana (Banking Square)': [160.0, 1020.1], 'Stanbic Bank': [181.6, 990.0], 'Ecobank (near Night Market)': [241.8, 1018.4], 'Union Building (Banking Square)': [257.0, 1025.7] };
+  for (const [n, [mx, mz]] of Object.entries(banks)) {
+    const a = ACCESS.get(n);
+    if (!a) { fail(`${n}: no access`); continue; }
+    if (Math.hypot(a.entrance[0] - mx, a.entrance[1] - mz) > 2) fail(`${n}: entrance ${a.entrance.map((v) => v.toFixed(1))} is not where the owner's photos put it`);
+  }
+  // CBG's door faces the way in from the Diaspora halls and the Night Market (south)
+  if (ACCESS.get('Consolidated Bank Ghana (near Night Market)')?.entrance[1] < placeByName('Consolidated Bank Ghana (near Night Market)').z) fail('CBG: the entrance is not on the south side');
+  const bankModels = (await server.ssrLoadModule('/src/game/banking.ts')).banking.frames();
+  if (bankModels.length !== 3) fail(`expected the bank compound, the Union Building and the ADB/HFC block, found ${bankModels.length}`);
+  const hostels = (await server.ssrLoadModule('/src/game/hostels.ts')).hostels.frames();
   if (hostels.length !== 3) fail(`expected Jubilee Hall, ISH 1 and ISH 2 models, found ${hostels.length}`);
   if (lowLegs) notes.push(`${lowLegs} low-confidence destinations have a building between the network and the entrance (enclosed courtyards / mapping gaps; listed in data/geography/access-report.json)`);
 

@@ -581,6 +581,9 @@ for (const l of REG.landmarks.landmarks) {
     line = ls; geomId = `road:${g.road}`;
     const all = ls.flat();
     pos = all[Math.floor(all.length / 2)];
+  } else if (g.at) {
+    // a point measured on owner-supplied imagery registered to the OSM footprints
+    pos = g.at; geomId = `measured:${l.id}`;
   } else if (g.place) {
     const p = placeByName(g.place);
     if (!p) throw new Error(`landmark ${l.id}: place ${g.place} not found`);

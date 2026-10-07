@@ -32,5 +32,7 @@ export const ROUTE_CHECKS: RouteCheck[] = [
   { from: 'Jean Nelson Aka Hall', to: 'Elizabeth Frances Sey Hall', maxLength: 250, expect: 'Front door to front door: JNA and Sey face each other across their car parks.' },
   { from: 'International Students Hostel 2, ISH 2', to: 'Jubilee Hall', maxLength: 400, expect: 'From the canopy on ISH 2\'s south facade past the car park to Jubilee\'s portico in its south-east corner.' },
   { from: 'Jubilee Hall', to: 'International Students Hostel 1, ISH 1', maxLength: 300, expect: 'From Jubilee\'s portico across the car park to the gabled porch on ISH 1\'s north facade.' },
+  { from: 'Night Market', to: 'Consolidated Bank Ghana (near Night Market)', maxLength: 500, expect: 'From the market north to the banking square, ending at the CBG door on the compound\'s south side.' },
+  { from: 'Jubilee Hall', to: 'Ecobank (near Night Market)', maxLength: 900, expect: 'From Jubilee\'s portico to the Ecobank door in the north notch of the Union Building.' },
   { from: 'Elizabeth Frances Sey Hall', to: 'Jones Quartey Building, JQB', maxLength: 3200, expect: 'From the southern halls (leaving by the Sey frontage) north to JQB by the Main Gate.' },
 ];
