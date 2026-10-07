@@ -33,7 +33,7 @@ export interface Route {
   /** road class under ride distance d */
   classAt: (d: number) => RoadClass;
   /** destination journeys: where the ride starts and ends relative to the places' entrances */
-  access?: { start: [number, number]; end: [number, number]; fromEntrance?: [number, number]; toEntrance?: [number, number] };
+  access?: { start: [number, number]; end: [number, number]; fromEntrance?: [number, number]; toEntrance?: [number, number]; fromVia?: [number, number][]; toVia?: [number, number][] };
 }
 
 const LEAD = 25;
@@ -108,7 +108,12 @@ export function routeThrough(stops: Place[], opts: { id: string; name: string; k
     fromEntrance = fa?.entrance;
     toEntrance = ta?.entrance;
     // run-up: out of the origin's entrance when it is a few metres off the road, else back along the road
-    const outOf = (e: XZ | undefined, at: XZ) => (e && dist2(e, at) >= 4 ? [ext(e, at, -1.5)] : null);
+    // the walk between the road and the door: arrival -> forecourt waypoints -> 1.5 m short of the entrance
+    const outOf = (e: XZ | undefined, at: XZ, via: XZ[] = []) => {
+      if (!e || dist2(e, at) < 4) return null;
+      const before = via.length ? via[via.length - 1] : at;
+      return [...via, ext(e, before, -1.5)];
+    };
     const along = (from: number, avoid: number, want: number): { pts: XZ[]; road: number } | null => {
       // follow the network away from `avoid`, always taking the straightest way on, up to `want` metres
       const out: XZ[] = [];
@@ -131,11 +136,13 @@ export function routeThrough(stops: Place[], opts: { id: string; name: string; k
       }
       return out.length ? { pts: out, road } : null;
     };
-    const runUp = outOf(fromEntrance, first);
+    const fromVia = fa?.via ?? [], toVia = ta?.via ?? [];
+    const up = outOf(fromEntrance, first, fromVia);
+    const runUp = up && up.reverse();
     const back = runUp ? null : along(nodes[0], nodes[1], LEAD);
     leadPts = runUp ?? back?.pts.reverse() ?? [ext(first, pts[1], LEAD)];
     if (back) leadRoad = back.road;
-    const runOut = outOf(toEntrance, last);
+    const runOut = outOf(toEntrance, last, toVia);
     const on = runOut ? null : along(nodes[nodes.length - 1], nodes[nodes.length - 2], TAIL);
     tailPts = runOut ?? on?.pts ?? [ext(last, pts[pts.length - 2], TAIL)];
     if (on) tailRoad = on.road;
@@ -188,7 +195,7 @@ export function routeThrough(stops: Place[], opts: { id: string; name: string; k
     from: stops[0],
     to: stops[stops.length - 1],
     classAt: (d: number) => ROADS[track.tagAt(d + lead)]?.cls ?? 2,
-    ...(campus && { access: { start: first, end: last, fromEntrance, toEntrance } }),
+    ...(campus && { access: { start: first, end: last, fromEntrance, toEntrance, fromVia: accessFor(stops[0])?.via, toVia: accessFor(stops[stops.length - 1])?.via } }),
   };
 }
 

@@ -36,9 +36,14 @@ export class Track {
   constructor(waypoints: [number, number][], segTags?: number[], radius = 14, sharp: [number, number][] = []) {
     // drop points closer than 1.5 m, they only add kinks
     const wp: { p: [number, number]; tag: number }[] = [];
+    const isSharp = (p: [number, number]) => sharp.some(([x, z]) => Math.abs(x - p[0]) < 1e-6 && Math.abs(z - p[1]) < 1e-6);
     waypoints.forEach((p, i) => {
       const last = wp[wp.length - 1];
-      if (last && Math.hypot(p[0] - last.p[0], p[1] - last.p[1]) < 1.5 && i < waypoints.length - 1) return;
+      if (last && Math.hypot(p[0] - last.p[0], p[1] - last.p[1]) < 1.5 && i < waypoints.length - 1) {
+        // a point the line must pass through replaces its close neighbour instead of being dropped
+        if (isSharp(p) && !isSharp(last.p) && wp.length > 1) wp[wp.length - 1] = { p, tag: last.tag };
+        return;
+      }
       wp.push({ p, tag: segTags?.[Math.min(i, segTags.length - 1)] ?? 0 });
     });
     const pts: [number, number][] = [wp[0].p];

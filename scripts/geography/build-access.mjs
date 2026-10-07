@@ -169,6 +169,8 @@ const stepOut = (ring, e, toward, off = 2.5) => {
 // ---------- resolve every destination ----------
 const places = master.features.filter((f) => f.properties.layer === 'place');
 const curatedByName = new Map(CURATED.destinations.map((d) => [d.place, d]));
+const PRIORITY = new Set(CURATED.priority ?? []);
+for (const n of PRIORITY) if (!places.some((p) => p.properties.name === n)) throw new Error(`priority destination ${n} is not a place`);
 const CAMPUS_GATE_NODES = new Set(CURATED.campusGates.flatMap((g) => g.osm.map((o) => `osm:${o}`)));
 /** points where routable ways cross an area's outline, with the outside end of each crossing segment */
 function areaCrossings(ring) {
@@ -191,8 +193,10 @@ const sourceOf = { curated: 0, 'osm-entrance': 0, gate: 0, 'path-access': 0, 'dr
 for (const place of places) {
   const name = place.properties.name;
   const at = pt(place.geometry.coordinates);
-  const fp = footprintOf(place);
   const cur = curatedByName.get(name);
+  // a curated entry may name the footprint the destination is really entered through
+  const fp = cur?.footprint ? (ringById.has(cur.footprint) ? { id: cur.footprint, ...ringById.get(cur.footprint) } : osmRing(cur.footprint)) : footprintOf(place);
+  if (cur?.footprint && !fp) throw new Error(`access ${name}: footprint ${cur.footprint} missing`);
   let ent = null; // { p, type, method, evidence, conf, via? }
   // 1. curated
   if (cur) {
@@ -221,11 +225,20 @@ for (const place of places) {
       p = best && nearestOnRing(lodge.ring, best.p).p;
     } else if (e.side) {
       // the middle of the footprint's side that faces a direction (compass), from mapped geometry
-      const c = centroid(fp.ring), dir = { north: [0, -1], south: [0, 1], east: [1, 0], west: [-1, 0] }[e.side];
+      const r = Math.SQRT1_2;
+      const c = centroid(fp.ring), dir = { north: [0, -1], south: [0, 1], east: [1, 0], west: [-1, 0], northeast: [r, -r], northwest: [-r, -r], southeast: [r, r], southwest: [-r, r] }[e.side];
       p = hitRing(fp.ring, [c[0] + dir[0] * 500, c[1] + dir[1] * 500], c);
+    } else if (e.inside) {
+      // an open space you ride into: the stopping point is inside it
+      if (!fp || !pointInRing(fp.ring, e.inside)) throw new Error(`access ${name}: 'inside' point is not inside the footprint`);
+      p = e.inside;
+    } else if (e.at) {
+      // a point measured on georeferenced imagery (the reference atlas), placed on the footprint outline
+      p = fp ? nearestOnRing(fp.ring, e.at).p : e.at;
+      if (fp && Math.hypot(p[0] - e.at[0], p[1] - e.at[1]) > 6) throw new Error(`access ${name}: measured entrance is ${Math.round(Math.hypot(p[0] - e.at[0], p[1] - e.at[1]))} m off the footprint`);
     }
     if (!p) throw new Error(`access ${name}: curated entrance did not resolve`);
-    ent = { p, type: cur.type, method: 'curated', evidence: cur.evidence, conf: cur.confidence ?? 'medium', cite: cur.cite };
+    ent = { p, type: cur.type, method: 'curated', evidence: cur.evidence, conf: cur.confidence ?? 'medium', cite: cur.cite, refs: cur.refs, status: cur.status ?? 'partial' };
   }
   if (!ent && fp) {
     // 2. OSM entrance nodes on the footprint
@@ -276,10 +289,12 @@ for (const place of places) {
 
   // ---------- arrival point on the network, visible from the entrance ----------
   const ownBuilding = fp?.layer === 'building' ? buildings.find((b) => b.id === fp.id) ?? null : null;
-  const outside = fp?.layer === 'building' ? stepOut(fp.ring, ent.p, ent.via ? ent.via.from : centroid(fp.ring).map((v, i) => 2 * ent.p[i] - v)) : ent.p;
+  const viaPts = cur?.via ?? [];
+  const outward = viaPts.length ? viaPts[viaPts.length - 1] : ent.via ? ent.via.from : centroid(fp?.ring ?? [ent.p]).map((v, i) => 2 * ent.p[i] - v);
+  const outside = fp?.layer === 'building' ? stepOut(fp.ring, ent.p, outward) : ent.p;
   let arr = null;
   if (cur?.arrival?.way) {
-    arr = nearestOnNetwork(outside, { maxDist: 200, filter: (w) => w.id === `osm:${cur.arrival.way}` });
+    arr = nearestOnNetwork(cur.arrival.near ?? viaPts[0] ?? outside, { maxDist: 200, filter: (w) => w.id === `osm:${cur.arrival.way}` });
     if (!arr) throw new Error(`access ${name}: arrival way ${cur.arrival.way} not reachable`);
   }
   arr ??= nearestOnNetwork(outside, { maxDist: 200, visibleFrom: outside, filter: (w) => w.hw !== 'steps' });
@@ -299,9 +314,18 @@ for (const place of places) {
   arr ??= nearestOnNetwork(outside, { maxDist: 300 });
   if (!arr) { problems.push(`${name}: no network point within 300 m`); continue; }
   // vehicle drop-off: a proper road (not a footway or trail) in sight of the entrance
-  const drop = nearestOnNetwork(outside, { maxDist: 200, filter: ROAD, visibleFrom: outside }) ?? nearestOnNetwork(outside, { maxDist: 400, filter: ROAD });
-  const facing = Math.atan2(ent.p[0] - arr.p[0], -(ent.p[1] - arr.p[1]));
-  const legBlocked = blocked(outside, arr.p);
+  let drop = null;
+  if (cur?.dropoff?.way) {
+    drop = nearestOnNetwork(cur.dropoff.near ?? outside, { maxDist: 300, filter: (w) => w.id === `osm:${cur.dropoff.way}` });
+    if (!drop) throw new Error(`access ${name}: drop-off way ${cur.dropoff.way} not reachable`);
+  }
+  drop ??= nearestOnNetwork(outside, { maxDist: 200, filter: ROAD, visibleFrom: outside }) ?? nearestOnNetwork(outside, { maxDist: 400, filter: ROAD });
+  // the access leg: arrival -> forecourt waypoints -> the step outside the entrance
+  const leg = [arr.p, ...viaPts, outside];
+  const firstLeg = leg[1];
+  const facing = Math.atan2(firstLeg[0] - arr.p[0], -(firstLeg[1] - arr.p[1]));
+  let legBlocked = null;
+  for (let i = 0; i < leg.length - 1 && !legBlocked; i++) legBlocked = blocked(leg[i], leg[i + 1]);
   const rec = {
     place: name, placeId: place.id, kind: place.properties.class, footprint: fp?.id ?? null,
     entrance: ent.p, entranceType: ent.type, method: ent.method, evidence: ent.evidence, cite: ent.cite, confidence: ent.conf,
@@ -309,7 +333,12 @@ for (const place of places) {
     approach: [bearing(arr.heading), bearing(arr.heading + Math.PI)], facing: bearing(facing),
     dropoff: drop?.p ?? null, dropoffWay: drop?.way.id ?? null, dropoffWayName: drop?.way.name, dropoffDistance: drop ? r1(drop.dist) : null,
     legClear: !legBlocked,
+    via: viaPts.length ? viaPts : undefined,
+    status: ent.status ?? (PRIORITY.has(name) ? 'unverified' : ent.conf === 'low' ? 'inferred' : 'mapped'),
+    refs: ent.refs, stop: cur?.stop, approachText: cur?.approach,
+    secondary: cur?.secondary?.map((x) => ({ ...x, at: fp ? nearestOnRing(fp.ring, x.at).p : x.at })),
   };
+  if (legBlocked && ent.method === 'curated') problems.push(`${name}: the curated access leg crosses ${legBlocked.name ?? legBlocked.id}`);
   if (legBlocked) { rec.confidence = 'low'; rec.note = `the last few metres from the network to the entrance cross ${legBlocked.name ?? legBlocked.id} (an enclosed courtyard or a mapping gap)`; warnings.push(`${name}: ${rec.note}`); }
   if (buildingAt(arr.p)) problems.push(`${name}: arrival point inside a building`);
   out.push(rec);
@@ -345,7 +374,8 @@ const fc = {
   },
   features: [
     ...out.flatMap((a) => [
-      feature(`access:${a.placeId}`, { type: 'Point', coordinates: lngLat(a.entrance) }, { role: 'entrance', ...a, entrance: undefined, arrival: lngLat(a.arrival), dropoff: a.dropoff && lngLat(a.dropoff) }),
+      feature(`access:${a.placeId}`, { type: 'Point', coordinates: lngLat(a.entrance) }, { role: 'entrance', ...a, entrance: undefined, arrival: lngLat(a.arrival), dropoff: a.dropoff && lngLat(a.dropoff), via: a.via?.map(lngLat), secondary: undefined }),
+      ...(a.secondary ?? []).map((x, i) => feature(`access:${a.placeId}:secondary-${i + 1}`, { type: 'Point', coordinates: lngLat(x.at) }, { role: 'secondary-entrance', place: a.place, label: x.label, entranceType: x.type, evidence: x.evidence })),
     ]),
     ...campusGates.map((g) => feature(`gate:${g.id}`, { type: 'Point', coordinates: lngLat(g.point) }, { role: 'campus-gate', ...g, point: undefined })),
   ],
@@ -354,6 +384,8 @@ writeFileSync(`${G}/legon-access.geojson`, JSON.stringify(fc));
 const byConf = out.reduce((m, a) => ((m[a.confidence] = (m[a.confidence] ?? 0) + 1), m), {});
 const report = {
   destinations: out.length, byMethod: sourceOf, byConfidence: byConf, campusGates: campusGates.length, problems, warnings,
+  priority: [...PRIORITY].map((n) => { const a = out.find((x) => x.place === n); return { place: n, status: a.status, confidence: a.confidence, method: a.method }; }),
+  byStatus: out.reduce((m, a) => ((m[a.status] = (m[a.status] ?? 0) + 1), m), {}),
   curated: out.filter((a) => a.method === 'curated').map((a) => ({ place: a.place, type: a.entranceType, arrivalOn: a.arrivalWayName ?? a.arrivalWayClass, arrivalDistance: a.arrivalDistance, facing: a.facing })),
   furthestArrivals: [...out].sort((a, b) => b.arrivalDistance - a.arrivalDistance).slice(0, 15).map((a) => ({ place: a.place, method: a.method, arrivalDistance: a.arrivalDistance })),
   networkPassagesThroughBuildings: (() => {

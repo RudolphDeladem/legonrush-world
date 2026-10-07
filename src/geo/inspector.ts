@@ -336,13 +336,66 @@ function drawRouting(label: (t: string, x: number, y: number, col: string, size?
       ctx.fillStyle = '#f5c518'; ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
       if (scale > 0.5) label(st.text, x + 6, y, '#fff3c4', 10);
     }
-    const s0 = r.track.pose(r.lead, 0), e0 = r.track.pose(r.lead + r.length, 0);
-    const dot = (x: number, z: number, col: string, t: string) => { const [px, py] = S(x, z); ctx.fillStyle = col; ctx.strokeStyle = '#05070f'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); label(t, px + 8, py, col, 11, true); };
-    dot(s0.x, s0.z, '#ffffff', 'start');
-    dot(e0.x, e0.z, '#2ee66b', 'arrival');
-    if (r.access?.toEntrance) dot(r.access.toEntrance[0], r.access.toEntrance[1], '#ff3df5', 'entrance');
-    if (r.access?.fromEntrance) dot(r.access.fromEntrance[0], r.access.fromEntrance[1], '#c9c9ff', 'exit');
+    const s0 = r.track.pose(r.lead, 0);
+    const mid = r.track.pose(r.lead + r.length / 2, 0), [mx, my] = S(mid.x, mid.z);
+    label('ROUTE', mx + 8, my - 10, '#ff4f81', 12, true);
+    drawAccess(r.from.name, label, 'START');
+    drawAccess(r.to.name, label, 'ARRIVAL');
+    const [sx, sy] = S(s0.x, s0.z); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(sx, sy, 6, 0, Math.PI * 2); ctx.fill(); label('START', sx + 8, sy + 12, '#ffffff', 11, true);
+    // where the rider stops, and the way they face
+    const end = r.track.pose(r.track.length, 0), [qx, qy] = S(end.x, end.z);
+    ctx.strokeStyle = '#f5c518'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(qx, qy); ctx.lineTo(qx + end.tx * 22, qy + end.tz * 22); ctx.stroke();
+    label('RIDER STOPS', qx + 8, qy + 14, '#f5c518', 10, true);
   }
+  if (focus) drawAccess(focus, label, 'ARRIVAL');
+}
+const STATUS_COL: Record<string, string> = { verified: '#06d6a0', partial: '#ffd166', unverified: '#ef476f', mapped: '#8ab4f8', inferred: '#9aa6bf' };
+/** one destination's access: footprint, ENTRANCE, forecourt path, ARRIVAL with approach direction, DROP-OFF */
+function drawAccess(name: string, label: (t: string, x: number, y: number, col: string, size?: number, bold?: boolean) => void, arrivalLabel: string) {
+  const a = ACCESS.get(name);
+  if (!a) return;
+  const S = (x: number, z: number) => toScreen(x, z);
+  if (a.footprint) {
+    ctx.beginPath(); a.footprint.forEach(([x, z], i) => { const [px, py] = S(x, z); if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); }); ctx.closePath();
+    ctx.fillStyle = 'rgba(255,61,245,0.18)'; ctx.fill(); ctx.strokeStyle = '#ff3df5'; ctx.lineWidth = 2.5; ctx.stroke();
+  }
+  const node = (i: number): [number, number] => [D.nodes[i * 2] / 10, D.nodes[i * 2 + 1] / 10];
+  const arr = node(a.node), drop = node(a.dropNode);
+  const leg = [arr, ...(a.via ?? []), a.entrance].map(([x, z]) => S(x, z));
+  ctx.strokeStyle = '#ff3df5'; ctx.lineWidth = 2.5; ctx.setLineDash([6, 4]);
+  ctx.beginPath(); leg.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke(); ctx.setLineDash([]);
+  if (a.via?.length) { const [x, y] = leg[1]; label('ACCESS PATH', x + 6, y - 8, '#ffb3f9', 10, true); }
+  const [ex, ey] = S(a.entrance[0], a.entrance[1]);
+  ctx.fillStyle = STATUS_COL[a.status]; ctx.strokeStyle = '#05070f'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(ex, ey - 8); ctx.lineTo(ex + 8, ey); ctx.lineTo(ex, ey + 8); ctx.lineTo(ex - 8, ey); ctx.closePath(); ctx.fill(); ctx.stroke();
+  label(`ENTRANCE · ${a.type} · ${a.status}`, ex + 10, ey - 10, STATUS_COL[a.status], 11, true);
+  // arrival, with an arrow along the approach (arrival -> first leg point)
+  const [ax, ay] = leg[0], [bx, by] = leg[1];
+  ctx.fillStyle = '#2ee66b'; ctx.strokeStyle = '#05070f'; ctx.beginPath(); ctx.rect(ax - 6, ay - 6, 12, 12); ctx.fill(); ctx.stroke();
+  const ang = Math.atan2(by - ay, bx - ax), L = 26;
+  ctx.strokeStyle = '#2ee66b'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax + Math.cos(ang) * L, ay + Math.sin(ang) * L);
+  ctx.lineTo(ax + Math.cos(ang - 0.5) * (L - 8), ay + Math.sin(ang - 0.5) * (L - 8)); ctx.moveTo(ax + Math.cos(ang) * L, ay + Math.sin(ang) * L); ctx.lineTo(ax + Math.cos(ang + 0.5) * (L - 8), ay + Math.sin(ang + 0.5) * (L - 8)); ctx.stroke();
+  label(arrivalLabel === 'START' ? 'EXIT POINT' : 'ARRIVAL', ax + 10, ay + 14, '#2ee66b', 11, true);
+  if (a.dropNode !== a.node) {
+    const [dx, dy] = S(drop[0], drop[1]);
+    ctx.fillStyle = '#ff9f1c'; ctx.beginPath(); ctx.arc(dx, dy, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    label('DROP-OFF', dx + 8, dy + 12, '#ff9f1c', 10, true);
+  }
+}
+// the entrance list: priority destinations by status
+let focus: string | null = null;
+const PRI = [...ACCESS.entries()].filter(([, a]) => a.status === 'verified' || a.status === 'partial' || a.status === 'unverified').sort((x, y) => ['verified', 'partial', 'unverified'].indexOf(x[1].status) - ['verified', 'partial', 'unverified'].indexOf(y[1].status) || x[0].localeCompare(y[0]));
+const entList = $('#entList');
+for (const [name, a] of PRI) {
+  const li = document.createElement('li');
+  li.innerHTML = `<i style="background:${STATUS_COL[a.status]}"></i>${esc(name)} <small style="margin-left:auto;color:var(--muted)">${a.status}</small>`;
+  li.addEventListener('click', () => {
+    focus = name; route = null;
+    const n = a.node; cx = (a.entrance[0] + D.nodes[n * 2] / 10) / 2; cz = (a.entrance[1] + D.nodes[n * 2 + 1] / 10) / 2; scale = Math.max(scale, 3);
+    show(name, a.entrance[0], a.entrance[1], `Entrance: ${esc(a.type)} · <b>${a.status}</b> · confidence ${a.confidence}. Details: docs/LEGON_ENTRANCE_VERIFICATION.md`);
+    saveHash();
+  });
+  entList.append(li);
 }
 const rtFrom = $<HTMLInputElement>('#rtFrom'), rtTo = $<HTMLInputElement>('#rtTo'), rtMode = $<HTMLSelectElement>('#rtMode'), rtOut = $('#rtOut');
 $('#rtPlaces').innerHTML = [...PLACES].sort((a, b) => a.name.localeCompare(b.name)).map((p) => `<option value="${esc(p.name)}"></option>`).join('');
@@ -354,9 +407,10 @@ function runRoute(expect?: string) {
   const a = placeByName(rtFrom.value), b = placeByName(rtTo.value);
   if (!a || !b) { rtOut.textContent = 'Pick two places from the list.'; return; }
   route = exploreRoute(a, b, rtMode.value as TravelMode);
+  focus = null;
   if (!route) { rtOut.textContent = 'No route.'; draw(); return; }
   const fa = ACCESS.get(a.name), ta = ACCESS.get(b.name);
-  rtOut.innerHTML = `<b>${route.length} m</b>, ${route.steps.filter((s) => s.turn !== 'start' && s.turn !== 'arrive').length} turns.<br>Leaves from: ${esc(fa?.type ?? 'nearest road')} (${fa?.confidence ?? '-'}).<br>Arrives at: ${esc(ta?.type ?? 'nearest road')} (${ta?.confidence ?? '-'}).${expect ? `<br><i>Expected: ${esc(expect)}</i>` : ''}`;
+  rtOut.innerHTML = `<b>${route.length} m</b>, ${route.steps.filter((s) => s.turn !== 'start' && s.turn !== 'arrive').length} turns.<br>Leaves from: ${esc(fa?.type ?? 'nearest road')} (${fa?.status ?? '-'}, ${fa?.confidence ?? '-'}).<br>Arrives at: ${esc(ta?.type ?? 'nearest road')} (${ta?.status ?? '-'}, ${ta?.confidence ?? '-'}).${expect ? `<br><em>Expected: ${esc(expect)}</em>` : ''}`;
   // frame the route
   let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
   for (let d = 0; d <= route.track.length; d += 5) { const p = route.track.pose(d, 0); minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x); minZ = Math.min(minZ, p.z); maxZ = Math.max(maxZ, p.z); }

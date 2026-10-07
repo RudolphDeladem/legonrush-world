@@ -1,19 +1,19 @@
 {
  "destinations": 433,
  "byMethod": {
-  "curated": 8,
-  "osm-entrance": 2,
+  "curated": 28,
+  "osm-entrance": 1,
   "gate": 2,
   "path-access": 8,
   "drive-access": 19,
-  "area-entry": 11,
-  "frontage": 270,
+  "area-entry": 9,
+  "frontage": 253,
   "point": 113
  },
  "byConfidence": {
-  "low": 273,
-  "medium": 155,
-  "high": 5
+  "medium": 164,
+  "low": 256,
+  "high": 13
  },
  "campusGates": 5,
  "problems": [],
@@ -23,18 +23,310 @@
   "Oak Plaza Hotel: the last few metres from the network to the entrance cross osm:way/1333949613 (an enclosed courtyard or a mapping gap)",
   "Dar es Salaam Courts: the last few metres from the network to the entrance cross osm:way/1189695654 (an enclosed courtyard or a mapping gap)",
   "Muslim Prayer Lounge: the last few metres from the network to the entrance cross osm:way/320072522 (an enclosed courtyard or a mapping gap)",
-  "Mensah Sarbah Main Hall Females' Laundromat: the last few metres from the network to the entrance cross ml:d7ba2696-15b7-4ec8-90f0-8689e070e149 (an enclosed courtyard or a mapping gap)",
+  "Mensah Sarbah Main Hall Females' Laundromat: the last few metres from the network to the entrance cross Block F (an enclosed courtyard or a mapping gap)",
   "SalmaRise: the last few metres from the network to the entrance cross osm:way/1137230518 (an enclosed courtyard or a mapping gap)",
   "Didi Jollof: the last few metres from the network to the entrance cross Jubilee Hall (an enclosed courtyard or a mapping gap)",
   "Information Studies Department: the last few metres from the network to the entrance cross Information Studies Labs (an enclosed courtyard or a mapping gap)"
  ],
+ "priority": [
+  {
+   "place": "Legon Main Entrance",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
+  },
+  {
+   "place": "The Balme Library",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
+  },
+  {
+   "place": "Great Hall",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
+  },
+  {
+   "place": "University Square",
+   "status": "partial",
+   "confidence": "medium",
+   "method": "curated"
+  },
+  {
+   "place": "Balme Library Fountain",
+   "status": "partial",
+   "confidence": "medium",
+   "method": "curated"
+  },
+  {
+   "place": "University of Ghana Registry",
+   "status": "partial",
+   "confidence": "medium",
+   "method": "curated"
+  },
+  {
+   "place": "Kuffour Quadrangle",
+   "status": "partial",
+   "confidence": "medium",
+   "method": "curated"
+  },
+  {
+   "place": "University of Ghana banking square",
+   "status": "partial",
+   "confidence": "medium",
+   "method": "curated"
+  },
+  {
+   "place": "Night Market",
+   "status": "partial",
+   "confidence": "medium",
+   "method": "curated"
+  },
+  {
+   "place": "Legon Hall",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
+  },
+  {
+   "place": "Commonwealth Hall",
+   "status": "partial",
+   "confidence": "medium",
+   "method": "curated"
+  },
+  {
+   "place": "Akuafo Hall Main",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
+  },
+  {
+   "place": "Mensah Sarbah Hall",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
+  },
+  {
+   "place": "Volta Hall",
+   "status": "partial",
+   "confidence": "medium",
+   "method": "curated"
+  },
+  {
+   "place": "Elizabeth Frances Sey Hall",
+   "status": "partial",
+   "confidence": "medium",
+   "method": "curated"
+  },
+  {
+   "place": "Alexander Kwapong Hall",
+   "status": "partial",
+   "confidence": "medium",
+   "method": "curated"
+  },
+  {
+   "place": "Dr. Hilla Limann Hall",
+   "status": "partial",
+   "confidence": "medium",
+   "method": "curated"
+  },
+  {
+   "place": "Jean Nelson Aka Hall",
+   "status": "partial",
+   "confidence": "medium",
+   "method": "curated"
+  },
+  {
+   "place": "Pentagon Block A",
+   "status": "unverified",
+   "confidence": "low",
+   "method": "frontage"
+  },
+  {
+   "place": "Jubilee Hall",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
+  },
+  {
+   "place": "School of Engineering Sciences",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
+  },
+  {
+   "place": "University of Ghana Business School",
+   "status": "partial",
+   "confidence": "medium",
+   "method": "curated"
+  },
+  {
+   "place": "Institute of Africa Studies",
+   "status": "unverified",
+   "confidence": "low",
+   "method": "frontage"
+  },
+  {
+   "place": "Jones Quartey Building, JQB",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
+  },
+  {
+   "place": "K. A. Busia Building, KAB",
+   "status": "unverified",
+   "confidence": "low",
+   "method": "frontage"
+  },
+  {
+   "place": "School of Law",
+   "status": "partial",
+   "confidence": "medium",
+   "method": "curated"
+  },
+  {
+   "place": "N Block",
+   "status": "unverified",
+   "confidence": "low",
+   "method": "frontage"
+  },
+  {
+   "place": "University of Ghana Sports Stadium",
+   "status": "partial",
+   "confidence": "medium",
+   "method": "curated"
+  },
+  {
+   "place": "Athletic Oval",
+   "status": "partial",
+   "confidence": "medium",
+   "method": "curated"
+  },
+  {
+   "place": "University of Ghana Botanical Gardens",
+   "status": "verified",
+   "confidence": "high",
+   "method": "curated"
+  },
+  {
+   "place": "Vaughan Dam",
+   "status": "unverified",
+   "confidence": "low",
+   "method": "frontage"
+  },
+  {
+   "place": "International Students Hostel 1, ISH 1",
+   "status": "partial",
+   "confidence": "medium",
+   "method": "curated"
+  },
+  {
+   "place": "Valco Trust Hostel Phase 1",
+   "status": "unverified",
+   "confidence": "low",
+   "method": "frontage"
+  },
+  {
+   "place": "Bani Hostel",
+   "status": "unverified",
+   "confidence": "medium",
+   "method": "area-entry"
+  },
+  {
+   "place": "Evandy Hostel",
+   "status": "unverified",
+   "confidence": "low",
+   "method": "frontage"
+  },
+  {
+   "place": "James Topp Nelson Yankah Hall",
+   "status": "unverified",
+   "confidence": "medium",
+   "method": "area-entry"
+  },
+  {
+   "place": "University of Ghana Hospital",
+   "status": "unverified",
+   "confidence": "medium",
+   "method": "area-entry"
+  },
+  {
+   "place": "University of Ghana Medical Center Limited",
+   "status": "unverified",
+   "confidence": "medium",
+   "method": "area-entry"
+  },
+  {
+   "place": "Central Cafeteria, CC",
+   "status": "partial",
+   "confidence": "medium",
+   "method": "curated"
+  }
+ ],
+ "byStatus": {
+  "partial": 18,
+  "unverified": 11,
+  "inferred": 246,
+  "mapped": 148,
+  "verified": 10
+ },
  "curated": [
+  {
+   "place": "University of Ghana Sports Stadium",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 22.5,
+   "facing": 90
+  },
   {
    "place": "University Square",
    "type": "public open space",
    "arrivalOn": "footway",
-   "arrivalDistance": 3.2,
-   "facing": 180
+   "arrivalDistance": 6.2,
+   "facing": 0
+  },
+  {
+   "place": "University of Ghana Registry",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 17.4,
+   "facing": 329
+  },
+  {
+   "place": "University of Ghana Business School",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 2.6,
+   "facing": 178
+  },
+  {
+   "place": "Jubilee Hall",
+   "type": "hall entrance",
+   "arrivalOn": "Diaspora Path",
+   "arrivalDistance": 28.3,
+   "facing": 267
+  },
+  {
+   "place": "Alexander Kwapong Hall",
+   "type": "hall entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 26.3,
+   "facing": 240
+  },
+  {
+   "place": "Jean Nelson Aka Hall",
+   "type": "hall entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 25.1,
+   "facing": 241
+  },
+  {
+   "place": "Dr. Hilla Limann Hall",
+   "type": "hall entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 28.2,
+   "facing": 60
   },
   {
    "place": "Elizabeth Frances Sey Hall",
@@ -48,7 +340,14 @@
    "type": "public entrance",
    "arrivalOn": "service",
    "arrivalDistance": 11.6,
-   "facing": 179
+   "facing": 180
+  },
+  {
+   "place": "Athletic Oval",
+   "type": "public open space",
+   "arrivalOn": "residential",
+   "arrivalDistance": 13.7,
+   "facing": 0
   },
   {
    "place": "The Balme Library",
@@ -58,11 +357,88 @@
    "facing": 359
   },
   {
+   "place": "School of Engineering Sciences",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 0.4,
+   "facing": 358
+  },
+  {
+   "place": "International Students Hostel 1, ISH 1",
+   "type": "hall entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 6.7,
+   "facing": 160
+  },
+  {
+   "place": "Central Cafeteria, CC",
+   "type": "public entrance",
+   "arrivalOn": "residential",
+   "arrivalDistance": 9,
+   "facing": 0
+  },
+  {
+   "place": "Jones Quartey Building, JQB",
+   "type": "public entrance",
+   "arrivalOn": "footway",
+   "arrivalDistance": 21.1,
+   "facing": 287
+  },
+  {
+   "place": "Balme Library Fountain",
+   "type": "public open space",
+   "arrivalOn": "footway",
+   "arrivalDistance": 3.3,
+   "facing": 180
+  },
+  {
+   "place": "Volta Hall",
+   "type": "hall entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 0.2,
+   "facing": 266
+  },
+  {
    "place": "Legon Main Entrance",
    "type": "campus gate",
    "arrivalOn": "Dr. J.B. Danquah Avenue",
    "arrivalDistance": 2.5,
-   "facing": 269
+   "facing": 359
+  },
+  {
+   "place": "University of Ghana Botanical Gardens",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 0,
+   "facing": 180
+  },
+  {
+   "place": "Akuafo Hall Main",
+   "type": "hall entrance",
+   "arrivalOn": "footway",
+   "arrivalDistance": 0.1,
+   "facing": 176
+  },
+  {
+   "place": "Legon Hall",
+   "type": "hall entrance",
+   "arrivalOn": "Dr. J.B. Danquah Avenue",
+   "arrivalDistance": 0.2,
+   "facing": 187
+  },
+  {
+   "place": "School of Law",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 15,
+   "facing": 278
+  },
+  {
+   "place": "Kuffour Quadrangle",
+   "type": "public open space",
+   "arrivalOn": "footway",
+   "arrivalDistance": 3.1,
+   "facing": 0
   },
   {
    "place": "Commonwealth Hall",
@@ -75,15 +451,22 @@
    "place": "Mensah Sarbah Hall",
    "type": "hall entrance (porters' lodge)",
    "arrivalOn": "service",
-   "arrivalDistance": 11.3,
-   "facing": 166
+   "arrivalDistance": 0.2,
+   "facing": 153
   },
   {
    "place": "Great Hall",
    "type": "public entrance",
    "arrivalOn": "service",
-   "arrivalDistance": 22.4,
-   "facing": 21
+   "arrivalDistance": 0.4,
+   "facing": 328
+  },
+  {
+   "place": "Night Market",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 8.2,
+   "facing": 180
   }
  ],
  "furthestArrivals": [

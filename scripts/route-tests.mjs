@@ -35,11 +35,27 @@ try {
     if (!reach.has(a.node)) fail(`${p.name}: access point is not connected to the road/path network`);
     if (!reach.has(a.dropNode)) fail(`${p.name}: drop-off is not connected to the road network`);
     if (blockedAt(ax, az)) fail(`${p.name}: arrival point is inside ${blockedAt(ax, az).name ?? 'a building'}`);
-    // the last metres from the arrival point to the entrance must be clear (the entrance itself sits on the outline)
-    const [ex, ez] = a.entrance, len = Math.hypot(ex - ax, ez - az);
+    // the walk from the arrival point through the forecourt waypoints to the entrance must be clear (the entrance itself sits on the outline)
+    const leg = [[ax, az], ...(a.via ?? []), a.entrance];
     let crossed = null;
-    for (let s = 0.5; s < len - 1.5; s += 0.5) { const b = blockedAt(ax + ((ex - ax) * s) / len, az + ((ez - az) * s) / len); if (b) { crossed = b; break; } }
+    for (let i = 0; i < leg.length - 1 && !crossed; i++) {
+      const [x0, z0] = leg[i], [x1, z1] = leg[i + 1], len = Math.hypot(x1 - x0, z1 - z0);
+      const end = i === leg.length - 2 ? len - 1.5 : len;
+      for (let s = 0.5; s < end; s += 0.5) { const b = blockedAt(x0 + ((x1 - x0) * s) / len, z0 + ((z1 - z0) * s) / len); if (b) { crossed = b; break; } }
+    }
     if (crossed) { if (a.confidence === 'low') lowLegs++; else fail(`${p.name}: the way from the arrival point to the entrance crosses ${crossed.name ?? 'a building'}`); }
+  }
+  // evidence rules: verified means high, nothing unverified or inferred is presented as high
+  const { readFileSync: rf } = await import('node:fs');
+  const registry = JSON.parse(rf('data/geography/registry/access.json', 'utf8'));
+  for (const n of registry.priority) {
+    const a = ACCESS.get(n);
+    if (!a) { fail(`priority destination ${n}: no access`); continue; }
+    if (a.status === 'inferred' || a.status === 'mapped') fail(`priority destination ${n}: status ${a.status} (must be verified, partial or unverified)`);
+  }
+  for (const [n, a] of ACCESS) {
+    if (a.status === 'verified' && a.confidence !== 'high') fail(`${n}: verified but confidence ${a.confidence}`);
+    if (a.status !== 'verified' && a.confidence === 'high' && !['mapped'].includes(a.status)) fail(`${n}: ${a.status} but confidence high`);
   }
   if (lowLegs) notes.push(`${lowLegs} low-confidence destinations have a building between the network and the entrance (enclosed courtyards / mapping gaps; listed in data/geography/access-report.json)`);
 

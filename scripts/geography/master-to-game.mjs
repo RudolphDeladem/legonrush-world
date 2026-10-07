@@ -67,10 +67,25 @@ for (const f of [...by('road'), ...by('path')]) {
 // access points: entrance, the node to ride to (arrival) and the node a car stops at (drop-off)
 const nodeAt = (pos) => { const k = pt(pos).map(dm).join(','); if (!nodeIndex.has(k)) throw new Error(`access node ${k} is not on the network`); return nodeIndex.get(k); };
 const TYPE = { 'public entrance': 'e', 'campus gate': 'g', pedestrian: 'p', 'drop-off': 'v', vehicle: 'v', gate: 'g', 'path access': 'p', 'inferred frontage': 'i', point: 'o', 'public open space': 's', 'hall entrance': 'h', "hall entrance (porters' lodge)": 'h' };
+// footprint outlines of the priority destinations, so the inspector can show building -> entrance -> forecourt -> road
+const fpById = new Map(master.features.filter((f) => f.geometry.type === 'Polygon').map((f) => [f.id, f]));
+const PRIORITY_FP = (p) => {
+  if (p.status === 'mapped' || p.status === 'inferred' || !p.footprint) return null;
+  const f = fpById.get(p.footprint);
+  return f ? flat(open(f.geometry.coordinates[0])) : null;
+};
 const access = ACCESS.map((f) => {
   const p = f.properties;
   const a = nodeAt(p.arrival), d = p.dropoff ? nodeAt(p.dropoff) : a;
-  return { n: p.place, e: pt(f.geometry.coordinates).map(dm), a, ...(d !== a && { d }), t: TYPE[p.entranceType] ?? 'o', f: p.facing, ...(Q[p.confidence] && { q: Q[p.confidence] }) };
+  const STATUS = { verified: 'v', partial: 'p', unverified: 'u', inferred: 'i', mapped: 'm' };
+  const fpRing = PRIORITY_FP(p);
+  return {
+    n: p.place, e: pt(f.geometry.coordinates).map(dm), a, ...(d !== a && { d }), t: TYPE[p.entranceType] ?? 'o', f: p.facing, ...(Q[p.confidence] && { q: Q[p.confidence] }),
+    s: STATUS[p.status] ?? 'i',
+    // forecourt waypoints from the arrival point to the entrance
+    ...(p.via && { v: p.via.flatMap((c) => pt(c).map(dm)) }),
+    ...(fpRing && { fp: fpRing }),
+  };
 }).sort((x, y) => (x.n < y.n ? -1 : 1));
 const accessNodes = [...accessKeys].map((k) => nodeIndex.get(k)).filter((i) => i !== undefined).sort((x, y) => x - y);
 const gates = accessFc.features.filter((f) => f.properties.role === 'campus-gate').map((f) => { const [x, z] = pt(f.geometry.coordinates).map(dm); return { id: f.properties.id, n: f.properties.name, x, z }; });

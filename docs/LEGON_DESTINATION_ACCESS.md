@@ -1,5 +1,7 @@
 # Legon destination access and routing
 
+> **Superseded for priority destinations by [LEGON_ENTRANCE_VERIFICATION.md](LEGON_ENTRANCE_VERIFICATION.md)**, which verifies entrances against the owner-supplied atlas and building references and marks unverified ones. The Great Hall row below (west façade) was wrong: the public front faces east onto the Convocation courtyard.
+
 How LEGONRUSH gets you *to* a place on campus: which door, which side, which road, and where the
 ride stops. This layer sits on top of the master geography ([LEGON_MASTER_GEOGRAPHY.md](LEGON_MASTER_GEOGRAPHY.md))
 and does not change it.

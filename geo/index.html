@@ -25,9 +25,9 @@
       input[type='range'] { width: 100%; }
       input[type='search'] { width: 100%; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--line); background: #0d1529; color: var(--text); }
       #lm { list-style: none; margin: 6px 0 0; padding: 0; max-height: 240px; overflow: auto; }
-      #lm li { padding: 4px 6px; border-radius: 5px; cursor: pointer; display: flex; gap: 6px; align-items: center; }
-      #lm li:hover { background: #18223d; }
-      #lm li i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+      #lm li, #entList li { padding: 4px 6px; border-radius: 5px; cursor: pointer; display: flex; gap: 6px; align-items: center; }
+      #lm li:hover, #entList li:hover { background: #18223d; }
+      #lm li i, #entList li i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
       #info { right: 12px; top: 12px; width: 300px; padding: 12px 14px; display: none; }
       #info h3 { margin: 0 0 4px; font-size: 14px; }
       #info .k { color: var(--muted); }
@@ -63,6 +63,9 @@
       <datalist id="rtPlaces"></datalist>
       <div style="display:flex;gap:6px;align-items:center"><select id="rtMode" style="flex:1;padding:6px;border-radius:6px;background:#0d1529;color:var(--text);border:1px solid var(--line)"><option value="cycle">Ride</option><option value="walk">Walk</option><option value="drive">Taxi / shuttle</option></select><button id="rtGo" type="button" style="padding:6px 12px;border-radius:6px;border:0;background:var(--accent);font-weight:700;cursor:pointer">Route</button></div>
       <div id="rtOut" class="legend" style="margin-top:6px"></div>
+      <h2>Destination entrances</h2>
+      <div class="legend">click to inspect <i style="background:#06d6a0"></i>verified <i style="background:#ffd166"></i>partial <i style="background:#ef476f"></i>unverified</div>
+      <ul id="entList" class="lm-list" style="list-style:none;margin:6px 0 0;padding:0;max-height:220px;overflow:auto"></ul>
       <h2>Landmarks</h2>
       <div class="legend">confidence <i style="background:#06d6a0"></i>high <i style="background:#ffd166"></i>medium <i style="background:#ef476f"></i>low</div>
       <input id="q" type="search" placeholder="Find a landmark or place" style="margin-top:6px" />

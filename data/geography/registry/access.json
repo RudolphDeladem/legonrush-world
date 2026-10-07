@@ -1,12 +1,15 @@
 {
- "about": "Curated destination access for Legon. An entry here overrides the automatic evidence chain in scripts/geography/build-access.mjs and must say why. Entrances are never placed freely: each one is an OpenStreetMap node or gate, the point where a mapped way meets the footprint, or the side of the footprint met by a mapped axis. 'campusGates' names the university's gates from written sources.",
+ "about": "Evidence-verified destination access for Legon. An entry here overrides the automatic evidence chain in scripts/geography/build-access.mjs and must say why. Entrances are an OSM node or gate, a point measured on the georeferenced reference atlas ('at', snapped onto the named footprint), the side of a footprint met by a mapped axis or facing a direction, or where a mapped way meets the footprint. 'status': verified (direct visual or written evidence of the entrance), partial (evidence for the side/approach but not the exact door), unverified (listed in 'priority' with no entry here: the automatic result is kept and reported, never presented as verified). 'refs' name the user-supplied reference images (UG_BUILDINGS__LAYOUTS_AND_THEIR_STRUCTURES.zip and the two satellite atlas sheets) used as evidence; coordinates are game-frame metres measured on those images after registering them to the OSM footprints (docs/LEGON_ENTRANCE_VERIFICATION.md).",
  "citations": {
   "ug-legon-campus": "https://old1.ug.edu.gh/node/38",
   "ug-gates": "https://www.graphic.com.gh/news/general-news/univ-of-ghana-blocks-access-routes-to-public.html",
   "ug-gates-2": "https://citifmonline.com/2014/03/chaos-at-ug-over-blocked-roads/",
   "ug-stadium-gate": "https://old1.ug.edu.gh/node/70293",
   "univers-level100": "https://univers.ug.edu.gh/finding-your-way-on-the-streets-of-legon-a-level-100-guide/",
-  "visitghana-botanical": "https://visitghana.com/?p=12576"
+  "visitghana-botanical": "https://visitghana.com/?p=12576",
+  "user-atlas": "Satellite campus reference atlas supplied by the project owner (2 sheets, Apple Maps imagery), registered to OSM footprints",
+  "user-layouts": "UG_BUILDINGS__LAYOUTS_AND_THEIR_STRUCTURES.zip supplied by the project owner: labelled layouts and entrance photos",
+  "legon-porters-lodge": "https://gh.near-place.com/legon-hall-porters-lodge-j-b-danquah-road-accra"
  },
  "campusGates": [
   {
@@ -79,9 +82,14 @@
    "arrival": {
     "way": "way/448225218"
    },
+   "status": "verified",
    "confidence": "high",
    "cite": "ug-gates",
-   "evidence": "The Main Gate is the permit lift gate across the inbound (northern, right-hand) carriageway of Dr. J.B. Danquah Avenue at the gatehouse (OSM node 5813545127); written: 'the Main gate (opposite the Legon Police Station)'."
+   "approach": "From the N4 (J.J. Rawlings Avenue) turn west into Dr. J.B. Danquah Avenue and pass the inbound lift gate at the gatehouse.",
+   "evidence": "UG security directive: 'the Main gate (opposite the Legon Police Station)'; OSM permit lift gates at the gatehouse on the inbound carriageway; reference atlas shows the gatehouse straddling the avenue.",
+   "refs": [
+    "atlas sheet 2"
+   ]
   },
   {
    "place": "The Balme Library",
@@ -89,19 +97,137 @@
     "axisFrom": "osm:way/320067568"
    },
    "type": "public entrance",
-   "confidence": "medium",
+   "status": "verified",
+   "confidence": "high",
    "cite": "ug-legon-campus",
-   "evidence": "Written: an ornamental fountain on the University Square 'overlooking the Balme Library'. OSM: the forecourt lanes (ways 448104199, 448104193) run from the fountain roundabout straight to the library's south front, so the public front is the fa\u00e7ade facing the fountain. Previously the ride ended on the road behind (north of) the library."
+   "approach": "Along the avenue to the fountain roundabout, then north up the forecourt lanes to the library's south front.",
+   "evidence": "UG: the fountain on the University Square 'overlooking the Balme Library'. Reference atlas (sheet 2): a paved forecourt runs on the fountain axis from the roundabout to the library's south facade; OSM forecourt lanes (ways 448104199, 448104193) frame it. The north side faces the Kuffour Quadrangle gardens.",
+   "refs": [
+    "atlas sheet 2"
+   ]
+  },
+  {
+   "place": "Great Hall",
+   "entrance": {
+    "at": [
+     -992,
+     127
+    ]
+   },
+   "type": "public entrance",
+   "arrival": {
+    "way": "way/424526319",
+    "near": [
+     -889,
+     127
+    ]
+   },
+   "via": [
+    [
+     -896,
+     115
+    ],
+    [
+     -920,
+     115
+    ],
+    [
+     -932,
+     133
+    ],
+    [
+     -985,
+     133
+    ]
+   ],
+   "status": "verified",
+   "confidence": "high",
+   "cite": "user-layouts",
+   "stop": "outside",
+   "approach": "Up Legon Hill on the axial road from the east, stop at its turning loop, then cross the Convocation courtyard west to the hall's east front.",
+   "evidence": "great_hall_and_directorate_4: the public front is the gable end with three doors at the end of a long paved courtyard with lawn panels between low flanking wings, the tower beside it. great_hall_and_directorate_3: the opposite (west) end is the curved, terraced end above the loop road. Reference atlas sheet 2: the paved courtyard lies east of the hall, between it and the axial road loop (OSM way 424526319). Previous entrance (west side, at the turning circles) was the back of the hall.",
+   "refs": [
+    "great_hall_and_directorate_2_labeled.png",
+    "great_hall_and_directorate_3_labeled.png",
+    "great_hall_and_directorate_4_labeled.png",
+    "atlas sheet 2"
+   ],
+   "secondary": [
+    {
+     "label": "west turning circles (service / back of the hall)",
+     "type": "vehicle",
+     "at": [
+      -1028,
+      128
+     ],
+     "evidence": "OSM turning circles on the summit loop at the curved west end"
+    }
+   ]
   },
   {
    "place": "University Square",
    "entrance": {
+    "inside": [
+     8,
+     52
+    ]
+   },
+   "type": "public open space",
+   "status": "partial",
+   "confidence": "medium",
+   "cite": "ug-legon-campus",
+   "approach": "Ride onto the square's paths and stop in the middle of the square, between the library front and the fountain.",
+   "evidence": "UG text: 'mid-way [along the avenue] is an open space, the University Square, with an ornamental fountain'. The square's outline is derived from the lanes that bound it (no source maps it).",
+   "refs": [
+    "atlas sheet 2"
+   ],
+   "stop": "inside"
+  },
+  {
+   "place": "Balme Library Fountain",
+   "entrance": {
+    "side": "north"
+   },
+   "type": "public open space",
+   "status": "partial",
+   "confidence": "medium",
+   "cite": "ug-legon-campus",
+   "approach": "Viewed and reached from the University Square's south edge; the fountain sits on the avenue roundabout island.",
+   "evidence": "OSM fountain polygon (way 320067568) inside the avenue roundabout; the square lies directly north of it.",
+   "refs": [
+    "atlas sheet 2"
+   ]
+  },
+  {
+   "place": "University of Ghana Registry",
+   "footprint": "osm:way/492099527",
+   "entrance": {
+    "side": "south"
+   },
+   "type": "public entrance",
+   "status": "partial",
+   "confidence": "medium",
+   "cite": "user-atlas",
+   "approach": "Up Legon Hill to the service road south of the Convocation Group and its car park.",
+   "evidence": "OSM 'University of Ghana Registry' node lies inside this building (OSM names it 'Cash office'); Apple's 'University of Ghana Registry' label in reference atlas sheet 2 sits on the same block; OSM car park (way 720486435) and service road (way 720486437) adjoin its south side. Exact door not visible.",
+   "refs": [
+    "atlas sheet 2"
+   ]
+  },
+  {
+   "place": "Kuffour Quadrangle",
+   "entrance": {
     "side": "south"
    },
    "type": "public open space",
+   "status": "partial",
    "confidence": "medium",
-   "cite": "ug-legon-campus",
-   "evidence": "Written: 'mid-way [along the avenue] is an open space, the University Square, with an ornamental fountain'. The square opens onto the avenue at the fountain roundabout, its south edge."
+   "cite": "univers-level100",
+   "approach": "Behind (north of) the Balme Library; enter the formal garden from its south edge on the central path.",
+   "evidence": "Radio Univers: 'Balme Library Gardens / Kuffuor Quadrangle', behind the library. Atlas sheet 2 shows the symmetric formal garden with its central axis aligned on the library.",
+   "refs": [
+    "atlas sheet 2"
+   ]
   },
   {
    "place": "University of Ghana banking square",
@@ -109,29 +235,113 @@
     "axisFrom": "osm:way/492099498"
    },
    "type": "public entrance",
+   "status": "partial",
    "confidence": "medium",
-   "cite": "ug-legon-campus",
-   "evidence": "OSM: the bank complex (relation 7226878) is served by the car park named 'Banking Square Parking' (way 492099498) on its north side; the banks face their customers' car park."
+   "cite": "user-layouts",
+   "approach": "Into the Banking Square car park on the north side of the bank courtyard building.",
+   "evidence": "banking_square_layout: the bank courtyard building (Prudential Bank) with its customer car park along the north facade and access road; OSM car park 'Banking Square Parking'. Individual bank doors are not visible.",
+   "refs": [
+    "banking_square_layout_labeled.png"
+   ]
   },
   {
-   "place": "Great Hall",
+   "place": "Night Market",
    "entrance": {
-    "side": "west"
+    "side": "north"
    },
    "type": "public entrance",
+   "status": "partial",
    "confidence": "medium",
-   "cite": "ug-legon-campus",
-   "evidence": "OSM maps two vehicle turning circles on the summit loop road directly at the Great Hall's west fa\u00e7ade (master roundabouts at -1046,157 and -1032,102): the drop-off. The east side faces the enclosed courtyard of the Convocation Group with no mapped access. Unresolved alternative: a ceremonial east front on the avenue axis (Commonwealth Hall and the Great Hall share an east-west line)."
+   "cite": "user-atlas",
+   "approach": "From the Banking Square side, into the north end of the stall rows.",
+   "evidence": "Reference atlas sheet 1: the market is the angled rows of stall sheds south of the bank courtyard (OSM food court way 773864855); the rows open toward the Banking Square car park at their north end.",
+   "refs": [
+    "atlas sheet 1",
+    "banking_square_layout_labeled.png"
+   ]
   },
   {
-   "place": "Commonwealth Hall",
+   "place": "Legon Hall",
+   "footprint": "osm:way/394125209",
    "entrance": {
-    "side": "east"
+    "at": [
+     -147,
+     157
+    ]
    },
    "type": "hall entrance",
-   "confidence": "medium",
-   "cite": "ug-legon-campus",
-   "evidence": "Written: 'the University Avenue extends to Commonwealth Hall on Legon Hill'. The hall is approached from the avenue end, its east side facing down the avenue toward the Balme Library."
+   "arrival": {
+    "way": "way/448224302",
+    "near": [
+     -145,
+     137
+    ]
+   },
+   "dropoff": {
+    "way": "way/448224302",
+    "near": [
+     -145,
+     137
+    ]
+   },
+   "status": "verified",
+   "confidence": "high",
+   "cite": "legon-porters-lodge",
+   "stop": "outside",
+   "approach": "Along the avenue's southern carriageway, turn into the paved forecourt on the hall's axis and stop at the north front.",
+   "evidence": "Business listings place the Legon Hall Porters Lodge on J. B. Danquah Road (the avenue). legon_hall_layout (registered to OSM): the hall's spine footway (OSM 1186587902/614159986) runs north to this block; atlas sheet 2 shows a paved forecourt from the avenue to its north face. legon_hall_entrance photo: arched front with a paved forecourt. Note: Apple's 'Legon Hall' pin sits on OSM 'Maison Francais' to the east, which is a different building.",
+   "refs": [
+    "legon_hall_layout_labeled.png",
+    "legon_hall_entrance_labeled.png",
+    "atlas sheet 2"
+   ],
+   "secondary": [
+    {
+     "label": "Legon Hall Southern Gate",
+     "type": "pedestrian",
+     "at": [
+      -147,
+      360
+     ],
+     "evidence": "Apple label 'Legon Hall Southern Gate' in legon_hall_layout"
+    }
+   ]
+  },
+  {
+   "place": "Akuafo Hall Main",
+   "footprint": "osm:way/394125203",
+   "entrance": {
+    "at": [
+     160,
+     156
+    ]
+   },
+   "type": "hall entrance",
+   "arrival": {
+    "way": "way/603522802",
+    "near": [
+     160,
+     146
+    ]
+   },
+   "dropoff": {
+    "way": "way/448225216",
+    "near": [
+     160,
+     135
+    ]
+   },
+   "status": "verified",
+   "confidence": "high",
+   "cite": "user-layouts",
+   "stop": "outside",
+   "approach": "Off the avenue's southern carriageway onto the forecourt footway, to the arched gatehouse that leads into the fountain court.",
+   "evidence": "akuafo_hall_layout (registered to OSM): the forecourt footway (OSM 606687250 / 603522802) leaves the avenue and passes through the arch of this north block into the circular fountain court; akuafo_hall_entrance: stone-paved forecourt with curved paths and circular planters at the entrance. Previous entrance was an inferred point on the service road east of the hall.",
+   "refs": [
+    "akuafo_hall_layout_labeled.png",
+    "akuafo_hall_entrance_labeled.png",
+    "atlas sheet 2"
+   ]
   },
   {
    "place": "Mensah Sarbah Hall",
@@ -139,9 +349,71 @@
     "building": "way/300288063"
    },
    "type": "hall entrance (porters' lodge)",
+   "arrival": {
+    "way": "way/1540994843",
+    "near": [
+     5,
+     598
+    ]
+   },
+   "status": "verified",
+   "confidence": "high",
+   "cite": "user-layouts",
+   "stop": "outside",
+   "approach": "Along Mensah Sarbah Crescent into the semicircular drive in front of the porters' lodge archway.",
+   "evidence": "mensah_sarbah_hall_main_2 (aerial): the gate building with its central archway faces a semicircular drive; mensah_sarbah_hall_layout (registered): that drive is OSM way 1540994843 and the gate building is OSM 'Administration and Porters' Lodge' (way 300288063). The large block with the cupola in main_1/main_3 is across the courtyard (the dining hall), not the entrance.",
+   "refs": [
+    "mensah_sarbah_hall_layout_labeled.png",
+    "mensah_sarbah_hall_main_1_labeled.png",
+    "mensah_sarbah_hall_main_2_labeled.png",
+    "mensah_sarbah_hall_main_3_labeled.png"
+   ]
+  },
+  {
+   "place": "Volta Hall",
+   "footprint": "osm:way/320072537",
+   "entrance": {
+    "at": [
+     -259,
+     0
+    ]
+   },
+   "type": "hall entrance",
+   "arrival": {
+    "way": "way/1535119978",
+    "near": [
+     -248,
+     0
+    ]
+   },
+   "status": "partial",
+   "confidence": "medium",
+   "cite": "user-layouts",
+   "approach": "Along Volta Hall Road into the semicircular drop-off loop in front of the east wing.",
+   "evidence": "volta_hall_layout (registered to OSM): OSM maps a semicircular drop-off loop (way 1535119978) off Volta Hall Road directly in front of the east wing; volta_hall_entrance: an arched doorway at the top of a flight of steps up from a drive. The photo cannot be tied to the loop with certainty.",
+   "refs": [
+    "volta_hall_layout_labeled.png",
+    "volta_hall_entrance_labeled.png"
+   ]
+  },
+  {
+   "place": "Commonwealth Hall",
+   "entrance": {
+    "side": "east"
+   },
+   "type": "hall entrance",
+   "status": "partial",
    "confidence": "medium",
    "cite": "ug-legon-campus",
-   "evidence": "OSM: the hall's 'Administration and Porters' Lodge' (way 300288063) stands at the north edge of the Sarbah precinct; halls are entered at the porters' lodge. Radio Univers: the Central Cafeteria is 'right in front of Mensah Sarbah Hall', on the same side."
+   "approach": "Up the avenue to its western end at the hall.",
+   "evidence": "UG: 'the University Avenue extends to Commonwealth Hall on Legon Hill'. commonwealth_hall_entrance_1-3: a porch at the top of wide steps from a drive where cars park. The oblique layout photos are not north-up, so which end they show cannot be fixed; the east end on the avenue axis is kept.",
+   "refs": [
+    "commonwealth_hall_entrance_1_labeled.png",
+    "commonwealth_hall_entrance_2_labeled.png",
+    "commonwealth_hall_entrance_3_labeled.png",
+    "commonwealth_hall_building_layout_1_labeled.png",
+    "commonwealth_hall_building_layout_2_labeled.png"
+   ]
   },
   {
    "place": "Elizabeth Frances Sey Hall",
@@ -149,9 +421,260 @@
     "axisFrom": "osm:way/765261438"
    },
    "type": "hall entrance",
+   "status": "partial",
    "confidence": "medium",
-   "cite": "ug-legon-campus",
-   "evidence": "OSM: the hall's forecourt car park is mapped and named 'Sey frontage' (way 765261438); the entrance is the fa\u00e7ade facing it."
+   "cite": "user-atlas",
+   "approach": "From Jubilee Link into the car park shared with Jean Nelson Aka Hall.",
+   "evidence": "OSM names the car park on the hall's south-west side 'Sey frontage' (way 765261438); atlas sheet 1 shows it shared with JNA. The door's position along the facade is not visible.",
+   "refs": [
+    "atlas sheet 1"
+   ]
+  },
+  {
+   "place": "Jean Nelson Aka Hall",
+   "entrance": {
+    "axisFrom": "osm:way/765261442"
+   },
+   "type": "hall entrance",
+   "status": "partial",
+   "confidence": "medium",
+   "cite": "user-atlas",
+   "approach": "Into the car park shared with Elizabeth Sey Hall.",
+   "evidence": "Atlas sheet 1: JNA and Sey face each other across shared car parks (OSM ways 765261438, 765261442). Door position not visible.",
+   "refs": [
+    "atlas sheet 1"
+   ]
+  },
+  {
+   "place": "Alexander Kwapong Hall",
+   "entrance": {
+    "side": "northeast"
+   },
+   "type": "hall entrance",
+   "status": "partial",
+   "confidence": "medium",
+   "cite": "user-atlas",
+   "approach": "Into the car parks shared with Hilla Limann Hall.",
+   "evidence": "Atlas sheet 1: Kwapong and Limann face each other across shared car parks (OSM ways 758589789-792). Kwapong also has a car park on its south-west side (765261445), so the main door side is not certain.",
+   "refs": [
+    "atlas sheet 1"
+   ]
+  },
+  {
+   "place": "Dr. Hilla Limann Hall",
+   "entrance": {
+    "side": "southwest"
+   },
+   "type": "hall entrance",
+   "status": "partial",
+   "confidence": "medium",
+   "cite": "user-atlas",
+   "approach": "Into the car parks shared with Alexander Kwapong Hall.",
+   "evidence": "Atlas sheet 1: Limann and Kwapong face each other across shared car parks (OSM ways 758589789-792). Door position not visible.",
+   "refs": [
+    "atlas sheet 1"
+   ]
+  },
+  {
+   "place": "Jubilee Hall",
+   "entrance": {
+    "at": [
+     136,
+     1300
+    ]
+   },
+   "type": "hall entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "user-layouts",
+   "approach": "From Jubilee Link to the porch at the hall's southern corner, beside the round stair tower.",
+   "evidence": "jubilee_hall_4: the entrance porch with the hall sign beside a rounded white stair tower at a corner, with a road below; jubilee_hall_3 shows the same corner nearest the road. jubilee_hall_layout (registered to OSM): the rounded tower and porch are at the southern corner (the notch in OSM relation 3697984) next to the road.",
+   "refs": [
+    "jubilee_hall_layout_labeled.png",
+    "jubilee_hall_3_labeled.png",
+    "jubilee_hall_4_labeled.png",
+    "atlas sheet 1"
+   ]
+  },
+  {
+   "place": "School of Engineering Sciences",
+   "entrance": {
+    "side": "south"
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "user-layouts",
+   "approach": "Up the straight access road from the south that ends at the school's forecourt.",
+   "evidence": "engineering_school_layout (registered to OSM): a straight access road from the south ends at a paved forecourt in front of the south block, where Apple pins 'School of Engineering Sciences'; the car park is to the west.",
+   "refs": [
+    "engineering_school_layout_labeled.png"
+   ]
+  },
+  {
+   "place": "University of Ghana Business School",
+   "entrance": {
+    "side": "north"
+   },
+   "type": "public entrance",
+   "status": "partial",
+   "confidence": "medium",
+   "cite": "user-layouts",
+   "approach": "From the road north of the school, through its car park to the covered walkway along the north front.",
+   "evidence": "business_school_layout (registered to OSM): the car park and access road lie along the north side, with a covered walkway on the north facade. Door not visible.",
+   "refs": [
+    "business_school_layout_labeled.png"
+   ]
+  },
+  {
+   "place": "Jones Quartey Building, JQB",
+   "entrance": {
+    "side": "south"
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "univers-level100",
+   "approach": "From the avenue side by the footpaths that converge on the building's south front.",
+   "evidence": "Radio Univers: JQB is 'close to the Main Entrance ... behind the Institute of African Studies, on your right side when coming from the main gate'. Atlas sheet 2 + OSM: the footpaths from the avenue side converge on the south face. Previous entrance was an inferred point at the north-east corner (the back).",
+   "refs": [
+    "atlas sheet 2"
+   ]
+  },
+  {
+   "place": "School of Law",
+   "entrance": {
+    "side": "east"
+   },
+   "type": "public entrance",
+   "status": "partial",
+   "confidence": "medium",
+   "cite": "user-layouts",
+   "approach": "From the road on the east into the paved courtyard enclosed by the law buildings.",
+   "evidence": "law_school_layout (registered to OSM): the buildings wrap a paved courtyard that opens to the road on the east (a vehicle is parked in it).",
+   "refs": [
+    "law_school_layout_labeled.png"
+   ]
+  },
+  {
+   "place": "University of Ghana Sports Stadium",
+   "entrance": {
+    "side": "west"
+   },
+   "type": "public entrance",
+   "status": "partial",
+   "confidence": "medium",
+   "cite": "user-atlas",
+   "approach": "From the road west of the stadium to the main (west) grandstand.",
+   "evidence": "Atlas sheet 1: the covered main grandstand is on the west side of the bowl, facing the road and the gym centre. Spectator gates are not mapped.",
+   "refs": [
+    "atlas sheet 1"
+   ]
+  },
+  {
+   "place": "Athletic Oval",
+   "entrance": {
+    "side": "south"
+   },
+   "type": "public open space",
+   "status": "partial",
+   "confidence": "medium",
+   "cite": "user-layouts",
+   "approach": "From the road along the south side, facing the Central Cafeteria.",
+   "evidence": "athletic_oval_labeled: paths enter the oval at its south end; Radio Univers: the CC is 'opposite Athletic Oval' (CC lies to the south).",
+   "refs": [
+    "athletic_oval_labeled.png"
+   ]
+  },
+  {
+   "place": "Central Cafeteria, CC",
+   "entrance": {
+    "side": "south"
+   },
+   "type": "public entrance",
+   "status": "partial",
+   "confidence": "medium",
+   "cite": "univers-level100",
+   "approach": "From the road between the CC and Mensah Sarbah Hall.",
+   "evidence": "Radio Univers: CC is 'right in front of Mensah Sarbah Hall and opposite Athletic Oval' (Sarbah lies south). Door not visible.",
+   "refs": [
+    "atlas sheet 2"
+   ]
+  },
+  {
+   "place": "International Students Hostel 1, ISH 1",
+   "entrance": {
+    "at": [
+     210,
+     1308
+    ]
+   },
+   "type": "hall entrance",
+   "status": "partial",
+   "confidence": "medium",
+   "cite": "user-layouts",
+   "approach": "From Jubilee Link through the car park on the north-west side to the porch in the middle of the long facade.",
+   "evidence": "international_students_hostel_2: the gabled entrance porch in the middle of the long facade behind a large car park; atlas sheet 1: that car park is on the north-west side toward Jubilee Link.",
+   "refs": [
+    "international_students_hostel_layout_labeled.png",
+    "international_students_hostel_1_labeled.png",
+    "international_students_hostel_2_labeled.png",
+    "atlas sheet 1"
+   ]
+  },
+  {
+   "place": "University of Ghana Botanical Gardens",
+   "entrance": {
+    "osm": "node/2248903579"
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "visitghana-botanical",
+   "approach": "From the Haatso-Atomic road side into the gardens' main entrance.",
+   "evidence": "OSM entrance=main (node 2248903579) on the gardens' boundary; Visit Ghana: the gardens are 'off Atomic Haatso Main Road at Agbogba Junction'.",
+   "refs": []
   }
+ ],
+ "priority": [
+  "Legon Main Entrance",
+  "The Balme Library",
+  "Great Hall",
+  "University Square",
+  "Balme Library Fountain",
+  "University of Ghana Registry",
+  "Kuffour Quadrangle",
+  "University of Ghana banking square",
+  "Night Market",
+  "Legon Hall",
+  "Commonwealth Hall",
+  "Akuafo Hall Main",
+  "Mensah Sarbah Hall",
+  "Volta Hall",
+  "Elizabeth Frances Sey Hall",
+  "Alexander Kwapong Hall",
+  "Dr. Hilla Limann Hall",
+  "Jean Nelson Aka Hall",
+  "Pentagon Block A",
+  "Jubilee Hall",
+  "School of Engineering Sciences",
+  "University of Ghana Business School",
+  "Institute of Africa Studies",
+  "Jones Quartey Building, JQB",
+  "K. A. Busia Building, KAB",
+  "School of Law",
+  "N Block",
+  "University of Ghana Sports Stadium",
+  "Athletic Oval",
+  "University of Ghana Botanical Gardens",
+  "Vaughan Dam",
+  "International Students Hostel 1, ISH 1",
+  "Valco Trust Hostel Phase 1",
+  "Bani Hostel",
+  "Evandy Hostel",
+  "James Topp Nelson Yankah Hall",
+  "University of Ghana Hospital",
+  "University of Ghana Medical Center Limited",
+  "Central Cafeteria, CC"
  ]
 }
