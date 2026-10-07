@@ -318,7 +318,7 @@ hall and on to the Great Hall, and that the avenue below the stairs and the camp
 ### The approach
 
 - **Gate houses** (owner photo, picture 1): two single-storey white houses with dark hip roofs and blue signs either
-  side of the foot of the stairway, by the road; low stone walls and paving between them. The way in between them is
+  side of the foot of the stairway, set back from the road loop at the end of the avenue (they once stood over it); low stone walls and paving between them. The way in between them is
   a secondary entrance of the hall (`access.json → secondary`, `free`: it stays where the owner marks it rather than
   snapping to the hall's outline).
 - **Stairway** (owner photos): mapped as a footway of steps (`corrections.json → addWays`, snapped onto the road at
@@ -363,8 +363,14 @@ roofs.
 - **Plan:** two lanes north-south round the central court with bars across their north ends, blocks across their
   south ends either side of the walk, the front block with the entrance, the blocks closing the south court, and the
   west block with its wings; white render, dark windows in white frames, terracotta hip roofs with dark fascias.
-- **On a terrace** (`relief.ts`, the new terrace kind of zone): the hall stands **2.4 m above Volta Hall Road**, its
-  east front over a stone retaining wall with a hedge along the top; the Annex to the north is at road level.
+- **On a terrace** (`relief.ts`, the terrace kind of zone): the hall stands **2.4 m above Volta Hall Road**, its
+  east front over a stone retaining wall with a hedge along the top; the Annex to the north is at road level. The
+  terrace is two rectangles over the hall's blocks only (the courts and the east front; the west block), so the lawn
+  corner south-west of the hall and the road round it stay at road level.
+- **The ground mesh** (`reliefGround`): each patch of ground is drawn by one grid only, 2 m cells on the hill and 1 m
+  on terraces and hollows, with slopes eased at the top and the foot. Two grids used to overlap at Volta and the
+  foot of Legon Hill, and the hill's coarse one rode up to a metre above the true ground there (grass over the road,
+  a rider half sunk).
 - **Entrance** (owner's blue marks, pictures 1 to 3): on the east face of the front block: an arched doorway with its
   gate under a small tile canopy, round windows either side above it and the hall's name board, at the top of a
   **short flight of steps** (three flights of five) between stone walls with planters and palms at the foot.
