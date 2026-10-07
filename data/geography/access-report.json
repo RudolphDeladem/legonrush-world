@@ -1,18 +1,18 @@
 {
  "destinations": 436,
  "byMethod": {
-  "curated": 70,
+  "curated": 75,
   "osm-entrance": 0,
   "gate": 2,
   "path-access": 2,
   "drive-access": 18,
   "area-entry": 8,
-  "frontage": 224,
+  "frontage": 219,
   "point": 112
  },
  "byConfidence": {
-  "high": 64,
-  "low": 227,
+  "high": 69,
+  "low": 222,
   "medium": 145
  },
  "campusGates": 5,
@@ -360,8 +360,8 @@
   }
  ],
  "byStatus": {
-  "verified": 62,
-  "inferred": 219,
+  "verified": 67,
+  "inferred": 214,
   "partial": 8,
   "unverified": 9,
   "mapped": 138
@@ -576,6 +576,13 @@
    "arrivalOn": "service",
    "arrivalDistance": 25.6,
    "facing": 2
+  },
+  {
+   "place": "Legon hall barbeque joint",
+   "type": "public entrance",
+   "arrivalOn": "E.A. Boateng Road",
+   "arrivalDistance": 44.9,
+   "facing": 26
   },
   {
    "place": "Department of Economics, University of Ghana",
@@ -802,6 +809,27 @@
    "facing": 353
   },
   {
+   "place": "Career and councelling dept",
+   "type": "public entrance",
+   "arrivalOn": "E.A. Boateng Road",
+   "arrivalDistance": 3.9,
+   "facing": 112
+  },
+  {
+   "place": "Confusious Institute",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 3,
+   "facing": 209
+  },
+  {
+   "place": "Language Center",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 6.3,
+   "facing": 262
+  },
+  {
    "place": "Commonwealth Hall",
    "type": "hall entrance",
    "arrivalOn": "service",
@@ -814,6 +842,13 @@
    "arrivalOn": "service",
    "arrivalDistance": 0.2,
    "facing": 181
+  },
+  {
+   "place": "Modern language department",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 46,
+   "facing": 342
   },
   {
    "place": "Cedi Conference Centre",
@@ -930,9 +965,9 @@
    "arrivalDistance": 46.5
   },
   {
-   "place": "New Pent Block A",
+   "place": "Modern language department",
    "method": "curated",
-   "arrivalDistance": 45.7
+   "arrivalDistance": 46
   }
  ],
  "networkPassagesThroughBuildings": [

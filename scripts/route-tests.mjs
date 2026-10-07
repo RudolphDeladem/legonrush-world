@@ -207,6 +207,16 @@ try {
     const g = walkGaps(r.track, 3.8, [9, 7.4, 6.2, 4.6, 2.6]);
     if (g[0].length + g[1].length < 6) fail(`the route's pavements cross the roads that join it (only ${g[0].length + g[1].length} gaps from Volta Hall to the Great Hall)`);
   }
+  // west of Legon Hall (owner): the Language Centre cluster at their heights, and the ground-floor bungalows behind it
+  for (const [n, x, z] of [['Modern language department', -284.1, 258.6], ['Confusious Institute', -271.6, 305.1], ['Legon hall barbeque joint', -277, 351.2], ['Language Center', -258.3, 213.8], ['Career and councelling dept', -365.3, 264.9]]) {
+    const e = ann(n);
+    if (!e || Math.hypot(e[0] - x, e[1] - z) > 2) fail(`${n}: the entrance is not where the owner's photos put it`);
+  }
+  for (const [n, lo, hi] of [['Modern language department', 14, 20], ['Confusious Institute', 10, 14], ['Legon hall barbeque joint', 7, 10], ['Language Center', 7, 10], ['Career and councelling dept', 3, 5]]) {
+    const b = BUILDINGS.find((q) => q.name === n);
+    if (!b || b.height < lo || b.height > hi) fail(`${n}: height ${b?.height} is not the owner's (${lo}-${hi} m)`);
+  }
+  if ((await server.ssrLoadModule('/src/game/westlegon.ts')).westLegon.frames().length !== 24) fail('expected the four buildings by the Language Centre and the twenty bungalows and outbuildings behind them');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)
   for (const [x, z] of [[95, 1573], [-88, 1676], [210, 1509], [200, 1500]]) if (cm.buildingNear(x, z, 0.35)) fail(`free ride: the road at ${x},${z} is blocked by ${cm.buildingNear(x, z, 0.35).name ?? 'a building'}`);

@@ -540,6 +540,26 @@ The open ground between the two sets of annexes (owner): **mainly bare soil**, w
 left round the edges and in the corners, faded lines, and a pair of **goalposts** at either end. It replaces the flat
 green pitch that was drawn there.
 
+## 19. West of Legon Hall: the Language Centre, its neighbours and the bungalows behind them
+
+From the owner's map of the area, two photos from the air and an aerial of the houses behind (circled white),
+registered to the OSM footprints at 2.8 px/m (`src/game/westlegon.ts`).
+
+- **Department of Modern Languages:** **four floors**, a cross of hipped **red** roofs (the corners a floor lower)
+  with a **glass lantern** where they meet; on the east, toward its car park, a glazed bay between tall columns and a
+  car-port canopy (the entrance).
+- **Confucius Institute**, south of it: a long block of **three floors** under a weathered **dark** sheet roof; its
+  door at the east end, off the lane from the road.
+- **The solar-roofed building** south again (the map's *Legon hall barbeque joint*): **two floors**, a red hipped roof
+  carrying **solar panels**, an arcade at its west end and a **porch under a small dark-red gable** on the south (the
+  entrance).
+- **Language Centre**, north-east by the road: **two floors** under orange tiles with a small raised roof over the
+  middle; its door on the east face. Two small orange-roofed buildings near it are one floor.
+- **The bungalows** (circled white): every building in the zone is an ordinary **ground-floor house**, built round a
+  small courtyard, with its **outbuildings**; all under red tiles, each with **one door** (a step and a little
+  canopy) on the side toward the nearest road. The *Career and councelling dept* is one of these houses. The houses
+  on Legon Hill's slope stand on the ground.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

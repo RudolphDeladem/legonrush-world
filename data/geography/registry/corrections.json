@@ -1301,6 +1301,188 @@
       "levels": 5,
       "height": 19,
       "reason": "Owner's photo of Phase 1 and Phase 2: five floors (ground and four) under a low hipped roof of orange tiles; modelled in src/game/valco.ts."
+    },
+    {
+      "id": "osm:way/565872090",
+      "place": "Modern language department",
+      "levels": 4,
+      "height": 17,
+      "reason": "Owner's photos of the buildings west of Legon Hall (from the air, from the south-west): four floors under a cross of hipped red roofs with a glass lantern; modelled in src/game/westlegon.ts."
+    },
+    {
+      "id": "osm:way/492729695",
+      "place": "Confusious Institute",
+      "levels": 3,
+      "height": 12,
+      "reason": "Owner's photos of the buildings west of Legon Hall (from the air, from the south-west): a long block of three floors under a dark sheet roof."
+    },
+    {
+      "id": "osm:way/1334286389",
+      "place": "Legon hall barbeque joint",
+      "levels": 2,
+      "height": 9,
+      "reason": "Owner's photos of the buildings west of Legon Hall (from the air, from the south-west): two floors under a red hipped roof with solar panels."
+    },
+    {
+      "id": "osm:way/492729719",
+      "place": "Language Center",
+      "levels": 2,
+      "height": 9,
+      "reason": "Owner's photos of the buildings west of Legon Hall (from the air, from the south-west): two floors under orange tiles."
+    },
+    {
+      "id": "osm:way/1188719806",
+      "place": "west of Legon Hall",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's photos of the buildings west of Legon Hall (from the air, from the south-west): a small one-floor building under orange tiles."
+    },
+    {
+      "id": "osm:way/130863398",
+      "place": "west of Legon Hall",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's photos of the buildings west of Legon Hall (from the air, from the south-west): a small one-floor building under orange tiles."
+    },
+    {
+      "id": "osm:way/492729612",
+      "place": "Career and councelling dept",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/492729613",
+      "place": "bungalow west of Legon Hall",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/492729614",
+      "place": "bungalow west of Legon Hall",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/492729619",
+      "place": "bungalow west of Legon Hall",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/492729625",
+      "place": "bungalow west of Legon Hall",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/492729632",
+      "place": "bungalow west of Legon Hall",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/492729633",
+      "place": "bungalow west of Legon Hall",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/492729636",
+      "place": "bungalow west of Legon Hall",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/492729639",
+      "place": "bungalow west of Legon Hall",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/492729855",
+      "place": "bungalow west of Legon Hall",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/492729708",
+      "place": "bungalow west of Legon Hall",
+      "levels": 1,
+      "height": 3.5,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/492729710",
+      "place": "bungalow west of Legon Hall",
+      "levels": 1,
+      "height": 3.5,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/492729716",
+      "place": "bungalow west of Legon Hall",
+      "levels": 1,
+      "height": 3.5,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/492729726",
+      "place": "bungalow west of Legon Hall",
+      "levels": 1,
+      "height": 3.5,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/492729732",
+      "place": "bungalow west of Legon Hall",
+      "levels": 1,
+      "height": 3.5,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/492729763",
+      "place": "bungalow west of Legon Hall",
+      "levels": 1,
+      "height": 3.5,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/492729789",
+      "place": "bungalow west of Legon Hall",
+      "levels": 1,
+      "height": 3.5,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/492729792",
+      "place": "bungalow west of Legon Hall",
+      "levels": 1,
+      "height": 3.5,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/492729799",
+      "place": "bungalow west of Legon Hall",
+      "levels": 1,
+      "height": 3.5,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/492729800",
+      "place": "bungalow west of Legon Hall",
+      "levels": 1,
+      "height": 3.5,
+      "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
     }
   ],
   "reclass": [
