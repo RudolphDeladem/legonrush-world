@@ -255,6 +255,14 @@ try {
     const parking = cm.AREAS.filter((a) => a.kind === 'parking'), inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
     for (const [n, x, z] of [['the Mathematics galleries', 292, -236], ['the east block', 370, -237.5]]) if (!parking.some((a) => inA(a, x, z))) fail(`no car park in front of ${n}`);
     if ((await server.ssrLoadModule('/src/game/mathstat.ts')).mathStat.frames().length !== 1) fail('expected the Mathematics and Statistics model'); }
+  // owner: ISSER, the RIPS building and Computer Science are one connected range of three floors; ISSER is
+  // entered from the drive facing the Mathematics department, Computer Science on its wing's west face; the
+  // Department of Plant Biology and the two small buildings behind the engineering school are one floor
+  { for (const [x, z] of [[290, -290], [306, -297], [330, -296], [347, -296], [355, -310], [355, -290], [356, -279], [375, -287]]) { const b = buildingAt(x, z); if (!b) fail(`ISSER and Computer Science: no building at ${x},${z} (the blocks must be connected)`); else if (b.height < 10) fail(`ISSER and Computer Science: the block at ${x},${z} is not three floors`); }
+    const e = ann('ISSER Building'); if (!e || Math.hypot(e[0] - 312.5, e[1] - -283.3) > 2) fail('ISSER Building: the entrance is not on the front facing the Mathematics department (owner)');
+    const c = ann('Computer Science Dept'); if (!c || Math.hypot(c[0] - 349.6, c[1] - -305.8) > 2) fail('Computer Science Dept: the entrance is not on the wing\'s west face (owner)');
+    for (const [n, x, z] of [['the Department of Plant Biology', 406, -314], ['a small building behind the engineering school', 524, -472], ['the other small building behind the engineering school', 535, -473]]) { const b = buildingAt(x, z); if (!b || b.height > 5) fail(`${n} is not one floor (owner)`); }
+    if ((await server.ssrLoadModule('/src/game/issercs.ts')).isserCs.frames().length !== 1) fail('expected the ISSER and Computer Science model'); }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

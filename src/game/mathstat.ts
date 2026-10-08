@@ -22,10 +22,10 @@
 //   (three floors, white galleries on its north face toward the east car park, blank east end), joined to the
 //   Statistics block by a stair tower and a one-floor link.
 import * as THREE from 'three';
-import { box, canvas, merge, rnd, speckle, type Part } from './modelkit';
+import { box, merge, speckle, type Part } from './modelkit';
 import { PL, createSite, type Block, type Kit, type Spec, type Style } from './blocks';
 import { garden } from './gardens';
-import { groundShade } from './shading';
+import { aged, breeze, concrete, door, pane, panel as panelAt, rails, wall } from './concrete';
 
 const ST = 3.4;
 const O: [number, number] = [330, -232];
@@ -39,40 +39,6 @@ const blk = (x0: number, x1: number, z0: number, z1: number, floors: number, mor
 const OLD = '#ece9e1', EDGE = '#e3dfd5', FIN = '#d3d1cb', OCHRE = '#d2ad57', RED = '#a8483c', RAIL = '#2a2b2d', DOOR = '#4a2d21';
 const ROOF_RED = '#b0584b', ROOF_PINK = '#d39b8d', ROOF_PALE = '#cdbcae', STEP = '#a39684';
 
-// ---------- weathering ----------
-/** grime on a facade canvas: streaks running down from the window sills and slab lines, blotches, mildew */
-function aged(g: CanvasRenderingContext2D, sills: number[]) {
-  for (let i = 0; i < 26; i++) {
-    const x = rnd() * 256, y = sills[(rnd() * sills.length) | 0], len = 30 + rnd() * 120, w = 2 + rnd() * 7;
-    const gr = g.createLinearGradient(0, y, 0, y + len);
-    gr.addColorStop(0, `rgba(80,78,70,${0.12 + rnd() * 0.25})`); gr.addColorStop(1, 'rgba(80,78,70,0)');
-    g.fillStyle = gr; g.fillRect(x, y, w, len);
-  }
-  for (let i = 0; i < 18; i++) {
-    const x = rnd() * 256, y = rnd() * 512, r = 8 + rnd() * 40;
-    const gr = g.createRadialGradient(x, y, 0, x, y, r);
-    gr.addColorStop(0, `rgba(110,106,96,${0.06 + rnd() * 0.12})`); gr.addColorStop(1, 'rgba(110,106,96,0)');
-    g.fillStyle = gr; g.fillRect(x - r, y - r, 2 * r, 2 * r);
-  }
-  const foot = g.createLinearGradient(0, 470, 0, 512);
-  foot.addColorStop(0, 'rgba(60,62,50,0)'); foot.addColorStop(1, 'rgba(60,62,50,0.35)');
-  g.fillStyle = foot; g.fillRect(0, 470, 256, 42);
-  speckle(g, 0, 0, 256, 512, 900, ['rgba(70,70,64,0.35)', 'rgba(120,116,104,0.3)']);
-}
-const wall = (g: CanvasRenderingContext2D, c: string) => { g.fillStyle = c; g.fillRect(0, 0, 256, 512); speckle(g, 0, 0, 256, 512, 2500, ['#d9d6cc', '#e9e6de', '#cfccc2']); };
-const pane = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, cols = 2) => {
-  g.fillStyle = '#3b3b38'; g.fillRect(x - 3, y - 3, w + 6, h + 6);
-  const gl = g.createLinearGradient(0, y, 0, y + h);
-  gl.addColorStop(0, '#4a535a'); gl.addColorStop(1, '#1d2126');
-  g.fillStyle = gl; g.fillRect(x, y, w, h);
-  g.fillStyle = '#3b3b38';
-  for (let i = 1; i < cols; i++) g.fillRect(x + (w * i) / cols - 2, y, 4, h);
-};
-const door = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) => {
-  g.fillStyle = '#2e2622'; g.fillRect(x - 3, y - 3, w + 6, h + 3);
-  g.fillStyle = DOOR; g.fillRect(x, y, w, h);
-  g.fillStyle = 'rgba(0,0,0,0.25)'; g.fillRect(x + w / 2 - 1, y, 2, h);
-};
 /** a gallery wall: a white pier, a narrow dark door and a wide two-pane window to a bay; the upper storeys painted
  *  in the given colour (ochre on the Mathematics block, white on the east block), the ground storey white */
 function galleryWall(upper: string): Style {
@@ -85,8 +51,8 @@ function galleryWall(upper: string): Style {
       g.fillStyle = upper; g.fillRect(0, 0, 256, 256);
       speckle(g, 0, 0, 256, 256, 1200, ['rgba(150,120,60,0.25)', 'rgba(240,215,140,0.25)']);
       g.fillStyle = OLD; g.fillRect(0, 0, 22, 512);
-      door(g, 44, 36, 40, 196); pane(g, 112, 36, 120, 130);
-      door(g, 44, 256 + 40, 40, 200); pane(g, 112, 256 + 50, 120, 120);
+      door(g, 44, 36, 40, 196, DOOR); pane(g, 112, 36, 120, 130);
+      door(g, 44, 256 + 40, 40, 200, DOOR); pane(g, 112, 256 + 50, 120, 120);
       aged(g, [170, 236, 256 + 174, 500]);
     },
   };
@@ -99,90 +65,7 @@ const WIN: Style = {
 };
 /** blank walls: end walls and the stair tower */
 const BLANK: Style = { bay: 4, up: [], ground: [], draw: (g) => { wall(g, OLD); aged(g, [0, 128, 256, 384]); aged(g, [60, 300]); } };
-
-/** the stain map for the concrete parts: mottling, rain streaks hanging from random heights, mildew specks */
-function stains() {
-  return canvas(512, 512, (g) => {
-    g.fillStyle = '#ffffff'; g.fillRect(0, 0, 512, 512);
-    for (let i = 0; i < 160; i++) {
-      const x = rnd() * 512, y = rnd() * 512, r = 10 + rnd() * 70;
-      for (const [ox, oy] of [[0, 0], [512, 0], [-512, 0], [0, 512], [0, -512]]) {
-        const gr = g.createRadialGradient(x + ox, y + oy, 0, x + ox, y + oy, r);
-        const a = 0.04 + rnd() * 0.1;
-        gr.addColorStop(0, `rgba(118,116,106,${a})`); gr.addColorStop(1, 'rgba(118,116,106,0)');
-        g.fillStyle = gr; g.fillRect(x + ox - r, y + oy - r, 2 * r, 2 * r);
-      }
-    }
-    for (let i = 0; i < 170; i++) {
-      const x = rnd() * 512, y = rnd() * 512, len = 30 + rnd() * 200, w = 2 + rnd() * 8;
-      const a = 0.04 + rnd() * 0.14;
-      for (const oy of [0, -512]) {
-        const gr = g.createLinearGradient(0, y + oy, 0, y + oy + len);
-        gr.addColorStop(0, `rgba(82,80,72,${a})`); gr.addColorStop(1, 'rgba(82,80,72,0)');
-        g.fillStyle = gr; g.fillRect(x, y + oy, w, len);
-      }
-    }
-    speckle(g, 0, 0, 512, 512, 2500, ['rgba(60,62,56,0.25)', 'rgba(100,98,90,0.2)', 'rgba(150,146,134,0.2)']);
-  });
-}
-/** weathered concrete: vertex colours times the stain map, laid in world metres on every face */
-let concreteMat: THREE.MeshStandardMaterial | null = null;
-function concrete() {
-  if (concreteMat) return concreteMat;
-  const tex = stains();
-  const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95 });
-  m.onBeforeCompile = (sh) => {
-    sh.uniforms.msTex = { value: tex };
-    sh.vertexShader = sh.vertexShader
-      .replace('#include <common>', '#include <common>\nvarying vec3 vMsP;\nvarying vec3 vMsN;')
-      .replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvMsP = (modelMatrix * vec4(transformed, 1.0)).xyz;\nvMsN = normalize(mat3(modelMatrix) * objectNormal);');
-    sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', '#include <common>\nvarying vec3 vMsP;\nvarying vec3 vMsN;\nuniform sampler2D msTex;')
-      .replace('#include <map_fragment>', `#include <map_fragment>
-  vec3 msA = abs(vMsN);
-  vec2 msUv = msA.y > 0.6 ? vMsP.xz / 7.0 : vec2((msA.x > msA.z ? vMsP.z : vMsP.x) / 7.0, vMsP.y / 7.0);
-  diffuseColor.rgb *= texture2D(msTex, msUv).rgb;`);
-  };
-  m.customProgramCacheKey = () => 'mathstat-concrete';
-  return (concreteMat = groundShade(m, 2.2, 0.3, 'wall'));
-}
-
-// ---------- screens and railings (alpha-tested textures on planes) ----------
-let breezeMat: THREE.MeshStandardMaterial | null = null;
-/** breeze blocks: a grid of square blocks, each pierced by a round opening, with small openings at the corners */
-const breeze = () => (breezeMat ??= (() => {
-  const t = canvas(128, 128, (g) => {
-    g.fillStyle = '#e1ded5'; g.fillRect(0, 0, 128, 128);
-    speckle(g, 0, 0, 128, 128, 400, ['#cfccc2', '#bdb9ae']);
-    g.globalCompositeOperation = 'destination-out';
-    g.beginPath(); g.arc(64, 64, 46, 0, Math.PI * 2); g.fill();
-    for (const [x, y] of [[0, 0], [128, 0], [0, 128], [128, 128]]) { g.beginPath(); g.arc(x, y, 12, 0, Math.PI * 2); g.fill(); }
-    g.globalCompositeOperation = 'source-over';
-    g.strokeStyle = '#c8c4b8'; g.lineWidth = 4; g.strokeRect(2, 2, 124, 124);
-  });
-  return new THREE.MeshStandardMaterial({ map: t, transparent: true, alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.95 });
-})());
-let railMat: THREE.MeshStandardMaterial | null = null;
-/** a thin dark railing: balusters 15 cm apart between a top and a bottom rail */
-const rails = () => (railMat ??= (() => {
-  const t = canvas(64, 64, (g) => {
-    g.clearRect(0, 0, 64, 64);
-    g.fillStyle = RAIL; g.fillRect(28, 0, 8, 64); g.fillRect(0, 0, 64, 6); g.fillRect(0, 56, 64, 6);
-  });
-  return new THREE.MeshStandardMaterial({ map: t, transparent: true, alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.6, metalness: 0.4 });
-})());
-/** a textured plane from (ax, az) to (bx, bz) in world x/z, between heights y0 and y1, the texture tiled every `tile` m */
-function panel(k: Kit, mat: THREE.Material, ax: number, az: number, bx: number, bz: number, y0: number, y1: number, tile: number, tileY = tile) {
-  const len = Math.hypot(bx - ax, bz - az), h = y1 - y0;
-  const geo = new THREE.PlaneGeometry(len, h);
-  const uv = geo.attributes.uv as THREE.BufferAttribute;
-  for (let i = 0; i < uv.count; i++) uv.setXY(i, (uv.getX(i) * len) / tile, (uv.getY(i) * h) / tileY);
-  const m = new THREE.Mesh(geo, mat);
-  m.position.set((ax + bx) / 2 - O[0], (y0 + y1) / 2, (az + bz) / 2 - O[1]);
-  m.rotation.y = -Math.atan2(bz - az, bx - ax);
-  m.castShadow = true;
-  k.meshes.push(m);
-}
+const panel = (k: Kit, mat: THREE.Material, ax: number, az: number, bx: number, bz: number, y0: number, y1: number, tile: number, tileY = tile) => panelAt(O, k, mat, ax, az, bx, bz, y0, y1, tile, tileY);
 
 // ---------- the parts ----------
 /** open galleries on a north face from x0 to x1: cantilevered slabs with a thick upturned edge and a railing on

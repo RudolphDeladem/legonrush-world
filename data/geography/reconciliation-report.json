@@ -102,7 +102,7 @@
   "medianCentroidOffsetToGoogleM": {
    "x": 0.6,
    "z": 0.4,
-   "n": 1206
+   "n": 1208
   },
   "mlAdded": 294,
   "mlRejected": {
@@ -312,7 +312,7 @@
    "ha": 1.3
   },
   "parking": {
-   "count": 90,
+   "count": 92,
    "ha": 9.4
   },
   "track": {
@@ -2559,8 +2559,8 @@
    "kind": "academic",
    "ha": 56,
    "shareOutsideCampus": 0,
-   "places": 75,
-   "buildings": 150,
+   "places": 74,
+   "buildings": 149,
    "anchorsMissing": []
   },
   {
@@ -2569,8 +2569,8 @@
    "kind": "academic",
    "ha": 48,
    "shareOutsideCampus": 0,
-   "places": 68,
-   "buildings": 177,
+   "places": 69,
+   "buildings": 178,
    "anchorsMissing": []
   },
   {

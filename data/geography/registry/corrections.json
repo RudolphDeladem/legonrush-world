@@ -1797,6 +1797,55 @@
       "levels": 3,
       "height": 12,
       "reason": "Owner photos of the north front: three floors (ground and two floors of galleries) under a deep roof slab, about 12 m; the Statistics block steps down to two floors east of the entrance."
+    },
+    {
+      "id": "osm:way/335456888",
+      "place": "ISSER Building",
+      "levels": 3,
+      "height": 12,
+      "reason": "Owner: ISSER and Computer Science are three floors (photos of their fronts); the range is joined and of one height, under flat roofs."
+    },
+    {
+      "id": "osm:way/335456885",
+      "place": "RIPS building",
+      "levels": 3,
+      "height": 12,
+      "reason": "Owner: ISSER and Computer Science are three floors (photos of their fronts); the range is joined and of one height, under flat roofs."
+    },
+    {
+      "id": "osm:way/665125612",
+      "place": "Computer Science Dept",
+      "levels": 3,
+      "height": 12,
+      "reason": "Owner: ISSER and Computer Science are three floors (photos of their fronts); the range is joined and of one height, under flat roofs."
+    },
+    {
+      "id": "osm:way/665125611",
+      "place": "Computer Science Dept (north wing)",
+      "levels": 3,
+      "height": 12,
+      "reason": "Owner: ISSER and Computer Science are three floors (photos of their fronts); the range is joined and of one height, under flat roofs."
+    },
+    {
+      "id": "osm:way/530270654",
+      "place": "Department of Plant Biology",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner: the Department of Plant and Environmental Biology is one floor."
+    },
+    {
+      "id": "osm:way/1189695661",
+      "place": "small building behind the School of Engineering Sciences",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner: the two small square buildings behind (north of) the engineering school are one floor."
+    },
+    {
+      "id": "osm:way/1189695662",
+      "place": "small building behind the School of Engineering Sciences",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner: the two small square buildings behind (north of) the engineering school are one floor."
     }
   ],
   "reclass": [
@@ -2170,6 +2219,166 @@
         ]
       ],
       "reason": "Owner: the Mathematics and Statistics departments are one connected building (their aerial, picture 4, and three photos along the north front). The mapped outlines cover only parts of it and leave the blocks apart; the ring follows the roofs on the registered aerial. This part: the long east block with its north galleries, joined to the Statistics block by a stair tower and a one-floor link."
+    },
+    {
+      "id": "osm:way/335456888",
+      "place": "ISSER Building",
+      "source": "google-open-buildings footprints (ISSER 0.67, RIPS 0.91, the Computer Science wing 0.82/0.85 and east block 0.91) and the owner-supplied photos of ISSER and Computer Science",
+      "ring": [
+        [
+          276.3,
+          -283.3
+        ],
+        [
+          318.3,
+          -283.3
+        ],
+        [
+          318.3,
+          -294.5
+        ],
+        [
+          310.2,
+          -294.5
+        ],
+        [
+          310.2,
+          -300.8
+        ],
+        [
+          302.2,
+          -300.8
+        ],
+        [
+          302.2,
+          -294.5
+        ],
+        [
+          276.3,
+          -294.5
+        ]
+      ],
+      "reason": "Owner: ISSER, the RIPS building and the Department of Computer Science are connected, not separate (photos of the front and back). Google Open Buildings' roofs meet; the ring follows them, each part reaching its neighbour. This part: ISSER's long bar, its front toward the Mathematics department, and the stair tower standing out at the back."
+    },
+    {
+      "id": "osm:way/335456885",
+      "place": "RIPS building",
+      "source": "google-open-buildings footprints (ISSER 0.67, RIPS 0.91, the Computer Science wing 0.82/0.85 and east block 0.91) and the owner-supplied photos of ISSER and Computer Science",
+      "ring": [
+        [
+          318.3,
+          -290.0
+        ],
+        [
+          344.7,
+          -290.0
+        ],
+        [
+          344.7,
+          -293.0
+        ],
+        [
+          350.0,
+          -293.0
+        ],
+        [
+          350.0,
+          -299.0
+        ],
+        [
+          344.7,
+          -299.0
+        ],
+        [
+          344.7,
+          -300.9
+        ],
+        [
+          318.3,
+          -300.9
+        ]
+      ],
+      "reason": "Owner: ISSER, the RIPS building and the Department of Computer Science are connected, not separate (photos of the front and back). Google Open Buildings' roofs meet; the ring follows them, each part reaching its neighbour. This part: the RIPS building east of ISSER with its galleries, and the link to the Computer Science wing."
+    },
+    {
+      "id": "osm:way/665125612",
+      "place": "Computer Science Dept",
+      "source": "google-open-buildings footprints (ISSER 0.67, RIPS 0.91, the Computer Science wing 0.82/0.85 and east block 0.91) and the owner-supplied photos of ISSER and Computer Science",
+      "ring": [
+        [
+          349.6,
+          -300.9
+        ],
+        [
+          361.4,
+          -300.9
+        ],
+        [
+          361.4,
+          -291.5
+        ],
+        [
+          393.8,
+          -291.5
+        ],
+        [
+          393.8,
+          -280.6
+        ],
+        [
+          366.8,
+          -280.6
+        ],
+        [
+          366.8,
+          -279.3
+        ],
+        [
+          361.4,
+          -279.3
+        ],
+        [
+          361.4,
+          -277.0
+        ],
+        [
+          350.0,
+          -277.0
+        ],
+        [
+          350.0,
+          -293.0
+        ],
+        [
+          349.6,
+          -293.0
+        ]
+      ],
+      "reason": "Owner: ISSER, the RIPS building and the Department of Computer Science are connected, not separate (photos of the front and back). Google Open Buildings' roofs meet; the ring follows them, each part reaching its neighbour. This part: the south half of the tall wing (its south end is the front in the owner's first photo), the stair tower behind its fins and the east block with its balconies."
+    },
+    {
+      "id": "osm:way/665125611",
+      "place": "Computer Science Dept (north wing)",
+      "source": "google-open-buildings footprints (ISSER 0.67, RIPS 0.91, the Computer Science wing 0.82/0.85 and east block 0.91) and the owner-supplied photos of ISSER and Computer Science",
+      "ring": [
+        [
+          349.6,
+          -320.1
+        ],
+        [
+          361.2,
+          -320.1
+        ],
+        [
+          361.2,
+          -300.9
+        ],
+        [
+          349.6,
+          -300.9
+        ]
+      ],
+      "reason": "The OSM outline sits about 4 m west of Google's footprint (confidence 0.85) of the north half of the Computer Science wing; the department's door is on its west face (owner's photo 3)."
     }
   ],
   "addAreas": [
@@ -2723,6 +2932,52 @@
         ]
       ],
       "reason": "Owner aerial: the curved paving at the north-west corner of the heavy block, by the Mathematics door."
+    },
+    {
+      "id": "owner:isser-car-park-north",
+      "class": "parking",
+      "ring": [
+        [
+          284.0,
+          -302.5
+        ],
+        [
+          301.4,
+          -302.5
+        ],
+        [
+          301.4,
+          -296.0
+        ],
+        [
+          284.0,
+          -296.0
+        ]
+      ],
+      "reason": "Owner's photo 3: cars parked nose-in along the back of ISSER, on asphalt."
+    },
+    {
+      "id": "owner:isser-car-park-rips",
+      "class": "parking",
+      "ring": [
+        [
+          312.0,
+          -308.5
+        ],
+        [
+          344.0,
+          -308.5
+        ],
+        [
+          344.0,
+          -302.0
+        ],
+        [
+          312.0,
+          -302.0
+        ]
+      ],
+      "reason": "Owner's photo 3: the car park behind ISSER runs on past the stair tower along the back of the RIPS building, toward the Computer Science door."
     }
   ],
   "addWays": [

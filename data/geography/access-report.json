@@ -1,19 +1,19 @@
 {
  "destinations": 436,
  "byMethod": {
-  "curated": 80,
+  "curated": 82,
   "osm-entrance": 0,
   "gate": 2,
   "path-access": 2,
-  "drive-access": 18,
+  "drive-access": 17,
   "area-entry": 8,
-  "frontage": 215,
+  "frontage": 214,
   "point": 111
  },
  "byConfidence": {
-  "high": 76,
-  "low": 218,
-  "medium": 142
+  "high": 78,
+  "low": 217,
+  "medium": 141
  },
  "campusGates": 5,
  "problems": [],
@@ -25,7 +25,8 @@
   "Mensah Sarbah Main Hall Females' Laundromat: the last few metres from the network to the entrance cross Block F (an enclosed courtyard or a mapping gap)",
   "SalmaRise: the last few metres from the network to the entrance cross osm:way/1137230518 (an enclosed courtyard or a mapping gap)",
   "Didi Jollof: the last few metres from the network to the entrance cross Jubilee Hall (an enclosed courtyard or a mapping gap)",
-  "Information Studies Department: the last few metres from the network to the entrance cross Information Studies Labs (an enclosed courtyard or a mapping gap)"
+  "Information Studies Department: the last few metres from the network to the entrance cross Information Studies Labs (an enclosed courtyard or a mapping gap)",
+  "RIPS building: the last few metres from the network to the entrance cross ISSER Building (an enclosed courtyard or a mapping gap)"
  ],
  "priority": [
   {
@@ -360,11 +361,11 @@
   }
  ],
  "byStatus": {
-  "verified": 74,
-  "inferred": 210,
+  "verified": 76,
+  "inferred": 209,
   "partial": 6,
   "unverified": 9,
-  "mapped": 137
+  "mapped": 136
  },
  "curated": [
   {
@@ -732,6 +733,13 @@
    "facing": 180
   },
   {
+   "place": "ISSER Building",
+   "type": "main entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 1.7,
+   "facing": 2
+  },
+  {
    "place": "Mathematics Dept",
    "type": "side entrance",
    "arrivalOn": "service",
@@ -877,6 +885,13 @@
    "arrivalOn": "service",
    "arrivalDistance": 46,
    "facing": 342
+  },
+  {
+   "place": "Computer Science Dept",
+   "type": "main entrance",
+   "arrivalOn": "residential",
+   "arrivalDistance": 32,
+   "facing": 171
   },
   {
    "place": "Cedi Conference Centre",

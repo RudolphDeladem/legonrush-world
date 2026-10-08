@@ -31,7 +31,8 @@
   "owner-ugbs": "The owner's photos of the Business School (the front and the north side from the north-west corner, the front face on, the middle and east blocks from the north car park) and the owner's aerial marking the front (F, west) and the side the owner calls west (W, north), registered to the OSM footprints at 4.0 px/m.",
   "owner-stadium": "The owner's aerial of the stadium area (the stadium, the training track, the swimming pool, the gym and the tennis courts) and photos of the stadium from outside and of the main stand, registered to the OSM footprints at 2.2 px/m.",
   "owner-residences": "The owner's aerials of the Volta Hall Road stretch north-west of CEDI, of the buildings opposite the Business School (the Larway Oraca Building circled yellow, the cross-shaped building circled purple, their doors marked blue) and of the lecturers' houses east of the annexes, and the owner's photos of the two buildings opposite the Business School.",
-  "owner-mathstat": "The owner's aerial of the Mathematics and Statistics departments (the main entrance marked blue, an arrow along the north front) and three photos taken along that arrow: the Mathematics galleries and the heavy block, the main entrance steps, and the Statistics block with its stair and fins."
+  "owner-mathstat": "The owner's aerial of the Mathematics and Statistics departments (the main entrance marked blue, an arrow along the north front) and three photos taken along that arrow: the Mathematics galleries and the heavy block, the main entrance steps, and the Statistics block with its stair and fins.",
+  "owner-issercs": "The owner's photos of the Department of Computer Science (its front and side from the south; its door marked blue beyond the back of ISSER) and of ISSER (front, with the entrance marked blue, facing the Mathematics department; back)."
  },
  "campusGates": [
   {
@@ -1876,6 +1877,44 @@
    "cite": "owner-mathstat",
    "approach": "From the east car park through the gap in the hedge to the east block's ground-floor gallery.",
    "evidence": "Owner's photo 3 (the east block's galleries facing the car park) and aerial.",
+   "refs": [
+    "owner's photo 3"
+   ]
+  },
+  {
+   "place": "ISSER Building",
+   "footprint": "osm:way/335456888",
+   "entrance": {
+    "at": [
+     312.5,
+     -282.6
+    ]
+   },
+   "type": "main entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-issercs",
+   "approach": "Up the drive from the road by the Mathematics department to the glazed doors under the canopy with the institute's name.",
+   "evidence": "Owner's photo 4 (the entrance marked blue, at the head of the drive, facing the Mathematics department).",
+   "refs": [
+    "owner's photo of the ISSER front"
+   ]
+  },
+  {
+   "place": "Computer Science Dept",
+   "footprint": "osm:way/665125611",
+   "entrance": {
+    "at": [
+     348.6,
+     -305.8
+    ]
+   },
+   "type": "main entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-issercs",
+   "approach": "Through the car park behind ISSER and the RIPS building to the porch on the west face of the Computer Science wing.",
+   "evidence": "Owner's photo 3 (the door marked blue beyond the back of ISSER).",
    "refs": [
     "owner's photo 3"
    ]

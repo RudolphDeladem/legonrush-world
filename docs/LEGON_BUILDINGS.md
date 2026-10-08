@@ -727,6 +727,29 @@ Department**) are reshaped to the roofs on the aerial and meet edge to edge (`co
 Parked cars now keep clear of a building by its real outline, not its bounding box (the Mathematics car park lies
 inside the L of the Mathematics outline's box).
 
+## 29. ISSER, the RIPS building and Computer Science; one-floor buildings
+
+From the owner's four photos (`src/game/issercs.ts`); the layout from Google Open Buildings' roofs. **One
+connected range** north of the Mathematics and Statistics departments: ISSER, the RIPS building, a link and the
+Computer Science wing and east block meet edge to edge (`corrections.json`: reshape), all **three floors**.
+
+- **ISSER** (fresh white paint): brown louvred windows deep-set between projecting piers, a deep ledge along the
+  first floor and a band along the second, air-conditioners on the ledges. The **entrance** (owner's blue mark)
+  is at the head of the drive from the road by the Mathematics department: glazed doors up three steps under a
+  canopy reading INSTITUTE OF STATISTICAL, SOCIAL AND ECONOMIC RESEARCH, hedges either side of the drive. At the
+  back the ground floor is set in behind columns under the floors above, a stair tower faced with lattice blocks
+  stands out, and cars park nose-in along it on asphalt.
+- **RIPS**, east of ISSER: galleries on solid parapets toward the drive; a car park along its back.
+- **Computer Science** (old white paint, washed grey, streaked and peeling): the tall wing's south end is the
+  front in the owner's first photo: barred windows below, a long window band with curtains, a blank stained wall
+  above, louvred vents between piers on its sides, a small room on the roof with a satellite dish. The
+  department's **door** (owner's blue mark) is a porch on the wing's west face, past the back of ISSER. East of
+  the wing: a stair tower behind tall vertical fins, the east block with balconies (solid parapets, grilled
+  windows, air-conditioners), and before it the **diesel generator house** (blue fascia, orange doors behind
+  lattice grilles) and a car shed under a red-brown sheet roof.
+- **One floor** (owner): the Department of Plant (and Environmental) Biology east of Computer Science, and the
+  two small square buildings behind (north of) the School of Engineering Sciences.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain
