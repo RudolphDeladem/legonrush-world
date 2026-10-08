@@ -22,6 +22,8 @@ import { box, merge, speckle, type Part } from './modelkit';
 import { PL, createSite, type Block, type Kit, type Spec, type Style } from './blocks';
 import { aged, breeze, concrete, door, grille, pane, panel as panelAt, peeling, rails, wall } from './concrete';
 import { garden } from './gardens';
+import { letters } from './letters';
+import { stairsOf } from './relief';
 import { SOLIDS } from './solids';
 
 const ST = 3.5;
@@ -31,17 +33,18 @@ const blk = (x0: number, x1: number, z0: number, z1: number, floors: number, mor
   ({ x0: x0 - O[0], x1: x1 - O[0], z0: z0 - O[1], z1: z1 - O[1], floors, roof: 'none', ...more });
 const panel = (k: Kit, mat: THREE.Material, ax: number, az: number, bx: number, bz: number, y0: number, y1: number, tile: number, tileY = tile) => panelAt(O, k, mat, ax, az, bx, bz, y0, y1, tile, tileY);
 
-const FRESH = '#f6f5f1', GREYED = '#e6e3da', WASHED = '#dcd8ce', LOUVRE = '#5b3f2c', STEP = '#b5ada0';
+const FRESH = '#f6f5f1', GREYED = '#e6e3da', WASHED = '#dcd8ce', STEP = '#b5ada0';
 
 // ---------- facades ----------
 /** both halves of a facade canvas drawn alike (blocks whose every storey looks the same) */
 const both = (base: string, one: (g: CanvasRenderingContext2D, y0: number) => void) => (g: CanvasRenderingContext2D) => { wall(g, base); one(g, 0); one(g, 256); };
-/** a brown louvred window: a dark frame round horizontal wooden slats, deep-set in the white */
+/** a louvred window in silver-grey aluminium: a frame round angled glass blades, deep-set in the white, dark behind */
 function louvred(g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) {
-  g.fillStyle = 'rgba(0,0,0,0.18)'; g.fillRect(x - 6, y - 6, w + 12, h + 10);
-  g.fillStyle = '#3a281c'; g.fillRect(x - 3, y - 3, w + 6, h + 6);
-  for (let s = y; s < y + h; s += 6) { g.fillStyle = (s - y) % 12 ? '#6e4c35' : LOUVRE; g.fillRect(x, s, w, 4); g.fillStyle = '#2c1f16'; g.fillRect(x, s + 4, w, 2); }
-  g.fillStyle = '#3a281c'; g.fillRect(x + w / 2 - 2, y, 4, h);
+  g.fillStyle = 'rgba(0,0,0,0.16)'; g.fillRect(x - 6, y - 6, w + 12, h + 10);
+  g.fillStyle = '#8e9398'; g.fillRect(x - 4, y - 4, w + 8, h + 8);
+  g.fillStyle = '#3b4146'; g.fillRect(x, y, w, h);
+  for (let s = y + 2; s < y + h - 2; s += 7) { g.fillStyle = '#b9bec3'; g.fillRect(x + 2, s, w - 4, 3); g.fillStyle = '#d4d8db'; g.fillRect(x + 2, s, w - 4, 1); }
+  g.fillStyle = '#8e9398'; g.fillRect(x + w / 2 - 2, y, 4, h);
 }
 const ISS_UP: Style = {
   bay: 2.625, up: [[34, 64, 188, 112]], ground: [[34, 256 + 64, 188, 112]],
@@ -155,7 +158,7 @@ const SPEC: Spec = {
     blk(361.4, 393.8, -291.5, -282.4, 3, { faces: { z1: CS_GAL, x1: CS_BLANK } }),
   ],
   keep: [
-    [309 - O[0], 316 - O[0], -283.3 - O[1], -281.5 - O[1]],
+    [306 - O[0], 318.3 - O[0], -283.3 - O[1], -279 - O[1]],
     [361.2 - O[0], 393.8 - O[0], -282.4 - O[1], -273.8 - O[1]],
     [347.5 - O[0], 349.6 - O[0], -309 - O[1], -303 - O[1]],
     [276.3 - O[0], 318.3 - O[0], -294.6 - O[1], -292.3 - O[1]],
@@ -174,19 +177,53 @@ const SPEC: Spec = {
     // air-conditioners on the ledges under the windows
     for (let i = 0; i < 16; i++) for (const f of [1, 2]) if ((i * 7 + f * 3) % 4 !== 0) {
       const x = 276.3 + (i + 0.5) * 2.625 + (f === 1 ? -0.4 : 0.4), y = f === 1 ? ST + 0.45 : 2 * ST + 0.45;
-      if (x > 309 && x < 316 && f === 1) continue;
+      if (x > 307 && x < 318 && f === 1) continue;
       k.plain.push([B(x - 0.42, x + 0.42, y, y + 0.58, -283.2, -282.9), '#ecebe7'], [B(x - 0.3, x + 0.3, y + 0.1, y + 0.48, -282.9, -282.88), '#9da0a3']);
     }
-    // the entrance: a lobby set in under a canopy with the institute's name, glazed doors, three steps, a rail
-    k.plain.push([B(309.6, 315.4, PL, ST - 0.05, -283.32, -283.3), '#e9e7e1']);
-    k.plain.push([B(311.2, 313.8, PL, 3.0, -283.36, -283.32), '#2a333b'], [B(312.47, 312.53, PL, 3.0, -283.38, -283.36), '#8d9196']);
-    k.plain.push([B(314.2, 315.0, 1.3, 2.1, -283.36, -283.32), '#2b2a28'], [B(314.25, 314.95, 1.35, 2.05, -283.37, -283.36), '#f2f0ea']);
-    fresh.push([B(309.2, 315.8, ST - 0.05, ST + 0.45, -282.45, -281.6), FRESH], [B(309.2, 315.8, ST - 0.05, ST + 0.55, -281.65, -281.5), FRESH]);
-    k.signs.push({ text: 'INSTITUTE OF STATISTICAL, SOCIAL AND ECONOMIC RESEARCH', x: 312.5 - O[0], y: ST + 0.25, z: -281.48 - O[1], ry: 0, w: 6.2, colors: ['#f4f3ef', '#283a5c'] });
-    for (let i = 0; i < 3; i++) old.push([B(309.4 - 0.2 * i, 315.6 + 0.2 * i, 0, PL - 0.13 * i, -283.3, -282.85 + 0.4 * i), STEP]);
-    for (const x of [309.7, 315.3]) { k.plain.push([B(x - 0.03, x + 0.03, 0, 1.3, -282.1, -282.04), '#9c9fa3']); }
-    k.plain.push([B(309.67, 309.73, 1.25, 1.3, -283.3, -282.04), '#9c9fa3'], [B(315.27, 315.33, 1.25, 1.3, -283.3, -282.04), '#9c9fa3']);
-    for (const x of [310.0, 315.0]) k.plain.push([new THREE.CylinderGeometry(0.28, 0.22, 0.5, 10).translate(x - O[0], PL + 0.25, -283.0 - O[1]), '#efe9de'], [new THREE.IcosahedronGeometry(0.42, 0).translate(x - O[0], PL + 0.8, -283.0 - O[1]), '#3f7a2c']);
+    // the entrance (owner's photo): a lobby set in under a canopy whose deep fascia carries the institute's name in
+    // raised grey letters; glazed doors in silver frames and a side light on the left, the framed ISSER emblem and a
+    // small blue sign on the white back wall, big potted plants, an air-conditioner on the floor; four wide tiled
+    // steps with stainless rails, running on past the canopy to the left; on the right a raised step edged in
+    // dark red with a steel railing; an EXIT sign on a post before the steps
+    const L0 = 307.7, L1 = 317.3, lob = 0.75, zf = -283.3, zc = -280.7;
+    k.plain.push([B(L0 + 0.6, L1 - 0.6, 0, ST + 0.05, zf, zf + 0.03), '#f4f3ef']);
+    fresh.push([B(L0, L0 + 0.6, 0, ST + 0.05, zf, -281.2), FRESH], [B(L1 - 0.7, L1, 0, ST + 0.05, zf, -281.2), FRESH]);
+    fresh.push([B(L0 - 0.1, L1 + 0.1, ST + 0.05, ST + 0.3, zf, zc), FRESH]);
+    fresh.push([new THREE.BoxGeometry(L1 - L0 + 0.2, 0.8, 0.22).rotateX(-0.18).translate((L0 + L1) / 2 - O[0], ST + 0.5, zc + 0.02 - O[1]), FRESH]);
+    letters(k, 'INSTITUTE OF STATISTICAL, SOCIAL AND ECONOMIC RESEARCH', (L0 + L1) / 2 - O[0], ST + 0.5, zc + 0.14 - O[1], 0, 0.26, 0.05, '#686d72', { wide: 0.58, gap: 0.28, stroke: 0.26 });
+    k.plain.push([B(L0 + 0.4, L1 - 0.4, ST - 0.02, ST + 0.05, zf, zc - 0.1), '#e8e6e0']);
+    for (const x of [L0 + 2.6, L1 - 3.0]) k.plain.push([B(x - 0.5, x + 0.5, ST - 0.04, ST - 0.01, -282.3, -282.1), '#f6f3e6']);
+    // the lobby floor and the steps down to the drive, wider than the canopy to the left
+    old.push([B(L0 + 0.6, L1 - 0.7, 0, lob, zf, -281.5), '#d8cbb3']);
+    for (let i = 1; i <= 4; i++) old.push([B(L0 - 1.2, L1 - 0.7, 0, lob - (lob / 4) * i + lob / 4, -281.5 + 0.32 * (i - 1), -281.5 + 0.32 * i), i % 2 ? '#d3c5ac' : '#cdbfa5']);
+    // glazed doors in silver frames and a side light
+    const D0 = L0 + 0.9, D1 = D0 + 2.3;
+    k.plain.push([B(D0 - 0.08, D1 + 0.75, lob, lob + 2.45, zf + 0.03, zf + 0.06), '#a7abb0']);
+    k.glass.push(B(D0, D0 + 1.1, lob + 0.05, lob + 2.3, zf + 0.06, zf + 0.08), B(D0 + 1.2, D1, lob + 0.05, lob + 2.3, zf + 0.06, zf + 0.08), B(D1 + 0.1, D1 + 0.67, lob + 0.05, lob + 2.3, zf + 0.06, zf + 0.08));
+    for (const x of [D0 + 1.0, D0 + 1.3]) k.plain.push([B(x - 0.02, x + 0.02, lob + 0.9, lob + 1.4, zf + 0.08, zf + 0.14), '#c9ccd0']);
+    // the framed emblem and the small blue sign on the back wall
+    k.plain.push([B(D1 + 1.3, D1 + 2.15, lob + 1.0, lob + 1.95, zf + 0.03, zf + 0.06), '#1f1f22']);
+    k.signs.push({ text: 'ISSER', x: D1 + 1.725 - O[0], y: lob + 1.475, z: zf + 0.07 - O[1], ry: 0, w: 0.7, colors: ['#e9e7e1', '#3a4a6a'] });
+    k.plain.push([B(D1 + 0.75, D1 + 1.2, lob + 1.45, lob + 1.62, zf + 0.03, zf + 0.06), '#2c5fb3']);
+    // potted plants and the air-conditioner on the lobby floor
+    for (const x of [D1 + 0.95, L1 - 1.25]) {
+      k.plain.push([B(x - 0.25, x + 0.25, lob, lob + 0.65, -282.95, -282.45), '#c9b48f']);
+      for (let j = 0; j < 5; j++) k.plain.push([new THREE.ConeGeometry(0.1, 0.9, 4).rotateZ((j - 2) * 0.35).translate(x - O[0] + (j - 2) * 0.08, lob + 1.05, -282.7 - O[1]), j % 2 ? '#3f7a2c' : '#4f8f36']);
+    }
+    k.plain.push([B(L1 - 2.35, L1 - 1.6, lob, lob + 0.6, zf + 0.03, zf + 0.33), '#ecebe7'], [new THREE.CylinderGeometry(0.2, 0.2, 0.02, 16).rotateX(Math.PI / 2).translate(L1 - 1.97 - O[0], lob + 0.3, zf + 0.34 - O[1]), '#5f6366']);
+    // stainless rails on the steps, left and right
+    for (const x of [L0 - 0.7, L1 - 0.95]) {
+      for (const z of [-281.4, -280.2]) k.plain.push([new THREE.CylinderGeometry(0.025, 0.025, 1.0, 6).translate(x - O[0], (z < -281 ? lob : 0.2) + 0.5, z - O[1]), '#c7cbcf']);
+      const a = Math.atan2(lob - 0.2, 1.2);
+      k.plain.push([new THREE.CylinderGeometry(0.025, 0.025, 1.35, 6).rotateX(Math.PI / 2 - a).translate(x - O[0], (lob + 0.2) / 2 + 1.0, -280.8 - O[1]), '#c7cbcf']);
+    }
+    // the raised step on the right, edged in dark red, with a steel railing
+    old.push([B(L1 - 0.7, 318.3, 0, lob, zf, -281.7), '#d8cbb3'], [B(L1 - 0.7, 318.3, 0, 0.3, -281.72, -281.66), '#6e2a22']);
+    k.plain.push([B(L1 - 0.7, 318.3, lob + 0.95, lob + 1.0, -281.75, -281.7), '#c7cbcf']);
+    for (const x of [L1 - 0.6, 318.2]) k.plain.push([B(x - 0.02, x + 0.02, lob, lob + 1.0, -281.75, -281.7), '#c7cbcf']);
+    // the EXIT sign on its post before the steps
+    k.plain.push([B(311.0, 311.06, 0, 1.15, -279.5, -279.44), '#3a3a3a'], [B(310.65, 311.4, 1.0, 1.4, -279.44, -279.4), '#2a2a2a']);
+    k.signs.push({ text: 'EXIT', x: 311.03 - O[0], y: 1.2, z: -279.38 - O[1], ry: 0, w: 0.6, colors: ['#f2f2ef', '#1d1d1d'] });
     // the back: the floors above standing over the ground floor on columns, a soffit under them
     fresh.push([B(276.3, 318.3, ST - 0.05, ST + 0.4, -294.5, -292.3), FRESH]);
     for (let x = 278.5; x < 318; x += 5.25) if (x < 301.6 || x > 310.8) fresh.push([B(x - 0.25, x + 0.25, 0, ST, -294.4, -293.9), FRESH]);
@@ -195,6 +232,17 @@ const SPEC: Spec = {
 
     // --- RIPS: galleries on solid parapets toward the drive, and the link ---
     balconies(old, k, 318.3, 344.7, -292, -290, GREYED, 6.6);
+    // the kerb where the paved ground before RIPS drops half a metre below its galleries, and the small stairs' cheeks
+    old.push([B(318.3, 344.7, -0.5, 0.02, -290.0, -289.55), '#cfc9bd']);
+    for (const x of [336.35, 339.4]) old.push([B(x, x + 0.25, -0.5, 0.35, -278.7, -277.4), '#d9d4c8']);
+    old.push([B(319, 336.35, -0.5, 0.01, -278.66, -278.3), '#cfc9bd'], [B(339.65, 349.4, -0.5, 0.01, -278.66, -278.3), '#cfc9bd']);
+    const small = stairsOf().find((q) => q.alongZ && q.z0 === 336.6)!;
+    for (let j = 0; j < small.steps; j++) { const za = small.x0 + j * small.tread, y = small.at(za + small.tread / 2); old.push([B(small.z0, small.z1, -0.5, y, za, za + small.tread + 0.02), STEP]); }
+    // the white sign board on the second-floor parapet (owner): REGIONAL INSTITUTE FOR on the first line, POPULATION
+    // STUDIES (RIPS) under it
+    k.plain.push([B(322.9, 329.1, 2 * ST + 0.42, 2 * ST + 1.55, -289.99, -289.93), '#fbfbf9'], [B(322.8, 329.2, 2 * ST + 0.39, 2 * ST + 1.58, -290.0, -289.97), '#c9ccd0']);
+    k.signs.push({ text: 'REGIONAL INSTITUTE FOR', x: 326 - O[0], y: 2 * ST + 1.26, z: -289.92 - O[1], ry: 0, w: 4.4, colors: ['#fbfbf9', '#1d2f6b'] });
+    k.signs.push({ text: 'POPULATION STUDIES (RIPS)', x: 326 - O[0], y: 2 * ST + 0.76, z: -289.92 - O[1], ry: 0, w: 4.9, colors: ['#fbfbf9', '#1d2f6b'] });
     old.push([B(318.1, 344.9, top, top + 0.6, -301.1, -292), GREYED], [B(344.5, 350.2, top, top + 0.5, -299.2, -292.8), GREYED]);
     for (let x = 319; x < 344.5; x += 6.6) old.push([B(x - 0.2, x + 0.2, 0, PL + ST - 0.3, -290.5, -290.1), GREYED]);
 

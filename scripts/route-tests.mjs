@@ -275,6 +275,14 @@ try {
     if (Math.abs(gh(448.5, -331.5) - 1) > 0.5) fail('Innovation Enclave: no steps up from the road');
     if (gh(448.5, -338) !== 0) fail('Innovation Enclave: the road before the terrace is not at road level');
     if ((await server.ssrLoadModule('/src/game/enclave.ts')).enclave.frames().length !== 1) fail('expected the Innovation Enclave model'); }
+  // owner: the paved ground before RIPS lies three steps below the car park to its south, small stairs between
+  // them, and neither has grass (both paved)
+  { const { groundHeight: gh } = await server.ssrLoadModule('/src/game/relief.ts');
+    if (Math.abs(gh(333, -284) + 0.5) > 0.05) fail('the ground before RIPS is not three steps below the car park (owner)');
+    if (gh(345, -270) !== 0) fail('the car park north of the Mathematics and Statistics departments is not at road level');
+    const st = gh(338, -278.0); if (!(st > -0.5 && st < 0)) fail('no small stairs up from the ground before RIPS to the car park (owner)');
+    const inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
+    for (const [n, x, z] of [['before RIPS', 333, -284], ['in the car park by Computer Science', 345, -270], ['between the car park and the Mathematics entrance', 325, -262]]) if (!cm.AREAS.some((a) => (a.kind === 'plaza' || a.kind === 'parking') && inA(a, x, z))) fail(`the ground ${n} is not paved (owner)`); }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

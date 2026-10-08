@@ -66,6 +66,10 @@ const ZONES: Zone[] = [
   // above the road on its north, behind a white retaining wall that three flights of steps climb (owner's photos);
   // the ground falls away gently on the other sides
   { kind: 'terrace', x0: 397, x1: 497, z0: -333.2, z1: -296, depth: 2, w: 6, e: 4, n: 0.3, s: 8 },
+  // the paved ground before the RIPS building, between ISSER and Computer Science: a little downhill, three steps
+  // below the car park north of the Mathematics and Statistics departments (owner); the drive along ISSER's front
+  // ramps down into it from the west
+  { kind: 'hollow', x0: 319, x1: 349.4, z0: -289.6, z1: -278.6, depth: 0.5, w: 3, e: 0.3, n: 0.4, s: 0.3 },
 ];
 const STAIRS: Stairs[] = [
   // Commonwealth: from the gate houses up Legon Hill to the drive
@@ -78,6 +82,8 @@ const STAIRS: Stairs[] = [
   { x0: -334.2, x1: -329.4, z0: 415, z1: 419, flights: 1, steps: 12, tread: 0.4, alongZ: true },
   { x0: -334.2, x1: -329.4, z0: 445.5, z1: 451.5, flights: 1, steps: 12, tread: 0.4, alongZ: true },
   { x0: -334.2, x1: -329.4, z0: 478, z1: 481.5, flights: 1, steps: 12, tread: 0.4, alongZ: true },
+  // the small stairs from the paved ground before RIPS up to the car park (owner)
+  { x0: -278.7, x1: -277.5, z0: 336.6, z1: 339.4, flights: 1, steps: 3, tread: 0.4, alongZ: true },
 ];
 
 const boxOf = (q: Zone) => q.kind !== 'hill'

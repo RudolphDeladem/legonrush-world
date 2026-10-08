@@ -769,6 +769,22 @@ Computer Science wing and east block meet edge to edge (`corrections.json`: resh
   road and **INNOVATION ENCLAVE** in raised blue letters on the wall by its steps; the university's sign board
   stands before the middle buildings. Explore goes up the west steps to the Department of Plant Biology's doors.
 
+## 31. ISSER's entrance and windows, the RIPS sign, the ground before RIPS
+
+- **ISSER's windows** are louvred in silver-grey aluminium, not brown (owner).
+- **ISSER's entrance** (owner's close photo): a lobby set in under a canopy whose deep, slightly tilted fascia
+  carries INSTITUTE OF STATISTICAL, SOCIAL AND ECONOMIC RESEARCH in raised grey letters; glazed doors and a side
+  light in silver frames on the left, the framed ISSER emblem and a small blue sign on the white back wall, big
+  potted plants and an air-conditioner on the lobby floor, lamps in the canopy's soffit; four wide tiled steps with
+  stainless rails running on past the canopy to the left; on the right a raised step edged in dark red with a
+  steel railing; an EXIT sign on a post before the steps (`issercs.ts`; raised letters: `letters.ts`).
+- **RIPS** has a white sign board on its second-floor parapet: REGIONAL INSTITUTE FOR on the first line,
+  POPULATION STUDIES (RIPS) under it.
+- **The ground before RIPS** (between ISSER and Computer Science) is paved, not grass, and a little downhill:
+  about three steps (0.5 m) below the car park to its south, with a kerb along the drop and **small stairs** up
+  at the end of the drive (`relief.ts`). **The car park** from there to the Mathematics and Statistics departments'
+  north front is concrete throughout, no grass.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

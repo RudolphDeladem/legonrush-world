@@ -29,18 +29,24 @@ const GLYPHS: Record<string, Stroke[]> = {
   V: [[0, 1.4, 0.5, 0], [0.5, 0, 1, 1.4]],
   C: [...arc(0.55, 0.95, 0.45, 25 * D, 180 * D, 6), [0.1, 0.95, 0.1, 0.45], ...arc(0.55, 0.45, 0.45, 180 * D, 335 * D, 6)],
   L: [[0, 1.4, 0, 0], [0, 0, 0.9, 0]],
+  H: [[0, 0, 0, 1.4], [1, 0, 1, 1.4], [0, 0.7, 1, 0.7]],
+  F: [[0, 0, 0, 1.4], [0, 1.4, 0.9, 1.4], [0, 0.7, 0.75, 0.7]],
+  D: [[0, 0, 0, 1.4], [0, 1.4, 0.45, 1.4], [0, 0, 0.45, 0], ...arc(0.45, 0.85, 0.55, 90 * D, 0, 4), [1, 0.85, 1, 0.55], ...arc(0.45, 0.55, 0.55, 0, -90 * D, 4)],
+  ',': [[0.5, 0.12, 0.3, -0.25]],
   G: [...arc(0.55, 0.95, 0.45, 25 * D, 180 * D, 6), [0.1, 0.95, 0.1, 0.45], ...arc(0.55, 0.45, 0.45, 180 * D, 360 * D, 6), [1, 0.45, 1, 0.7], [1, 0.7, 0.6, 0.7]],
 };
 /**
  * Raised letters standing out from a wall: centred on (x, y, z), letters h high and `depth` deep, the face of the
- * wall turned toward `face` (radians about y; 0 faces +z).
+ * wall turned toward `face` (radians about y; 0 faces +z). `wide` narrows the letters (1: as wide as 1/1.4 of their
+ * height), `gap` is the space between them and `stroke` the stroke weight, both in letter widths.
  */
-export function letters(k: Kit, text: string, x: number, y: number, z: number, face: number, h: number, depth: number, color: string) {
-  const s = h / 1.4, w = 0.2, gap = 0.5;
-  const width = text.length * (1 + gap) - gap;
+export function letters(k: Kit, text: string, x: number, y: number, z: number, face: number, h: number, depth: number, color: string, { wide = 1, gap = 0.5, stroke = 0.2 } = {}) {
+  const s = h / 1.4, w = stroke;
+  const width = text.length * (wide + gap) - gap;
   [...text].forEach((ch, i) => {
-    const u0 = (i * (1 + gap) - width / 2) * s;
-    for (const [x0, y0, x1, y1] of GLYPHS[ch] ?? []) {
+    const u0 = (i * (wide + gap) - width / 2) * s;
+    for (const [ax, y0, bx, y1] of GLYPHS[ch] ?? []) {
+      const x0 = ax * wide, x1 = bx * wide;
       const len = Math.hypot(x1 - x0, y1 - y0) * s;
       const geo = new THREE.BoxGeometry(len + w * s, w * s, depth)
         .rotateZ(Math.atan2(y1 - y0, x1 - x0))

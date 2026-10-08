@@ -3051,6 +3051,84 @@
         ]
       ],
       "reason": "Owner's photo 3: the car park behind ISSER runs on past the stair tower along the back of the RIPS building, toward the Computer Science door."
+    },
+    {
+      "id": "owner:rips-forecourt",
+      "class": "plaza",
+      "ring": [
+        [
+          316.0,
+          -289.6
+        ],
+        [
+          319.0,
+          -289.6
+        ],
+        [
+          349.4,
+          -289.6
+        ],
+        [
+          349.4,
+          -278.6
+        ],
+        [
+          319.0,
+          -278.6
+        ],
+        [
+          316.0,
+          -278.6
+        ]
+      ],
+      "reason": "Owner's in-game view (circled violet): the ground before the RIPS building between ISSER and Computer Science has no grass; it is paved, a little downhill, three steps below the car park to its south."
+    },
+    {
+      "id": "owner:mathstat-cs-car-park",
+      "class": "plaza",
+      "ring": [
+        [
+          319.5,
+          -278.3
+        ],
+        [
+          336.4,
+          -278.3
+        ],
+        [
+          336.4,
+          -277.4
+        ],
+        [
+          339.6,
+          -277.4
+        ],
+        [
+          339.6,
+          -278.3
+        ],
+        [
+          392.0,
+          -278.3
+        ],
+        [
+          392.0,
+          -248.5
+        ],
+        [
+          337.0,
+          -248.5
+        ],
+        [
+          337.0,
+          -253.4
+        ],
+        [
+          319.5,
+          -253.4
+        ]
+      ],
+      "reason": "Owner's in-game view (circled yellow) and photo of the east car park of the Mathematics and Statistics departments: no grass, all concrete from the departments' north front to the front of Computer Science."
     }
   ],
   "addWays": [
