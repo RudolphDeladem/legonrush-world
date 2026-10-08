@@ -11,9 +11,9 @@
   "point": 111
  },
  "byConfidence": {
-  "high": 71,
+  "high": 72,
   "low": 222,
-  "medium": 143
+  "medium": 142
  },
  "campusGates": 5,
  "problems": [],
@@ -192,8 +192,8 @@
   },
   {
    "place": "University of Ghana Sports Stadium",
-   "status": "partial",
-   "confidence": "medium",
+   "status": "verified",
+   "confidence": "high",
    "method": "curated"
   },
   {
@@ -360,9 +360,9 @@
   }
  ],
  "byStatus": {
-  "verified": 69,
+  "verified": 70,
   "inferred": 214,
-  "partial": 7,
+  "partial": 6,
   "unverified": 9,
   "mapped": 137
  },
@@ -385,7 +385,7 @@
    "place": "University of Ghana Sports Stadium",
    "type": "public entrance",
    "arrivalOn": "service",
-   "arrivalDistance": 22.5,
+   "arrivalDistance": 4.1,
    "facing": 90
   },
   {

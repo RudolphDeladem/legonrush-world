@@ -629,6 +629,41 @@ park by the road, and the side the owner calls **west (W) on the north**, toward
 - **East block** ('UGBS extention', beige): five floors of deep-set windows between projecting fins under a flat
   overhanging roof. Its OSM outline wrapped round the middle block; it is reshaped to the rectangle the aerial shows.
 
+## 23. The University of Ghana Sports Stadium, its training track, the pool and the tennis courts
+
+From the owner's aerial of the area and photos of the stadium from outside and of the main stand
+(`src/game/stadium.ts`).
+
+- **The stadium:** a blue running track round a green football pitch (lines, penalty areas, goals), inside a bowl of
+  **green seating** in three stands (north and south curves, the east side, *UG SPORTS* picked out in white seats),
+  with gaps at the corners for the entrances. The outer wall is banded in **red, white and grey stripes** over a blue
+  base, with leaping athletes on it; four **floodlight masts** stand outside the corners.
+- **The main stand** (west): red seats with a blue section in the middle, in front of a three-floor white building
+  under the **raised roof** cantilevered out over the seats. The **main entrance** is on its west face, under a
+  canopy, with the stadium's name over it (the owner: the main entrance is on the side with the raised roof). Its
+  mapped outline is extended to the building the aerial shows.
+- **The training track** to the south-west: blue round a grass pitch, on the mapped outline.
+- **The swimming pool** (lane lines, a diving board, a white deck) and the two **blue tennis courts** in their green
+  surround and wire fence, to the north-west. Satellite outlines on the courts and on the track are excluded.
+
+## 24. Car parks
+
+The owner: places with car parks have them, and there are cars in them.
+
+- **Parked cars:** every mapped car park is now filled to 65 to 90 per cent (it was 35 to 75 per cent, with a cap
+  of 60 cars a car park and 700 on the campus; now 220 and 2,600).
+- **School of Public Health:** its car parks along the east side, along the west side by the road and south of the
+  entrance are added from the owner's aerial.
+- **The Balme Library:** a car park along the front of each pair of wings, and a second row of bays by the road on
+  each side of the forecourt (the owner's top view, marked P).
+
+## 25. The ground before the Balme Library
+
+From the owner's top view: the roads, the **concrete forecourt** before the entrance (marked yellow, now a paved
+area from the road to the door), the car parks either side of it, and **trees** everywhere else, with shaded leaf
+litter under them rather than lawn. The only **lawn** is in the sunken square round the pool, with rows of palms on
+it either side.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

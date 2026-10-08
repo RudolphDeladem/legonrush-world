@@ -28,7 +28,8 @@
   "owner-valco": "The owner's photo of Valco Trust Hostel Phase 1 and Phase 2 (Phase 1's entrance marked in blue) and the owner's account: the back of Phase 1 faces the back of Phase 2.",
   "owner-west-legon": "The owner's map of the buildings west of Legon Hall (Language Center, Modern Languages, Confucius Institute, the barbeque joint), the owner's two photos of them from the air, and the owner's aerial of the bungalows behind them (circled white), registered to the OSM footprints at 2.8 px/m.",
   "owner-sph": "The owner's aerial of the School of Public Health (wings marked yellow: two floors, white: three floors; entrances circled blue; structures circled purple gone), registered to the OSM footprints at 4.0 px/m, and the owner's photo of its three-floor front.",
-  "owner-ugbs": "The owner's photos of the Business School (the front and the north side from the north-west corner, the front face on, the middle and east blocks from the north car park) and the owner's aerial marking the front (F, west) and the side the owner calls west (W, north), registered to the OSM footprints at 4.0 px/m."
+  "owner-ugbs": "The owner's photos of the Business School (the front and the north side from the north-west corner, the front face on, the middle and east blocks from the north car park) and the owner's aerial marking the front (F, west) and the side the owner calls west (W, north), registered to the OSM footprints at 4.0 px/m.",
+  "owner-stadium": "The owner's aerial of the stadium area (the stadium, the training track, the swimming pool, the gym and the tennis courts) and photos of the stadium from outside and of the main stand, registered to the OSM footprints at 2.2 px/m."
  },
  "campusGates": [
   {
@@ -706,16 +707,21 @@
   },
   {
    "place": "University of Ghana Sports Stadium",
+   "footprint": "osm:way/1273337670",
    "entrance": {
-    "side": "west"
+    "at": [
+     685.5,
+     1414
+    ]
    },
    "type": "public entrance",
-   "status": "partial",
-   "confidence": "medium",
-   "cite": "user-atlas",
-   "approach": "From the road west of the stadium to the main (west) grandstand.",
-   "evidence": "Atlas sheet 1: the covered main grandstand is on the west side of the bowl, facing the road and the gym centre. Spectator gates are not mapped.",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-stadium",
+   "approach": "From the road on the west to the main entrance under the canopy in the middle of the main stand's west face.",
+   "evidence": "Owner: a stadium has several entrances but the main one is on the side with the raised roof: the main stand on the west (aerial: its white roof; photo: the stand under its cantilevered roof). Atlas sheet 1 also puts the covered grandstand on the west, facing the road and the gym centre.",
    "refs": [
+    "owner's aerial and photos of the stadium",
     "atlas sheet 1"
    ]
   },

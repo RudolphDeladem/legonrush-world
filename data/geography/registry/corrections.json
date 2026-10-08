@@ -88,6 +88,18 @@
     {
       "id": "osm:way/665113661",
       "reason": "Owner: there is no building between the two phone booths north of the banking square; the open ground there runs to La Road, where a low waiting shed stands by the road (modelled in src/game/parks.ts)."
+    },
+    {
+      "id": "ml:9c0ba3eb-db42-4c2a-8dcf-6ebda6ca27e7",
+      "reason": "Owner's aerial of the stadium area: a satellite outline on the tennis courts; there is no building there."
+    },
+    {
+      "id": "ml:edff1234-d025-41fd-8944-9b4f98783a3a",
+      "reason": "Owner's aerial of the stadium area: a satellite outline along the tennis courts' south fence; no building."
+    },
+    {
+      "id": "ml:08b7e191-3ea7-4816-9d8d-1b38fd141fb3",
+      "reason": "Owner's aerial and photos of the stadium: a satellite outline on the track at the north end; no building."
     }
   ],
   "heights": [
@@ -1560,6 +1572,34 @@
       "levels": 5,
       "height": 19,
       "reason": "Owner's photo from the north car park: the beige east block, four floors and a fifth under a flat overhanging roof."
+    },
+    {
+      "id": "osm:way/1273337670",
+      "place": "University of Ghana Sports Stadium",
+      "levels": 3,
+      "height": 10,
+      "reason": "Owner's photos of the stadium: tiers of seats about 9 m high to the top of the outer wall; the main stand on the west rises to its raised roof at about 17 m. Modelled in src/game/stadium.ts."
+    },
+    {
+      "id": "osm:way/1273337671",
+      "place": "University of Ghana Sports Stadium",
+      "levels": 3,
+      "height": 10,
+      "reason": "Owner's photos of the stadium: tiers of seats about 9 m high to the top of the outer wall; the main stand on the west rises to its raised roof at about 17 m. Modelled in src/game/stadium.ts."
+    },
+    {
+      "id": "osm:way/1273337672",
+      "place": "University of Ghana Sports Stadium",
+      "levels": 3,
+      "height": 10,
+      "reason": "Owner's photos of the stadium: tiers of seats about 9 m high to the top of the outer wall; the main stand on the west rises to its raised roof at about 17 m. Modelled in src/game/stadium.ts."
+    },
+    {
+      "id": "osm:way/1273337673",
+      "place": "University of Ghana Sports Stadium",
+      "levels": 3,
+      "height": 10,
+      "reason": "Owner's photos of the stadium: tiers of seats about 9 m high to the top of the outer wall; the main stand on the west rises to its raised roof at about 17 m. Modelled in src/game/stadium.ts."
     }
   ],
   "reclass": [
@@ -1765,6 +1805,30 @@
         ]
       ],
       "reason": "The OSM outline wraps round the middle block and reaches 10 m east of any roof; the owner's aerial shows the east block as a plain rectangle, the one the main outline also draws."
+    },
+    {
+      "id": "osm:way/1273337670",
+      "place": "University of Ghana Sports Stadium (main stand)",
+      "source": "the owner's aerial of the stadium (registered to the OSM footprints at 2.2 px/m)",
+      "ring": [
+        [
+          685.5,
+          1380
+        ],
+        [
+          716,
+          1380
+        ],
+        [
+          716,
+          1444
+        ],
+        [
+          685.5,
+          1444
+        ]
+      ],
+      "reason": "The OSM outline covers only the seats of the west stand; the owner's aerial shows the main stand's white roof and its building reaching 15 m further west, where the main entrance is."
     }
   ],
   "addAreas": [
@@ -1974,6 +2038,258 @@
         ]
       ],
       "reason": "Owner's aerial of the current Night Market (circled blue), west of the banking square: market zones and stall rows, one floor, with the supermarket on its east side; registered to the bank compound's footprint at 4.9 px/m."
+    },
+    {
+      "id": "owner:sph-car-park-east",
+      "class": "parking",
+      "ring": [
+        [
+          481,
+          1582
+        ],
+        [
+          522,
+          1582
+        ],
+        [
+          551,
+          1630
+        ],
+        [
+          551,
+          1682
+        ],
+        [
+          536,
+          1688
+        ],
+        [
+          528,
+          1668
+        ],
+        [
+          501,
+          1613
+        ],
+        [
+          506,
+          1606
+        ],
+        [
+          498,
+          1592
+        ]
+      ],
+      "reason": "Owner: the School of Public Health's car park along its east side (aerial, rows of bays at the building's angle)."
+    },
+    {
+      "id": "owner:sph-car-park-west",
+      "class": "parking",
+      "ring": [
+        [
+          424,
+          1631
+        ],
+        [
+          432.5,
+          1629
+        ],
+        [
+          436,
+          1645.5
+        ],
+        [
+          440.5,
+          1655.5
+        ],
+        [
+          454,
+          1676.5
+        ],
+        [
+          441,
+          1684
+        ],
+        [
+          430,
+          1672
+        ],
+        [
+          418,
+          1648
+        ]
+      ],
+      "reason": "Owner: the School of Public Health's car park along its west side, by the road (aerial)."
+    },
+    {
+      "id": "owner:sph-car-park-south",
+      "class": "parking",
+      "ring": [
+        [
+          495,
+          1680
+        ],
+        [
+          512,
+          1672
+        ],
+        [
+          518,
+          1684
+        ],
+        [
+          502,
+          1694
+        ]
+      ],
+      "reason": "Owner's aerial: the bays south of the School of Public Health's entrance."
+    },
+    {
+      "id": "owner:balme-car-park-west",
+      "class": "parking",
+      "ring": [
+        [
+          -80,
+          11.8
+        ],
+        [
+          -12,
+          11.8
+        ],
+        [
+          -12,
+          19
+        ],
+        [
+          -80,
+          19
+        ]
+      ],
+      "reason": "Owner's top view of the Balme Library: the car park (P) along the front of the west wings."
+    },
+    {
+      "id": "owner:balme-car-park-west-2",
+      "class": "parking",
+      "ring": [
+        [
+          -82,
+          22.5
+        ],
+        [
+          -46,
+          22.5
+        ],
+        [
+          -46,
+          32.5
+        ],
+        [
+          -82,
+          32.5
+        ]
+      ],
+      "reason": "Owner's top view of the Balme Library: the second row of bays west of the forecourt, by the road."
+    },
+    {
+      "id": "owner:balme-car-park-east",
+      "class": "parking",
+      "ring": [
+        [
+          22,
+          11.8
+        ],
+        [
+          92,
+          11.8
+        ],
+        [
+          92,
+          19
+        ],
+        [
+          22,
+          19
+        ]
+      ],
+      "reason": "Owner's top view of the Balme Library: the car park (P) along the front of the east wings."
+    },
+    {
+      "id": "owner:balme-car-park-east-2",
+      "class": "parking",
+      "ring": [
+        [
+          52,
+          22.5
+        ],
+        [
+          92,
+          22.5
+        ],
+        [
+          92,
+          32.5
+        ],
+        [
+          52,
+          32.5
+        ]
+      ],
+      "reason": "Owner's top view of the Balme Library: the second row of bays east of the forecourt, by the road."
+    },
+    {
+      "id": "owner:balme-forecourt",
+      "class": "plaza",
+      "ring": [
+        [
+          -1,
+          11.5
+        ],
+        [
+          16,
+          11.5
+        ],
+        [
+          16,
+          18
+        ],
+        [
+          21,
+          18
+        ],
+        [
+          21,
+          29
+        ],
+        [
+          16,
+          29
+        ],
+        [
+          16,
+          36
+        ],
+        [
+          -1,
+          36
+        ],
+        [
+          -1,
+          29
+        ],
+        [
+          -8,
+          29
+        ],
+        [
+          -8,
+          18
+        ],
+        [
+          -1,
+          18
+        ]
+      ],
+      "reason": "Owner's top view of the Balme Library (marked yellow): the concrete forecourt before the entrance, from the road to the door."
     }
   ],
   "addWays": [

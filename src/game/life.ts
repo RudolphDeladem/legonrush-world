@@ -906,7 +906,7 @@ export function buildCampusLife() {
   // --- parked cars in the car parks ---
   let cars = 0;
   for (const a of AREAS) {
-    if (a.kind !== 'parking' || cars > 700) continue;
+    if (a.kind !== 'parking' || cars > 2600) continue;
     cars += parkCars(cells, M.car, a.pts, rand);
   }
 
@@ -1207,10 +1207,11 @@ function parkCars(cells: Cells, car: Model, pts: Float32Array, rand: () => numbe
     u0 = Math.min(u0, u); u1 = Math.max(u1, u); w0 = Math.min(w0, w); w1 = Math.max(w1, w);
   }
   if ((u1 - u0) * (w1 - w0) > 40000) return 0;
-  const fill = 0.35 + rand() * 0.4;
+  // car parks on campus are busy: most bays taken
+  const fill = 0.65 + rand() * 0.25;
   let count = 0;
   // rows of 5 m bays facing each other across 6 m aisles
-  for (let w = w0 + 3; w < w1 - 2.5 && count < 60; w += 8) {
+  for (let w = w0 + 3; w < w1 - 2.5 && count < 220; w += 8) {
     const facing = (Math.round((w - w0) / 8) % 2) ? 1 : -1;
     for (let u = u0 + 2; u < u1 - 1.5; u += 2.6) {
       if (rand() > fill) continue;

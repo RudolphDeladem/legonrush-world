@@ -278,7 +278,10 @@
    "osm:way/714954249",
    "osm:way/714954250",
    "osm:way/1239491152",
-   "osm:way/665113661"
+   "osm:way/665113661",
+   "ml:9c0ba3eb-db42-4c2a-8dcf-6ebda6ca27e7",
+   "ml:edff1234-d025-41fd-8944-9b4f98783a3a",
+   "ml:08b7e191-3ea7-4816-9d8d-1b38fd141fb3"
   ]
  },
  "areas": {
@@ -303,12 +306,12 @@
    "ha": 12.8
   },
   "plaza": {
-   "count": 10,
-   "ha": 1.2
+   "count": 11,
+   "ha": 1.3
   },
   "parking": {
-   "count": 81,
-   "ha": 8.9
+   "count": 88,
+   "ha": 9.4
   },
   "track": {
    "count": 3,

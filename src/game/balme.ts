@@ -23,6 +23,7 @@ import * as THREE from 'three';
 import { WHITE, box, canvas } from './modelkit';
 import { PL, createSite, gableZ, render, window_, type Block, type Kit, type Spec, type Style } from './blocks';
 import { stairsOf } from './relief';
+import { garden } from './gardens';
 
 // ---------- CEDI Conference Centre ----------
 const C: [number, number, number, number] = [-153.4, -106.4, 1.7, 49.7];
@@ -503,9 +504,35 @@ const steps: Spec = {
     const st = stairsOf().find((q) => q.alongZ)!;
     const x = (wx: number) => wx - SO[0], z = (wz: number) => wz - SO[1];
     const xa = x(-6.6), xb = x(24.6), deck = st.foot, mid = deck / 2;
-    // the paving of the pool deck and of the middle terrace
-    k.plain.push([box(xa, xb, deck - 0.2, deck + 0.04, z(60.6), z(93.5)), PAVE_B]);
-    k.plain.push([box(xa, xb, mid - 0.2, mid + 0.04, z(49.2), z(60.6)), PAVE_B]);
+    // the paved strip down the middle (the pool deck and the middle terrace); lawns either side (owner's top view:
+    // the only grass in front of the library is round the pool)
+    k.plain.push([box(x(-1), x(17), deck - 0.2, deck + 0.04, z(60.6), z(93.5)), PAVE_B]);
+    k.plain.push([box(x(-1), x(17), mid - 0.2, mid + 0.04, z(49.2), z(60.6)), PAVE_B]);
+    // the footpath across the square
+    k.plain.push([box(xa, xb, mid - 0.2, mid + 0.05, z(57), z(59.2)), PAVE_B]);
+    const g = garden([-90, 100, 10, 110]);
+    g.reseed(77);
+    // rows of palms on the lawns either side of the pool
+    for (let wz = 64; wz <= 92; wz += 7) for (const wx of [-4.2, 21.2]) g.palm(k, x(wx), z(wz), 4.5);
+    // under the trees the ground is shaded leaf litter and bare earth, not lawn (owner's top view)
+    const litter = new THREE.MeshStandardMaterial({ color: '#5d5a3a', roughness: 1 });
+    for (const [x0, x1, z0, z1] of [[-46, -12.5, 19.6, 35.5], [22.5, 52, 19.6, 35.5], [-24.5, -15.5, 38.5, 104], [31.5, 37.5, 38.5, 104]]) {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(x1 - x0, z1 - z0).rotateX(-Math.PI / 2), litter);
+      m.position.set(x((x0 + x1) / 2), 0.03, z((z0 + z1) / 2));
+      m.receiveShadow = true;
+      k.meshes.push(m);
+    }
+    // trees, not lawn, everywhere else before the library (owner's top view): between the car parks either side
+    // of the forecourt, and along the lanes past the square
+    for (const wz of [22, 27.5, 33]) {
+      for (const wx of [-14, -20, -26, -32, -38, -43]) g.tree(k, x(wx + (g.rand() - 0.5) * 2), z(wz + (g.rand() - 0.5) * 1.5), 1.1 + g.rand() * 0.4);
+      for (const wx of [25, 31, 37, 43, 48.5]) g.tree(k, x(wx + (g.rand() - 0.5) * 2), z(wz + (g.rand() - 0.5) * 1.5), 1.1 + g.rand() * 0.4);
+    }
+    for (let wz = 43; wz <= 103; wz += 6.5) {
+      g.tree(k, x(-18.5), z(wz), 1.1 + g.rand() * 0.4);
+      g.tree(k, x(-22), z(wz + 3), 0.9 + g.rand() * 0.4);
+      g.tree(k, x(34.8), z(wz + 1.5), 1.0 + g.rand() * 0.4);
+    }
     // a laterite stone wall from (x0..x1, z0..z1), y0 to y1, with a lighter capping
     const wall = (x0: number, x1: number, z0: number, z1: number, y0: number, y1: number) => {
       k.plain.push([box(x0, x1, y0, y1, z0, z1), STONE]);

@@ -232,6 +232,13 @@ try {
   // the Business School (owner): entered at the foot of the open bay in the middle of the west front; three blocks
   { const e = ann('University of Ghana Business School'); if (!e || Math.hypot(e[0] - -193.4, e[1] - -117.8) > 2) fail('University of Ghana Business School: the entrance is not in the open bay of the west front'); }
   if ((await server.ssrLoadModule('/src/game/ugbs.ts')).ugbs.frames().length !== 3) fail('expected the Business School\'s three blocks');
+  // the stadium (owner): entered at the main stand with the raised roof, on the west; the stadium models
+  { const e = ann('University of Ghana Sports Stadium'); if (!e || Math.hypot(e[0] - 685.5, e[1] - 1414) > 3) fail('University of Ghana Sports Stadium: the entrance is not at the main stand on the west'); }
+  if ((await server.ssrLoadModule('/src/game/stadium.ts')).stadiumSite.frames().length !== 3) fail('expected the stadium, the training track and the pool and tennis courts');
+  // car parks the owner pointed out: the School of Public Health's, east and west, and the Balme Library's either side of its forecourt
+  { const parking = cm.AREAS.filter((a) => a.kind === 'parking'), inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
+    for (const [n, x, z] of [['the School of Public Health east', 520, 1640], ['the School of Public Health west', 430, 1655], ['the Balme Library west', -40, 15], ['the Balme Library east', 60, 15]]) if (!parking.some((a) => inA(a, x, z))) fail(`no car park at ${n}`);
+    if (!cm.AREAS.some((a) => a.kind === 'plaza' && inA(a, 7.5, 24))) fail('the Balme Library forecourt is not paved'); }
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)
   for (const [x, z] of [[95, 1573], [-88, 1676], [210, 1509], [200, 1500]]) if (cm.buildingNear(x, z, 0.35)) fail(`free ride: the road at ${x},${z} is blocked by ${cm.buildingNear(x, z, 0.35).name ?? 'a building'}`);
