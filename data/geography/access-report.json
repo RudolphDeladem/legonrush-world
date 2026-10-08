@@ -1,18 +1,18 @@
 {
  "destinations": 436,
  "byMethod": {
-  "curated": 84,
+  "curated": 86,
   "osm-entrance": 0,
   "gate": 1,
   "path-access": 2,
   "drive-access": 17,
   "area-entry": 8,
-  "frontage": 213,
+  "frontage": 211,
   "point": 111
  },
  "byConfidence": {
-  "high": 79,
-  "low": 216,
+  "high": 81,
+  "low": 214,
   "medium": 141
  },
  "campusGates": 5,
@@ -25,7 +25,6 @@
   "Mensah Sarbah Main Hall Females' Laundromat: the last few metres from the network to the entrance cross Block F (an enclosed courtyard or a mapping gap)",
   "SalmaRise: the last few metres from the network to the entrance cross osm:way/1137230518 (an enclosed courtyard or a mapping gap)",
   "Didi Jollof: the last few metres from the network to the entrance cross Jubilee Hall (an enclosed courtyard or a mapping gap)",
-  "Information Studies Department: the last few metres from the network to the entrance cross Information Studies Labs (an enclosed courtyard or a mapping gap)",
   "RIPS building: the last few metres from the network to the entrance cross ISSER Building (an enclosed courtyard or a mapping gap)"
  ],
  "priority": [
@@ -361,8 +360,8 @@
   }
  ],
  "byStatus": {
-  "verified": 78,
-  "inferred": 208,
+  "verified": 80,
+  "inferred": 206,
   "partial": 6,
   "unverified": 9,
   "mapped": 135
@@ -579,6 +578,13 @@
    "facing": 176
   },
   {
+   "place": "New N Block, NNB",
+   "type": "main entrance",
+   "arrivalOn": "residential",
+   "arrivalDistance": 11.3,
+   "facing": 359
+  },
+  {
    "place": "University of Ghana Computing Systems (UGCS)",
    "type": "public entrance",
    "arrivalOn": "service",
@@ -731,6 +737,13 @@
    "arrivalOn": "service",
    "arrivalDistance": 0,
    "facing": 180
+  },
+  {
+   "place": "GCB Lecture Building",
+   "type": "main entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 27.1,
+   "facing": 64
   },
   {
    "place": "ISSER Building",
@@ -959,6 +972,11 @@
  ],
  "furthestArrivals": [
   {
+   "place": "Information Studies Department",
+   "method": "frontage",
+   "arrivalDistance": 188.6
+  },
+  {
    "place": "Department of Adult Education",
    "method": "point",
    "arrivalDistance": 164.8
@@ -1027,11 +1045,6 @@
    "place": "Commonwealth Hall Library",
    "method": "frontage",
    "arrivalDistance": 46.5
-  },
-  {
-   "place": "Modern language department",
-   "method": "curated",
-   "arrivalDistance": 46
   }
  ],
  "networkPassagesThroughBuildings": [

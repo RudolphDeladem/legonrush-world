@@ -34,7 +34,8 @@
   "owner-mathstat": "The owner's aerial of the Mathematics and Statistics departments (the main entrance marked blue, an arrow along the north front) and three photos taken along that arrow: the Mathematics galleries and the heavy block, the main entrance steps, and the Statistics block with its stair and fins.",
   "owner-issercs": "The owner's photos of the Department of Computer Science (its front and side from the south; its door marked blue beyond the back of ISSER) and of ISSER (front, with the entrance marked blue, facing the Mathematics department; back).",
   "owner-enclave": "The owner's aerial of the Innovation Enclave (its six buildings circled, their doors marked with blue lines) and two photos: from the road facing the engineering school (the steps, the UG logo, INNOVATION ENCLAVE in blue letters) and from the courtyards facing the back of the School of Law.",
-  "owner-basic-school": "The owner's aerial of the University of Ghana Basic School and photos of a classroom block and of its entrance gate and fence, which face Valco across La Road."
+  "owner-basic-school": "The owner's aerial of the University of Ghana Basic School and photos of a classroom block and of its entrance gate and fence, which face Valco across La Road.",
+  "owner-nnb-gcb": "The owner's photos of the New N Block (front and side, its doors marked) and of the GCB Lecture Building (north side with the stair and ramps, west side with its entrances marked), and their marked aerial of both (front F, cardinal sides N/E/S/W, stair and ramps)."
  },
  "campusGates": [
   {
@@ -1985,6 +1986,50 @@
    "evidence": "Owner's photo of the entrance (red-brick gate pillars, gatehouse, iron fence on a stone wall) and their note that it faces Valco.",
    "refs": [
     "owner's photo of the Basic School entrance"
+   ]
+  },
+  {
+   "place": "New N Block, NNB",
+   "footprint": "osm:way/1051209373",
+   "entrance": {
+    "at": [
+     -95,
+     -444.6
+    ]
+   },
+   "type": "main entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-nnb-gcb",
+   "approach": "From the road along its front (F, south) onto the verandah, doors all along it.",
+   "evidence": "Owner's aerial (front marked F to the road) and photos (doors along the verandah, marked blue).",
+   "refs": [
+    "owner's photos and aerial of the New N Block"
+   ]
+  },
+  {
+   "place": "GCB Lecture Building",
+   "footprint": "osm:way/335456880",
+   "entrance": {
+    "at": [
+     -135.5,
+     -390.1
+    ]
+   },
+   "via": [
+    [
+     -135.5,
+     -418
+    ]
+   ],
+   "type": "main entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-nnb-gcb",
+   "approach": "From the road before the New N Block up the broad stair (or the ramps either side) to the north gallery.",
+   "evidence": "Owner's aerial (stair striped blue, ramps yellow, north side marked N) and photo of the north side.",
+   "refs": [
+    "owner's photos and aerial of the GCB Lecture Building"
    ]
   }
  ],

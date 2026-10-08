@@ -200,6 +200,10 @@
     {
       "id": "ml:d15236c1-7ac9-43b3-ae6a-ecf9a9b708af",
       "reason": "Owner (game map of Valco Trust Hostel, circled green): there is no structure here, north of Phase 1 or between the two phases."
+    },
+    {
+      "id": "ml:9a503cd5-ecc9-48e8-ad4c-0895ecc05ea9",
+      "reason": "Owner's marked aerial of the GCB Lecture Building: this outline is the platform with the stair and the ramps before the north entrance, not a building (modelled in src/game/nblock.ts)."
     }
   ],
   "heights": [
@@ -2442,6 +2446,20 @@
       "levels": 1,
       "height": 4,
       "reason": "Owner (game map of Valco Trust Hostel, circled purple): one floor."
+    },
+    {
+      "id": "osm:way/1051209373",
+      "place": "New N Block, NNB",
+      "levels": 1,
+      "height": 9,
+      "reason": "Owner's photos: one tall floor under a red corrugated gable roof with a clerestory, a verandah round it (src/game/nblock.ts)."
+    },
+    {
+      "id": "osm:way/335456880",
+      "place": "GCB Lecture Building",
+      "levels": 2,
+      "height": 10.5,
+      "reason": "Owner's photos: two floors under a maroon corrugated hip roof, up the slope from the New N Block (src/game/nblock.ts)."
     }
   ],
   "reclass": [
@@ -4879,6 +4897,187 @@
         ]
       ],
       "reason": "Owner's photos of Akuafo Hall's front: cars parked nose-in before the entrance on grey pavers, either side of the walk to the gate."
+    },
+    {
+      "id": "owner:nnb-car-park-north",
+      "class": "parking",
+      "ring": [
+        [
+          -157.5,
+          -498.7
+        ],
+        [
+          -113.5,
+          -498.7
+        ],
+        [
+          -113.5,
+          -486.1
+        ],
+        [
+          -157.5,
+          -486.1
+        ]
+      ],
+      "reason": "Owner's marked aerial of the New N Block and the GCB Lecture Building, registered to their footprints at 0.25 m/px: the car park north of the New N Block, cars in it."
+    },
+    {
+      "id": "owner:nnb-car-park-west",
+      "class": "parking",
+      "ring": [
+        [
+          -168.9,
+          -472.3
+        ],
+        [
+          -143.7,
+          -472.3
+        ],
+        [
+          -143.7,
+          -444.6
+        ],
+        [
+          -168.9,
+          -444.6
+        ]
+      ],
+      "reason": "Owner's marked aerial of the New N Block and the GCB Lecture Building, registered to their footprints at 0.25 m/px: the paved car park west of the New N Block."
+    },
+    {
+      "id": "owner:gcb-car-park-west",
+      "class": "parking",
+      "ring": [
+        [
+          -177,
+          -358
+        ],
+        [
+          -166,
+          -358
+        ],
+        [
+          -166,
+          -312
+        ],
+        [
+          -177,
+          -312
+        ]
+      ],
+      "reason": "Owner's marked aerial of the New N Block and the GCB Lecture Building, registered to their footprints at 0.25 m/px: the car park west of the GCB Lecture Building, before its entrances."
+    },
+    {
+      "id": "owner:woods-nnb-west",
+      "class": "wood",
+      "ring": [
+        [
+          -189.0,
+          -484.9
+        ],
+        [
+          -171.4,
+          -489.9
+        ],
+        [
+          -167.6,
+          -469.8
+        ],
+        [
+          -173.9,
+          -434.5
+        ],
+        [
+          -189.0,
+          -437.0
+        ]
+      ],
+      "reason": "Owner's marked aerial of the New N Block and the GCB Lecture Building, registered to their footprints at 0.25 m/px: trees west of the New N Block."
+    },
+    {
+      "id": "owner:woods-nnb-northeast",
+      "class": "wood",
+      "ring": [
+        [
+          -83.2,
+          -500.0
+        ],
+        [
+          -41.2,
+          -500.0
+        ],
+        [
+          -41.2,
+          -473.6
+        ],
+        [
+          -78.2,
+          -474.8
+        ]
+      ],
+      "reason": "Owner's marked aerial of the New N Block and the GCB Lecture Building, registered to their footprints at 0.25 m/px: trees north-east of the New N Block."
+    },
+    {
+      "id": "owner:woods-gcb-northwest",
+      "class": "wood",
+      "ring": [
+        [
+          -189.0,
+          -424.5
+        ],
+        [
+          -161.3,
+          -425.7
+        ],
+        [
+          -158.8,
+          -411.9
+        ],
+        [
+          -168.9,
+          -399.3
+        ],
+        [
+          -189.0,
+          -394.2
+        ]
+      ],
+      "reason": "Owner's marked aerial of the New N Block and the GCB Lecture Building, registered to their footprints at 0.25 m/px: trees north-west of the GCB Lecture Building."
+    },
+    {
+      "id": "owner:woods-gcb-east",
+      "class": "wood",
+      "ring": [
+        [
+          -116.0,
+          -424.5
+        ],
+        [
+          -70.6,
+          -427.0
+        ],
+        [
+          -68.1,
+          -386.7
+        ],
+        [
+          -70.6,
+          -298.5
+        ],
+        [
+          -117.2,
+          -298.5
+        ],
+        [
+          -116.0,
+          -343.9
+        ],
+        [
+          -113.5,
+          -381.6
+        ]
+      ],
+      "reason": "Owner's marked aerial of the New N Block and the GCB Lecture Building, registered to their footprints at 0.25 m/px: the trees east of the GCB Lecture Building."
     }
   ],
   "addWays": [

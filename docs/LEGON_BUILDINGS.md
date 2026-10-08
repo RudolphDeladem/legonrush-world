@@ -872,6 +872,24 @@ Computer Science wing and east block meet edge to edge (`corrections.json`: resh
   with a flag pole and RESERVED signs, the APOSA-LEGON banner at the east end, and east of the front the raised planter
   with a low dark stone wall, a fan palm, bushes and a bench, a hedge before the east block's gable, a big tree beyond.
 
+## 37. The New N Block and the GCB Lecture Building
+
+From the owner's photos and marked aerial (registered to the footprints at 0.25 m/px; `src/game/nblock.ts`).
+
+- **New N Block** (front F to the road on the south): one tall floor; a hall under a red corrugated gable roof
+  (ridge east-west) with white gable ends and brown timber louvres in them, a white clerestory band of dark louvres
+  along the top of its walls; a verandah all round under a lean-to of the same red sheets with a dark fascia, on square
+  green columns, its floor raised on a white plinth; green walls with dark doors along every side (the owner's
+  entrances), dark windows with air-conditioners under them. Car parks with cars north and west of it, trees west and
+  north-east, small trees along its front by the road.
+- **GCB Lecture Building**, south across the road and **2.4 m up the slope** from it (`relief.ts`: its ground, the
+  platform before its north side and the car park on its west): two floors, white, brown-framed windows, a maroon
+  corrugated hip roof with a gable across its middle over the west and east entrances (owner's blue marks: lit lobbies
+  under the big white gable wall). On the north (N) a deep gallery on both floors with slender columns and a solid
+  parapet under the roof's long eave, on the platform behind white retaining walls: the **broad stair** up the middle
+  (blue stripes) and a **ramp** along the wall either side (yellow), white parapets. On the west (W) the car park with
+  cars before the entrances, feather flags, a black water tank on a stand; trees east and north-west.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

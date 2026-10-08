@@ -306,13 +306,14 @@
    "ml:15d392dd-e9eb-4dac-8e24-d5454a691a48",
    "ml:2edde621-3f03-4897-adc9-139e177e51ea",
    "ml:d31a78ce-5df2-4e52-9098-0179a02ecc96",
-   "ml:d15236c1-7ac9-43b3-ae6a-ecf9a9b708af"
+   "ml:d15236c1-7ac9-43b3-ae6a-ecf9a9b708af",
+   "ml:9a503cd5-ecc9-48e8-ad4c-0895ecc05ea9"
   ]
  },
  "areas": {
   "wood": {
-   "count": 36,
-   "ha": 494.5
+   "count": 40,
+   "ha": 495.4
   },
   "water": {
    "count": 26,
@@ -335,8 +336,8 @@
    "ha": 1.5
   },
   "parking": {
-   "count": 97,
-   "ha": 9.6
+   "count": 100,
+   "ha": 9.9
   },
   "track": {
    "count": 3,

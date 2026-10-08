@@ -71,6 +71,12 @@ const ZONES: Zone[] = [
   // (1.26 m) below the car park north of the Mathematics and Statistics departments (owner); the drive along ISSER's
   // front ramps down into it from the west
   { kind: 'hollow', x0: 321, x1: 349.4, z0: -282, z1: -277.5, depth: 1.26, w: 4, e: 0.3, n: 8, s: 0.3 },
+  // the GCB Lecture Building stands up the slope from the road before the New N Block (owner's photo): its ground,
+  // the platform before its north gallery (behind white retaining walls, a stair up the middle) and the car park on
+  // its west are 2.4 m above that road, falling to Ebenezer Laing Road on the south and the road on the west
+  { kind: 'terrace', x0: -157.5, x1: -114, z0: -392, z1: -306, depth: 2.4, w: 2, e: 6, n: 0.4, s: 2 },
+  { kind: 'terrace', x0: -148.2, x1: -121.8, z0: -407.5, z1: -392, depth: 2.4, w: 0.3, e: 0.3, n: 0.3, s: 0.3 },
+  { kind: 'terrace', x0: -178, x1: -157.5, z0: -360, z1: -306, depth: 2.4, w: 2, e: 0.3, n: 6, s: 2 },
 ];
 const STAIRS: Stairs[] = [
   // Commonwealth: from the gate houses up Legon Hill to the drive
@@ -85,6 +91,8 @@ const STAIRS: Stairs[] = [
   { x0: -333, x1: -328.2, z0: 478, z1: 481.5, flights: 1, steps: 12, tread: 0.4, alongZ: true },
   // the small stairs at the end of the drive, from the paved ground before RIPS up to the car park (owner)
   { x0: -277.5, x1: -275.4, z0: 336.6, z1: 339.4, flights: 1, steps: 7, tread: 0.3, alongZ: true },
+  // the GCB Lecture Building: the broad stair up the middle of its platform's north wall (owner)
+  { x0: -415.5, x1: -407.5, z0: -139, z1: -132, flights: 2, steps: 8, tread: 0.5, alongZ: true },
 ];
 
 const boxOf = (q: Zone) => q.kind !== 'hill'

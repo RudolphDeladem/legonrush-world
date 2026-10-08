@@ -307,6 +307,15 @@ try {
   // owner: no structures north of Valco Phase 1 or between the phases; the building south-west of Phase 2 is one floor
   { for (const [x, z] of [[49.9, 743.1], [57.9, 755.7], [31.8, 755.8], [44.3, 799]]) if (buildingAt(x, z)) fail(`a structure still stands at Valco ${x},${z} (owner: none)`);
     const b = buildingAt(-59, 865); if (!b || b.height > 5) fail('the building south-west of Valco Phase 2 is not one floor (owner)'); }
+  // owner: the GCB Lecture Building stands up the slope from the New N Block, a stair up to its north entrance; both
+  // entered where the owner marks
+  { const { groundHeight: gh } = await server.ssrLoadModule('/src/game/relief.ts');
+    if (gh(-139, -350) < 2) fail('the GCB Lecture Building is not up the slope from the New N Block (owner)');
+    if (gh(-95, -432) !== 0) fail('the road before the New N Block is not at road level');
+    const st = gh(-135.5, -411.5); if (!(st > 0 && st < 2.4)) fail('no stair up to the GCB Lecture Building\'s north entrance (owner)');
+    const n = ann('New N Block, NNB'); if (!n || Math.abs(n[1] - -444.6) > 2) fail('New N Block: the entrance is not on its front to the road (owner)');
+    const g = ann('GCB Lecture Building'); if (!g || Math.hypot(g[0] - -135.5, g[1] - -390.1) > 3) fail('GCB Lecture Building: the entrance is not the north one up the stair (owner)');
+    if ((await server.ssrLoadModule('/src/game/nblock.ts')).nBlockGcb.frames().length !== 2) fail('expected the New N Block and GCB models'); }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)
