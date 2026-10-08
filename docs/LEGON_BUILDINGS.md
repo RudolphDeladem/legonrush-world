@@ -664,6 +664,22 @@ area from the road to the door), the car parks either side of it, and **trees** 
 litter under them rather than lawn. The only **lawn** is in the sunken square round the pool, with rows of palms on
 it either side.
 
+## 26. Corrections (Akuafo, the Balme Library's paving, the pool)
+
+- **Akuafo Hall Annex A:** the satellite outline north of the annex's slab, west of its stair tower, is excluded:
+  there is no building on that side.
+- **Akuafo Hall Main:** the small blocks in and round its south courts were drawn by the generic builder in cream;
+  they are part of the hall's model now, white like the rest (`greathalls.ts`: the twin takes footprints from 60 m²).
+- **The Balme Library's square:** everything at road level round the sunken square is **paving**, not lawn: the strip
+  before the upper wall round the head of the stairs, the strips between the lanes and the side walls, and the area
+  south of the pool to the roundabout. Each level now **drops at its retaining wall** (no slope outside the wall:
+  `relief.ts` slopes 0.5 m, under the wall), a wall closes the pool deck on the south, and the footway that crossed
+  the square through the walls is excluded (`corrections.json → exclude` now drops ways too).
+- **The swimming pool** (owner's photo): blue water in a deck of orange-red tiles with a white edge, crazy stone
+  paving beyond and a hedge round it, starting blocks at the east end, and at the west end the **orange-red diving
+  tower** with platforms at 3, 5, 7.5 and 10 m, white rails and a stair, two springboards beside it; the pool house
+  to the north-east, white under a red hipped roof, open toward the pool.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

@@ -100,6 +100,14 @@
     {
       "id": "ml:08b7e191-3ea7-4816-9d8d-1b38fd141fb3",
       "reason": "Owner's aerial and photos of the stadium: a satellite outline on the track at the north end; no building."
+    },
+    {
+      "id": "ml:f76db941-2ec7-4697-a1d4-4c53700a1580",
+      "reason": "Owner: there is no building on that side of Akuafo Hall Annex A (the satellite outline north of the annex's slab, west of its stair tower)."
+    },
+    {
+      "id": "osm:way/624028488",
+      "reason": "Owner's photos of the Balme Library: University Square is sunk below the road behind stone retaining walls, with paving between the walls and the lanes; no path crosses the square at that line (it would run through the walls)."
     }
   ],
   "heights": [
@@ -1600,6 +1608,34 @@
       "levels": 3,
       "height": 10,
       "reason": "Owner's photos of the stadium: tiers of seats about 9 m high to the top of the outer wall; the main stand on the west rises to its raised roof at about 17 m. Modelled in src/game/stadium.ts."
+    },
+    {
+      "id": "osm:way/606687248",
+      "place": "Akuafo Hall Main",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner: the small blocks of Akuafo Hall are part of the hall, two floors and painted white like the rest; drawn by the hall's model (greathalls.ts)."
+    },
+    {
+      "id": "osm:way/566078591",
+      "place": "Akuafo Hall Main",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner: the small blocks of Akuafo Hall are part of the hall, two floors and painted white like the rest; drawn by the hall's model (greathalls.ts)."
+    },
+    {
+      "id": "osm:way/773856647",
+      "place": "Akuafo Hall Main",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner: the small blocks of Akuafo Hall are part of the hall, two floors and painted white like the rest; drawn by the hall's model (greathalls.ts)."
+    },
+    {
+      "id": "osm:way/665125648",
+      "place": "Akuafo Hall Main",
+      "levels": 2,
+      "height": 8,
+      "reason": "Owner: the small blocks of Akuafo Hall are part of the hall, two floors and painted white like the rest; drawn by the hall's model (greathalls.ts)."
     }
   ],
   "reclass": [

@@ -405,9 +405,9 @@
   {
    "place": "University Square",
    "type": "public open space",
-   "arrivalOn": "footway",
-   "arrivalDistance": 6.2,
-   "facing": 0
+   "arrivalOn": "service",
+   "arrivalDistance": 13.9,
+   "facing": 179
   },
   {
    "place": "Standard Chartered ATM (near Balme Library Fountain)",
@@ -699,9 +699,9 @@
   {
    "place": "Balme Library Fountain",
    "type": "public open space",
-   "arrivalOn": "footway",
-   "arrivalDistance": 3.3,
-   "facing": 180
+   "arrivalOn": "service",
+   "arrivalDistance": 20.3,
+   "facing": 90
   },
   {
    "place": "Volta Hall",

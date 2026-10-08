@@ -239,6 +239,10 @@ try {
   { const parking = cm.AREAS.filter((a) => a.kind === 'parking'), inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
     for (const [n, x, z] of [['the School of Public Health east', 520, 1640], ['the School of Public Health west', 430, 1655], ['the Balme Library west', -40, 15], ['the Balme Library east', 60, 15]]) if (!parking.some((a) => inA(a, x, z))) fail(`no car park at ${n}`);
     if (!cm.AREAS.some((a) => a.kind === 'plaza' && inA(a, 7.5, 24))) fail('the Balme Library forecourt is not paved'); }
+  // owner: no building north of Akuafo Annex A's slab; the paving round the Balme Library's sunken square is flat to
+  // the walls (no slope outside them)
+  if (buildingAt(132, 416)) fail('a building still stands beside Akuafo Hall Annex A (the owner: there is none)');
+  { const { groundHeight: gh } = await server.ssrLoadModule('/src/game/relief.ts'); for (const [x, z] of [[-7.25, 70], [25.25, 70], [8, 94.2], [-9, 55]]) if (gh(x, z) !== 0) fail(`Balme: the paving at ${x},${z} slopes down (${gh(x, z).toFixed(2)})`); }
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)
   for (const [x, z] of [[95, 1573], [-88, 1676], [210, 1509], [200, 1500]]) if (cm.buildingNear(x, z, 0.35)) fail(`free ride: the road at ${x},${z} is blocked by ${cm.buildingNear(x, z, 0.35).name ?? 'a building'}`);

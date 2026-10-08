@@ -237,14 +237,44 @@ const poolTennis: Spec = {
   axis: [1, 0], origin: PO, storey: 3, style: MAIN_WALL, roofColor: '#d9d9d4', fascia: WHITE, pitch: 0.1,
   blocks: [],
   covers: [[518, 1334], [549, 1438]],
-  keep: [[492 - PO[0], 545 - PO[0], 1324 - PO[1], 1344 - PO[1]], [529 - PO[0], 569 - PO[0], 1416 - PO[1], 1460 - PO[1]]],
+  replaces: [[553, 1309]],
+  keep: [[484 - PO[0], 562 - PO[0], 1300 - PO[1], 1350 - PO[1]], [529 - PO[0], 569 - PO[0], 1416 - PO[1], 1460 - PO[1]]],
   extras: (k: Kit) => {
     const X = (x: number) => x - PO[0], Z = (z: number) => z - PO[1];
-    // the pool: a white deck, the water, dark lane lines, a diving board at the west end
-    k.plain.push([box(X(491.5), X(545.5), 0, 0.25, Z(1323.5), Z(1344.5)), '#eceae4']);
-    k.plain.push([box(X(495), X(542), 0.1, 0.27, Z(1327), Z(1341)), '#55b7e3']);
+    // the pool (owner's photo): blue water in a deck of orange-red tiles with a white edge, crazy stone paving beyond,
+    // a hedge round it; at the west end the orange-red diving tower with four railed platforms and two springboards
+    k.plain.push([box(X(486), X(549), 0, 0.12, Z(1319.5), Z(1348.5)), '#bfb3a0']);
+    for (let i = 0; i < 60; i++) { const px = 487 + ((i * 37) % 61), pz = 1320.5 + ((i * 13) % 27); k.plain.push([box(X(px), X(px + 0.9), 0.12, 0.13, Z(pz), Z(pz + 0.7)), i % 3 ? '#a99c88' : '#cbbfac']); }
+    k.plain.push([box(X(491.5), X(545.5), 0, 0.25, Z(1323.5), Z(1344.5)), '#c8573c']);
+    k.plain.push([box(X(495), X(542), 0.1, 0.27, Z(1327), Z(1341)), '#3fb0e6']);
+    for (const [a1, b1, c1, d1] of [[494.6, 542.4, 1326.6, 1327], [494.6, 542.4, 1341, 1341.4], [494.6, 495, 1327, 1341], [542, 542.4, 1327, 1341]]) k.plain.push([box(X(a1), X(b1), 0.25, 0.29, Z(c1), Z(d1)), '#f2f0ea']);
     for (let i = 1; i < 6; i++) { const z = Z(1327 + (14 * i) / 6); k.plain.push([box(X(497), X(540), 0.27, 0.28, z - 0.08, z + 0.08), '#1f4f9a']); }
-    k.plain.push([box(X(493.5), X(497.5), 0.9, 1.05, Z(1333.6), Z(1334.4)), '#f4f4f0'], [box(X(493.5), X(494), 0, 0.9, Z(1333.7), Z(1334.3)), '#bfc3c7']);
+    // starting blocks along the east end
+    for (let i = 0; i < 6; i++) { const z = Z(1327 + (14 * (i + 0.5)) / 6); k.plain.push([box(X(542.6), X(543.4), 0.25, 0.85, z - 0.35, z + 0.35), '#eeeae2']); }
+    // the diving tower: two orange-red legs, platforms at 3, 5, 7.5 and 10 m reaching out over the water, white rails,
+    // a stair up the back; two springboards on plinths beside it
+    const tx = X(492.6), tz = Z(1334);
+    for (const dz of [-1.6, 1.6]) k.plain.push([box(tx - 2.6, tx - 1.4, 0, 11.2, tz + dz - 0.6, tz + dz + 0.6), '#c8573c']);
+    for (const [h, reach] of [[3, 3.2], [5, 3.6], [7.5, 4], [10, 4.4]] as [number, number][]) {
+      k.plain.push([box(tx - 2.8, tx + reach, h - 0.45, h, tz - 2.4, tz + 2.4), '#c8573c']);
+      for (const [a1, b1, c1, d1] of [[tx - 2.8, tx + reach - 0.6, tz - 2.4, tz - 2.32], [tx - 2.8, tx + reach - 0.6, tz + 2.32, tz + 2.4]]) {
+        k.plain.push([box(a1, b1, h + 0.95, h + 1.02, c1, d1), '#f2f2ee']);
+        for (let x = a1; x <= b1; x += 0.9) k.plain.push([box(x - 0.03, x + 0.03, h, h + 1.0, c1, d1), '#f2f2ee']);
+      }
+    }
+    for (let i = 0; i < 20; i++) k.plain.push([box(tx - 3.8, tx - 2.6, (i * 10) / 20, (i * 10) / 20 + 0.2, tz + 2.4 - (i % 2) * 0.1, tz + 3.4), '#b44c35']);
+    for (const dz of [-4.6, 4.6]) {
+      k.plain.push([box(tx - 1.5, tx + 0.5, 0, 1.0, tz + dz - 0.6, tz + dz + 0.6), '#c8573c']);
+      k.plain.push([box(tx - 0.5, tx + 4.2, 1.0, 1.1, tz + dz - 0.3, tz + dz + 0.3), '#f4f4f0']);
+    }
+    // the pool house to the north-east: white walls under a red hipped roof, open on the pool side
+    const hx0 = X(547), hx1 = X(560), hz0 = Z(1303), hz1 = Z(1315);
+    k.plain.push([box(hx0, hx1, 0, 3.0, hz0, hz0 + 0.25), '#f3f1ec'], [box(hx0, hx0 + 0.25, 0, 3.0, hz0, hz1), '#f3f1ec'], [box(hx1 - 0.25, hx1, 0, 3.0, hz0, hz1), '#f3f1ec']);
+    for (const x of [hx0 + 0.2, (hx0 + hx1) / 2, hx1 - 0.2]) k.plain.push([box(x - 0.2, x + 0.2, 0, 3.0, hz1 - 0.4, hz1), '#f3f1ec']);
+    k.plain.push([box(hx0 - 0.6, hx1 + 0.6, 2.9, 3.1, hz0 - 0.6, hz1 + 0.6), '#7a3a26']);
+    k.plain.push([new THREE.ConeGeometry(Math.hypot(hx1 - hx0, hz1 - hz0) / 2 + 0.8, 2.6, 4).rotateY(Math.PI / 4).scale(1, 1, (hz1 - hz0) / (hx1 - hx0)).translate((hx0 + hx1) / 2, 4.4, (hz0 + hz1) / 2), '#b9502f']);
+    // the hedge round the pool's enclosure
+    for (const [a1, b1, c1, d1] of [[485, 562, 1318.5, 1319.5], [485, 562, 1348.5, 1349.5], [485, 486, 1319.5, 1348.5]]) k.plain.push([box(X(a1), X(b1), 0, 1.1, Z(c1), Z(d1)), '#3f7a35']);
     // the tennis courts: a green surround, two blue courts with white lines, nets, a wire fence
     k.plain.push([box(X(530), X(568), 0, 0.04, Z(1417), Z(1459)), '#3f8f62']);
     for (const cx of [538, 558.5]) {

@@ -59,8 +59,9 @@ const ZONES: Zone[] = [
   // The Balme Library stands above University Square and the long pool before it (owner's photo from the pool):
   // the pool deck 2.4 m below the road in front of the library, a middle terrace 1.2 m below it, each behind a
   // stone retaining wall, the central stairs climbing from the pool to the road; the side lanes stay up
-  { kind: 'hollow', x0: -6.6, x1: 24.6, z0: 60.3, z1: 93.5, depth: 2.4, w: 2, e: 2, n: 0.3, s: 1.5 },
-  { kind: 'hollow', x0: -6.6, x1: 24.6, z0: 49, z1: 60.6, depth: 1.2, w: 2, e: 2, n: 0.3, s: 0.3 },
+  // each level drops at its retaining wall (owner: the paving outside runs flat to the wall, no slope)
+  { kind: 'hollow', x0: -6.6, x1: 24.6, z0: 60.3, z1: 93.5, depth: 2.4, w: 0.5, e: 0.5, n: 0.3, s: 0.5 },
+  { kind: 'hollow', x0: -6.6, x1: 24.6, z0: 49, z1: 60.6, depth: 1.2, w: 0.5, e: 0.5, n: 0.3, s: 0.3 },
 ];
 const STAIRS: Stairs[] = [
   // Commonwealth: from the gate houses up Legon Hill to the drive

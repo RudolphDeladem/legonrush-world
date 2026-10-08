@@ -508,8 +508,15 @@ const steps: Spec = {
     // the only grass in front of the library is round the pool)
     k.plain.push([box(x(-1), x(17), deck - 0.2, deck + 0.04, z(60.6), z(93.5)), PAVE_B]);
     k.plain.push([box(x(-1), x(17), mid - 0.2, mid + 0.04, z(49.2), z(60.6)), PAVE_B]);
-    // the footpath across the square
-    k.plain.push([box(xa, xb, mid - 0.2, mid + 0.05, z(57), z(59.2)), PAVE_B]);
+    // the paving at road level all round the sunken square (owner): from the road before the library to the upper
+    // wall (round the head of the stairs), from the lanes to the side walls, and south of the pool to the footway
+    const PAVE_T = '#d9d3c6';
+    k.plain.push([box(x(-10), x(27.2), -0.05, 0.05, z(40.8), z(43)), PAVE_T]);
+    k.plain.push([box(x(-10), x(st.z0), -0.05, 0.05, z(43), z(48.7)), PAVE_T]);
+    k.plain.push([box(x(st.z1), x(27.2), -0.05, 0.05, z(43), z(48.7)), PAVE_T]);
+    k.plain.push([box(x(-10), x(-7.2), -0.05, 0.05, z(48.7), z(94.6)), PAVE_T]);
+    k.plain.push([box(x(25.2), x(27.2), -0.05, 0.05, z(48.7), z(94.6)), PAVE_T]);
+    k.plain.push([box(x(-10), x(27.2), -0.05, 0.03, z(94.1), z(102)), PAVE_T]);
     const g = garden([-90, 100, 10, 110]);
     g.reseed(77);
     // rows of palms on the lawns either side of the pool
@@ -546,9 +553,11 @@ const steps: Spec = {
     }
     // the side walls along the lanes, open where the footpath crosses the square
     for (const wx of [-7.2, 24.6]) {
-      wall(x(wx), x(wx + 0.6), z(48.7), z(56.4), mid, 0.7);
-      wall(x(wx), x(wx + 0.6), z(59.6), z(93.5), deck, 0.7);
+      wall(x(wx), x(wx + 0.6), z(48.7), z(60.3), mid, 0.7);
+      wall(x(wx), x(wx + 0.6), z(60.3), z(94.1), deck, 0.7);
     }
+    // the south wall, below the footway, closing the pool deck
+    wall(x(-7.2), x(25.2), z(93.5), z(94.1), deck, 0.7);
     // white planters with small shrubs along the tops of the walls (owner's photo)
     for (const [y, zz] of [[mid + 0.82, 60.6], [0.82, 49]] as [number, number][]) for (const wx of [-5, -1.5, 17, 20, 23]) {
       k.plain.push([new THREE.CylinderGeometry(0.42, 0.32, 0.7, 12).translate(x(wx), y + 0.35, z(zz)), '#f2f0eb']);

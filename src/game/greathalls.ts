@@ -249,8 +249,8 @@ const sarbah: Spec = {
 };
 
 // ---------- Akuafo Hall and Legon Hall (twins) ----------
-const twin = (name: string, o: [number, number], box_: [number, number, number, number], front: [number, number, number, number], skip: RegExp | null, drop: [number, number][], entrance: (k: Kit) => void, frontStyle: Style): Spec => {
-  const fps = footprints(...box_, 120, skip, drop).filter(({ b }) => !inRect((b.minX + b.maxX) / 2, (b.minZ + b.maxZ) / 2, front));
+const twin = (name: string, o: [number, number], box_: [number, number, number, number], front: [number, number, number, number], skip: RegExp | null, drop: [number, number][], entrance: (k: Kit) => void, frontStyle: Style, min = 120): Spec => {
+  const fps = footprints(...box_, min, skip, drop).filter(({ b }) => !inRect((b.minX + b.maxX) / 2, (b.minZ + b.maxZ) / 2, front));
   const fr = footprints(...front, 120);
   const ps = [...piecesOf(fps, 2), ...piecesOf(fr, 2, { faces: { z0: frontStyle } }, fps.length)];
   const bl = blocksOf(ps, o, 3.3);
@@ -276,7 +276,8 @@ const akuafo = twin('Akuafo Hall Main', AO, [85, 215, 150, 390], [140, 175, 154,
   k.plain.push([new THREE.CylinderGeometry(0.6, 0.9, 1.6, 12).translate(0, 0.8, fz), '#e8e2d6']);
   k.plain.push([new THREE.CylinderGeometry(1.4, 0.4, 0.4, 14).translate(0, 1.7, fz), '#e8e2d6']);
   greenCourts(k, AO, [[128, 186, 222, 287], [128, 186, 301, 351]]);
-}, AKUAFO_FRONT);
+  // (the small blocks in and round the south courts are part of the hall too, white like the rest: owner)
+}, AKUAFO_FRONT, 60);
 
 const LO: [number, number] = [-147, 165];
 // (the hall mirrors Akuafo across the avenue's axis; the satellite-detected outline at (-82, 378) is not part of it)

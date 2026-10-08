@@ -116,7 +116,8 @@ function addRoad(id, pts, t, src) {
   const cls = ROAD_CLASS[t.highway];
   if (cls === undefined || pts.length < 2 || !anyInContext(pts)) return;
   // same exclusions as the game always had: parking aisles, mapped areas and private drives stay out of the network
-  const game = !(t.service === 'parking_aisle' || t.area === 'yes' || t.access === 'private');
+  // (and ways the owner's evidence rules out: corrections.json exclude)
+  const game = !(t.service === 'parking_aisle' || t.area === 'yes' || t.access === 'private' || SUSPECT.has(id));
   const [width, widthSrc] = roadWidth(t);
   const named = !!t.name;
   const onCampus = pts.some(inCampus);
