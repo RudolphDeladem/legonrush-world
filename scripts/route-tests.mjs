@@ -219,7 +219,7 @@ try {
   if ((await server.ssrLoadModule('/src/game/westlegon.ts')).westLegon.frames().length !== 24) fail('expected the four buildings by the Language Centre and the twenty bungalows and outbuildings behind them');
   // phone booths, not buildings, north of the banking square's car park; nothing close west of the Diaspora Dome;
   // the School of Public Health (owner): two-floor and three-floor wings, entered from the east car park
-  if (buildingAt(142.7, 933) || buildingAt(-77.5, 1594.7)) fail('a building still stands where the owner says there is a phone booth or open ground (banking square, Diaspora Dome)');
+  if (buildingAt(142.7, 933) || buildingAt(-77.5, 1594.7) || buildingAt(165, 920)) fail('a building still stands where the owner says there is a phone booth or open ground (banking square, Diaspora Dome)');
   for (const [x, z] of [[435, 1600], [452, 1606], [430, 1618], [453, 1590]]) if (buildingAt(x, z)) fail(`School of Public Health: the structures circled purple (${x},${z}) are still there`);
   { const e = ann('School of Public Health'); if (!e || Math.hypot(e[0] - 506.8, e[1] - 1633.8) > 3) fail('School of Public Health: the entrance is not on the east front'); }
   if ((await server.ssrLoadModule('/src/game/publichealth.ts')).publicHealth.frames().length !== 3) fail('expected the three School of Public Health buildings');

@@ -582,8 +582,12 @@ From the owner's aerial (registered to the OSM footprints at 4.0 px/m) and photo
 ## 21. Smaller corrections
 
 - **Phone booths, banking square:** the two square structures north of the banking square's car park are not
-  buildings but **phone booths**: open square shelters on four posts under a flat roof of dark panels, with four
-  payphones on a pillar in the middle (`parks.ts`). The satellite outline drawn as a building there is excluded.
+  buildings but **phone booths**: square booths **walled on three sides**, open only on the face with the PHONE sign
+  for people to walk in, under a flat roof of dark panels, with four payphones on a pillar in the middle
+  (`parks.ts`). The satellite outline drawn as a building there is excluded, and so is the building that stood
+  **between the two booths**: there is none.
+- **Waiting shed, La Road:** north-west of the booths, on the verge right by La Road, a low one-floor **waiting shed**
+  where people sit and wait for cars: a slab, a back wall and side panels, a bench and a flat roof, open to the road.
 - **Diaspora Dome:** the building drawn **west of the dome** is excluded: there is no building that close to it.
 
 ## Explore: drone view

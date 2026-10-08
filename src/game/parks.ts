@@ -102,9 +102,12 @@ const phoneBooths: Spec = {
   extras: (k: Kit) => {
     for (const [wx, wz] of [[142.6, 930.5], [193.7, 933]]) {
       const x = wx - BO[0], z = wz - BO[1], h = 3, r = 3.2;
-      // an open square shelter: a slab, four posts and a flat roof of dark panels in a light frame (the aerial's grid)
+      // a square booth: a slab, walls on three sides and a flat roof of dark panels in a light frame (the aerial's
+      // grid); only the face with the PHONE sign is open, for people to walk in (owner)
       k.plain.push([box(x - r - 0.3, x + r + 0.3, 0, 0.15, z - r - 0.3, z + r + 0.3), '#cfc9bd']);
-      for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) k.plain.push([box(x + sx * r - 0.1, x + sx * r + 0.1, 0, h, z + sz * r - 0.1, z + sz * r + 0.1), '#d9d9d4']);
+      k.plain.push([box(x - r - 0.1, x + r + 0.1, 0, h, z - r - 0.1, z - r + 0.1), '#ece9e1']);
+      for (const sx of [-1, 1]) k.plain.push([box(x + sx * r - 0.1, x + sx * r + 0.1, 0, h, z - r - 0.1, z + r + 0.1), '#ece9e1']);
+      for (const sx of [-1, 1]) k.plain.push([box(x + sx * r - 0.15, x + sx * r + 0.15, 0, h, z + r - 0.15, z + r + 0.15), '#d9d9d4']);
       k.plain.push([box(x - r - 0.2, x + r + 0.2, h, h + 0.12, z - r - 0.2, z + r + 0.2), '#d9d9d4']);
       for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) {
         const px = x - r + 0.15 + (i * (2 * r - 0.3)) / 4, pz = z - r + 0.15 + (j * (2 * r - 0.3)) / 4, s = (2 * r - 0.3) / 4 - 0.12;
@@ -120,5 +123,27 @@ const phoneBooths: Spec = {
   },
 };
 
+// ---------- the waiting shed by La Road, north-west of the phone booths ----------
+// (owner: a low one-floor shelter very close to the road, where people sit and wait for cars)
+// La Road runs from (130.1, 893.2) to (152.7, 885.8) here; the shed stands on its south verge, facing it
+const WD: [number, number] = [0.95, -0.31], WO: [number, number] = [146.9, 894.0];
+const waitingShed: Spec = {
+  name: 'La Road waiting shed',
+  axis: WD, origin: WO, storey: 3, style: PLAIN, roofColor: '#b8572f', fascia: WHITE, pitch: 0.4,
+  blocks: [],
+  keep: [[-4, 4, -2.5, 2.5]],
+  extras: (k: Kit) => {
+    // model frame: x along the road, -z toward it. A slab, a back wall and two side panels, a bench along the back,
+    // and a flat roof sloping gently toward the road, about 2.6 m up
+    k.plain.push([box(-3.3, 3.3, 0, 0.18, -1.4, 1.4), '#cfc9bd']);
+    k.plain.push([box(-3.1, 3.1, 0.18, 2.5, 1.1, 1.3), '#ece9e1']);
+    for (const s of [-1, 1]) k.plain.push([box(s * 3.1 - 0.1, s * 3.1 + 0.1, 0.18, 2.5, -0.4, 1.3), '#ece9e1']);
+    for (const s of [-1, 1]) k.plain.push([box(s * 3.0 - 0.08, s * 3.0 + 0.08, 0.18, 2.55, -1.15, -0.99), '#8d8f91']);
+    k.plain.push([new THREE.BoxGeometry(7, 0.12, 3.2).rotateX(0.08).translate(0, 2.65, 0.05), '#3e6b8a']);
+    k.plain.push([box(-2.7, 2.7, 0.45, 0.55, 0.45, 1.05), '#8a6a48']);
+    for (const t of [-2.2, 0, 2.2]) k.plain.push([box(t - 0.06, t + 0.06, 0.18, 0.45, 0.6, 0.9), '#5a5d63']);
+  },
+};
+
 /** open grounds drawn from the owner's descriptions */
-export const parks = createSite('parks', [footballPark, oldMarket, phoneBooths]);
+export const parks = createSite('parks', [footballPark, oldMarket, phoneBooths, waitingShed]);
