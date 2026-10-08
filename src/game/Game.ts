@@ -243,7 +243,7 @@ const SKIES: Record<TimeOfDay, { lamps: number; top: string; bottom: string; fog
   night: { lamps: 1, top: '#03060f', bottom: '#1b2650', fog: [40, 220], sun: '#9fb6ff', sunI: 0.55, sunPos: [20, 40, 10], hemiSky: '#3a4f8a', hemiGround: '#10131c', hemiI: 0.45, env: 0.12, exposure: 1.15, cloud: 0.4, cloudCol: '#26324f' },
 };
 
-/** Explore's free ride: woods and water a bike can't go into (with their bounding boxes) */
+/** Explore's free ride: water a bike can't go into (with its bounding boxes) */
 let wilds: { pts: Float32Array; x0: number; x1: number; z0: number; z1: number }[] | null = null;
 const inPts = (pts: Float32Array, x: number, z: number) => {
   let c = false;
@@ -255,16 +255,17 @@ const inPts = (pts: Float32Array, x: number, z: number) => {
 };
 /**
  * Where a free-ridden bike can't go: stairs; and off the roads, buildings (their real outlines, not
- * their bounding boxes), trees, woods and water. Every mapped road and path is rideable end to end: a
- * tree at its edge, a wood or water area mapped across it, or a building outline it runs through (an
- * archway, a gate canopy, a passage) doesn't close it.
+ * their bounding boxes), trees and water. The grass of a wood is rideable between its trees (owner: the
+ * wooded lawns round the GCB Lecture Building); each trunk stops the bike, which slides off it. Every
+ * mapped road and path is rideable end to end: a tree at its edge, a water area mapped across it, or a
+ * building outline it runs through (an archway, a gate canopy, a passage) doesn't close it.
  */
 function freeBlocked(x: number, z: number) {
   if (inStairs(x, z)) return true;
   if (roadClearance(x, z, 6, -1, true) <= 0) return false;
   if (buildingNear(x, z, 0.35) || solidAt(x, z, 0.3)) return true;
   if (!wilds) {
-    wilds = AREAS.filter((a) => a.kind === 'wood' || a.kind === 'water').map((a) => {
+    wilds = AREAS.filter((a) => a.kind === 'water').map((a) => {
       let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
       for (let i = 0; i < a.pts.length; i += 2) { x0 = Math.min(x0, a.pts[i]); x1 = Math.max(x1, a.pts[i]); z0 = Math.min(z0, a.pts[i + 1]); z1 = Math.max(z1, a.pts[i + 1]); }
       return { pts: a.pts, x0, x1, z0, z1 };
@@ -945,7 +946,7 @@ export class Game {
    * Explore, on a bike: after arriving, the rider takes the bike wherever a bike can go. Nothing drives
    * it any more: steer with freeInput.steer (-1 left .. 1 right); one freePedal() and the rider keeps
    * pedalling until the brake; a tap on the brake stops the bike, holding it rolls the bike backwards.
-   * Buildings, trees, woods, water, stairs and walls stop it. endFreeRide() ends the ride.
+   * Buildings, trees, water, stairs and walls stop it (a wood's grass is rideable between its trees). endFreeRide() ends the ride.
    */
   freeRide() {
     if (this.phase !== 'riding' || this.free) return;

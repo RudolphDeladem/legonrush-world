@@ -223,7 +223,8 @@ const gcb: Spec = {
     // outer edge to the gallery (the owner's green arrows); solid white parapets both sides; a planted well inside
     const RW = 2, zN = -413.3, zS = -395, rise1 = 1.0;
     for (const s of [-1, 1]) {
-      const xi = s < 0 ? st.z0 - 0.25 : st.z1 + 0.25, xo = s < 0 ? -148.8 : -123.1;
+      // (the ramp starts 1.6 m clear of the stair's side wall, so a wheelchair turns onto it freely: owner)
+      const xi = s < 0 ? st.z0 - 0.25 - 1.6 : st.z1 + 0.25 + 1.6, xo = s < 0 ? -148.8 : -123.1;
       const xc0 = Math.min(xi, xo), xc1 = Math.max(xi, xo);
       // the run out along the north edge
       const n1 = Math.ceil((xc1 - xc0) / 0.5);
@@ -306,7 +307,7 @@ const gcb: Spec = {
     }
     const g = garden([-190, -100, -420, -300]);
     g.reseed(41);
-    for (const [x, z, sc] of [[-163, -400, 1.4], [-168, -397, 1.2], [-113, -382, 1.6], [-113, -350, 1.5], [-113, -318, 1.4], [-162, -312, 1.2]]) g.tree(k, GX(x), GZ(z), sc);
+    for (const [x, z, sc] of [[-170, -404, 1.4], [-176, -396, 1.2], [-113, -382, 1.6], [-113, -350, 1.5], [-113, -318, 1.4], [-162, -312, 1.2]]) g.tree(k, GX(x), GZ(z), sc);
 
     const m = new THREE.Mesh(merge(c), concrete(0.12));
     m.castShadow = true; m.receiveShadow = true;

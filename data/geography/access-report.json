@@ -980,8 +980,8 @@
    "place": "School of Pharmacy",
    "type": "main entrance",
    "arrivalOn": "Volta Hall Road",
-   "arrivalDistance": 25.3,
-   "facing": 210
+   "arrivalDistance": 29.8,
+   "facing": 228
   },
   {
    "place": "School of Public Health",

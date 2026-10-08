@@ -24,6 +24,11 @@ export function garden([bx0, bx1, bz0, bz1]: [number, number, number, number]) {
     const dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
     return Math.hypot(x - ax - dx * t, z - az - dz * t) < w;
   });
+  /** on a carriageway or a path itself (a tree or palm a model places there is left out) */
+  const onRoad = (x: number, z: number) => roads.some(([ax, az, bx, bz, w]) => {
+    const dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+    return Math.hypot(x - ax - dx * t, z - az - dz * t) < (w === 2 ? 1.3 : 3.8);
+  });
   /** world rectangles kept clear of planting (blocks, walks, forecourts, stairways) */
   const clear: [number, number, number, number][] = [];
   const clearOf = (x: number, z: number) => !clear.some(([x0, x1, z0, z1]) => x > x0 && x < x1 && z > z0 && z < z1) && !buildingAt(x, z, 2) && !nearRoad(x, z);
@@ -42,6 +47,7 @@ export function garden([bx0, bx1, bz0, bz1]: [number, number, number, number]) {
     /** a shade tree: trunk and a round crown */
     tree(k: Kit, x: number, z: number, s = 1) {
       const y = k.ground(x, z), h = (2.6 + rand() * 2.2) * s, r = (1.8 + rand() * 1.3) * s;
+      if (onRoad(...k.world(x, z))) return;
       SOLIDS.add(...k.world(x, z), 0.3 * s + 0.1);
       k.plain.push([new THREE.CylinderGeometry(0.14 * s + 0.08, 0.26 * s + 0.08, h + 0.4, 5).translate(x, y + h / 2 - 0.2, z), '#5b4636']);
       const leaf = LEAVES[(rand() * LEAVES.length) | 0];
@@ -51,6 +57,7 @@ export function garden([bx0, bx1, bz0, bz1]: [number, number, number, number]) {
     /** a palm: tall grey trunk, green crownshaft, fronds */
     palm(k: Kit, x: number, z: number, h = 7) {
       const y = k.ground(x, z);
+      if (onRoad(...k.world(x, z))) return;
       SOLIDS.add(...k.world(x, z), 0.3);
       k.plain.push([new THREE.CylinderGeometry(0.17, 0.26, h, 6).translate(x, y + h / 2, z), '#a39886']);
       k.plain.push([new THREE.CylinderGeometry(0.2, 0.21, 1.1, 5).translate(x, y + h + 0.55, z), '#6a8f3c']);

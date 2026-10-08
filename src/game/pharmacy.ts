@@ -4,10 +4,11 @@
 // One-floor wings under maroon sheet roofs round a car park open to Volta Hall Road: a long wing along the north
 // (white, a red band round its foot, glass windows with curtains, an air-conditioner under each, panels boarded up
 // here and there), one along the south, one along the west; on the car park side covered walks on slim posts, lit,
-// doors along them. At the back of the car park a three-storey block, its paint gone grey and patched, panel lines
-// across it, black-framed glass windows; in its middle a taller bay under its own hip. Before it a one-floor front
-// wing with the school's two doors and a banner, black water tanks on a stand beside it; a tree and yuccas on the lawn
-// by the road.
+// doors along them. The three-storey block is the L along the west (the owner's yellow mark on the top view): its
+// paint gone grey and patched, panel lines across it, black-framed glass windows, a flat-roofed bay at its north end,
+// its arm east into the paved court a little taller under its own hip. At the back of the car park the one-floor
+// front wing with the school's two doors and a banner, black water tanks on the flat link north of it; a tree and
+// yuccas on the lawn by the road.
 import * as THREE from 'three';
 import { box, canvas, merge, speckle, type Part } from './modelkit';
 import { BAND, PL, createSite, render, type Block, type Kit, type Spec, type Style } from './blocks';
@@ -94,8 +95,13 @@ const P_FRONT: Style = {
 };
 
 const R = (x0: number, x1: number, z0: number, z1: number, floors: number, more: Partial<Block> = {}): Block => ({ x0, x1, z0, z1, floors, roof: 'none', ...more });
-const NB = [-25.0, 24.7, -19.6, -11.1], SB = [-25.0, 24.6, 12.1, 22.45], WB = [-39.75, -27.75, -20.3, 22.5], CEN = [-7.6, 4.7, -11.2, 12.1];
-const TOWER = [-7.6, 6.2, 0.0, 6.4], FRONT = [4.7, 13.4, -4.85, 11.2];
+// (owner's top view, the three-storey block marked yellow: an L along the west, its arm east into the court; the rest
+// one floor)
+const NB = [-25.0, 24.7, -19.6, -11.1], SB = [-25.0, 24.6, 12.1, 22.45];
+/** the three-storey L: its range along the west (a flat-roofed bay at its north end), its arm east */
+const WB = [-39.75, -27.75, -20.3, 22.5], WBN = [-39.75, -27.75, -24.5, -20.3], ARM = [-27.75, -14.9, -8.8, 7.3];
+/** the one-floor front wing at the back of the car park, the flat link north of it carrying the water tanks */
+const FRONT = [-5.3, 9.4, -7.7, 11.2], LINK = [-4.5, 9.0, -11.1, -7.7];
 
 const pharmacy: Spec = {
   name: 'School of Pharmacy',
@@ -104,14 +110,14 @@ const pharmacy: Spec = {
   blocks: [
     R(NB[0], NB[1], NB[2], NB[3], 1, { faces: { z1: P_WALK } }),
     R(SB[0], SB[1], SB[2], SB[3], 1, { faces: { z0: P_WALK } }),
-    R(WB[0], WB[1], WB[2], WB[3], 1),
-    R(-27.8, -24.7, -8.8, 7.3, 1), R(-24.7, -14.9, -6.1, 1.4, 1), R(-24.7, -17.1, 1.4, 4.6, 1),
-    R(CEN[0], CEN[1], CEN[2], CEN[3], 3, { faces: { x0: P_THREE, x1: P_THREE, z0: P_THREE, z1: P_THREE }, floorStyle: { 0: P_THREE, 1: P_THREE, 2: P_THREE } }),
-    R(TOWER[0], TOWER[1], TOWER[2], TOWER[3], 3, { floorStyle: { 0: P_BAY, 1: P_BAY, 2: P_BAY } }),
+    R(WB[0], WB[1], WB[2], WB[3], 3, { floorStyle: { 0: P_THREE, 1: P_THREE, 2: P_THREE } }),
+    R(WBN[0], WBN[1], WBN[2], WBN[3], 3, { floorStyle: { 0: P_THREE, 1: P_THREE, 2: P_THREE }, roof: 'flat' }),
+    R(ARM[0], ARM[1], ARM[2], ARM[3], 3, { floorStyle: { 0: P_THREE, 1: P_THREE, 2: P_THREE }, faces: { x1: P_BAY } }),
     R(FRONT[0], FRONT[1], FRONT[2], FRONT[3], 1, { faces: { x1: P_FRONT } }),
+    R(LINK[0], LINK[1], LINK[2], LINK[3], 1, { roof: 'flat' }),
   ],
   // (the car park, the covered walks, the tank stand, the lawn by the road)
-  keep: [[FRONT[1], 40, -11.2, 12.2], [5.5, 10, -10.5, -5]],
+  keep: [[FRONT[1], 40, -11.2, 12.2], [ARM[1], FRONT[0], -11.1, 12.1]],
   extras: (k: Kit) => {
     const c: Part[] = [], old: Part[] = [];
     const M = (x: number, z: number): [number, number] => [x, z];
@@ -119,15 +125,20 @@ const pharmacy: Spec = {
     // ---- the roofs: maroon sheets, hips; the three-storey block's taller middle bay under its own hip ----
     hipRoof(k, M, NB[0] - 0.7, NB[1] + 0.7, NB[2] - 0.7, NB[3] + 0.7, E1, 0.32, 'x', [hip, hip], c, BARGE);
     hipRoof(k, M, SB[0] - 0.7, SB[1] + 0.7, SB[2] - 0.7, SB[3] + 0.7, E1, 0.32, 'x', [hip, hip], c, BARGE);
-    hipRoof(k, M, WB[0] - 0.7, WB[1] + 0.7, WB[2] - 0.7, WB[3] + 0.7, E1, 0.32, 'z', [hip, hip], c, BARGE);
-    hipRoof(k, M, -28.5, -14.2, -9.5, 8.0, E1, 0.3, 'z', [hip, hip], c, BARGE);
-    hipRoof(k, M, FRONT[0] - 1, FRONT[1] + 0.7, FRONT[2] - 0.7, FRONT[3] + 0.7, E1, 0.3, 'z', [hip, hip], c, BARGE);
-    hipRoof(k, M, CEN[0] - 0.7, CEN[1] + 0.7, CEN[2] - 0.7, CEN[3] + 0.7, E3, 0.4, 'z', [hip, hip], c, BARGE);
+    hipRoof(k, M, FRONT[0] - 0.7, FRONT[1] + 0.7, FRONT[2] - 0.7, FRONT[3] + 0.7, E1, 0.3, 'z', [hip, hip], c, BARGE);
+    // the three-storey L: a hip along the west range, the flat-roofed bay at its north end with its parapet and the
+    // plant on its roof, the arm east a little taller under its own hip (photo 4: the raised middle)
+    hipRoof(k, M, WB[0] - 0.7, WB[1] + 0.7, WB[2], WB[3] + 0.7, E3, 0.4, 'z', [buried, hip], c, BARGE);
+    old.push([box(WBN[0], WBN[1], E3, E3 + 0.9, WBN[2], WBN[2] + 0.2), '#e9e9e6'], [box(WBN[0], WBN[0] + 0.2, E3, E3 + 0.9, WBN[2], WBN[3]), '#e9e9e6'], [box(WBN[1] - 0.2, WBN[1], E3, E3 + 0.9, WBN[2], WBN[3]), '#e9e9e6']);
+    old.push([box(-36, -31, E3, E3 + 2.2, -23.8, -21.2), '#cfcdc6'], [box(-36.3, -30.7, E3 + 2.2, E3 + 2.4, -24.1, -20.9), '#9a978f']);
     const TE = E3 + 0.9;
-    old.push([box(TOWER[0], TOWER[1], E3 - BAND, TE, TOWER[2], TOWER[3]), '#e9e9e6']);
-    hipRoof(k, M, TOWER[0] - 0.7, TOWER[1] + 0.7, TOWER[2] - 0.7, TOWER[3] + 0.7, TE, 0.45, 'x', [buried, hip], c, BARGE);
+    old.push([box(ARM[0] + 0.5, ARM[1], E3 - BAND, TE, ARM[2], ARM[3]), '#e9e9e6']);
+    hipRoof(k, M, ARM[0] - 2, ARM[1] + 0.7, ARM[2] - 0.7, ARM[3] + 0.7, TE, 0.45, 'x', [buried, hip], c, BARGE);
+    // the paved court between the L and the front wing, planters in it
+    k.plain.push([box(ARM[1], FRONT[0], 0, 0.05, NB[3], SB[2]), '#c9c4b8'], [box(WB[1], ARM[0], 0, 0.05, NB[3], ARM[2]), '#c9c4b8'], [box(WB[1], ARM[0], 0, 0.05, ARM[3], SB[2]), '#c9c4b8']);
+    for (const [x, z] of [[-12.5, -6], [-12.5, 2], [-8.5, 9], [-20, 10]]) { k.plain.push([box(x - 0.8, x + 0.8, 0, 0.5, z - 0.8, z + 0.8), '#e9e9e6'], [new THREE.IcosahedronGeometry(0.7, 0).translate(x, 0.95, z), '#3f7a2c']); }
     // ---- the covered walks round the car park: a lean-to of the same sheets on slim posts, lights under it ----
-    for (const [x0, x1, zw, s] of [[FRONT[0], NB[1], NB[3], 1], [FRONT[1], SB[1], SB[2], -1]] as [number, number, number, number][]) {
+    for (const [x0, x1, zw, s] of [[FRONT[1], NB[1], NB[3], 1], [FRONT[1], SB[1], SB[2], -1]] as [number, number, number, number][]) {
       const zo = zw + s * 2.3;
       k.roof.quad([x0, E1 - 0.1, zw], [x1, E1 - 0.1, zw], [x1, E1 - 0.75, zo], [x0, E1 - 0.75, zo]);
       c.push([box(x0, x1, E1 - 0.95, E1 - 0.75, Math.min(zo, zo - s * 0.12), Math.max(zo, zo - s * 0.12)), BARGE]);
@@ -142,19 +153,19 @@ const pharmacy: Spec = {
     }
     // ---- the front wing's two doors (owner's blue marks), its banner; the school's board ----
     const xf = FRONT[1];
-    for (const z of [1.2, -3.3]) {
+    for (const z of [-0.6, -5.85]) {
       k.plain.push([box(xf, xf + 0.06, PL, PL + 2.5, z - 0.8, z + 0.8), '#1f2a33'], [box(xf + 0.06, xf + 0.1, PL + 0.1, PL + 2.4, z - 0.02, z + 0.02), '#55636c']);
       k.plain.push([box(xf, xf + 0.12, PL + 2.5, PL + 2.65, z - 0.95, z + 0.95), '#d9d9d6']);
       k.plain.push([box(xf + 0.6, xf + 1.6, 0, 0.15, z - 1.2, z + 1.2), '#c9c4b8']);
     }
-    k.plain.push([box(xf, xf + 0.05, PL + 1.3, PL + 2.4, 4.6, 7.4), '#25348a']);
-    k.signs.push({ text: 'UNIVERSITY OF GHANA SCHOOL OF PHARMACY', x: xf + 0.07, y: PL + 1.85, z: 6.0, ry: Math.PI / 2, w: 2.6, colors: ['#25348a', '#ffffff'] });
-    k.signs.push({ text: 'SCHOOL OF PHARMACY', x: xf + 0.14, y: PL + 2.95, z: 1.2, ry: Math.PI / 2, w: 1.7, colors: ['#f4f4f1', '#1d3f7a'] });
-    for (const z of [9.0, 3.2, -1.0]) k.plain.push([box(xf, xf + 0.3, 0.3, 0.85, z - 0.4, z + 0.4), '#eceeee']);
-    // ---- the black water tanks on their stand between the front wing and the north wing ----
-    const tx = 7.6, tz = -8.0, th = 4.6;
-    for (const [dx, dz] of [[-1.4, -1.6], [1.4, -1.6], [-1.4, 1.6], [1.4, 1.6]]) c.push([box(tx + dx - 0.08, tx + dx + 0.08, 0, th, tz + dz - 0.08, tz + dz + 0.08), '#6d7175']);
-    c.push([box(tx - 1.6, tx + 1.6, th, th + 0.15, tz - 1.8, tz + 1.8), '#6d7175']);
+    k.plain.push([box(xf, xf + 0.05, PL + 1.3, PL + 2.4, 3.4, 6.7), '#25348a']);
+    k.signs.push({ text: 'UNIVERSITY OF GHANA SCHOOL OF PHARMACY', x: xf + 0.07, y: PL + 1.85, z: 5.05, ry: Math.PI / 2, w: 2.6, colors: ['#25348a', '#ffffff'] });
+    k.signs.push({ text: 'SCHOOL OF PHARMACY', x: xf + 0.14, y: PL + 2.95, z: -0.6, ry: Math.PI / 2, w: 1.7, colors: ['#f4f4f1', '#1d3f7a'] });
+    for (const z of [8.5, 2.0, -3.2]) k.plain.push([box(xf, xf + 0.3, 0.3, 0.85, z - 0.4, z + 0.4), '#eceeee']);
+    // ---- the black water tanks on a stand on the flat roof of the link north of the front wing ----
+    const tx = 4.5, tz = -9.4, th = E1 + 1.2;
+    for (const [dx, dz] of [[-1.4, -1.4], [1.4, -1.4], [-1.4, 1.4], [1.4, 1.4]]) c.push([box(tx + dx - 0.08, tx + dx + 0.08, E1, th, tz + dz - 0.08, tz + dz + 0.08), '#6d7175']);
+    c.push([box(tx - 1.6, tx + 1.6, th, th + 0.15, tz - 1.6, tz + 1.6), '#6d7175']);
     k.plain.push([new THREE.CylinderGeometry(1.0, 1.0, 2.4, 16).translate(tx + 0.3, th + 1.35, tz - 0.6), '#1b1c1f']);
     k.plain.push([new THREE.SphereGeometry(1.0, 16, 6, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, 0.3, 1).translate(tx + 0.3, th + 2.55, tz - 0.6), '#1b1c1f']);
     k.plain.push([new THREE.CylinderGeometry(0.7, 0.7, 1.5, 14).translate(tx - 0.7, th + 0.9, tz + 1.0), '#1b1c1f']);

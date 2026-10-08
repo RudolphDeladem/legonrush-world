@@ -2605,16 +2605,16 @@
     {
       "id": "osm:way/773875246",
       "place": "School of Pharmacy",
-      "levels": 3,
-      "height": 11.0,
-      "reason": "Owner's photos of the School of Pharmacy (its side to the road from WACCBIP, and its front to Volta Hall Road with the doors marked blue): one-floor wings round a car park, a three-storey block at its back. Modelled in src/game/pharmacy.ts."
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's top view of the School of Pharmacy (the three-storey block marked yellow), registered at 0.25 m/px, and photos: the wings round the car park and the courts are one floor. Modelled in src/game/pharmacy.ts."
     },
     {
       "id": "osm:way/1051755651",
-      "place": "School of Pharmacy (west wing)",
-      "levels": 1,
-      "height": 4.5,
-      "reason": "Owner's photos of the School of Pharmacy (its side to the road from WACCBIP, and its front to Volta Hall Road with the doors marked blue): a one-floor wing. Modelled in src/game/pharmacy.ts."
+      "place": "School of Pharmacy (three-storey block)",
+      "levels": 3,
+      "height": 11.6,
+      "reason": "Owner's top view of the School of Pharmacy (the three-storey block marked yellow), registered at 0.25 m/px, and photos: the L along the west, with its arm east, is the three-storey block of the owner's side views. Modelled in src/game/pharmacy.ts."
     },
     {
       "id": "osm:way/1055216923",
@@ -2664,6 +2664,13 @@
       "levels": 1,
       "height": 5.0,
       "reason": "Owner: one floor. Modelled in src/game/labs.ts."
+    },
+    {
+      "id": "ml:8a972cbf-87cd-4aec-aff5-387904e60d0d",
+      "place": "unfinished block building north of Food Science",
+      "levels": 1,
+      "height": 3.2,
+      "reason": "Owner: the building beside the Department of Nutrition and Food Science is unfinished, one floor of bare blockwork, no paint, no roof. Modelled in src/game/labs.ts."
     }
   ],
   "reclass": [
@@ -3413,6 +3420,30 @@
         ]
       ],
       "reason": "Owner's marked aerial of WACCBIP (its whole west side marked yellow as the back of photo 175), registered at 0.25 m/px: the back of the building is one long range along the road on its west, 12 m further west than the OSM outline, its two arms reaching east to the spine either side of a light well. Modelled in src/game/waccbip.ts."
+    },
+    {
+      "id": "osm:way/1055216923",
+      "place": "School of Pharmacy (front wing)",
+      "source": "owner's top view",
+      "ring": [
+        [
+          -266.9,
+          -252.9
+        ],
+        [
+          -253.1,
+          -252.3
+        ],
+        [
+          -253.1,
+          -233.2
+        ],
+        [
+          -266.9,
+          -233.6
+        ]
+      ],
+      "reason": "Owner's top view of the School of Pharmacy (the three-storey block marked yellow), registered at 0.25 m/px, and photos: the one-floor front wing at the back of the car park is 14 m wide, its face to the car park 4 m west of the outline."
     }
   ],
   "addAreas": [

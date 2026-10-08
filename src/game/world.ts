@@ -474,21 +474,38 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
   };
   const yawAt = (d: number) => track.pose(d).yaw;
 
+  // a route that climbs a modelled stair (the GCB Lecture Building's, Commonwealth Hall's) lays no road over the steps,
+  // nor over the platform it ends on beyond them (owner: asphalt on the stair)
+  const stairs: [number, number][] = [];
+  {
+    let s0 = -1;
+    for (let d = 0; d <= L; d += 0.5) {
+      const on = [-ROAD_HALF, 0, ROAD_HALF].some((l) => { const p = track.pose(d, l); return inStairs(p.x, p.z); });
+      if (on && s0 < 0) s0 = d;
+      if (!on && s0 >= 0) { stairs.push([Math.max(0, s0 - 0.5), d]); s0 = -1; }
+    }
+    if (s0 >= 0) stairs.push([Math.max(0, s0 - 0.5), L]);
+    if (stairs.length && stairs[stairs.length - 1][1] > L - 25) stairs[stairs.length - 1][1] = L;
+  }
+  const paved = openRuns(stairs, L), onStairs = (d: number) => stairs.some(([a, b]) => d > a && d < b);
   const roadTex = asphaltTexture();
   roadTex.repeat.set(2, 1);
-  const road = new THREE.Mesh(ribbon(track, -ROAD_HALF, 0, ROAD_HALF, 0, 0, L, 8, 2, 4), weathering(wettable(groundMat('#ffffff', 5, roadTex)), 'ground', 34, 0.35));
-  road.receiveShadow = true;
-  group.add(road);
+  const roadMat = weathering(wettable(groundMat('#ffffff', 5, roadTex)), 'ground', 34, 0.35);
+  for (const [d0, d1] of paved) {
+    const road = new THREE.Mesh(ribbon(track, -ROAD_HALF, 0, ROAD_HALF, 0, d0, d1, 8, 2, 4), roadMat);
+    road.receiveShadow = true;
+    group.add(road);
+  }
   const white = groundMat('#e9e6dc', 6);
   for (const s of [-1, 1]) {
     const [a, c] = [s * (ROAD_HALF - 0.27), s * (ROAD_HALF - 0.13)].sort((u, v) => u - v);
-    group.add(new THREE.Mesh(ribbon(track, a, 0, c, 0, 0, L, 8, 4), white));
+    for (const [d0, d1] of paved) group.add(new THREE.Mesh(ribbon(track, a, 0, c, 0, d0, d1, 8, 4), white));
   }
   const conc = concreteTexture();
   conc.repeat.set(1, 4);
   const walkMat = wettable(new THREE.MeshStandardMaterial({ map: conc, roughness: 0.95, side: THREE.DoubleSide }));
   // the pavements stop where another road joins or crosses the route: a kerb across its mouth would block it
-  const gaps = walkGaps(track, ROAD_HALF, ROAD_WIDTH);
+  const gaps = walkGaps(track, ROAD_HALF, ROAD_WIDTH).map((g) => [...g, ...stairs]);
   for (const s of [-1, 1]) {
     const a = s * ROAD_HALF, c = s * (ROAD_HALF + 1.6);
     for (const [d0, d1] of openRuns(gaps[s > 0 ? 1 : 0], L)) {
@@ -519,7 +536,7 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
   for (const x of [-1.2, 1.2]) {
     for (let k = 0; k < dashCount; k++) {
       const d = k * 9 + 4;
-      m.compose(at(d, x, 0.01), q.setFromAxisAngle(up, yawAt(d)), one);
+      m.compose(at(d, x, 0.01), q.setFromAxisAngle(up, yawAt(d)), onStairs(d) ? new THREE.Vector3(0, 0, 0) : one);
       dashes.setMatrixAt(i++, m);
     }
   }

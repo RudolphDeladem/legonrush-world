@@ -97,12 +97,12 @@
    "google-open-buildings": 139
   },
   "osmOnCampusChecked": 1467,
-  "osmValidatedByGoogleOpenBuildings": 1328,
-  "validatedShare": 0.905,
+  "osmValidatedByGoogleOpenBuildings": 1329,
+  "validatedShare": 0.906,
   "medianCentroidOffsetToGoogleM": {
    "x": 0.6,
    "z": 0.4,
-   "n": 1208
+   "n": 1209
   },
   "mlAdded": 294,
   "mlRejected": {
@@ -123,8 +123,8 @@
    "health": 2
   },
   "byConfidence": {
-   "medium": 1499,
-   "high": 1328
+   "medium": 1498,
+   "high": 1329
   },
   "osmNotSeenBySatellite": [
    {
@@ -246,10 +246,6 @@
    {
     "id": "osm:way/696169978",
     "area": 211
-   },
-   {
-    "id": "osm:way/1055216923",
-    "area": 195
    },
    {
     "id": "osm:way/696869835",

@@ -934,7 +934,7 @@ the back, the unfinished frame and the old shed (`waccbip.ts`):
   hardly weathered, on a ground floor raised a metre, under dark red hip roofs with a dark louvred gablet at the ends
   of the wings and over the front pavilion. Between the two wings, deep **galleries on every floor** (the owner's large
   balconies): solid white parapets, columns to the eaves, lights under the slabs; in the middle the pavilion with round
-  columns at its corners, a **broad stair** up to the entrance in a **blue frame** (entered here, from the drive),
+  columns at its corners, a **broad stair** up to the entrance in a white surround (entered here, from the drive; the blue round it on the owner's photos is their mark, not paint),
   WACCBIP on its parapet. Paired dark windows, lit at dusk; a tall glazed stair window up the east end of each wing;
   air-conditioners on the outer walls.
 - **The back** (owner's yellow mark on the aerial, photo 4) is the whole west face: one long range along the road behind
@@ -942,7 +942,7 @@ the back, the unfinished frame and the old shed (`waccbip.ts`):
   its two arms reaching east to the spine either side of a planted light well, their gablets at the two ends of the
   back. Plain white upper floor; a tall black-framed window over two floors near each end, a slit window and a
   two-pane window upstairs, a barred window by the door, two pilasters, wall lamps, a white vent and an
-  air-conditioner; the entrance up three steps in a blue frame between white planters, the centre's board over it, a
+  air-conditioner; the entrance up three steps between white planters, a collapsible lattice gate across the top of its opening over the glass door, a gold strip light and the centre's **full board** over it as it reads (University of Ghana and WACCBIP marks, the centre's name, African Centre of Excellence, the Department of Biochemistry, Cell & Molecular Biology (Annex), the College of Basic & Applied Sciences, the addresses), a
   brown grille window above, iron grilles each side; palms beside it, the raised box on the roof over it; brick paving
   to the road with a post and chain.
 - **Before the front:** interlocking brick paving; the four **blue tensile shades on white curved posts** (red marks)
@@ -986,7 +986,7 @@ with gable ends boarded in dark timber, and low walls and platforms **faced in r
 From the owner's photos: the pharmacy's side to the road from WACCBIP, a closer view of its three-storey block, its
 front with the doors marked blue (`pharmacy.ts`); a side view of the Larway Oraca Building (`residences.ts`).
 
-- **School of Pharmacy:** one-floor wings under maroon sheet roofs round a car park open to Volta Hall Road: the long
+- **School of Pharmacy** (layout corrected in section 44): one-floor wings under maroon sheet roofs round a car park open to Volta Hall Road: the long
   north wing (white, a red band round its foot, wide glass windows with curtains in light aluminium frames, boarded
   panels between, an air-conditioner under each), the south and west wings; on the car park side covered walks on slim
   posts, lit, with doors, windows, notices and potted plants. At the back of the car park the **three-storey block**,
@@ -1018,6 +1018,27 @@ From the owner's photos and top view (`labs.ts`; the trees in `corrections.json`
   walk round the main court; **trees** wherever the owner circled them, in the courts and all round, so that from the
   road the buildings barely show; along J.K.M. Hodasi Road a brick-paved walk between two low walls faced in rubble
   stone, young palms in the verge.
+
+## 44. The pharmacy's layout; WACCBIP's board; the GCB stair and ramps; riding through woods; an unfinished building
+
+- **School of Pharmacy, laid out from the owner's top view** (registered at 0.25 m/px, `pharmacy.ts`): the
+  **three-storey block is the L along the west** (marked yellow): its range along the back with a flat-roofed bay at
+  its north end, and its arm east into a paved court with planters, a little taller under its own hip. Everything
+  else is one floor: the wings along the north and the south, and at the back of the car park the front wing with the
+  school's two doors (entered at the north one), the flat link north of it carrying the black water tanks.
+- **WACCBIP's back entrance** carries the centre's **full board** as it reads, a gold strip light under it, a
+  collapsible lattice gate across the top of the opening, the university's plate on the glass door and a camera. The
+  blue round both of WACCBIP's doors on the owner's photos marks the entrances; it was never paint, and is gone.
+- **GCB Lecture Building:** a ridden route that climbs a modelled stair lays **no asphalt over the steps** or the
+  platform beyond them (`world.ts → buildRouteLayer`), so the white stair shows; each **ramp starts 1.6 m clear of the
+  stair's side wall**, so a wheelchair turns onto it freely. A model's tree is never planted on a road (`gardens.ts`):
+  the two that stood on the lane north-west of the building are moved into the wood beside it.
+- **Free ride:** the grass of a wood is rideable between its trees (the wooded lawns round the GCB Lecture Building);
+  every trunk still stops the bike, which slides round it.
+- **The building beside Food Science** (north of it) is **unfinished**: one floor of bare grey sandcrete blockwork,
+  no paint, no roof, empty door and window openings under concrete lintels, two cross walls making three rooms,
+  bare columns with their rebar standing out, a ring beam begun on one side, weeds inside, sand and new blocks
+  stacked by it.
 
 ## Explore: drone view
 
@@ -1054,7 +1075,9 @@ bike and the rider steers it anywhere a bike can go (`Game.freeRide`).
   stairway closes it (a tree at its edge, a wood or water area mapped across it, or a building outline it runs
   through, such as an archway or a gate canopy, doesn't). Off the roads, buildings (by their real outlines,
   `buildingNear`; their bounding boxes, used for placing props, cover the roads round a building set at an angle
-  such as the Diaspora halls), trees and palms (campus, gardens and the route's own; `src/game/solids.ts`), woods,
-  water and banks too steep to ride stop it, forwards or backwards; it slides along an edge it meets at an angle.
+  such as the Diaspora halls), trees and palms (campus, gardens and the route's own; `src/game/solids.ts`), water and
+  banks too steep to ride stop it, forwards or backwards; it slides along an edge it meets at an angle. A wood's
+  grass is rideable between its trees (owner: the wooded lawns round the GCB Lecture Building); every trunk stops
+  the bike and it slides round it.
   The chase camera follows.
 - **Finish ride** ends the ride as arriving does.

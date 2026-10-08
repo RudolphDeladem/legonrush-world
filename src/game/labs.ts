@@ -354,5 +354,93 @@ function stoneMat() {
   return (stone = m);
 }
 
+// ---------- the unfinished block building north of Food Science (owner: one floor, never finished, no paint) ----------
+const UO: [number, number] = [-189.6, -224.2];
+const UR = [-193.4, -185.8, -233.2, -215.2];
+let blockMat: THREE.MeshStandardMaterial | null = null;
+/** bare sandcrete blockwork: grey hollow blocks, darker mortar joints, laid in world metres */
+function blocks() {
+  if (blockMat) return blockMat;
+  const tex = canvas(256, 256, (g) => {
+    g.fillStyle = '#8c8a83'; g.fillRect(0, 0, 256, 256);
+    for (let j = 0; j < 8; j++) for (let i = -1; i < 3; i++) {
+      const x = i * 128 + (j % 2) * 64, y = j * 32;
+      g.fillStyle = ['#aeaca4', '#a5a39b', '#b6b3aa', '#a09e96'][(i + j * 3 + 8) % 4];
+      g.fillRect(x + 3, y + 3, 122, 26);
+    }
+    speckle(g, 0, 0, 256, 256, 2500, ['rgba(70,68,62,0.25)', 'rgba(200,198,190,0.25)']);
+    for (let i = 0; i < 10; i++) { const x = (i * 61) % 240; const gr = g.createLinearGradient(0, 0, 0, 120); gr.addColorStop(0, 'rgba(70,72,64,0.3)'); gr.addColorStop(1, 'rgba(70,72,64,0)'); g.fillStyle = gr; g.fillRect(x, 0, 6, 120); }
+  });
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.97 });
+  m.onBeforeCompile = (sh) => {
+    sh.uniforms.bkTex = { value: tex };
+    sh.vertexShader = sh.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vBkP;\nvarying vec3 vBkN;')
+      .replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvBkP = (modelMatrix * vec4(transformed, 1.0)).xyz;\nvBkN = normalize(mat3(modelMatrix) * objectNormal);');
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vBkP;\nvarying vec3 vBkN;\nuniform sampler2D bkTex;')
+      .replace('#include <map_fragment>', `#include <map_fragment>
+  vec3 bkA = abs(vBkN);
+  vec2 bkUv = bkA.y > 0.6 ? vBkP.xz / 0.8 : vec2((bkA.x > bkA.z ? vBkP.z : vBkP.x) / 0.9, vBkP.y / 1.6);
+  diffuseColor.rgb *= texture2D(bkTex, bkUv).rgb;`);
+  };
+  m.customProgramCacheKey = () => 'sandcrete-blocks';
+  return (blockMat = m);
+}
+const unfinishedBlocks: Spec = (() => {
+  const X = (x: number) => x - UO[0], Z = (z: number) => z - UO[1];
+  const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
+  return {
+    name: 'unfinished block building north of Food Science',
+    axis: [1, 0], origin: UO, storey: 3, style: FS_GROUND, roofColor: '#8f8a80', fascia: '#bdb9b0', pitch: 0.3,
+    replaces: [[-189.6, -224.2]],
+    blocks: [],
+    keep: [[X(UR[0]) - 1, X(UR[1]) + 3, Z(UR[2]) - 1, Z(UR[3]) + 1]],
+    extras: (k: Kit) => {
+      const wall: Part[] = [], conc: Part[] = [];
+      const [x0, x1, z0, z1] = UR, T = 0.2;
+      let sd = 13;
+      const r = () => ((sd = (sd * 1664525 + 1013904223) >>> 0) / 4294967296);
+      /** a run of blockwork from a to b along x or z at c, openings [from, to, sill, head] cut out, its top course
+       *  left ragged where the work stopped */
+      const run = (alongX: boolean, a: number, b: number, c: number, openings: [number, number, number, number][]) => {
+        const cuts = [a, ...openings.flatMap(([o0, o1]) => [o0, o1]), b];
+        const piece = (p0: number, p1: number, y0: number, y1: number) => wall.push([alongX ? B(p0, p1, y0, y1, c - T / 2, c + T / 2) : B(c - T / 2, c + T / 2, y0, y1, p0, p1), '#ffffff']);
+        for (let i = 0; i < cuts.length - 1; i += 2) {
+          const p0 = cuts[i], p1 = cuts[i + 1];
+          for (let p = p0; p < p1 - 0.01; p += 1.8) { const q = Math.min(p1, p + 1.8), top = 2.2 + Math.floor(r() * 5) * 0.2; piece(p, q, 0, top); }
+        }
+        for (const [o0, o1, sill, head] of openings) { if (sill > 0) piece(o0, o1, 0, sill); piece(o0, o1, head, head + 0.4 + Math.floor(r() * 3) * 0.2); conc.push([alongX ? B(o0 - 0.15, o1 + 0.15, head - 0.15, head, c - 0.12, c + 0.12) : B(c - 0.12, c + 0.12, head - 0.15, head, o0 - 0.15, o1 + 0.15), '#9d9b94']); }
+      };
+      // the four outer walls: a door to the road on the west, window openings in every room, a back door on the east
+      run(false, z0, z1, x0 + T / 2, [[-231.2, -230.0, 0.9, 2.1], [-224.6, -223.4, 0, 2.1], [-219.6, -218.4, 0.9, 2.1]]);
+      run(false, z0, z1, x1 - T / 2, [[-230.6, -229.4, 0.9, 2.1], [-226.0, -224.9, 0, 2.1], [-218.8, -217.6, 0.9, 2.1]]);
+      run(true, x0, x1, z0 + T / 2, [[-190.4, -189.0, 0.9, 2.1]]);
+      run(true, x0, x1, z1 - T / 2, [[-190.6, -189.2, 0.9, 2.1]]);
+      // two cross walls make three rooms, each with a doorway
+      run(true, x0 + T, x1 - T, -227.2, [[-190.5, -189.6, 0, 2.1]]);
+      run(true, x0 + T, x1 - T, -221.2, [[-189.6, -188.7, 0, 2.1]]);
+      // bare concrete columns at the corners and the joints, rebar standing out of them; a ring beam begun along the
+      // south wall only
+      for (const x of [x0 + 0.12, x1 - 0.12]) for (const z of [z0 + 0.12, -227.2, -221.2, z1 - 0.12]) {
+        conc.push([B(x - 0.14, x + 0.14, 0, 3.2, z - 0.14, z + 0.14), '#a3a199']);
+        for (const [dx, dz] of [[-0.08, -0.08], [0.08, 0.08]]) k.plain.push([B(x + dx - 0.012, x + dx + 0.012, 3.2, 3.8 + r() * 0.3, z + dz - 0.012, z + dz + 0.012), '#5b4535']);
+      }
+      conc.push([B(x0, x1, 2.9, 3.2, z1 - 0.22, z1), '#a3a199']);
+      conc.push([B(x0 + 0.2, x1 - 0.2, 0, 0.1, z0 + 0.2, z1 - 0.2), '#8d8b84']);
+      // weeds inside, a heap of sand and a stack of new blocks by the east wall
+      for (let i = 0; i < 14; i++) k.plain.push([new THREE.IcosahedronGeometry(0.25 + r() * 0.3, 0).scale(1.2, 0.6, 1).translate(X(x0 + 0.6 + r() * (x1 - x0 - 1.2)), 0.2, Z(z0 + 0.6 + r() * (z1 - z0 - 1.2))), ['#5d7f38', '#4a7531', '#6b8a3e'][i % 3]]);
+      k.plain.push([new THREE.ConeGeometry(1.3, 0.9, 12).translate(X(x1 + 1.8), 0.45, Z(-229.5)), '#c9a46a']);
+      for (let i = 0; i < 4; i++) wall.push([B(x1 + 0.8, x1 + 2.4, 0, 0.2 * (4 - i), -222 + i * 0.45, -221.6 + i * 0.45), '#ffffff']);
+      const wm = new THREE.Mesh(merge(wall), blocks());
+      wm.castShadow = true; wm.receiveShadow = true;
+      const cm = new THREE.Mesh(merge(conc), concrete(1.4));
+      cm.castShadow = true; cm.receiveShadow = true;
+      k.meshes.push(wm, cm);
+    },
+  };
+})();
+
 /** Food Science, Nursing, and Animal Biology with the Centre for Biodiversity */
-export const labsSite = createSite('labs', [foodScience, nursing, animal]);
+export const labsSite = createSite('labs', [foodScience, nursing, animal, unfinishedBlocks]);

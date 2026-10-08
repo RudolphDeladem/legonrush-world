@@ -6,8 +6,8 @@
 // red hip roofs with a dark louvred gablet at the ends of the wings and over the front. Its front: two wings reaching
 // east to the drive, between them the deep galleries the owner calls large balconies, on every floor, solid white
 // parapets, columns to the eaves, lights under the slabs; in the middle a pavilion under its own gablet roof with a
-// broad stair up to the entrance in a blue frame. Paired dark windows, warm-lit at dusk; a tall glazed stair window up
-// the east end of each wing. The back (photo 4): tall narrow windows, the entrance in a blue frame up three steps
+// broad stair up to the entrance (the blue round it on the owner's photos marks it; the paint is white). Paired dark windows, warm-lit at dusk; a tall glazed stair window up
+// the east end of each wing. The back (photo 4): tall narrow windows, the entrance up three steps under a lattice gate
 // between white planters with the centre's board over it, palms beside it, a raised box on the roof.
 // Before the front: interlocking brick paving; under the blue tensile shades on white curved posts, the car parks
 // (owner's red marks); grass islands of yuccas by the road.
@@ -16,9 +16,9 @@
 // The unfinished frame (owner's green mark, photo 2): raw grey concrete columns, a first-floor slab, column stubs
 // with their rebar standing above it, some bays walled in blockwork, weeds and trees growing through.
 import * as THREE from 'three';
-import { box, merge, speckle, tri2, type Part } from './modelkit';
+import { box, canvas, merge, speckle, tri2, type Part } from './modelkit';
 import { BAND, PL, createSite, render, type Block, type Kit, type Spec, type Style } from './blocks';
-import { concrete } from './concrete';
+import { concrete, grille, panel } from './concrete';
 import { garden } from './gardens';
 
 // ---------- WACCBIP ----------
@@ -29,7 +29,7 @@ const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: numbe
 const RAISE = 0.6, WST = 3.6;
 /** the ground floor, the first and second floors, the eaves */
 const F0 = RAISE + PL, F1 = F0 + WST, F2 = F1 + WST, EAVE = F0 + 3 * WST + BAND;
-const PAINT = '#f6f5f1', WROOF = '#86302c', WFASCIA = '#5e201d', BLUE = '#2f7fe0', FRAME = '#34383c';
+const PAINT = '#f6f5f1', WROOF = '#86302c', WFASCIA = '#5e201d', FRAME = '#34383c';
 /** a dark aluminium window: frame, two panes, a sill */
 const win = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, cols = 2) => {
   g.fillStyle = 'rgba(120,118,110,0.25)'; g.fillRect(x - 5, y - 5, w + 10, h + 10);
@@ -282,12 +282,10 @@ const waccbip: Spec = {
       c.push([B(PE, PE + 2.2, 0, F0 + 0.1, z, z + 0.5), PAINT]);
       k.plain.push([new THREE.IcosahedronGeometry(0.45, 0).scale(1.3, 0.8, 0.6).translate(WX(PE + 1.6), F0 + 0.35, WZ(z + 0.25)), '#3f7a2c']);
     }
-    // the entrance: glass doors in the pavilion's wall, the blue frame round the opening (owner's photos 3 and 4)
+    // the entrance: glass doors in the pavilion's wall in a white surround (the blue on the owner's photos marks it)
     k.glass.push(B(PAV[1] + 0.01, PAV[1] + 0.05, F0, F0 + 2.7, ENZ - 1.6, ENZ + 1.6));
     k.plain.push([B(PAV[1], PAV[1] + 0.08, F0 + 2.7, F0 + 2.85, ENZ - 1.7, ENZ + 1.7), FRAME], [B(PAV[1], PAV[1] + 0.08, F0, F0 + 2.7, ENZ - 0.04, ENZ + 0.04), FRAME]);
-    for (const z of [ENZ - 3.4, ENZ + 3.4]) c.push([B(PE + 0.05, PE + 0.3, F0, F1 - 0.75, z - 0.12, z + 0.12), BLUE]);
-    c.push([B(PE + 0.05, PE + 0.3, F1 - 0.75, F1 - 0.55, ENZ - 3.0, ENZ + 3.0), BLUE]);
-    for (const s of [-1, 1]) c.push([new THREE.BoxGeometry(0.25, 0.2, 0.62).rotateX(s * Math.PI / 4).translate(WX(PE + 0.18), F1 - 0.86, WZ(ENZ + s * 3.17)), BLUE]);
+    c.push([B(PAV[1], PAV[1] + 0.25, F0, F0 + 3.1, ENZ - 2.0, ENZ - 1.7), PAINT], [B(PAV[1], PAV[1] + 0.25, F0, F0 + 3.1, ENZ + 1.7, ENZ + 2.0), PAINT], [B(PAV[1], PAV[1] + 0.25, F0 + 2.85, F0 + 3.1, ENZ - 2.0, ENZ + 2.0), PAINT]);
     k.signs.push({ text: 'WACCBIP', x: WX(PE + 0.08), y: F1 + 0.55, z: WZ(ENZ), ry: Math.PI / 2, w: 3.0, colors: ['#f4f6f8', '#1d3f7a'] });
 
     // ---- the tall glazed stair windows up the wings' east ends ----
@@ -305,19 +303,45 @@ const waccbip: Spec = {
     }
 
     // ---- the back (owner's marked aerial, yellow, and photo 4): the whole west face of the west range, the two arms'
-    // gablets at its ends, the entrance near the middle up three steps in a blue frame, the board over it ----
+    // gablets at its ends, the entrance near the middle up three steps, the centre's full board over it ----
     const bx = WR[0], bz = -330.0;
     for (let i = 1; i <= 3; i++) c.push([B(bx - 0.35 * i, bx, 0, (F0 * (4 - i)) / 3, bz - 1.9, bz + 1.9), '#d9d6ce']);
     c.push([B(bx - 0.5, bx, F0 + 2.75, F0 + 3.0, bz - 1.7, bz + 1.7), PAINT]);
     for (const s of [-1, 1]) c.push([B(bx - 0.5, bx, F0, F0 + 2.75, bz + s * 1.6 - 0.1, bz + s * 1.6 + 0.1), PAINT]);
     k.plain.push([B(bx - 0.04, bx, F0, F0 + 2.75, bz - 1.5, bz + 1.5), '#f3e6c4']);
     k.glass.push(B(bx - 0.1, bx - 0.06, F0, F0 + 2.6, bz - 1.2, bz + 1.2));
-    for (const s of [-1, 1]) c.push([B(bx - 0.62, bx - 0.5, F0, F0 + 2.95, bz + s * 1.72 - 0.06, bz + s * 1.72 + 0.06), BLUE]);
-    c.push([B(bx - 0.62, bx - 0.5, F0 + 2.92, F0 + 3.04, bz - 1.78, bz + 1.78), BLUE]);
-    // (the centre's board: the university's and the centre's names over its full name)
-    k.plain.push([B(bx - 0.08, bx, F0 + 3.15, F0 + 4.25, bz - 1.4, bz + 1.4), '#f2f4f6'], [B(bx - 0.1, bx - 0.02, F0 + 3.12, F0 + 3.17, bz - 1.42, bz + 1.42), '#9aa0a6']);
-    k.signs.push({ text: 'UNIVERSITY OF GHANA | WACCBIP', x: WX(bx) - 0.1, y: F0 + 3.98, z: WZ(bz), ry: -Math.PI / 2, w: 2.3, colors: ['#f2f4f6', '#1d3f7a'] });
-    k.signs.push({ text: 'WEST AFRICAN CENTRE FOR CELL BIOLOGY OF INFECTIOUS PATHOGENS', x: WX(bx) - 0.1, y: F0 + 3.55, z: WZ(bz), ry: -Math.PI / 2, w: 2.5, colors: ['#f2f4f6', '#1d3f7a'] });
+    // (owner's photo of the door: a collapsible lattice gate drawn across the top of the opening, the glass door under
+    // it with the university's plate, a camera in the corner, a gold strip light under the board)
+    panel(WO, k, grille(), bx - 0.08, bz - 1.2, bx - 0.08, bz + 1.2, F0 + 1.35, F0 + 2.6, 0.45);
+    k.plain.push([B(bx - 0.12, bx - 0.06, F0 + 1.3, F0 + 1.38, bz - 1.25, bz + 1.25), '#9a9d9f'], [B(bx - 0.14, bx - 0.08, F0 + 0.8, F0 + 1.15, bz - 0.55, bz + 0.15), '#1d3f7a']);
+    k.signs.push({ text: 'UNIVERSITY OF GHANA', x: WX(bx) - 0.15, y: F0 + 0.98, z: WZ(bz - 0.2), ry: -Math.PI / 2, w: 0.62, colors: ['#1d3f7a', '#ffffff'] });
+    k.plain.push([B(bx - 0.3, bx - 0.5, F0 + 2.45, F0 + 2.6, bz + 1.15, bz + 1.35), '#e9e9e6']);
+    k.plain.push([B(bx - 0.14, bx - 0.02, F0 + 3.06, F0 + 3.14, bz - 0.95, bz + 0.95), '#d8b24a']);
+    // the centre's board as it reads (owner's photo): the university's and WACCBIP's marks, the centre's name, the
+    // African Centre of Excellence, the department (annex), the college, the addresses
+    const boardTex = canvas(1024, 560, (g) => {
+      g.fillStyle = '#9aa0a6'; g.fillRect(0, 0, 1024, 560);
+      g.fillStyle = '#fbfbfa'; g.fillRect(8, 8, 1008, 544);
+      g.fillStyle = '#1d3f7a'; g.fillRect(150, 34, 40, 48); g.fillStyle = '#d8b24a'; g.fillRect(158, 42, 24, 30);
+      g.textBaseline = 'middle'; g.textAlign = 'left';
+      g.fillStyle = '#1d3f7a'; g.font = 'bold 34px sans-serif'; g.fillText('UNIVERSITY', 202, 46); g.fillText('OF GHANA', 202, 80);
+      g.fillStyle = '#b9bcc0'; g.fillRect(470, 30, 3, 60);
+      g.strokeStyle = '#1d3f7a'; g.lineWidth = 3; g.strokeRect(520, 32, 330, 58);
+      g.fillStyle = '#1d3f7a'; g.font = 'bold 44px sans-serif'; g.fillText('WACCBIP', 540, 62);
+      g.fillStyle = '#7b8a99'; g.beginPath(); g.moveTo(790, 40); g.lineTo(830, 48); g.lineTo(822, 84); g.lineTo(800, 78); g.closePath(); g.fill();
+      g.textAlign = 'center';
+      g.fillStyle = '#4b6cb7'; g.font = 'bold 40px sans-serif'; g.fillText('WEST AFRICAN CENTRE FOR CELL BIOLOGY OF', 512, 150); g.fillText('INFECTIOUS PATHOGENS', 512, 198);
+      g.fillStyle = '#8a6fc0'; g.font = 'bold 24px sans-serif'; g.fillText('AFRICAN CENTRE OF EXCELLENCE FOR HIGHER EDUCATION', 512, 240);
+      g.fillStyle = '#2a2d33'; g.font = 'bold 26px sans-serif'; g.fillText('DEPARTMENT OF BIOCHEMISTRY, CELL & MOLECULAR BIOLOGY (ANNEX)', 512, 300);
+      g.font = 'bold 32px sans-serif'; g.fillText('COLLEGE OF BASIC & APPLIED SCIENCES', 512, 350);
+      g.fillStyle = '#c3c6ca'; g.fillRect(120, 380, 784, 2);
+      g.fillStyle = '#3a3d42'; g.font = '22px sans-serif'; g.fillText('waccbipleader@ug.edu.gh  |  waccbipadmin@ug.edu.gh', 512, 420); g.fillText('www.waccbip.org', 512, 456);
+    });
+    const board = new THREE.Mesh(new THREE.PlaneGeometry(3.0, 1.64), new THREE.MeshStandardMaterial({ map: boardTex, roughness: 0.6 }));
+    board.position.set(WX(bx) - 0.11, F0 + 4.0, WZ(bz));
+    board.rotation.y = -Math.PI / 2;
+    k.meshes.push(board);
+    k.plain.push([B(bx - 0.1, bx, F0 + 3.15, F0 + 4.85, bz - 1.56, bz + 1.56), '#9aa0a6']);
     // the planters each side, the window with its brown grille over the door, iron grilles each side of it
     for (const [s, w] of [[-1, 1.0], [1, 1.8]] as [number, number][]) {
       const zc = bz + s * (2.0 + w / 2);
