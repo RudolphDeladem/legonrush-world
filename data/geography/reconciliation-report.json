@@ -69,9 +69,9 @@
  "roads": {
   "junctions": 1207,
   "roundabouts": 18,
-  "count": 1554,
+  "count": 1556,
   "kmByClass": {
-   "service": 70.6,
+   "service": 70.7,
    "residential": 65.6,
    "path": 25.8,
    "tertiary": 14.1,
@@ -307,13 +307,19 @@
    "ml:2edde621-3f03-4897-adc9-139e177e51ea",
    "ml:d31a78ce-5df2-4e52-9098-0179a02ecc96",
    "ml:d15236c1-7ac9-43b3-ae6a-ecf9a9b708af",
-   "ml:9a503cd5-ecc9-48e8-ad4c-0895ecc05ea9"
+   "ml:9a503cd5-ecc9-48e8-ad4c-0895ecc05ea9",
+   "ml:26296066-5b1e-43e9-9c3d-16477bc0e6dd",
+   "osm:way/1334283644",
+   "ml:24cc4797-bacf-4127-99fd-34d906a280cc",
+   "ml:b3e1f50c-1184-417a-abf1-2a8cb0172ed1",
+   "ml:e7984293-2654-4b6e-99ed-d05dd0ff3877",
+   "osm:way/690589818"
   ]
  },
  "areas": {
   "wood": {
-   "count": 40,
-   "ha": 495.4
+   "count": 43,
+   "ha": 496.2
   },
   "water": {
    "count": 26,
@@ -336,7 +342,7 @@
    "ha": 1.5
   },
   "parking": {
-   "count": 100,
+   "count": 104,
    "ha": 9.9
   },
   "track": {

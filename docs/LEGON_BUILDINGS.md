@@ -910,8 +910,8 @@ From the owner's photos and marked aerial (registered to the footprints at 0.25 
 
 From the owner's marked aerial (registered at 0.25 m/px) and photos of the north and west sides (`nblock.ts`):
 
-- **Old paint:** the white was never redone: washed grey, rain-streaked and stained all over (the weathered-concrete
-  material of `concrete.ts`), the retaining walls and the ramps' parapets most of all.
+- **Old paint, lightly weathered:** the white was never redone, but it must still read as white (owner: the first
+  weathering was ten times too strong): a faint stain map (`concrete(0.12)`) and a few specks on the facades.
 - **The gallery** (purple mark) across the whole north, about 13 m deep: round columns on the ground floor, the first
   floor cantilevered past them behind a thick solid parapet, tall slender columns up to the roof, the roof's beams
   standing out under the eaves with a beam across over the columns (orange mark), lights in the ceilings; a stair under
@@ -924,6 +924,31 @@ From the owner's marked aerial (registered at 0.25 m/px) and photos of the north
   a colonnade of round columns before a lit lobby with shopfronts, stalls and banners (never closed); over it a cross
   gable with red sheet cladding in its triangle. The main roof is a hip with a gablet at each end.
 - **New N Block:** the doors are twice as wide (about a metre, two leaves).
+
+## 40. WACCBIP, its car-park shades, the old shed, the unfinished frame
+
+From the owner's marked aerial (front F to Volta Hall Road, back B; registered at 0.25 m/px) and photos of the front,
+the back, the unfinished frame and the old shed (`waccbip.ts`):
+
+- **West African Centre for Cell Biology of Infectious Pathogens (WACCBIP):** three storeys of bright white paint,
+  hardly weathered, on a ground floor raised a metre, under dark red hip roofs with a dark louvred gablet at the ends
+  of the wings and over the front pavilion. Between the two wings, deep **galleries on every floor** (the owner's large
+  balconies): solid white parapets, columns to the eaves, lights under the slabs; in the middle the pavilion with round
+  columns at its corners, a **broad stair** up to the entrance in a **blue frame** (entered here, from the drive),
+  WACCBIP on its parapet. Paired dark windows, lit at dusk; a tall glazed stair window up the east end of each wing;
+  air-conditioners on the outer walls.
+- **The back:** tall narrow windows; the entrance up three steps in a blue frame between white planters, the
+  centre's board over it, a brown grille window above, palms beside it, wall lamps; a raised box on the roof.
+- **Before the front:** interlocking brick paving; the four **blue tensile shades on white curved posts** (red marks)
+  are car parks with cars under them, not buildings; the drive runs between the two rows of shades; grass islands of
+  yuccas by the road, the centre's board, lamp posts.
+- **The old shed** (white mark): one floor, old clay tiles gone dark with moss, white paint stained and mouldy, paint
+  gone in patches, old plank doors (one shut with a louvre at its head, one standing open on a dark room), louvred
+  windows, a bush grown over its south-east corner.
+- **The unfinished building** (green mark): a raw grey concrete frame, columns and beams under a first-floor slab,
+  column stubs with their rebar above it, some bays walled in blockwork, weeds and young trees inside.
+- **Cleared:** the structures circled yellow are gone; trees there, north of WACCBIP round the shed, and east of
+  Volta Hall Road across from it.
 
 ## Explore: drone view
 

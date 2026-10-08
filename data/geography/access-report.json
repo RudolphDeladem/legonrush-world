@@ -1,18 +1,18 @@
 {
  "destinations": 436,
  "byMethod": {
-  "curated": 86,
+  "curated": 87,
   "osm-entrance": 0,
   "gate": 1,
   "path-access": 2,
   "drive-access": 17,
   "area-entry": 8,
-  "frontage": 211,
+  "frontage": 210,
   "point": 111
  },
  "byConfidence": {
-  "high": 81,
-  "low": 214,
+  "high": 82,
+  "low": 213,
   "medium": 141
  },
  "campusGates": 5,
@@ -360,8 +360,8 @@
   }
  ],
  "byStatus": {
-  "verified": 80,
-  "inferred": 206,
+  "verified": 81,
+  "inferred": 205,
   "partial": 6,
   "unverified": 9,
   "mapped": 135
@@ -625,6 +625,13 @@
    "arrivalOn": "service",
    "arrivalDistance": 18,
    "facing": 305
+  },
+  {
+   "place": "West African Centre for Cell Biology of Infectious Pathogens, WACCBIP",
+   "type": "main entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 10.1,
+   "facing": 90
   },
   {
    "place": "Central Cafeteria, CC",

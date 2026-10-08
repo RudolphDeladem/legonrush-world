@@ -204,6 +204,30 @@
     {
       "id": "ml:9a503cd5-ecc9-48e8-ad4c-0895ecc05ea9",
       "reason": "Owner's marked aerial of the GCB Lecture Building: this outline is the platform with the stair and the ramps before the north entrance, not a building (modelled in src/game/nblock.ts)."
+    },
+    {
+      "id": "ml:26296066-5b1e-43e9-9c3d-16477bc0e6dd",
+      "reason": "Owner's marked aerial of WACCBIP and the ground north of it, registered to the WACCBIP footprint at 0.25 m/px: the structure circled yellow west of the unfinished frame is to be deleted (owner); the ground there is trees."
+    },
+    {
+      "id": "osm:way/1334283644",
+      "reason": "Owner's marked aerial of WACCBIP and the ground north of it, registered to the WACCBIP footprint at 0.25 m/px: the structure circled yellow at the north end is to be deleted (owner); the ground there is trees."
+    },
+    {
+      "id": "ml:24cc4797-bacf-4127-99fd-34d906a280cc",
+      "reason": "Owner's marked aerial of WACCBIP and the ground north of it, registered to the WACCBIP footprint at 0.25 m/px: a blue car-park shade circled red before WACCBIP, not a building (modelled with its car park in src/game/waccbip.ts)."
+    },
+    {
+      "id": "ml:b3e1f50c-1184-417a-abf1-2a8cb0172ed1",
+      "reason": "Owner's marked aerial of WACCBIP and the ground north of it, registered to the WACCBIP footprint at 0.25 m/px: a blue car-park shade circled red before WACCBIP, not a building (modelled with its car park in src/game/waccbip.ts)."
+    },
+    {
+      "id": "ml:e7984293-2654-4b6e-99ed-d05dd0ff3877",
+      "reason": "Owner's marked aerial of WACCBIP and the ground north of it, registered to the WACCBIP footprint at 0.25 m/px: a blue car-park shade circled red before WACCBIP, not a building (modelled with its car park in src/game/waccbip.ts)."
+    },
+    {
+      "id": "osm:way/690589818",
+      "reason": "Owner's marked aerial of WACCBIP and the ground north of it, registered to the WACCBIP footprint at 0.25 m/px: the drive before WACCBIP runs between the two rows of car-park shades, about 3 m west of the mapped line, which ran under the eastern shades; replaced by owner:waccbip-drive."
     }
   ],
   "heights": [
@@ -2537,6 +2561,34 @@
       "levels": 1,
       "height": 5.5,
       "reason": "Owner's photos of the road south of the roundabout before the Balme Library (and of Legon Hall's front): chalet-style blocks, white with wooden shutters under steep tiled gable roofs, one floor. Modelled in src/game/chalets.ts."
+    },
+    {
+      "id": "osm:way/278303028",
+      "place": "West African Centre for Cell Biology of Infectious Pathogens, WACCBIP",
+      "levels": 3,
+      "height": 12.2,
+      "reason": "Owner's photos of WACCBIP's front and back: three storeys on a ground floor raised a metre. Modelled in src/game/waccbip.ts."
+    },
+    {
+      "id": "osm:way/672764757",
+      "place": "old shed north of WACCBIP",
+      "levels": 1,
+      "height": 4.9,
+      "reason": "Owner's photo 5 (circled white on the aerial): an old one-floor shed under a tiled gable roof. Modelled in src/game/waccbip.ts."
+    },
+    {
+      "id": "ml:85b63914-a4fa-4a33-a53e-9f1667807d4b",
+      "place": "unfinished building north of WACCBIP",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner (circled green, photo 2): an unfinished concrete frame, a ground floor of columns under a slab with column stubs above. Modelled in src/game/waccbip.ts."
+    },
+    {
+      "id": "ml:5f3e8143-855f-4fc0-a831-e9e9f76b0165",
+      "place": "unfinished building north of WACCBIP",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner (circled green, photo 2): an unfinished concrete frame, a ground floor of columns under a slab with column stubs above. Modelled in src/game/waccbip.ts."
     }
   ],
   "reclass": [
@@ -5155,6 +5207,195 @@
         ]
       ],
       "reason": "Owner's marked aerial of the New N Block and the GCB Lecture Building, registered to their footprints at 0.25 m/px: the trees east of the GCB Lecture Building."
+    },
+    {
+      "id": "owner:waccbip-shade-1",
+      "class": "parking",
+      "ring": [
+        [
+          -258.7,
+          -348.2
+        ],
+        [
+          -251.2,
+          -348.2
+        ],
+        [
+          -251.2,
+          -338.0
+        ],
+        [
+          -258.7,
+          -338.0
+        ]
+      ],
+      "reason": "Owner's marked aerial of WACCBIP and the ground north of it, registered to the WACCBIP footprint at 0.25 m/px: cars park under the blue shades circled red before the front (owner's photo 3)."
+    },
+    {
+      "id": "owner:waccbip-shade-2",
+      "class": "parking",
+      "ring": [
+        [
+          -260.0,
+          -329.4
+        ],
+        [
+          -251.4,
+          -329.4
+        ],
+        [
+          -251.4,
+          -321.0
+        ],
+        [
+          -260.0,
+          -321.0
+        ]
+      ],
+      "reason": "Owner's marked aerial of WACCBIP and the ground north of it, registered to the WACCBIP footprint at 0.25 m/px: cars park under the blue shades circled red before the front (owner's photo 3)."
+    },
+    {
+      "id": "owner:waccbip-shade-3",
+      "class": "parking",
+      "ring": [
+        [
+          -243.0,
+          -362.5
+        ],
+        [
+          -234.0,
+          -362.5
+        ],
+        [
+          -234.0,
+          -336.8
+        ],
+        [
+          -243.0,
+          -336.8
+        ]
+      ],
+      "reason": "Owner's marked aerial of WACCBIP and the ground north of it, registered to the WACCBIP footprint at 0.25 m/px: cars park under the blue shades circled red before the front (owner's photo 3)."
+    },
+    {
+      "id": "owner:waccbip-shade-4",
+      "class": "parking",
+      "ring": [
+        [
+          -243.5,
+          -330.6
+        ],
+        [
+          -234.0,
+          -330.6
+        ],
+        [
+          -234.0,
+          -314.0
+        ],
+        [
+          -243.5,
+          -314.0
+        ]
+      ],
+      "reason": "Owner's marked aerial of WACCBIP and the ground north of it, registered to the WACCBIP footprint at 0.25 m/px: cars park under the blue shades circled red before the front (owner's photo 3)."
+    },
+    {
+      "id": "owner:woods-waccbip-north",
+      "class": "wood",
+      "ring": [
+        [
+          -302,
+          -398
+        ],
+        [
+          -250,
+          -398
+        ],
+        [
+          -244,
+          -393
+        ],
+        [
+          -228,
+          -389
+        ],
+        [
+          -226,
+          -385
+        ],
+        [
+          -243.5,
+          -385
+        ],
+        [
+          -243.5,
+          -375.5
+        ],
+        [
+          -302,
+          -375.5
+        ]
+      ],
+      "reason": "Owner's marked aerial of WACCBIP and the ground north of it, registered to the WACCBIP footprint at 0.25 m/px: trees north of WACCBIP, round the old shed."
+    },
+    {
+      "id": "owner:woods-waccbip-yellow",
+      "class": "wood",
+      "ring": [
+        [
+          -302,
+          -500
+        ],
+        [
+          -226,
+          -500
+        ],
+        [
+          -231,
+          -450
+        ],
+        [
+          -251,
+          -426
+        ],
+        [
+          -249,
+          -401
+        ],
+        [
+          -302,
+          -401
+        ]
+      ],
+      "reason": "Owner's marked aerial of WACCBIP and the ground north of it, registered to the WACCBIP footprint at 0.25 m/px: the ground of the deleted structures circled yellow and west of the unfinished frame is trees."
+    },
+    {
+      "id": "owner:woods-volta-road-east",
+      "class": "wood",
+      "ring": [
+        [
+          -213,
+          -372
+        ],
+        [
+          -189,
+          -372
+        ],
+        [
+          -189,
+          -418
+        ],
+        [
+          -193,
+          -425
+        ],
+        [
+          -203,
+          -402
+        ]
+      ],
+      "reason": "Owner's marked aerial of WACCBIP and the ground north of it, registered to the WACCBIP footprint at 0.25 m/px: trees east of Volta Hall Road across from the old shed."
     }
   ],
   "addWays": [
@@ -5248,6 +5489,48 @@
       ],
       "open": "end",
       "reason": "Owner's top view: a paved walk runs south from the cross walk to Annex B's entrance (marked) at the east end of its north face."
+    },
+    {
+      "id": "owner:waccbip-drive",
+      "highway": "service",
+      "pts": [
+        [
+          -243.2,
+          -367.4
+        ],
+        [
+          -247.2,
+          -362.5
+        ],
+        [
+          -247.2,
+          -292.5
+        ],
+        [
+          -243.5,
+          -288.6
+        ],
+        [
+          -221.3,
+          -280.4
+        ]
+      ],
+      "reason": "Owner's marked aerial of WACCBIP and the ground north of it, registered to the WACCBIP footprint at 0.25 m/px: the drive before WACCBIP runs between the two rows of car-park shades (replacing the mapped line under the eastern shades)."
+    },
+    {
+      "id": "owner:waccbip-drive-north",
+      "highway": "service",
+      "pts": [
+        [
+          -221.1,
+          -366.9
+        ],
+        [
+          -243.2,
+          -367.4
+        ]
+      ],
+      "reason": "Owner's marked aerial of WACCBIP and the ground north of it, registered to the WACCBIP footprint at 0.25 m/px: the drive's north end from Volta Hall Road (the mapped segment kept)."
     }
   ]
 }

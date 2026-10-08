@@ -319,6 +319,15 @@ try {
   // owner: the chalet blocks along the road south of the roundabout (two floors, cottages one) and Legon's gable block
   { for (const [x, z, f] of [[33.7, 166.6, 2], [27.8, 176.6, 1], [-26.6, 163.6, 2], [-13.8, 202.5, 1], [-122.3, 168.9, 2]]) { const b = buildingAt(x, z); if (!b || (f === 1 ? b.height > 6 : b.height < 8)) fail(`the chalet block at ${x},${z} is not ${f} floor(s) (owner)`); }
     if ((await server.ssrLoadModule('/src/game/chalets.ts')).chaletSite.frames().length !== 13) fail('expected the chalet blocks, Legon\'s gable block and the verges'); }
+  // owner: WACCBIP entered up the stair at its front (F, to Volta Hall Road), three floors; the blue shades before it are
+  // car parks, not buildings; the old shed one floor; the structures circled yellow gone, trees there
+  { const inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
+    const w = ann('West African Centre for Cell Biology of Infectious Pathogens, WACCBIP'); if (!w || Math.hypot(w[0] - -259.8, w[1] - -333.5) > 3) fail('WACCBIP: the entrance is not the front one up the stair (owner)');
+    const b = buildingAt(-272.4, -335.1); if (!b || b.height < 11) fail('WACCBIP is not three floors (owner)');
+    for (const [x, z] of [[-255, -343], [-255.7, -325], [-238.5, -350], [-238.7, -322]]) { if (buildingAt(x, z)) fail(`the car-park shade at ${x},${z} is drawn as a building (owner)`); if (!cm.AREAS.some((a) => a.kind === 'parking' && inA(a, x, z))) fail(`no car park under the shade at ${x},${z} (owner)`); }
+    const sh = buildingAt(-238.6, -377.7); if (!sh || sh.height > 5.5) fail('the old shed north of WACCBIP is not one floor (owner)');
+    for (const [x, z] of [[-276.7, -456.8], [-272.5, -494]]) { if (buildingAt(x, z)) fail(`the structure circled yellow at ${x},${z} still stands (owner)`); if (!cm.AREAS.some((a) => a.kind === 'wood' && inA(a, x, z))) fail(`no trees at ${x},${z} (owner)`); }
+    if ((await server.ssrLoadModule('/src/game/waccbip.ts')).waccbipSite.frames().length !== 3) fail('expected WACCBIP, the old shed and the unfinished frame'); }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

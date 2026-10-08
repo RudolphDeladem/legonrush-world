@@ -9,7 +9,7 @@
 //
 // GCB Lecture Building, south across the road and 2.4 m up the slope from it (owner's marked aerial and photos): two
 // floors under a maroon corrugated hip roof with a gablet at each end and a cross gable over the middle, old white
-// paint never redone, washed grey and streaked by rain. Across the whole north a deep gallery on both floors: round
+// paint, only lightly weathered (owner: the white must still read as white). Across the whole north a deep gallery on both floors: round
 // columns on the ground floor, a thick solid parapet round the cantilevered first floor, tall slender columns to the
 // roof, the roof's beams standing out under the eaves, a stair under the gallery up to the first floor, a glazed room
 // at its east end. Before it at road level, inside one square: a broad stair up the middle and two ramps that run out
@@ -18,7 +18,7 @@
 import * as THREE from 'three';
 import { box, merge, speckle, tri2, type Part } from './modelkit';
 import { BAND, PL, createSite, render, type Block, type Kit, type Spec, type Style } from './blocks';
-import { aged, concrete, pane, wall } from './concrete';
+import { concrete, pane, wall } from './concrete';
 import { garden } from './gardens';
 import { stairsOf } from './relief';
 
@@ -109,7 +109,7 @@ const nBlock: Spec = {
 
 // ---------- the GCB Lecture Building ----------
 // (owner's marked aerial, registered at 0.25 m/px, and photos of its north and west sides; old white paint, never
-// redone, washed grey and streaked by rain and sun)
+// redone, only lightly weathered: the white must still read as white)
 const GO: [number, number] = [-139, -350];
 const GX = (x: number) => x - GO[0], GZ = (z: number) => z - GO[1];
 /** a box given in world x and z */
@@ -117,14 +117,15 @@ const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: numbe
 const GROOF = '#8a2b2b', GST = 3.6, GT = 2.4;
 /** the ground floor, the first floor and the eaves (the blocks' storeys: plinth, two storeys, the band) */
 const F1 = GT + PL + GST, EAVE = GT + PL + 2 * GST + BAND;
-const OLDW = '#e3e0d7', TILES = '#bdb6a8';
+const OLDW = '#efede6', TILES = '#bdb6a8';
 const GCB_WIN: Style = {
   bay: 3.4, up: [[40, 48, 176, 132]], ground: [[40, 256 + 56, 176, 126]],
   draw: (g) => {
     wall(g, OLDW);
     pane(g, 40, 48, 176, 132, 3); pane(g, 40, 256 + 56, 176, 126, 3);
     g.fillStyle = '#d9d5cb'; g.fillRect(32, 184, 192, 6); g.fillRect(32, 256 + 186, 192, 6);
-    aged(g, [190, 256 + 192, 0, 248]); aged(g, [190, 256 + 192]);
+    // (a little weathering only: owner, the white must read as white)
+    speckle(g, 0, 0, 256, 512, 300, ['rgba(120,116,104,0.18)']);
   },
 };
 /** the lobbies' back walls (open to the colonnades on the west and east): lit, posters and notice boards */
@@ -307,7 +308,7 @@ const gcb: Spec = {
     g.reseed(41);
     for (const [x, z, sc] of [[-163, -400, 1.4], [-168, -397, 1.2], [-113, -382, 1.6], [-113, -350, 1.5], [-113, -318, 1.4], [-162, -312, 1.2]]) g.tree(k, GX(x), GZ(z), sc);
 
-    const m = new THREE.Mesh(merge(c), concrete(1.2));
+    const m = new THREE.Mesh(merge(c), concrete(0.12));
     m.castShadow = true; m.receiveShadow = true;
     k.meshes.push(m);
   },
