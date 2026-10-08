@@ -337,6 +337,13 @@ try {
     const e = ann('Department of Economics, University of Ghana'); if (!e || Math.hypot(e[0] - -44, e[1] - 77) > 3) fail('the long block by the car park: the entrance is not the portico (owner)');
     for (const [x, z, f] of [[-58.5, 53, 1], [-59, 101, 1], [-34.5, 77, 2], [-104, 95, 2]]) { const b = buildingAt(x, z); if (!b || (f === 1 ? b.height > 5 : b.height < 6.5)) fail(`the building at ${x},${z} is not ${f} floor(s) (owner)`); }
     if ((await server.ssrLoadModule('/src/game/balmewest.ts')).balmeWest.frames().length !== 2) fail('expected the French Department and the buildings in the owner\'s white circle'); }
+  // owner: WACCBIP's back is the whole west range along the road behind it (the yellow mark), the road clear of it;
+  // the School of Pharmacy entered from its car park, one-floor wings round a three-storey block
+  { const b = buildingAt(-298, -332); if (!b || b.height < 11) fail('WACCBIP: the back range along the road behind it is missing (owner)');
+    for (const z of [-350, -330, -315]) { if (buildingAt(-306.5, z)) fail(`the road behind WACCBIP at z ${z} runs into the building`); if (!ROADS.some((r) => r.nodes.some((n, i) => { if (!i) return false; const [ax, az] = nodeXZ(r.nodes[i - 1]), [bx, bz] = nodeXZ(n), dx = bx - ax, dz = bz - az, t = Math.max(0, Math.min(1, ((-308.4 - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz || 1))); return Math.hypot(ax + dx * t + 308.4, az + dz * t - z) < 1.2; }))) fail(`the road behind WACCBIP is not at x -308 at z ${z} (owner's aerial)`); }
+    const e = ann('School of Pharmacy'); if (!e || Math.hypot(e[0] - -248.5, e[1] - -243.7) > 3) fail('School of Pharmacy: the entrance is not the door off its car park (owner)');
+    for (const [x, z, f] of [[-262, -245, 3], [-295, -245, 1], [-255, -241, 1]]) { const p = buildingAt(x, z); if (!p || (f === 1 ? p.height > 5 : p.height < 9)) fail(`the School of Pharmacy at ${x},${z} is not ${f} floor(s) (owner)`); }
+    if ((await server.ssrLoadModule('/src/game/pharmacy.ts')).pharmacySite.frames().length !== 1) fail('expected the School of Pharmacy model'); }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

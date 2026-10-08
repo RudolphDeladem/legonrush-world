@@ -28,6 +28,23 @@ const WIDE: Style = {
   draw: (g) => { render(g, '#f4f3ee'); window_(g, [30, 256 + 60, 196, 120], '#e1dfd8', 3, 0); g.fillStyle = '#c9c3b5'; g.fillRect(0, 512 - 16, 256, 16); },
 };
 const TILE = '#b5502f';
+/** the Larway Oraca Building's walls (owner's side view): white gone grey in streaks, pilasters between the bays, a row
+ *  of small dark windows high up, a dark grey foot */
+const LARWAY_WALL: Style = {
+  bay: 3.6, up: [], ground: [[60, 256 + 60, 40, 34], [108, 256 + 60, 40, 34], [156, 256 + 60, 40, 34]],
+  draw: (g) => {
+    render(g, '#eeede8');
+    for (let i = 0; i < 22; i++) {
+      const x = (i * 47) % 250, y = 256 + (i % 3) * 30, len = 60 + (i * 31) % 120, gr = g.createLinearGradient(0, y, 0, y + len);
+      gr.addColorStop(0, `rgba(105,102,94,${0.18 + (i % 4) * 0.06})`); gr.addColorStop(1, 'rgba(105,102,94,0)');
+      g.fillStyle = gr; g.fillRect(x, y, 3 + (i % 5) * 2, len);
+    }
+    g.fillStyle = '#e2e0d9'; g.fillRect(0, 256, 18, 256); g.fillRect(238, 256, 18, 256);
+    g.fillStyle = 'rgba(90,88,82,0.25)'; g.fillRect(18, 256, 3, 256); g.fillRect(235, 256, 3, 256);
+    for (const x of [60, 108, 156]) { g.fillStyle = '#d9d7d0'; g.fillRect(x - 4, 256 + 56, 48, 42); g.fillStyle = '#1e2124'; g.fillRect(x, 256 + 60, 40, 34); g.fillStyle = '#3a3f44'; g.fillRect(x + 19, 256 + 60, 2, 34); }
+    g.fillStyle = '#9a978e'; g.fillRect(0, 512 - 22, 256, 22);
+  },
+};
 
 export interface House { id: string; ring: [number, number][]; door: [number, number]; out: [number, number]; walk: number; roof?: string }
 /** a one-floor building on its mapped outline, in its own square, with a door (and a walk to its road) */
@@ -99,7 +116,7 @@ const larway: Spec = (() => {
   const R = (x0: number, x1: number, z0: number, z1: number, floors = 1, more: Partial<Block> = {}): Block => ({ x0: x0 - O[0], x1: x1 - O[0], z0: z0 - O[1], z1: z1 - O[1], floors, ...more });
   return {
     name: 'Larway Oraca Building',
-    axis: [1, 0], origin: O, storey: 3.4, style: WALL, roofColor: TILE, fascia: '#f1efe9', pitch: 0.42,
+    axis: [1, 0], origin: O, storey: 3.4, style: LARWAY_WALL, roofColor: TILE, fascia: '#f1efe9', pitch: 0.42, plinth: '#8f8c84',
     replaces: [[-262, -178]],
     blocks: [
       R(-271.3, -255.9, -214.6, -204.2), R(-271.1, -255.6, -183.6, -173.7),
@@ -120,6 +137,12 @@ const larway: Spec = (() => {
         const w = z1 - z0, tri = new THREE.Shape([new THREE.Vector2(-w / 2 - 0.3, 0), new THREE.Vector2(w / 2 + 0.3, 0), new THREE.Vector2(0, 2.4)]);
         k.plain.push([new THREE.ExtrudeGeometry(tri, { depth: 0.5, bevelEnabled: false }).rotateY(Math.PI / 2).translate(x - O[0] - (dir > 0 ? 0.5 : 0), e - 0.1, (z0 + z1) / 2 - O[1]), WHITE]);
       }
+      // the black water tank on its stand and a red box in the corner between the north and east wings (side view)
+      const tx = -254.4 - O[0], tz = -206.0 - O[1];
+      for (const [dx, dz] of [[-0.8, -0.8], [0.8, -0.8], [-0.8, 0.8], [0.8, 0.8]]) k.plain.push([box(tx + dx - 0.05, tx + dx + 0.05, 0, 1.2, tz + dz - 0.05, tz + dz + 0.05), '#6d7175']);
+      k.plain.push([box(tx - 0.95, tx + 0.95, 1.2, 1.3, tz - 0.95, tz + 0.95), '#6d7175']);
+      k.plain.push([new THREE.CylinderGeometry(0.85, 0.85, 2.1, 16).translate(tx, 2.35, tz), '#1b1c1f']);
+      k.plain.push([box(tx + 1.3, tx + 2.5, 0, 0.9, tz - 0.5, tz + 0.4), '#b8452f']);
       const dzz = -173.7 - O[1], dxx = -263.2 - O[0];
       k.plain.push([box(dxx - 1.2, dxx + 1.2, PL, PL + 2.4, dzz, dzz + 0.06), '#2d3640']);
       k.plain.push([box(dxx - 1.8, dxx + 1.8, 2.9, 3.15, dzz, dzz + 1.8), WHITE]);

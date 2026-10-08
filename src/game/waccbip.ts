@@ -79,18 +79,26 @@ const W_BACK: Style = {
     }
   },
 };
+/** the back face of the west range: plain white, its windows set in by the model (photo 4) */
+const W_BLANK: Style = { bay: 4.0, up: [], ground: [], draw: (g) => paint(g) };
 const W = (x0: number, x1: number, z0: number, z1: number, more: Partial<Block> = {}): Block => ({ x0: WX(x0), x1: WX(x1), z0: WZ(z0), z1: WZ(z1), floors: 3, y: RAISE, roof: 'none', ...more });
 // (the footprint's rings, squared: the wings, the spine between them with the galleries before it, the pavilion in
 // the middle of the front, the block behind the spine with the back entrance)
-const NW = [-289.3, -249.6, -362.3, -348.5], SW = [-291.9, -252.7, -309.6, -292.6], NUB = [-277.9, -264.2, -367.5, -362.3];
-const SPINE = [-280.5, -269.5, -348.5, -309.6], BACKB = [-289.3, -280.5, -337.8, -323], PAV = [-269.5, -264, -338.2, -328.8];
+const NW = [-289.3, -249.6, -362.3, -348.5], SW = [-294.0, -252.7, -309.6, -292.6], NUB = [-277.9, -264.2, -367.5, -362.3];
+const SPINE = [-280.5, -269.5, -348.5, -309.6], PAV = [-269.5, -264, -338.2, -328.8];
+/** the west range along the back road (owner's yellow mark), its two arms east to the spine either side of a light
+ *  well, the block between the well and the spine */
+const WR = [-301.6, -294.6, -353.1, -311.4], NA = [-294.6, -280.5, -353.1, -338.8], SA = [-294.6, -280.5, -322.0, -311.4], CB = [-288.2, -280.5, -338.8, -322.0];
 /** the gallery front: the recesses' edge, the pavilion's edge */
 const GE = -266.5, PE = -259.8, ENZ = -333.5;
 const wBlocks: Block[] = [
   W(NW[0], NW[1], NW[2], NW[3], { faces: { x0: W_BACK } }),
   W(NUB[0], NUB[1], NUB[2], NUB[3]),
   W(SPINE[0], SPINE[1], SPINE[2], SPINE[3], { faces: { x1: W_GAL } }),
-  W(BACKB[0], BACKB[1], BACKB[2], BACKB[3], { faces: { x0: W_BACK } }),
+  W(WR[0], WR[1], WR[2], WR[3], { faces: { x0: W_BLANK } }),
+  W(NA[0], NA[1], NA[2], NA[3]),
+  W(SA[0], SA[1], SA[2], SA[3]),
+  W(CB[0], CB[1], CB[2], CB[3]),
   W(PAV[0], PAV[1], PAV[2], PAV[3], { faces: { x1: W_GAL } }),
   W(SW[0], SW[1], SW[2], SW[3], { faces: { x0: W_BACK } }),
 ];
@@ -229,11 +237,11 @@ const waccbip: Spec = {
   plinth: '#e2e0d9',
   blocks: wBlocks,
   // (the galleries and the stair, the walk to the road between the shades, the back entrance and its palms)
-  keep: [[WX(-270), WX(-257.4), WZ(-349), WZ(-309)], [WX(-257.4), WX(-225.4), WZ(ENZ - 3.0), WZ(ENZ + 2.8)], [WX(-297), WX(-289), WZ(-340), WZ(-321)]],
+  keep: [[WX(-270), WX(-257.4), WZ(-349), WZ(-309)], [WX(-257.4), WX(-225.4), WZ(ENZ - 3.0), WZ(ENZ + 2.8)], [WX(-316), WX(-301.4), WZ(-354), WZ(-311)]],
   extras: (k: Kit) => {
     const c: Part[] = [];
     // the raised ground floor: a white base under every block
-    for (const b of [NW, SW, NUB, SPINE, BACKB, PAV]) c.push([B(b[0] - 0.05, b[1] + 0.05, 0, RAISE, b[2] - 0.05, b[3] + 0.05), '#e2e0d9']);
+    for (const b of [NW, SW, NUB, SPINE, WR, NA, SA, CB, PAV]) c.push([B(b[0] - 0.05, b[1] + 0.05, 0, RAISE, b[2] - 0.05, b[3] + 0.05), '#e2e0d9']);
 
     // ---- the galleries across the front (owner: large balconies), every floor ----
     const recs: [number, number][] = [[NW[3], PAV[2]], [PAV[3], SW[2]]];
@@ -296,8 +304,9 @@ const waccbip: Spec = {
       k.plain.push([B(x + 2 - 0.4, x + 2 + 0.4, y + 0.2, y + 0.75, SW[3], SW[3] + 0.3), '#eceeee']);
     }
 
-    // ---- the back entrance (owner's photo 4): up three steps, a blue frame, the board over it ----
-    const bx = BACKB[0], bz = (BACKB[2] + BACKB[3]) / 2;
+    // ---- the back (owner's marked aerial, yellow, and photo 4): the whole west face of the west range, the two arms'
+    // gablets at its ends, the entrance near the middle up three steps in a blue frame, the board over it ----
+    const bx = WR[0], bz = -330.0;
     for (let i = 1; i <= 3; i++) c.push([B(bx - 0.35 * i, bx, 0, (F0 * (4 - i)) / 3, bz - 1.9, bz + 1.9), '#d9d6ce']);
     c.push([B(bx - 0.5, bx, F0 + 2.75, F0 + 3.0, bz - 1.7, bz + 1.7), PAINT]);
     for (const s of [-1, 1]) c.push([B(bx - 0.5, bx, F0, F0 + 2.75, bz + s * 1.6 - 0.1, bz + s * 1.6 + 0.1), PAINT]);
@@ -310,21 +319,47 @@ const waccbip: Spec = {
     k.signs.push({ text: 'UNIVERSITY OF GHANA | WACCBIP', x: WX(bx) - 0.1, y: F0 + 3.98, z: WZ(bz), ry: -Math.PI / 2, w: 2.3, colors: ['#f2f4f6', '#1d3f7a'] });
     k.signs.push({ text: 'WEST AFRICAN CENTRE FOR CELL BIOLOGY OF INFECTIOUS PATHOGENS', x: WX(bx) - 0.1, y: F0 + 3.55, z: WZ(bz), ry: -Math.PI / 2, w: 2.5, colors: ['#f2f4f6', '#1d3f7a'] });
     // the planters each side, the window with its brown grille over the door, iron grilles each side of it
-    for (const s of [-1, 1]) {
-      c.push([B(bx - 1.3, bx - 0.1, 0, 0.55, bz + s * 2.4 - 0.5, bz + s * 2.4 + 0.5), PAINT]);
-      k.plain.push([new THREE.IcosahedronGeometry(0.4, 0).scale(1.2, 0.7, 1).translate(WX(bx - 0.7), 0.75, WZ(bz + s * 2.4)), '#4a7a32']);
-      k.plain.push([B(bx - 0.06, bx, F1 + 1.2, F1 + 1.7, bz + s * 3.4 - 0.75, bz + s * 3.4 + 0.75), '#2a2a2a']);
+    for (const [s, w] of [[-1, 1.0], [1, 1.8]] as [number, number][]) {
+      const zc = bz + s * (2.0 + w / 2);
+      c.push([B(bx - 1.3, bx - 0.1, 0, 0.55, zc - w / 2, zc + w / 2), PAINT]);
+      k.plain.push([new THREE.IcosahedronGeometry(0.4, 0).scale(1.2 * w, 0.7, 1).translate(WX(bx - 0.7), 0.75, WZ(zc)), '#4a7a32']);
+      k.plain.push([B(bx - 0.06, bx, F1 + 1.2, F1 + 1.7, bz + s * 4.5 - 0.8, bz + s * 4.5 + 0.8), '#2a2a2a']);
+      for (let z = bz + s * 4.5 - 0.7; z < bz + s * 4.5 + 0.75; z += 0.2) k.plain.push([B(bx - 0.09, bx - 0.05, F1 + 1.25, F1 + 1.65, z - 0.02, z + 0.02), '#4a4a48']);
     }
     k.glass.push(B(bx - 0.06, bx - 0.02, F1 + 0.8, F1 + 2.5, bz - 0.9, bz + 0.9));
     for (let z = bz - 0.9; z <= bz + 0.91; z += 0.3) k.plain.push([B(bx - 0.1, bx - 0.06, F1 + 0.8, F1 + 2.5, z - 0.03, z + 0.03), '#6b4a2e']);
-    // lamps on the back wall, palms beside the door, a post and chain
-    for (const z of [BACKB[2] + 1.5, BACKB[3] - 1.5, NW[3] - 4, SW[2] + 4]) k.plain.push([B(-289.45, -289.3, F0 + 2.1, F0 + 2.25, z - 0.4, z + 0.4), '#fff1c4']);
-    const g = garden([-300, -220, -372, -286]);
+    // the tall windows over two floors near each end, black frames; slit and small windows; pilasters; lamps
+    const tall = (zc: number, w: number, y0: number, y1: number, cols: number, rows: number) => {
+      k.glass.push(B(bx - 0.06, bx - 0.02, y0, y1, zc - w / 2, zc + w / 2));
+      k.plain.push([B(bx - 0.1, bx, y0 - 0.08, y0, zc - w / 2 - 0.08, zc + w / 2 + 0.08), '#1c1d1f'], [B(bx - 0.1, bx, y1, y1 + 0.08, zc - w / 2 - 0.08, zc + w / 2 + 0.08), '#1c1d1f']);
+      for (let i = 0; i <= cols; i++) { const z = zc - w / 2 + (w * i) / cols; k.plain.push([B(bx - 0.1, bx - 0.02, y0, y1, z - 0.05, z + 0.05), '#1c1d1f']); }
+      for (let j = 1; j < rows; j++) { const y = y0 + ((y1 - y0) * j) / rows; k.plain.push([B(bx - 0.1, bx - 0.02, y - 0.04, y + 0.04, zc - w / 2, zc + w / 2), '#1c1d1f']); }
+      c.push([B(bx - 0.12, bx, y0 - 0.25, y0 - 0.08, zc - w / 2 - 0.2, zc + w / 2 + 0.2), '#e6e4de']);
+    };
+    tall(-348.6, 1.9, F0 + 0.7, F1 + 2.8, 2, 3);
+    tall(-320.2, 1.9, F0 + 0.7, F1 + 2.8, 2, 3);
+    tall(-341.0, 0.5, F1 - 1.2, F1 + 2.4, 1, 2);
+    tall(-338.4, 1.3, F1 + 0.4, F1 + 2.6, 2, 1);
+    tall(-324.9, 0.9, F0 + 1.0, F0 + 1.9, 1, 1);
+    for (let z = -325.3; z < -324.4; z += 0.15) k.plain.push([B(bx - 0.12, bx - 0.08, F0 + 1.0, F0 + 1.9, z - 0.015, z + 0.015), '#2a2a2a']);
+    for (const z of [-342.0, -317.3]) c.push([B(bx - 0.3, bx, 0, EAVE - 0.3, z - 0.35, z + 0.35), PAINT]);
+    for (const z of [-346.1, -322.5]) k.plain.push([B(bx - 0.15, bx, F0 + 2.3, F0 + 2.45, z - 0.4, z + 0.4), '#fff1c4']);
+    // a white ventilation grille low under the north tall window, an air-conditioner by the pilaster
+    k.plain.push([B(bx - 0.08, bx, 0.5, 1.3, -348.1, -345.4), '#ecebe6']);
+    for (let y = 0.6; y < 1.25; y += 0.12) k.plain.push([B(bx - 0.12, bx - 0.08, y, y + 0.05, -348.0, -345.5), '#bdbbb4']);
+    k.plain.push([B(bx - 0.3, bx, F0 + 2.6, F0 + 3.15, -341.9, -341.1), '#eceeee']);
+    // the paving between the back and the road, a post and chain along it
+    paving(k, -305.0, bx, WR[2], WR[3]);
+    for (const z of [-320.5, -316.2, -312.0]) k.plain.push([new THREE.CylinderGeometry(0.06, 0.06, 1.0, 8).translate(WX(-304.4), 0.5, WZ(z)), '#6d7175']);
+    for (let z = -320.5; z < -312.1; z += 0.25) { const t = ((z + 320.5) % 4.3) / 4.3, sag = 0.25 * Math.sin(Math.PI * t); k.plain.push([B(-304.42, -304.38, 0.9 - sag, 0.94 - sag, z, z + 0.22), '#3a3a3a']); }
+    const g = garden([-310, -220, -372, -286]);
     g.reseed(61);
-    for (const [z, h] of [[-336.4, 4.6], [-335.4, 5.4], [-334.6, 4.2], [-337.2, 5.8]] as [number, number][]) g.palm(k, WX(-290.6), WZ(z), h);
-    k.plain.push([new THREE.CylinderGeometry(0.06, 0.06, 1.0, 8).translate(WX(-291.4), 0.5, WZ(-326.2)), '#6d7175']);
-    // the raised box on the roof over the back
-    const rb = new THREE.Mesh(merge([[B(-286.2, -281.2, EAVE - 0.4, EAVE + 2.7, -333.6, -327.2), '#d4d1c8'], [B(-286.5, -280.9, EAVE + 2.7, EAVE + 2.95, -333.9, -326.9), '#bdb9af']]), concrete(0.6));
+    for (const [z, h] of [[-340.2, 4.6], [-339.0, 5.6], [-337.6, 4.2], [-336.2, 5.2], [-335.0, 4.8]] as [number, number][]) g.palm(k, WX(bx - 1.0), WZ(z), h);
+    // the light well between the west range and the spine: paving, planted boxes
+    paving(k, WR[1], CB[0], NA[3], SA[2]);
+    for (const z of [-336.5, -333.2, -329.9, -326.6, -323.6]) { c.push([B(-292.4, -290.4, 0, 0.6, z - 0.9, z + 0.9), PAINT]); k.plain.push([new THREE.IcosahedronGeometry(0.75, 0).scale(1.2, 0.8, 1).translate(WX(-291.4), 1.0, WZ(z)), '#3f6f2c']); }
+    // the raised box on the roof over the back (photo 4), weathered
+    const rb = new THREE.Mesh(merge([[B(-299.8, -295.6, EAVE - 0.4, EAVE + 2.4, -334.5, -325.5), '#d4d1c8'], [B(-300.1, -295.3, EAVE + 2.4, EAVE + 2.65, -334.8, -325.2), '#bdb9af']]), concrete(0.6));
     rb.castShadow = true;
     k.meshes.push(rb);
 
@@ -335,7 +370,11 @@ const waccbip: Spec = {
     hipRoof(k, M, SW[0] - O, SW[1] + O, SW[2] - O, SW[3] + O, EAVE, 0.45, 'x', [gab, gab], c);
     hipRoof(k, M, NUB[0] - O, NUB[1] + O, NUB[2] - O, NUB[3] + 2, EAVE, 0.45, 'x', [hip, hip], c);
     hipRoof(k, M, SPINE[0] - O, GE + O, -355.4, -301.1, EAVE, 0.45, 'z', [buried, buried], c);
-    hipRoof(k, M, BACKB[0] - O, BACKB[1] + 2, BACKB[2] - O, BACKB[3] + O, EAVE, 0.45, 'z', [hip, hip], c);
+    // the west range under a hip along the back, the arms' gablets over its ends (photo 4), the block by the well
+    hipRoof(k, M, WR[0] - O, WR[1] + O, WR[2] - O, WR[3] + O, EAVE, 0.45, 'z', [hip, hip], c);
+    hipRoof(k, M, WR[0] - O, NA[1] + 2, NA[2] - O, NA[3] + O, EAVE, 0.45, 'x', [gab, buried], c);
+    hipRoof(k, M, WR[0] - O, SA[1] + 2, SA[2] - O, SA[3] + O, EAVE, 0.45, 'x', [gab, buried], c);
+    hipRoof(k, M, CB[0] - O, CB[1] + 2, CB[2], CB[3], EAVE, 0.45, 'z', [buried, buried], c);
     hipRoof(k, M, -273.5, PE + O, PAV[2] - O, PAV[3] + O, EAVE, 0.45, 'x', [buried, gab], c);
 
     // ---- before the front: brick paving, the shades over the car parks, yucca islands by the road ----
@@ -360,7 +399,7 @@ const waccbip: Spec = {
       k.plain.push([B(-251.6, -250.8, 7.85, 8.0, z - 0.12, z + 0.12), '#8a8d90'], [B(-251.8, -251.3, 7.7, 7.85, z - 0.15, z + 0.15), '#fff1c4']);
     }
     // shade trees on the lawns south of the front and by the road
-    for (const [x, z, sc] of [[-230.5, -301, 1.3], [-238.5, -297.5, 1.1], [-228.5, -366, 1.3], [-300, -318, 1.5], [-299, -344, 1.4]] as [number, number, number][]) g.tree(k, WX(x), WZ(z), sc);
+    for (const [x, z, sc] of [[-230.5, -301, 1.3], [-238.5, -297.5, 1.1], [-228.5, -366, 1.3]] as [number, number, number][]) g.tree(k, WX(x), WZ(z), sc);
 
     const m = new THREE.Mesh(merge(c), concrete(0.1));
     m.castShadow = true; m.receiveShadow = true;

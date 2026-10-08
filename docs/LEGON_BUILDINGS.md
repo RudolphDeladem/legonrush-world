@@ -937,8 +937,14 @@ the back, the unfinished frame and the old shed (`waccbip.ts`):
   columns at its corners, a **broad stair** up to the entrance in a **blue frame** (entered here, from the drive),
   WACCBIP on its parapet. Paired dark windows, lit at dusk; a tall glazed stair window up the east end of each wing;
   air-conditioners on the outer walls.
-- **The back:** tall narrow windows; the entrance up three steps in a blue frame between white planters, the
-  centre's board over it, a brown grille window above, palms beside it, wall lamps; a raised box on the roof.
+- **The back** (owner's yellow mark on the aerial, photo 4) is the whole west face: one long range along the road behind
+  the building, 12 m further west than the OSM outline (the road moved about 3 m west to where the aerial shows it),
+  its two arms reaching east to the spine either side of a planted light well, their gablets at the two ends of the
+  back. Plain white upper floor; a tall black-framed window over two floors near each end, a slit window and a
+  two-pane window upstairs, a barred window by the door, two pilasters, wall lamps, a white vent and an
+  air-conditioner; the entrance up three steps in a blue frame between white planters, the centre's board over it, a
+  brown grille window above, iron grilles each side; palms beside it, the raised box on the roof over it; brick paving
+  to the road with a post and chain.
 - **Before the front:** interlocking brick paving; the four **blue tensile shades on white curved posts** (red marks)
   are car parks with cars under them, not buildings; the drive runs between the two rows of shades; grass islands of
   yuccas by the road, the centre's board, lamp posts.
@@ -974,6 +980,22 @@ with gable ends boarded in dark timber, and low walls and platforms **faced in r
   the north side with the wall of red post boxes under a canopy and the stone-faced platform before it.
 - **The car park** between them, asphalt with two rows of bays; the **yellow GCB ATM** kiosk with its blue roof on it,
   the **red and white lattice mast** behind it; trees along the square and the road, palms by the Post Office.
+
+## 42. The School of Pharmacy; the Larway Oraca Building's sides
+
+From the owner's photos: the pharmacy's side to the road from WACCBIP, a closer view of its three-storey block, its
+front with the doors marked blue (`pharmacy.ts`); a side view of the Larway Oraca Building (`residences.ts`).
+
+- **School of Pharmacy:** one-floor wings under maroon sheet roofs round a car park open to Volta Hall Road: the long
+  north wing (white, a red band round its foot, wide glass windows with curtains in light aluminium frames, boarded
+  panels between, an air-conditioner under each), the south and west wings; on the car park side covered walks on slim
+  posts, lit, with doors, windows, notices and potted plants. At the back of the car park the **three-storey block**,
+  its paint grey and patched, panel lines across it, black-framed glass windows, a taller middle bay with a ribbon of
+  glass under its own hip; before it the one-floor front wing with the school's **two doors** (entered at the one
+  under the middle bay) and its banner; black water tanks on a stand beside it; a tree and yuccas on the lawn by the
+  road. A second, shifted outline of the south wing is dropped.
+- **Larway Oraca Building:** its walls gone grey in streaks, pilasters between the bays, rows of small dark windows
+  high in the wall, a dark grey foot; a black water tank on a stand and a red box in the corner by the north wing.
 
 ## Explore: drone view
 

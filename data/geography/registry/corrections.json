@@ -228,6 +228,18 @@
     {
       "id": "osm:way/690589818",
       "reason": "Owner's marked aerial of WACCBIP and the ground north of it, registered to the WACCBIP footprint at 0.25 m/px: the drive before WACCBIP runs between the two rows of car-park shades, about 3 m west of the mapped line, which ran under the eastern shades; replaced by owner:waccbip-drive."
+    },
+    {
+      "id": "osm:way/394125242",
+      "reason": "Owner's marked aerial of WACCBIP (its whole west side marked yellow as the back of photo 175), registered at 0.25 m/px: the road behind WACCBIP runs about 3 m further west than mapped (the back range stands where the mapped road's edge was); replaced by owner:waccbip-back-road, its other points kept."
+    },
+    {
+      "id": "osm:way/690589816",
+      "reason": "Its end met the road behind WACCBIP at the point moved west; replaced by owner:waccbip-back-service with the same course."
+    },
+    {
+      "id": "osm:way/1051755650",
+      "reason": "Owner's photos of the School of Pharmacy: a second outline of the pharmacy's south wing (osm:way/773875246 already has it), shifted 2 m; the wing is modelled in src/game/pharmacy.ts."
     }
   ],
   "heights": [
@@ -2589,6 +2601,27 @@
       "levels": 1,
       "height": 3.8,
       "reason": "Owner (circled green, photo 2): an unfinished concrete frame, a ground floor of columns under a slab with column stubs above. Modelled in src/game/waccbip.ts."
+    },
+    {
+      "id": "osm:way/773875246",
+      "place": "School of Pharmacy",
+      "levels": 3,
+      "height": 11.0,
+      "reason": "Owner's photos of the School of Pharmacy (its side to the road from WACCBIP, and its front to Volta Hall Road with the doors marked blue): one-floor wings round a car park, a three-storey block at its back. Modelled in src/game/pharmacy.ts."
+    },
+    {
+      "id": "osm:way/1051755651",
+      "place": "School of Pharmacy (west wing)",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's photos of the School of Pharmacy (its side to the road from WACCBIP, and its front to Volta Hall Road with the doors marked blue): a one-floor wing. Modelled in src/game/pharmacy.ts."
+    },
+    {
+      "id": "osm:way/1055216923",
+      "place": "School of Pharmacy (front wing)",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's photos of the School of Pharmacy (its side to the road from WACCBIP, and its front to Volta Hall Road with the doors marked blue): the one-floor front wing with the two doors. Modelled in src/game/pharmacy.ts."
     }
   ],
   "reclass": [
@@ -3250,6 +3283,94 @@
         ]
       ],
       "reason": "Owner's marked aerial of the buildings south-west of the Balme Library (circled white), registered to the OSM footprints at 0.25 m/px, and photos: the long block's south part reaches about 2 m further south than the OSM outline. Modelled in src/game/balmewest.ts."
+    },
+    {
+      "id": "osm:way/278303028",
+      "place": "West African Centre for Cell Biology of Infectious Pathogens, WACCBIP",
+      "source": "owner's marked aerial",
+      "ring": [
+        [
+          -249.6,
+          -362.3
+        ],
+        [
+          -264.2,
+          -362.3
+        ],
+        [
+          -264.2,
+          -367.5
+        ],
+        [
+          -277.9,
+          -367.5
+        ],
+        [
+          -277.9,
+          -362.3
+        ],
+        [
+          -289.3,
+          -362.3
+        ],
+        [
+          -289.3,
+          -353.1
+        ],
+        [
+          -301.6,
+          -353.1
+        ],
+        [
+          -301.6,
+          -311.4
+        ],
+        [
+          -294.0,
+          -311.4
+        ],
+        [
+          -294.0,
+          -292.6
+        ],
+        [
+          -252.7,
+          -292.6
+        ],
+        [
+          -252.7,
+          -309.6
+        ],
+        [
+          -266.1,
+          -309.6
+        ],
+        [
+          -266.1,
+          -321.5
+        ],
+        [
+          -259.8,
+          -321.5
+        ],
+        [
+          -259.8,
+          -337.2
+        ],
+        [
+          -266.9,
+          -337.2
+        ],
+        [
+          -266.9,
+          -348.5
+        ],
+        [
+          -249.6,
+          -348.5
+        ]
+      ],
+      "reason": "Owner's marked aerial of WACCBIP (its whole west side marked yellow as the back of photo 175), registered at 0.25 m/px: the back of the building is one long range along the road on its west, 12 m further west than the OSM outline, its two arms reaching east to the spine either side of a light well. Modelled in src/game/waccbip.ts."
     }
   ],
   "addAreas": [
@@ -5635,6 +5756,88 @@
         ]
       ],
       "reason": "Owner's marked aerial of WACCBIP and the ground north of it, registered to the WACCBIP footprint at 0.25 m/px: the drive's north end from Volta Hall Road (the mapped segment kept)."
+    },
+    {
+      "id": "owner:waccbip-back-road",
+      "highway": "residential",
+      "pts": [
+        [
+          -320.018,
+          -542.797
+        ],
+        [
+          -320.029,
+          -517.884
+        ],
+        [
+          -318.954,
+          -501.464
+        ],
+        [
+          -315.321,
+          -446.266
+        ],
+        [
+          -313.493,
+          -418.423
+        ],
+        [
+          -309.516,
+          -382.453
+        ],
+        [
+          -308.9,
+          -352.5
+        ],
+        [
+          -308.0,
+          -312.0
+        ],
+        [
+          -306.6,
+          -292.0
+        ],
+        [
+          -304.6,
+          -284.6
+        ],
+        [
+          -302.57,
+          -280.957
+        ],
+        [
+          -300.72,
+          -278.525
+        ],
+        [
+          -297.596,
+          -277.198
+        ],
+        [
+          -220.971,
+          -273.173
+        ]
+      ],
+      "reason": "Owner's marked aerial of WACCBIP (its whole west side marked yellow as the back of photo 175), registered at 0.25 m/px: the road behind WACCBIP, its course between z -353 and -281 moved to the road in the aerial (about 3 m west of the mapped line), the rest as mapped."
+    },
+    {
+      "id": "owner:waccbip-back-service",
+      "highway": "service",
+      "pts": [
+        [
+          -321.137,
+          -278.503
+        ],
+        [
+          -329.833,
+          -350.531
+        ],
+        [
+          -308.9,
+          -352.5
+        ]
+      ],
+      "reason": "The service road west of WACCBIP as mapped, meeting the road behind WACCBIP where it now runs."
     }
   ]
 }

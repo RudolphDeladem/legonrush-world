@@ -1,18 +1,18 @@
 {
  "destinations": 436,
  "byMethod": {
-  "curated": 87,
+  "curated": 88,
   "osm-entrance": 0,
   "gate": 1,
   "path-access": 2,
   "drive-access": 17,
   "area-entry": 8,
-  "frontage": 210,
+  "frontage": 209,
   "point": 111
  },
  "byConfidence": {
-  "high": 82,
-  "low": 213,
+  "high": 83,
+  "low": 212,
   "medium": 141
  },
  "campusGates": 5,
@@ -360,8 +360,8 @@
   }
  ],
  "byStatus": {
-  "verified": 81,
-  "inferred": 205,
+  "verified": 82,
+  "inferred": 204,
   "partial": 6,
   "unverified": 9,
   "mapped": 135
@@ -968,6 +968,13 @@
    "arrivalOn": "W.E.B. Dubois Road",
    "arrivalDistance": 42.2,
    "facing": 266
+  },
+  {
+   "place": "School of Pharmacy",
+   "type": "main entrance",
+   "arrivalOn": "Volta Hall Road",
+   "arrivalDistance": 25.3,
+   "facing": 210
   },
   {
    "place": "School of Public Health",

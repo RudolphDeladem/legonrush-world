@@ -69,10 +69,10 @@
  "roads": {
   "junctions": 1207,
   "roundabouts": 18,
-  "count": 1556,
+  "count": 1558,
   "kmByClass": {
-   "service": 70.7,
-   "residential": 65.6,
+   "service": 70.8,
+   "residential": 66,
    "path": 25.8,
    "tertiary": 14.1,
    "footway": 12.5,
@@ -313,7 +313,10 @@
    "ml:24cc4797-bacf-4127-99fd-34d906a280cc",
    "ml:b3e1f50c-1184-417a-abf1-2a8cb0172ed1",
    "ml:e7984293-2654-4b6e-99ed-d05dd0ff3877",
-   "osm:way/690589818"
+   "osm:way/690589818",
+   "osm:way/394125242",
+   "osm:way/690589816",
+   "osm:way/1051755650"
   ]
  },
  "areas": {
