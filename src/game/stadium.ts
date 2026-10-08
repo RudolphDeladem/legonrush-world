@@ -10,7 +10,7 @@
 // - North-west, the swimming pool on its white deck, and the two blue tennis courts in their green surround.
 import * as THREE from 'three';
 import { WHITE, box, canvas } from './modelkit';
-import { createSite, render, window_, type Kit, type Spec, type Style } from './blocks';
+import { PL, createSite, render, window_, type Block, type Kit, type Spec, type Style } from './blocks';
 
 // ---------- the stadium's plan: the track's outer edge, two straights along z and two half circles ----------
 const CX = 776.5, CN = 1374, CS = 1448.5, R0 = 51;
@@ -293,5 +293,61 @@ const poolTennis: Spec = {
   },
 };
 
-/** the stadium, its training track, the pool and the tennis courts */
-export const stadiumSite = createSite('stadium', [stadium, training, poolTennis]);
+// ---------- the UG Gymnasium (Sports Directorate), north of the sports complex car parks ----------
+// (owner's aerial and photo: two floors but short; white walls on a dark red base, a long band of dark windows high
+// in the walls with the air-conditioners below them, terracotta hipped roofs on the four arms of the cross and a
+// raised clerestory over the middle, its dark glazed band under its own tiled hip; red steps up to the doors)
+const GO: [number, number] = [616.8, 1331.8];
+const GYM_ST = 2.5;
+const GYM_WALL: Style = {
+  bay: 3.2,
+  up: [[12, 40, 232, 120]],
+  ground: [[150, 256 + 70, 70, 90]],
+  draw: (g) => {
+    render(g, '#f6f5f1');
+    // the upper band: dark glass in white mullions
+    g.fillStyle = '#e4e2dc'; g.fillRect(6, 34, 244, 132);
+    g.fillStyle = '#20262c'; g.fillRect(12, 40, 232, 120);
+    g.fillStyle = '#eceae4'; for (const x of [12, 70, 128, 186, 244]) g.fillRect(x - 3, 40, 6, 120);
+    g.fillStyle = '#eceae4'; g.fillRect(12, 96, 232, 5);
+    // the lower storey: a small window and an air-conditioner now and then, the red base at the foot
+    window_(g, [150, 256 + 70, 70, 90], '#e1dfd8', 2, 0.3);
+    g.fillStyle = '#e9e9e6'; g.fillRect(40, 256 + 70, 70, 46); g.fillStyle = '#8d9196'; g.beginPath(); g.arc(75, 256 + 93, 14, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#7b2a22'; g.fillRect(0, 512 - 70, 256, 70);
+  },
+};
+const CLERESTORY: Style = {
+  bay: 2.4, up: [[0, 20, 256, 210]], ground: [[0, 256 + 20, 256, 210]],
+  draw: (g) => { g.fillStyle = '#1b1f24'; g.fillRect(0, 0, 256, 512); g.fillStyle = '#3a4048'; for (const y0 of [0, 256]) for (const x of [0, 128]) g.fillRect(x, y0, 6, 256); },
+};
+const GB = (x0: number, x1: number, z0: number, z1: number, more: Partial<Block> = {}): Block => ({ x0: x0 - GO[0], x1: x1 - GO[0], z0: z0 - GO[1], z1: z1 - GO[1], floors: 2, ...more });
+const gym: Spec = {
+  name: 'UG Gymnasium',
+  footprint: 'University of Ghana Sports Directorate',
+  axis: [1, 0], origin: GO, storey: GYM_ST, style: GYM_WALL, roofColor: '#b9573a', fascia: '#f1efe9', pitch: 0.42,
+  plinth: '#7b2a22',
+  blocks: [
+    GB(610.9, 623, 1313.7, 1326), GB(623, 636.3, 1326.1, 1337.8), GB(599.3, 610.9, 1326.3, 1337.6), GB(610.3, 622.8, 1337.7, 1349.3),
+    // the middle under the raised clerestory
+    GB(610.9, 623, 1326, 1337.8, { roof: 'none' }),
+    GB(611.4, 622.5, 1326.5, 1337.3, { floors: 1, y: PL + 2 * GYM_ST + 0.4 - PL, faces: { x0: CLERESTORY, x1: CLERESTORY, z0: CLERESTORY, z1: CLERESTORY }, pitch: 0.5 }),
+  ],
+  keep: [[612 - GO[0], 621 - GO[0], 1349.3 - GO[1], 1353.8 - GO[1]]],
+  extras: (k: Kit) => {
+    const X = (x: number) => x - GO[0], Z = (z: number) => z - GO[1];
+    const top = k.wallTop(2);
+    // the flat roof deck over the middle round the clerestory
+    k.plain.push([box(X(610.9), X(623), top - 0.1, top + 0.05, Z(1326), Z(1337.8)), '#9a4a33']);
+    // the entrance on the south arm: a raised red landing, five red steps, glazed doors under a white canopy on posts
+    k.plain.push([box(X(612.6), X(620.6), 0, 0.95, Z(1349.3), Z(1351.2)), '#8e3328']);
+    for (let i = 0; i < 5; i++) k.plain.push([box(X(612.6), X(620.6), 0, 0.95 - 0.19 * (i + 1) + 0.19, Z(1351.2) + 0.32 * i, Z(1351.2) + 0.32 * (i + 1)), i % 2 ? '#9c3a2e' : '#a6402f']);
+    k.plain.push([box(X(613.6), X(619.6), 0.95, 3.4, Z(1349.32), Z(1349.36)), '#252b31']);
+    k.plain.push([box(X(616.58), X(616.62), 0.95, 3.4, Z(1349.36), Z(1349.4)), '#9a9ea3']);
+    k.plain.push([box(X(612.4), X(620.8), 3.5, 3.75, Z(1349.3), Z(1352.2)), '#f3f2ee']);
+    for (const x of [612.8, 620.4]) k.plain.push([box(X(x) - 0.15, X(x) + 0.15, 0.95, 3.5, Z(1351.9), Z(1352.2)), '#f3f2ee']);
+    k.signs.push({ text: 'UG GYMNASIUM', x: X(616.6), y: 3.62, z: Z(1352.22), ry: 0, w: 2.6, colors: ['#f3f2ee', '#1d3f7a'] });
+  },
+};
+
+/** the stadium, its training track, the pool and the tennis courts, and the gymnasium */
+export const stadiumSite = createSite('stadium', [stadium, training, poolTennis, gym]);

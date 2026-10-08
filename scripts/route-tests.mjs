@@ -234,7 +234,7 @@ try {
   if ((await server.ssrLoadModule('/src/game/ugbs.ts')).ugbs.frames().length !== 3) fail('expected the Business School\'s three blocks');
   // the stadium (owner): entered at the main stand with the raised roof, on the west; the stadium models
   { const e = ann('University of Ghana Sports Stadium'); if (!e || Math.hypot(e[0] - 685.5, e[1] - 1414) > 3) fail('University of Ghana Sports Stadium: the entrance is not at the main stand on the west'); }
-  if ((await server.ssrLoadModule('/src/game/stadium.ts')).stadiumSite.frames().length !== 3) fail('expected the stadium, the training track and the pool and tennis courts');
+  if ((await server.ssrLoadModule('/src/game/stadium.ts')).stadiumSite.frames().length !== 4) fail('expected the stadium, the training track, the pool and tennis courts and the gymnasium');
   // car parks the owner pointed out: the School of Public Health's, east and west, and the Balme Library's either side of its forecourt
   { const parking = cm.AREAS.filter((a) => a.kind === 'parking'), inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
     for (const [n, x, z] of [['the School of Public Health east', 520, 1640], ['the School of Public Health west', 430, 1655], ['the Balme Library west', -40, 15], ['the Balme Library east', 60, 15]]) if (!parking.some((a) => inA(a, x, z))) fail(`no car park at ${n}`);
@@ -285,6 +285,17 @@ try {
     for (const [x, z] of [[430, -339], [470, -341], [500, -342.4], [505, -400], [506, -440]]) if (gh(x, z) !== 0) fail(`the road at ${x},${z} dips into the engineering school's hollow`);
     const inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
     for (const [n, x, z] of [['before RIPS', 333, -284], ['in the car park by Computer Science', 345, -270], ['between the car park and the Mathematics entrance', 325, -262]]) if (!cm.AREAS.some((a) => (a.kind === 'plaza' || a.kind === 'parking') && inA(a, x, z))) fail(`the ground ${n} is not paved (owner)`); }
+  // owner: no structures east of Alexander Kwapong Hall toward Limann; the narrow rectangles round the gymnasium
+  // are not structures; round the pool everything is one floor but the gym (two short floors); the houses south
+  // of the stadium are one floor; trees round the pool and the tennis courts
+  { for (const [x, z] of [[378, 1427], [407, 1424], [440, 1463], [375, 1505], [420, 1497], [446, 1489], [429, 1502]]) if (buildingAt(x, z)) fail(`a structure still stands east of Kwapong Hall at ${x},${z} (owner: none there)`);
+    const inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
+    for (const [x, z] of [[585, 1365], [638, 1368], [630, 1413], [643, 1422], [650, 1427], [605, 1426], [674, 1356], [684, 1351], [690, 1298], [710, 1299]]) if (cm.AREAS.some((a) => a.kind === 'parking' && inA(a, x, z)) || buildingAt(x, z)) fail(`the rectangle the owner marked at ${x},${z} is still there`);
+    const maxi = buildingAt(520, 1381), gym = buildingAt(617, 1332);
+    if (!maxi || maxi.height > 5) fail('Maxi Catering Services is not one floor (owner)');
+    if (!gym || gym.height > 9 || gym.height < 7) fail('the UG Gymnasium is not two short floors (owner)');
+    for (const [x, z] of [[933, 1682], [878, 1717], [788, 1797], [740, 1675], [846, 1619]]) { const b = buildingAt(x, z); if (!b || b.height > 5) fail(`the house south of the stadium at ${x},${z} is not one floor (owner)`); }
+    for (const [x, z] of [[540, 1295], [575, 1310], [535, 1365], [500, 1430], [595, 1420], [620, 1400]]) if (!cm.AREAS.some((a) => a.kind === 'wood' && inA(a, x, z))) fail(`no trees at ${x},${z} round the pool and the tennis courts (owner)`); }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

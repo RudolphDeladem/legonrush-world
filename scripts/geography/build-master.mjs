@@ -403,7 +403,9 @@ function addArea(id, rings, t, src) {
   const [outer, ...holes] = rings;
   const c = centroid(outer);
   if (!anyInContext(outer)) return;
-  areas.push({ id, layer: 'area', class: cls[0], subclass: cls[1], name: t.name, area: Math.round(area(outer)), conf: fix ? 'medium' : 'high', src: [src], ring: outer, holes, c, ...(fix && { note: `mapped as ${areaClass(t)?.[0] ?? 'unclassified'}; ${fix.reason}` }) });
+  areas.push({ id, layer: 'area', class: cls[0], subclass: cls[1], name: t.name, area: Math.round(area(outer)), conf: fix ? 'medium' : 'high', src: [src], ring: outer, holes, c, ...(fix && { note: `mapped as ${areaClass(t)?.[0] ?? 'unclassified'}; ${fix.reason}` }),
+    // an area the evidence shows is not there (corrections.json exclude) stays in the master, kept out of the game
+    ...(SUSPECT.has(id) && { suspect: SUSPECT.get(id), conf: 'low', game: false }) });
 }
 for (const w of osm.ways.values()) {
   if (w.t.building || w.refs.length < 4 || w.refs[0] !== w.refs[w.refs.length - 1]) continue;

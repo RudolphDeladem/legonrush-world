@@ -813,6 +813,24 @@ Computer Science wing and east block meet edge to edge (`corrections.json`: resh
 - **Kerbs and drains** of the campus roads stop short of the side roads a route turns into: the route's rounded
   bend overruns the mapped corner, and the black and white kerb and the drain showed across the road there.
 
+## 34. Cleared structures; the sports area; the houses south of the stadium
+
+- **East of Alexander Kwapong Hall**, toward Limann (owner's game map, circled green): no structures; the seven
+  satellite-detected or mapped outlines there are excluded (`corrections.json`).
+- **Round the UG Gymnasium** (owner's game map, marked green): the narrow rectangles (mapped as car-park strips) and
+  the small outline among them are not there; excluded. Areas can now be excluded like buildings and roads
+  (`build-master.mjs`).
+- **The pool, gym and other structures** (owner's aerial): everything is one floor (Maxi Catering, the pool house)
+  except the pool and the **gym**: two short floors, modelled from the owner's photo (`stadium.ts`): white walls on a
+  dark red base, a band of dark windows high in the walls, air-conditioners below, terracotta hipped roofs on the four
+  arms of the cross and a raised dark clerestory over the middle under its own hip, red steps up to glazed doors
+  under a white canopy on its south front.
+- **Trees, not grass** (owner's red outlines): woods round the pool, the gym, the Maxi Catering building and the
+  tennis courts. On aerials, dark green clumped canopy with shadows is trees; smooth light green is grass.
+- **South of the UG Sports Stadium** (owner's game map, circled yellow): 33 houses, all one floor like bungalows,
+  each with its door on the side facing its nearest road and a laterite walk out to it, a gate in a low hedge where
+  the road is near (`stadiumhouses.ts`, `residences.ts`).
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

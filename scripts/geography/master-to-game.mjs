@@ -120,7 +120,7 @@ const GAME_AREAS = ['grass', 'wood', 'plaza', 'parking', 'pitch', 'track', 'wate
 const areas = [];
 for (const f of by('area').sort((a, b) => GAME_AREAS.indexOf(a.properties.class) - GAME_AREAS.indexOf(b.properties.class))) {
   const p = f.properties;
-  if (!GAME_AREAS.includes(p.class)) continue;
+  if (!GAME_AREAS.includes(p.class) || p.game === false) continue;
   areas.push({ k: p.class, p: flat(open(f.geometry.coordinates[0])) });
 }
 

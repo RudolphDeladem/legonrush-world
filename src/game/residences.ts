@@ -8,11 +8,14 @@
 // - East of the Akuafo and Mensah Sarbah annexes, between Akuafo Road, E.A. Boateng Road and La Road (circled): the
 //   lecturers' houses, all one floor, each with a front door, a little porch and a gate in its hedge toward its road,
 //   standing in a wood: trees all through, the ground under them leaf litter and bare red earth, not lawn.
+// - South of the UG Sports Stadium (circled yellow): houses of one floor, like bungalows, each door toward its road
+//   (stadiumhouses.ts).
 import * as THREE from 'three';
 import { WHITE, box } from './modelkit';
 import { PL, createSite, render, window_, type Block, type Kit, type Spec, type Style } from './blocks';
 import { rectsOf } from './rectilinear';
 import { garden } from './gardens';
+import { STADIUM_HOUSES } from './stadiumhouses';
 
 const WALL: Style = {
   bay: 3.4, up: [], ground: [[86, 256 + 70, 84, 100]],
@@ -24,7 +27,7 @@ const WIDE: Style = {
 };
 const TILE = '#b5502f';
 
-interface House { id: string; ring: [number, number][]; door: [number, number]; out: [number, number]; walk: number }
+export interface House { id: string; ring: [number, number][]; door: [number, number]; out: [number, number]; walk: number }
 /** a one-floor building on its mapped outline, in its own square, with a door (and a walk to its road) */
 function house(h: House, opts: { style?: Style; gate?: boolean; porch?: 'canopy' | 'gable'; name?: string } = {}): Spec {
   const n = h.ring.length;
@@ -176,4 +179,6 @@ export const residences = createSite('residences', [
   house(PURPLE, { style: WIDE, porch: 'gable', name: 'Business School road cross building' }),
   ...LECTURERS.map((h) => house(h)),
   wood,
+  // south of the UG Sports Stadium: one-floor houses, like bungalows (owner)
+  ...STADIUM_HOUSES.map((h) => house(h, { name: `stadium house ${h.id}`, gate: h.walk < 12 })),
 ]);

@@ -283,13 +283,31 @@
    "ml:edff1234-d025-41fd-8944-9b4f98783a3a",
    "ml:08b7e191-3ea7-4816-9d8d-1b38fd141fb3",
    "ml:f76db941-2ec7-4697-a1d4-4c53700a1580",
-   "osm:way/624028488"
+   "osm:way/624028488",
+   "ml:39427ea2-5f28-4d5a-a6d8-fbf83dfb2db0",
+   "osm:way/765264263",
+   "ml:6df4718b-8084-4a58-bbf1-51502be9ff7f",
+   "ml:9798fa36-d356-4929-a748-c68873d1fd5f",
+   "ml:e2d00d79-2931-4155-87c9-1df612a446b1",
+   "ml:e96a27b6-e3ca-46fa-b488-6b0d1cb50fe5",
+   "ml:eab228a8-c46f-4b69-9962-7410634eac8d",
+   "osm:way/464683567",
+   "osm:way/1533364938",
+   "osm:way/1533364937",
+   "osm:way/1533364936",
+   "osm:way/1533364935",
+   "osm:way/1533364930",
+   "ml:4dd53d8b-b4bf-4c84-abe2-1e02de76d72a",
+   "osm:way/1533364932",
+   "osm:way/1533364931",
+   "osm:way/1533364944",
+   "osm:way/1533364943"
   ]
  },
  "areas": {
   "wood": {
-   "count": 12,
-   "ha": 489.3
+   "count": 21,
+   "ha": 490.6
   },
   "water": {
    "count": 26,

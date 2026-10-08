@@ -108,6 +108,78 @@
     {
       "id": "osm:way/624028488",
       "reason": "Owner's photos of the Balme Library: University Square is sunk below the road behind stone retaining walls, with paving between the walls and the lanes; no path crosses the square at that line (it would run through the walls)."
+    },
+    {
+      "id": "ml:39427ea2-5f28-4d5a-a6d8-fbf83dfb2db0",
+      "reason": "Owner (game map, circled green, east of Alexander Kwapong Hall toward Limann): there are no structures in this area; the satellite-detected or mapped outlines are not buildings."
+    },
+    {
+      "id": "osm:way/765264263",
+      "reason": "Owner (game map, circled green, east of Alexander Kwapong Hall toward Limann): there are no structures in this area; the satellite-detected or mapped outlines are not buildings."
+    },
+    {
+      "id": "ml:6df4718b-8084-4a58-bbf1-51502be9ff7f",
+      "reason": "Owner (game map, circled green, east of Alexander Kwapong Hall toward Limann): there are no structures in this area; the satellite-detected or mapped outlines are not buildings."
+    },
+    {
+      "id": "ml:9798fa36-d356-4929-a748-c68873d1fd5f",
+      "reason": "Owner (game map, circled green, east of Alexander Kwapong Hall toward Limann): there are no structures in this area; the satellite-detected or mapped outlines are not buildings."
+    },
+    {
+      "id": "ml:e2d00d79-2931-4155-87c9-1df612a446b1",
+      "reason": "Owner (game map, circled green, east of Alexander Kwapong Hall toward Limann): there are no structures in this area; the satellite-detected or mapped outlines are not buildings."
+    },
+    {
+      "id": "ml:e96a27b6-e3ca-46fa-b488-6b0d1cb50fe5",
+      "reason": "Owner (game map, circled green, east of Alexander Kwapong Hall toward Limann): there are no structures in this area; the satellite-detected or mapped outlines are not buildings."
+    },
+    {
+      "id": "ml:eab228a8-c46f-4b69-9962-7410634eac8d",
+      "reason": "Owner (game map, circled green, east of Alexander Kwapong Hall toward Limann): there are no structures in this area; the satellite-detected or mapped outlines are not buildings."
+    },
+    {
+      "id": "osm:way/464683567",
+      "reason": "Owner (game map of the sports area round the UG Gymnasium, marked green): this narrow rectangle is not a structure or car park on the ground; it is taken off."
+    },
+    {
+      "id": "osm:way/1533364938",
+      "reason": "Owner (game map of the sports area round the UG Gymnasium, marked green): this narrow rectangle is not a structure or car park on the ground; it is taken off."
+    },
+    {
+      "id": "osm:way/1533364937",
+      "reason": "Owner (game map of the sports area round the UG Gymnasium, marked green): this narrow rectangle is not a structure or car park on the ground; it is taken off."
+    },
+    {
+      "id": "osm:way/1533364936",
+      "reason": "Owner (game map of the sports area round the UG Gymnasium, marked green): this narrow rectangle is not a structure or car park on the ground; it is taken off."
+    },
+    {
+      "id": "osm:way/1533364935",
+      "reason": "Owner (game map of the sports area round the UG Gymnasium, marked green): this narrow rectangle is not a structure or car park on the ground; it is taken off."
+    },
+    {
+      "id": "osm:way/1533364930",
+      "reason": "Owner (game map of the sports area round the UG Gymnasium, marked green): this narrow rectangle is not a structure or car park on the ground; it is taken off."
+    },
+    {
+      "id": "ml:4dd53d8b-b4bf-4c84-abe2-1e02de76d72a",
+      "reason": "Owner (game map of the sports area round the UG Gymnasium, marked green): this narrow rectangle is not a structure or car park on the ground; it is taken off."
+    },
+    {
+      "id": "osm:way/1533364932",
+      "reason": "Owner (game map of the sports area round the UG Gymnasium, marked green): this narrow rectangle is not a structure or car park on the ground; it is taken off."
+    },
+    {
+      "id": "osm:way/1533364931",
+      "reason": "Owner (game map of the sports area round the UG Gymnasium, marked green): this narrow rectangle is not a structure or car park on the ground; it is taken off."
+    },
+    {
+      "id": "osm:way/1533364944",
+      "reason": "Owner (game map of the sports area round the UG Gymnasium, marked green): this narrow rectangle is not a structure or car park on the ground; it is taken off."
+    },
+    {
+      "id": "osm:way/1533364943",
+      "reason": "Owner (game map of the sports area round the UG Gymnasium, marked green): this narrow rectangle is not a structure or car park on the ground; it is taken off."
     }
   ],
   "heights": [
@@ -1895,6 +1967,258 @@
       "levels": 2,
       "height": 8.0,
       "reason": "Owner (in-game view of Volta Hall): the building between the hall and the Annex is part of the hall, two floors, white, joined to the blocks either side."
+    },
+    {
+      "id": "osm:way/444321274",
+      "place": "Maxi Catering Services",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner (aerial of the UG pool, gym and other structures): every structure there is one floor except the pool area and the gym."
+    },
+    {
+      "id": "osm:way/492099500",
+      "place": "University of Ghana Sports Directorate (UG Gymnasium)",
+      "levels": 2,
+      "height": 8.5,
+      "reason": "Owner (aerial and photo of the UG Gymnasium): two floors but short, not a tall two floors: low white walls on a red base under a tiled hipped roof with a raised clerestory in the middle (modelled in src/game/stadium.ts)."
+    },
+    {
+      "id": "ml:f6aa7315-4a5f-4731-ba94-1f6d4c14a5bf",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1180708888",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1180708889",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1180708890",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1180708891",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1234735625",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1239491145",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1239491153",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1239491154",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1239491155",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1239491156",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1239491157",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1314378595",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1314378596",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1314378597",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1314378598",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1314378599",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1314378600",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1314378601",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1314378602",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/1314378604",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/486614510",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/675701529",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/675701530",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/675701531",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/675701532",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/675701533",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/675702603",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/675702604",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/675703095",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/675703571",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/704819047",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/704819048",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
+    },
+    {
+      "id": "osm:way/765264266",
+      "place": "house south of the UG Sports Stadium",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner (game map, circled yellow, south of the UG Sports Stadium): all one floor, like bungalows (modelled as houses with their doors toward the road, src/game/residences.ts)."
     }
   ],
   "reclass": [
@@ -3267,6 +3591,317 @@
         ]
       ],
       "reason": "Owner's marked aerial (yellow arrow): the paved way from the service road east along the car park behind ISSER and RIPS to the Computer Science door."
+    },
+    {
+      "id": "owner:woods-sports-1",
+      "class": "wood",
+      "ring": [
+        [
+          499.0,
+          1287.6
+        ],
+        [
+          563.7,
+          1287.6
+        ],
+        [
+          565.6,
+          1300.5
+        ],
+        [
+          534.2,
+          1303.5
+        ],
+        [
+          500.9,
+          1302.4
+        ]
+      ],
+      "reason": "Owner's aerial of the UG pool, gym and tennis courts: the red outlines are trees, not grass (registered to the pool, the tennis courts and the Maxi Catering building at 0.37 m/px)."
+    },
+    {
+      "id": "owner:woods-sports-2",
+      "class": "wood",
+      "ring": [
+        [
+          480.5,
+          1295.0
+        ],
+        [
+          497.2,
+          1295.0
+        ],
+        [
+          497.2,
+          1311.6
+        ],
+        [
+          480.5,
+          1311.6
+        ]
+      ],
+      "reason": "Owner's aerial of the UG pool, gym and tennis courts: the red outlines are trees, not grass (registered to the pool, the tennis courts and the Maxi Catering building at 0.37 m/px)."
+    },
+    {
+      "id": "owner:woods-sports-3",
+      "class": "wood",
+      "ring": [
+        [
+          561.9,
+          1289.5
+        ],
+        [
+          584.1,
+          1289.5
+        ],
+        [
+          585.9,
+          1302.4
+        ],
+        [
+          608.1,
+          1311.6
+        ],
+        [
+          606.3,
+          1331.9
+        ],
+        [
+          587.8,
+          1341.1
+        ],
+        [
+          571.1,
+          1337.4
+        ],
+        [
+          561.9,
+          1320.8
+        ],
+        [
+          567.4,
+          1307.9
+        ]
+      ],
+      "reason": "Owner's aerial of the UG pool, gym and tennis courts: the red outlines are trees, not grass (registered to the pool, the tennis courts and the Maxi Catering building at 0.37 m/px)."
+    },
+    {
+      "id": "owner:woods-sports-4",
+      "class": "wood",
+      "ring": [
+        [
+          585.9,
+          1286.5
+        ],
+        [
+          606.3,
+          1286.5
+        ],
+        [
+          606.3,
+          1301.3
+        ],
+        [
+          585.9,
+          1301.3
+        ]
+      ],
+      "reason": "Owner's aerial of the UG pool, gym and tennis courts: the red outlines are trees, not grass (registered to the pool, the tennis courts and the Maxi Catering building at 0.37 m/px)."
+    },
+    {
+      "id": "owner:woods-sports-5",
+      "class": "wood",
+      "ring": [
+        [
+          613.7,
+          1296.9
+        ],
+        [
+          634.0,
+          1298.7
+        ],
+        [
+          633.3,
+          1307.2
+        ],
+        [
+          614.8,
+          1307.2
+        ]
+      ],
+      "reason": "Owner's aerial of the UG pool, gym and tennis courts: the red outlines are trees, not grass (registered to the pool, the tennis courts and the Maxi Catering building at 0.37 m/px)."
+    },
+    {
+      "id": "owner:woods-sports-6",
+      "class": "wood",
+      "ring": [
+        [
+          506.4,
+          1355.8
+        ],
+        [
+          571.1,
+          1354.0
+        ],
+        [
+          574.8,
+          1377.9
+        ],
+        [
+          571.1,
+          1398.2
+        ],
+        [
+          556.3,
+          1396.3
+        ],
+        [
+          549.0,
+          1374.2
+        ],
+        [
+          536.0,
+          1374.2
+        ],
+        [
+          524.9,
+          1377.9
+        ],
+        [
+          508.3,
+          1376.1
+        ]
+      ],
+      "reason": "Owner's aerial of the UG pool, gym and tennis courts: the red outlines are trees, not grass (registered to the pool, the tennis courts and the Maxi Catering building at 0.37 m/px)."
+    },
+    {
+      "id": "owner:woods-sports-7",
+      "class": "wood",
+      "ring": [
+        [
+          467.6,
+          1392.7
+        ],
+        [
+          500.9,
+          1390.8
+        ],
+        [
+          512.0,
+          1396.3
+        ],
+        [
+          537.9,
+          1403.7
+        ],
+        [
+          539.7,
+          1416.6
+        ],
+        [
+          530.5,
+          1416.6
+        ],
+        [
+          519.4,
+          1412.9
+        ],
+        [
+          519.4,
+          1455.3
+        ],
+        [
+          515.7,
+          1466.4
+        ],
+        [
+          486.1,
+          1459.0
+        ],
+        [
+          473.1,
+          1440.6
+        ],
+        [
+          467.6,
+          1414.8
+        ]
+      ],
+      "reason": "Owner's aerial of the UG pool, gym and tennis courts: the red outlines are trees, not grass (registered to the pool, the tennis courts and the Maxi Catering building at 0.37 m/px)."
+    },
+    {
+      "id": "owner:woods-sports-8",
+      "class": "wood",
+      "ring": [
+        [
+          582.2,
+          1381.6
+        ],
+        [
+          600.7,
+          1379.8
+        ],
+        [
+          604.4,
+          1396.3
+        ],
+        [
+          602.6,
+          1447.9
+        ],
+        [
+          587.8,
+          1457.2
+        ],
+        [
+          580.4,
+          1444.3
+        ]
+      ],
+      "reason": "Owner's aerial of the UG pool, gym and tennis courts: the red outlines are trees, not grass (registered to the pool, the tennis courts and the Maxi Catering building at 0.37 m/px)."
+    },
+    {
+      "id": "owner:woods-sports-9",
+      "class": "wood",
+      "ring": [
+        [
+          604.4,
+          1359.5
+        ],
+        [
+          619.2,
+          1357.7
+        ],
+        [
+          622.9,
+          1377.9
+        ],
+        [
+          635.9,
+          1383.5
+        ],
+        [
+          634.0,
+          1407.4
+        ],
+        [
+          626.6,
+          1433.2
+        ],
+        [
+          613.7,
+          1436.9
+        ],
+        [
+          608.1,
+          1407.4
+        ],
+        [
+          606.3,
+          1381.6
+        ]
+      ],
+      "reason": "Owner's aerial of the UG pool, gym and tennis courts: the red outlines are trees, not grass (registered to the pool, the tennis courts and the Maxi Catering building at 0.37 m/px)."
     }
   ],
   "addWays": [
