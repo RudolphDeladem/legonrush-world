@@ -2012,13 +2012,13 @@
    "footprint": "osm:way/335456880",
    "entrance": {
     "at": [
-     -135.5,
+     -136.2,
      -390.1
     ]
    },
    "via": [
     [
-     -135.5,
+     -136.2,
      -418
     ]
    ],
@@ -2026,7 +2026,7 @@
    "status": "verified",
    "confidence": "high",
    "cite": "owner-nnb-gcb",
-   "approach": "From the road before the New N Block up the broad stair (or the ramps either side) to the north gallery.",
+   "approach": "From the road before the New N Block up the broad stair between the two ramps to the deep north gallery (the ramps run out along the north edge and climb along the sides).",
    "evidence": "Owner's aerial (stair striped blue, ramps yellow, north side marked N) and photo of the north side.",
    "refs": [
     "owner's photos and aerial of the GCB Lecture Building"

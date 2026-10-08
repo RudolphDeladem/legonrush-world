@@ -312,9 +312,9 @@ try {
   { const { groundHeight: gh } = await server.ssrLoadModule('/src/game/relief.ts');
     if (gh(-139, -350) < 2) fail('the GCB Lecture Building is not up the slope from the New N Block (owner)');
     if (gh(-95, -432) !== 0) fail('the road before the New N Block is not at road level');
-    const st = gh(-135.5, -411.5); if (!(st > 0 && st < 2.4)) fail('no stair up to the GCB Lecture Building\'s north entrance (owner)');
+    const st = gh(-136.2, -403); if (!(st > 0 && st < 2.4)) fail('no stair up to the GCB Lecture Building\'s north entrance (owner)');
     const n = ann('New N Block, NNB'); if (!n || Math.abs(n[1] - -444.6) > 2) fail('New N Block: the entrance is not on its front to the road (owner)');
-    const g = ann('GCB Lecture Building'); if (!g || Math.hypot(g[0] - -135.5, g[1] - -390.1) > 3) fail('GCB Lecture Building: the entrance is not the north one up the stair (owner)');
+    const g = ann('GCB Lecture Building'); if (!g || Math.hypot(g[0] - -136.2, g[1] - -390.1) > 3) fail('GCB Lecture Building: the entrance is not the north one up the stair (owner)');
     if ((await server.ssrLoadModule('/src/game/nblock.ts')).nBlockGcb.frames().length !== 2) fail('expected the New N Block and GCB models'); }
   // owner: the chalet blocks along the road south of the roundabout (two floors, cottages one) and Legon's gable block
   { for (const [x, z, f] of [[33.7, 166.6, 2], [27.8, 176.6, 1], [-26.6, 163.6, 2], [-13.8, 202.5, 1], [-122.3, 168.9, 2]]) { const b = buildingAt(x, z); if (!b || (f === 1 ? b.height > 6 : b.height < 8)) fail(`the chalet block at ${x},${z} is not ${f} floor(s) (owner)`); }

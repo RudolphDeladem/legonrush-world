@@ -742,8 +742,8 @@
    "place": "GCB Lecture Building",
    "type": "main entrance",
    "arrivalOn": "service",
-   "arrivalDistance": 27.1,
-   "facing": 64
+   "arrivalDistance": 26.5,
+   "facing": 63
   },
   {
    "place": "ISSER Building",

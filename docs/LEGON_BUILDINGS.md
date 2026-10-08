@@ -906,6 +906,25 @@ From the owner's photos and marked aerial (registered to the footprints at 0.25 
   timber-clad gable end to the avenue with shutters up and a lean-to porch over a lit door, air-conditioners along its
   west side, hedges and a bench, and a low covered passage with an iron lattice joining it to the front block.
 
+## 39. The GCB Lecture Building rebuilt; wider doors at the New N Block
+
+From the owner's marked aerial (registered at 0.25 m/px) and photos of the north and west sides (`nblock.ts`):
+
+- **Old paint:** the white was never redone: washed grey, rain-streaked and stained all over (the weathered-concrete
+  material of `concrete.ts`), the retaining walls and the ramps' parapets most of all.
+- **The gallery** (purple mark) across the whole north, about 13 m deep: round columns on the ground floor, the first
+  floor cantilevered past them behind a thick solid parapet, tall slender columns up to the roof, the roof's beams
+  standing out under the eaves with a beam across over the columns (orange mark), lights in the ceilings; a stair under
+  the gallery up to the first floor (green mark); a glazed room at the east end of the upper gallery.
+- **The stair and ramps** (red square), at road level before the gallery: the broad stair up the middle (in flights
+  with landings), and on each side a ramp that starts by the foot of the stair, runs out along the north edge, turns
+  and climbs south along the outer edge to the gallery (green arrows); solid parapets both sides, a planted well inside.
+  The gallery and the ground round the building are 2.4 m up behind stained white retaining walls.
+- **The west and east gates** (yellow lines): the ground floor is open under the upper floor's plain gable wall,
+  a colonnade of round columns before a lit lobby with shopfronts, stalls and banners (never closed); over it a cross
+  gable with red sheet cladding in its triangle. The main roof is a hip with a gablet at each end.
+- **New N Block:** the doors are twice as wide (about a metre, two leaves).
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain
