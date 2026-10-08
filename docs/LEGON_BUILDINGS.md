@@ -831,6 +831,25 @@ Computer Science wing and east block meet edge to edge (`corrections.json`: resh
   each with its door on the side facing its nearest road and a laterite walk out to it, a gate in a low hedge where
   the road is near (`stadiumhouses.ts`, `residences.ts`).
 
+## 35. The African Studies chalets, the Apaloo Crescent bungalows, the UG Basic School
+
+- **Institute of African Studies chalets** (owner's aerial, circled yellow, registered to the chalets' outlines):
+  every building one floor, doors toward the road, roofs in the colours the aerial shows (red-pink sheets, Yiri
+  Lodge's orange tiles). Trees all through the area (a grove), dense woods between the chalets, car parks with cars
+  among the northern chalets, before the Institute and before Yiri Lodge.
+- **West of the Diaspora Dome round F.K. Apaloo Crescent** (owner's aerial, circled yellow): 28 one-floor bungalows,
+  each door on the side facing its road with a walk out to it; dark grey sheet roofs in the middle, terracotta to the
+  west, as the aerial shows (`diasporahouses.ts`). They stand in a park of trees on grass: a new area kind, a
+  **grove** (trees spaced on lawn), beside the **wood** (dense trees over a dark floor).
+- **UG Basic School** (`basicschool.ts`, owner's aerial and two photos): one-floor classroom blocks, white with a
+  grey-blue band along the foot, red-brown doors and louvred windows behind verandahs of square white columns with
+  grey feet. Roofs as on the aerial: terracotta round the north-west court, dark brown sheets on the long blocks and
+  the cross-shaped block, grey on the small blocks, pale on the south-west block, salmon-red on the hall south of the
+  car park. A building outline on the north yard (none there) is excluded. **The entrance faces Valco** across La
+  Road: red-brick gate pillars with white caps, a black iron sliding gate, a small gatehouse with a brown hipped roof
+  on red pillars, the yellow and blue shade, the school's sign board, a paved apron; **the fence** along La Road is a
+  stone wall under a coping with white square pillars and black iron railings. Big shade trees in the yards.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

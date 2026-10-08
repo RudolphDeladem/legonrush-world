@@ -116,7 +116,8 @@ for (const f of by('building')) {
 
 // ---------- ground areas the 3D world draws ----------
 // drawn in this order, so pitches and pools inside parks stay visible
-const GAME_AREAS = ['grass', 'wood', 'plaza', 'parking', 'pitch', 'track', 'water'];
+// (a grove: trees standing on grass, the ground left as lawn; a wood: dense trees over a dark floor)
+const GAME_AREAS = ['grass', 'grove', 'wood', 'plaza', 'parking', 'pitch', 'track', 'water'];
 const areas = [];
 for (const f of by('area').sort((a, b) => GAME_AREAS.indexOf(a.properties.class) - GAME_AREAS.indexOf(b.properties.class))) {
   const p = f.properties;

@@ -9,13 +9,15 @@
 //   lecturers' houses, all one floor, each with a front door, a little porch and a gate in its hedge toward its road,
 //   standing in a wood: trees all through, the ground under them leaf litter and bare red earth, not lawn.
 // - South of the UG Sports Stadium (circled yellow): houses of one floor, like bungalows, each door toward its road
-//   (stadiumhouses.ts).
+//   (stadiumhouses.ts), and the Institute of African Studies chalets among them; west of the Diaspora Dome round F.K.
+//   Apaloo Crescent, one-floor bungalows in a park of trees (diasporahouses.ts).
 import * as THREE from 'three';
 import { WHITE, box } from './modelkit';
 import { PL, createSite, render, window_, type Block, type Kit, type Spec, type Style } from './blocks';
 import { rectsOf } from './rectilinear';
 import { garden } from './gardens';
 import { STADIUM_HOUSES } from './stadiumhouses';
+import { DIASPORA_HOUSES } from './diasporahouses';
 
 const WALL: Style = {
   bay: 3.4, up: [], ground: [[86, 256 + 70, 84, 100]],
@@ -27,7 +29,7 @@ const WIDE: Style = {
 };
 const TILE = '#b5502f';
 
-export interface House { id: string; ring: [number, number][]; door: [number, number]; out: [number, number]; walk: number }
+export interface House { id: string; ring: [number, number][]; door: [number, number]; out: [number, number]; walk: number; roof?: string }
 /** a one-floor building on its mapped outline, in its own square, with a door (and a walk to its road) */
 function house(h: House, opts: { style?: Style; gate?: boolean; porch?: 'canopy' | 'gable'; name?: string } = {}): Spec {
   const n = h.ring.length;
@@ -48,7 +50,7 @@ function house(h: House, opts: { style?: Style; gate?: boolean; porch?: 'canopy'
   const b0 = blocks[0];
   return {
     name: opts.name ?? `house ${h.id}`,
-    axis: [ux, uz], origin: [cx, cz], storey: 3.3, style: opts.style ?? WALL, roofColor: TILE, fascia: '#f1efe9', pitch: 0.45,
+    axis: [ux, uz], origin: [cx, cz], storey: 3.3, style: opts.style ?? WALL, roofColor: h.roof ?? TILE, fascia: '#f1efe9', pitch: 0.45,
     replaces: [[cx + ((b0.x0 + b0.x1) / 2) * ux - ((b0.z0 + b0.z1) / 2) * uz, cz + ((b0.x0 + b0.x1) / 2) * uz + ((b0.z0 + b0.z1) / 2) * ux]],
     blocks,
     keep: [[dx - 2 + ox * 1.5, dx + 2 + ox * 1.5, dz - 2 + oz * 1.5, dz + 2 + oz * 1.5]],
@@ -181,4 +183,6 @@ export const residences = createSite('residences', [
   wood,
   // south of the UG Sports Stadium: one-floor houses, like bungalows (owner)
   ...STADIUM_HOUSES.map((h) => house(h, { name: `stadium house ${h.id}`, gate: h.walk < 12 })),
+  // west of the Diaspora Dome round F.K. Apaloo Crescent: one-floor bungalows in a park of trees (owner)
+  ...DIASPORA_HOUSES.map((h) => house(h, { name: `Apaloo Crescent house ${h.id}`, gate: h.walk < 12 })),
 ]);

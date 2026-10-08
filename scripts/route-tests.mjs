@@ -296,6 +296,14 @@ try {
     if (!gym || gym.height > 9 || gym.height < 7) fail('the UG Gymnasium is not two short floors (owner)');
     for (const [x, z] of [[933, 1682], [878, 1717], [788, 1797], [740, 1675], [846, 1619]]) { const b = buildingAt(x, z); if (!b || b.height > 5) fail(`the house south of the stadium at ${x},${z} is not one floor (owner)`); }
     for (const [x, z] of [[540, 1295], [575, 1310], [535, 1365], [500, 1430], [595, 1420], [620, 1400]]) if (!cm.AREAS.some((a) => a.kind === 'wood' && inA(a, x, z))) fail(`no trees at ${x},${z} round the pool and the tennis courts (owner)`); }
+  // owner: the Institute of African Studies chalets and the bungalows round F.K. Apaloo Crescent are one floor in their
+  // trees; the Basic School's entrance faces Valco across La Road, its blocks one floor, no building on its yard
+  { const inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
+    for (const [x, z] of [[-354, 1356.5], [-268, 1355], [-288, 1473], [-430, 1573], [-641, 1632]]) { const b = buildingAt(x, z); if (!b || b.height > 5) fail(`the bungalow by F.K. Apaloo Crescent at ${x},${z} is not one floor (owner)`); }
+    for (const [x, z] of [[-350, 1430], [-560, 1600], [880, 1650], [760, 1760]]) if (!cm.AREAS.some((a) => (a.kind === 'grove' || a.kind === 'wood') && inA(a, x, z))) fail(`no trees at ${x},${z} (owner)`);
+    const e = ann('University of Ghana Basic School'); if (!e || Math.hypot(e[0] - -113, e[1] - 899) > 3) fail('University of Ghana Basic School: the entrance is not the gate facing Valco (owner)');
+    if (buildingAt(-68, 998)) fail('a building still stands on the Basic School yard (owner)');
+    if ((await server.ssrLoadModule('/src/game/basicschool.ts')).basicSchool.frames().length < 16) fail('expected the Basic School blocks and its entrance'); }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

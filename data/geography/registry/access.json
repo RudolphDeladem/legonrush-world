@@ -33,7 +33,8 @@
   "owner-residences": "The owner's aerials of the Volta Hall Road stretch north-west of CEDI, of the buildings opposite the Business School (the Larway Oraca Building circled yellow, the cross-shaped building circled purple, their doors marked blue) and of the lecturers' houses east of the annexes, and the owner's photos of the two buildings opposite the Business School.",
   "owner-mathstat": "The owner's aerial of the Mathematics and Statistics departments (the main entrance marked blue, an arrow along the north front) and three photos taken along that arrow: the Mathematics galleries and the heavy block, the main entrance steps, and the Statistics block with its stair and fins.",
   "owner-issercs": "The owner's photos of the Department of Computer Science (its front and side from the south; its door marked blue beyond the back of ISSER) and of ISSER (front, with the entrance marked blue, facing the Mathematics department; back).",
-  "owner-enclave": "The owner's aerial of the Innovation Enclave (its six buildings circled, their doors marked with blue lines) and two photos: from the road facing the engineering school (the steps, the UG logo, INNOVATION ENCLAVE in blue letters) and from the courtyards facing the back of the School of Law."
+  "owner-enclave": "The owner's aerial of the Innovation Enclave (its six buildings circled, their doors marked with blue lines) and two photos: from the road facing the engineering school (the steps, the UG logo, INNOVATION ENCLAVE in blue letters) and from the courtyards facing the back of the School of Law.",
+  "owner-basic-school": "The owner's aerial of the University of Ghana Basic School and photos of a classroom block and of its entrance gate and fence, which face Valco across La Road."
  },
  "campusGates": [
   {
@@ -1965,6 +1966,25 @@
    "evidence": "Owner's aerial of the Innovation Enclave: the westmost building's doors (blue lines) are on its east side, facing its neighbour.",
    "refs": [
     "owner's aerial of the Innovation Enclave"
+   ]
+  },
+  {
+   "place": "University of Ghana Basic School",
+   "footprint": "osm:way/394125244",
+   "entrance": {
+    "at": [
+     -113,
+     901.5
+    ]
+   },
+   "type": "main entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-basic-school",
+   "approach": "From La Road opposite Valco through the gate between the red-brick pillars, past the gatehouse.",
+   "evidence": "Owner's photo of the entrance (red-brick gate pillars, gatehouse, iron fence on a stone wall) and their note that it faces Valco.",
+   "refs": [
+    "owner's photo of the Basic School entrance"
    ]
   }
  ],

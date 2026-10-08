@@ -1,9 +1,9 @@
 {
  "destinations": 436,
  "byMethod": {
-  "curated": 83,
+  "curated": 84,
   "osm-entrance": 0,
-  "gate": 2,
+  "gate": 1,
   "path-access": 2,
   "drive-access": 17,
   "area-entry": 8,
@@ -361,11 +361,11 @@
   }
  ],
  "byStatus": {
-  "verified": 77,
+  "verified": 78,
   "inferred": 208,
   "partial": 6,
   "unverified": 9,
-  "mapped": 136
+  "mapped": 135
  },
  "curated": [
   {
@@ -766,6 +766,13 @@
    "arrivalOn": "E.A. Boateng Road",
    "arrivalDistance": 0.4,
    "facing": 167
+  },
+  {
+   "place": "University of Ghana Basic School",
+   "type": "main entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 0.1,
+   "facing": 90
   },
   {
    "place": "Akuafo Hall Main",

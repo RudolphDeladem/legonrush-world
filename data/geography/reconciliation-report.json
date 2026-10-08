@@ -301,13 +301,14 @@
    "osm:way/1533364932",
    "osm:way/1533364931",
    "osm:way/1533364944",
-   "osm:way/1533364943"
+   "osm:way/1533364943",
+   "ml:f3ead4b6-6f26-4091-9a5e-b76f96a67f13"
   ]
  },
  "areas": {
   "wood": {
-   "count": 21,
-   "ha": 490.6
+   "count": 36,
+   "ha": 494.5
   },
   "water": {
    "count": 26,
@@ -330,12 +331,16 @@
    "ha": 1.5
   },
   "parking": {
-   "count": 92,
-   "ha": 9.4
+   "count": 95,
+   "ha": 9.6
   },
   "track": {
    "count": 3,
    "ha": 4.6
+  },
+  "grove": {
+   "count": 2,
+   "ha": 21.1
   }
  },
  "places": {

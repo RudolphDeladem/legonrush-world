@@ -31,7 +31,7 @@ export interface Building {
   minX: number; maxX: number; minZ: number; maxZ: number;
 }
 export interface Area {
-  kind: 'pitch' | 'track' | 'parking' | 'water' | 'wood' | 'grass' | 'plaza';
+  kind: 'pitch' | 'track' | 'parking' | 'water' | 'wood' | 'grove' | 'grass' | 'plaza';
   pts: Float32Array;
 }
 

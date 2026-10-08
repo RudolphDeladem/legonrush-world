@@ -782,11 +782,12 @@ export function buildCampusLife() {
 
   // --- woods and open ground near buildings get scattered trees ---
   for (const a of AREAS) {
-    if (a.kind !== 'wood') continue;
+    if (a.kind !== 'wood' && a.kind !== 'grove') continue;
     let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
     for (let i = 0; i < a.pts.length; i += 2) { minX = Math.min(minX, a.pts[i]); maxX = Math.max(maxX, a.pts[i]); minZ = Math.min(minZ, a.pts[i + 1]); maxZ = Math.max(maxZ, a.pts[i + 1]); }
-    // dense enough to read as woodland (the owner's photos of the woods round the School of Law)
-    const n = Math.min(280, ((maxX - minX) * (maxZ - minZ)) / 75);
+    // dense enough to read as woodland (the owner's photos of the woods round the School of Law); a grove's trees
+    // stand further apart on the lawn (the park round the bungalows west of the Diaspora Dome)
+    const n = Math.min(900, ((maxX - minX) * (maxZ - minZ)) / (a.kind === 'wood' ? 75 : 120));
     for (let i = 0; i < n; i++) {
       const x = minX + rand() * (maxX - minX), z = minZ + rand() * (maxZ - minZ);
       if (inPoly(a.pts, x, z) && freeSpot(x, z, 1.5)) tree(x, z, rand() < 0.6 ? 'mahogany' : 'neem', 0.8 + rand() * 0.6);
