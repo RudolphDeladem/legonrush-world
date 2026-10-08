@@ -696,6 +696,37 @@ From the owner's aerials (registered to the OSM footprints) and photos (`src/gam
   outlined area (kept off the houses, the roads and the walks), the ground under them leaf litter and moss with
   patches of bare red earth, not lawn.
 
+## 28. The Mathematics and Statistics departments
+
+From the owner's aerial (picture 4, registered to Google Open Buildings) and three photos taken along the arrow
+on it, west to east along the north front (`src/game/mathstat.ts`). **One connected building**, not three: the
+three mapped outlines (Mathematics Dept, Statistics, and the east block, now named **Mathematics and Statistics
+Department**) are reshaped to the roofs on the aerial and meet edge to edge (`corrections.json`: reshape).
+
+- **The paint:** old white concrete gone grey, stained and streaked: rain streaks under every slab edge, mottled
+  patches, mildew at the foot of the walls; red paint on the plinths, planters and the screens' base.
+- **The Mathematics block** (photo 1): a long bar of **three floors** under a red-painted roof slab. On its north
+  face two floors of open galleries on cantilevered slabs with thick edges and thin dark railings, the walls behind
+  them **ochre**, with dark doors and windows between white piers; the ground floor white, red planters along it,
+  and a blank end wall at the west end. Its **car park** is in front, with cars.
+- **The heavy block** joining it to the rest (photos 1 and 2): three floors stepping out over each other on the
+  north and west: a first-floor box with a **breeze-block** balustrade at the corner, a second-floor gallery on
+  columns, a deep roof slab. The **Mathematics door** (wooden double doors up four steps) is on its west face,
+  toward the car park.
+- **The main entrance** (the owner's blue mark, photo 2): glazed doors up five steps under the overhang, red
+  planters and young palms beside them, an ENTRANCE board by the steps; a paved forecourt to the road. Explore goes
+  here for Statistics.
+- **The Statistics block** (photos 2 and 3): two floors of breeze-block screens with round openings on a red base
+  and a first-floor gallery on columns, then the three-floor part with a **stair climbing the north face** from
+  east to west behind a sloping parapet, a **tall screen of vertical fins** from the stair to the roof, and a
+  **glazed box** on the top floor.
+- **Behind it:** a glass-roofed hall (pale blue on the aerial), a walled courtyard, an inner court with trees, and
+  the **east block** (three floors, white galleries toward the **east car park**, blank east end), joined by a
+  stair tower and a one-floor link.
+
+Parked cars now keep clear of a building by its real outline, not its bounding box (the Mathematics car park lies
+inside the L of the Mathematics outline's box).
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

@@ -1776,6 +1776,27 @@
       "levels": 1,
       "height": 4.5,
       "reason": "Owner's aerial and photo: the cross-shaped building opposite the Business School is one floor, entered by the gabled porch on its east front."
+    },
+    {
+      "id": "osm:way/335456889",
+      "place": "Mathematics Dept",
+      "levels": 3,
+      "height": 12,
+      "reason": "Owner photos of the north front: three floors (ground and two floors of galleries) under a deep roof slab, about 12 m; the Statistics block steps down to two floors east of the entrance."
+    },
+    {
+      "id": "osm:way/430197436",
+      "place": "Statistics",
+      "levels": 3,
+      "height": 12,
+      "reason": "Owner photos of the north front: three floors (ground and two floors of galleries) under a deep roof slab, about 12 m; the Statistics block steps down to two floors east of the entrance."
+    },
+    {
+      "id": "osm:way/430197438",
+      "place": "Maths Dept",
+      "levels": 3,
+      "height": 12,
+      "reason": "Owner photos of the north front: three floors (ground and two floors of galleries) under a deep roof slab, about 12 m; the Statistics block steps down to two floors east of the entrance."
     }
   ],
   "reclass": [
@@ -2005,6 +2026,150 @@
         ]
       ],
       "reason": "The OSM outline covers only the seats of the west stand; the owner's aerial shows the main stand's white roof and its building reaching 15 m further west, where the main entrance is."
+    },
+    {
+      "id": "osm:way/335456889",
+      "place": "Mathematics Dept",
+      "source": "the owner-supplied aerial of the Mathematics and Statistics departments (registered to Google Open Buildings: the west bar 276.5..310.4 and the east block 342.1..389.5 land on their roofs at 0.232 m/px)",
+      "ring": [
+        [
+          276,
+          -231.2
+        ],
+        [
+          302.4,
+          -231.2
+        ],
+        [
+          302.4,
+          -247.4
+        ],
+        [
+          310.8,
+          -247.4
+        ],
+        [
+          310.8,
+          -219.6
+        ],
+        [
+          276,
+          -219.6
+        ]
+      ],
+      "reason": "Owner: the Mathematics and Statistics departments are one connected building (their aerial, picture 4, and three photos along the north front). The mapped outlines cover only parts of it and leave the blocks apart; the ring follows the roofs on the registered aerial. This part: the long Mathematics bar with its north galleries and the heavy block that joins it to the rest."
+    },
+    {
+      "id": "osm:way/430197436",
+      "place": "Statistics",
+      "source": "the owner-supplied aerial of the Mathematics and Statistics departments (registered to Google Open Buildings: the west bar 276.5..310.4 and the east block 342.1..389.5 land on their roofs at 0.232 m/px)",
+      "ring": [
+        [
+          310.8,
+          -247.4
+        ],
+        [
+          350.4,
+          -247.4
+        ],
+        [
+          350.4,
+          -230.8
+        ],
+        [
+          342,
+          -230.8
+        ],
+        [
+          342,
+          -225.7
+        ],
+        [
+          338.6,
+          -225.7
+        ],
+        [
+          338.6,
+          -230.8
+        ],
+        [
+          331,
+          -230.8
+        ],
+        [
+          331,
+          -217.3
+        ],
+        [
+          324.5,
+          -217.3
+        ],
+        [
+          324.5,
+          -230.8
+        ],
+        [
+          322,
+          -230.8
+        ],
+        [
+          322,
+          -233.8
+        ],
+        [
+          310.8,
+          -233.8
+        ]
+      ],
+      "reason": "Owner: the Mathematics and Statistics departments are one connected building (their aerial, picture 4, and three photos along the north front). The mapped outlines cover only parts of it and leave the blocks apart; the ring follows the roofs on the registered aerial. This part: the heavy block east of the Mathematics bar, the main entrance, the Statistics block with its south arm, and the glass-roofed hall behind it."
+    },
+    {
+      "id": "osm:way/430197438",
+      "place": "Maths Dept",
+      "source": "the owner-supplied aerial of the Mathematics and Statistics departments (registered to Google Open Buildings: the west bar 276.5..310.4 and the east block 342.1..389.5 land on their roofs at 0.232 m/px)",
+      "ring": [
+        [
+          342,
+          -230.6
+        ],
+        [
+          350.4,
+          -230.6
+        ],
+        [
+          350.4,
+          -234.6
+        ],
+        [
+          355,
+          -234.6
+        ],
+        [
+          355,
+          -228
+        ],
+        [
+          387.8,
+          -228
+        ],
+        [
+          387.8,
+          -217.3
+        ],
+        [
+          341.7,
+          -217.3
+        ],
+        [
+          341.7,
+          -225.7
+        ],
+        [
+          342,
+          -225.7
+        ]
+      ],
+      "reason": "Owner: the Mathematics and Statistics departments are one connected building (their aerial, picture 4, and three photos along the north front). The mapped outlines cover only parts of it and leave the blocks apart; the ring follows the roofs on the registered aerial. This part: the long east block with its north galleries, joined to the Statistics block by a stair tower and a one-floor link."
     }
   ],
   "addAreas": [
@@ -2466,6 +2631,98 @@
         ]
       ],
       "reason": "Owner's top view of the Balme Library (marked yellow): the concrete forecourt before the entrance, from the road to the door."
+    },
+    {
+      "id": "owner:mathstat-car-park-west",
+      "class": "parking",
+      "ring": [
+        [
+          284.5,
+          -239.2
+        ],
+        [
+          301.4,
+          -239.2
+        ],
+        [
+          301.4,
+          -232.3
+        ],
+        [
+          284.5,
+          -232.3
+        ]
+      ],
+      "reason": "Owner photo 1 and aerial: the row of bays in front of the Mathematics galleries, cars nosed in toward the building."
+    },
+    {
+      "id": "owner:mathstat-car-park-east",
+      "class": "parking",
+      "ring": [
+        [
+          356,
+          -241
+        ],
+        [
+          391,
+          -241
+        ],
+        [
+          391,
+          -234.2
+        ],
+        [
+          356,
+          -234.2
+        ]
+      ],
+      "reason": "Owner photo 3 and aerial: the striped bays along the south edge of the east car park, in front of the east block."
+    },
+    {
+      "id": "owner:mathstat-forecourt",
+      "class": "plaza",
+      "ring": [
+        [
+          312,
+          -253.4
+        ],
+        [
+          337,
+          -253.4
+        ],
+        [
+          337,
+          -247.2
+        ],
+        [
+          312,
+          -247.2
+        ]
+      ],
+      "reason": "Owner aerial and photo 2: the paved forecourt before the main entrance steps (marked blue)."
+    },
+    {
+      "id": "owner:mathstat-corner",
+      "class": "plaza",
+      "ring": [
+        [
+          297,
+          -250.5
+        ],
+        [
+          302.2,
+          -250.5
+        ],
+        [
+          302.2,
+          -239.4
+        ],
+        [
+          297,
+          -239.4
+        ]
+      ],
+      "reason": "Owner aerial: the curved paving at the north-west corner of the heavy block, by the Mathematics door."
     }
   ],
   "addWays": [

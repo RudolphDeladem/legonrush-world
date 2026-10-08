@@ -247,6 +247,14 @@ try {
   { const one = (x, z) => { const b = buildingAt(x, z); return b && b.height <= 5; };
     for (const [n, x, z] of [['the Volta Hall Road stretch', -198.6, -38.8], ['the Larway Oraca Building', -263, -178], ['the building opposite the Business School', -266, -135], ['a lecturer\'s house (East Legon 20)', 262, 560], ['a lecturer\'s house (East Legon 11)', 385.9, 426]]) if (!one(x, z)) fail(`${n} is not one floor (owner)`);
     const e = ann('Larway Oraca Building'); if (!e || Math.hypot(e[0] - -263.2, e[1] - -173.7) > 2) fail('Larway Oraca Building: the entrance is not on the south (owner)'); }
+  // owner: the Mathematics and Statistics departments are one connected building of three floors, entered on the
+  // north front (marked blue), with car parks in front of the Mathematics galleries and the east block
+  { const chain = [[290, -225], [307, -238], [316, -240], [325, -240], [333, -240], [345, -240], [340, -228], [346, -228], [352, -230], [370, -221]];
+    for (const [x, z] of chain) { const b = buildingAt(x, z); if (!b) fail(`Mathematics and Statistics: no building at ${x},${z} (the blocks must be connected)`); else if (b.height < 10) fail(`Mathematics and Statistics: the block at ${x},${z} is not three floors`); }
+    const e = ann('Statistics'); if (!e || Math.hypot(e[0] - 325.2, e[1] - -247.4) > 2) fail('Statistics: the main entrance is not on the north front (owner)');
+    const parking = cm.AREAS.filter((a) => a.kind === 'parking'), inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
+    for (const [n, x, z] of [['the Mathematics galleries', 292, -236], ['the east block', 370, -237.5]]) if (!parking.some((a) => inA(a, x, z))) fail(`no car park in front of ${n}`);
+    if ((await server.ssrLoadModule('/src/game/mathstat.ts')).mathStat.frames().length !== 1) fail('expected the Mathematics and Statistics model'); }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

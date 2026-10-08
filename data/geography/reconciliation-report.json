@@ -308,11 +308,11 @@
    "ha": 12.8
   },
   "plaza": {
-   "count": 11,
+   "count": 13,
    "ha": 1.3
   },
   "parking": {
-   "count": 88,
+   "count": 90,
    "ha": 9.4
   },
   "track": {
@@ -327,8 +327,8 @@
   "addedFromRegistry": 8,
   "movedToRegistryPosition": 7,
   "byConfidence": {
-   "high": 145,
-   "medium": 287,
+   "high": 146,
+   "medium": 286,
    "low": 4
   },
   "requiredNamesChecked": 152,

@@ -133,6 +133,8 @@ export interface Spec {
   onGround?: boolean;
   /** world points inside mapped ground areas (pitches, tracks) the model draws itself: the flat area is not drawn */
   covers?: [number, number][];
+  /** colour of the plinth round the foot of the walls (default PLINTH) */
+  plinth?: string;
 }
 export interface Kit { plain: Part[]; glass: THREE.BufferGeometry[]; roof: Roof; signs: { text: string; x: number; y: number; z: number; ry: number; w: number; colors?: [string, string] }[]; meshes: THREE.Mesh[]; wallTop: (floors: number) => number; storey: number;
   /** the height of the ground at a point of the model frame (0 unless the site stands on relief) */
@@ -254,7 +256,7 @@ function buildSpec(f: Frame) {
     const ang = -Math.atan2(bz - az, bx - ax), mx = (ax + bx) / 2, mz = (az + bz) / 2, top = yb + wallTop(floors);
     // the plinth reaches down to the ground at the low end of a block on a slope
     const drop = spec.onGround ? Math.max(0, yb - Math.min(ground(ax, az), ground(bx, bz))) + 0.6 : 0;
-    plain.push([new THREE.BoxGeometry(len + 0.1, PL + drop, 0.2).rotateY(ang).translate(mx, yb + (PL - drop) / 2, mz), PLINTH]);
+    plain.push([new THREE.BoxGeometry(len + 0.1, PL + drop, 0.2).rotateY(ang).translate(mx, yb + (PL - drop) / 2, mz), spec.plinth ?? PLINTH]);
     plain.push([new THREE.BoxGeometry(len + 0.1, BAND, 0.12).rotateY(ang).translate(mx, top - BAND / 2, mz), WHITE]);
   };
 

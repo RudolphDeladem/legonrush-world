@@ -1,18 +1,18 @@
 {
  "destinations": 436,
  "byMethod": {
-  "curated": 77,
+  "curated": 80,
   "osm-entrance": 0,
   "gate": 2,
   "path-access": 2,
   "drive-access": 18,
   "area-entry": 8,
-  "frontage": 218,
+  "frontage": 215,
   "point": 111
  },
  "byConfidence": {
-  "high": 73,
-  "low": 221,
+  "high": 76,
+  "low": 218,
   "medium": 142
  },
  "campusGates": 5,
@@ -360,8 +360,8 @@
   }
  ],
  "byStatus": {
-  "verified": 71,
-  "inferred": 213,
+  "verified": 74,
+  "inferred": 210,
   "partial": 6,
   "unverified": 9,
   "mapped": 137
@@ -732,6 +732,13 @@
    "facing": 180
   },
   {
+   "place": "Mathematics Dept",
+   "type": "side entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 13.2,
+   "facing": 186
+  },
+  {
    "place": "Legon Hall Annex C (Graduate Hostel)",
    "type": "hall entrance",
    "arrivalOn": "Legon Hall Annex walk",
@@ -772,6 +779,20 @@
    "arrivalOn": "service",
    "arrivalDistance": 0.1,
    "facing": 270
+  },
+  {
+   "place": "Statistics",
+   "type": "main entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 7.7,
+   "facing": 180
+  },
+  {
+   "place": "Mathematics and Statistics Department",
+   "type": "side entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 25.5,
+   "facing": 195
   },
   {
    "place": "Faculty of Arts, Languages",

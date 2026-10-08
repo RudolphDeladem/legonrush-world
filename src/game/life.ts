@@ -10,7 +10,7 @@
 import * as THREE from 'three';
 import { groundShade } from './shading';
 import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { AREAS, BUILDINGS, NODE_XZ, PLACES, ROADS, buildingAt, nodeDegree, placeByName, type Place } from './campusmap';
+import { AREAS, BUILDINGS, NODE_XZ, PLACES, ROADS, buildingAt, buildingNear, nodeDegree, placeByName, type Place } from './campusmap';
 import { HALLS, HALL_PLACE } from '../data/campus';
 import { buildingMaterials, setWindowLights } from './facades';
 import { inDiasporaHall, setHallLights } from './halls';
@@ -1217,7 +1217,7 @@ function parkCars(cells: Cells, car: Model, pts: Float32Array, rand: () => numbe
       if (rand() > fill) continue;
       const x = u * c - w * s, z = u * s + w * c;
       if (!inPoly(pts, x, z) || !inPoly(pts, x + s * 2.2, z - c * 2.2) || !inPoly(pts, x - s * 2.2, z + c * 2.2)) continue;
-      if (roadClearance(x, z, 8, -1) < 2.4 || buildingAt(x, z, 2) || inKeepOut(x, z)) continue;
+      if (roadClearance(x, z, 8, -1) < 2.4 || buildingNear(x, z, 2.4) || inKeepOut(x, z)) continue;
       const yaw = -ang + (facing > 0 ? 0 : Math.PI) + (rand() - 0.5) * 0.08;
       const col = CAR_COLORS[(rand() * CAR_COLORS.length) | 0];
       cells.p(x, z).add(car, yawM(x, 0, z, yaw), [col], 0.92 + rand() * 0.12);

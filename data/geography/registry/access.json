@@ -30,7 +30,8 @@
   "owner-sph": "The owner's aerial of the School of Public Health (wings marked yellow: two floors, white: three floors; entrances circled blue; structures circled purple gone), registered to the OSM footprints at 4.0 px/m, and the owner's photo of its three-floor front.",
   "owner-ugbs": "The owner's photos of the Business School (the front and the north side from the north-west corner, the front face on, the middle and east blocks from the north car park) and the owner's aerial marking the front (F, west) and the side the owner calls west (W, north), registered to the OSM footprints at 4.0 px/m.",
   "owner-stadium": "The owner's aerial of the stadium area (the stadium, the training track, the swimming pool, the gym and the tennis courts) and photos of the stadium from outside and of the main stand, registered to the OSM footprints at 2.2 px/m.",
-  "owner-residences": "The owner's aerials of the Volta Hall Road stretch north-west of CEDI, of the buildings opposite the Business School (the Larway Oraca Building circled yellow, the cross-shaped building circled purple, their doors marked blue) and of the lecturers' houses east of the annexes, and the owner's photos of the two buildings opposite the Business School."
+  "owner-residences": "The owner's aerials of the Volta Hall Road stretch north-west of CEDI, of the buildings opposite the Business School (the Larway Oraca Building circled yellow, the cross-shaped building circled purple, their doors marked blue) and of the lecturers' houses east of the annexes, and the owner's photos of the two buildings opposite the Business School.",
+  "owner-mathstat": "The owner's aerial of the Mathematics and Statistics departments (the main entrance marked blue, an arrow along the north front) and three photos taken along that arrow: the Mathematics galleries and the heavy block, the main entrance steps, and the Statistics block with its stair and fins."
  },
  "campusGates": [
   {
@@ -1814,6 +1815,69 @@
    "evidence": "Owner's aerial (door marked blue at the foot of the south wing) and photo (the white gabled end of a wing).",
    "refs": [
     "owner's aerial and photo"
+   ]
+  },
+  {
+   "place": "Statistics",
+   "footprint": "osm:way/430197436",
+   "entrance": {
+    "at": [
+     325.2,
+     -247.6
+    ]
+   },
+   "type": "main entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-mathstat",
+   "approach": "From the road along the north front, across the forecourt to the glazed doors up five steps under the heavy block's overhang.",
+   "evidence": "Owner's aerial (the entrance marked blue on the north front) and photo 2 (the steps and doors under the cantilevered floors).",
+   "refs": [
+    "owner's aerial and photos of the Mathematics and Statistics departments"
+   ]
+  },
+  {
+   "place": "Mathematics Dept",
+   "footprint": "osm:way/335456889",
+   "entrance": {
+    "at": [
+     302.2,
+     -237
+    ]
+   },
+   "type": "side entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-mathstat",
+   "approach": "From the car park in front of the Mathematics galleries to the wooden doors up the steps on the heavy block's west face.",
+   "evidence": "Owner's photo 1 (the doors and steps on the heavy block, facing the car park).",
+   "refs": [
+    "owner's photo 1"
+   ],
+   "via": [
+    [
+     296.5,
+     -240.5
+    ]
+   ]
+  },
+  {
+   "place": "Mathematics and Statistics Department",
+   "footprint": "osm:way/430197438",
+   "entrance": {
+    "at": [
+     360,
+     -228.5
+    ]
+   },
+   "type": "side entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-mathstat",
+   "approach": "From the east car park through the gap in the hedge to the east block's ground-floor gallery.",
+   "evidence": "Owner's photo 3 (the east block's galleries facing the car park) and aerial.",
+   "refs": [
+    "owner's photo 3"
    ]
   }
  ],

@@ -10,7 +10,8 @@
   "Dar es Salaam Courts": "Kampala Court",
   "Kampala Courts": "Addis Ababa Court",
   "Nairobi Courts": "Nairobi Court",
-  "Pentagon GHL Admin Office": "Pent Admin Block"
+  "Pentagon GHL Admin Office": "Pent Admin Block",
+  "Maths Dept": "Mathematics and Statistics Department"
  },
  "exclude": [
   "^University of Ghana$",
