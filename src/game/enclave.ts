@@ -127,20 +127,21 @@ const SPEC: Spec = {
   replaces: HOUSES.map((h) => [(h.x0 + h.x1) / 2 + (h.door === 'w' ? 1.5 : -1.5), (h.z0 + h.z1) / 2] as [number, number]),
   blocks: HOUSES.map(core),
   keep: [
-    [X(397), X(497), Z(-334.5), Z(-326.9)],
+    [X(397), X(497), Z(-333.4), Z(-326.9)],
     ...HOUSES.map((h) => [X(h.door === 'w' ? h.x0 - 1.7 : h.x1 - 2.5), X(h.door === 'w' ? h.x0 + 2.5 : h.x1 + 1.7), Z(h.z0), Z(h.z1)] as [number, number, number, number]),
   ],
   extras: (k: Kit) => {
     for (const h of HOUSES) house(k, h);
 
-    // the retaining wall along the road, white, with a parapet; gaps for the three flights of steps
+    // the retaining wall along the road, white, with a parapet; gaps for the three flights of steps (it stands clear
+    // of the road's verge and drain, which stay at road level)
     const stairs = stairsOf().filter((s) => s.alongZ && s.z0 > 400);
     const gaps = stairs.map((s) => [s.z0, s.z1]).sort((a, b) => a[0] - b[0]);
     let from = 397;
     for (const [g0, g1] of [...gaps, [497, 497]]) {
       if (g0 - from > 0.1) {
-        k.plain.push([B(from, g0, -0.3, T + 0.9, -333.6, -333.2), WHITE_E]);
-        k.plain.push([B(from, g0, T + 0.9, T + 1.0, -333.7, -333.1), '#e6e3dc']);
+        k.plain.push([B(from, g0, -0.3, T + 0.9, -332.5, -332.1), WHITE_E]);
+        k.plain.push([B(from, g0, T + 0.9, T + 1.0, -332.6, -332.0), '#e6e3dc']);
       }
       from = g1;
     }
@@ -160,7 +161,7 @@ const SPEC: Spec = {
       }
     }
     // a paved walk along the top of the wall in front of the buildings, and walks across the lawns
-    for (const [x0, x1, z0, z1] of [[399, 495, -329.4, -327.2], [411.2, 421, -312.8, -311.6], [442.1, 452.5, -312.8, -311.6], [473.6, 483.5, -310.8, -309.6]]) {
+    for (const [x0, x1, z0, z1] of [[399, 495, -328.1, -327.0], [411.2, 421, -312.8, -311.6], [442.1, 452.5, -312.8, -311.6], [473.6, 483.5, -310.8, -309.6]]) {
       k.plain.push([B(x0, x1, T - 0.05, T + 0.03, z0, z1), '#d6d1c6']);
     }
     // the UG logo on the east building's gable to the road, and INNOVATION ENCLAVE in raised blue letters on the
@@ -169,8 +170,8 @@ const SPEC: Spec = {
     k.plain.push([B(ex - 1.55, ex - 1.0, T + 2.1, T + 2.85, e.z0 + OVH - 0.08, e.z0 + OVH), '#1d3f8f']);
     k.plain.push([B(ex - 1.48, ex - 1.07, T + 2.2, T + 2.75, e.z0 + OVH - 0.1, e.z0 + OVH - 0.08), '#e9c45a']);
     letters(k, 'UG', X(ex + 0.2), T + 2.45, Z(e.z0 + OVH), Math.PI, 0.7, 0.08, '#1d2a4f');
-    letters(k, 'INNOVATION', X(487), 1.9, Z(-333.6), Math.PI, 0.34, 0.06, '#1f56b8');
-    letters(k, 'ENCLAVE', X(487), 1.35, Z(-333.6), Math.PI, 0.34, 0.06, '#1f56b8');
+    letters(k, 'INNOVATION', X(487), 1.9, Z(-332.5), Math.PI, 0.34, 0.06, '#1f56b8');
+    letters(k, 'ENCLAVE', X(487), 1.35, Z(-332.5), Math.PI, 0.34, 0.06, '#1f56b8');
     // sign boards on posts: the university's board before the middle buildings, the enclave's by the road
     const board = (x: number, z: number, y: number, text: string, w: number) => {
       for (const s of [-1, 1]) k.plain.push([B(x + s * (w / 2 - 0.1) - 0.04, x + s * (w / 2 - 0.1) + 0.04, y, y + 2.4, z - 0.04, z + 0.04), '#9ea2a6']);

@@ -11,7 +11,7 @@ import { ROUTE_SOLIDS } from './solids';
 import { walkGaps } from './junctions';
 import { newPentStyle } from './pentagon';
 import { RELIEF_BOXES, applyRelief, densify, inStairs, reliefGround } from './relief';
-import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, ROAD_WIDTH } from './life';
+import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, roadClearance, ROAD_WIDTH } from './life';
 
 export const LANES = [-2.4, 0, 2.4];
 
@@ -132,8 +132,11 @@ export function buildSky(top: string, bottom: string, detail = 4) {
   return sky;
 }
 
-/** A flat strip following the road, from lateral a to lateral b (metres, + = right), chunked so UVs stay small. */
-function ribbon(track: Track, a: number, ya: number, b: number, yb: number, from: number, to: number, uvScale = 8, step = 2) {
+/**
+ * A flat strip following the road, from lateral a to lateral b (metres, + = right), chunked so UVs stay small; `across`
+ * splits it into lanes of vertices so that over relief it follows the ground across its width too.
+ */
+function ribbon(track: Track, a: number, ya: number, b: number, yb: number, from: number, to: number, uvScale = 8, step = 2, across = 1) {
   const pos: number[] = [];
   const uv: number[] = [];
   const idx: number[] = [];
@@ -142,17 +145,20 @@ function ribbon(track: Track, a: number, ya: number, b: number, yb: number, from
     const c1 = Math.min(to, c0 + CHUNK);
     const base = pos.length / 3;
     let rows = 0;
+    const w = across + 1;
     for (let d = c0; ; d = Math.min(c1, d + step)) {
-      const pa = track.pose(d, a), pb = track.pose(d, b);
-      pos.push(pa.x, ya, pa.z, pb.x, yb, pb.z);
       const v = (d - c0) / uvScale;
-      uv.push(0, v, 1, v);
+      for (let k = 0; k <= across; k++) {
+        const f = k / across, p = track.pose(d, a + (b - a) * f);
+        pos.push(p.x, ya + (yb - ya) * f, p.z);
+        uv.push(f, v);
+      }
       rows++;
       if (d >= c1) break;
     }
-    for (let r = 0; r < rows - 1; r++) {
-      const i = base + r * 2;
-      idx.push(i, i + 1, i + 2, i + 1, i + 3, i + 2);
+    for (let r = 0; r < rows - 1; r++) for (let k = 0; k < across; k++) {
+      const i = base + r * w + k;
+      idx.push(i, i + 1, i + w, i + 1, i + w + 1, i + w);
     }
   }
   const geo = new THREE.BufferGeometry();
@@ -269,7 +275,8 @@ export function buildCampus() {
   const grass = grassMaterial(grassTex);
   const ground = new THREE.Mesh(mergeGeometries(tiles), grass);
   ground.receiveShadow = true;
-  group.add(ground, reliefGround(grass, TILE));
+  // under the roads the relief grid sinks out of sight (a road's strip is flat across, the slope under it is not)
+  group.add(ground, reliefGround(grass, TILE, (x, z) => { const c = roadClearance(x, z, 6, -1, true); return c < -0.4 ? 0.6 : c < 0 ? (0.6 * -c) / 0.4 : 0; }));
 
   // pitches, tracks, car parks, water and woods
   const AREA_COLOR: Record<string, string> = { pitch: '#4f9a3a', track: '#b4533a', parking: '#8d9096', water: '#4f8fbf', wood: '#2f6b2a', plaza: '#cfc5b2' };
@@ -282,6 +289,24 @@ export function buildCampus() {
     const tris = THREE.ShapeUtils.triangulateShape(contour, []);
     let buf = areaBuf.get(a.kind);
     if (!buf) areaBuf.set(a.kind, (buf = { pos: [], idx: [] }));
+    let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
+    for (const v of contour) { x0 = Math.min(x0, v.x); x1 = Math.max(x1, v.x); z0 = Math.min(z0, v.y); z1 = Math.max(z1, v.y); }
+    const over = RELIEF_BOXES.filter((r) => r.x1 > x0 && r.x0 < x1 && r.z1 > z0 && r.z0 < z1);
+    if (over.length) {
+      // (finer over the small zones' steps and banks than on the long gentle hill)
+      const fine = over.some((r) => (r.x1 - r.x0) * (r.z1 - r.z0) < 200000) ? 2 : 5;
+      // over relief the area is cut into small triangles, so that lowered or raised onto the ground (applyRelief)
+      // it follows the slopes instead of hanging over them or sinking under the grass and the roads
+      const split = (a: THREE.Vector2, b: THREE.Vector2, c: THREE.Vector2, depth: number) => {
+        const ab = a.distanceTo(b), bc = b.distanceTo(c), ca = c.distanceTo(a), m = Math.max(ab, bc, ca);
+        if (m < fine || depth > 14) { const k = buf!.pos.length / 3; buf!.pos.push(a.x, 0, a.y, b.x, 0, b.y, c.x, 0, c.y); buf!.idx.push(k, k + 1, k + 2); return; }
+        if (m === ab) { const p = a.clone().lerp(b, 0.5); split(a, p, c, depth + 1); split(p, b, c, depth + 1); }
+        else if (m === bc) { const p = b.clone().lerp(c, 0.5); split(a, b, p, depth + 1); split(a, p, c, depth + 1); }
+        else { const p = c.clone().lerp(a, 0.5); split(a, b, p, depth + 1); split(p, b, c, depth + 1); }
+      };
+      for (const t of tris) split(contour[t[0]], contour[t[1]], contour[t[2]], 0);
+      continue;
+    }
     const base = buf.pos.length / 3;
     for (const v of contour) buf.pos.push(v.x, 0, v.y);
     for (const t of tris) buf.idx.push(base + t[0], base + t[1], base + t[2]);
@@ -451,7 +476,7 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
 
   const roadTex = asphaltTexture();
   roadTex.repeat.set(2, 1);
-  const road = new THREE.Mesh(ribbon(track, -ROAD_HALF, 0, ROAD_HALF, 0, 0, L), weathering(wettable(groundMat('#ffffff', 5, roadTex)), 'ground', 34, 0.35));
+  const road = new THREE.Mesh(ribbon(track, -ROAD_HALF, 0, ROAD_HALF, 0, 0, L, 8, 2, 4), weathering(wettable(groundMat('#ffffff', 5, roadTex)), 'ground', 34, 0.35));
   road.receiveShadow = true;
   group.add(road);
   const white = groundMat('#e9e6dc', 6);

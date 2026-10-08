@@ -785,6 +785,24 @@ Computer Science wing and east block meet edge to edge (`corrections.json`: resh
   at the end of the drive (`relief.ts`). **The car park** from there to the Mathematics and Statistics departments'
   north front is concrete throughout, no grass.
 
+## 32. Ground fixes; Computer Science's door; seven steps before RIPS
+
+- **The engineering school's hollow** no longer reaches the main road on its south or Annie Jiagge Road on its
+  east: the slope levels out a few metres short of both, so neither road tips into it (`relief.ts`).
+- **Grass through the roads:** on slopes the ground grid sinks out of sight under every road and path, the route's
+  road follows the ground across its width as well as along it, and the road verges are laid in 3 m pieces that
+  follow the ground. Car parks and paved areas over relief are cut finely so they follow the slopes too
+  (`world.ts`, `life.ts`).
+- **The Innovation Enclave's wall** stands clear of the road's verge and drain, which stay at road level.
+- **Commonwealth Hall's red forecourt** follows the ground and goes under the road and the footpath across it.
+- **Computer Science's door** (owner's marked aerial: the blue mark where the yellow arrow ends) is on the wing's
+  west face further north, reached down the service road west of RIPS and east along a paved way by the car park
+  behind ISSER and RIPS. The ground the owner circled purple there is **trees**, not grass (woods north of RIPS,
+  north-west, west and south-west of ISSER, east of the Computer Science wing).
+- **Before RIPS** the paved ground now drops **seven steps (1.26 m)** below the car park to its south, behind a
+  retaining face with a coping, the seven-step stairs at the end of the drive; big shade trees stand over the
+  concrete car park.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

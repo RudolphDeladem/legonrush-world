@@ -896,9 +896,9 @@
   {
    "place": "Computer Science Dept",
    "type": "main entrance",
-   "arrivalOn": "residential",
-   "arrivalDistance": 32,
-   "facing": 171
+   "arrivalOn": "service",
+   "arrivalDistance": 0.4,
+   "facing": 109
   },
   {
    "place": "Cedi Conference Centre",

@@ -160,7 +160,7 @@ const SPEC: Spec = {
   keep: [
     [306 - O[0], 318.3 - O[0], -283.3 - O[1], -279 - O[1]],
     [361.2 - O[0], 393.8 - O[0], -282.4 - O[1], -273.8 - O[1]],
-    [347.5 - O[0], 349.6 - O[0], -309 - O[1], -303 - O[1]],
+    [347.5 - O[0], 349.6 - O[0], -312 - O[1], -307 - O[1]],
     [276.3 - O[0], 318.3 - O[0], -294.6 - O[1], -292.3 - O[1]],
   ],
   extras: (k: Kit) => {
@@ -232,12 +232,16 @@ const SPEC: Spec = {
 
     // --- RIPS: galleries on solid parapets toward the drive, and the link ---
     balconies(old, k, 318.3, 344.7, -292, -290, GREYED, 6.6);
-    // the kerb where the paved ground before RIPS drops half a metre below its galleries, and the small stairs' cheeks
-    old.push([B(318.3, 344.7, -0.5, 0.02, -290.0, -289.55), '#cfc9bd']);
-    for (const x of [336.35, 339.4]) old.push([B(x, x + 0.25, -0.5, 0.35, -278.7, -277.4), '#d9d4c8']);
-    old.push([B(319, 336.35, -0.5, 0.01, -278.66, -278.3), '#cfc9bd'], [B(339.65, 349.4, -0.5, 0.01, -278.66, -278.3), '#cfc9bd']);
+    // the paved ground before RIPS falls from the galleries to a floor seven steps (1.26 m) below the car park on its
+    // south: a retaining face with a coping along that edge, the stairs' cheek walls, and a face along the Computer
+    // Science wing where the ground drops beside it
+    const LOW = -1.26;
+    for (const x of [336.35, 339.4]) old.push([B(x, x + 0.25, LOW - 0.05, 0.45, -277.55, -275.4), '#d9d4c8']);
+    old.push([B(317, 336.35, LOW - 0.05, 0.01, -277.55, -277.2), '#cfc9bd'], [B(339.65, 349.65, LOW - 0.05, 0.01, -277.55, -277.2), '#cfc9bd']);
+    old.push([B(317, 336.35, 0, 0.12, -277.58, -277.1), '#e2ddd2'], [B(339.65, 349.65, 0, 0.12, -277.58, -277.1), '#e2ddd2']);
+    old.push([B(349.35, 349.65, LOW - 0.05, 0.01, -290, -277.2), '#cfc9bd']);
     const small = stairsOf().find((q) => q.alongZ && q.z0 === 336.6)!;
-    for (let j = 0; j < small.steps; j++) { const za = small.x0 + j * small.tread, y = small.at(za + small.tread / 2); old.push([B(small.z0, small.z1, -0.5, y, za, za + small.tread + 0.02), STEP]); }
+    for (let j = 0; j < small.steps; j++) { const za = small.x0 + j * small.tread, y = small.at(za + small.tread / 2); old.push([B(small.z0, small.z1, LOW - 0.05, y, za, za + small.tread + 0.02), STEP]); }
     // the white sign board on the second-floor parapet (owner): REGIONAL INSTITUTE FOR on the first line, POPULATION
     // STUDIES (RIPS) under it
     k.plain.push([B(322.9, 329.1, 2 * ST + 0.42, 2 * ST + 1.55, -289.99, -289.93), '#fbfbf9'], [B(322.8, 329.2, 2 * ST + 0.39, 2 * ST + 1.58, -290.0, -289.97), '#c9ccd0']);
@@ -254,11 +258,11 @@ const SPEC: Spec = {
     k.plain.push([new THREE.SphereGeometry(0.55, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, 0.35, 1).rotateX(-0.9).translate(358.6 - O[0], top + 0.9 + ST + 1.6, -285 - O[1]), '#e9e9e6']);
     for (const z of [-316, -312]) k.plain.push([new THREE.CylinderGeometry(0.75, 0.75, 1.5, 12).translate(355.5 - O[0], top + 1.35, z - O[1]), '#1b1c1f']);
     // the department's door on the wing's west face: a porch slab on two posts, glazed doors, two steps
-    washed.push([B(347.4, 349.6, 3.0, 3.3, -307.8, -303.8), WASHED]);
-    for (const z of [-307.6, -304]) washed.push([B(347.5, 347.75, 0, 3.0, z - 0.12, z + 0.12), WASHED]);
-    k.plain.push([B(349.56, 349.6, PL, 2.8, -306.8, -304.8), '#2a333b'], [B(349.55, 349.56, PL, 2.8, -305.83, -305.77), '#8d9196']);
-    washed.push([B(348.4, 349.6, 0, PL, -307.4, -304.2), STEP], [B(347.9, 348.4, 0, PL / 2, -307.4, -304.2), STEP]);
-    k.signs.push({ text: 'DEPARTMENT OF COMPUTER SCIENCE', x: 347.36 - O[0], y: 3.15, z: -305.8 - O[1], ry: -Math.PI / 2, w: 3.4, colors: ['#ffffff', '#1d3f7a'] });
+    washed.push([B(347.4, 349.6, 3.0, 3.3, -311.5, -307.5), WASHED]);
+    for (const z of [-311.3, -307.7]) washed.push([B(347.5, 347.75, 0, 3.0, z - 0.12, z + 0.12), WASHED]);
+    k.plain.push([B(349.56, 349.6, PL, 2.8, -310.5, -308.5), '#2a333b'], [B(349.55, 349.56, PL, 2.8, -309.53, -309.47), '#8d9196']);
+    washed.push([B(348.4, 349.6, 0, PL, -311.1, -307.9), STEP], [B(347.9, 348.4, 0, PL / 2, -311.1, -307.9), STEP]);
+    k.signs.push({ text: 'DEPARTMENT OF COMPUTER SCIENCE', x: 347.36 - O[0], y: 3.15, z: -309.5 - O[1], ry: -Math.PI / 2, w: 3.4, colors: ['#ffffff', '#1d3f7a'] });
     // the stair tower east of the wing: flights and landings seen through tall fins, a cap slab
     washed.push([B(366.4, 366.7, 0, top + 2.4, -284.6, -279.5), WASHED], [B(361.2, 366.9, top + 2.4, top + 3.1, -284.8, -279.3), WASHED]);
     for (let x = 361.75; x < 366.4; x += 0.55) washed.push([B(x - 0.07, x + 0.07, 0.5, top + 2.4, -279.7, -279.3), WASHED]);
@@ -299,11 +303,14 @@ const SPEC: Spec = {
     g.hedge(k, 311.6 - O[0], -278.5 - O[1], 311.6 - O[0], -268 - O[1]);
     g.hedge(k, 318.4 - O[0], -278.5 - O[1], 318.4 - O[0], -268 - O[1]);
     g.hedge(k, 300 - O[0], -278.3 - O[1], 310.6 - O[0], -278.3 - O[1]);
-    g.hedge(k, 319.4 - O[0], -278.3 - O[1], 330 - O[0], -278.3 - O[1]);
+    g.hedge(k, 319.4 - O[0], -276.6 - O[1], 330 - O[0], -276.6 - O[1]);
     g.tree(k, 297 - O[0], -274 - O[1], 1.4);
     g.tree(k, 342.5 - O[0], -275 - O[1], 1.6);
     g.tree(k, 396.5 - O[0], -276 - O[1], 1.5);
     g.palm(k, 346.3 - O[0], -279.5 - O[1], 3.2);
+    // big shade trees over the concrete car park north of the Mathematics and Statistics departments (owner's
+    // aerial: trees, not grass; the cars park under them)
+    for (const [x, z, sc] of [[325.5, -272, 1.7], [330.5, -265.8, 1.9], [334.2, -261, 1.6], [344.5, -268.5, 1.9], [348.2, -261.8, 1.7], [350.8, -273.4, 1.5]]) g.tree(k, x - O[0], z - O[1], sc);
     g.palm(k, 346 - O[0], -311 - O[1], 4.5);
     for (const [x, z] of [[352.5, -275.6], [357.6, -275.5]]) g.bush(k, x - O[0], z - O[1], 1.1);
 

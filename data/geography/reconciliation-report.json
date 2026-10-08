@@ -288,8 +288,8 @@
  },
  "areas": {
   "wood": {
-   "count": 7,
-   "ha": 488.9
+   "count": 12,
+   "ha": 489.3
   },
   "water": {
    "count": 26,
@@ -308,7 +308,7 @@
    "ha": 12.8
   },
   "plaza": {
-   "count": 15,
+   "count": 16,
    "ha": 1.5
   },
   "parking": {

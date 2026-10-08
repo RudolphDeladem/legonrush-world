@@ -1130,12 +1130,16 @@ export function buildRoadEdges(map: THREE.Texture) {
           if (ok && start < 0) start = j;
           if (!ok && start >= 0) {
             const t0 = (start / n) * len, t1 = (Math.min(j - 1, n) / n) * len;
-            if (t1 - t0 > 0.5) {
-              const x0 = ax + ux * t0, z0 = az + uz * t0, x1 = ax + ux * t1, z1 = az + uz * t1;
+            // a quad to every sample step (3 m), so that over relief the strips follow the ground instead of
+            // spanning a slope from one end of a long run to the other
+            if (t1 - t0 > 0.5) for (let ta = t0; t1 - ta > 1e-3; ) {
+              const tb = Math.min(t1, ta + len / n);
+              const x0 = ax + ux * ta, z0 = az + uz * ta, x1 = ax + ux * tb, z1 = az + uz * tb;
               if (at > half) quad(x0, z0, x1, z1, nx, nz, half - 0.05, at, verge);
               quad(x0, z0, x1, z1, nx, nz, at + 0.2, at + 0.32, lip);
               quad(x0, z0, x1, z1, nx, nz, at + 0.32, at + 0.82, drain);
               quad(x0, z0, x1, z1, nx, nz, at + 0.82, at + 0.95, lip);
+              ta = tb;
             }
             start = -1;
           }

@@ -1906,19 +1906,37 @@
    "footprint": "osm:way/665125611",
    "entrance": {
     "at": [
-     348.6,
-     -305.8
+     348.9,
+     -309.5
     ]
    },
    "type": "main entrance",
    "status": "verified",
    "confidence": "high",
    "cite": "owner-issercs",
-   "approach": "Through the car park behind ISSER and the RIPS building to the porch on the west face of the Computer Science wing.",
-   "evidence": "Owner's photo 3 (the door marked blue beyond the back of ISSER).",
+   "approach": "From the main road down the service road west of the RIPS building, then east through the car park behind ISSER and RIPS to the porch on the west face of the Computer Science wing.",
+   "evidence": "Owner's marked aerial: the path (yellow arrow) from the main road down the service road and east to the door (marked blue) on the wing's west face; owner's photo 3 (the door beyond the back of ISSER).",
    "refs": [
+    "owner's marked aerial of ISSER and Computer Science",
     "owner's photo 3"
-   ]
+   ],
+   "via": [
+    [
+     310,
+     -309.5
+    ],
+    [
+     340,
+     -309.5
+    ]
+   ],
+   "arrival": {
+    "way": "way/761120134",
+    "near": [
+     305,
+     -311
+    ]
+   }
   },
   {
    "place": "Department of Plant Biology",

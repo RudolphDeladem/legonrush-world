@@ -41,8 +41,9 @@ type Zone = Hollow | Hill;
 
 const ZONES: Zone[] = [
   // School of Engineering Sciences: the building, its forecourt and the car park on the floor;
-  // the access road from the main road on the south comes down the 28 m slope
-  { kind: 'hollow', x0: 372, x1: 498, z0: -458, z1: -372, depth: 4.5, w: 22, e: 20, n: 20, s: 28 },
+  // the access road from the main road on the south comes down the 23 m slope, which levels out a few metres
+  // short of that road and of Annie Jiagge Road on the east, so neither tips into it (owner)
+  { kind: 'hollow', x0: 372, x1: 494, z0: -458, z1: -372, depth: 4.5, w: 22, e: 10, n: 20, s: 23 },
   // Legon Hill: the end of the avenue (x -362) at 0; Commonwealth's stairway climbs 9 m to the drive and
   // the front block (x -464 to -500); the hall rises 6 m more to its west end; the Great Hall's summit
   // about 21 m up; then down again behind it
@@ -65,11 +66,11 @@ const ZONES: Zone[] = [
   // The Innovation Enclave, south of the engineering school: its six buildings stand up the hill on a terrace 2 m
   // above the road on its north, behind a white retaining wall that three flights of steps climb (owner's photos);
   // the ground falls away gently on the other sides
-  { kind: 'terrace', x0: 397, x1: 497, z0: -333.2, z1: -296, depth: 2, w: 6, e: 4, n: 0.3, s: 8 },
-  // the paved ground before the RIPS building, between ISSER and Computer Science: a little downhill, three steps
-  // below the car park north of the Mathematics and Statistics departments (owner); the drive along ISSER's front
-  // ramps down into it from the west
-  { kind: 'hollow', x0: 319, x1: 349.4, z0: -289.6, z1: -278.6, depth: 0.5, w: 3, e: 0.3, n: 0.4, s: 0.3 },
+  { kind: 'terrace', x0: 397, x1: 497, z0: -332.1, z1: -296, depth: 2, w: 6, e: 4, n: 0.3, s: 8 },
+  // the paved ground before the RIPS building, between ISSER and Computer Science: downhill from RIPS, seven steps
+  // (1.26 m) below the car park north of the Mathematics and Statistics departments (owner); the drive along ISSER's
+  // front ramps down into it from the west
+  { kind: 'hollow', x0: 321, x1: 349.4, z0: -282, z1: -277.5, depth: 1.26, w: 4, e: 0.3, n: 8, s: 0.3 },
 ];
 const STAIRS: Stairs[] = [
   // Commonwealth: from the gate houses up Legon Hill to the drive
@@ -79,11 +80,11 @@ const STAIRS: Stairs[] = [
   // the Balme Library: from the pool deck up to the middle terrace and on up to the road before the library
   { x0: 61.6, x1: 43, z0: 1.5, z1: 14.5, flights: 2, steps: 8, tread: 0.4, alongZ: true },
   // the Innovation Enclave: up from the road through the retaining wall to the terrace, west, middle and east
-  { x0: -334.2, x1: -329.4, z0: 415, z1: 419, flights: 1, steps: 12, tread: 0.4, alongZ: true },
-  { x0: -334.2, x1: -329.4, z0: 445.5, z1: 451.5, flights: 1, steps: 12, tread: 0.4, alongZ: true },
-  { x0: -334.2, x1: -329.4, z0: 478, z1: 481.5, flights: 1, steps: 12, tread: 0.4, alongZ: true },
-  // the small stairs from the paved ground before RIPS up to the car park (owner)
-  { x0: -278.7, x1: -277.5, z0: 336.6, z1: 339.4, flights: 1, steps: 3, tread: 0.4, alongZ: true },
+  { x0: -333, x1: -328.2, z0: 415, z1: 419, flights: 1, steps: 12, tread: 0.4, alongZ: true },
+  { x0: -333, x1: -328.2, z0: 445.5, z1: 451.5, flights: 1, steps: 12, tread: 0.4, alongZ: true },
+  { x0: -333, x1: -328.2, z0: 478, z1: 481.5, flights: 1, steps: 12, tread: 0.4, alongZ: true },
+  // the small stairs at the end of the drive, from the paved ground before RIPS up to the car park (owner)
+  { x0: -277.5, x1: -275.4, z0: 336.6, z1: 339.4, flights: 1, steps: 7, tread: 0.3, alongZ: true },
 ];
 
 const boxOf = (q: Zone) => q.kind !== 'hill'
@@ -220,8 +221,10 @@ export function applyRelief(root: THREE.Object3D) {
  * Each patch of ground is drawn by one grid only: where a small zone (a terrace, a hollow) lies inside a
  * big one (the hill), the big grid leaves its cells to the small zone's finer grid (two surfaces sampled
  * differently disagree across a slope's edge by up to a metre: grass over the road, a rider half sunk).
+ * `sink` lowers the grid under the roads: a road's strip is flat across its width, the ground under it is not, and
+ * on a slope crossed at an angle the grass would otherwise show through the middle of the road.
  */
-export function reliefGround(material: THREE.Material, tile: number) {
+export function reliefGround(material: THREE.Material, tile: number, sink: (x: number, z: number) => number = () => 0) {
   const geos: THREE.BufferGeometry[] = [];
   const area = (b: (typeof RELIEF_BOXES)[number]) => (b.x1 - b.x0) * (b.z1 - b.z0);
   RELIEF_BOXES.forEach((b, bi) => {
@@ -232,7 +235,7 @@ export function reliefGround(material: THREE.Material, tile: number) {
     const pos: number[] = [], uv: number[] = [], idx: number[] = [];
     for (let j = 0; j <= nz; j++) for (let i = 0; i <= nx; i++) {
       const x = b.x0 + ((b.x1 - b.x0) * i) / nx, z = b.z0 + ((b.z1 - b.z0) * j) / nz;
-      pos.push(x, groundHeight(x, z) - (inStairs(x, z) ? 0.6 : 0), z);
+      pos.push(x, groundHeight(x, z) - (inStairs(x, z) ? 0.6 : sink(x, z)), z);
       uv.push(x / tile, -z / tile);
     }
     for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {

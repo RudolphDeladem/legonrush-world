@@ -260,7 +260,7 @@ try {
   // Department of Plant Biology and the two small buildings behind the engineering school are one floor
   { for (const [x, z] of [[290, -290], [306, -297], [330, -296], [347, -296], [355, -310], [355, -290], [356, -279], [375, -287]]) { const b = buildingAt(x, z); if (!b) fail(`ISSER and Computer Science: no building at ${x},${z} (the blocks must be connected)`); else if (b.height < 10) fail(`ISSER and Computer Science: the block at ${x},${z} is not three floors`); }
     const e = ann('ISSER Building'); if (!e || Math.hypot(e[0] - 312.5, e[1] - -283.3) > 2) fail('ISSER Building: the entrance is not on the front facing the Mathematics department (owner)');
-    const c = ann('Computer Science Dept'); if (!c || Math.hypot(c[0] - 349.6, c[1] - -305.8) > 2) fail('Computer Science Dept: the entrance is not on the wing\'s west face (owner)');
+    const c = ann('Computer Science Dept'); if (!c || Math.hypot(c[0] - 349.6, c[1] - -309.5) > 2) fail('Computer Science Dept: the entrance is not on the wing\'s west face (owner)');
     for (const [n, x, z] of [['the Department of Plant Biology', 406, -314], ['a small building behind the engineering school', 524, -472], ['the other small building behind the engineering school', 535, -473]]) { const b = buildingAt(x, z); if (!b || b.height > 5) fail(`${n} is not one floor (owner)`); }
     if ((await server.ssrLoadModule('/src/game/issercs.ts')).isserCs.frames().length !== 1) fail('expected the ISSER and Computer Science model'); }
   // owner: south of CEDI the Faculty of Arts is two low floors (about half CEDI's height) and the building between
@@ -275,12 +275,14 @@ try {
     if (Math.abs(gh(448.5, -331.5) - 1) > 0.5) fail('Innovation Enclave: no steps up from the road');
     if (gh(448.5, -338) !== 0) fail('Innovation Enclave: the road before the terrace is not at road level');
     if ((await server.ssrLoadModule('/src/game/enclave.ts')).enclave.frames().length !== 1) fail('expected the Innovation Enclave model'); }
-  // owner: the paved ground before RIPS lies three steps below the car park to its south, small stairs between
+  // owner: the paved ground before RIPS lies seven steps below the car park to its south, small stairs between
   // them, and neither has grass (both paved)
   { const { groundHeight: gh } = await server.ssrLoadModule('/src/game/relief.ts');
-    if (Math.abs(gh(333, -284) + 0.5) > 0.05) fail('the ground before RIPS is not three steps below the car park (owner)');
+    if (Math.abs(gh(333, -280) + 1.26) > 0.05) fail('the ground before RIPS is not seven steps below the car park (owner)');
     if (gh(345, -270) !== 0) fail('the car park north of the Mathematics and Statistics departments is not at road level');
-    const st = gh(338, -278.0); if (!(st > -0.5 && st < 0)) fail('no small stairs up from the ground before RIPS to the car park (owner)');
+    const st = gh(338, -276.4); if (!(st > -1.26 && st < 0)) fail('no small stairs up from the ground before RIPS to the car park (owner)');
+    // owner: the engineering school's hollow must not tip the main road or Annie Jiagge Road into its slope
+    for (const [x, z] of [[430, -339], [470, -341], [500, -342.4], [505, -400], [506, -440]]) if (gh(x, z) !== 0) fail(`the road at ${x},${z} dips into the engineering school's hollow`);
     const inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
     for (const [n, x, z] of [['before RIPS', 333, -284], ['in the car park by Computer Science', 345, -270], ['between the car park and the Mathematics entrance', 325, -262]]) if (!cm.AREAS.some((a) => (a.kind === 'plaza' || a.kind === 'parking') && inA(a, x, z))) fail(`the ground ${n} is not paved (owner)`); }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');

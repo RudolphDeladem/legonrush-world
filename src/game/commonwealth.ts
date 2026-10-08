@@ -23,6 +23,7 @@ import { PAVE, WHITE, box, flat } from './modelkit';
 import { PL, createSite, render, slab, window_, type Block, type Kit, type Spec, type Style } from './blocks';
 import { garden } from './gardens';
 import { groundHeight, stairsOf } from './relief';
+import { NODE_XZ, ROADS } from './campusmap';
 
 const ROOF = '#c4613a', FASCIA = '#fbf9f3', FRAME = '#5a3b28', STONE = '#9b8a72', STONE_DARK = '#7d6d58';
 const ST = 3.3;
@@ -291,10 +292,31 @@ const approach: Spec = {
       k.plain.push([new THREE.CircleGeometry(1.1, 12, 0, Math.PI).rotateY(Math.PI / 2).translate(ax1 + 0.04, y0 + 2.2, zc), '#3a3129']);
     }
     // the forecourt: red paving with the hall crest in a ring, in front of the gate
+    // (laid on the ground, a little behind the roads in depth so the drive across it stays on top; owner: the road
+    // was covered by the red)
     const fy = k.ground(X(-478), 0);
-    k.plain.push([box(X(-489), X(-464), fy - 0.3, fy + 0.08, Z(108), Z(148)), '#a85a43']);
-    k.plain.push([new THREE.RingGeometry(3.4, 4.1, 32).rotateX(-Math.PI / 2).translate(X(-483), fy + 0.1, 0), '#e8dccb']);
-    k.plain.push([new THREE.CircleGeometry(1.7, 24).rotateX(-Math.PI / 2).translate(X(-483), fy + 0.1, 0), '#c8a13a']);
+    // the roads and footpaths across it, which the paving goes under
+    const ways: [number, number, number, number, number][] = [];
+    for (const r of ROADS) for (let i = 0; i < r.nodes.length - 1; i++) {
+      const ax = NODE_XZ[r.nodes[i] * 2], az = NODE_XZ[r.nodes[i] * 2 + 1], bx = NODE_XZ[r.nodes[i + 1] * 2], bz = NODE_XZ[r.nodes[i + 1] * 2 + 1];
+      if (Math.max(ax, bx) < -500 || Math.min(ax, bx) > -450 || Math.max(az, bz) < 95 || Math.min(az, bz) > 160) continue;
+      ways.push([ax, az, bx, bz, [9, 7.4, 6.2, 4.6, 2.6][r.cls] / 2 + 0.4]);
+    }
+    const underWay = (wx: number, wz: number) => ways.some(([ax, az, bx, bz, h]) => {
+      const dx = bx - ax, dz = bz - az, t = Math.max(0, Math.min(1, ((wx - ax) * dx + (wz - az) * dz) / (dx * dx + dz * dz || 1)));
+      return Math.hypot(wx - ax - dx * t, wz - az - dz * t) < h;
+    });
+    const onGround = (geo: THREE.BufferGeometry, color: string, lift: number, layer: number) => {
+      const p = geo.attributes.position as THREE.BufferAttribute;
+      for (let i = 0; i < p.count; i++) p.setY(i, k.ground(p.getX(i), p.getZ(i)) + (underWay(...k.world(p.getX(i), p.getZ(i))) ? -0.25 : lift));
+      geo.computeVertexNormals();
+      const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color, roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -layer, polygonOffsetUnits: -layer * 2 }));
+      m.receiveShadow = true;
+      k.meshes.push(m);
+    };
+    onGround(new THREE.PlaneGeometry(X(-464) - X(-489), Z(148) - Z(108), 25, 40).rotateX(-Math.PI / 2).translate((X(-489) + X(-464)) / 2, 0, (Z(108) + Z(148)) / 2), '#a85a43', 0.025, 1);
+    onGround(new THREE.RingGeometry(3.4, 4.1, 32, 2).rotateX(-Math.PI / 2).translate(X(-483), 0, 0), '#e8dccb', 0.02, 2);
+    onGround(new THREE.CircleGeometry(1.7, 24).rotateX(-Math.PI / 2).translate(X(-483), 0, 0), '#c8a13a', 0.02, 2);
     // a low wall along the forecourt's edge above the slope, open to the stairs
     for (const [za, zb] of [[108, stair.z0 - 0.4], [stair.z1 + 0.4, 148]]) k.plain.push([box(X(-465), X(-464), fy, fy + 0.9, Z(za), Z(zb)), STONE]);
     // landing at the foot: paving from the road to the first step, and the low stone walls by the gate houses (owner photo)

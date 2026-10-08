@@ -3058,30 +3058,22 @@
       "ring": [
         [
           316.0,
-          -289.6
-        ],
-        [
-          319.0,
-          -289.6
+          -290.0
         ],
         [
           349.4,
-          -289.6
+          -290.0
         ],
         [
           349.4,
-          -278.6
-        ],
-        [
-          319.0,
-          -278.6
+          -277.5
         ],
         [
           316.0,
-          -278.6
+          -277.5
         ]
       ],
-      "reason": "Owner's in-game view (circled violet): the ground before the RIPS building between ISSER and Computer Science has no grass; it is paved, a little downhill, three steps below the car park to its south."
+      "reason": "Owner's in-game views: the ground before the RIPS building between ISSER and Computer Science has no grass; it is paved and goes downhill from the RIPS galleries to a floor seven steps below the car park to its south, small stairs up at the end of the drive."
     },
     {
       "id": "owner:mathstat-cs-car-park",
@@ -3089,27 +3081,27 @@
       "ring": [
         [
           319.5,
-          -278.3
+          -277.2
         ],
         [
           336.4,
-          -278.3
+          -277.2
         ],
         [
           336.4,
-          -277.4
+          -275.3
         ],
         [
           339.6,
-          -277.4
+          -275.3
         ],
         [
           339.6,
-          -278.3
+          -277.2
         ],
         [
           392.0,
-          -278.3
+          -277.2
         ],
         [
           392.0,
@@ -3129,6 +3121,152 @@
         ]
       ],
       "reason": "Owner's in-game view (circled yellow) and photo of the east car park of the Mathematics and Statistics departments: no grass, all concrete from the departments' north front to the front of Computer Science."
+    },
+    {
+      "id": "owner:woods-cs-north",
+      "class": "wood",
+      "ring": [
+        [
+          308,
+          -326
+        ],
+        [
+          335,
+          -326
+        ],
+        [
+          335,
+          -312
+        ],
+        [
+          308,
+          -312
+        ]
+      ],
+      "reason": "Owner's marked aerial of ISSER and Computer Science (the purple outlines are trees, not grass), registered to Google Open Buildings' roofs of ISSER and the Computer Science wing at 4.2 px/m. Here: the trees north of the RIPS building, between the service road and the Computer Science wing, north of the way to the department's door."
+    },
+    {
+      "id": "owner:woods-isser-northwest",
+      "class": "wood",
+      "ring": [
+        [
+          270,
+          -320
+        ],
+        [
+          300,
+          -325.5
+        ],
+        [
+          302.5,
+          -314
+        ],
+        [
+          296,
+          -309
+        ],
+        [
+          282,
+          -304
+        ],
+        [
+          272,
+          -303
+        ]
+      ],
+      "reason": "Owner's marked aerial of ISSER and Computer Science (the purple outlines are trees, not grass), registered to Google Open Buildings' roofs of ISSER and the Computer Science wing at 4.2 px/m. Here: the trees north-west of ISSER, between the service road round it and the main road."
+    },
+    {
+      "id": "owner:woods-isser-west",
+      "class": "wood",
+      "ring": [
+        [
+          244,
+          -298
+        ],
+        [
+          266,
+          -298
+        ],
+        [
+          266,
+          -252
+        ],
+        [
+          244,
+          -252
+        ]
+      ],
+      "reason": "Owner's marked aerial of ISSER and Computer Science (the purple outlines are trees, not grass), registered to Google Open Buildings' roofs of ISSER and the Computer Science wing at 4.2 px/m. Here: the trees west of ISSER."
+    },
+    {
+      "id": "owner:woods-isser-southwest",
+      "class": "wood",
+      "ring": [
+        [
+          262,
+          -279
+        ],
+        [
+          290,
+          -279
+        ],
+        [
+          290,
+          -258
+        ],
+        [
+          262,
+          -258
+        ]
+      ],
+      "reason": "Owner's marked aerial of ISSER and Computer Science (the purple outlines are trees, not grass), registered to Google Open Buildings' roofs of ISSER and the Computer Science wing at 4.2 px/m. Here: the trees south-west of ISSER's front, before the road to the Mathematics department."
+    },
+    {
+      "id": "owner:woods-cs-east",
+      "class": "wood",
+      "ring": [
+        [
+          366,
+          -323
+        ],
+        [
+          390,
+          -323
+        ],
+        [
+          390,
+          -295
+        ],
+        [
+          366,
+          -295
+        ]
+      ],
+      "reason": "Owner's marked aerial of ISSER and Computer Science (the purple outlines are trees, not grass), registered to Google Open Buildings' roofs of ISSER and the Computer Science wing at 4.2 px/m. Here: the trees east of the Computer Science wing, north of its east block."
+    },
+    {
+      "id": "owner:cs-door-walk",
+      "class": "plaza",
+      "ring": [
+        [
+          306.5,
+          -311.2
+        ],
+        [
+          349.6,
+          -311.2
+        ],
+        [
+          349.6,
+          -308.5
+        ],
+        [
+          306.5,
+          -308.5
+        ]
+      ],
+      "reason": "Owner's marked aerial (yellow arrow): the paved way from the service road east along the car park behind ISSER and RIPS to the Computer Science door."
     }
   ],
   "addWays": [
