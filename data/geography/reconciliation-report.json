@@ -97,12 +97,12 @@
    "google-open-buildings": 139
   },
   "osmOnCampusChecked": 1467,
-  "osmValidatedByGoogleOpenBuildings": 1327,
+  "osmValidatedByGoogleOpenBuildings": 1328,
   "validatedShare": 0.905,
   "medianCentroidOffsetToGoogleM": {
    "x": 0.6,
    "z": 0.4,
-   "n": 1205
+   "n": 1206
   },
   "mlAdded": 294,
   "mlRejected": {
@@ -123,8 +123,8 @@
    "health": 2
   },
   "byConfidence": {
-   "medium": 1500,
-   "high": 1327
+   "medium": 1499,
+   "high": 1328
   },
   "osmNotSeenBySatellite": [
    {
@@ -160,11 +160,6 @@
    {
     "id": "osm:way/1548976997",
     "area": 1376
-   },
-   {
-    "id": "osm:way/440339204",
-    "name": "UGBS extention",
-    "area": 1091
    },
    {
     "id": "osm:way/278303051",

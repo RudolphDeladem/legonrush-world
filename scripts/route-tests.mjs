@@ -224,6 +224,9 @@ try {
   for (const [x, z] of [[435, 1600], [452, 1606], [430, 1618], [453, 1590]]) if (buildingAt(x, z)) fail(`School of Public Health: the structures circled purple (${x},${z}) are still there`);
   { const e = ann('School of Public Health'); if (!e || Math.hypot(e[0] - 506.8, e[1] - 1633.8) > 3) fail('School of Public Health: the entrance is not on the east front'); }
   if ((await server.ssrLoadModule('/src/game/publichealth.ts')).publicHealth.frames().length !== 3) fail('expected the three School of Public Health buildings');
+  // the Business School (owner): entered at the foot of the open bay in the middle of the west front; three blocks
+  { const e = ann('University of Ghana Business School'); if (!e || Math.hypot(e[0] - -193.4, e[1] - -117.8) > 2) fail('University of Ghana Business School: the entrance is not in the open bay of the west front'); }
+  if ((await server.ssrLoadModule('/src/game/ugbs.ts')).ugbs.frames().length !== 3) fail('expected the Business School\'s three blocks');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)
   for (const [x, z] of [[95, 1573], [-88, 1676], [210, 1509], [200, 1500]]) if (cm.buildingNear(x, z, 0.35)) fail(`free ride: the road at ${x},${z} is blocked by ${cm.buildingNear(x, z, 0.35).name ?? 'a building'}`);

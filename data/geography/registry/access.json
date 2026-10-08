@@ -27,7 +27,8 @@
   "owner-night-market": "The owner's aerials of the current Night Market (circled blue, the supermarket circled black) and of the buildings round it (circled yellow), registered to the OSM footprints (the bank compound at 4.9 px/m, the wider area at 3.6 px/m).",
   "owner-valco": "The owner's photo of Valco Trust Hostel Phase 1 and Phase 2 (Phase 1's entrance marked in blue) and the owner's account: the back of Phase 1 faces the back of Phase 2.",
   "owner-west-legon": "The owner's map of the buildings west of Legon Hall (Language Center, Modern Languages, Confucius Institute, the barbeque joint), the owner's two photos of them from the air, and the owner's aerial of the bungalows behind them (circled white), registered to the OSM footprints at 2.8 px/m.",
-  "owner-sph": "The owner's aerial of the School of Public Health (wings marked yellow: two floors, white: three floors; entrances circled blue; structures circled purple gone), registered to the OSM footprints at 4.0 px/m, and the owner's photo of its three-floor front."
+  "owner-sph": "The owner's aerial of the School of Public Health (wings marked yellow: two floors, white: three floors; entrances circled blue; structures circled purple gone), registered to the OSM footprints at 4.0 px/m, and the owner's photo of its three-floor front.",
+  "owner-ugbs": "The owner's photos of the Business School (the front and the north side from the north-west corner, the front face on, the middle and east blocks from the north car park) and the owner's aerial marking the front (F, west) and the side the owner calls west (W, north), registered to the OSM footprints at 4.0 px/m."
  },
  "campusGates": [
   {
@@ -633,16 +634,26 @@
   {
    "place": "University of Ghana Business School",
    "entrance": {
-    "side": "north"
+    "at": [
+     -189.4,
+     -117.8
+    ]
    },
    "type": "public entrance",
-   "status": "partial",
-   "confidence": "medium",
-   "cite": "user-layouts",
-   "approach": "From the road north of the school, through its car park to the covered walkway along the north front.",
-   "evidence": "business_school_layout (registered to OSM): the car park and access road lie along the north side, with a covered walkway on the north facade. Door not visible.",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-ugbs",
+   "approach": "From the car park on the west, by the road, into the open bay in the middle of the front, to the glass doors at its foot.",
+   "evidence": "Owner's aerial marks the front (F) on the west; the photos show the entrance at the foot of the open bay in the middle of that front, under the College of Humanities sign, with the PARKING lettering and the staff car park before it.",
    "refs": [
-    "business_school_layout_labeled.png"
+    "owner's photos and aerial of the Business School"
+   ],
+   "footprint": "osm:way/130861321",
+   "via": [
+    [
+     -196.5,
+     -117.8
+    ]
    ]
   },
   {

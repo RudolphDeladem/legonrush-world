@@ -11,9 +11,9 @@
   "point": 111
  },
  "byConfidence": {
-  "high": 70,
+  "high": 71,
   "low": 222,
-  "medium": 144
+  "medium": 143
  },
  "campusGates": 5,
  "problems": [],
@@ -156,8 +156,8 @@
   },
   {
    "place": "University of Ghana Business School",
-   "status": "partial",
-   "confidence": "medium",
+   "status": "verified",
+   "confidence": "high",
    "method": "curated"
   },
   {
@@ -360,9 +360,9 @@
   }
  ],
  "byStatus": {
-  "verified": 68,
+  "verified": 69,
   "inferred": 214,
-  "partial": 8,
+  "partial": 7,
   "unverified": 9,
   "mapped": 137
  },
@@ -476,8 +476,8 @@
    "place": "University of Ghana Business School",
    "type": "public entrance",
    "arrivalOn": "service",
-   "arrivalDistance": 2.6,
-   "facing": 178
+   "arrivalDistance": 4.8,
+   "facing": 85
   },
   {
    "place": "Jubilee Hall",

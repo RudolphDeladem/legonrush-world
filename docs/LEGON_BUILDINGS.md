@@ -602,6 +602,27 @@ From the owner's aerial (registered to the OSM footprints at 4.0 px/m) and photo
   where people sit and wait for cars: a slab, a back wall and side panels, a bench and a flat roof, open to the road.
 - **Diaspora Dome:** the building drawn **west of the dome** is excluded: there is no building that close to it.
 
+## 22. The University of Ghana Business School
+
+From the owner's photos (the front and the north side from the north-west corner, the front face on, the middle and
+east blocks from the north car park) and the owner's aerial marking the **front (F) on the west**, toward the car
+park by the road, and the side the owner calls **west (W) on the north**, toward the big car park (`src/game/ugbs.ts`).
+
+- **Main block** (white): three floors and a fourth **set back** under a **deep flat roof slab** that overhangs all
+  round; low red hipped roofs, a flat patch and a small red-roofed **penthouse** on top.
+- **Front (west):** north to south, a white panel and a tall **perforated concrete screen**, the **open bay** the
+  height of the building (floor slabs, columns; the *University of Ghana | UGBS (College of Humanities)* sign on the
+  first-floor parapet; the two **computer laboratories** standing out on the second floor, with their windows and
+  signs), a wider screen, and a big **blank panel** scored in squares. The **entrance** is the glass doors at the foot
+  of the open bay (Explore goes there from the west car park). Flagpoles on the lawn to the south.
+- **North side (W):** bands of windows between white piers, **balconies** standing out on the first floor, barred
+  windows on the ground floor.
+- **Middle block** (beige concrete, north-east of the main block): a big **grid of white-framed windows** over three
+  floors in a deep beige surround, AC units in it, a recessed ground floor of white grilles and glass, and an **open
+  storey** on the roof under a flat frame on posts.
+- **East block** ('UGBS extention', beige): five floors of deep-set windows between projecting fins under a flat
+  overhanging roof. Its OSM outline wrapped round the middle block; it is reshaped to the rectangle the aerial shows.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

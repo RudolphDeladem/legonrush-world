@@ -1546,6 +1546,20 @@
       "levels": 1,
       "height": 4,
       "reason": "Owner's photo of the Balme Library's west side: the small corner buildings are one-floor kiosks under pyramid tile roofs."
+    },
+    {
+      "id": "osm:way/130861321",
+      "place": "University of Ghana Business School",
+      "levels": 4,
+      "height": 17,
+      "reason": "Owner's photos of the Business School: three floors and a fourth set back under a deep overhanging roof slab, low red roofs and a penthouse on top; modelled in src/game/ugbs.ts."
+    },
+    {
+      "id": "osm:way/440339204",
+      "place": "UGBS extention",
+      "levels": 5,
+      "height": 19,
+      "reason": "Owner's photo from the north car park: the beige east block, four floors and a fifth under a flat overhanging roof."
     }
   ],
   "reclass": [
@@ -1727,6 +1741,30 @@
         ]
       ],
       "reason": "Owner: the long one-floor building on the east side of the Night Market (circled black) is a supermarket. The satellite-detected outline sits about 3 m west of the roof on the owner's aerial. Owner: the entrance must not reach the road; the building stands 2 m west of the roof on the aerial, so its door keeps a pavement before the road."
+    },
+    {
+      "id": "osm:way/440339204",
+      "place": "UGBS extention",
+      "source": "the owner's marked aerial of the Business School (registered to the OSM footprints at 4.0 px/m)",
+      "ring": [
+        [
+          -114.2,
+          -113.1
+        ],
+        [
+          -97.9,
+          -113.1
+        ],
+        [
+          -97.9,
+          -88.4
+        ],
+        [
+          -114.2,
+          -88.4
+        ]
+      ],
+      "reason": "The OSM outline wraps round the middle block and reaches 10 m east of any roof; the owner's aerial shows the east block as a plain rectangle, the one the main outline also draws."
     }
   ],
   "addAreas": [
