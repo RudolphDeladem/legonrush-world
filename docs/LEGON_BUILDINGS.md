@@ -803,6 +803,16 @@ Computer Science wing and east block meet edge to edge (`corrections.json`: resh
   retaining face with a coping, the seven-step stairs at the end of the drive; big shade trees stand over the
   concrete car park.
 
+## 33. Grass on the Pent to engineering road
+
+- **Grass tufts** (the blades laid round the camera as you ride, `tufts.ts`) were kept off the mapped roads by their
+  real widths, but the ridden route's road is wider (7.6 m plus pavements) and rounds its bends: on the ride from
+  Pent to the engineering school about 90 tufts stood on the road (at the start by Pent and on the descent into the
+  engineering school), re-laid as the camera moved, so the grass seemed to follow the rider. Tufts now keep off the
+  current route's road and pavements (`Game.setRoute`).
+- **Kerbs and drains** of the campus roads stop short of the side roads a route turns into: the route's rounded
+  bend overruns the mapped corner, and the black and white kerb and the drain showed across the road there.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

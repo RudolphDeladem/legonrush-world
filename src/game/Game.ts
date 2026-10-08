@@ -512,6 +512,9 @@ export class Game {
     }
     this.route = route;
     this.track = route.track;
+    // grass tufts keep off the route's road and pavements (they follow the mapped roads, which a route's wider road
+    // and rounded bends overrun: owner, tufts on the road from Pent to the engineering school)
+    this.tufts.setRoute((x, z) => route.track.distanceToRoad(x, z) < ROAD_HALF + 2.0);
     this.routeLayer = buildRouteLayer(route.track, {
       start: route.lead,
       finish: route.lead + route.length,

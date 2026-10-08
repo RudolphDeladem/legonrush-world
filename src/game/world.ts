@@ -500,6 +500,8 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
       // a kerb face closes each end of the pavement at a gap
       for (const d of [d0, d1]) if (d > 0 && d < L) {
         const p = track.pose(d, s * (ROAD_HALF + 0.8));
+        // on a tight bend the pavement's end can fall on the road itself: no kerb face there
+        if (track.distanceToRoad(p.x, p.z) < ROAD_HALF + 0.3) continue;
         const cap = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.12, 0.04), walkMat);
         cap.position.set(p.x, 0.06, p.z);
         cap.rotation.y = p.yaw;

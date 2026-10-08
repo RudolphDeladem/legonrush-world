@@ -70,6 +70,8 @@ export class Tufts {
   private cache = new Map<number, Float32Array | null>();
   private at = new THREE.Vector2(1e9, 1e9);
   private radius: number;
+  /** the ridden route's road and pavements (wider than the mapped road on bends and on narrow roads): no tufts there */
+  private onRoute: ((x: number, z: number) => boolean) | null = null;
 
   constructor(lowEnd: boolean) {
     this.radius = lowEnd ? 22 : 34;
@@ -84,6 +86,12 @@ export class Tufts {
     });
     this.group.add(...this.meshes);
     this.group.name = 'tufts';
+  }
+
+  /** keep the tufts off the ridden route's road and pavements (null: no route) */
+  setRoute(onRoute: ((x: number, z: number) => boolean) | null) {
+    this.onRoute = onRoute;
+    this.at.set(1e9, 1e9);
   }
 
   /** fewer tufts on low graphics */
@@ -118,7 +126,7 @@ export class Tufts {
     const count = [0, 0];
     for (let i = ci - rc; i <= ci + rc; i++) for (let j = cj - rc; j <= cj + rc; j++) {
       const c = this.cell(i, j);
-      if (!c || (c[0] - x) ** 2 + (c[1] - z) ** 2 > R * R) continue;
+      if (!c || (c[0] - x) ** 2 + (c[1] - z) ** 2 > R * R || this.onRoute?.(c[0], c[1])) continue;
       const mesh = this.meshes[c[4]];
       const n = count[c[4]];
       if (n >= mesh.instanceMatrix.count) continue;
