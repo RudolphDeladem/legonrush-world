@@ -13,7 +13,7 @@
 // on a raised platform behind white retaining walls: a broad stair up the middle (blue stripes) and ramps either side
 // along the walls (yellow). On the west a car park before the entrances, feather flags, a black water tank.
 import * as THREE from 'three';
-import { box, speckle } from './modelkit';
+import { box, speckle, tri2 } from './modelkit';
 import { PL, createSite, render, type Block, type Kit, type Spec, type Style } from './blocks';
 import { rectsOf } from './rectilinear';
 import { garden } from './gardens';
@@ -85,10 +85,8 @@ const nBlock: Spec = {
     k.roof.quad([X0, H, iz0 - 0.6], [X1, H, iz0 - 0.6], [X1, top, zm], [X0, top, zm]);
     k.roof.quad([X1, H, iz1 + 0.6], [X0, H, iz1 + 0.6], [X0, top, zm], [X1, top, zm]);
     for (const [x, s] of [[ix0, -1], [ix1, 1]] as [number, number][]) {
-      const tri = new THREE.Shape([new THREE.Vector2(iz0, H), new THREE.Vector2(iz1, H), new THREE.Vector2(zm, top - 0.15)]);
-      k.plain.push([new THREE.ShapeGeometry(tri).rotateY(s > 0 ? Math.PI / 2 : -Math.PI / 2).translate(x, 0, 0), '#f4f4f1']);
-      const lv = new THREE.Shape([new THREE.Vector2(zm - 4, H + 0.3), new THREE.Vector2(zm + 4, H + 0.3), new THREE.Vector2(zm, top - 0.6)]);
-      k.plain.push([new THREE.ShapeGeometry(lv).rotateY(s > 0 ? Math.PI / 2 : -Math.PI / 2).translate(x + s * 0.03, 0, 0), '#7a5a3c']);
+      k.plain.push([tri2([x, H, iz0], [x, H, iz1], [x, top - 0.15, zm]), '#f4f4f1']);
+      k.plain.push([tri2([x + s * 0.03, H + 0.3, zm - 4], [x + s * 0.03, H + 0.3, zm + 4], [x + s * 0.03, top - 0.6, zm]), '#7a5a3c']);
       for (let y = H + 0.5; y < top - 0.8; y += 0.3) { const w = (4 * (top - 0.6 - y)) / (top - 0.6 - H - 0.3); k.plain.push([box(x + s * 0.04 - 0.02, x + s * 0.04 + 0.02, y, y + 0.06, zm - w, zm + w), '#4e3a28']); }
       k.plain.push([box(x - 0.6 * (s < 0 ? 1 : 0) - 0.05, x + 0.6 * (s > 0 ? 1 : 0) + 0.05, H - 0.1, H + 0.1, iz0 - 0.6, iz1 + 0.6), NFASCIA]);
     }
@@ -175,8 +173,7 @@ const gcb: Spec = {
     k.roof.quad([cx0, eave, cz0 - 0.8], [cx1, eave, cz0 - 0.8], [cx1, ctop, czm], [cx0, ctop, czm]);
     k.roof.quad([cx1, eave, cz1 + 0.8], [cx0, eave, cz1 + 0.8], [cx0, ctop, czm], [cx1, ctop, czm]);
     for (const [x, s] of [[cx0 + 0.4, -1], [cx1 - 0.4, 1]] as [number, number][]) {
-      const tri = new THREE.Shape([new THREE.Vector2(cz0, eave), new THREE.Vector2(cz1, eave), new THREE.Vector2(czm, ctop - 0.1)]);
-      k.plain.push([new THREE.ShapeGeometry(tri).rotateY(s > 0 ? Math.PI / 2 : -Math.PI / 2).translate(x, 0, 0), '#f6f6f3']);
+      k.plain.push([tri2([x, eave, cz0], [x, eave, cz1], [x, ctop - 0.1, czm]), '#f6f6f3']);
       k.plain.push([box(x - 0.4, x + 0.4, GT, eave, cz0, cz1), '#f6f6f3']);
     }
     // the entrances on the west and the east (blue marks): open lobbies, lit inside, under the gable

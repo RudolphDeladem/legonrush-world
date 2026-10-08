@@ -999,13 +999,6 @@
       "reason": "Owner's photo of Legon Hall's entrance building: two storeys; the hall's blocks are one design (UG layout aerial). The source height was an estimate from the footprint's size."
     },
     {
-      "id": "osm:way/394125221",
-      "place": "Legon Hall",
-      "levels": 2,
-      "height": 8,
-      "reason": "Owner's photo of Legon Hall's entrance building: two storeys; the hall's blocks are one design (UG layout aerial). The source height was an estimate from the footprint's size."
-    },
-    {
       "id": "osm:way/394125225",
       "place": "Legon Hall",
       "levels": 2,
@@ -2460,6 +2453,90 @@
       "levels": 2,
       "height": 10.5,
       "reason": "Owner's photos: two floors under a maroon corrugated hip roof, up the slope from the New N Block (src/game/nblock.ts)."
+    },
+    {
+      "id": "osm:way/394125237",
+      "place": "chalet block of Akuafo or Legon Hall",
+      "levels": 2,
+      "height": 9,
+      "reason": "Owner's photos of the road south of the roundabout before the Balme Library (and of Legon Hall's front): chalet-style blocks, white with wooden shutters under steep tiled gable roofs, two floors. Modelled in src/game/chalets.ts."
+    },
+    {
+      "id": "osm:way/665125646",
+      "place": "chalet block of Akuafo or Legon Hall",
+      "levels": 1,
+      "height": 5.5,
+      "reason": "Owner's photos of the road south of the roundabout before the Balme Library (and of Legon Hall's front): chalet-style blocks, white with wooden shutters under steep tiled gable roofs, one floor. Modelled in src/game/chalets.ts."
+    },
+    {
+      "id": "osm:way/394125227",
+      "place": "chalet block of Akuafo or Legon Hall",
+      "levels": 2,
+      "height": 9,
+      "reason": "Owner's photos of the road south of the roundabout before the Balme Library (and of Legon Hall's front): chalet-style blocks, white with wooden shutters under steep tiled gable roofs, two floors. Modelled in src/game/chalets.ts."
+    },
+    {
+      "id": "osm:way/308653139",
+      "place": "chalet block of Akuafo or Legon Hall",
+      "levels": 2,
+      "height": 9,
+      "reason": "Owner's photos of the road south of the roundabout before the Balme Library (and of Legon Hall's front): chalet-style blocks, white with wooden shutters under steep tiled gable roofs, two floors. Modelled in src/game/chalets.ts."
+    },
+    {
+      "id": "osm:way/394125221",
+      "place": "Legon Hall gable block",
+      "levels": 2,
+      "height": 9,
+      "reason": "Owner's photos of the road south of the roundabout before the Balme Library (and of Legon Hall's front): chalet-style blocks, white with wooden shutters under steep tiled gable roofs, two floors. Modelled in src/game/chalets.ts."
+    },
+    {
+      "id": "osm:way/394125214",
+      "place": "chalet block of Akuafo or Legon Hall",
+      "levels": 2,
+      "height": 9,
+      "reason": "Owner's photos of the road south of the roundabout before the Balme Library (and of Legon Hall's front): chalet-style blocks, white with wooden shutters under steep tiled gable roofs, two floors. Modelled in src/game/chalets.ts."
+    },
+    {
+      "id": "osm:way/394125215",
+      "place": "chalet block of Akuafo or Legon Hall",
+      "levels": 2,
+      "height": 9,
+      "reason": "Owner's photos of the road south of the roundabout before the Balme Library (and of Legon Hall's front): chalet-style blocks, white with wooden shutters under steep tiled gable roofs, two floors. Modelled in src/game/chalets.ts."
+    },
+    {
+      "id": "osm:way/308653138",
+      "place": "chalet block of Akuafo or Legon Hall",
+      "levels": 2,
+      "height": 9,
+      "reason": "Owner's photos of the road south of the roundabout before the Balme Library (and of Legon Hall's front): chalet-style blocks, white with wooden shutters under steep tiled gable roofs, two floors. Modelled in src/game/chalets.ts."
+    },
+    {
+      "id": "osm:way/308653132",
+      "place": "chalet block of Akuafo or Legon Hall",
+      "levels": 2,
+      "height": 9,
+      "reason": "Owner's photos of the road south of the roundabout before the Balme Library (and of Legon Hall's front): chalet-style blocks, white with wooden shutters under steep tiled gable roofs, two floors. Modelled in src/game/chalets.ts."
+    },
+    {
+      "id": "osm:way/773856645",
+      "place": "chalet block of Akuafo or Legon Hall",
+      "levels": 1,
+      "height": 5.5,
+      "reason": "Owner's photos of the road south of the roundabout before the Balme Library (and of Legon Hall's front): chalet-style blocks, white with wooden shutters under steep tiled gable roofs, one floor. Modelled in src/game/chalets.ts."
+    },
+    {
+      "id": "osm:way/308653141",
+      "place": "chalet block of Akuafo or Legon Hall",
+      "levels": 2,
+      "height": 9,
+      "reason": "Owner's photos of the road south of the roundabout before the Balme Library (and of Legon Hall's front): chalet-style blocks, white with wooden shutters under steep tiled gable roofs, two floors. Modelled in src/game/chalets.ts."
+    },
+    {
+      "id": "osm:way/665125647",
+      "place": "chalet block of Akuafo or Legon Hall",
+      "levels": 1,
+      "height": 5.5,
+      "reason": "Owner's photos of the road south of the roundabout before the Balme Library (and of Legon Hall's front): chalet-style blocks, white with wooden shutters under steep tiled gable roofs, one floor. Modelled in src/game/chalets.ts."
     }
   ],
   "reclass": [

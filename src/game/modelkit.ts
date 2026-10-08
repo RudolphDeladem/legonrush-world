@@ -122,3 +122,10 @@ function flipWinding(g: THREE.BufferGeometry) {
   g.index.needsUpdate = true;
 }
 
+/** a flat triangle between three points, seen from both sides (gable ends) */
+export function tri2(a: [number, number, number], b: [number, number, number], c: [number, number, number]) {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute([...a, ...b, ...c, ...a, ...c, ...b], 3));
+  g.computeVertexNormals();
+  return g;
+}

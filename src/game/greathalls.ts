@@ -28,22 +28,22 @@
 import * as THREE from 'three';
 import { BUILDINGS, NODE_XZ, ROADS, type Building } from './campusmap';
 import { PAVE, WHITE, box } from './modelkit';
-import { PL, createSite, render, slab, window_, type Block, type Kit, type Spec, type Style } from './blocks';
+import { PL, createSite, louvre, render, slab, type Block, type Kit, type Spec, type Style } from './blocks';
 import { garden } from './gardens';
 import { rectsOf, type Rect } from './rectilinear';
 
 const ROOF = '#b85a37', FASCIA = '#5a3a2c', STONE = '#8f7a63';
 
-/** white render, dark windows in maroon frames (Sarbah, owner photo) */
+/** white render, wooden louvred windows in maroon frames (Sarbah, owner photos: wooden, not glass) */
 const SARBAH_WIN: Style = {
   bay: 3.2,
   up: [[76, 58, 104, 120]],
   ground: [[76, 256 + 62, 104, 120]],
   draw: (g) => {
     render(g, '#f7f6f1');
-    window_(g, [76, 58, 104, 120], '#7a2a24', 2, 0.3);
+    louvre(g, [76, 58, 104, 120], '#7a2a24');
     slab(g, 238, 18);
-    window_(g, [76, 256 + 62, 104, 120], '#7a2a24', 2, 0.3);
+    louvre(g, [76, 256 + 62, 104, 120], '#7a2a24');
   },
 };
 /** the lodge's court side: tall louvred windows in brown frames, one storey high (drawn across both floors) */
@@ -58,7 +58,8 @@ const LOUVRE = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h:
 const DINING_TALL: Style = { bay: 4.2, up: [[70, 40, 116, 216]], ground: [[70, 256, 116, 220]], draw: (g) => { render(g, '#f8f7f3'); LOUVRE(g, 70, 40, 116, 436); } };
 /** the dining hall's other faces: plain render with a high round window */
 const DINING_PLAIN: Style = { bay: 4.2, up: [], ground: [], draw: (g) => { render(g, '#f8f7f3'); g.fillStyle = '#2b3440'; g.beginPath(); g.arc(128, 120, 26, 0, Math.PI * 2); g.fill(); } };
-/** Akuafo and Legon: white render, dark windows in white frames, the base painted (Akuafo light green, Legon cream) */
+/** Akuafo and Legon: white render, wooden louvred windows (owner: wooden, not glass), the base painted (Akuafo light
+ *  green, Legon cream) */
 function twinWall(base: string): Style {
   return {
     bay: 3.2,
@@ -66,9 +67,9 @@ function twinWall(base: string): Style {
     ground: [[74, 256 + 60, 108, 118]],
     draw: (g) => {
       render(g, '#f5f4f0');
-      window_(g, [74, 56, 108, 118], '#ecebe6', 2, 0.3);
+      louvre(g, [74, 56, 108, 118]);
       slab(g, 238, 18);
-      window_(g, [74, 256 + 60, 108, 118], '#ecebe6', 2, 0.3);
+      louvre(g, [74, 256 + 60, 108, 118]);
       g.fillStyle = base; g.fillRect(0, 512 - 58, 256, 58);
       g.fillStyle = 'rgba(0,0,0,0.12)'; g.fillRect(0, 512 - 60, 256, 2);
     },
@@ -412,7 +413,8 @@ const LO: [number, number] = [-147, 165];
 const LG_ROOF = '#8c4a32';
 const LG = { x0: -156.7 - LO[0], x1: -137.7 - LO[0], P: 156.6 - LO[1], F: 154.6 - LO[1] };
 // (the hall mirrors Akuafo across the avenue's axis; the satellite-detected outline at (-82, 378) is not part of it)
-const legon = twin('Legon Hall', LO, [-215, -50, 150, 390], [-165, -129, 154, 174], /Maison/, [[-82, 378]], (k) => {
+// (the gable block east of the front, at (-122.3, 168.9), is modelled from the owner's photo in chalets.ts)
+const legon = twin('Legon Hall', LO, [-215, -50, 150, 390], [-165, -129, 154, 174], /Maison/, [[-82, 378], [-122.3, 168.9]], (k) => {
   const { x0, x1, P, F } = LG, xm = (x0 + x1) / 2;
   const X = (x: number) => x - LO[0], Z = (z: number) => z - LO[1];
   const G = PL + TWIN_ST, r = 1.75, spring = 1.35, bw = (x1 - x0) / 3;

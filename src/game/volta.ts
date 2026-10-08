@@ -16,23 +16,23 @@
 // balconies along the court sides, low tile roofs; a court open to the west and a closed one.
 import * as THREE from 'three';
 import { WHITE, box } from './modelkit';
-import { PL, createSite, render, slab, window_, type Block, type Kit, type Spec, type Style } from './blocks';
+import { PL, createSite, louvre, render, slab, type Block, type Kit, type Spec, type Style } from './blocks';
 import { garden } from './gardens';
 import { groundHeight, stairsOf } from './relief';
 
 const ROOF = '#b9593a', FASCIA = '#4a3428', STONE = '#9a7d62', STONE_DARK = '#7f6650';
 const ST = 3.2;
 
-/** white render, a dark window in a white frame per bay on both floors (owner photos) */
+/** white render, a wooden louvred window per bay on both floors (owner: wooden, not glass) */
 const VOLTA_WIN: Style = {
   bay: 3.2,
   up: [[72, 60, 112, 116]],
   ground: [[72, 256 + 64, 112, 116]],
   draw: (g) => {
     render(g, '#f7f6f2');
-    window_(g, [72, 60, 112, 116], '#f4f3ef', 2, 0.3);
+    louvre(g, [72, 60, 112, 116]);
     slab(g, 238, 18);
-    window_(g, [72, 256 + 64, 112, 116], '#f4f3ef', 2, 0.3);
+    louvre(g, [72, 256 + 64, 112, 116]);
     g.fillStyle = '#d9d4ca'; g.fillRect(0, 488, 256, 24);
   },
 };

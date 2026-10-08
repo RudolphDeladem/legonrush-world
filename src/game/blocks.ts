@@ -43,6 +43,18 @@ export const window_ = (g: CanvasRenderingContext2D, [x, y, w, h]: Rect, frame: 
   g.fillStyle = '#ffffff'; g.fillRect(x - 8, y + h + 3, w + 16, 7);
 };
 
+/** a wooden louvred window (the halls' windows, owner): dark brown horizontal slats in a frame, two leaves; `frame`
+ *  is the surround's paint */
+export const louvre = (g: CanvasRenderingContext2D, [x, y, w, h]: Rect, frame = '#3a2a1e') => {
+  g.fillStyle = 'rgba(70,60,50,0.35)'; g.fillRect(x - 7, y - 6, w + 14, h + 12);
+  g.fillStyle = frame; g.fillRect(x - 4, y - 4, w + 8, h + 8);
+  for (let t = y; t < y + h; t += 9) {
+    g.fillStyle = '#6b4a32'; g.fillRect(x, t, w, 6);
+    g.fillStyle = '#3e2b1f'; g.fillRect(x, t + 6, w, 3);
+  }
+  g.fillStyle = frame; g.fillRect(x + w / 2 - 2, y, 4, h);
+  g.fillStyle = '#ffffff'; g.fillRect(x - 8, y + h + 4, w + 16, 6);
+};
 const LIT_BAYS = 8, LIT_FLOORS = 4;
 function lightsFor(st: Style) {
   return canvas(LIT_BAYS * 32, LIT_FLOORS * 32, (g) => {

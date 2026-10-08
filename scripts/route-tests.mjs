@@ -316,6 +316,9 @@ try {
     const n = ann('New N Block, NNB'); if (!n || Math.abs(n[1] - -444.6) > 2) fail('New N Block: the entrance is not on its front to the road (owner)');
     const g = ann('GCB Lecture Building'); if (!g || Math.hypot(g[0] - -135.5, g[1] - -390.1) > 3) fail('GCB Lecture Building: the entrance is not the north one up the stair (owner)');
     if ((await server.ssrLoadModule('/src/game/nblock.ts')).nBlockGcb.frames().length !== 2) fail('expected the New N Block and GCB models'); }
+  // owner: the chalet blocks along the road south of the roundabout (two floors, cottages one) and Legon's gable block
+  { for (const [x, z, f] of [[33.7, 166.6, 2], [27.8, 176.6, 1], [-26.6, 163.6, 2], [-13.8, 202.5, 1], [-122.3, 168.9, 2]]) { const b = buildingAt(x, z); if (!b || (f === 1 ? b.height > 6 : b.height < 8)) fail(`the chalet block at ${x},${z} is not ${f} floor(s) (owner)`); }
+    if ((await server.ssrLoadModule('/src/game/chalets.ts')).chaletSite.frames().length !== 13) fail('expected the chalet blocks, Legon\'s gable block and the verges'); }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

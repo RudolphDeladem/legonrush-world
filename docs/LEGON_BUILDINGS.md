@@ -890,6 +890,22 @@ From the owner's photos and marked aerial (registered to the footprints at 0.25 
   (blue stripes) and a **ramp** along the wall either side (yellow), white parapets. On the west (W) the car park with
   cars before the entrances, feather flags, a black water tank on a stand; trees east and north-west.
 
+## 38. Wooden windows in the halls; the chalet blocks; Legon's gable block
+
+- **Wooden windows** (owner: the halls' windows are wooden, not glass): Legon, Akuafo, Mensah Sarbah (maroon
+  surrounds) and Volta Hall now show dark brown wooden louvred windows with horizontal slats, two leaves, a white
+  sill (`blocks.ts: louvre`).
+- **The road south from the roundabout before the Balme Library** (owner's aerial, purple and green marks, and two
+  photos; `chalets.ts`): Akuafo's blocks on its east, Legon's on its west, chalet-style: weathered white walls, wooden
+  shutters, steep orange-red tile gable roofs with deep overhangs and dark bargeboards, the gables clad in dark timber
+  boards. The two-storey blocks nearest the avenue turn a gable to the road with a balcony (solid white parapet, two
+  posts) on the side toward the avenue; the long blocks behind run north-south with a tiled lean-to on posts over the
+  ground floor along the road; one-floor cottages with a door under the gable to the road. Tall royal palms on Legon's
+  side, clipped golden hedges on Akuafo's.
+- **Legon Hall's gable block** east of its front (owner's picture 2): two floors under a steep tile gable roof, its
+  timber-clad gable end to the avenue with shutters up and a lean-to porch over a lit door, air-conditioners along its
+  west side, hedges and a bench, and a low covered passage with an iron lattice joining it to the front block.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain
