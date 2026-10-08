@@ -22,6 +22,7 @@
 import * as THREE from 'three';
 import { WHITE, box, canvas } from './modelkit';
 import { PL, createSite, gableZ, render, window_, type Block, type Kit, type Spec, type Style } from './blocks';
+import { stairsOf } from './relief';
 
 // ---------- CEDI Conference Centre ----------
 const C: [number, number, number, number] = [-153.4, -106.4, 1.7, 49.7];
@@ -469,7 +470,11 @@ const pool: Spec = {
   axis: [1, 0], origin: PO, storey: 3, style: LIB_WALL, roofColor: TILE, fascia: WHITE, pitch: 0.5,
   blocks: [],
   keep: [[-6.7, 6.7, -16.6, 16.6]],
+  // University Square and the pool's paved area are drawn by the steps model below, level by level
+  covers: [[8.6, 49.9], [8, 78]],
   extras: (k: Kit) => {
+    // the pool sits on the deck 2.4 m below the road before the library (relief.ts); its jets stand in a row
+    for (const z of [-9, -3, 3, 9]) k.plain.push([new THREE.CylinderGeometry(0.12, 0.12, 0.9, 8).translate(0, 0.45, z), '#55585c']);
     // a long pool of still water in a dark stone kerb on the library's axis, big white planters with small palms
     // along both sides (owner's photo of the front)
     const [x0, x1, z0, z1] = [-4.6, 4.6, -15, 15];
@@ -482,5 +487,61 @@ const pool: Spec = {
   },
 };
 
+// ---------- the stone terraces and stairs between the pool and the library (owner's photo from the pool) ----------
+// relief.ts sinks University Square and the pool below the road before the library: the pool deck 2.4 m down, a
+// middle terrace 1.2 m down, each behind a laterite stone retaining wall, the central stairs climbing between them
+const SO: [number, number] = [8.5, 70];
+const STONE = '#9b6e4a', STONE_L = '#b7865f', PAVE_B = '#d6d0c2';
+const steps: Spec = {
+  name: 'Balme Library steps',
+  axis: [1, 0], origin: SO, storey: 3, style: LIB_WALL, roofColor: TILE, fascia: WHITE, pitch: 0.5,
+  blocks: [],
+  onGround: true,
+  // no generated props on the stairs or in the sunken square
+  keep: [[1 - SO[0], 15 - SO[0], 42 - SO[1], 62 - SO[1]], [-8 - SO[0], 26 - SO[0], 48 - SO[1], 94 - SO[1]]],
+  extras: (k: Kit) => {
+    const st = stairsOf().find((q) => q.alongZ)!;
+    const x = (wx: number) => wx - SO[0], z = (wz: number) => wz - SO[1];
+    const xa = x(-6.6), xb = x(24.6), deck = st.foot, mid = deck / 2;
+    // the paving of the pool deck and of the middle terrace
+    k.plain.push([box(xa, xb, deck - 0.2, deck + 0.04, z(60.6), z(93.5)), PAVE_B]);
+    k.plain.push([box(xa, xb, mid - 0.2, mid + 0.04, z(49.2), z(60.6)), PAVE_B]);
+    // a laterite stone wall from (x0..x1, z0..z1), y0 to y1, with a lighter capping
+    const wall = (x0: number, x1: number, z0: number, z1: number, y0: number, y1: number) => {
+      k.plain.push([box(x0, x1, y0, y1, z0, z1), STONE]);
+      k.plain.push([box(x0 - 0.06, x1 + 0.06, y1, y1 + 0.12, z0 - 0.06, z1 + 0.06), STONE_L]);
+    };
+    // the lower wall (pool deck up to the middle terrace) and the upper wall (up to the road), open at the stairs,
+    // each standing 0.7 m above the level behind it as a parapet
+    for (const [z0, y0, y1] of [[60.3, deck, mid + 0.7], [48.7, mid, 0.7]] as [number, number, number][]) {
+      wall(xa, x(st.z0), z(z0), z(z0 + 0.6), y0, y1);
+      wall(x(st.z1), xb, z(z0), z(z0 + 0.6), y0, y1);
+    }
+    // the side walls along the lanes, open where the footpath crosses the square
+    for (const wx of [-7.2, 24.6]) {
+      wall(x(wx), x(wx + 0.6), z(48.7), z(56.4), mid, 0.7);
+      wall(x(wx), x(wx + 0.6), z(59.6), z(93.5), deck, 0.7);
+    }
+    // white planters with small shrubs along the tops of the walls (owner's photo)
+    for (const [y, zz] of [[mid + 0.82, 60.6], [0.82, 49]] as [number, number][]) for (const wx of [-5, -1.5, 17, 20, 23]) {
+      k.plain.push([new THREE.CylinderGeometry(0.42, 0.32, 0.7, 12).translate(x(wx), y + 0.35, z(zz)), '#f2f0eb']);
+      k.plain.push([new THREE.IcosahedronGeometry(0.42, 0).translate(x(wx), y + 0.85, z(zz)), '#4f8a3a']);
+    }
+    // the stairs: flights of stone steps with a landing between, each step a block reaching down into the ground
+    const dir = Math.sign(st.x1 - st.x0), len = Math.abs(st.x1 - st.x0), seg = len / st.flights;
+    for (let f = 0; f < st.flights; f++) for (let i = 0; i <= st.steps; i++) {
+      const u0 = f * seg + i * st.tread, u1 = i < st.steps ? u0 + st.tread : (f + 1) * seg;
+      const za = z(st.x0 + dir * u0), zb = z(st.x0 + dir * Math.min(len, u1)), h = st.at(st.x0 + dir * (u0 + 0.01));
+      k.plain.push([box(x(st.z0), x(st.z1), h - 1.4, h + 0.02, Math.min(za, zb), Math.max(za, zb)), i === st.steps ? PAVE_B : i % 2 ? '#c9b597' : '#bfa98a']);
+    }
+    // the statue on the upper level, to the east of the stairs (owner's photo)
+    const sx = x(23.5), sz = z(45.5);
+    k.plain.push([box(sx - 0.7, sx + 0.7, 0, 1.6, sz - 0.7, sz + 0.7), '#e6e3dc']);
+    k.plain.push([new THREE.CylinderGeometry(0.32, 0.42, 1.5, 12).translate(sx, 2.35, sz), '#eeece6']);
+    k.plain.push([new THREE.CylinderGeometry(0.3, 0.32, 0.55, 12).translate(sx, 3.35, sz), '#eeece6']);
+    k.plain.push([new THREE.SphereGeometry(0.2, 12, 10).translate(sx, 3.85, sz), '#eeece6']);
+  },
+};
+
 /** the CEDI Conference Centre, the Standard Chartered and Absa building, the Balme Library, the pool in front of it and the Kuffour Quadrangle fountain */
-export const balmeSite = createSite('balme', [cedi, ugcs, banks, library, libraryWings, pool, fountain]);
+export const balmeSite = createSite('balme', [cedi, ugcs, banks, library, libraryWings, pool, steps, fountain]);

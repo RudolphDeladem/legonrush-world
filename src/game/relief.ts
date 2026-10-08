@@ -31,8 +31,12 @@ interface Hill {
   /** the ridge line, how far either side it keeps its full height, and how far it then falls away */
   zc: number; full: number; fall: number;
 }
-/** a stairway: x from the foot (x0) up to the top (x1), z0..z1, in flights of `steps` steps of `tread` m */
-interface Stairs { x0: number; x1: number; z0: number; z1: number; flights: number; steps: number; tread: number }
+/**
+ * a stairway: x from the foot (x0) up to the top (x1), z0..z1, in flights of `steps` steps of `tread` m; with
+ * `alongZ` it climbs along z instead (x0, x1 are then z values, z0, z1 the x span). It climbs from the ground at its
+ * foot to the ground at its top.
+ */
+interface Stairs { x0: number; x1: number; z0: number; z1: number; flights: number; steps: number; tread: number; alongZ?: boolean }
 type Zone = Hollow | Hill;
 
 const ZONES: Zone[] = [
@@ -52,12 +56,19 @@ const ZONES: Zone[] = [
   // stay at road level
   { kind: 'terrace', x0: -336, x1: -258.6, z0: -27, z1: 99.6, depth: 2.4, w: 6, e: 2, n: 10, s: 4 },
   { kind: 'terrace', x0: -365, x1: -336, z0: 44, z1: 86, depth: 2.4, w: 5, e: 0.1, n: 5, s: 4 },
+  // The Balme Library stands above University Square and the long pool before it (owner's photo from the pool):
+  // the pool deck 2.4 m below the road in front of the library, a middle terrace 1.2 m below it, each behind a
+  // stone retaining wall, the central stairs climbing from the pool to the road; the side lanes stay up
+  { kind: 'hollow', x0: -6.6, x1: 24.6, z0: 60.3, z1: 93.5, depth: 2.4, w: 2, e: 2, n: 0.3, s: 1.5 },
+  { kind: 'hollow', x0: -6.6, x1: 24.6, z0: 49, z1: 60.6, depth: 1.2, w: 2, e: 2, n: 0.3, s: 0.3 },
 ];
 const STAIRS: Stairs[] = [
   // Commonwealth: from the gate houses up Legon Hill to the drive
   { x0: -372, x1: -464, z0: 118, z1: 138, flights: 7, steps: 9, tread: 0.4 },
   // Volta: from the forecourt up to the entrance
   { x0: -245, x1: -258.6, z0: 60, z1: 72, flights: 3, steps: 5, tread: 0.4 },
+  // the Balme Library: from the pool deck up to the middle terrace and on up to the road before the library
+  { x0: 61.6, x1: 43, z0: 1.5, z1: 14.5, flights: 2, steps: 8, tread: 0.4, alongZ: true },
 ];
 
 const boxOf = (q: Zone) => q.kind !== 'hill'
@@ -74,20 +85,24 @@ function profileAt(p: [number, number][], x: number) {
   }
   return 0;
 }
-/** the top of a stairway's tread at x: flights of steps going up from x0 toward x1, landings between */
-function stairAt(s: Stairs, top: number, x: number) {
+/** a point in a stairway's own terms: how far along its climb (u, the x of an x stairway) and across it */
+const along = (s: Stairs, x: number, z: number) => (s.alongZ ? [z, x] : [x, z]);
+/** the top of a stairway's tread at u (x, or z): flights of steps going up from its foot toward its top, landings between */
+function stairAt(s: Stairs, foot: number, top: number, x: number) {
   const dir = Math.sign(s.x1 - s.x0), len = Math.abs(s.x1 - s.x0), u = (x - s.x0) * dir;
-  if (u <= 0) return 0;
+  if (u <= 0) return foot;
   if (u >= len) return top;
-  const seg = len / s.flights, rise = top / s.flights, r = rise / s.steps, k = Math.floor(u / seg), w = u - k * seg;
-  return k * rise + Math.min(s.steps, Math.floor(w / s.tread) + 1) * r;
+  const seg = len / s.flights, rise = (top - foot) / s.flights, r = rise / s.steps, k = Math.floor(u / seg), w = u - k * seg;
+  return foot + k * rise + Math.min(s.steps, Math.floor(w / s.tread) + 1) * r;
 }
-const inCorridor = (s: Stairs, x: number, z: number) => z > s.z0 && z < s.z1 && x < Math.max(s.x0, s.x1) && x > Math.min(s.x0, s.x1);
-/** the ground at the top of a stairway */
-const topOf = (s: Stairs) => zoneHeight(s.x1, (s.z0 + s.z1) / 2);
-/** where the stairways are, and the height of their top */
+const inCorridor = (s: Stairs, x: number, z: number) => { const [u, c] = along(s, x, z); return c > s.z0 && c < s.z1 && u < Math.max(s.x0, s.x1) && u > Math.min(s.x0, s.x1); };
+/** the ground at the top and at the foot of a stairway */
+const endOf = (s: Stairs, u: number) => { const c = (s.z0 + s.z1) / 2; return s.alongZ ? zoneHeight(c, u) : zoneHeight(u, c); };
+const topOf = (s: Stairs) => endOf(s, s.x1);
+const footOf = (s: Stairs) => endOf(s, s.x0 - Math.sign(s.x1 - s.x0) * 0.5);
+/** where the stairways are, the height of their top and foot, and the tread height along the climb */
 export function stairsOf() {
-  return STAIRS.map((s) => { const top = topOf(s); return { ...s, top, at: (x: number) => stairAt(s, top, x) }; });
+  return STAIRS.map((s) => { const top = topOf(s), foot = footOf(s); return { ...s, top, foot, at: (u: number) => stairAt(s, foot, top, u) }; });
 }
 
 /** inside a stairway (its steps are modelled: the ground mesh keeps below them) */
@@ -118,7 +133,7 @@ function zoneHeight(x: number, z: number) {
 
 /** Height of the ground at a point (0 on the flat campus, negative in a hollow, positive on a hill or terrace). */
 export function groundHeight(x: number, z: number) {
-  for (const s of STAIRS) if (inCorridor(s, x, z)) return stairAt(s, topOf(s), x);
+  for (const s of STAIRS) if (inCorridor(s, x, z)) return stairAt(s, footOf(s), topOf(s), along(s, x, z)[0]);
   return zoneHeight(x, z);
 }
 

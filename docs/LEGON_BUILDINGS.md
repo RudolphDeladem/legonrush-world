@@ -512,7 +512,13 @@ aerial. The heights vary from part to part:
   At the middle of each, a **one-floor gatehouse** under a steep pyramid roof (a dark doorway on the west), joined to
   small **pyramid-roofed kiosks** at the corners by white **perforated screen walls** on a maroon base; a porch under a
   tiled lean-to on the west wing near its south end.
-- **In front:** the long pool on the library's axis, in a dark stone kerb with white planters along both sides.
+- **In front:** the library **stands above** University Square and the long pool (owner's photo from the pool): the
+  road before the library and the side lanes stay up; the square's **middle terrace** is 1.2 m down and the **pool
+  deck** 2.4 m down, each behind a laterite **stone retaining wall** with white planters along its top, and the
+  **central stairs** climb in two flights from the pool to the road (`relief.ts`: two hollows and a stairway along z;
+  stairways can now climb along z and from a foot below the ground). A white statue stands on the upper level east
+  of the stairs. The long pool on the library's axis, in a dark stone kerb with white planters along both sides and
+  a row of jets, sits on the deck.
 - **Behind (north), in the Kuffour Quadrangle:** the round fountain with a blue-banded rim, a blue-and-white pedestal
   and the blue sculpture of interlocking rings.
 
