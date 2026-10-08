@@ -997,6 +997,28 @@ front with the doors marked blue (`pharmacy.ts`); a side view of the Larway Orac
 - **Larway Oraca Building:** its walls gone grey in streaks, pilasters between the bays, rows of small dark windows
   high in the wall, a dark grey foot; a black water tank on a stand and a red box in the corner by the north wing.
 
+## 43. Food Science, the School of Nursing, Animal Biology and the Centre for Biodiversity
+
+From the owner's photos and top view (`labs.ts`; the trees in `corrections.json`):
+
+- **Department of Nutrition and Food Science** (east across Volta Hall Road, its front to the Larway Oraca Building):
+  a ground floor clad in white ribbed panels and three floors of board-marked concrete over it, each standing out over
+  the one below with a dark gap under it, small square windows scattered in them, everything washed and streaked grey;
+  in the middle of the front the stair core between two tall square columns rising to a flat canopy over the roof, the
+  **lit entrance** at its foot (entered here); a recessed bay with windows and an air-conditioner on the second floor;
+  a row of windows along the south side; a hedge, the department's board, and the brick-paved car park under a blue
+  tensile shade before its south-west corner.
+- **School of Nursing and Midwifery** (west of the Larway Oraca Building): white; three floors, the ground floor set back
+  behind square columns, lit, grilles across its openings; continuous **balconies** on both upper floors, solid
+  parapets pierced by a row of slots, stepping out round the middle of the south front; glass louvre windows; a flat
+  roof with a deep white fascia and lamps; on the lawn an island of bush and agave with two dry flower stalks, blue
+  benches, palms.
+- **Animal Biology and Conservation Science, the Centre for Biodiversity** (and Nature and Food beside them): **one
+  floor**, long white ranges under hipped tile roofs round the courts, piers between pairs of dark windows, a covered
+  walk round the main court; **trees** wherever the owner circled them, in the courts and all round, so that from the
+  road the buildings barely show; along J.K.M. Hodasi Road a brick-paved walk between two low walls faced in rubble
+  stone, young palms in the verge.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

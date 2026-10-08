@@ -38,7 +38,8 @@
   "owner-nnb-gcb": "The owner's photos of the New N Block (front and side, its doors marked) and of the GCB Lecture Building (north side with the stair and ramps, west side with its entrances marked), and their marked aerial of both (front F, cardinal sides N/E/S/W, stair and ramps).",
   "owner-waccbip": "The owner's marked aerial of WACCBIP (front F to Volta Hall Road, back B, car-park shades circled red, the old shed white, the unfinished frame green, structures to delete yellow) and their photos of the front, the back, the unfinished frame and the old shed.",
   "owner-balme-southwest": "The owner's marked aerial of the buildings south-west of the Balme Library (circled white, view directions marked) and their photos of the French Department's south end, the road side of the Office of the Dean of Student Affairs, the Post Office with the GCB ATM, and the long block from the car park.",
-  "owner-pharmacy": "Owner's photos of the School of Pharmacy (its side to the road from WACCBIP, and its front to Volta Hall Road with the doors marked blue)."
+  "owner-pharmacy": "Owner's photos of the School of Pharmacy (its side to the road from WACCBIP, and its front to Volta Hall Road with the doors marked blue).",
+  "owner-food-science": "Owner's photos of the Department of Nutrition and Food Science (front, to the Larway Oraca Building, and side)."
  },
  "campusGates": [
   {
@@ -2083,6 +2084,31 @@
    "evidence": "Owner's photo of the front, its doors marked blue.",
    "refs": [
     "owner's photos of the School of Pharmacy"
+   ]
+  },
+  {
+   "place": "Department of Nutrition and Food Sciences",
+   "footprint": "osm:way/278303009",
+   "entrance": {
+    "at": [
+     -198.4,
+     -206.0
+    ]
+   },
+   "via": [
+    [
+     -220.9,
+     -206.0
+    ]
+   ],
+   "type": "main entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-food-science",
+   "approach": "From Volta Hall Road to the lit entrance at the foot of the stair core in the middle of the front.",
+   "evidence": "Owner's photo of the front, the entrance lit on the ground floor.",
+   "refs": [
+    "owner's photos of the Department of Nutrition and Food Science"
    ]
   }
  ],

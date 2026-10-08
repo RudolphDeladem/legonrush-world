@@ -1,18 +1,18 @@
 {
  "destinations": 436,
  "byMethod": {
-  "curated": 88,
+  "curated": 89,
   "osm-entrance": 0,
   "gate": 1,
   "path-access": 2,
   "drive-access": 17,
   "area-entry": 8,
-  "frontage": 209,
+  "frontage": 208,
   "point": 111
  },
  "byConfidence": {
-  "high": 83,
-  "low": 212,
+  "high": 84,
+  "low": 211,
   "medium": 141
  },
  "campusGates": 5,
@@ -360,8 +360,8 @@
   }
  ],
  "byStatus": {
-  "verified": 82,
-  "inferred": 204,
+  "verified": 83,
+  "inferred": 203,
   "partial": 6,
   "unverified": 9,
   "mapped": 135
@@ -597,6 +597,13 @@
    "arrivalOn": "E.A. Boateng Road",
    "arrivalDistance": 44.9,
    "facing": 26
+  },
+  {
+   "place": "Department of Nutrition and Food Sciences",
+   "type": "main entrance",
+   "arrivalOn": "Volta Hall Road",
+   "arrivalDistance": 19.7,
+   "facing": 290
   },
   {
    "place": "Department of Economics, University of Ghana",

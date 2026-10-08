@@ -344,6 +344,13 @@ try {
     const e = ann('School of Pharmacy'); if (!e || Math.hypot(e[0] - -248.5, e[1] - -243.7) > 3) fail('School of Pharmacy: the entrance is not the door off its car park (owner)');
     for (const [x, z, f] of [[-262, -245, 3], [-295, -245, 1], [-255, -241, 1]]) { const p = buildingAt(x, z); if (!p || (f === 1 ? p.height > 5 : p.height < 9)) fail(`the School of Pharmacy at ${x},${z} is not ${f} floor(s) (owner)`); }
     if ((await server.ssrLoadModule('/src/game/pharmacy.ts')).pharmacySite.frames().length !== 1) fail('expected the School of Pharmacy model'); }
+  // owner: Food Science entered at the foot of its stair core facing the Larway Oraca Building, four floors; Nursing three;
+  // the Animal Biology and Biodiversity ranges one floor, among the trees the owner circled
+  { const inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
+    const e = ann('Department of Nutrition and Food Sciences'); if (!e || Math.hypot(e[0] - -198.4, e[1] - -206) > 3) fail('Food Science: the entrance is not at the foot of the stair core on its front (owner)');
+    for (const [x, z, lo, hi] of [[-185, -204, 12, 16], [-331, -190, 10, 13], [-90, -196, 0, 5.5], [-70, -270, 0, 5.5], [-148, -235, 0, 5.5]]) { const b = buildingAt(x, z); if (!b || b.height < lo || b.height > hi) fail(`the building at ${x},${z} is not the height the owner shows`); }
+    for (const [x, z] of [[-80, -255], [-120, -220], [-28, -215], [-100, -180]]) if (!cm.AREAS.some((a) => a.kind === 'wood' && inA(a, x, z))) fail(`no trees at ${x},${z} round the Animal Biology ranges (owner)`);
+    if ((await server.ssrLoadModule('/src/game/labs.ts')).labsSite.frames().length !== 3) fail('expected Food Science, Nursing and Animal Biology'); }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

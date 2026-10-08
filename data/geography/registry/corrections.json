@@ -2622,6 +2622,48 @@
       "levels": 1,
       "height": 4.5,
       "reason": "Owner's photos of the School of Pharmacy (its side to the road from WACCBIP, and its front to Volta Hall Road with the doors marked blue): the one-floor front wing with the two doors. Modelled in src/game/pharmacy.ts."
+    },
+    {
+      "id": "osm:way/278303009",
+      "place": "Department of Nutrition and Food Sciences",
+      "levels": 4,
+      "height": 14.0,
+      "reason": "Owner's photos of the Department of Nutrition and Food Science (front, to the Larway Oraca Building, and side): a ground floor and three concrete floors over it, the stair core's canopy above the roof. Modelled in src/game/labs.ts."
+    },
+    {
+      "id": "osm:way/394125223",
+      "place": "School Of Nursing and Midwifery",
+      "levels": 3,
+      "height": 11.6,
+      "reason": "Owner's photo of the School of Nursing and Midwifery: three floors, balconies on the two upper ones. Modelled in src/game/labs.ts."
+    },
+    {
+      "id": "osm:relation/3993815",
+      "place": "Department of Animal Biology and Conservation Science",
+      "levels": 1,
+      "height": 5.0,
+      "reason": "Owner: the Animal Biology buildings are one floor. Modelled in src/game/labs.ts."
+    },
+    {
+      "id": "osm:way/530270652",
+      "place": "Department of Animal Biology and Conservation Science (west range)",
+      "levels": 1,
+      "height": 5.0,
+      "reason": "Owner: one floor. Modelled in src/game/labs.ts."
+    },
+    {
+      "id": "osm:way/1051755653",
+      "place": "Centre for Biodiversity Conservation Research",
+      "levels": 1,
+      "height": 5.0,
+      "reason": "Owner: one floor. Modelled in src/game/labs.ts."
+    },
+    {
+      "id": "osm:way/1051755652",
+      "place": "Nature and Food Development Foundation",
+      "levels": 1,
+      "height": 5.0,
+      "reason": "Owner: one floor. Modelled in src/game/labs.ts."
     }
   ],
   "reclass": [
@@ -5621,6 +5663,252 @@
         ]
       ],
       "reason": "Owner's marked aerial of WACCBIP and the ground north of it, registered to the WACCBIP footprint at 0.25 m/px: trees east of Volta Hall Road across from the old shed."
+    },
+    {
+      "id": "owner:woods-biodiversity-north",
+      "class": "wood",
+      "ring": [
+        [
+          -155,
+          -295.5
+        ],
+        [
+          -15,
+          -295.5
+        ],
+        [
+          -15,
+          -280
+        ],
+        [
+          -36,
+          -279
+        ],
+        [
+          -66,
+          -286
+        ],
+        [
+          -112,
+          -285
+        ],
+        [
+          -126,
+          -280
+        ],
+        [
+          -155,
+          -280
+        ]
+      ],
+      "reason": "Owner's top view of the Animal Biology and Biodiversity buildings with the trees circled red, registered to their outlines at 0.24 m/px: trees along the north of the Centre for Biodiversity."
+    },
+    {
+      "id": "owner:woods-biodiversity-north-court",
+      "class": "wood",
+      "ring": [
+        [
+          -101.5,
+          -262.5
+        ],
+        [
+          -67.6,
+          -262.5
+        ],
+        [
+          -67.6,
+          -241
+        ],
+        [
+          -101.5,
+          -241
+        ]
+      ],
+      "reason": "Owner's top view of the Animal Biology and Biodiversity buildings with the trees circled red, registered to their outlines at 0.24 m/px: trees in the court between the Centre for Biodiversity and the range across the middle."
+    },
+    {
+      "id": "owner:woods-animal-biology-carpark",
+      "class": "wood",
+      "ring": [
+        [
+          -134.3,
+          -241.5
+        ],
+        [
+          -124.7,
+          -241.5
+        ],
+        [
+          -124.7,
+          -232.6
+        ],
+        [
+          -134.3,
+          -232.6
+        ]
+      ],
+      "reason": "Owner's top view of the Animal Biology and Biodiversity buildings with the trees circled red, registered to their outlines at 0.24 m/px: a tree by the car park."
+    },
+    {
+      "id": "owner:woods-animal-biology-west-court",
+      "class": "wood",
+      "ring": [
+        [
+          -136,
+          -229
+        ],
+        [
+          -110,
+          -229
+        ],
+        [
+          -110,
+          -211.5
+        ],
+        [
+          -136,
+          -211.5
+        ]
+      ],
+      "reason": "Owner's top view of the Animal Biology and Biodiversity buildings with the trees circled red, registered to their outlines at 0.24 m/px: trees in the court west of the main court."
+    },
+    {
+      "id": "owner:woods-animal-biology-court",
+      "class": "wood",
+      "ring": [
+        [
+          -90,
+          -220.6
+        ],
+        [
+          -58,
+          -220.6
+        ],
+        [
+          -58,
+          -206
+        ],
+        [
+          -90,
+          -206
+        ]
+      ],
+      "reason": "Owner's top view of the Animal Biology and Biodiversity buildings with the trees circled red, registered to their outlines at 0.24 m/px: trees in the main court."
+    },
+    {
+      "id": "owner:woods-animal-biology-east",
+      "class": "wood",
+      "ring": [
+        [
+          -40,
+          -229
+        ],
+        [
+          -15,
+          -229
+        ],
+        [
+          -15,
+          -203.5
+        ],
+        [
+          -40,
+          -203.5
+        ]
+      ],
+      "reason": "Owner's top view of the Animal Biology and Biodiversity buildings with the trees circled red, registered to their outlines at 0.24 m/px: trees east of the main court."
+    },
+    {
+      "id": "owner:woods-animal-biology-south",
+      "class": "wood",
+      "ring": [
+        [
+          -139,
+          -189.5
+        ],
+        [
+          -72,
+          -189.5
+        ],
+        [
+          -72,
+          -170
+        ],
+        [
+          -139,
+          -170
+        ]
+      ],
+      "reason": "Owner's top view of the Animal Biology and Biodiversity buildings with the trees circled red, registered to their outlines at 0.24 m/px: trees between the south range and J.K.M. Hodasi Road (owner's photo 4: the buildings barely show through them)."
+    },
+    {
+      "id": "owner:woods-animal-biology-south-2",
+      "class": "wood",
+      "ring": [
+        [
+          -66,
+          -189.5
+        ],
+        [
+          -53,
+          -189.5
+        ],
+        [
+          -53,
+          -170
+        ],
+        [
+          -66,
+          -170
+        ]
+      ],
+      "reason": "Owner's top view of the Animal Biology and Biodiversity buildings with the trees circled red, registered to their outlines at 0.24 m/px: trees south of the main court."
+    },
+    {
+      "id": "owner:woods-animal-biology-south-3",
+      "class": "wood",
+      "ring": [
+        [
+          -39.5,
+          -189.5
+        ],
+        [
+          -28.7,
+          -189.5
+        ],
+        [
+          -28.7,
+          -179
+        ],
+        [
+          -39.5,
+          -179
+        ]
+      ],
+      "reason": "Owner's top view of the Animal Biology and Biodiversity buildings with the trees circled red, registered to their outlines at 0.24 m/px: trees south-east of the main court."
+    },
+    {
+      "id": "owner:food-science-parking",
+      "class": "parking",
+      "ring": [
+        [
+          -213.3,
+          -194.6
+        ],
+        [
+          -208.2,
+          -194.6
+        ],
+        [
+          -208.2,
+          -185.4
+        ],
+        [
+          -213.3,
+          -185.4
+        ]
+      ],
+      "reason": "Owner's photo of the Department of Nutrition and Food Science: cars park under the blue shade on the brick paving before its south-west corner."
     }
   ],
   "addWays": [

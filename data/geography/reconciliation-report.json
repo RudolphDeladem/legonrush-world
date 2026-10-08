@@ -321,8 +321,8 @@
  },
  "areas": {
   "wood": {
-   "count": 43,
-   "ha": 496.2
+   "count": 52,
+   "ha": 496.7
   },
   "water": {
    "count": 26,
@@ -345,7 +345,7 @@
    "ha": 1.5
   },
   "parking": {
-   "count": 104,
+   "count": 105,
    "ha": 9.9
   },
   "track": {
