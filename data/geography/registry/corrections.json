@@ -1532,6 +1532,20 @@
       "levels": 3,
       "height": 12.5,
       "reason": "Owner's aerial of the School of Public Health: the wings marked white are three floors."
+    },
+    {
+      "id": "osm:way/130857930",
+      "place": "University of Ghana Computing Systems (UGCS)",
+      "levels": 4,
+      "height": 16,
+      "reason": "Owner's photo of UGCS from CEDI: four floors under a long tiled roof; modelled in src/game/balme.ts."
+    },
+    {
+      "id": "osm:way/570167617",
+      "place": "Balme Library corner kiosk",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's photo of the Balme Library's west side: the small corner buildings are one-floor kiosks under pyramid tile roofs."
     }
   ],
   "reclass": [

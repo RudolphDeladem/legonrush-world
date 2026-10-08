@@ -21,7 +21,7 @@
 // library, the round fountain with its blue sculpture in the Kuffour Quadrangle.
 import * as THREE from 'three';
 import { WHITE, box, canvas } from './modelkit';
-import { PL, createSite, render, window_, type Block, type Kit, type Spec, type Style } from './blocks';
+import { PL, createSite, gableZ, render, window_, type Block, type Kit, type Spec, type Style } from './blocks';
 
 // ---------- CEDI Conference Centre ----------
 const C: [number, number, number, number] = [-153.4, -106.4, 1.7, 49.7];
@@ -38,21 +38,45 @@ const CEDI_WALL: Style = {
     for (const y0 of [0, 256]) for (const x of [70, 150]) { g.fillStyle = '#1f2329'; g.fillRect(x, y0 + 30, 36, 200); g.fillStyle = '#e9e9e5'; g.fillRect(x - 3, y0 + 228, 42, 6); }
   },
 };
+/** the east face toward the Balme Library (owner's photo): pairs of dark square windows upstairs, tall windows in
+ *  brown frames on the ground floor */
+const CEDI_EAST: Style = {
+  bay: 3.6,
+  up: [[52, 70, 70, 76], [134, 70, 70, 76]],
+  ground: [[60, 256 + 40, 136, 180]],
+  draw: (g) => {
+    render(g, '#f6f6f3');
+    for (const x of [52, 134]) { g.fillStyle = '#1b1f25'; g.fillRect(x, 70, 70, 76); g.fillStyle = '#e4e4df'; g.fillRect(x - 3, 146, 76, 5); }
+    g.fillStyle = '#6a4630'; g.fillRect(56, 256 + 36, 144, 188);
+    g.fillStyle = '#1b1f25'; for (const [x, y] of [[62, 42], [130, 42], [62, 132], [130, 132]]) g.fillRect(x, 256 + y, 62, 84);
+  },
+};
 const cedi: Spec = {
   name: 'Cedi Conference Centre',
   axis: [1, 0], origin: CO, storey: ST, style: CEDI_WALL, roofColor: '#c8776c', fascia: '#f6f6f3', pitch: 0.3,
   replaces: [CO],
-  blocks: [{ x0: cx(C[0]), x1: cx(C[1]), z0: cz(C[2]), z1: cz(C[3]), floors: F, roof: 'none' }],
-  keep: [[cx(C[0]) - 5, cx(C[0]), cz(6), cz(15)], [cx(C[1]), cx(C[1]) + 4, cz(20), cz(30)]],
+  blocks: [{ x0: cx(C[0]), x1: cx(C[1]), z0: cz(C[2]), z1: cz(C[3]), floors: F, roof: 'none', faces: { x1: CEDI_EAST } }],
+  keep: [[cx(C[0]) - 5, cx(C[0]), cz(6), cz(15)], [cx(C[1]), cx(C[1]) + 7, cz(-2), cz(12)], [cx(C[1]), cx(C[1]) + 2, cz(C[2]), cz(C[3])]],
   extras: (k: Kit) => {
     const [x0, x1, z0, z1] = [cx(C[0]), cx(C[1]), cz(C[2]), cz(C[3])];
     const e = k.wallTop(F);
-    // the white parapet round the roof, and the pink hipped roof rising inside it (owner's top view)
-    for (const [a, b, c, d] of [[x0, x1, z0, z0 + 0.5], [x0, x1, z1 - 0.5, z1], [x0, x0 + 0.5, z0, z1], [x1 - 0.5, x1, z0, z1]]) k.plain.push([box(a, b, e, e + 1.4, c, d), WHITE]);
+    // the deep white entablature round the roof, in stepped bands (owner's photo of the east face); on the east it
+    // stands out over the columns. The pink hipped roof rises inside it (owner's top view)
+    const ent = (a: number, b: number, c: number, out: number, eastOut: number) => {
+      k.plain.push([box(a - out, a + 0.5, b, c, z0 - out, z1 + out), WHITE], [box(x1 - 0.5, x1 + eastOut, b, c, z0 - out, z1 + out), WHITE]);
+      k.plain.push([box(a - out, x1 + eastOut, b, c, z0 - out, z0 + 0.5), WHITE], [box(a - out, x1 + eastOut, b, c, z1 - 0.5, z1 + out), WHITE]);
+    };
+    ent(x0, e - 0.6, e, 0.25, 1.85);
+    ent(x0, e, e + 0.9, 0.1, 1.7);
+    ent(x0, e + 0.9, e + 1.25, 0.45, 2.05);
+    ent(x0, e + 1.25, e + 2.4, 0.2, 1.8);
+    ent(x0, e + 2.4, e + 2.7, 0.5, 2.1);
+    // shadow lines between the bands
+    for (const y of [e, e + 1.25, e + 2.4]) k.plain.push([box(x1 + 1.6, x1 + 1.72, y - 0.06, y, z0, z1), '#d9d8d2']);
     k.roof.c = new THREE.Color('#c8776c');
-    const i = 0.5, w = x1 - x0 - 2 * i, h = z1 - z0 - 2 * i, half = Math.min(w, h) / 2, top = e + 0.6 + half * 0.22;
+    const i = 0.5, w = x1 - x0 - 2 * i, h = z1 - z0 - 2 * i, half = Math.min(w, h) / 2, top = e + 1.2 + half * 0.22;
     const X0 = x0 + i, X1 = x1 - i, Z0 = z0 + i, Z1 = z1 - i, zm = (z0 + z1) / 2, r0 = [X0 + half, top, zm], r1 = [X1 - half, top, zm];
-    const ey = e + 0.6;
+    const ey = e + 1.2;
     k.roof.quad([X0, ey, Z0], [X1, ey, Z0], r1, r0);
     k.roof.quad([X1, ey, Z1], [X0, ey, Z1], r0, r1);
     k.roof.quad([X0, ey, Z1], [X0, ey, Z0], r0, r0);
@@ -71,11 +95,96 @@ const cedi: Spec = {
     for (const dz of [-3, 3]) k.plain.push([box(x0 - 3.1, x0 - 2.8, 0, 3.2, pz + dz - 0.15, pz + dz + 0.15), WHITE]);
     k.plain.push([box(x0 - 0.05, x0, PL, PL + 2.7, pz - 2, pz + 2), '#2b2f36']);
     k.plain.push([box(x0 - 3.4, x0, 0, 0.2, pz - 3.6, pz + 3.6), '#c9c3b5']);
-    // the east face toward the Balme Library: the name across the top, doors under a canopy (owner's photo)
-    const ezm = cz(25.7);
-    k.signs.push({ text: 'CEDI CONFERENCE CENTRE', x: x1 + 0.05, y: e - 1.3, z: ezm, ry: Math.PI / 2, w: 12, colors: ['#f6f6f3', '#1f3a93'] });
-    k.plain.push([box(x1, x1 + 2.6, 3.0, 3.3, ezm - 5, ezm + 5), WHITE]);
-    k.plain.push([box(x1, x1 + 0.05, PL, PL + 2.6, ezm - 3, ezm + 3), '#2b2f36']);
+    // the east face toward the Balme Library (owner's photo): round columns the height of both floors stand
+    // out from the wall under the entablature; at the north end a tall portico on two columns shelters the doors
+    const col = (x: number, z: number, r: number) => {
+      k.plain.push([new THREE.CylinderGeometry(r, r * 1.08, e - 0.6, 20).translate(x, (e - 0.6) / 2, z), WHITE]);
+      k.plain.push([box(x - r - 0.15, x + r + 0.15, e - 0.9, e - 0.6, z - r - 0.15, z + r + 0.15), WHITE]);
+      k.plain.push([box(x - r - 0.1, x + r + 0.1, 0, 0.35, z - r - 0.1, z + r + 0.1), '#e2e1dc']);
+    };
+    for (let z = z0 + 13; z < z1 - 1; z += 7.2) col(x1 + 1.1, z, 0.42);
+    // the portico: a deep canopy at the top of the entablature on two big columns, reaching past the north end
+    const pz0 = z0 - 3.5, pz1 = z0 + 9.5;
+    k.plain.push([box(x1, x1 + 7.2, e - 0.6, e + 1.2, pz0, pz1), WHITE]);
+    k.plain.push([box(x1 + 6.9, x1 + 7.4, e + 0.9, e + 1.35, pz0 - 0.25, pz1 + 0.25), WHITE]);
+    k.plain.push([box(x1 + 1.8, x1 + 7.1, e - 0.65, e - 0.6, pz0 + 0.3, pz1 - 0.3), '#e8e7e2']);
+    col(x1 + 6.2, z0 - 2.4, 0.62);
+    col(x1 + 6.2, z0 + 8.4, 0.62);
+    for (const z of [z0 + 1.5, z0 + 5]) k.plain.push([box(x1 + 0.6, x1 + 2.2, e - 0.65, e - 0.6, z - 0.3, z + 0.3), '#fff6d8']);
+    const dz = z0 + 4;
+    k.plain.push([box(x1, x1 + 0.06, PL, PL + 3.2, dz - 2, dz + 2), '#2b2f36']);
+    k.plain.push([box(x1, x1 + 7.2, 0, 0.18, pz0, pz1), '#cfc9bd']);
+    // the name on a plaque standing on the entablature, over the middle of the front
+    k.plain.push([box(x1 + 1.75, x1 + 1.95, e + 2.7, e + 4.0, -7.5, 1.5), '#e9e8e3']);
+    k.signs.push({ text: 'UG  CEDI CONFERENCE CENTRE', x: x1 + 1.97, y: e + 3.45, z: -3, ry: Math.PI / 2, w: 8.4, colors: ['#e9e8e3', '#2a3a6a'] });
+    k.signs.push({ text: 'DEPARTMENT OF ECONOMICS', x: x1 + 1.97, y: e + 2.95, z: -3, ry: Math.PI / 2, w: 5.2, colors: ['#e9e8e3', '#2a3a6a'] });
+    // air-conditioning units along the foot of the wall
+    for (let z = z0 + 14; z < z1 - 2; z += 4.5) k.plain.push([box(x1, x1 + 0.4, 0.2, 0.75, z - 0.45, z + 0.45), '#e6e6e3']);
+    // the taller block at the south end, set back from the east front: small square windows (owner's photos)
+    const sx0 = x0, sx1 = x1 - 9, sz0 = z1 - 10, top2 = e + 5.6;
+    k.plain.push([box(sx0, sx1, e, top2, sz0, z1), WHITE]);
+    k.plain.push([box(sx0 - 0.3, sx1 + 0.3, top2, top2 + 0.5, sz0 - 0.3, z1 + 0.3), WHITE]);
+    for (const y of [e + 1.2, e + 3.4]) {
+      for (let x = sx0 + 3; x < sx1 - 1; x += 4.5) k.plain.push([box(x - 0.55, x + 0.55, y, y + 1.1, z1 - 0.02, z1 + 0.04), '#1b1f25']);
+      for (let z = sz0 + 2.5; z < z1 - 1; z += 3.6) k.plain.push([box(sx1 - 0.02, sx1 + 0.04, y, y + 1.1, z - 0.55, z + 0.55), '#1b1f25']);
+    }
+  },
+};
+
+// ---------- UGCS (University of Ghana Computing Systems), north of CEDI ----------
+// (owner's photo of the side facing CEDI): four floors, white, windows in brown frames in a regular grid, a long
+// roof of orange tiles over a brown fascia; at the west end a flat-topped bay with a blank board on it and barred
+// openings below; along the ground floor right of the middle, a porch under a tiled roof over the glazed entrance
+const U: [number, number, number, number] = [-125.9, -87.8, -53.2, -32.4];
+const UO: [number, number] = [(U[0] + U[1]) / 2, (U[2] + U[3]) / 2];
+const UGCS_WALL: Style = {
+  bay: 3.3,
+  up: [[66, 52, 124, 120]],
+  ground: [[66, 256 + 56, 124, 120]],
+  draw: (g) => {
+    render(g, '#f4f3ef');
+    for (const y0 of [0, 256]) {
+      g.fillStyle = '#7a5434'; g.fillRect(60, y0 + 46, 136, 132);
+      g.fillStyle = '#2a2a2a'; g.fillRect(66, y0 + 52, 124, 120);
+      g.fillStyle = '#7a5434'; g.fillRect(126, y0 + 52, 4, 120); g.fillRect(66, y0 + 92, 124, 4);
+      g.fillStyle = 'rgba(230,226,214,0.35)'; g.fillRect(70, y0 + 56, 50, 34);
+    }
+  },
+};
+const UGCS_BAY: Style = { bay: 3, up: [], ground: [], draw: (g) => render(g, '#f4f3ef') };
+const ugcs: Spec = {
+  name: 'University of Ghana Computing Systems (UGCS)',
+  axis: [1, 0], origin: UO, storey: 3.4, style: UGCS_WALL, roofColor: '#b8653a', fascia: '#6b4a2e', pitch: 0.42,
+  replaces: [UO],
+  blocks: [
+    { x0: U[0] + 6 - UO[0], x1: U[1] - UO[0], z0: U[2] - UO[1], z1: U[3] - UO[1], floors: 4 },
+    { x0: U[0] - UO[0], x1: U[0] + 6 - UO[0], z0: U[2] - UO[1], z1: U[3] - UO[1], floors: 4, roof: 'flat', faces: { z1: UGCS_BAY, x0: UGCS_BAY } },
+  ],
+  keep: [[-118.8 - UO[0], -104.8 - UO[0], U[3] - UO[1], U[3] - UO[1] + 4]],
+  extras: (k: Kit) => {
+    const z1 = U[3] - UO[1], e = k.wallTop(4), wx0 = U[0] - UO[0], wx1 = wx0 + 6;
+    // the brown fascia band under the eaves
+    k.plain.push([box(wx1, U[1] - UO[0], e - 0.5, e, z1, z1 + 0.06), '#6b4a2e']);
+    // the west bay: a parapet, the blank board, and barred openings on the ground floor
+    k.plain.push([box(wx0, wx1, e, e + 0.7, U[2] - UO[1], z1), '#f4f3ef']);
+    k.plain.push([box(wx0 + 0.6, wx1 - 0.6, 5.2, 9.4, z1, z1 + 0.06), '#7a5434'], [box(wx0 + 0.75, wx1 - 0.75, 5.35, 9.25, z1 + 0.06, z1 + 0.1), '#f2f1ec']);
+    k.plain.push([box(wx0, wx1 + 7, 3.4, 3.9, z1, z1 + 0.12), '#f2f1ec']);
+    for (let x = wx0 + 0.4; x < wx1 + 6.6; x += 0.25) k.plain.push([box(x, x + 0.06, PL, 3.3, z1 + 0.02, z1 + 0.08), '#3a3a3a']);
+    // the porch over the entrance: a tiled roof on posts, glass and notice boards behind
+    const px0 = -118.8 - UO[0], px1 = -104.8 - UO[0], d = 3.6;
+    k.plain.push([box(px0, px1, PL, 3.1, z1, z1 + 0.06), '#33404a']);
+    for (let x = px0 + 1.4; x < px1 - 1; x += 2.6) k.plain.push([box(x, x + 1.4, 1.2, 2.3, z1 + 0.06, z1 + 0.1), '#d9dde2']);
+    k.roof.c = new THREE.Color('#b8653a');
+    const ey = 3.3, top = 4.5;
+    k.roof.quad([px0 - 0.4, ey, z1 + d], [px0 - 0.4, ey, z1], [px0 + 1.2, top, z1], [px0 + 1.2, top, z1 + d - 1.2]);
+    k.roof.quad([px1 + 0.4, ey, z1], [px1 + 0.4, ey, z1 + d], [px1 - 1.2, top, z1 + d - 1.2], [px1 - 1.2, top, z1]);
+    k.roof.quad([px1 + 0.4, ey, z1 + d], [px0 - 0.4, ey, z1 + d], [px0 + 1.2, top, z1 + d - 1.2], [px1 - 1.2, top, z1 + d - 1.2]);
+    k.plain.push([box(px0 - 0.4, px1 + 0.4, ey - 0.4, ey, z1 + d - 0.05, z1 + d + 0.05), '#6b4a2e']);
+    for (const x of [px0 + 0.2, px1 - 0.2]) k.plain.push([box(x - 0.15, x + 0.15, 0, ey, z1 + d - 0.35, z1 + d - 0.05), '#f2f1ec']);
+    k.plain.push([box(px0, px1, 0, 0.15, z1, z1 + d), '#cfc9bd']);
+    // air-conditioning units on the wall
+    for (const [x, y] of [[-106, 4.4], [-100, 4.4], [-96, 4.4], [-113, 4.4]]) k.plain.push([box(x - UO[0] - 0.45, x - UO[0] + 0.45, y, y + 0.6, z1, z1 + 0.35), '#e6e6e3']);
+    k.roof.c = new THREE.Color('#b8653a');
   },
 };
 
@@ -135,13 +244,6 @@ const LIB_TALL: Style = {
   up: [[96, 18, 64, 220]],
   ground: [[96, 256 + 24, 64, 214]],
   draw: (g) => { render(g, '#f7f5ef'); window_(g, [96, 18, 64, 220], '#ffffff', 1, 0.2); window_(g, [96, 256 + 24, 64, 214], '#ffffff', 1, 0.2); },
-};
-/** the four-floor outer wings: rows of square windows (owner's photo of the north-west corner) */
-const WING_WALL: Style = {
-  bay: 3.1,
-  up: [[72, 70, 112, 120]],
-  ground: [[72, 256 + 74, 112, 120]],
-  draw: (g) => { render(g, '#f7f5ef'); window_(g, [72, 70, 112, 120], '#ffffff', 2, 0.3); window_(g, [72, 256 + 74, 112, 120], '#ffffff', 2, 0.3); },
 };
 const TILE = '#b9592f';
 /** a tiled roof sloping from an outer rectangle at y0 up to an inner one at y1 (round a tower stage) */
@@ -233,18 +335,108 @@ const library: Spec = {
     for (let i = 0; i < 4; i++) k.plain.push([box(ax - 5 - i * 0.3, ax + 5 + i * 0.3, 0, PL - i * 0.1, fz, fz + 1.2 + i * 1.1), '#cfc8bb']);
   },
 };
+/** the outer wings (owner's photo of the west side): bands of wide dark windows, narrow ones near the gable ends */
+const OUTER_WALL: Style = {
+  bay: 3.4,
+  up: [[40, 70, 176, 100]],
+  ground: [[40, 256 + 74, 176, 100]],
+  draw: (g) => {
+    render(g, '#f8f7f3');
+    for (const y0 of [0, 256]) { g.fillStyle = '#1c2026'; g.fillRect(40, y0 + 70, 176, 100); g.fillStyle = '#3a3f46'; g.fillRect(126, y0 + 70, 4, 100); }
+    g.fillStyle = '#8e2f2a'; g.fillRect(0, 512 - 24, 256, 24);
+  },
+};
+/** perforated concrete blocks: a white screen wall with square openings, on a maroon base */
+let screenMat: THREE.MeshStandardMaterial | null = null;
+const screen = () => (screenMat ??= (() => {
+  const t = canvas(64, 64, (g) => {
+    g.clearRect(0, 0, 64, 64);
+    g.fillStyle = '#ecebe5'; g.fillRect(0, 0, 64, 64);
+    g.clearRect(10, 10, 18, 18); g.clearRect(36, 10, 18, 18); g.clearRect(10, 36, 18, 18); g.clearRect(36, 36, 18, 18);
+  });
+  return new THREE.MeshStandardMaterial({ map: t, transparent: true, alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.9 });
+})());
+/** a screen wall from (ax, az) to (bx, bz): the perforated panel over a solid maroon base, with piers */
+function screenWall(k: Kit, ax: number, az: number, bx: number, bz: number) {
+  const len = Math.hypot(bx - ax, bz - az), ang = -Math.atan2(bz - az, bx - ax), mx = (ax + bx) / 2, mz = (az + bz) / 2;
+  k.plain.push([new THREE.BoxGeometry(len, 0.7, 0.25).rotateY(ang).translate(mx, 0.35, mz), '#8e2f2a']);
+  const geo = new THREE.PlaneGeometry(len, 1.8);
+  const uv = geo.attributes.uv as THREE.BufferAttribute;
+  for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * len / 0.4, uv.getY(i) * 1.8 / 0.4);
+  const m = new THREE.Mesh(geo, screen());
+  m.position.set(mx, 0.7 + 0.9, mz); m.rotation.y = ang; m.castShadow = true;
+  k.meshes.push(m);
+  const n = Math.max(1, Math.round(len / 4));
+  for (let i = 0; i <= n; i++) k.plain.push([box(ax + ((bx - ax) * i) / n - 0.2, ax + ((bx - ax) * i) / n + 0.2, 0, 2.6, az + ((bz - az) * i) / n - 0.2, az + ((bz - az) * i) / n + 0.2), '#ecebe5']);
+}
+/** a hipped pyramid roof of tiles over a square, with a dark fascia */
+function pyramid(k: Kit, x0: number, x1: number, z0: number, z1: number, y: number, rise: number, o = 0.9) {
+  const X0 = x0 - o, X1 = x1 + o, Z0 = z0 - o, Z1 = z1 + o, c = [(X0 + X1) / 2, y + rise, (Z0 + Z1) / 2];
+  k.roof.c = new THREE.Color(TILE);
+  k.roof.quad([X0, y, Z0], [X1, y, Z0], c, c); k.roof.quad([X1, y, Z1], [X0, y, Z1], c, c);
+  k.roof.quad([X1, y, Z0], [X1, y, Z1], c, c); k.roof.quad([X0, y, Z1], [X0, y, Z0], c, c);
+  for (const [a, b, cc, d] of [[X0, X1, Z0 - 0.05, Z0 + 0.05], [X0, X1, Z1 - 0.05, Z1 + 0.05], [X0 - 0.05, X0 + 0.05, Z0, Z1], [X1 - 0.05, X1 + 0.05, Z0, Z1]]) k.plain.push([box(a, b, y - 0.35, y, cc, d), '#3a2a22']);
+}
+const lx = (x: number) => x - LO[0], lz = (z: number) => z - LO[1];
 const libraryWings: Spec = {
   name: 'Balme Library wings',
-  axis: [1, 0], origin: LO, storey: 3.4, style: WING_WALL, roofColor: TILE, fascia: '#f7f5ef', pitch: 0.62,
+  axis: [1, 0], origin: LO, storey: 3.4, style: OUTER_WALL, roofColor: TILE, fascia: '#3a2a22', pitch: 0.62,
+  // the four small corner kiosks (satellite outlines and the 'Balme Library extension') are drawn here
+  replaces: [[-74.5, -50.3], [86, -50.2], [-73.9, 0.3], [86.2, 0.1]],
   blocks: [
-    L(-59.1, -45, -58.3, 7.1, 4), // the outer west wing
-    L(-74.3, -59.1, -32.7, -18.1, 4), // its arm to the west
-    L(57.1, 71.1, -58.3, 7.1, 4), // the outer east wing
-    L(71.1, 85.9, -32.7, -18.1, 4), // its arm to the east
+    L(-59.1, -45, -58.3, 7.1, 4, { roof: 'none' }), // the outer west wing
+    L(-74.3, -59.1, -32.7, -18.1, 1, { roof: 'none' }), // its gatehouse to the west, one floor
+    L(57.1, 71.1, -58.3, 7.1, 4, { roof: 'none' }), // the outer east wing
+    L(71.1, 85.9, -32.7, -18.1, 1, { roof: 'none' }), // its gatehouse to the east
     L(71.1, 76.9, -52.7, -44, 1), // the small annex on the east
   ],
-  keep: [],
-  extras: () => {},
+  keep: [[lx(-80), lx(-59), lz(-50), lz(5)], [lx(71), lx(92), lz(-50), lz(5)]],
+  extras: (k: Kit) => {
+    const e4 = k.wallTop(4), e1 = k.wallTop(1);
+    // the four-floor wings (owner's photo of the west side): a tiled roof along the wing, its ends gabled with dark
+    // boarded triangles under the tiles, and a small lantern on the ridge in the middle
+    for (const [wx0, wx1] of [[-59.1, -45], [57.1, 71.1]]) {
+      const x0 = lx(wx0) - 0.8, x1 = lx(wx1) + 0.8, z0 = lz(-58.3) - 0.8, z1 = lz(7.1) + 0.8, pitch = 0.62;
+      k.roof.c = new THREE.Color(TILE);
+      gableZ(k, x0, x1, z0, z1, e4, pitch, [false, false]);
+      const xc = (x0 + x1) / 2, top = e4 + ((x1 - x0) / 2) * pitch;
+      for (const z of [z0 + 0.7, z1 - 0.8]) {
+        const tri = new THREE.Shape([new THREE.Vector2(x0 + 0.9, e4), new THREE.Vector2(x1 - 0.9, e4), new THREE.Vector2(xc, top - 0.55)]);
+        k.plain.push([new THREE.ExtrudeGeometry(tri, { depth: 0.1, bevelEnabled: false }).translate(0, 0, z), '#3a2a22']);
+      }
+      for (const [a, b, c, d] of [[x0, x1, z0 - 0.05, z0 + 0.05], [x0, x1, z1 - 0.05, z1 + 0.05], [x0 - 0.05, x0 + 0.05, z0, z1], [x1 - 0.05, x1 + 0.05, z0, z1]]) k.plain.push([box(a, b, e4 - 0.35, e4, c, d), '#3a2a22']);
+      const lzm = lz(-25.4);
+      k.plain.push([box(xc - 1.3, xc + 1.3, top - 0.6, top + 1.1, lzm - 1.3, lzm + 1.3), WHITE]);
+      for (const sx of [-1, 1]) k.plain.push([box(xc + sx * 1.3 - 0.02, xc + sx * 1.3 + 0.02, top, top + 0.8, lzm - 0.9, lzm + 0.9), '#1c2026']);
+      pyramid(k, xc - 1.3, xc + 1.3, lzm - 1.3, lzm + 1.3, top + 1.1, 1.0, 0.5);
+      // the maroon base
+      for (const [a, b, c, d] of [[lx(wx0) - 0.06, lx(wx0), lz(-58.3), lz(7.1)], [lx(wx1), lx(wx1) + 0.06, lz(-58.3), lz(7.1)]]) k.plain.push([box(a, b, 0, 0.8, c, d), '#8e2f2a']);
+    }
+    // the one-floor gatehouses on the arms, under steep pyramid roofs; on the west a dark doorway
+    for (const [gx0, gx1] of [[-74.3, -59.1], [71.1, 85.9]]) pyramid(k, lx(gx0), lx(gx1), lz(-32.7), lz(-18.1), e1, 4.2);
+    const gz = lz(-25.4), gx = lx(-74.3);
+    k.plain.push([new THREE.CylinderGeometry(1.25, 1.25, 0.08, 8).rotateZ(Math.PI / 2).rotateX(Math.PI / 8).translate(gx - 0.04, 2.0, gz), '#1c1c1e']);
+    for (const [a, b, c, d] of [[gx - 0.06, gx, lz(-32.7), lz(-18.1)], [lx(85.9), lx(85.9) + 0.06, lz(-32.7), lz(-18.1)]]) k.plain.push([box(a, b, 0, 0.8, c, d), '#8e2f2a']);
+    // the four corner kiosks: white, one floor, pyramid tile roofs
+    for (const [kx0, kx1, kz0, kz1] of [[-77.9, -71, -53.8, -46.8], [82.7, 89.3, -53.8, -46.5], [-77.4, -70.4, -3.2, 3.8], [82.6, 89.8, -3.6, 3.8]]) {
+      k.plain.push([box(lx(kx0), lx(kx1), 0, 3.2, lz(kz0), lz(kz1)), WHITE]);
+      k.plain.push([box(lx(kx0) - 0.05, lx(kx1) + 0.05, 0, 0.7, lz(kz0) - 0.05, lz(kz1) + 0.05), '#8e2f2a']);
+      for (const [a, b, c, d] of [[kx0 - 0.03, kx0 + 0.03, (kz0 + kz1) / 2 - 0.8, (kz0 + kz1) / 2 + 0.8], [kx1 - 0.03, kx1 + 0.03, (kz0 + kz1) / 2 - 0.8, (kz0 + kz1) / 2 + 0.8]]) k.plain.push([box(lx(a), lx(b), 1.3, 2.4, lz(c), lz(d)), '#1c2026']);
+      pyramid(k, lx(kx0), lx(kx1), lz(kz0), lz(kz1), 3.2, 2.6, 0.7);
+    }
+    // the screen walls between them along the roads, west and east, with the gatehouses between
+    for (const wx of [-74.3, 85.9]) {
+      screenWall(k, lx(wx), lz(-46.8), lx(wx), lz(-32.7));
+      screenWall(k, lx(wx), lz(-18.1), lx(wx), lz(-3.4));
+    }
+    // a porch under a tiled lean-to on the west face of the west wing near its south end
+    const px = lx(-59.1), pz = lz(-1.5);
+    k.plain.push([box(px - 0.05, px, PL, PL + 2.6, pz - 2.5, pz + 2.5), '#1c2026']);
+    k.roof.c = new THREE.Color(TILE);
+    k.roof.quad([px - 2.6, 3.0, pz + 3.2], [px - 2.6, 3.0, pz - 3.2], [px, 4.0, pz - 3.2], [px, 4.0, pz + 3.2]);
+    k.plain.push([box(px - 2.7, px - 2.5, 2.7, 3.0, pz - 3.2, pz + 3.2), '#3a2a22']);
+    k.roof.c = new THREE.Color(TILE);
+  },
 };
 
 // ---------- the fountain in the Kuffour Quadrangle, behind the library ----------
@@ -291,4 +483,4 @@ const pool: Spec = {
 };
 
 /** the CEDI Conference Centre, the Standard Chartered and Absa building, the Balme Library, the pool in front of it and the Kuffour Quadrangle fountain */
-export const balmeSite = createSite('balme', [cedi, banks, library, libraryWings, pool, fountain]);
+export const balmeSite = createSite('balme', [cedi, ugcs, banks, library, libraryWings, pool, fountain]);

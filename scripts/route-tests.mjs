@@ -187,7 +187,8 @@ try {
     if (!b || (floors === 1 ? b.height > 5 : b.height < 7 || b.height > 10)) fail(`${n}: not ${floors === 1 ? 'a ground floor only' : 'two floors'} (owner's aerial)`);
   }
   const balmeModels = (await server.ssrLoadModule('/src/game/balme.ts')).balmeSite.frames().map((f) => f.name);
-  for (const n of ['Cedi Conference Centre', 'Standard Chartered and Absa', 'The Balme Library', 'Balme Library wings', 'Balme Library pool', 'Kuffour Quadrangle fountain']) if (!balmeModels.includes(n)) fail(`missing the ${n} model`);
+  for (const n of ['Cedi Conference Centre', 'University of Ghana Computing Systems (UGCS)', 'Standard Chartered and Absa', 'The Balme Library', 'Balme Library wings', 'Balme Library pool', 'Kuffour Quadrangle fountain']) if (!balmeModels.includes(n)) fail(`missing the ${n} model`);
+  { const u = BUILDINGS.find((b) => b.name === 'University of Ghana Computing Systems (UGCS)'); if (!u || u.height < 13 || u.height > 18) fail(`UGCS: height ${u?.height}, the owner's photo shows four floors`); }
   // the Balme Library (owner's photos): entered by the arched door in the middle of the south front
   { const e = ann('The Balme Library'); if (!e || Math.hypot(e[0] - 5.2, e[1] - 6.9) > 2) fail('The Balme Library: the entrance is not the arched door on the south front'); }
   // the Night Market (owner): west of the banking square, entered from the road on its east side; the supermarket on

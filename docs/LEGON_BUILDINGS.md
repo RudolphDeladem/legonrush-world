@@ -469,6 +469,15 @@ circled black, entrances in blue) and photos of CEDI from the west, the east and
 scaled, and Google Open Buildings agrees with the OSM footprints, so the footprints stay where they are and the blue
 marks are placed in proportion on them.
 
+- **CEDI Conference Centre, east face** (owner's photo from the Balme Library side): round **columns** the height of
+  both floors stand out from the wall under a deep **stepped entablature**; a tall **portico** on two big columns at
+  the north end shelters the east doors; the name, *UG CEDI Conference Centre, Department of Economics*, stands on a
+  plaque on top of the entablature over the middle; small square windows upstairs, tall brown-framed windows below.
+  A **taller block** with small square windows rises at the **south** end, set back from the east front; the raked
+  auditorium roof rises at the north end.
+- **UGCS** (owner's photo from CEDI): **four floors**, white, windows in brown frames in a regular grid under a long
+  orange-tiled roof with a brown fascia; at the west end a flat-topped bay with a blank board and barred openings
+  below it; the entrance porch under a tiled roof along the ground floor, toward CEDI.
 - **CEDI Conference Centre:** a big white hall of **two tall storeys**, rows of tall narrow windows in pairs, a
   **pink hipped roof** inside a white parapet, and a raked white stage tower at the north end. The **main entrance is
   on the west face toward Volta Hall**, a porch under a red canopy (owner's photo, marked); the east face toward the
@@ -498,8 +507,11 @@ aerial. The heights vary from part to part:
   windows a side rises from it, then the **clock tower** with a railed balcony and four clock faces, a small hipped
   cap, an open lantern and the **red spire**, about 34 m up.
 - **Two-floor ranges** across the middle and along the north close the courtyards.
-- **Four-floor outer wings** east and west, with arms reaching out at the middle (the owner's photo of the
-  north-west corner); small one-floor pavilions stand at the corners.
+- **Four-floor outer wings** east and west (owner's photos of the west side, facing CEDI): bands of wide dark windows,
+  a maroon base, a tiled roof along each wing with **dark boarded gable ends**, and a small **lantern** on the ridge.
+  At the middle of each, a **one-floor gatehouse** under a steep pyramid roof (a dark doorway on the west), joined to
+  small **pyramid-roofed kiosks** at the corners by white **perforated screen walls** on a maroon base; a porch under a
+  tiled lean-to on the west wing near its south end.
 - **In front:** the long pool on the library's axis, in a dark stone kerb with white planters along both sides.
 - **Behind (north), in the Kuffour Quadrangle:** the round fountain with a blue-banded rim, a blue-and-white pedestal
   and the blue sculpture of interlocking rings.

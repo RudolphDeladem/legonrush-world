@@ -1387,13 +1387,13 @@
    ],
    "secondary": [
     {
-     "label": "east doors under the name, toward the Balme Library",
+     "label": "east doors under the tall portico at the north end, toward the Balme Library",
      "type": "pedestrian",
      "at": [
       -106.4,
-      25.7
+      5.7
      ],
-     "evidence": "Owner's photo of CEDI from the Balme Library side: the name across the top over the doors."
+     "evidence": "Owner's photo of CEDI's east face: a tall portico on two columns at the north end, the name over the middle of the front."
     }
    ]
   },
