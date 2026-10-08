@@ -850,6 +850,28 @@ Computer Science wing and east block meet edge to edge (`corrections.json`: resh
   on red pillars, the yellow and blue shade, the school's sign board, a paved apron; **the fence** along La Road is a
   stone wall under a coping with white square pillars and black iron railings. Big shade trees in the yards.
 
+## 36. Valco cleared; the fronts of Akuafo Hall and Legon Hall
+
+- **Valco** (owner's game map): the four satellite-detected outlines north of Phase 1 and between the phases (circled
+  green) are not there and are excluded; the small building south-west of Phase 2 (circled purple) is one floor.
+- **Akuafo Hall and Legon Hall** (owner's photos of both fronts, `greathalls.ts`): every block white, Akuafo's base
+  painted **light green**, Legon's **cream**; storeys 3.6 m. Both fronts face north (a viewer facing one has east on
+  the left). Each front block's middle carries a **loggia** upstairs: three bays between white piers under a deep beam
+  and dark fascia, over a dark balcony ledge, lit ceilings; its back wall has brown louvred shutters (Akuafo) or dark
+  barred windows (Legon).
+- **Akuafo**: the ground floor stands forward under the loggia. The **gate** (owner's blue mark) right of the middle as
+  seen from the car park: a white surround, iron lattice gates folded back, the lit teal hall inside, a lamp and a
+  plaque over it; the lit window behind its iron grille east of it, a small window to the west; banners (the hall week
+  over the balcony, the farmers' expo, the 70th anniversary stand); flag poles either end; the iron lattice gate in the
+  gap to the west; the **gilded statue of the farmer** with his hoe on a plinth (owner's yellow mark) and the hall's
+  board UNIVERSITY OF GHANA / AKUAFO HALL in the garden to the east; car parks with cars before it, either side of the
+  walk to the gate.
+- **Legon**: the ground floor is an **arcade of three round arches**, white over cream, a lattice window lit from
+  inside in each bay and the **entrance** (owner's blue mark) in the middle one behind a black lattice gate; LEGON HALL in
+  white on a black board with the crest over the middle arch, lights over the side arches. A forecourt of square slabs
+  with a flag pole and RESERVED signs, the APOSA-LEGON banner at the east end, and east of the front the raised planter
+  with a low dark stone wall, a fan palm, bushes and a bench, a hedge before the east block's gable, a big tree beyond.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

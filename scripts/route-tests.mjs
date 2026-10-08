@@ -304,6 +304,9 @@ try {
     const e = ann('University of Ghana Basic School'); if (!e || Math.hypot(e[0] - -113, e[1] - 899) > 3) fail('University of Ghana Basic School: the entrance is not the gate facing Valco (owner)');
     if (buildingAt(-68, 998)) fail('a building still stands on the Basic School yard (owner)');
     if ((await server.ssrLoadModule('/src/game/basicschool.ts')).basicSchool.frames().length < 16) fail('expected the Basic School blocks and its entrance'); }
+  // owner: no structures north of Valco Phase 1 or between the phases; the building south-west of Phase 2 is one floor
+  { for (const [x, z] of [[49.9, 743.1], [57.9, 755.7], [31.8, 755.8], [44.3, 799]]) if (buildingAt(x, z)) fail(`a structure still stands at Valco ${x},${z} (owner: none)`);
+    const b = buildingAt(-59, 865); if (!b || b.height > 5) fail('the building south-west of Valco Phase 2 is not one floor (owner)'); }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

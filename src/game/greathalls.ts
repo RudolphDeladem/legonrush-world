@@ -17,10 +17,14 @@
 // lower two-storey wings either side joined to the blocks (owner's photos and panorama).
 //
 // Akuafo Hall and Legon Hall, twins either side of the avenue: two-storey blocks (owner) in lanes and
-// bars round long courts. Akuafo's entrance is the gatehouse on the north with a row of square windows
-// under deep eaves, dark doors between white piers over a teal base, the gate (owner's blue mark) into
-// the fountain court; Legon's is its north block, three arches on the ground floor with the entrance in
-// the middle one (blue), a recessed balcony above, banners.
+// bars round long courts, white; Akuafo's base painted light green, Legon's cream (owner's photos). Each
+// front block carries a loggia upstairs: three bays between white piers under a deep beam, brown louvred
+// shutters (Akuafo) or dark barred windows (Legon) on its back wall, over a dark balcony ledge.
+// Akuafo's ground floor stands forward under it: the gate (owner's blue mark) right of the middle with
+// iron lattice gates and the lit hall inside, a lit window behind a grille, banners, flag poles; the gilded
+// statue of the farmer and the hall's board in the garden to the east (yellow mark). Legon's ground floor is
+// an arcade of three round arches, LEGON HALL with the crest over the middle one, the entrance in it (blue);
+// a slab-paved forecourt with a flag pole, the raised planter with a fan palm and a big tree to the east.
 import * as THREE from 'three';
 import { BUILDINGS, NODE_XZ, ROADS, type Building } from './campusmap';
 import { PAVE, WHITE, box } from './modelkit';
@@ -54,31 +58,64 @@ const LOUVRE = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h:
 const DINING_TALL: Style = { bay: 4.2, up: [[70, 40, 116, 216]], ground: [[70, 256, 116, 220]], draw: (g) => { render(g, '#f8f7f3'); LOUVRE(g, 70, 40, 116, 436); } };
 /** the dining hall's other faces: plain render with a high round window */
 const DINING_PLAIN: Style = { bay: 4.2, up: [], ground: [], draw: (g) => { render(g, '#f8f7f3'); g.fillStyle = '#2b3440'; g.beginPath(); g.arc(128, 120, 26, 0, Math.PI * 2); g.fill(); } };
-/** Akuafo and Legon: white render, dark windows in white frames */
-const TWIN_WIN: Style = {
-  bay: 3.2,
-  up: [[74, 56, 108, 118]],
+/** Akuafo and Legon: white render, dark windows in white frames, the base painted (Akuafo light green, Legon cream) */
+function twinWall(base: string): Style {
+  return {
+    bay: 3.2,
+    up: [[74, 56, 108, 118]],
+    ground: [[74, 256 + 60, 108, 118]],
+    draw: (g) => {
+      render(g, '#f5f4f0');
+      window_(g, [74, 56, 108, 118], '#ecebe6', 2, 0.3);
+      slab(g, 238, 18);
+      window_(g, [74, 256 + 60, 108, 118], '#ecebe6', 2, 0.3);
+      g.fillStyle = base; g.fillRect(0, 512 - 58, 256, 58);
+      g.fillStyle = 'rgba(0,0,0,0.12)'; g.fillRect(0, 512 - 60, 256, 2);
+    },
+  };
+}
+const AK_GREEN = '#a6d2b8', LG_CREAM = '#e4d5b2';
+const AKUAFO_WALL = twinWall(AK_GREEN), LEGON_WALL = twinWall(LG_CREAM);
+/** a brown louvred shutter window: slats in a dark frame, two leaves */
+function shutter(g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) {
+  g.fillStyle = '#2b211b'; g.fillRect(x - 4, y - 4, w + 8, h + 8);
+  for (let t = y; t < y + h; t += 9) { g.fillStyle = '#6a4b35'; g.fillRect(x, t, w, 6); g.fillStyle = '#3d2c21'; g.fillRect(x, t + 6, w, 3); }
+  g.fillStyle = '#2b211b'; g.fillRect(x + w / 2 - 2, y, 4, h);
+}
+/** Akuafo's front behind the loggia (owner's photos): upstairs the loggia's back wall, white, a brown louvred shutter
+ *  window to a bay, shaded under the ceiling; downstairs (hidden by the porch block) the hall's wall */
+const AK_LOGGIA: Style = {
+  bay: 6.3,
+  up: [[100, 56, 56, 120]],
   ground: [[74, 256 + 60, 108, 118]],
   draw: (g) => {
-    render(g, '#f7f6f2');
-    window_(g, [74, 56, 108, 118], '#ecebe6', 2, 0.3);
-    slab(g, 238, 18);
-    window_(g, [74, 256 + 60, 108, 118], '#ecebe6', 2, 0.3);
-    g.fillStyle = '#d6d0c4'; g.fillRect(0, 490, 256, 22);
+    AKUAFO_WALL.draw(g);
+    g.fillStyle = '#f2f1ec'; g.fillRect(0, 0, 256, 238);
+    const sh = g.createLinearGradient(0, 0, 0, 90); sh.addColorStop(0, 'rgba(70,64,56,0.35)'); sh.addColorStop(1, 'rgba(70,64,56,0)');
+    g.fillStyle = sh; g.fillRect(0, 0, 256, 90);
+    shutter(g, 100, 56, 56, 120);
   },
 };
-/** Akuafo's gatehouse: square dark windows above, dark doors between white piers over a teal base (owner photo) */
-const AKUAFO_FRONT: Style = {
-  bay: 3.0,
-  up: [[64, 70, 128, 110]],
-  ground: [[56, 256 + 40, 144, 200]],
+/** Legon's front behind the loggias and the arcade (owner's photos): upstairs the lit back wall of a loggia with two
+ *  dark barred windows; downstairs the arcade's inner wall, white over cream, a lattice window lit from inside */
+const LG_LOGGIA: Style = {
+  bay: 6.33,
+  up: [[46, 64, 54, 130], [156, 64, 54, 130]],
+  ground: [[86, 256 + 50, 84, 130]],
   draw: (g) => {
-    render(g, '#f7f6f2');
-    window_(g, [64, 70, 128, 110], '#2f2a26', 3, 0);
+    render(g, '#f6f6f3');
+    for (const x of [46, 156]) {
+      g.fillStyle = '#16191d'; g.fillRect(x - 4, 60, 62, 138);
+      g.fillStyle = '#2b3138'; g.fillRect(x, 64, 54, 130);
+      g.fillStyle = '#0d0f12'; for (let b = x + 6; b < x + 54; b += 8) g.fillRect(b, 64, 3, 130);
+    }
     slab(g, 238, 18);
-    g.fillStyle = '#3a2c22'; g.fillRect(56, 256 + 40, 144, 216);
-    g.fillStyle = '#5a4434'; for (let x = 66; x < 196; x += 22) g.fillRect(x, 256 + 50, 14, 200);
-    g.fillStyle = '#58b5a6'; g.fillRect(0, 440, 56, 72); g.fillRect(200, 440, 56, 72);
+    g.fillStyle = LG_CREAM; g.fillRect(0, 256 + 150, 256, 106);
+    g.fillStyle = '#121416'; g.fillRect(80, 256 + 44, 96, 142);
+    g.fillStyle = '#cfe2ee'; g.fillRect(86, 256 + 50, 84, 130);
+    g.fillStyle = '#121416';
+    for (let x = 86; x < 170; x += 14) g.fillRect(x, 256 + 50, 3, 130);
+    for (let y = 256 + 50; y < 256 + 180; y += 14) g.fillRect(86, y, 84, 3);
   },
 };
 
@@ -249,27 +286,119 @@ const sarbah: Spec = {
 };
 
 // ---------- Akuafo Hall and Legon Hall (twins) ----------
-const twin = (name: string, o: [number, number], box_: [number, number, number, number], front: [number, number, number, number], skip: RegExp | null, drop: [number, number][], entrance: (k: Kit) => void, frontStyle: Style, min = 120): Spec => {
+const TWIN_ST = 3.6;
+/**
+ * A twin hall: its footprints as blocks under tile hips, the base painted in `wall`; the foremost piece of the front
+ * footprint takes `frontStyle` on its north face (the back of the loggias), the entrance model stands before it.
+ * (Both fronts face north, so a viewer facing one has east on the left.)
+ */
+const twin = (name: string, o: [number, number], box_: [number, number, number, number], front: [number, number, number, number], skip: RegExp | null, drop: [number, number][], entrance: (k: Kit) => void, frontStyle: Style, wall: Style, roof: string, plinth: string, keep: [number, number, number, number][], min = 120): Spec => {
   const fps = footprints(...box_, min, skip, drop).filter(({ b }) => !inRect((b.minX + b.maxX) / 2, (b.minZ + b.maxZ) / 2, front));
   const fr = footprints(...front, 120);
-  const ps = [...piecesOf(fps, 2), ...piecesOf(fr, 2, { faces: { z0: frontStyle } }, fps.length)];
-  const bl = blocksOf(ps, o, 3.3);
+  const frontPieces = piecesOf(fr, 2, {}, fps.length);
+  // the piece standing furthest forward (the middle of the front, whose north face is behind the loggias)
+  const fore = frontPieces.reduce((m, p) => (p.r[2] < m.r[2] - 0.01 || (Math.abs(p.r[2] - m.r[2]) < 0.01 && p.r[1] - p.r[0] > m.r[1] - m.r[0]) ? p : m), frontPieces[0]);
+  fore.extra = { faces: { z0: frontStyle } };
+  const ps = [...piecesOf(fps, 2), ...frontPieces];
+  const bl = blocksOf(ps, o, TWIN_ST);
   return {
-    name, axis: [1, 0], origin: o, storey: 3.3, style: TWIN_WIN, roofColor: ROOF, fascia: FASCIA, pitch: 0.5,
+    name, axis: [1, 0], origin: o, storey: TWIN_ST, style: wall, roofColor: roof, fascia: FASCIA, pitch: 0.5, plinth,
     replaces: pointsOf(ps),
     blocks: bl.blocks,
-    keep: [],
+    keep,
     extras: (k) => { gateways(k, bl.gates); entrance(k); },
   };
 };
+const WHITE_T = '#f4f3ef', LEDGE = '#3a3532', IRON = '#1b1c1e';
+/** a dark iron lattice (a grid of flat bars) filling a rectangle in the plane z (model frame), facing -z */
+function lattice(k: Kit, x0: number, x1: number, y0: number, y1: number, z: number, cell = 0.22) {
+  k.plain.push([box(x0, x1, y0, y0 + 0.05, z - 0.03, z), IRON], [box(x0, x1, y1 - 0.05, y1, z - 0.03, z), IRON]);
+  for (let x = x0; x <= x1 + 1e-6; x += cell) k.plain.push([box(x - 0.02, x + 0.02, y0, y1, z - 0.03, z), IRON]);
+  for (let y = y0; y <= y1 + 1e-6; y += cell) k.plain.push([box(x0, x1, y - 0.02, y + 0.02, z - 0.03, z), IRON]);
+}
+/** a flag pole at a model point */
+const flagPole = (k: Kit, x: number, z: number, h = 9) => k.plain.push([new THREE.CylinderGeometry(0.05, 0.08, h, 8).translate(x, h / 2, z), '#d9d9d6'], [new THREE.SphereGeometry(0.1, 8, 6).translate(x, h + 0.05, z), '#c9b25a']);
+/**
+ * The loggia over a porch block (Akuafo, Legon): the front of the ground floor stands forward of the footprint from
+ * F to P, its top the balcony with a dark ledge; piers rise from it to a deep beam under the eaves, framing three bays
+ * whose back wall is the footprint's face (the front style's upper storey). Returns the heights.
+ */
+function loggia(k: Kit, x0: number, x1: number, F: number, P: number, endW: number, pierW: number) {
+  const G = PL + TWIN_ST, eave = k.wallTop(2), bw = (x1 - x0) / 3;
+  k.plain.push([box(x0 - 0.08, x1 + 0.08, G, G + 0.16, F - 0.1, P), LEDGE]);
+  for (const [a, b] of [[x0, x0 + endW], [x1 - endW, x1], [x0 + bw - pierW / 2, x0 + bw + pierW / 2], [x0 + 2 * bw - pierW / 2, x0 + 2 * bw + pierW / 2]]) k.plain.push([box(a, b, G + 0.16, eave - 0.7, F, P), WHITE_T]);
+  k.plain.push([box(x0 - 0.08, x1 + 0.08, eave - 0.7, eave, F - 0.05, P), WHITE_T]);
+  k.plain.push([box(x0 - 0.1, x1 + 0.1, eave - 0.3, eave + 0.02, F - 0.11, F - 0.05), FASCIA]);
+  k.plain.push([box(x0 - 0.1, x1 + 0.1, eave, eave + 0.04, F - 0.11, P - 0.6), FASCIA]);
+  // the loggias' ceilings, a light in each
+  for (let i = 0; i < 3; i++) k.plain.push([box(x0 + bw * i + 0.6, x0 + bw * (i + 1) - 0.6, eave - 0.73, eave - 0.7, F + 0.5, F + 0.62), '#fff6dc']);
+  return { G, eave, bw };
+}
+
 const AO: [number, number] = [157, 165];
+const AK_ROOF = '#b4532f';
+// the front block's middle (x 147.9..167, north face z 156.2) carries the loggia; its porch stands 1.6 m forward
+const AK = { x0: 147.9 - AO[0], x1: 167 - AO[0], P: 156.2 - AO[1], F: 154.6 - AO[1] };
 const akuafo = twin('Akuafo Hall Main', AO, [85, 215, 150, 390], [140, 175, 154, 174], null, [], (k) => {
-  // the gate into the fountain court (owner's blue mark) on the north face of the gatehouse, z 156.3
-  const z = 156.3 - AO[1];
-  k.plain.push([box(-1.6, 1.6, 0, 3.0, z - 0.06, z - 0.02), '#2a221c']);
-  k.plain.push([box(-1.9, 1.9, 3.0, 3.25, z - 0.1, z), WHITE]);
-  k.plain.push([box(-4, 4, 0, 0.12, z - 5, z), '#b7a58c']);
-  // the fountain court behind it
+  const { x0, x1, P, F } = AK, xm = (x0 + x1) / 2;
+  const X = (x: number) => x - AO[0], Z = (z: number) => z - AO[1];
+  // the porch block: white over a light green base (owner's photos)
+  k.plain.push([box(x0, x1, 1.15, PL + TWIN_ST, F, P), WHITE_T], [box(x0 - 0.02, x1 + 0.02, 0, 1.15, F - 0.02, P), AK_GREEN]);
+  loggia(k, x0, x1, F, P, 0.9, 0.7);
+  const f = F - 0.01;
+  // the gate (owner's blue mark), right of the middle as seen from the car park (west): a white surround, the lit hall inside, iron lattice gates
+  // folded back either side, a step; a lamp over it and a small plaque
+  const d0 = xm - 3.4, d1 = xm - 0.4;
+  k.plain.push([box(d0 - 0.2, d1 + 0.2, 0, 2.95, f - 0.05, f), '#fbfaf6']);
+  k.plain.push([box(d0, d1, 0.12, 2.8, f - 0.06, f - 0.05), '#9fd8c6']);
+  k.plain.push([box(d0 + 0.6, d1 - 0.6, 0.12, 2.0, f - 0.065, f - 0.06), '#e8d8a8']);
+  lattice(k, d0, d0 + 0.7, 0.12, 2.8, f - 0.07);
+  lattice(k, d1 - 0.7, d1, 0.12, 2.8, f - 0.07);
+  k.plain.push([box(d0 - 0.4, d1 + 0.4, 0, 0.14, f - 0.9, f), '#bdb6aa']);
+  k.plain.push([box((d0 + d1) / 2 - 0.35, (d0 + d1) / 2 + 0.35, 3.05, 3.2, f - 0.25, f), '#fffbe6']);
+  k.plain.push([box((d0 + d1) / 2 - 0.4, (d0 + d1) / 2 + 0.4, 3.4, 3.85, f - 0.07, f - 0.05), '#d8d4ca']);
+  // the lit window left of the gate behind its iron grille, and a small one on the right
+  k.plain.push([box(xm + 3.0, xm + 6.4, 1.0, 2.75, f - 0.05, f), '#fbfaf6'], [box(xm + 3.2, xm + 6.2, 1.15, 2.6, f - 0.06, f - 0.05), '#eef4ef']);
+  lattice(k, xm + 3.2, xm + 6.2, 1.6, 2.6, f - 0.07, 0.18);
+  k.plain.push([box(xm - 8.2, xm - 7.3, 1.0, 2.5, f - 0.05, f), '#eef4ef']);
+  for (const x of [xm + 7.2, xm + 1.6, xm - 4.4, xm - 9.0]) k.plain.push([box(x - 0.08, x + 0.08, 3.0, 3.18, f - 0.14, f), '#ece9e0']);
+  // banners: the hall week hanging over the balcony on the left, the farmers' expo on the right, the 70th anniversary
+  // stand before the left window
+  k.plain.push([box(xm + 2.8, xm + 6.6, 2.85, 4.75, f - 0.12, f - 0.08), '#2f5b3e']);
+  k.signs.push({ text: 'AKUAFO HALL WEEK', x: xm + 4.7, y: 3.8, z: f - 0.13, ry: Math.PI, w: 3.4, colors: ['#2f5b3e', '#f0e7c8'] });
+  k.plain.push([box(xm - 6.8, xm - 5.0, 1.55, 4.7, f - 0.12, f - 0.08), '#e9eadf']);
+  k.signs.push({ text: 'FARMERS EXPO', x: xm - 5.9, y: 4.1, z: f - 0.13, ry: Math.PI, w: 1.6, colors: ['#2e7d3a', '#ffffff'] });
+  k.plain.push([box(xm + 3.1, xm + 6.1, 0.05, 1.6, f - 0.42, f - 0.36), '#f3f3ef']);
+  k.signs.push({ text: 'AKUAFO HALL @ 70', x: xm + 4.6, y: 1.2, z: f - 0.43, ry: Math.PI, w: 2.8, colors: ['#f3f3ef', '#2f7d3a'] });
+  k.plain.push([new THREE.CylinderGeometry(0.22, 0.17, 0.45, 10).translate(d1 + 0.6, 0.22, f - 0.4), '#ece6d8'], [new THREE.IcosahedronGeometry(0.3, 0).translate(d1 + 0.6, 0.7, f - 0.4), '#4f8a35']);
+  // the paved walk along the front, grey pavers
+  k.plain.push([box(X(139), X(176), 0, 0.05, F - 1.6, F), '#9a958c']);
+  // flag poles either end of the porch
+  flagPole(k, X(145.6), F - 1.0); flagPole(k, X(169.2), F - 1.0);
+  // the iron lattice gate between the front block and its west neighbour
+  lattice(k, X(137.9), X(141.6), 0, 2.4, Z(158.5), 0.3);
+  k.plain.push([box(X(137.7), X(137.9), 0, 2.6, Z(158.3), Z(158.6)), WHITE_T], [box(X(141.6), X(141.8), 0, 2.6, Z(158.3), Z(158.6)), WHITE_T]);
+  // the statue of the farmer east of the front (owner's yellow mark): gilded, a hoe over his shoulder, on a plinth
+  const sx = X(176.4), sz = Z(153.2), gold = '#b6a13a';
+  k.plain.push([box(sx - 0.6, sx + 0.6, 0, 0.9, sz - 0.6, sz + 0.6), '#d9d4c8'], [box(sx - 0.7, sx + 0.7, 0.9, 1.0, sz - 0.7, sz + 0.7), '#bfb8aa']);
+  k.plain.push([new THREE.CylinderGeometry(0.13, 0.15, 0.95, 8).translate(sx - 0.14, 1.48, sz), gold], [new THREE.CylinderGeometry(0.13, 0.15, 0.95, 8).translate(sx + 0.14, 1.48, sz), gold]);
+  k.plain.push([new THREE.CylinderGeometry(0.3, 0.26, 0.85, 10).translate(sx, 2.35, sz), gold], [new THREE.SphereGeometry(0.17, 12, 10).translate(sx, 2.95, sz), gold]);
+  k.plain.push([new THREE.CylinderGeometry(0.07, 0.07, 0.8, 6).rotateZ(0.3).translate(sx - 0.38, 2.3, sz), gold], [new THREE.CylinderGeometry(0.07, 0.07, 0.75, 6).rotateZ(-2.6).translate(sx + 0.34, 2.75, sz), gold]);
+  k.plain.push([new THREE.CylinderGeometry(0.035, 0.035, 1.6, 6).rotateZ(0.9).translate(sx + 0.55, 3.1, sz - 0.05), '#7d6a2a'], [box(sx + 1.05, sx + 1.3, 3.35, 3.7, sz - 0.08, sz - 0.02), '#7d6a2a']);
+  // the hall's board east of the statue: UNIVERSITY OF GHANA, AKUAFO HALL, the crests, on two white posts
+  const bx = X(181.5), bz = Z(151.6);
+  for (const s of [-1, 1]) k.plain.push([box(bx + s * 1.6 - 0.1, bx + s * 1.6 + 0.1, 0, 3.4, bz - 0.1, bz + 0.1), '#f3f3f0']);
+  k.plain.push([box(bx - 2.0, bx + 2.0, 1.4, 3.6, bz - 0.06, bz + 0.06), '#f7f7f4']);
+  k.plain.push([box(bx - 1.85, bx - 1.25, 2.7, 3.4, bz - 0.08, bz - 0.06), '#1d3f7a'], [box(bx - 1.85, bx - 1.25, 1.65, 2.35, bz - 0.08, bz - 0.06), '#2f6a9a']);
+  k.signs.push({ text: 'UNIVERSITY OF GHANA', x: bx + 0.35, y: 3.05, z: bz - 0.08, ry: Math.PI, w: 2.9, colors: ['#f7f7f4', '#1d3f7a'] });
+  k.signs.push({ text: 'AKUAFO HALL', x: bx + 0.2, y: 2.1, z: bz - 0.08, ry: Math.PI, w: 2.5, colors: ['#f7f7f4', '#1d3f7a'] });
+  // the garden round the statue and the board: flowering bushes, a low rail, a tree
+  gs.reseed(31);
+  for (const [x, z] of [[174.5, 151.2], [178.4, 151.6], [179.5, 154.4], [183.8, 154.2], [175.2, 155.6]]) gs.bush(k, X(x), Z(z), 0.7);
+  k.plain.push([box(X(174), X(186), 0.85, 0.9, Z(149.6), Z(149.7)), '#8a8d90']);
+  for (const x of [174, 177, 180, 183, 186]) k.plain.push([box(X(x) - 0.03, X(x) + 0.03, 0, 0.9, Z(149.6), Z(149.7)), '#8a8d90']);
+  gs.tree(k, X(186.5), Z(156.5), 1.3);
+  // the fountain court behind
   const fz = 185 - AO[1];
   k.plain.push([new THREE.CylinderGeometry(7, 7, 0.5, 32).translate(0, 0.25, fz), '#cfc6b6']);
   k.plain.push([new THREE.CylinderGeometry(5.6, 5.6, 0.12, 32).translate(0, 0.52, fz), '#4f9cb8']);
@@ -277,24 +406,74 @@ const akuafo = twin('Akuafo Hall Main', AO, [85, 215, 150, 390], [140, 175, 154,
   k.plain.push([new THREE.CylinderGeometry(1.4, 0.4, 0.4, 14).translate(0, 1.7, fz), '#e8e2d6']);
   greenCourts(k, AO, [[128, 186, 222, 287], [128, 186, 301, 351]]);
   // (the small blocks in and round the south courts are part of the hall too, white like the rest: owner)
-}, AKUAFO_FRONT, 60);
+}, AK_LOGGIA, AKUAFO_WALL, AK_ROOF, '#8fc0a3', [[147.9 - 157, 167 - 157, 152.8 - 165, 156.2 - 165], [172 - 157, 189 - 157, 148 - 165, 157 - 165]], 60);
 
 const LO: [number, number] = [-147, 165];
+const LG_ROOF = '#8c4a32';
+const LG = { x0: -156.7 - LO[0], x1: -137.7 - LO[0], P: 156.6 - LO[1], F: 154.6 - LO[1] };
 // (the hall mirrors Akuafo across the avenue's axis; the satellite-detected outline at (-82, 378) is not part of it)
 const legon = twin('Legon Hall', LO, [-215, -50, 150, 390], [-165, -129, 154, 174], /Maison/, [[-82, 378]], (k) => {
-  // the north front (z 156.6): three arches on the ground floor, the entrance in the middle one (owner's blue mark),
-  // a recessed balcony above, banners either side
-  const z = 156.6 - LO[1];
-  for (const x of [-5, 0, 5]) {
-    k.plain.push([box(x - 1.6, x + 1.6, 0, 2.4, z - 0.05, z - 0.01), x === 0 ? '#2a221c' : '#3d3632']);
-    k.plain.push([new THREE.CircleGeometry(1.6, 16, 0, Math.PI).rotateY(Math.PI).translate(x, 2.4, z - 0.05), x === 0 ? '#2a221c' : '#3d3632']);
+  const { x0, x1, P, F } = LG, xm = (x0 + x1) / 2;
+  const X = (x: number) => x - LO[0], Z = (z: number) => z - LO[1];
+  const G = PL + TWIN_ST, r = 1.75, spring = 1.35, bw = (x1 - x0) / 3;
+  // the arcade's front wall (owner's photos): three round arches, white over a cream base, 0.45 m thick
+  const sh = new THREE.Shape();
+  sh.moveTo(x0, 0); sh.lineTo(x0, G); sh.lineTo(x1, G); sh.lineTo(x1, 0);
+  for (let i = 2; i >= 0; i--) {
+    const c = x0 + bw * (i + 0.5);
+    sh.lineTo(c + r, 0); sh.lineTo(c + r, spring); sh.absarc(c, spring, r, 0, Math.PI, false); sh.lineTo(c - r, 0);
   }
-  k.plain.push([box(-7.5, 7.5, PL + 3.3 + 0.1, PL + 3.3 + 0.25, z - 1.2, z), WHITE]);
-  k.plain.push([box(-7.5, 7.5, PL + 3.3 + 0.25, PL + 3.3 + 1.2, z - 1.25, z - 1.15), WHITE]);
-  for (const [x, c] of [[-7.8, '#2e7d4f'], [4.6, '#c98a2b'], [6.6, '#2f5d9a']] as [number, string][]) k.plain.push([box(x - 0.8, x + 0.8, 4.2, 7.0, z - 0.12, z - 0.08), c]);
-  k.plain.push([box(-9, 9, 0, 0.1, z - 9, z), '#c9b8a0']);
+  sh.lineTo(x0, 0);
+  const wallGeo = new THREE.ExtrudeGeometry(sh, { depth: 0.45, bevelEnabled: false, curveSegments: 18 }).translate(0, 0, F);
+  k.plain.push([wallGeo, '#f1f0eb']);
+  // the cream base on the piers between the arches, front and inside faces
+  const piers: [number, number][] = [[x0, x0 + bw * 0.5 - r]];
+  for (let i = 0; i < 2; i++) piers.push([x0 + bw * (i + 0.5) + r, x0 + bw * (i + 1.5) - r]);
+  piers.push([x0 + bw * 2.5 + r, x1]);
+  for (const [a, b] of piers) k.plain.push([box(a - 0.01, b + 0.01, 0, 1.3, F - 0.02, F + 0.47), LG_CREAM]);
+  // the arcade: a tiled floor a step up, a ceiling with lights
+  k.plain.push([box(x0, x1, 0, 0.15, F, P), '#cbc4b4'], [box(x0 + 0.4, x1 - 0.4, G - 0.12, G, F + 0.45, P), '#f6f5f1']);
+  for (let i = 0; i < 3; i++) k.plain.push([box(x0 + bw * (i + 0.5) - 0.6, x0 + bw * (i + 0.5) + 0.6, G - 0.15, G - 0.12, F + 1.2, F + 1.3), '#fff8e2']);
+  loggia(k, x0, x1, F, P, 1.2, 0.9);
+  // LEGON HALL over the middle arch: black letters board lit from behind, the crest between the words, EST. 1952 below
+  const f = F - 0.01;
+  k.plain.push([box(xm - 2.9, xm + 2.9, spring + r + 0.15, spring + r + 0.85, f - 0.1, f), '#141414']);
+  k.signs.push({ text: 'LEGON', x: xm + 1.6, y: spring + r + 0.5, z: f - 0.11, ry: Math.PI, w: 2.0, colors: ['#141414', '#ffffff'] });
+  k.signs.push({ text: 'HALL', x: xm - 1.6, y: spring + r + 0.5, z: f - 0.11, ry: Math.PI, w: 1.6, colors: ['#141414', '#ffffff'] });
+  k.plain.push([box(xm - 0.42, xm + 0.42, spring + r + 0.05, spring + r + 1.0, f - 0.14, f - 0.1), '#c9dcef'], [box(xm - 0.3, xm + 0.3, spring + r + 0.15, spring + r + 0.9, f - 0.15, f - 0.14), '#3a6a9a']);
+  // lights over the side arches and under the balcony
+  for (const x of [xm - bw, xm + bw]) k.plain.push([box(x - 0.8, x + 0.8, spring + r + 0.35, spring + r + 0.45, f - 0.08, f), '#fffbea']);
+  // the entrance in the middle arch (owner's blue mark): the lit hall inside, a black lattice gate, a mat, a step
+  k.plain.push([box(xm - 1.2, xm + 1.2, 0.15, 2.9, P - 0.08, P - 0.02), '#4f9fd8']);
+  k.plain.push([box(xm - 1.0, xm + 0.2, 0.15, 2.6, P - 0.1, P - 0.08), '#e8edf2']);
+  lattice(k, xm + 0.2, xm + 1.2, 0.15, 2.9, P - 0.1, 0.2);
+  lattice(k, xm - 1.2, xm + 1.2, 2.3, 2.9, P - 0.09, 0.2);
+  k.plain.push([box(xm - 1.3, xm + 1.3, 0.15, 0.17, F + 0.5, P), '#55524f']);
+  k.plain.push([box(x0, x1, 0, 0.08, F - 0.5, F), '#bfb7a7']);
+  // the paved forecourt of square slabs before it
+  k.plain.push([box(X(-166), X(-128), 0, 0.04, Z(141), F - 0.5), '#c7bfae']);
+  for (let x = -166; x <= -128; x += 1.2) k.plain.push([box(X(x) - 0.02, X(x) + 0.02, 0.04, 0.045, Z(141), F - 0.5), '#a59d8d']);
+  for (let z = 141; z <= 154; z += 1.2) k.plain.push([box(X(-166), X(-128), 0.04, 0.045, Z(z) - 0.02, Z(z) + 0.02), '#a59d8d']);
+  // the flag pole on the forecourt, west of the middle; RESERVED signs; the welcome banner stand
+  flagPole(k, X(-143.4), Z(150.5), 10);
+  for (const [x, z] of [[-150.2, 146.5], [-142.4, 146.8]]) k.plain.push([new THREE.BoxGeometry(0.9, 0.6, 0.05).rotateX(0.3).translate(X(x), 0.55, Z(z)), '#3e4d5c'], [new THREE.BoxGeometry(0.9, 0.6, 0.05).rotateX(-0.3).translate(X(x), 0.55, Z(z) + 0.3), '#3e4d5c']);
+  k.plain.push([box(X(-139.3), X(-138.3), 0, 2.1, Z(153.0), Z(153.1)), '#f2f2ee']);
+  k.signs.push({ text: 'APOSA-LEGON', x: X(-138.8), y: 1.8, z: Z(152.99), ry: Math.PI, w: 0.95, colors: ['#1d3f7a', '#ffffff'] });
+  // the raised planter east of the front, before the gap to the east block (owner's photos): a low dark stone wall
+  // round a fan palm and bushes, a bench; a hedge before the east block's gable; a big tree beyond
+  const P0 = -136.6, P1 = -129.2, Q0 = 146.5, Q1 = 154.5;
+  k.plain.push([box(X(P0), X(P1), 0, 0.7, Z(Q0), Z(Q0) + 0.4), '#56524d'], [box(X(P0), X(P1), 0, 0.7, Z(Q1) - 0.4, Z(Q1)), '#56524d']);
+  k.plain.push([box(X(P0), X(P0) + 0.4, 0, 0.7, Z(Q0), Z(Q1)), '#56524d'], [box(X(P1) - 0.4, X(P1), 0, 0.7, Z(Q0), Z(Q1)), '#56524d']);
+  k.plain.push([box(X(P0) + 0.4, X(P1) - 0.4, 0, 0.5, Z(Q0) + 0.4, Z(Q1) - 0.4), '#4a3b2c']);
+  gs.reseed(17);
+  gs.palm(k, X(-133.2), Z(150.4), 6.5);
+  for (const [x, z] of [[-135.2, 148.2], [-130.8, 152.6], [-131, 148.4]]) gs.bush(k, X(x), Z(z), 0.8);
+  gs.hedge(k, X(-127.6), Z(153.6), X(-117.2), Z(153.6));
+  k.plain.push([box(X(-128.4), X(-126.4), 0.35, 0.45, Z(148), Z(148.5)), '#a89e90'], [box(X(-128.3), X(-128.1), 0, 0.35, Z(148), Z(148.5)), '#8a8178'], [box(X(-126.7), X(-126.5), 0, 0.35, Z(148), Z(148.5)), '#8a8178']);
+  gs.tree(k, X(-121), Z(146.5), 1.9);
+  gs.palm(k, X(-160), Z(151), 8);
   greenCourts(k, LO, [[-175, -119, 222, 287], [-175, -119, 298, 350]]);
-}, TWIN_WIN);
+}, LG_LOGGIA, LEGON_WALL, LG_ROOF, '#d4c29a', [[-166 - -147, -128 - -147, 141 - 165, 156.6 - 165], [-137 - -147, -128.8 - -147, 146 - 165, 155 - 165]]);
 
 /** the long courts between the lanes: a walk down the middle, lawns, palms and bushes */
 function greenCourts(k: Kit, o: [number, number], courts: [number, number, number, number][]) {

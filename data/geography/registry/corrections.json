@@ -184,6 +184,22 @@
     {
       "id": "ml:f3ead4b6-6f26-4091-9a5e-b76f96a67f13",
       "reason": "Owner's aerial of the University of Ghana Basic School: the satellite-detected outline lies on the sandy yard south of the long north block; there is no building there."
+    },
+    {
+      "id": "ml:15d392dd-e9eb-4dac-8e24-d5454a691a48",
+      "reason": "Owner (game map of Valco Trust Hostel, circled green): there is no structure here, north of Phase 1 or between the two phases."
+    },
+    {
+      "id": "ml:2edde621-3f03-4897-adc9-139e177e51ea",
+      "reason": "Owner (game map of Valco Trust Hostel, circled green): there is no structure here, north of Phase 1 or between the two phases."
+    },
+    {
+      "id": "ml:d31a78ce-5df2-4e52-9098-0179a02ecc96",
+      "reason": "Owner (game map of Valco Trust Hostel, circled green): there is no structure here, north of Phase 1 or between the two phases."
+    },
+    {
+      "id": "ml:d15236c1-7ac9-43b3-ae6a-ecf9a9b708af",
+      "reason": "Owner (game map of Valco Trust Hostel, circled green): there is no structure here, north of Phase 1 or between the two phases."
     }
   ],
   "heights": [
@@ -2419,6 +2435,13 @@
       "levels": 1,
       "height": 4.2,
       "reason": "Owner (aerial round F.K. Apaloo Crescent, circled yellow): all one-floor bungalows (modelled with their doors toward the road, src/game/diasporahouses.ts)."
+    },
+    {
+      "id": "osm:way/715051482",
+      "place": "building south-west of Valco Trust Hostel Phase 2",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner (game map of Valco Trust Hostel, circled purple): one floor."
     }
   ],
   "reclass": [
@@ -4810,6 +4833,52 @@
         ]
       ],
       "reason": "Owner's aerial of the University of Ghana Basic School, registered to the school's footprints (the cross-shaped block and the hall) at 0.3 m/px: big shade trees."
+    },
+    {
+      "id": "owner:akuafo-front-car-park-1",
+      "class": "parking",
+      "ring": [
+        [
+          142,
+          143.5
+        ],
+        [
+          156.4,
+          143.5
+        ],
+        [
+          156.4,
+          152.8
+        ],
+        [
+          142,
+          152.8
+        ]
+      ],
+      "reason": "Owner's photos of Akuafo Hall's front: cars parked nose-in before the entrance on grey pavers, either side of the walk to the gate."
+    },
+    {
+      "id": "owner:akuafo-front-car-park-2",
+      "class": "parking",
+      "ring": [
+        [
+          159.6,
+          143.5
+        ],
+        [
+          172,
+          143.5
+        ],
+        [
+          172,
+          152.8
+        ],
+        [
+          159.6,
+          152.8
+        ]
+      ],
+      "reason": "Owner's photos of Akuafo Hall's front: cars parked nose-in before the entrance on grey pavers, either side of the walk to the gate."
     }
   ],
   "addWays": [

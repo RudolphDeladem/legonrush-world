@@ -302,7 +302,11 @@
    "osm:way/1533364931",
    "osm:way/1533364944",
    "osm:way/1533364943",
-   "ml:f3ead4b6-6f26-4091-9a5e-b76f96a67f13"
+   "ml:f3ead4b6-6f26-4091-9a5e-b76f96a67f13",
+   "ml:15d392dd-e9eb-4dac-8e24-d5454a691a48",
+   "ml:2edde621-3f03-4897-adc9-139e177e51ea",
+   "ml:d31a78ce-5df2-4e52-9098-0179a02ecc96",
+   "ml:d15236c1-7ac9-43b3-ae6a-ecf9a9b708af"
   ]
  },
  "areas": {
@@ -331,7 +335,7 @@
    "ha": 1.5
   },
   "parking": {
-   "count": 95,
+   "count": 97,
    "ha": 9.6
   },
   "track": {
