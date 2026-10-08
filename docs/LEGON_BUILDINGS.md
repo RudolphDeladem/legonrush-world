@@ -950,6 +950,31 @@ the back, the unfinished frame and the old shed (`waccbip.ts`):
 - **Cleared:** the structures circled yellow are gone; trees there, north of WACCBIP round the shed, and east of
   Volta Hall Road across from it.
 
+## 41. South-west of the Balme Library: the French Department, the Post Office and their neighbours
+
+From the owner's marked aerial (circled white, view directions marked; registered at 0.25 m/px) and five photos
+(`balmewest.ts`). All of them white with **black wooden louvred windows** (wood, not glass), orange clay tile roofs
+with gable ends boarded in dark timber, and low walls and platforms **faced in rubble stone** under a concrete cap
+(the owner's yellow marks).
+
+- **French Department** (the Faculty of Arts' H-shaped block west of W.E.B. Dubois Road; photo 1): two floors. At the
+  south end of its east wing, toward the corner of Dubois Road and Danquah Avenue: a porch on two columns under a
+  first-floor balcony with a solid white parapet, steps up between two stone-faced planters; a loggia upstairs in the
+  range's south face.
+- **The long block on the Balme square** (photos 2 and 5): two floors, a deep red band round its foot, gables to the
+  roads north and south, a raised lantern with a band of dark louvres over its middle; on the car-park side a portico
+  of two tall columns before the door (entered here), verandahs on square columns along the upper floor either side,
+  two black water tanks.
+- **Office of the Dean of Student Affairs** (photo 2; outline lengthened 5 m west to its roof): one floor along the
+  road, its name on the road side, the internal mail office's door at its east end, a hedge before it, a stone-faced
+  bed along its south; the university's board at the corner (blue arrow).
+- **University Post Office** (photo 3): one floor, faded white with the red band peeling at its foot, darker old tiles,
+  plain white gables with wide dark bargeboards; UNIVERSITY POST OFFICE over the porch in its west gable (entered here,
+  up two stone-faced steps), its red door, black grilles each side, red post boxes; a verandah on square columns along
+  the north side with the wall of red post boxes under a canopy and the stone-faced platform before it.
+- **The car park** between them, asphalt with two rows of bays; the **yellow GCB ATM** kiosk with its blue roof on it,
+  the **red and white lattice mast** behind it; trees along the square and the road, palms by the Post Office.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

@@ -1216,21 +1216,21 @@
       "place": "Department of Economics, University of Ghana",
       "levels": 2,
       "height": 8,
-      "reason": "Owner's marked aerial of the Balme Library surroundings: circled red, two floors."
+      "reason": "Owner's marked aerial of the Balme Library surroundings: circled red, two floors. Modelled in src/game/balmewest.ts from the owner's photos."
     },
     {
       "id": "osm:way/448104181",
       "place": "Office of The Dean of Students",
       "levels": 1,
       "height": 4,
-      "reason": "Owner's marked aerial of the Balme Library surroundings: circled black, a ground floor only."
+      "reason": "Owner's marked aerial of the Balme Library surroundings: circled black, a ground floor only. Modelled in src/game/balmewest.ts from the owner's photos."
     },
     {
       "id": "osm:way/448104184",
       "place": "Legon Post Office",
       "levels": 1,
       "height": 4,
-      "reason": "Owner's marked aerial of the Balme Library surroundings: circled black, a ground floor only."
+      "reason": "Owner's marked aerial of the Balme Library surroundings: circled black, a ground floor only. Modelled in src/game/balmewest.ts from the owner's photos."
     },
     {
       "id": "osm:way/670708229",
@@ -1957,8 +1957,8 @@
       "id": "osm:way/440338448",
       "place": "Faculty of Arts, Languages",
       "levels": 2,
-      "height": 6.0,
-      "reason": "Owner (aerial of the CEDI Conference Centre, circled red): two floors, but low: about half the height of the CEDI Conference Centre beside it."
+      "height": 7.0,
+      "reason": "Owner (aerial of the CEDI Conference Centre, circled red): two floors, but low: about half the height of the CEDI Conference Centre beside it. Owner's photo of its south end (the French Department): two floors under steep tiled gables, modelled in src/game/balmewest.ts."
     },
     {
       "id": "osm:way/492099503",
@@ -3146,6 +3146,110 @@
         ]
       ],
       "reason": "Owner: the building between Volta Hall and the Annex was drawn skewed (the satellite-detected outline is irregular); it is a straight two-floor block joining the hall's east lane to the Annex, modelled in src/game/volta.ts."
+    },
+    {
+      "id": "osm:way/448104181",
+      "place": "Office of The Dean of Students",
+      "source": "owner's marked aerial",
+      "ring": [
+        [
+          -70.0,
+          47.0
+        ],
+        [
+          -47.0,
+          47.0
+        ],
+        [
+          -47.0,
+          58.9
+        ],
+        [
+          -70.0,
+          58.9
+        ]
+      ],
+      "reason": "Owner's marked aerial of the buildings south-west of the Balme Library (circled white), registered to the OSM footprints at 0.25 m/px, and photos: the roof of the Office of the Dean of Student Affairs reaches 5 m further west than the OSM outline, along the road north of the car park. Modelled in src/game/balmewest.ts."
+    },
+    {
+      "id": "osm:way/448104184",
+      "place": "Legon Post Office",
+      "source": "owner's marked aerial",
+      "ring": [
+        [
+          -69.8,
+          94.0
+        ],
+        [
+          -48.5,
+          94.0
+        ],
+        [
+          -48.5,
+          107.8
+        ],
+        [
+          -69.8,
+          107.8
+        ]
+      ],
+      "reason": "Owner's marked aerial of the buildings south-west of the Balme Library (circled white), registered to the OSM footprints at 0.25 m/px, and photos: the Post Office's roof (with the verandah along its north side) is longer and wider than the OSM outline. Modelled in src/game/balmewest.ts."
+    },
+    {
+      "id": "osm:way/278303013",
+      "place": "Department of Economics, University of Ghana",
+      "source": "owner's marked aerial",
+      "ring": [
+        [
+          -41.1,
+          45.6
+        ],
+        [
+          -28.1,
+          45.8
+        ],
+        [
+          -28.4,
+          64.9
+        ],
+        [
+          -24.9,
+          64.9
+        ],
+        [
+          -25.2,
+          88.5
+        ],
+        [
+          -27.7,
+          88.5
+        ],
+        [
+          -27.8,
+          109.5
+        ],
+        [
+          -41.1,
+          109.5
+        ],
+        [
+          -40.9,
+          89.2
+        ],
+        [
+          -44.0,
+          89.2
+        ],
+        [
+          -43.7,
+          65.3
+        ],
+        [
+          -41.4,
+          65.3
+        ]
+      ],
+      "reason": "Owner's marked aerial of the buildings south-west of the Balme Library (circled white), registered to the OSM footprints at 0.25 m/px, and photos: the long block's south part reaches about 2 m further south than the OSM outline. Modelled in src/game/balmewest.ts."
     }
   ],
   "addAreas": [

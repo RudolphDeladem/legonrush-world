@@ -183,7 +183,9 @@ try {
   if (!placeByName('Standard Chartered ATM (near SRC Union Building)')) fail('the Standard Chartered ATM building between the CC and the Union Building is missing');
   // round the Balme Library (owner's marked aerial): CEDI entered on the west under the red canopy, Standard Chartered
   // (west) and Absa (east, by the road) doors on the north face of their one-floor building, the ATMs on its south face
-  for (const [n, x, z] of [['Cedi Conference Centre', -152.5, 10.6], ['University of Ghana Computing Systems (UGCS)', -111.8, -32.8], ['Department of Economics, University of Ghana', -43.8, 75.7], ['University of Ghana Bookshop', 58.7, 74.7], ['Faculty of Arts, Languages', -161, 98.5], ['Office of The Dean of Students', -55.6, 58.9], ['Legon Post Office', -58.6, 93.8], ['Standard Chartered', 70.2, 94.7], ['Absa (near Balme Library Fountain)', 78, 94.7], ['Standard Chartered ATM (near Balme Library Fountain)', 70.2, 106.3]]) {
+  // (the Post Office's door and the long block's are where the owner's later photos show them: the porch in the west
+  // gable, the portico on the car park)
+  for (const [n, x, z] of [['Cedi Conference Centre', -152.5, 10.6], ['University of Ghana Computing Systems (UGCS)', -111.8, -32.8], ['Department of Economics, University of Ghana', -44, 77], ['University of Ghana Bookshop', 58.7, 74.7], ['Faculty of Arts, Languages', -161, 98.5], ['Office of The Dean of Students', -55.6, 58.9], ['Legon Post Office', -69.8, 102], ['Standard Chartered', 70.2, 94.7], ['Absa (near Balme Library Fountain)', 78, 94.7], ['Standard Chartered ATM (near Balme Library Fountain)', 70.2, 106.3]]) {
     const e = ann(n);
     if (!e || Math.hypot(e[0] - x, e[1] - z) > 2) fail(`${n}: the entrance is not where the owner marks it`);
   }
@@ -328,6 +330,13 @@ try {
     const sh = buildingAt(-238.6, -377.7); if (!sh || sh.height > 5.5) fail('the old shed north of WACCBIP is not one floor (owner)');
     for (const [x, z] of [[-276.7, -456.8], [-272.5, -494]]) { if (buildingAt(x, z)) fail(`the structure circled yellow at ${x},${z} still stands (owner)`); if (!cm.AREAS.some((a) => a.kind === 'wood' && inA(a, x, z))) fail(`no trees at ${x},${z} (owner)`); }
     if ((await server.ssrLoadModule('/src/game/waccbip.ts')).waccbipSite.frames().length !== 3) fail('expected WACCBIP, the old shed and the unfinished frame'); }
+  // owner: south-west of the Balme Library, the Post Office entered by the porch in its west gable, the long block by
+  // the portico on the car park; the Dean of Students and the Post Office one floor, the long block and the French
+  // Department two
+  { const p = ann('Legon Post Office'); if (!p || Math.hypot(p[0] - -69.8, p[1] - 102) > 3) fail('Legon Post Office: the entrance is not the porch in the west gable (owner)');
+    const e = ann('Department of Economics, University of Ghana'); if (!e || Math.hypot(e[0] - -44, e[1] - 77) > 3) fail('the long block by the car park: the entrance is not the portico (owner)');
+    for (const [x, z, f] of [[-58.5, 53, 1], [-59, 101, 1], [-34.5, 77, 2], [-104, 95, 2]]) { const b = buildingAt(x, z); if (!b || (f === 1 ? b.height > 5 : b.height < 6.5)) fail(`the building at ${x},${z} is not ${f} floor(s) (owner)`); }
+    if ((await server.ssrLoadModule('/src/game/balmewest.ts')).balmeWest.frames().length !== 2) fail('expected the French Department and the buildings in the owner\'s white circle'); }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

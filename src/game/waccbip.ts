@@ -105,9 +105,9 @@ function rod(p: [number, number, number], q: [number, number, number], r: number
 
 /** A hip roof in world coordinates x0..x1, z0..z1 (at the eave), its ridge along `along`; each end of the ridge either
  *  a hip, a hip rising to a small dark louvred gablet (gw: its half width) or, buried in a neighbour's roof, a gable
- *  (gw >= half, tri false). `M` maps world x, z to the model frame. */
-function hipRoof(k: Kit, M: (x: number, z: number) => [number, number], x0: number, x1: number, z0: number, z1: number, e: number, pitch: number,
-  along: 'x' | 'z', ends: [{ gw: number; tri: boolean }, { gw: number; tri: boolean }], parts: Part[], barge = WFASCIA) {
+ *  (gw >= half, tri false; with tri, a gable end boarded in timber). `M` maps world x, z to the model frame. */
+export function hipRoof(k: Kit, M: (x: number, z: number) => [number, number], x0: number, x1: number, z0: number, z1: number, e: number, pitch: number,
+  along: 'x' | 'z', ends: [{ gw: number; tri: boolean }, { gw: number; tri: boolean }], parts: Part[], barge = WFASCIA, timber: [string, string] = ['#3a3431', '#57504b']) {
   const [A0, A1, B0, B1] = along === 'x' ? [x0, x1, z0, z1] : [z0, z1, x0, x1];
   const P = (a: number, y: number, b: number): number[] => { const [x, z] = along === 'x' ? M(a, b) : M(b, a); return [x, y, z]; };
   const half = (B1 - B0) / 2, bm = (B0 + B1) / 2, top = e + half * pitch;
@@ -129,10 +129,10 @@ function hipRoof(k: Kit, M: (x: number, z: number) => [number, number], x0: numb
   for (const [i, a, g, h, s] of [[0, a0, g0, h0, -1], [1, a1, g1, h1, 1]] as [number, number, number, number, number][]) {
     if (!ends[i].tri || g <= 0) continue;
     const T = (aa: number, y: number, b: number) => P(aa, y, b) as [number, number, number];
-    parts.push([tri2(T(a + s * 0.04, h, bm - g), T(a + s * 0.04, h, bm + g), T(a + s * 0.04, top, bm)), '#3a3431']);
+    parts.push([tri2(T(a + s * 0.04, h, bm - g), T(a + s * 0.04, h, bm + g), T(a + s * 0.04, top, bm)), timber[0]]);
     for (let y = h + 0.18; y < top - 0.2; y += 0.22) {
       const w = (g * (top - y)) / (top - h) - 0.12;
-      if (w > 0.1) parts.push([tri2(T(a + s * 0.08, y, bm - w), T(a + s * 0.08, y, bm + w), T(a + s * 0.12, y - 0.08, bm)), '#57504b']);
+      if (w > 0.1) parts.push([tri2(T(a + s * 0.08, y, bm - w), T(a + s * 0.08, y, bm + w), T(a + s * 0.12, y - 0.08, bm)), timber[1]]);
     }
     for (const b of [-1, 1]) {
       const p = T(a + s * 0.06, h - 0.05, bm + b * (g + 0.1)), q = T((i ? r1 : r0) + s * 0.06, top + 0.05, bm);

@@ -847,14 +847,14 @@
    "place": "Office of The Dean of Students",
    "type": "public entrance",
    "arrivalOn": "W.E.B. Dubois Road",
-   "arrivalDistance": 26.9,
+   "arrivalDistance": 27.9,
    "facing": 90
   },
   {
    "place": "Legon Post Office",
    "type": "public entrance",
    "arrivalOn": "W.E.B. Dubois Road",
-   "arrivalDistance": 24.1,
+   "arrivalDistance": 10.2,
    "facing": 90
   },
   {

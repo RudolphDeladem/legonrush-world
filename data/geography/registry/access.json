@@ -36,7 +36,8 @@
   "owner-enclave": "The owner's aerial of the Innovation Enclave (its six buildings circled, their doors marked with blue lines) and two photos: from the road facing the engineering school (the steps, the UG logo, INNOVATION ENCLAVE in blue letters) and from the courtyards facing the back of the School of Law.",
   "owner-basic-school": "The owner's aerial of the University of Ghana Basic School and photos of a classroom block and of its entrance gate and fence, which face Valco across La Road.",
   "owner-nnb-gcb": "The owner's photos of the New N Block (front and side, its doors marked) and of the GCB Lecture Building (north side with the stair and ramps, west side with its entrances marked), and their marked aerial of both (front F, cardinal sides N/E/S/W, stair and ramps).",
-  "owner-waccbip": "The owner's marked aerial of WACCBIP (front F to Volta Hall Road, back B, car-park shades circled red, the old shed white, the unfinished frame green, structures to delete yellow) and their photos of the front, the back, the unfinished frame and the old shed."
+  "owner-waccbip": "The owner's marked aerial of WACCBIP (front F to Volta Hall Road, back B, car-park shades circled red, the old shed white, the unfinished frame green, structures to delete yellow) and their photos of the front, the back, the unfinished frame and the old shed.",
+  "owner-balme-southwest": "The owner's marked aerial of the buildings south-west of the Balme Library (circled white, view directions marked) and their photos of the French Department's south end, the road side of the Office of the Dean of Student Affairs, the Post Office with the GCB ATM, and the long block from the car park."
  },
  "campusGates": [
   {
@@ -1512,16 +1513,16 @@
    "footprint": "osm:way/448104184",
    "entrance": {
     "at": [
-     -58.6,
-     93.7
+     -69.8,
+     102.0
     ]
    },
    "type": "public entrance",
    "status": "verified",
    "confidence": "high",
-   "cite": "owner-balme",
-   "approach": "To the middle of the north face, across from the Dean of Students.",
-   "evidence": "Blue mark on the owner's aerial (circled black: a ground floor only).",
+   "cite": "owner-balme-southwest",
+   "approach": "From W.E.B. Dubois Road up two stone-faced steps into the recessed porch in the west gable under UNIVERSITY POST OFFICE.",
+   "evidence": "Owner's photo of the Post Office from the north-west (purple arrow on the aerial).",
    "refs": [
     "owner's marked aerial of the Balme Library surroundings"
    ]
@@ -1531,16 +1532,16 @@
    "footprint": "osm:way/278303013",
    "entrance": {
     "at": [
-     -44,
-     75.7
+     -44.0,
+     77.0
     ]
    },
    "type": "public entrance",
    "status": "verified",
    "confidence": "high",
-   "cite": "owner-balme",
-   "approach": "To the middle of the west face.",
-   "evidence": "Blue mark on the owner's aerial (circled red: two floors).",
+   "cite": "owner-balme-southwest",
+   "approach": "Across the car park to the door between the portico's two tall columns in the middle of the west face.",
+   "evidence": "Owner's photo from the car park (yellow arrow on the aerial).",
    "refs": [
     "owner's marked aerial of the Balme Library surroundings"
    ]

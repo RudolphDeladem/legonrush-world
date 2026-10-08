@@ -1,7 +1,7 @@
 // Round the Balme Library: the CEDI Conference Centre and the building with Standard Chartered and
 // Absa, from the owner's photos and marked aerial (block engine: blocks.ts). The two-storey and
-// single-storey blocks the owner marked round the square (Economics, the Bookshop, the Faculty of Arts,
-// the Dean of Students, the Post Office) keep the generic builder, at their storeys.
+// single-storey blocks the owner marked round the square keep the generic builder, at their storeys (the Bookshop);
+// Economics, the Faculty of Arts, the Dean of Students and the Post Office are modelled in balmewest.ts.
 //
 // CEDI Conference Centre: a big white hall of two tall storeys under a pink hipped roof edged by a white
 // parapet, rows of tall narrow windows, a raked white stage tower at the north end. The main entrance is

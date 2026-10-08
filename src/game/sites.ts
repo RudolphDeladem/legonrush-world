@@ -22,10 +22,11 @@ import { basicSchool } from './basicschool';
 import { nBlockGcb } from './nblock';
 import { chaletSite } from './chalets';
 import { waccbipSite } from './waccbip';
+import { balmeWest } from './balmewest';
 import { stadiumSite } from './stadium';
 import { ugbs } from './ugbs';
 import { valco } from './valco';
 import { volta } from './volta';
 import { westLegon } from './westlegon';
 
-export const BLOCK_SITES = [hostels, banking, vikingsLaw, engineeringSite, domeHouse, pentagon, commonwealth, volta, greatHalls, athletics, annexes, ccSite, balmeSite, parks, nightMarket, valco, westLegon, publicHealth, ugbs, stadiumSite, residences, mathStat, isserCs, enclave, basicSchool, nBlockGcb, chaletSite, waccbipSite];
+export const BLOCK_SITES = [hostels, banking, vikingsLaw, engineeringSite, domeHouse, pentagon, commonwealth, volta, greatHalls, athletics, annexes, ccSite, balmeSite, parks, nightMarket, valco, westLegon, publicHealth, ugbs, stadiumSite, residences, mathStat, isserCs, enclave, basicSchool, nBlockGcb, chaletSite, waccbipSite, balmeWest];
