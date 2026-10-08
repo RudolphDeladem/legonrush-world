@@ -91,5 +91,34 @@ const oldMarket: Spec = {
   },
 };
 
+// ---------- the phone booths north of the banking square's car park ----------
+// (owner: the two square structures there are not buildings but phone booths for making calls)
+const BO: [number, number] = [168, 932];
+const phoneBooths: Spec = {
+  name: 'banking square phone booths',
+  axis: [1, 0], origin: BO, storey: 3, style: PLAIN, roofColor: '#b8572f', fascia: WHITE, pitch: 0.4,
+  blocks: [],
+  keep: [[142.6 - BO[0] - 4, 142.6 - BO[0] + 4, 930.5 - BO[1] - 4, 930.5 - BO[1] + 4], [193.7 - BO[0] - 4, 193.7 - BO[0] + 4, 933 - BO[1] - 4, 933 - BO[1] + 4]],
+  extras: (k: Kit) => {
+    for (const [wx, wz] of [[142.6, 930.5], [193.7, 933]]) {
+      const x = wx - BO[0], z = wz - BO[1], h = 3, r = 3.2;
+      // an open square shelter: a slab, four posts and a flat roof of dark panels in a light frame (the aerial's grid)
+      k.plain.push([box(x - r - 0.3, x + r + 0.3, 0, 0.15, z - r - 0.3, z + r + 0.3), '#cfc9bd']);
+      for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) k.plain.push([box(x + sx * r - 0.1, x + sx * r + 0.1, 0, h, z + sz * r - 0.1, z + sz * r + 0.1), '#d9d9d4']);
+      k.plain.push([box(x - r - 0.2, x + r + 0.2, h, h + 0.12, z - r - 0.2, z + r + 0.2), '#d9d9d4']);
+      for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) {
+        const px = x - r + 0.15 + (i * (2 * r - 0.3)) / 4, pz = z - r + 0.15 + (j * (2 * r - 0.3)) / 4, s = (2 * r - 0.3) / 4 - 0.12;
+        k.plain.push([box(px, px + s, h + 0.12, h + 0.16, pz, pz + s), '#3b4a5c']);
+      }
+      // the telephones: four payphones on a pillar in the middle, one to a side
+      k.plain.push([box(x - 0.3, x + 0.3, 0.15, 2.2, z - 0.3, z + 0.3), '#e9e6de']);
+      for (const [dx, dz, w, d] of [[0.42, 0, 0.12, 0.5], [-0.42, 0, 0.12, 0.5], [0, 0.42, 0.5, 0.12], [0, -0.42, 0.5, 0.12]]) {
+        k.plain.push([box(x + dx - w / 2, x + dx + w / 2, 1.1, 1.7, z + dz - d / 2, z + dz + d / 2), '#1f5fa8']);
+      }
+      k.signs.push({ text: 'PHONE', x, y: h - 0.35, z: z + r + 0.22, ry: 0, w: 1.6, colors: ['#1f5fa8', '#ffffff'] });
+    }
+  },
+};
+
 /** open grounds drawn from the owner's descriptions */
-export const parks = createSite('parks', [footballPark, oldMarket]);
+export const parks = createSite('parks', [footballPark, oldMarket, phoneBooths]);

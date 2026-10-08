@@ -1,19 +1,19 @@
 {
  "destinations": 436,
  "byMethod": {
-  "curated": 75,
+  "curated": 76,
   "osm-entrance": 0,
   "gate": 2,
   "path-access": 2,
   "drive-access": 18,
   "area-entry": 8,
   "frontage": 219,
-  "point": 112
+  "point": 111
  },
  "byConfidence": {
-  "high": 69,
+  "high": 70,
   "low": 222,
-  "medium": 145
+  "medium": 144
  },
  "campusGates": 5,
  "problems": [],
@@ -360,11 +360,11 @@
   }
  ],
  "byStatus": {
-  "verified": 67,
+  "verified": 68,
   "inferred": 214,
   "partial": 8,
   "unverified": 9,
-  "mapped": 138
+  "mapped": 137
  },
  "curated": [
   {
@@ -392,7 +392,7 @@
    "place": "Supermart (Night Market)",
    "type": "public entrance",
    "arrivalOn": "Jubilee Link",
-   "arrivalDistance": 1.8,
+   "arrivalDistance": 3.8,
    "facing": 272
   },
   {
@@ -882,7 +882,7 @@
    "place": "Night Market",
    "type": "public entrance",
    "arrivalOn": "Jubilee Link",
-   "arrivalDistance": 1,
+   "arrivalDistance": 2.9,
    "facing": 272
   },
   {
@@ -891,6 +891,13 @@
    "arrivalOn": "W.E.B. Dubois Road",
    "arrivalDistance": 42.2,
    "facing": 266
+  },
+  {
+   "place": "School of Public Health",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 19.9,
+   "facing": 241
   }
  ],
  "furthestArrivals": [

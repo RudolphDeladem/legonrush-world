@@ -26,7 +26,8 @@
   "owner-balme-library": "The owner's photos of the Balme Library: the front from the south (the arched door 'THE BALME LIBRARY' up a flight of steps, and from the far end of the long pool), a top view from the south, the north-west corner, and the north side from the round fountain in the Kuffour Quadrangle.",
   "owner-night-market": "The owner's aerials of the current Night Market (circled blue, the supermarket circled black) and of the buildings round it (circled yellow), registered to the OSM footprints (the bank compound at 4.9 px/m, the wider area at 3.6 px/m).",
   "owner-valco": "The owner's photo of Valco Trust Hostel Phase 1 and Phase 2 (Phase 1's entrance marked in blue) and the owner's account: the back of Phase 1 faces the back of Phase 2.",
-  "owner-west-legon": "The owner's map of the buildings west of Legon Hall (Language Center, Modern Languages, Confucius Institute, the barbeque joint), the owner's two photos of them from the air, and the owner's aerial of the bungalows behind them (circled white), registered to the OSM footprints at 2.8 px/m."
+  "owner-west-legon": "The owner's map of the buildings west of Legon Hall (Language Center, Modern Languages, Confucius Institute, the barbeque joint), the owner's two photos of them from the air, and the owner's aerial of the bungalows behind them (circled white), registered to the OSM footprints at 2.8 px/m.",
+  "owner-sph": "The owner's aerial of the School of Public Health (wings marked yellow: two floors, white: three floors; entrances circled blue; structures circled purple gone), registered to the OSM footprints at 4.0 px/m, and the owner's photo of its three-floor front."
  },
  "campusGates": [
   {
@@ -273,7 +274,7 @@
    "place": "Night Market",
    "entrance": {
     "at": [
-     118.6,
+     117.0,
      1016.5
     ]
    },
@@ -1601,7 +1602,7 @@
    "footprint": "ml:277d59b2-0047-401d-bf87-17917a45b798",
    "entrance": {
     "at": [
-     116.2,
+     114.2,
      994.7
     ]
    },
@@ -1746,6 +1747,36 @@
    "evidence": "Owner: every building in this zone is a ground-floor bungalow with one door; it is on the side toward the road.",
    "refs": [
     "owner's photos and aerial west of Legon Hall"
+   ]
+  },
+  {
+   "place": "School of Public Health",
+   "footprint": "osm:way/714954252",
+   "entrance": {
+    "at": [
+     510.0,
+     1632.0
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-sph",
+   "approach": "From the car park on the east to the door at the north end of the three-floor front, under the SCHOOL OF PUBLIC HEALTH sign's wing.",
+   "evidence": "Owner's aerial (entrance circled blue on the east side of the three-floor wing) and photo of that front (the door at its right-hand end).",
+   "refs": [
+    "owner's aerial and photo of the School of Public Health"
+   ],
+   "secondary": [
+    {
+     "label": "west door of the two-floor wing, by the west car park",
+     "type": "pedestrian",
+     "at": [
+      437.2,
+      1650.0
+     ],
+     "evidence": "Owner's aerial: the entrance circled blue on the west side of the two-floor wing."
+    }
    ]
   }
  ],

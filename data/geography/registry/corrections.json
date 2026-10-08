@@ -60,6 +60,30 @@
     {
       "id": "ml:f7509632-b50a-4182-b545-95537b938076",
       "reason": "Owner: the Night Market moved (it stood here only while the market was relocated for construction); the owner's aerial of the current market shows this ground as grass, trees and bare soil with no buildings."
+    },
+    {
+      "id": "ml:0ffcf3cd-efe8-4b6b-bd15-aa5087287336",
+      "reason": "Owner: the square structure north of the banking square's car park is a phone booth, not a building (modelled as an open shelter in src/game/parks.ts)."
+    },
+    {
+      "id": "ml:feb463cf-2e9e-4722-82ec-aa8d7dd1440d",
+      "reason": "Owner: there is no building that close to the Diaspora Dome on its west side."
+    },
+    {
+      "id": "osm:way/714954248",
+      "reason": "Owner's aerial of the School of Public Health: the structures circled purple north-west of it are gone."
+    },
+    {
+      "id": "osm:way/714954249",
+      "reason": "Owner's aerial of the School of Public Health: the structures circled purple north-west of it are gone."
+    },
+    {
+      "id": "osm:way/714954250",
+      "reason": "Owner's aerial of the School of Public Health: the structures circled purple north-west of it are gone."
+    },
+    {
+      "id": "osm:way/1239491152",
+      "reason": "Owner's aerial of the School of Public Health: the structures circled purple north-west of it are gone."
     }
   ],
   "heights": [
@@ -1483,6 +1507,27 @@
       "levels": 1,
       "height": 3.5,
       "reason": "Owner's marked aerial (circled white): every building in this zone is an ordinary ground-floor bungalow or its outbuilding."
+    },
+    {
+      "id": "osm:way/353697511",
+      "place": "School of Public Health",
+      "levels": 2,
+      "height": 8.5,
+      "reason": "Owner's aerial of the School of Public Health: the wings marked yellow are two floors."
+    },
+    {
+      "id": "osm:way/714954252",
+      "place": "School of Public Health",
+      "levels": 3,
+      "height": 12.5,
+      "reason": "Owner's aerial and photo of the School of Public Health: the wings marked white are three floors."
+    },
+    {
+      "id": "osm:way/714954251",
+      "place": "School of Public Health",
+      "levels": 3,
+      "height": 12.5,
+      "reason": "Owner's aerial of the School of Public Health: the wings marked white are three floors."
     }
   ],
   "reclass": [
@@ -1647,23 +1692,23 @@
       "source": "the owner's aerial of the Night Market (registered to the bank compound's footprint at 4.9 px/m)",
       "ring": [
         [
-          105.0,
+          103.0,
           975.5
         ],
         [
-          116.2,
+          114.2,
           975.5
         ],
         [
-          116.2,
+          114.2,
           1014.0
         ],
         [
-          105.0,
+          103.0,
           1014.0
         ]
       ],
-      "reason": "Owner: the long one-floor building on the east side of the Night Market (circled black) is a supermarket. The satellite-detected outline sits about 3 m west of the roof on the owner's aerial."
+      "reason": "Owner: the long one-floor building on the east side of the Night Market (circled black) is a supermarket. The satellite-detected outline sits about 3 m west of the roof on the owner's aerial. Owner: the entrance must not reach the road; the building stands 2 m west of the roof on the aerial, so its door keeps a pavement before the road."
     }
   ],
   "addAreas": [
@@ -1848,19 +1893,19 @@
           983.0
         ],
         [
-          103.5,
+          103.0,
           975.0
         ],
         [
-          119.0,
+          117.0,
           975.0
         ],
         [
-          118.8,
+          117.0,
           1022.0
         ],
         [
-          118.5,
+          116.5,
           1057.0
         ],
         [

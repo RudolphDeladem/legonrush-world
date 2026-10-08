@@ -276,7 +276,13 @@
    "ml:ca2c9c6b-df5b-4089-83cf-58f6c2520e32",
    "ml:601cbe85-1fce-4588-9e5d-3ea488aaf994",
    "ml:706c5a32-3d25-4cfa-b723-55f8884cf84b",
-   "ml:f7509632-b50a-4182-b545-95537b938076"
+   "ml:f7509632-b50a-4182-b545-95537b938076",
+   "ml:0ffcf3cd-efe8-4b6b-bd15-aa5087287336",
+   "ml:feb463cf-2e9e-4722-82ec-aa8d7dd1440d",
+   "osm:way/714954248",
+   "osm:way/714954249",
+   "osm:way/714954250",
+   "osm:way/1239491152"
   ]
  },
  "areas": {
@@ -345,10 +351,10 @@
      1071
     ],
     "to": [
-     99,
+     98,
      1016
     ],
-    "distanceM": 87
+    "distanceM": 88
    },
    {
     "name": "University of Ghana Registry",
@@ -859,8 +865,8 @@
      "text": "The Banking Square is close to the Night Market (on the old Manciples site).",
      "test": "near",
      "pass": true,
-     "value": 26,
-     "detail": "26 m apart (limit 200 m)"
+     "value": 27,
+     "detail": "27 m apart (limit 200 m)"
     }
    ]
   },
@@ -871,8 +877,8 @@
    "importance": 1,
    "geometry": "owner:night-market",
    "lat": 5.642611,
-   "lng": -0.186204,
-   "x": 99,
+   "lng": -0.186212,
+   "x": 98,
    "z": 1016,
    "elevationM": 87,
    "confidence": "high",
@@ -883,7 +889,7 @@
    "sources": {
     "osm": {
      "name": "Night Market",
-     "distanceM": 15
+     "distanceM": 14
     },
     "overture": {
      "name": "Night Market",
@@ -898,7 +904,7 @@
     {
      "name": "Night Market",
      "dataset": "meta",
-     "distanceM": 1071
+     "distanceM": 1072
     },
     {
      "name": "Night Market",
@@ -912,8 +918,8 @@
      "text": "The Night Market is the campus's main marketplace (80 cubicles, 36 food stalls).",
      "test": "near",
      "pass": true,
-     "value": 26,
-     "detail": "26 m apart (limit 200 m)"
+     "value": 27,
+     "detail": "27 m apart (limit 200 m)"
     }
    ],
    "notes": "Owner: the market moved back west of the banking square after the construction; the old site south of the banking square is grass, trees and soil. The area is drawn from the owner's aerial (corrections.json addAreas)."

@@ -58,7 +58,8 @@ function letters(k: Kit, text: string, x: number, y: number, z: number, face: nu
 }
 
 // ---------- the supermarket ----------
-const SM: [number, number, number, number] = [105, 116.2, 975.5, 1014];
+// 2 m west of the roof on the aerial, so the entrance keeps a pavement in front of it, short of the road
+const SM: [number, number, number, number] = [103, 114.2, 975.5, 1014];
 const SMO: [number, number] = [(SM[0] + SM[1]) / 2, (SM[2] + SM[3]) / 2];
 const SM_WALL: Style = {
   bay: 3.2, up: [], ground: [[90, 256 + 40, 76, 50]],
@@ -80,24 +81,24 @@ const supermart: Spec = {
   axis: [1, 0], origin: SMO, storey: 4.6, style: SM_WALL, roofColor: '#b45a3a', fascia: '#f5f4ef', pitch: 0.3,
   replaces: [SMO],
   blocks: [{ x0: SM[0] - SMO[0], x1: SM[1] - SMO[0], z0: SM[2] - SMO[1], z1: SM[3] - SMO[1], floors: 1, faces: { x1: SHOPFRONT } }],
-  keep: [[SM[1] - SMO[0], SM[1] - SMO[0] + 3, -6, 6]],
+  keep: [[SM[1] - SMO[0], SM[1] - SMO[0] + 2, -6, 6]],
   extras: (k: Kit) => {
     const ex = SM[1] - SMO[0], dz = 994.7 - SMO[1];
-    // the canopy over the doors, on two posts
-    k.plain.push([box(ex, ex + 2.8, 3.05, 3.3, dz - 4, dz + 4), '#1d7a3c']);
-    k.plain.push([box(ex, ex + 2.8, 3.0, 3.05, dz - 4, dz + 4), '#e9e9e4']);
-    for (const s of [-1, 1]) k.plain.push([box(ex + 2.55, ex + 2.7, 0, 3.05, dz + s * 3.8 - 0.07, dz + s * 3.8 + 0.07), '#d9d9d4']);
+    // the canopy over the doors, held off the wall on brackets: it stays over the pavement, short of the road
+    k.plain.push([box(ex, ex + 1.6, 3.05, 3.3, dz - 4, dz + 4), '#1d7a3c']);
+    k.plain.push([box(ex, ex + 1.6, 3.0, 3.05, dz - 4, dz + 4), '#e9e9e4']);
+    for (const z of [dz - 3.5, dz, dz + 3.5]) k.plain.push([new THREE.BoxGeometry(1.9, 0.08, 0.08).rotateZ(0.6).translate(ex + 0.75, 2.55, z), '#d9d9d4']);
     // glazed sliding doors
     k.plain.push([box(ex, ex + 0.06, PL, PL + 2.5, dz - 1.6, dz + 1.6), '#9fb6c4']);
     k.plain.push([box(ex + 0.06, ex + 0.08, PL, PL + 2.5, dz - 0.03, dz + 0.03), '#e4e6e8']);
-    k.plain.push([box(ex, ex + 2.8, 0, 0.12, dz - 4, dz + 4), '#cfc9bd']);
+    k.plain.push([box(ex, ex + 1.6, 0, 0.12, dz - 4, dz + 4), '#cfc9bd']);
     // SUPERMART in raised red letters on the wall over the canopy, and again on the north end over the car park
     k.plain.push([box(ex, ex + 0.04, 3.55, 4.9, -12, 12), '#1d7a3c']);
     letters(k, 'SUPERMART', ex + 0.04, 4.22, 0, Math.PI / 2, 1.0, 0.18, '#d42a2a');
     const nz = SM[2] - SMO[1];
     letters(k, 'SUPERMART', 0, 3.7, nz, Math.PI, 0.75, 0.15, '#d42a2a');
-    // trolleys parked by the door
-    for (let i = 0; i < 3; i++) k.plain.push([box(ex + 1.2, ex + 2.0, 0.25, 1.0, dz + 4.4 + i * 0.35, dz + 4.65 + i * 0.35), '#9aa0a6']);
+    // trolleys parked along the wall by the door
+    for (let i = 0; i < 3; i++) k.plain.push([box(ex + 0.3, ex + 1.1, 0.25, 1.0, dz + 4.4 + i * 0.35, dz + 4.65 + i * 0.35), '#9aa0a6']);
   },
 };
 
@@ -169,21 +170,23 @@ const market: Spec = {
   // the satellite-detected outlines of the stall rows
   replaces: [[85, 1030], [97, 1030]],
   blocks: [],
-  keep: [[mx(76), mx(105), mz(984), mz(1057)], [mx(105), mx(114), mz(1015), mz(1056)]],
+  keep: [[mx(76), mx(102), mz(984), mz(1057)], [mx(102), mx(114), mz(1015), mz(1056)]],
   extras: (k: Kit) => {
     // zones from the owner's aerial: the blue stall in the north-west corner, the grey-blue lean-to along the
     // west side, the long red rows, the red block north of the tree, the purple rows south of it and the three
     // orange sheds along the lane by the supermarket
+    // the gaps between the rows are at least twice what they first were (owner): 1 m between neighbouring rows, a
+    // 2 m lane between the two red rows that face each other, 2 m and 3.8 m lanes, 1 m between the orange sheds
     stalls(k, mx(79), mx(84.5), mz(985.5), mz(993.5), '#4b5fae', 'x0');
-    stalls(k, mx(77.8), mx(81), mz(1004), mz(1024), '#8c9bb0', 'x0');
-    stalls(k, mx(81.5), mx(86), mz(997), mz(1046), '#b4503b', 'x0');
-    stalls(k, mx(86.5), mx(91), mz(997), mz(1046), '#b4503b', 'x1');
-    stalls(k, mx(92), mx(105), mz(997), mz(1003.5), '#b4503b', 'z0');
-    stalls(k, mx(92), mx(97.3), mz(1022), mz(1046), '#6a5aa6', 'x0');
-    stalls(k, mx(99.2), mx(104.5), mz(1022), mz(1046), '#5266b5', 'x1');
-    stalls(k, mx(105.5), mx(113.6), mz(1016), mz(1029), '#d8844f', 'x1');
-    stalls(k, mx(105.5), mx(113.6), mz(1029.5), mz(1044.5), '#d8844f', 'x1');
-    stalls(k, mx(105.5), mx(113.6), mz(1045), mz(1055), '#d8844f', 'x1');
+    stalls(k, mx(77.8), mx(80.8), mz(1004), mz(1024), '#8c9bb0', 'x0');
+    stalls(k, mx(81.8), mx(85.3), mz(997), mz(1046), '#b4503b', 'x0');
+    stalls(k, mx(87.3), mx(90.8), mz(997), mz(1046), '#b4503b', 'x1');
+    stalls(k, mx(92.8), mx(101.5), mz(997), mz(1003.5), '#b4503b', 'z0');
+    stalls(k, mx(92.8), mx(97), mz(1022), mz(1046), '#6a5aa6', 'x0');
+    stalls(k, mx(100.8), mx(104), mz(1022), mz(1046), '#5266b5', 'x1');
+    stalls(k, mx(106), mx(113.6), mz(1016), mz(1028.75), '#d8844f', 'x1');
+    stalls(k, mx(106), mx(113.6), mz(1029.75), mz(1044.25), '#d8844f', 'x1');
+    stalls(k, mx(106), mx(113.6), mz(1045.25), mz(1055), '#d8844f', 'x1');
     // the shade tree in the middle, and benches under it
     k.plain.push([new THREE.CylinderGeometry(0.35, 0.45, 3.6, 8).translate(mx(97.5), 1.8, mz(1013)), '#6b4a33']);
     k.plain.push([new THREE.IcosahedronGeometry(4.2, 1).scale(1, 0.75, 1).translate(mx(97.5), 5.6, mz(1013)), '#3f7a35']);

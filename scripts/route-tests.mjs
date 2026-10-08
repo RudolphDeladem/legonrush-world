@@ -192,7 +192,7 @@ try {
   { const e = ann('The Balme Library'); if (!e || Math.hypot(e[0] - 5.2, e[1] - 6.9) > 2) fail('The Balme Library: the entrance is not the arched door on the south front'); }
   // the Night Market (owner): west of the banking square, entered from the road on its east side; the supermarket on
   // that side; the old site south of the banking square is grass, trees and soil with no building
-  for (const [n, x, z] of [['Night Market', 118.6, 1016.5], ['Supermart (Night Market)', 116.2, 994.7], ['Valco Trust Hostel Phase 1', 27.3, 770.7], ['Valco Trust Hostel Phase 2', 24.2, 847.0]]) {
+  for (const [n, x, z] of [['Night Market', 117.0, 1016.5], ['Supermart (Night Market)', 114.2, 994.7], ['Valco Trust Hostel Phase 1', 27.3, 770.7], ['Valco Trust Hostel Phase 2', 24.2, 847.0]]) {
     const e = ann(n);
     if (!e || Math.hypot(e[0] - x, e[1] - z) > 2) fail(`${n}: the entrance is not where the owner marks it`);
   }
@@ -217,6 +217,12 @@ try {
     if (!b || b.height < lo || b.height > hi) fail(`${n}: height ${b?.height} is not the owner's (${lo}-${hi} m)`);
   }
   if ((await server.ssrLoadModule('/src/game/westlegon.ts')).westLegon.frames().length !== 24) fail('expected the four buildings by the Language Centre and the twenty bungalows and outbuildings behind them');
+  // phone booths, not buildings, north of the banking square's car park; nothing close west of the Diaspora Dome;
+  // the School of Public Health (owner): two-floor and three-floor wings, entered from the east car park
+  if (buildingAt(142.7, 933) || buildingAt(-77.5, 1594.7)) fail('a building still stands where the owner says there is a phone booth or open ground (banking square, Diaspora Dome)');
+  for (const [x, z] of [[435, 1600], [452, 1606], [430, 1618], [453, 1590]]) if (buildingAt(x, z)) fail(`School of Public Health: the structures circled purple (${x},${z}) are still there`);
+  { const e = ann('School of Public Health'); if (!e || Math.hypot(e[0] - 506.8, e[1] - 1633.8) > 3) fail('School of Public Health: the entrance is not on the east front'); }
+  if ((await server.ssrLoadModule('/src/game/publichealth.ts')).publicHealth.frames().length !== 3) fail('expected the three School of Public Health buildings');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)
   for (const [x, z] of [[95, 1573], [-88, 1676], [210, 1509], [200, 1500]]) if (cm.buildingNear(x, z, 0.35)) fail(`free ride: the road at ${x},${z} is blocked by ${cm.buildingNear(x, z, 0.35).name ?? 'a building'}`);

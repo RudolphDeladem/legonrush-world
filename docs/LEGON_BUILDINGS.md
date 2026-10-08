@@ -515,12 +515,17 @@ From the owner's aerials of the current market (circled blue, the supermarket ci
 - **The market:** **one floor**, not buildings of rooms but **market zones**: rows of stall cubicles under sheet roofs
   on posts (red, blue, purple and grey-blue, and three orange sheds along the lane by the supermarket), counters and
   goods at the open fronts, a few shutters down, lanes between the rows and a shade tree with benches in the middle.
+  The gaps between the rows are **at least twice** the first ones (owner: room to walk through): 1 m between
+  neighbouring rows and between the orange sheds, a 2 m lane between the two red rows that face each other, and 2 m
+  and 3.8 m lanes further east.
   Explore enters it from the road on its east side, between the supermarket and the stall rows.
 - **Supermart:** the long one-floor **supermarket** on the market's east side, by the road: a glass shopfront with the
   week's offers, glazed sliding doors under a green canopy, and **SUPERMART** in **raised red letters** standing out
   from the wall (and again on the north end over the car park). It is a destination of its own,
-  *Supermart (Night Market)*, entered by those doors. Its satellite-detected outline was 3 m off the roof and is
-  moved (`corrections.json → reshape` now also corrects satellite-detected outlines).
+  *Supermart (Night Market)*, entered by those doors. It stands **2 m west of the roof on the aerial** so that its
+  entrance keeps a pavement before the road: the canopy is held off the wall on brackets and ends over the pavement,
+  short of the road (owner). Its outline is set by `corrections.json → reshape`, which now also corrects
+  satellite-detected outlines.
 - **Round the market (circled yellow):** every building is **one floor**, a ground floor only, under a roof the
   **colour the aerial shows**, sampled roof by roof: rusty brown sheets, faded tan sheets or terracotta tiles.
 
@@ -559,6 +564,27 @@ registered to the OSM footprints at 2.8 px/m (`src/game/westlegon.ts`).
   small courtyard, with its **outbuildings**; all under red tiles, each with **one door** (a step and a little
   canopy) on the side toward the nearest road. The *Career and councelling dept* is one of these houses. The houses
   on Legon Hill's slope stand on the ground.
+
+## 20. The School of Public Health
+
+From the owner's aerial (registered to the OSM footprints at 4.0 px/m) and photo of the three-floor front
+(`src/game/publichealth.ts`). The buildings stand at an angle to the map grid; each is built in its own frame.
+
+- **Two floors** (marked yellow): the long west wing and the south wing, round the inner court.
+- **Three floors** (marked white): the wing along the east car park and the block north of it.
+- **How it is built:** cream walls, big windows in **dark frames** (barred on the ground floor), a **dark fascia**
+  under low hipped roofs of **terracotta** tiles. The east front has **SCHOOL OF PUBLIC HEALTH** over a forward bay
+  in the middle, its **door at the north end** with a tall **lattice screen** beside it, and air-conditioning units
+  along its foot. Explore enters there, from the east car park; the two-floor west wing has a second door toward the
+  west car park (both circled blue).
+- The four structures circled purple, north-west of the school, are **gone** (`corrections.json → exclude`).
+
+## 21. Smaller corrections
+
+- **Phone booths, banking square:** the two square structures north of the banking square's car park are not
+  buildings but **phone booths**: open square shelters on four posts under a flat roof of dark panels, with four
+  payphones on a pillar in the middle (`parks.ts`). The satellite outline drawn as a building there is excluded.
+- **Diaspora Dome:** the building drawn **west of the dome** is excluded: there is no building that close to it.
 
 ## Explore: drone view
 
