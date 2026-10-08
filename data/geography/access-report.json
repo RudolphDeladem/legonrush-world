@@ -1,18 +1,18 @@
 {
  "destinations": 436,
  "byMethod": {
-  "curated": 76,
+  "curated": 77,
   "osm-entrance": 0,
   "gate": 2,
   "path-access": 2,
   "drive-access": 18,
   "area-entry": 8,
-  "frontage": 219,
+  "frontage": 218,
   "point": 111
  },
  "byConfidence": {
-  "high": 72,
-  "low": 222,
+  "high": 73,
+  "low": 221,
   "medium": 142
  },
  "campusGates": 5,
@@ -360,8 +360,8 @@
   }
  ],
  "byStatus": {
-  "verified": 70,
-  "inferred": 214,
+  "verified": 71,
+  "inferred": 213,
   "partial": 6,
   "unverified": 9,
   "mapped": 137
@@ -478,6 +478,13 @@
    "arrivalOn": "service",
    "arrivalDistance": 4.8,
    "facing": 85
+  },
+  {
+   "place": "Larway Oraca Building",
+   "type": "public entrance",
+   "arrivalOn": "J.K.M. Hodasi Road",
+   "arrivalDistance": 11.5,
+   "facing": 352
   },
   {
    "place": "Jubilee Hall",

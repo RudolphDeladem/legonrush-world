@@ -680,6 +680,22 @@ it either side.
   tower** with platforms at 3, 5, 7.5 and 10 m, white rails and a stair, two springboards beside it; the pool house
   to the north-east, white under a red hipped roof, open toward the pool.
 
+## 27. Ground-floor buildings and the lecturers' houses in their wood
+
+From the owner's aerials (registered to the OSM footprints) and photos (`src/game/residences.ts`):
+
+- **Volta Hall Road stretch**, north-west of CEDI (circled blue): the small buildings are **one floor**, each with
+  its door toward the road.
+- **Opposite the Business School's front:** the **Larway Oraca Building** (circled yellow), four one-floor wings in a
+  cross round a small court, white with a white parapet gable at each wing's end under red tiles, entered on the
+  **south** (owner's mark: Explore goes there); and south of it the **cross-shaped building** (circled purple), one
+  floor, white with big windows, entered by the **gabled porch** in the middle of its east front (owner's photo).
+- **The lecturers' houses** east of the Akuafo and Mensah Sarbah annexes, between Akuafo Road, E.A. Boateng Road and
+  La Road (circled): all **one floor**, each with a front door and a little porch, a laterite walk out to its road and
+  a **gate** in a low hedge across it, on the side toward the road. They stand in a **wood**: trees all through the
+  outlined area (kept off the houses, the roads and the walks), the ground under them leaf litter and moss with
+  patches of bare red earth, not lawn.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

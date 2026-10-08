@@ -29,7 +29,8 @@
   "owner-west-legon": "The owner's map of the buildings west of Legon Hall (Language Center, Modern Languages, Confucius Institute, the barbeque joint), the owner's two photos of them from the air, and the owner's aerial of the bungalows behind them (circled white), registered to the OSM footprints at 2.8 px/m.",
   "owner-sph": "The owner's aerial of the School of Public Health (wings marked yellow: two floors, white: three floors; entrances circled blue; structures circled purple gone), registered to the OSM footprints at 4.0 px/m, and the owner's photo of its three-floor front.",
   "owner-ugbs": "The owner's photos of the Business School (the front and the north side from the north-west corner, the front face on, the middle and east blocks from the north car park) and the owner's aerial marking the front (F, west) and the side the owner calls west (W, north), registered to the OSM footprints at 4.0 px/m.",
-  "owner-stadium": "The owner's aerial of the stadium area (the stadium, the training track, the swimming pool, the gym and the tennis courts) and photos of the stadium from outside and of the main stand, registered to the OSM footprints at 2.2 px/m."
+  "owner-stadium": "The owner's aerial of the stadium area (the stadium, the training track, the swimming pool, the gym and the tennis courts) and photos of the stadium from outside and of the main stand, registered to the OSM footprints at 2.2 px/m.",
+  "owner-residences": "The owner's aerials of the Volta Hall Road stretch north-west of CEDI, of the buildings opposite the Business School (the Larway Oraca Building circled yellow, the cross-shaped building circled purple, their doors marked blue) and of the lecturers' houses east of the annexes, and the owner's photos of the two buildings opposite the Business School."
  },
  "campusGates": [
   {
@@ -1794,6 +1795,25 @@
      ],
      "evidence": "Owner's aerial: the entrance circled blue on the west side of the two-floor wing."
     }
+   ]
+  },
+  {
+   "place": "Larway Oraca Building",
+   "footprint": "osm:relation/14080880",
+   "entrance": {
+    "at": [
+     -263.2,
+     -173.7
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-residences",
+   "approach": "From the road on the south to the door in the middle of the south wing's end.",
+   "evidence": "Owner's aerial (door marked blue at the foot of the south wing) and photo (the white gabled end of a wing).",
+   "refs": [
+    "owner's aerial and photo"
    ]
   }
  ],

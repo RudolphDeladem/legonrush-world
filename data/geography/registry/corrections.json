@@ -1636,6 +1636,146 @@
       "levels": 2,
       "height": 8,
       "reason": "Owner: the small blocks of Akuafo Hall are part of the hall, two floors and painted white like the rest; drawn by the hall's model (greathalls.ts)."
+    },
+    {
+      "id": "ml:27f1c560-6cd5-4ecc-a647-8c13912b2ae2",
+      "place": "one-floor building",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial (circled blue): the small buildings along the Volta Hall Road stretch north-west of CEDI are one floor."
+    },
+    {
+      "id": "osm:way/665124067",
+      "place": "one-floor building",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial (circled blue): the small buildings along the Volta Hall Road stretch north-west of CEDI are one floor."
+    },
+    {
+      "id": "osm:way/715027977",
+      "place": "Rest station",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial (circled blue): the small buildings along the Volta Hall Road stretch north-west of CEDI are one floor."
+    },
+    {
+      "id": "osm:way/773887685",
+      "place": "one-floor building",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial (circled blue): the small buildings along the Volta Hall Road stretch north-west of CEDI are one floor."
+    },
+    {
+      "id": "ml:ba95c5d9-4ee8-47ad-acf0-e8ddff060a94",
+      "place": "one-floor building",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial (circled): the lecturers' houses east of the Akuafo and Mensah Sarbah annexes are all one floor."
+    },
+    {
+      "id": "osm:way/439690552",
+      "place": "one-floor building",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial (circled): the lecturers' houses east of the Akuafo and Mensah Sarbah annexes are all one floor."
+    },
+    {
+      "id": "osm:way/642127979",
+      "place": "East Legon 8",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial (circled): the lecturers' houses east of the Akuafo and Mensah Sarbah annexes are all one floor."
+    },
+    {
+      "id": "osm:way/665126141",
+      "place": "one-floor building",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial (circled): the lecturers' houses east of the Akuafo and Mensah Sarbah annexes are all one floor."
+    },
+    {
+      "id": "osm:way/665126142",
+      "place": "one-floor building",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial (circled): the lecturers' houses east of the Akuafo and Mensah Sarbah annexes are all one floor."
+    },
+    {
+      "id": "osm:way/665126143",
+      "place": "one-floor building",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial (circled): the lecturers' houses east of the Akuafo and Mensah Sarbah annexes are all one floor."
+    },
+    {
+      "id": "osm:way/665126149",
+      "place": "East Legon",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial (circled): the lecturers' houses east of the Akuafo and Mensah Sarbah annexes are all one floor."
+    },
+    {
+      "id": "osm:way/696169978",
+      "place": "one-floor building",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial (circled): the lecturers' houses east of the Akuafo and Mensah Sarbah annexes are all one floor."
+    },
+    {
+      "id": "osm:way/744897578",
+      "place": "East Legon 9",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial (circled): the lecturers' houses east of the Akuafo and Mensah Sarbah annexes are all one floor."
+    },
+    {
+      "id": "osm:way/744922439",
+      "place": "East Legon 11",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial (circled): the lecturers' houses east of the Akuafo and Mensah Sarbah annexes are all one floor."
+    },
+    {
+      "id": "osm:way/744922440",
+      "place": "East Legon 6",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial (circled): the lecturers' houses east of the Akuafo and Mensah Sarbah annexes are all one floor."
+    },
+    {
+      "id": "osm:way/744922441",
+      "place": "East Legon 20",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial (circled): the lecturers' houses east of the Akuafo and Mensah Sarbah annexes are all one floor."
+    },
+    {
+      "id": "osm:way/744922442",
+      "place": "one-floor building",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial (circled): the lecturers' houses east of the Akuafo and Mensah Sarbah annexes are all one floor."
+    },
+    {
+      "id": "osm:way/744967432",
+      "place": "East Legon 8",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial (circled): the lecturers' houses east of the Akuafo and Mensah Sarbah annexes are all one floor."
+    },
+    {
+      "id": "osm:relation/14080880",
+      "place": "Larway Oraca Building",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial and photo: the Larway Oraca Building opposite the Business School is one floor, four wings round a small court."
+    },
+    {
+      "id": "osm:way/773888688",
+      "place": "one-floor building",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial and photo: the cross-shaped building opposite the Business School is one floor, entered by the gabled porch on its east front."
     }
   ],
   "reclass": [

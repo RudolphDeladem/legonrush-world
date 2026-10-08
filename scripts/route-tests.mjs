@@ -243,6 +243,11 @@ try {
   // the walls (no slope outside them)
   if (buildingAt(132, 416)) fail('a building still stands beside Akuafo Hall Annex A (the owner: there is none)');
   { const { groundHeight: gh } = await server.ssrLoadModule('/src/game/relief.ts'); for (const [x, z] of [[-7.25, 70], [25.25, 70], [8, 94.2], [-9, 55]]) if (gh(x, z) !== 0) fail(`Balme: the paving at ${x},${z} slopes down (${gh(x, z).toFixed(2)})`); }
+  // owner: one-floor buildings by Volta Hall Road, opposite the Business School and the lecturers' houses in their wood
+  { const one = (x, z) => { const b = buildingAt(x, z); return b && b.height <= 5; };
+    for (const [n, x, z] of [['the Volta Hall Road stretch', -198.6, -38.8], ['the Larway Oraca Building', -263, -178], ['the building opposite the Business School', -266, -135], ['a lecturer\'s house (East Legon 20)', 262, 560], ['a lecturer\'s house (East Legon 11)', 385.9, 426]]) if (!one(x, z)) fail(`${n} is not one floor (owner)`);
+    const e = ann('Larway Oraca Building'); if (!e || Math.hypot(e[0] - -263.2, e[1] - -173.7) > 2) fail('Larway Oraca Building: the entrance is not on the south (owner)'); }
+  if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)
   for (const [x, z] of [[95, 1573], [-88, 1676], [210, 1509], [200, 1500]]) if (cm.buildingNear(x, z, 0.35)) fail(`free ride: the road at ${x},${z} is blocked by ${cm.buildingNear(x, z, 0.35).name ?? 'a building'}`);
