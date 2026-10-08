@@ -1,18 +1,18 @@
 {
  "destinations": 436,
  "byMethod": {
-  "curated": 82,
+  "curated": 83,
   "osm-entrance": 0,
   "gate": 2,
   "path-access": 2,
   "drive-access": 17,
   "area-entry": 8,
-  "frontage": 214,
+  "frontage": 213,
   "point": 111
  },
  "byConfidence": {
-  "high": 78,
-  "low": 217,
+  "high": 79,
+  "low": 216,
   "medium": 141
  },
  "campusGates": 5,
@@ -361,8 +361,8 @@
   }
  ],
  "byStatus": {
-  "verified": 76,
-  "inferred": 209,
+  "verified": 77,
+  "inferred": 208,
   "partial": 6,
   "unverified": 9,
   "mapped": 136
@@ -878,6 +878,13 @@
    "arrivalOn": "service",
    "arrivalDistance": 0.2,
    "facing": 181
+  },
+  {
+   "place": "Department of Plant Biology",
+   "type": "main entrance",
+   "arrivalOn": "residential",
+   "arrivalDistance": 21.1,
+   "facing": 154
   },
   {
    "place": "Modern language department",

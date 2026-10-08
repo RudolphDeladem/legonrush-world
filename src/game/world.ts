@@ -375,7 +375,7 @@ export function buildCampus() {
 
   // every building: cream walls with window bays, a plinth, and terracotta tile roofs
   // (buildings modelled from photos are built by halls.ts and the block-model sites instead)
-  const buildings = buildBuildings(BUILDINGS.filter((b) => !isDiasporaHall(b) && !BLOCK_SITES.some((s) => s.replaces(b))), newPentStyle);
+  const buildings = buildBuildings(BUILDINGS.filter((b) => !isDiasporaHall(b) && !BLOCK_SITES.some((s) => s.replaces(b))), (b) => newPentStyle(b) ?? whitePaint(b));
   group.add(buildings);
   const halls = buildDiasporaHalls();
   const sites = BLOCK_SITES.map((s) => s.build());
@@ -393,6 +393,14 @@ export function buildCampus() {
   applyRelief(group);
   cullBeyondFog(group, [...(buildings.children as THREE.Mesh[]), ...(halls.userData.cullMeshes as THREE.Mesh[]), ...sites.flatMap((s) => s.userData.cullMeshes as THREE.Mesh[]), ...(life.userData.cullMeshes as THREE.Mesh[]), ...edges.meshes]);
   return group;
+}
+
+/** where the owner says every building is painted white, not cream: round the Balme Library (CEDI, the faculties,
+ *  the University Square blocks) and round Volta Hall */
+const WHITE_ZONES: [number, number, number, number][] = [[-220, 170, -175, 150], [-380, -230, -110, 110]];
+function whitePaint(b: { minX: number; maxX: number; minZ: number; maxZ: number }) {
+  const cx = (b.minX + b.maxX) / 2, cz = (b.minZ + b.maxZ) / 2;
+  return WHITE_ZONES.some(([x0, x1, z0, z1]) => cx > x0 && cx < x1 && cz > z0 && cz < z1) ? { wall: '#f7f6f2' } : undefined;
 }
 
 export interface RouteLabel {

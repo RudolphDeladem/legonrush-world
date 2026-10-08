@@ -189,7 +189,7 @@ try {
   }
   for (const [n, floors] of [['Department of Economics, University of Ghana', 2], ['Faculty of Arts, Languages', 2], ['University of Ghana Bookshop', 2], ['Office of The Dean of Students', 1], ['Legon Post Office', 1]]) {
     const b = BUILDINGS.find((x) => x.name === n);
-    if (!b || (floors === 1 ? b.height > 5 : b.height < 7 || b.height > 10)) fail(`${n}: not ${floors === 1 ? 'a ground floor only' : 'two floors'} (owner's aerial)`);
+    if (!b || (floors === 1 ? b.height > 5 : b.height < 5.5 || b.height > 10)) fail(`${n}: not ${floors === 1 ? 'a ground floor only' : 'two floors'} (owner's aerial)`);
   }
   const balmeModels = (await server.ssrLoadModule('/src/game/balme.ts')).balmeSite.frames().map((f) => f.name);
   for (const n of ['Cedi Conference Centre', 'University of Ghana Computing Systems (UGCS)', 'Standard Chartered and Absa', 'The Balme Library', 'Balme Library wings', 'Balme Library pool', 'Kuffour Quadrangle fountain']) if (!balmeModels.includes(n)) fail(`missing the ${n} model`);
@@ -263,6 +263,18 @@ try {
     const c = ann('Computer Science Dept'); if (!c || Math.hypot(c[0] - 349.6, c[1] - -305.8) > 2) fail('Computer Science Dept: the entrance is not on the wing\'s west face (owner)');
     for (const [n, x, z] of [['the Department of Plant Biology', 406, -314], ['a small building behind the engineering school', 524, -472], ['the other small building behind the engineering school', 535, -473]]) { const b = buildingAt(x, z); if (!b || b.height > 5) fail(`${n} is not one floor (owner)`); }
     if ((await server.ssrLoadModule('/src/game/issercs.ts')).isserCs.frames().length !== 1) fail('expected the ISSER and Computer Science model'); }
+  // owner: south of CEDI the Faculty of Arts is two low floors (about half CEDI's height) and the building between
+  // them four floors (about CEDI's height); Volta Hall's block by the Annex is straight and joins them; the
+  // Innovation Enclave's six buildings are one floor, up on a terrace above the road with steps up to it
+  { const fa = buildingAt(-140, 92), h4 = buildingAt(-121, 62), cedi = buildingAt(-130, 25);
+    if (!fa || !cedi || fa.height > cedi.height * 0.55) fail('the Faculty of Arts south of CEDI is not about half its height (owner)');
+    if (!h4 || !cedi || h4.height < cedi.height * 0.85 || h4.height > cedi.height * 1.1) fail('the four-floor building south of CEDI is not about CEDI\'s height (owner)');
+    const link = buildingAt(-263.5, -33); if (!link || link.maxX - link.minX > 9.5) fail('Volta Hall: the block by the Annex is missing or skewed');
+    const { groundHeight: gh } = await server.ssrLoadModule('/src/game/relief.ts');
+    for (const x of [406, 425, 437, 457, 469, 488]) { const b = buildingAt(x, -312); if (!b || b.height > 5) fail(`Innovation Enclave: the building at x ${x} is not one floor (owner)`); if (Math.abs(gh(x, -312) - 2) > 0.01) fail(`Innovation Enclave: the building at x ${x} is not up on its terrace`); }
+    if (Math.abs(gh(448.5, -331.5) - 1) > 0.5) fail('Innovation Enclave: no steps up from the road');
+    if (gh(448.5, -338) !== 0) fail('Innovation Enclave: the road before the terrace is not at road level');
+    if ((await server.ssrLoadModule('/src/game/enclave.ts')).enclave.frames().length !== 1) fail('expected the Innovation Enclave model'); }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

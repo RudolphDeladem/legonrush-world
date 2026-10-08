@@ -750,6 +750,25 @@ Computer Science wing and east block meet edge to edge (`corrections.json`: resh
 - **One floor** (owner): the Department of Plant (and Environmental) Biology east of Computer Science, and the
   two small square buildings behind (north of) the School of Engineering Sciences.
 
+## 30. South of CEDI, Volta Hall's link, the Innovation Enclave
+
+- **South of the CEDI Conference Centre** (owner's aerial): the Faculty of Arts building (circled red) is two
+  low floors, about half CEDI's height; the H-shaped building between them (circled violet) is four floors,
+  about CEDI's height.
+- **White, not cream:** every building round the Balme Library (CEDI, the faculties, the University Square blocks)
+  and round Volta Hall is painted white (`world.ts`: the generic buildings there take white walls).
+- **Volta Hall:** the block between the hall's east lane and the Annex was drawn skewed from a satellite outline;
+  it is a straight white two-floor block joining the two (`volta.ts`, `corrections.json`: reshape).
+- **The Innovation Enclave** (`src/game/enclave.ts`), south of the School of Engineering Sciences, up the hill:
+  six one-floor buildings (the westmost is the Department of Plant Biology) on a terrace 2 m above the road
+  behind a white retaining wall, climbed by three flights of steps (the middle one wide; `relief.ts`). Each
+  runs north-south with its gable end to the road: white walls with a **wine-red border** round the foot, a
+  gable roof of wine-red metal sheets, and a verandah on white square columns along the side with the doors
+  (the owner's blue lines: many wooden doors, windows behind black grilles), a brick-paved walk along it.
+  Lawns between the buildings, crossed by paved walks. The east building has the **UG logo** on its gable to the
+  road and **INNOVATION ENCLAVE** in raised blue letters on the wall by its steps; the university's sign board
+  stands before the middle buildings. Explore goes up the west steps to the Department of Plant Biology's doors.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

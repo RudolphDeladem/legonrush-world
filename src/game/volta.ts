@@ -64,6 +64,8 @@ const HALL: Block[] = [
   W(-320, -297.5, -22.8, -13.9), W(-320, -305.2, -13.9, 30.7),
   // east lane ("Volta Hall") and the bar across its north end
   W(-280.6, -259.5, -26.7, -17.2), W(-268.1, -259.4, -17.2, 33.1),
+  // the block joining the east lane's north bar to the Annex (owner: straight, white, part of the hall)
+  W(-268.4, -259.5, -38.9, -26.7),
   // the blocks across the lanes' south ends, either side of the walk
   W(-316.5, -292, 35.3, 45.7), W(-316.5, -307.7, 45.7, 55), W(-327.5, -316.5, 50.6, 55.3),
   W(-285.4, -259.7, 35, 44.8), W(-268.2, -259.7, 44.8, 51.5),
@@ -83,7 +85,7 @@ const hall: Spec = {
   name: 'Volta Hall',
   axis: [1, 0], origin: O, storey: ST, style: VOLTA_WIN, roofColor: ROOF, fascia: FASCIA, pitch: 0.5,
   onGround: true,
-  replaces: [[-265.2, 87], [-265.3, 63.9], [-342, 65], [-287, 94], [-312, 88], [-249.5, 38.4], [-249, 93], [-304, 40], [-312, 0], [-264, 0], [-264, 40]],
+  replaces: [[-263.5, -33], [-265.2, 87], [-265.3, 63.9], [-342, 65], [-287, 94], [-312, 88], [-249.5, 38.4], [-249, 93], [-304, 40], [-312, 0], [-264, 0], [-264, 40]],
   blocks: [...HALL, ...FLANKS],
   keep: [[-258.6 - O[0], -220 - O[0], 54 - O[1], 78 - O[1]], [-292 - O[0], -286 - O[0], -30 - O[1], 88 - O[1]]],
   extras: (k) => {

@@ -17,10 +17,11 @@ import { vikingsLaw } from './vikingslaw';
 import { residences } from './residences';
 import { mathStat } from './mathstat';
 import { isserCs } from './issercs';
+import { enclave } from './enclave';
 import { stadiumSite } from './stadium';
 import { ugbs } from './ugbs';
 import { valco } from './valco';
 import { volta } from './volta';
 import { westLegon } from './westlegon';
 
-export const BLOCK_SITES = [hostels, banking, vikingsLaw, engineeringSite, domeHouse, pentagon, commonwealth, volta, greatHalls, athletics, annexes, ccSite, balmeSite, parks, nightMarket, valco, westLegon, publicHealth, ugbs, stadiumSite, residences, mathStat, isserCs];
+export const BLOCK_SITES = [hostels, banking, vikingsLaw, engineeringSite, domeHouse, pentagon, commonwealth, volta, greatHalls, athletics, annexes, ccSite, balmeSite, parks, nightMarket, valco, westLegon, publicHealth, ugbs, stadiumSite, residences, mathStat, isserCs, enclave];

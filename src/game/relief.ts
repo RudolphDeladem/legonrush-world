@@ -62,6 +62,10 @@ const ZONES: Zone[] = [
   // each level drops at its retaining wall (owner: the paving outside runs flat to the wall, no slope)
   { kind: 'hollow', x0: -6.6, x1: 24.6, z0: 60.3, z1: 93.5, depth: 2.4, w: 0.5, e: 0.5, n: 0.3, s: 0.5 },
   { kind: 'hollow', x0: -6.6, x1: 24.6, z0: 49, z1: 60.6, depth: 1.2, w: 0.5, e: 0.5, n: 0.3, s: 0.3 },
+  // The Innovation Enclave, south of the engineering school: its six buildings stand up the hill on a terrace 2 m
+  // above the road on its north, behind a white retaining wall that three flights of steps climb (owner's photos);
+  // the ground falls away gently on the other sides
+  { kind: 'terrace', x0: 397, x1: 497, z0: -333.2, z1: -296, depth: 2, w: 6, e: 4, n: 0.3, s: 8 },
 ];
 const STAIRS: Stairs[] = [
   // Commonwealth: from the gate houses up Legon Hill to the drive
@@ -70,6 +74,10 @@ const STAIRS: Stairs[] = [
   { x0: -245, x1: -258.6, z0: 60, z1: 72, flights: 3, steps: 5, tread: 0.4 },
   // the Balme Library: from the pool deck up to the middle terrace and on up to the road before the library
   { x0: 61.6, x1: 43, z0: 1.5, z1: 14.5, flights: 2, steps: 8, tread: 0.4, alongZ: true },
+  // the Innovation Enclave: up from the road through the retaining wall to the terrace, west, middle and east
+  { x0: -334.2, x1: -329.4, z0: 415, z1: 419, flights: 1, steps: 12, tread: 0.4, alongZ: true },
+  { x0: -334.2, x1: -329.4, z0: 445.5, z1: 451.5, flights: 1, steps: 12, tread: 0.4, alongZ: true },
+  { x0: -334.2, x1: -329.4, z0: 478, z1: 481.5, flights: 1, steps: 12, tread: 0.4, alongZ: true },
 ];
 
 const boxOf = (q: Zone) => q.kind !== 'hill'

@@ -32,7 +32,8 @@
   "owner-stadium": "The owner's aerial of the stadium area (the stadium, the training track, the swimming pool, the gym and the tennis courts) and photos of the stadium from outside and of the main stand, registered to the OSM footprints at 2.2 px/m.",
   "owner-residences": "The owner's aerials of the Volta Hall Road stretch north-west of CEDI, of the buildings opposite the Business School (the Larway Oraca Building circled yellow, the cross-shaped building circled purple, their doors marked blue) and of the lecturers' houses east of the annexes, and the owner's photos of the two buildings opposite the Business School.",
   "owner-mathstat": "The owner's aerial of the Mathematics and Statistics departments (the main entrance marked blue, an arrow along the north front) and three photos taken along that arrow: the Mathematics galleries and the heavy block, the main entrance steps, and the Statistics block with its stair and fins.",
-  "owner-issercs": "The owner's photos of the Department of Computer Science (its front and side from the south; its door marked blue beyond the back of ISSER) and of ISSER (front, with the entrance marked blue, facing the Mathematics department; back)."
+  "owner-issercs": "The owner's photos of the Department of Computer Science (its front and side from the south; its door marked blue beyond the back of ISSER) and of ISSER (front, with the entrance marked blue, facing the Mathematics department; back).",
+  "owner-enclave": "The owner's aerial of the Innovation Enclave (its six buildings circled, their doors marked with blue lines) and two photos: from the road facing the engineering school (the steps, the UG logo, INNOVATION ENCLAVE in blue letters) and from the courtyards facing the back of the School of Law."
  },
  "campusGates": [
   {
@@ -1917,6 +1918,35 @@
    "evidence": "Owner's photo 3 (the door marked blue beyond the back of ISSER).",
    "refs": [
     "owner's photo 3"
+   ]
+  },
+  {
+   "place": "Department of Plant Biology",
+   "footprint": "osm:way/530270654",
+   "entrance": {
+    "at": [
+     411.4,
+     -316.0
+    ]
+   },
+   "via": [
+    [
+     417,
+     -327.8
+    ],
+    [
+     414,
+     -318
+    ]
+   ],
+   "type": "main entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-enclave",
+   "approach": "Up the west steps from the road to the terrace, then along the lawn to the doors on the verandah on the building's east side.",
+   "evidence": "Owner's aerial of the Innovation Enclave: the westmost building's doors (blue lines) are on its east side, facing its neighbour.",
+   "refs": [
+    "owner's aerial of the Innovation Enclave"
    ]
   }
  ],

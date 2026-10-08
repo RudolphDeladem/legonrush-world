@@ -1106,13 +1106,6 @@
       "reason": "Owner's marked aerial of the Balme Library surroundings: circled red, two floors."
     },
     {
-      "id": "osm:way/440338448",
-      "place": "Faculty of Arts, Languages",
-      "levels": 2,
-      "height": 8,
-      "reason": "Owner's marked aerial of the Balme Library surroundings: circled red, two floors."
-    },
-    {
       "id": "osm:way/448104181",
       "place": "Office of The Dean of Students",
       "levels": 1,
@@ -1846,6 +1839,62 @@
       "levels": 1,
       "height": 4,
       "reason": "Owner: the two small square buildings behind (north of) the engineering school are one floor."
+    },
+    {
+      "id": "osm:way/440338448",
+      "place": "Faculty of Arts, Languages",
+      "levels": 2,
+      "height": 6.0,
+      "reason": "Owner (aerial of the CEDI Conference Centre, circled red): two floors, but low: about half the height of the CEDI Conference Centre beside it."
+    },
+    {
+      "id": "osm:way/492099503",
+      "place": "building south of the CEDI Conference Centre",
+      "levels": 4,
+      "height": 12.5,
+      "reason": "Owner (aerial of the CEDI Conference Centre, circled violet): four floors, almost as tall as the conference centre."
+    },
+    {
+      "id": "osm:way/1005034746",
+      "place": "Innovation Enclave building",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner (aerial of the Innovation Enclave and two photos): one floor under a gable roof of metal sheets, on a terrace above the road (src/game/enclave.ts)."
+    },
+    {
+      "id": "osm:way/1005034747",
+      "place": "Innovation Enclave building",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner (aerial of the Innovation Enclave and two photos): one floor under a gable roof of metal sheets, on a terrace above the road (src/game/enclave.ts)."
+    },
+    {
+      "id": "osm:way/1005034748",
+      "place": "Innovation Enclave building",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner (aerial of the Innovation Enclave and two photos): one floor under a gable roof of metal sheets, on a terrace above the road (src/game/enclave.ts)."
+    },
+    {
+      "id": "osm:way/1005034749",
+      "place": "Innovation Enclave building",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner (aerial of the Innovation Enclave and two photos): one floor under a gable roof of metal sheets, on a terrace above the road (src/game/enclave.ts)."
+    },
+    {
+      "id": "osm:way/1005034750",
+      "place": "Innovation Enclave building",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner (aerial of the Innovation Enclave and two photos): one floor under a gable roof of metal sheets, on a terrace above the road (src/game/enclave.ts)."
+    },
+    {
+      "id": "ml:ad79efa8-2d66-4973-aff9-5c6c0459434f",
+      "place": "Volta Hall (link to the Annex)",
+      "levels": 2,
+      "height": 8.0,
+      "reason": "Owner (in-game view of Volta Hall): the building between the hall and the Annex is part of the hall, two floors, white, joined to the blocks either side."
     }
   ],
   "reclass": [
@@ -2379,6 +2428,30 @@
         ]
       ],
       "reason": "The OSM outline sits about 4 m west of Google's footprint (confidence 0.85) of the north half of the Computer Science wing; the department's door is on its west face (owner's photo 3)."
+    },
+    {
+      "id": "ml:ad79efa8-2d66-4973-aff9-5c6c0459434f",
+      "place": "Volta Hall (link to the Annex)",
+      "source": "Microsoft ML footprint, squared to the hall's blocks",
+      "ring": [
+        [
+          -268.4,
+          -38.9
+        ],
+        [
+          -259.5,
+          -38.9
+        ],
+        [
+          -259.5,
+          -26.7
+        ],
+        [
+          -268.4,
+          -26.7
+        ]
+      ],
+      "reason": "Owner: the building between Volta Hall and the Annex was drawn skewed (the satellite-detected outline is irregular); it is a straight two-floor block joining the hall's east lane to the Annex, modelled in src/game/volta.ts."
     }
   ],
   "addAreas": [
