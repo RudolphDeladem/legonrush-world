@@ -336,7 +336,7 @@ try {
   { const p = ann('Legon Post Office'); if (!p || Math.hypot(p[0] - -69.8, p[1] - 102) > 3) fail('Legon Post Office: the entrance is not the porch in the west gable (owner)');
     const e = ann('Department of Economics, University of Ghana'); if (!e || Math.hypot(e[0] - -44, e[1] - 77) > 3) fail('the long block by the car park: the entrance is not the portico (owner)');
     for (const [x, z, f] of [[-58.5, 53, 1], [-59, 101, 1], [-34.5, 77, 2], [-114, 95, 2]]) { const b = buildingAt(x, z); if (!b || (f === 1 ? b.height > 5 : b.height < 6.5)) fail(`the building at ${x},${z} is not ${f} floor(s) (owner)`); }
-    if ((await server.ssrLoadModule('/src/game/balmewest.ts')).balmeWest.frames().length !== 4) fail('expected the French Department, the Economic Policy office, the buildings in the owner\'s white circle and the Bookshop'); }
+    if ((await server.ssrLoadModule('/src/game/balmewest.ts')).balmeWest.frames().length !== 5) fail('expected the French Department, the Economic Policy office, its terrace walls, the buildings in the owner\'s white circle and the Bookshop'); }
   // owner: WACCBIP's back is the whole west range along the road behind it (the yellow mark), the road clear of it;
   // the School of Pharmacy entered from its car park, one-floor wings round a three-storey block
   { const b = buildingAt(-298, -332); if (!b || b.height < 11) fail('WACCBIP: the back range along the road behind it is missing (owner)');
@@ -425,6 +425,15 @@ try {
     if (buildingAt(-100, 90) || buildingAt(-102, 60)) fail('the French Department or the Economic Policy office still stands on its old outline');
     { const b = buildingAt(-146, 62); if (!b || b.height < 11 || b.height > 14) fail('the Economic Policy Management office is not three floors (owner)'); }
     const fa = ACCESS.get('Faculty of Arts, Languages'); if (!fa || Math.hypot(fa.entrance[0] + 165.9, fa.entrance[1] - 94.7) > 2) fail('the Faculty of Arts is not entered by the door beside the passage (owner)');
+  }
+  // owner: the Faculty of Arts up behind its rubble-stone wall on Danquah Avenue, the stairs up from the footway; the
+  // avenue, the footway and their pavements flat; the two hotspot comfort zones south of the loop
+  {
+    const rl = await server.ssrLoadModule('/src/game/relief.ts');
+    if (Math.abs(rl.groundHeight(-150, 100) - 1) > 0.01 || Math.abs(rl.groundHeight(-130, 62) - 1) > 0.01) fail('the Faculty of Arts and the Economic Policy office do not stand on their raised ground (owner)');
+    for (let x = -188; x <= -100; x += 4) for (const z of [108.5, 112, 114, 116, 118.5, 121]) if (!(z < 110.1 && x > -146.1 && x < -142.9) && rl.groundHeight(x, z) !== 0) fail(`Danquah Avenue or its footway is not flat at ${x},${z}`);
+    if (!rl.stairsOf().some((q) => q.alongZ && q.z0 === -146 && q.top > 0.9 && q.foot < 0.1)) fail('no stairs up through the Faculty of Arts\' wall (owner)');
+    if ((await server.ssrLoadModule('/src/game/hotspots.ts')).hotspotSite.frames().length !== 2) fail('expected the two hotspot comfort zones (owner)');
   }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between

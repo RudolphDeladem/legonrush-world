@@ -88,6 +88,10 @@ const ZONES: Zone[] = [
   // the Department of Physics stands up the hill from Danquah Avenue (owner's photos): its ranges 1.5 m up, a grass
   // bank down to a low stone wall along the pavement and to Cruise O'Brien Road; a stone retaining wall on the east
   { kind: 'terrace', x0: 106, x1: 205.3, z0: 52, z1: 106.5, depth: 1.5, w: 5, e: 0.3, n: 5, s: 5.6 },
+  // the Faculty of Arts (the French Department) and the Economic Policy Management office stand 1 m above Danquah
+  // Avenue (owner's street photo from before Legon Hall): a rubble-stone retaining wall along the road, kept back
+  // behind the footway and its pavement, and down the east side; the ground slopes down to the lane on the west
+  { kind: 'terrace', x0: -188.5, x1: -101.3, z0: 50.6, z1: 108.0, depth: 1.0, w: 3, e: 0.3, n: 0.3, s: 0.3 },
 ];
 const STAIRS: Stairs[] = [
   // Commonwealth: from the gate houses up Legon Hill to the drive
@@ -108,6 +112,8 @@ const STAIRS: Stairs[] = [
   { x0: 106.5, x1: 99.3, z0: 322.5, z1: 331.5, flights: 2, steps: 5, tread: 0.45, alongZ: true },
   // Physics: the steps from the end of the lane on the east up to its door
   { x0: 207.6, x1: 205.4, z0: 84, z1: 89, flights: 1, steps: 7, tread: 0.3 },
+  // the Faculty of Arts: the stairs up through the retaining wall from the footway along Danquah Avenue (owner)
+  { x0: 110.0, x1: 107.9, z0: -146.0, z1: -143.0, flights: 1, steps: 6, tread: 0.35, alongZ: true },
 ];
 
 const boxOf = (q: Zone) => q.kind !== 'hill'

@@ -136,7 +136,9 @@ const cedi: Spec = {
 // ---------- UGCS (University of Ghana Computing Systems), north of CEDI ----------
 // (owner's photo of the side facing CEDI): four floors, white, windows in brown frames in a regular grid, a long
 // roof of orange tiles over a brown fascia; at the west end a flat-topped bay with a blank board on it and barred
-// openings below; along the ground floor right of the middle, a porch under a tiled roof over the glazed entrance
+// openings below; along the ground floor right of the middle, a porch under a tiled roof over the glazed entrance.
+// (owner's photo of its back, toward the Business School): the open stair painted red-brown up the west end of the
+// north face, a red-brown band at the foot of the walls, a board on a post, a green generator
 const U: [number, number, number, number] = [-125.9, -87.8, -53.2, -32.4];
 const UO: [number, number] = [(U[0] + U[1]) / 2, (U[2] + U[3]) / 2];
 const UGCS_WALL: Style = {
@@ -156,7 +158,7 @@ const UGCS_WALL: Style = {
 const UGCS_BAY: Style = { bay: 3, up: [], ground: [], draw: (g) => render(g, '#f4f3ef') };
 const ugcs: Spec = {
   name: 'University of Ghana Computing Systems (UGCS)',
-  axis: [1, 0], origin: UO, storey: 3.4, style: UGCS_WALL, roofColor: '#b8653a', fascia: '#6b4a2e', pitch: 0.42,
+  axis: [1, 0], origin: UO, storey: 3.4, style: UGCS_WALL, roofColor: '#b8653a', fascia: '#6b4a2e', pitch: 0.42, plinth: '#8a2d27',
   replaces: [UO],
   blocks: [
     { x0: U[0] + 6 - UO[0], x1: U[1] - UO[0], z0: U[2] - UO[1], z1: U[3] - UO[1], floors: 4 },
@@ -187,6 +189,51 @@ const ugcs: Spec = {
     // air-conditioning units on the wall
     for (const [x, y] of [[-106, 4.4], [-100, 4.4], [-96, 4.4], [-113, 4.4]]) k.plain.push([box(x - UO[0] - 0.45, x - UO[0] + 0.45, y, y + 0.6, z1, z1 + 0.35), '#e6e6e3']);
     k.roof.c = new THREE.Color('#b8653a');
+    // ----- the back (north) face toward the Business School (owner's photo): the open stair up its west end, painted
+    // red-brown: a landing at each floor by a door at the west, two flights between floors (the inner one up to a half
+    // landing at the east, the outer one back up to the next floor), solid parapets; a canopy over the top landing
+    const X = (x: number) => x - UO[0], Z = (z: number) => z - UO[1];
+    const zw = U[2], RED = '#8a2d27', UNDER = '#d9d6cf';
+    const sx0 = -124.5, sx1 = -114.5, lw = 2.5, zi = zw - 1.3, zo = zw - 2.6;
+    const fl = (f: number) => PL + f * 3.4;
+    const slab = (x0: number, x1: number, za: number, zb: number, y: number) => {
+      k.plain.push([box(X(x0), X(x1), y - 0.25, y, Z(zb), Z(za)), UNDER]);
+      k.plain.push([box(X(x0), X(x1), y - 0.25, y - 0.05, Z(zb) - 0.02, Z(zb) + 0.02), RED]);
+    };
+    /** a flight from (xa, ya) to (xb, yb) between za and zb (za nearer the wall): steps on a sloping slab */
+    const flight = (xa: number, ya: number, xb: number, yb: number, za: number, zb: number, outer: boolean) => {
+      const n = 10, run = xb - xa, rise = yb - ya;
+      for (let i = 0; i < n; i++) {
+        const x0 = xa + (run * i) / n, x1 = xa + (run * (i + 1)) / n, y = ya + (rise * (i + 1)) / n;
+        k.plain.push([box(X(Math.min(x0, x1)), X(Math.max(x0, x1)), y - 0.3, y, Z(zb), Z(za)), '#c9c4b9']);
+      }
+      if (outer) {
+        // the solid parapet along its outer edge, sloping with it
+        const len = Math.hypot(run, rise), ang = Math.atan2(rise, run), cx = X((xa + xb) / 2), cy = (ya + yb) / 2 + 0.45;
+        k.plain.push([new THREE.BoxGeometry(len, 1.3, 0.16).rotateZ(ang).translate(cx, cy, Z(zb) - 0.08), RED]);
+      }
+    };
+    const LX = sx0 + lw, MX = sx1 - lw;
+    for (let f = 0; f < 3; f++) {
+      const y0 = f === 0 ? 0.15 : fl(f), y1 = fl(f + 1), ym = (y0 + y1) / 2;
+      flight(LX, y0, MX, ym, zw, zi, false);
+      slab(MX, sx1, zw, zo, ym);
+      flight(MX, ym, LX, y1, zi, zo, true);
+      slab(sx0, LX, zw, zo, y1);
+      // the parapets round the landing (west and outer sides) and the half landing (east and outer sides)
+      k.plain.push([box(X(sx0), X(sx0) + 0.16, y1, y1 + 1.05, Z(zo), Z(zw)), RED], [box(X(sx0), X(LX), y1, y1 + 1.05, Z(zo), Z(zo) + 0.16), RED]);
+      k.plain.push([box(X(sx1) - 0.16, X(sx1), ym, ym + 1.05, Z(zo), Z(zw)), RED], [box(X(MX), X(sx1), ym, ym + 1.05, Z(zo), Z(zo) + 0.16), RED]);
+      // the door off the landing
+      k.plain.push([box(X(sx0 + 0.6), X(sx0 + 1.6), y1, y1 + 2.2, Z(zw) - 0.04, Z(zw)), '#3a2420']);
+    }
+    k.plain.push([box(X(sx0 - 0.2), X(LX + 0.4), fl(3) + 2.7, fl(3) + 3.0, Z(zo) - 0.3, Z(zw)), UNDER], [box(X(sx0 - 0.2), X(LX + 0.4), fl(3) + 2.7, fl(3) + 3.1, Z(zo) - 0.32, Z(zo) - 0.2), RED]);
+    for (const x of [sx0, LX, MX, sx1 - 0.25]) k.plain.push([box(X(x), X(x + 0.25), 0, fl(1) - 0.25, Z(zo), Z(zo) + 0.25), UNDER]);
+    // air-conditioners along the back's ground floor, the department's board on its post, the green generator
+    for (const x of [-110, -104, -97, -92]) k.plain.push([box(X(x - 0.45), X(x + 0.45), 0.4, 1.0, Z(zw) - 0.35, Z(zw)), '#e6e6e3']);
+    for (const x of [-129.6, -127.4]) k.plain.push([box(X(x) - 0.05, X(x) + 0.05, 0, 2.6, Z(-58.6) - 0.05, Z(-58.6) + 0.05), '#d9dcdf']);
+    k.plain.push([box(X(-129.8), X(-127.2), 1.6, 2.7, Z(-58.6) - 0.1, Z(-58.6) - 0.04), '#f2f2ee'], [box(X(-129.6), X(-129.1), 2.0, 2.5, Z(-58.6) - 0.12, Z(-58.6) - 0.1), '#1d3f7a']);
+    k.plain.push([box(X(-99.5), X(-97.0), 0.15, 1.6, Z(-57.8), Z(-56.6)), '#3f8a66'], [box(X(-99.6), X(-96.9), 0, 0.15, Z(-57.9), Z(-56.5)), '#4a4a48']);
+    for (let x = -99.3; x < -97.1; x += 0.3) k.plain.push([box(X(x), X(x + 0.12), 0.5, 1.3, Z(-57.82), Z(-57.8)), '#2c5e46']);
   },
 };
 

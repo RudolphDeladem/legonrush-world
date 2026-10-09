@@ -1245,6 +1245,32 @@ side and of the French Department's south and west sides (`balmewest.ts`, `galle
 - A block's plinth can now take its own colour (`Block.plinth`): the upper floors behind the galleries no longer show
   the base colour as a band under the gallery floor.
 
+## 53. The Faculty of Arts up behind its stone wall; UGCS's back stair; the two hotspot comfort zones
+
+From the owner's street photo of the Faculty of Arts from before Legon Hall, a photo of the back of UGCS, a marked
+aerial south of the loop at the end of the avenue (registered to the avenue and the loop at 0.3 m/px) and night photos
+of the two hotspot comfort zones (`relief.ts`, `balmewest.ts`, `balme.ts`, `hotspots.ts`):
+
+- **The Faculty of Arts stands up the slope from Danquah Avenue** (yellow): it and the Economic Policy Management
+  office stand on ground 1 m above the road, behind a **rubble-stone retaining wall** with a concrete cap along the road
+  (kept back behind the footway and its pavement, so the avenue, the footway and the route stay flat) and down the
+  east side, where it edges the office's brick walk; on the west the ground slopes down to the lane. **The stairs**
+  (green) climb through the wall from the footway, where the path from the avenue meets it, and a paved walk runs up to
+  a door in the middle of the range. The range's loggia runs along most of its south face (the photo).
+- **UGCS's back** (toward the Business School): the **open stair painted red-brown** up the west end of the north face,
+  a landing by a door at each floor, two flights between floors with solid parapets, a canopy over the top landing,
+  posts under it; a red-brown band at the foot of the walls; air-conditioners; the board on its posts; the green
+  generator.
+- **The hotspot comfort zones** south of the loop, beside the lanes to the Athletic Oval, both facing the loop:
+  new, white; two levels: a solid block each side (the stair up to the deck at the west one, a tall grey louvred vent
+  and planters at the east one), the open sitting area between them on the ground floor and the deck above behind a
+  black railing; a deep band under the eaves with the board; a dark brown hip roof on a white fascia; two steel struts
+  in a V from one foot up to the band; paved fronts and walks from the loop, trees round them.
+  - **University of Ghana Alumni Association** (yellow): UNIVERSITY OF GHANA ALUMNI ASSOCIATION / HOTSPOT COMFORT ZONE on
+    dark brown.
+  - **First Bank Ghana** (red): FIRST BANK GHANA / HOTSPOT COMFORT ZONE on navy over a warm brown band, the ceilings
+    painted blue with a yellow frame round the deck's opening, ceiling fans, a colourful mural of patterns and faces.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

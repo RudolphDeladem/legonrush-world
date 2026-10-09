@@ -24,6 +24,7 @@ import { concrete } from './concrete';
 import { garden } from './gardens';
 import { hipRoof } from './waccbip';
 import { PASSAGES, SOLIDS } from './solids';
+import { stairsOf } from './relief';
 import { FRENCH_SOUTH, FRENCH_WEST, galleryBlocks, galleryParts } from './galleries';
 
 const WALL = '#f4f2ec', DADO = '#9b2b25', TILE = '#c4623d', BARGE = '#2b221c', TIMBER: [string, string] = ['#33251b', '#4a3526'];
@@ -141,14 +142,17 @@ const gableEnd = { gw: 99, tri: true }, buried = { gw: 99, tri: false }, hip = {
 // between them the two-storey range (its west end a gable boarded in dark timber over the passage), and between the
 // west wing and the range the one-floor tiled pavilion with the open passage through it (owner's photos 3 and 4).
 const FO: [number, number] = [-147, 90];
+/** the ground the Faculty of Arts and the Economic Policy office stand on (relief.ts): 1 m above Danquah Avenue behind
+ *  rubble-stone retaining walls on the road (south) and east, the stairs up from the footway at TSX (owner) */
+const TER = [-188.5, -101.3, 50.6, 108.0], TSX = -144.5;
 const FST = 3.0, FE = PL + 2 * FST + BAND;
 const FW = [-185.0, -175.0, 74.4, 105.0], LINK = [-175.0, -170.6, 85.6, 93.8], FBAR = [-170.6, -119.7, 83.6, 94.7], FEW = [-119.7, -108.4, 75.0, 106.0];
 /** the open passage through the pavilion (no door, no gate: owner) */
 const PX = [-173.95, -171.55];
 // the free-ridden bike rides through it
 PASSAGES.push([PX[0] + 0.35, PX[1] - 0.35, LINK[2] - 0.8, LINK[3] + 0.8]);
-/** the range's loggia upstairs on its south face (owner's photo 4) */
-const LOG = [-162.0, -149.0];
+/** the range's loggia upstairs along most of its south face (owner's photos: from the street before Legon Hall) */
+const LOG = [-162.0, -124.0];
 const W_FR = winStyle(true, 3.4, 92);
 const W_BLANK: Style = { bay: 3.4, up: [], ground: [], draw: (g) => { paint(g); dado(g); } };
 const french: Spec = (() => {
@@ -225,7 +229,13 @@ const french: Spec = (() => {
       // ----- before it (photos 3 and 4): the paved walk from the road to the passage and along the range, the School
       // of Languages board on two white posts on the lawn, shrubs and flowering bushes along the walls, a potted plant,
       // the big tree before the west wing's south end
-      k.plain.push([B(p0 - 0.6, p1 + 0.6, 0.02, 0.07, lz1 + 1.5, 114), '#a9a497'], [B(-170.6, -150, 0.02, 0.07, zb + 0.6, zb + 2.4), '#a9a497']);
+      k.plain.push([B(p0 - 0.6, p1 + 0.6, 0.02, 0.07, lz1 + 1.5, zb + 2.4), '#a9a497'], [B(-170.6, -124, 0.02, 0.07, zb + 0.6, zb + 2.4), '#a9a497']);
+      // the door in the middle of the range under the loggia, the walk from it down to the stairs through the stone wall
+      // at the road (owner's street photo from before Legon Hall: the green lines)
+      const mx = TSX;
+      k.plain.push([B(mx - 0.6, mx + 0.6, 0.15, 2.5, zb, zb + 0.04), '#1e1a17'], [B(mx - 0.02, mx + 0.02, 0.2, 2.45, zb + 0.04, zb + 0.06), '#3d3631']);
+      c.push([B(mx - 0.8, mx - 0.6, 0.15, 2.7, zb, zb + 0.1), WALL], [B(mx + 0.6, mx + 0.8, 0.15, 2.7, zb, zb + 0.1), WALL], [B(mx - 0.8, mx + 0.8, 2.5, 2.7, zb, zb + 0.1), WALL]);
+      k.plain.push([B(mx - 1.5, mx + 1.5, 0.02, 0.07, zb + 2.4, TER[3]), '#a9a497']);
       const bx = -158.5, bz = 101.5;
       for (const s of [-1, 1]) k.plain.push([B(bx + s * 1.35 - 0.06, bx + s * 1.35 + 0.06, 0, 2.9, bz - 0.06, bz + 0.06), '#f3f3f0']);
       k.plain.push([B(bx - 1.25, bx + 1.25, 1.5, 3.0, bz - 0.05, bz + 0.05), '#f2f0e8'], [B(bx - 1.15, bx - 0.75, 2.3, 2.85, bz + 0.05, bz + 0.07), '#1d3f7a']);
@@ -235,12 +245,44 @@ const french: Spec = (() => {
       k.signs.push({ text: 'DEPARTMENT OF FRENCH', x: X(bx + 0.2), y: 1.7, z: Z(bz) + 0.06, ry: 0, w: 1.6, colors: ['#f2f0e8', '#1d2a44'] });
       const g = garden([-200, -100, 70, 120]);
       g.reseed(23);
-      for (let x = -163; x < -148; x += 1.8) g.bush(k, X(x), Z(zb + 3.0), 0.55 + g.rand() * 0.25);
-      for (const [x, z] of [[-169.6, 96.4], [-176.5, 96.5], [-184, 107.2], [-177, 107.4]]) g.bush(k, X(x), Z(z), 0.7);
+      // (the model stands lifted onto the raised ground: plants go on the ground under it)
+      const lift = k.ground(0, 0), kg: Kit = { ...k, ground: (x: number, z: number) => k.ground(x, z) - lift };
+      for (let x = -163; x < -148; x += 1.8) g.bush(kg, X(x), Z(zb + 3.0), 0.55 + g.rand() * 0.25);
+      for (const [x, z] of [[-169.6, 96.4], [-176.5, 96.5], [-184, 107.2], [-177, 107.4]]) g.bush(kg, X(x), Z(z), 0.7);
       k.plain.push([new THREE.CylinderGeometry(0.3, 0.22, 0.55, 10).translate(X(l0 - 0.6), 0.27, Z(lz1 + 0.6)), '#6a5a4a'], [new THREE.IcosahedronGeometry(0.42, 0).translate(X(l0 - 0.6), 0.8, Z(lz1 + 0.6)), '#4f7f35']);
-      g.tree(k, X(-180.5), Z(109.6), 2.2);
+      g.tree(kg, X(-179.5), Z(107.3), 2.2);
       stoneMesh(k, st);
       const m = new THREE.Mesh(merge(c), concrete(0.15));
+      m.castShadow = true; m.receiveShadow = true;
+      k.meshes.push(m);
+    },
+  };
+})();
+
+// ---------- the retaining walls of the raised ground (owner's street photo from before Legon Hall: yellow) ----------
+// Rubble stone with a concrete cap a little over the ground above, along the road on the south and along the east side;
+// the stairs (green) climb through the south wall from the footway to the walk up to the range's middle door.
+const terrace: Spec = (() => {
+  const O: [number, number] = [-145, 100];
+  const { B } = frame(O);
+  return {
+    name: 'Faculty of Arts terrace', axis: [1, 0], origin: O, storey: 3, style: W_FR, roofColor: TILE, fascia: BARGE, pitch: 0.5,
+    onGround: true, blocks: [], keep: [],
+    extras: (k: Kit) => {
+      const st: Part[] = [], c: Part[] = [];
+      const [x0, x1, z0, z1] = TER, top = 1.12;
+      const s = stairsOf().find((q) => q.alongZ && q.z0 === TSX - 1.5)!;
+      for (const [a, b] of [[x0, s.z0 - 0.25], [s.z1 + 0.25, x1 + 0.3]]) stoneWall(k, O, st, a, b, z1 - 0.1, z1 + 0.35, top);
+      stoneWall(k, O, st, x1 - 0.1, x1 + 0.35, z0, z1 + 0.35, top);
+      stoneWall(k, O, st, x0, x1 + 0.35, z0 - 0.35, z0 + 0.1, top);
+      // the stairs: concrete treads between stone cheeks (relief.ts)
+      for (let u = s.x1; u < s.x0 - 1e-3; u += 0.35) {
+        const y = s.at(Math.min(s.x0 - 0.01, u + 0.17));
+        c.push([B(s.z0, s.z1, 0, y, u, Math.min(s.x0, u + 0.36)), '#cfcac0'], [B(s.z0, s.z1, y - 0.02, y + 0.005, u, u + 0.06), '#e8e5dc']);
+      }
+      for (const x of [s.z0 - 0.25, s.z1]) stoneWall(k, O, st, x, x + 0.25, z1 - 0.1, s.x0, top);
+      stoneMesh(k, st);
+      const m = new THREE.Mesh(merge(c), concrete(0.3));
       m.castShadow = true; m.receiveShadow = true;
       k.meshes.push(m);
     },
@@ -310,9 +352,10 @@ const epmo: Spec = (() => {
       SOLIDS.add(-105.6, 65.6, 0.5);
       const g = garden([-112, -98, 45, 85]);
       g.reseed(29);
-      g.bush(k, X(-106.0), Z(70.2), 1.2);
-      for (const z of [54, 58, 61, 69.5, 72.5]) g.bush(k, X(-105.2), Z(z), 0.65 + g.rand() * 0.3);
-      g.tree(k, X(-103.0), Z(80.5), 2.0);
+      const lift = k.ground(0, 0), kg: Kit = { ...k, ground: (x: number, z: number) => k.ground(x, z) - lift };
+      g.bush(kg, X(-106.0), Z(70.2), 1.2);
+      for (const z of [54, 58, 61, 69.5, 72.5]) g.bush(kg, X(-105.2), Z(z), 0.65 + g.rand() * 0.3);
+      g.tree(kg, X(-103.0), Z(80.5), 2.0);
       const m = new THREE.Mesh(merge(c), concrete(0.3));
       m.castShadow = true; m.receiveShadow = true;
       k.meshes.push(m);
@@ -610,4 +653,4 @@ const bookshop: Spec = (() => {
 })();
 
 /** the French Department, the buildings in the owner's white circle, and the Bookshop across the square */
-export const balmeWest = createSite('balme-west', [french, epmo, circle, bookshop]);
+export const balmeWest = createSite('balme-west', [french, epmo, terrace, circle, bookshop]);
