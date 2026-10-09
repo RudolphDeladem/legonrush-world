@@ -138,27 +138,73 @@ const fenceX = (z: number) => {
 };
 
 // ---------- facades ----------
-const WHITE = '#f3f2ec', KHAKI = '#b9ad8e', LAVENDER = '#a9a3dc', TILE_BR = '#9a4a36', TILE_RED = '#b5443a', TILE_OR = '#c4683f', TILE_DK = '#5e3a2c';
+const WHITE = '#f3f2ec', KHAKI = '#d6c38b', CREAM = '#eee3c4', BRICK_T = '#b1603e', WOOD = '#4e2f1f', LAVENDER = '#a9a3dc', TILE_BR = '#9a4a36', TILE_RED = '#b5443a', TILE_OR = '#c4683f', TILE_DK = '#5e3a2c';
 /** white render over a khaki base, wide dark windows (St. Thomas Aquinas, photos 2 and 3) */
 const darkWin = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) => {
   g.fillStyle = '#dcd8cc'; g.fillRect(x - 6, y - 6, w + 12, h + 12);
   g.fillStyle = '#1a1714'; g.fillRect(x, y, w, h);
   g.fillStyle = '#2c2621'; for (let i = 1; i < 3; i++) g.fillRect(x + (w * i) / 3 - 2, y, 4, h);
 };
+/** a window in a dark brown wooden frame, glass behind, a white sill (St. Thomas Aquinas, the owner's photos) */
+const brownWin = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, cols = 2) => {
+  g.fillStyle = 'rgba(90,80,70,0.3)'; g.fillRect(x - 6, y - 5, w + 12, h + 10);
+  g.fillStyle = '#4a2e1f'; g.fillRect(x - 4, y - 4, w + 8, h + 8);
+  const gl = g.createLinearGradient(0, y, 0, y + h); gl.addColorStop(0, '#5d6a72'); gl.addColorStop(1, '#262b2e');
+  g.fillStyle = gl; g.fillRect(x, y, w, h);
+  g.fillStyle = '#4a2e1f'; for (let i = 1; i < cols; i++) g.fillRect(x + (w * i) / cols - 2, y, 4, h);
+  g.fillRect(x, y + h * 0.3, w, 3);
+  g.fillStyle = '#f0ede4'; g.fillRect(x - 7, y + h + 4, w + 14, 5);
+};
+/** glass louvre blade windows in white frames (the house's upper floor, the owner's photo) */
+const louvreGlass = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) => {
+  g.fillStyle = 'rgba(90,80,70,0.25)'; g.fillRect(x - 6, y - 5, w + 12, h + 10);
+  g.fillStyle = '#f2f1ec'; g.fillRect(x - 5, y - 5, w + 10, h + 10);
+  g.fillStyle = '#2f3438'; g.fillRect(x, y, w, h);
+  for (let t = y + 3; t < y + h - 2; t += 9) { g.fillStyle = '#8fa1ab'; g.fillRect(x + 2, t, w - 4, 5); g.fillStyle = '#c9d4d9'; g.fillRect(x + 2, t, w - 4, 1); }
+  g.fillStyle = '#f2f1ec'; g.fillRect(x + w / 2 - 2, y, 4, h);
+};
 const ST_WALL: Style = {
   bay: 4.2, up: [[40, 60, 176, 110]], ground: [[40, 256 + 104, 176, 100]],
   draw: (g) => {
     render(g, WHITE); speckle(g, 0, 0, 256, 512, 400, ['rgba(140,134,120,0.12)']);
     g.fillStyle = 'rgba(150,146,136,0.45)'; g.fillRect(0, 0, 2, 512); g.fillRect(254, 0, 2, 512);
-    darkWin(g, 40, 60, 176, 110);
+    brownWin(g, 40, 60, 176, 110, 3);
     g.fillStyle = KHAKI; g.fillRect(0, 512 - 92, 256, 92); g.fillStyle = 'rgba(0,0,0,0.12)'; g.fillRect(0, 512 - 94, 256, 2);
-    darkWin(g, 40, 256 + 104, 176, 100);
+    brownWin(g, 52, 256 + 92, 152, 104, 3);
   },
 };
 /** the church's own walls: tall narrow windows in white surrounds */
 const ST_NAVE: Style = {
   bay: 3.6, up: [[100, 30, 56, 200]], ground: [[100, 256 + 40, 56, 150]],
-  draw: (g) => { render(g, WHITE); speckle(g, 0, 0, 256, 512, 300, ['rgba(140,134,120,0.12)']); darkWin(g, 100, 30, 56, 200); darkWin(g, 100, 256 + 40, 56, 150); g.fillStyle = KHAKI; g.fillRect(0, 512 - 60, 256, 60); },
+  draw: (g) => { render(g, WHITE); speckle(g, 0, 0, 256, 512, 300, ['rgba(140,134,120,0.12)']); brownWin(g, 100, 30, 56, 200, 1); brownWin(g, 100, 256 + 40, 56, 150, 1); g.fillStyle = KHAKI; g.fillRect(0, 512 - 60, 256, 60); },
+};
+/** the church's front to the court: white over the yellow-beige base (its door, windows and window are modelled) */
+const ST_FRONT: Style = { bay: 4, up: [], ground: [], draw: (g) => { render(g, WHITE); speckle(g, 0, 0, 256, 512, 300, ['rgba(140,134,120,0.12)']); g.fillStyle = KHAKI; g.fillRect(0, 512 - 44, 256, 44); } };
+/** the house's ground floor: cream over a base of terracotta brick, brown-framed windows (photo 2) */
+const HOUSE_GF: Style = {
+  bay: 3.4, up: [], ground: [[64, 256 + 70, 128, 100]],
+  draw: (g) => {
+    render(g, CREAM); speckle(g, 0, 0, 256, 512, 300, ['rgba(140,130,110,0.12)']);
+    brownWin(g, 64, 256 + 70, 128, 100, 3);
+    g.fillStyle = BRICK_T; g.fillRect(0, 512 - 64, 256, 64);
+    g.fillStyle = 'rgba(80,40,25,0.45)'; for (let y = 512 - 64; y < 512; y += 8) g.fillRect(0, y, 256, 1);
+    for (let y = 512 - 64, r = 0; y < 512; y += 8, r++) for (let x = (r % 2) * 16; x < 256; x += 32) g.fillRect(x, y, 1, 8);
+  },
+};
+/** the house's upper floor: cream, glass louvre windows in white frames (photo 3), shown on the ground half (a block
+ *  holding only the upper storey) */
+const HOUSE_UP: Style = {
+  bay: 3.3, up: [], ground: [[60, 256 + 60, 136, 120]],
+  draw: (g) => { render(g, CREAM); speckle(g, 0, 0, 256, 512, 300, ['rgba(140,130,110,0.12)']); louvreGlass(g, 60, 256 + 60, 136, 120); },
+};
+/** behind the verandah: cream over the yellow-beige base, a brown door and a window to a bay */
+const HOUSE_VER: Style = {
+  bay: 3.3, up: [], ground: [[30, 256 + 50, 70, 206], [140, 256 + 80, 90, 100]],
+  draw: (g) => {
+    render(g, CREAM); g.fillStyle = KHAKI; g.fillRect(0, 512 - 50, 256, 50);
+    g.fillStyle = '#3a2418'; g.fillRect(30, 256 + 50, 70, 206); g.fillStyle = '#5a3826'; g.fillRect(36, 256 + 56, 58, 200);
+    brownWin(g, 140, 256 + 80, 90, 100, 2);
+  },
 };
 /** the house west of it: two floors, dark windows in white surrounds, the khaki base */
 const ST_HOUSE: Style = {
@@ -199,31 +245,74 @@ const frameOf = (O: [number, number]) => ({
 
 // ---------- St. Thomas Aquinas Catholic Church ----------
 const SO: [number, number] = [-360, -330];
-const NAVE = [-373.5, -346.5, -345.0, -312.0], PORCH = [-360.8, -350.2, -312.0, -303.5];
-const AN_E = [-346.5, -336.0, -350.5, -321.0], AN_N = [-382.0, -346.5, -350.5, -345.0], AN_W = [-382.0, -373.5, -345.0, -329.0];
-const HOUSE_N = [-397.0, -372.5, -326.0, -284.1], HOUSE_S = [-389.6, -371.0, -284.1, -251.0], LODGE = [-392.0, -384.0, -354.0, -343.0];
+const ST_ROOF = '#93392f', MAROON_T = '#6e2420';
+const NAVE = [-372.0, -346.5, -345.0, -312.0], PORCH = [-364.85, -353.65, -312.0, -304.0];
+const AN_E = [-346.5, -336.0, -350.5, -321.0], AN_N = [-382.0, -346.5, -350.5, -345.0], AN_W = [-382.0, -372.0, -345.0, -329.0];
+const HOUSE_N = [-397.0, -375.5, -326.0, -284.1], HOUSE_S = [-389.6, -371.0, -284.1, -251.0], LODGE = [-392.0, -384.0, -354.0, -343.0];
 const SST = 3.6;
+/** the open corner under the house's balcony (photo 2) runs back to HN_RX and south to HN_RZ; the verandah along the
+ *  south part's east face is HS_VX..HOUSE_S[1] (photo 3) */
+const HN_RX = -379.5, HN_RZ = -316.5, HS_VX = -373.6;
 const stThomas: Spec = (() => {
   const { X, Z, B } = frameOf(SO);
   const R = (r: number[], floors: number, more: object = {}) => ({ x0: X(r[0]), x1: X(r[1]), z0: Z(r[2]), z1: Z(r[3]), floors, ...more });
   return {
     name: 'St. Thomas Aquinas Catholic Church',
-    axis: [1, 0], origin: SO, storey: SST, style: ST_WALL, roofColor: TILE_BR, fascia: WHITE, pitch: 0.42, plinth: '#a89c7d',
+    axis: [1, 0], origin: SO, storey: SST, style: ST_WALL, roofColor: ST_ROOF, fascia: WHITE, pitch: 0.42, plinth: '#c4b27d',
     replaces: [[-358, -330], [-385, -305], [-380, -265], [-388, -348.5], [-344.8, -349.1], [-380, -331.5]],
     blocks: [
-      R(NAVE, 2, { faces: { x0: ST_NAVE, x1: ST_NAVE, z0: ST_NAVE, z1: ST_NAVE } }),
-      R(PORCH, 1, { faces: { z1: ST_NAVE } }),
+      R(NAVE, 2, { roof: 'none', faces: { x0: ST_NAVE, x1: ST_NAVE, z0: ST_NAVE, z1: ST_FRONT } }),
       R(AN_E, 1, { roof: 'flat' }), R(AN_N, 1, { roof: 'flat' }), R(AN_W, 1, { roof: 'flat' }),
-      R(HOUSE_N, 2, { roofColor: TILE_RED, faces: { x0: ST_HOUSE, x1: ST_HOUSE, z0: ST_HOUSE, z1: ST_HOUSE } }),
-      R(HOUSE_S, 2, { roofColor: TILE_RED, faces: { x0: ST_HOUSE, x1: ST_HOUSE, z0: ST_HOUSE, z1: ST_HOUSE } }),
+      // the house: its north-east corner open under the balcony (photo 2); the ground floor of its south part set back
+      // behind the verandah (photo 3); the upper floor over both
+      R([HOUSE_N[0], HN_RX, HOUSE_N[2], HOUSE_N[3]], 1, { roof: 'none', faces: { x0: HOUSE_GF, x1: HOUSE_GF, z0: HOUSE_GF, z1: HOUSE_GF } }),
+      R([HN_RX, HOUSE_N[1], HN_RZ, HOUSE_N[3]], 1, { roof: 'none', faces: { x0: HOUSE_GF, x1: HOUSE_GF, z0: HOUSE_GF, z1: HOUSE_GF } }),
+      R([HOUSE_N[0], HN_RX, HOUSE_N[2], HOUSE_N[3]], 1, { roof: 'none', y: SST, plinth: CREAM, faces: { x0: HOUSE_UP, x1: HOUSE_UP, z0: HOUSE_UP, z1: HOUSE_UP } }),
+      R([HN_RX, HOUSE_N[1], HN_RZ, HOUSE_N[3]], 1, { roof: 'none', y: SST, plinth: CREAM, faces: { x0: HOUSE_UP, x1: HOUSE_UP, z0: HOUSE_UP, z1: HOUSE_UP } }),
+      R([HOUSE_S[0], HS_VX, HOUSE_S[2], HOUSE_S[3]], 1, { roof: 'none', faces: { x0: HOUSE_GF, x1: HOUSE_VER, z0: HOUSE_GF, z1: HOUSE_GF } }),
+      R(HOUSE_S, 1, { roof: 'none', y: SST, plinth: CREAM, faces: { x0: HOUSE_UP, x1: HOUSE_UP, z0: HOUSE_UP, z1: HOUSE_UP } }),
       R(LODGE, 1, { roofColor: '#6b4a3a', faces: { x0: ST_HOUSE, x1: ST_HOUSE, z0: ST_HOUSE, z1: ST_HOUSE } }),
     ],
-    keep: [[X(-370), X(-338), Z(-303.5), Z(-288)], [X(-337), X(-329), Z(-353), Z(-345)]],
+    keep: [[X(-370), X(-338), Z(-304), Z(-288)], [X(-337), X(-329), Z(-353), Z(-345)], [X(HS_VX), X(-368), Z(-284), Z(-251)], [X(-375.5), X(-372), Z(-327), Z(-316)]],
     extras: (k: Kit) => {
       const c: Part[] = [], st: Part[] = [];
       const e1 = k.wallTop(1), e2 = k.wallTop(2);
-      // the church's broad white fascia under its roof
-      for (const [a, b, z0, z1] of [[NAVE[0] - 0.85, NAVE[1] + 0.85, NAVE[2] - 0.85, NAVE[2] - 0.75], [NAVE[0] - 0.85, NAVE[1] + 0.85, NAVE[3] + 0.75, NAVE[3] + 0.85], [NAVE[0] - 0.85, NAVE[0] - 0.75, NAVE[2] - 0.85, NAVE[3] + 0.85], [NAVE[1] + 0.75, NAVE[1] + 0.85, NAVE[2] - 0.85, NAVE[3] + 0.85]]) c.push([B(a, b, e2 - 0.75, e2 + 0.05, z0, z1), WHITE]);
+      const { M } = frameOf(SO);
+      // the church's roof (photo 1): its gable to the court on the south, hipped at the north; a white band under the
+      // eaves along the sides, maroon barge boards up the gable
+      k.roof.c = new THREE.Color(ST_ROOF);
+      const top = hipRoof(k, M, NAVE[0] - 0.9, NAVE[1] + 0.9, NAVE[2] - 0.9, NAVE[3] + 0.35, e2, 0.42, 'z', [hip, open], c, MAROON_T);
+      for (const [a, b, z0, z1] of [[NAVE[0] - 0.9, NAVE[1] + 0.9, NAVE[2] - 0.9, NAVE[2] - 0.8], [NAVE[0] - 0.9, NAVE[0] - 0.8, NAVE[2] - 0.9, NAVE[3] + 0.35], [NAVE[1] + 0.8, NAVE[1] + 0.9, NAVE[2] - 0.9, NAVE[3] + 0.35]]) c.push([B(a, b, e2 - 0.55, e2 + 0.05, z0, z1), WHITE]);
+      const xm = (NAVE[0] + NAVE[1]) / 2, fz = NAVE[3];
+      c.push([tri2([X(NAVE[0] - 0.9), e2 - 0.02, Z(fz) + 0.02], [X(NAVE[1] + 0.9), e2 - 0.02, Z(fz) + 0.02], [X(xm), top - 0.1, Z(fz) + 0.02]), WHITE]);
+      // the front stepped: the middle of the gable wall stands forward between two broad piers
+      for (const x of [xm - 6.2, xm + 6.2]) c.push([B(x - 0.5, x + 0.5, 0, e2 + 0.2, fz, fz + 0.35), WHITE], [B(x - 0.52, x + 0.52, 0, 1.0, fz, fz + 0.37), KHAKI]);
+      // the stained-glass window high in the gable, in a dark frame
+      const wy = e2 + 0.4;
+      k.plain.push([B(xm - 1.0, xm + 1.0, wy - 0.12, wy + 2.62, fz + 0.02, fz + 0.06), '#2e2622']);
+      for (const [a, b, col] of [[-0.9, -0.3, '#3a5a9a'], [-0.3, 0.3, '#c8a23a'], [0.3, 0.9, '#9a3a3a']] as [number, number, string][]) k.plain.push([B(xm + a, xm + b, wy, wy + 2.5, fz + 0.06, fz + 0.08), col]);
+      for (const y of [wy + 0.8, wy + 1.65]) k.plain.push([B(xm - 0.9, xm + 0.9, y, y + 0.06, fz + 0.08, fz + 0.1), '#2e2622']);
+      // the porch (photo 1): a steep gable roof of maroon sheets on two pairs of round columns, white over a yellow
+      // foot, the timber ceiling under it; the wooden double door (blue) in the front, windows either side; a step
+      const [p0, p1, pz0, pz1] = PORCH, pe = 3.7;
+      k.roof.c = new THREE.Color('#8a2e28');
+      const ptop = hipRoof(k, M, p0 - 0.5, p1 + 0.5, pz0, pz1 + 0.4, pe, 0.62, 'z', [open, open], c, MAROON_T);
+      const pmx = (p0 + p1) / 2;
+      c.push([tri2([X(p0 - 0.3), pe - 0.05, Z(pz1) + 0.2], [X(p1 + 0.3), pe - 0.05, Z(pz1) + 0.2], [X(pmx), ptop - 0.25, Z(pz1) + 0.2]), '#5a3826']);
+      for (let i = 1; i < 8; i++) { const x = p0 - 0.3 + ((p1 - p0 + 0.6) * i) / 8, h = (ptop - 0.25 - pe) * (1 - Math.abs(x - pmx) / ((p1 - p0) / 2 + 0.3)); if (h > 0.1) k.plain.push([B(x - 0.03, x + 0.03, pe - 0.05, pe - 0.05 + h, pz1 + 0.21, pz1 + 0.23), '#3e2618']); }
+      c.push([B(p0 - 0.4, p1 + 0.4, pe - 0.3, pe, pz1 - 0.3, pz1 + 0.3), WHITE]);
+      for (const x of [p0 + 0.4, p0 + 1.35, p1 - 1.35, p1 - 0.4]) {
+        k.plain.push([new THREE.CylinderGeometry(0.3, 0.3, pe - 0.3 - 1.2, 14).translate(X(x), 1.2 + (pe - 1.5) / 2, Z(pz1 - 0.4)), WHITE]);
+        k.plain.push([new THREE.CylinderGeometry(0.31, 0.31, 1.2, 14).translate(X(x), 0.6, Z(pz1 - 0.4)), KHAKI]);
+        SOLIDS.add(x, pz1 - 0.4, 0.35);
+      }
+      c.push([B(p0 - 0.6, p1 + 0.6, 0, 0.15, pz0, pz1 + 0.3), '#c9c2b2']);
+      k.plain.push([B(xm - 1.3, xm + 1.3, 0.15, 3.1, fz, fz + 0.05), WOOD]);
+      for (const dx of [-0.65, 0.65]) for (const y of [0.5, 1.8]) k.plain.push([B(xm + dx - 0.5, xm + dx + 0.5, y, y + 1.0, fz + 0.05, fz + 0.07), '#6a4230']);
+      k.plain.push([B(xm - 0.02, xm + 0.02, 0.15, 3.1, fz + 0.05, fz + 0.08), '#2a1a12']);
+      for (const x of [xm - 3.9, xm + 3.9]) {
+        k.plain.push([B(x - 0.9, x + 0.9, 1.0, 2.6, fz + 0.36, fz + 0.4), '#4a2e1f'], [B(x - 0.8, x + 0.8, 1.1, 2.5, fz + 0.4, fz + 0.42), '#2c3236']);
+      }
       // the low range round it: a parapet, a white railing round its roof
       for (const r of [AN_E, AN_N, AN_W]) {
         c.push([B(r[0], r[1], e1, e1 + 0.5, r[2], r[2] + 0.2), WHITE], [B(r[0], r[1], e1, e1 + 0.5, r[3] - 0.2, r[3]), WHITE]);
@@ -252,13 +341,98 @@ const stThomas: Spec = (() => {
       for (let z = -352.2; z < -346.3; z += 0.15) k.plain.push([B(-329.83, -329.77, 0.1, 0.94, z, z + 0.02), '#161616']);
       // the tall white fins on the church's north-east (photo 3)
       for (let x = -353.5; x <= -347.4; x += 0.85) c.push([B(x - 0.13, x + 0.13, e1, e2 - 0.75, NAVE[2] - 0.7, NAVE[2]), WHITE]);
-      // the porch: double doors in the church's south side, steps down to the court
-      k.plain.push([B(-357.2, -353.8, 0.4, 3.4, PORCH[3], PORCH[3] + 0.04), '#3a2620']);
-      for (let i = 0; i < 3; i++) c.push([B(-358 - i * 0.3, -353 + i * 0.3, 0, 0.4 - i * 0.13, PORCH[3], PORCH[3] + 0.5 + i * 0.4), '#cfcac0']);
-      // the paved court south of the church: a lawn strip down its middle, a statue on a plinth
-      k.plain.push([B(-368, -340, 0.02, 0.07, -303.5, -289.5), '#a7a399'], [B(-357.5, -353.5, 0.07, 0.1, -302, -290.5), '#6f8f3c']);
-      c.push([B(-344.5, -343.5, 0, 1.0, -298, -297), '#d9d6cc']);
-      k.plain.push([new THREE.CylinderGeometry(0.22, 0.3, 1.6, 10).translate(X(-344), 1.8, Z(-297.5)), '#f2f0ea'], [new THREE.SphereGeometry(0.2, 10, 8).translate(X(-344), 2.75, Z(-297.5)), '#f2f0ea']);
+      // the arched wooden door (blue) in the east range's south end, steps; an air-conditioner beside it (photo 1)
+      { const dx = -341.6, dz = AN_E[3];
+        const arch = new THREE.Shape(); arch.moveTo(-0.75, 0); arch.lineTo(0.75, 0); arch.lineTo(0.75, 1.9); arch.absarc(0, 1.9, 0.75, 0, Math.PI, false); arch.lineTo(-0.75, 0);
+        k.plain.push([new THREE.ShapeGeometry(arch).translate(X(dx), 0.5, Z(dz) + 0.03), WOOD]);
+        const ring = new THREE.Shape(); ring.absarc(0, 1.9, 1.0, 0, Math.PI, false); ring.lineTo(-0.75, 1.9); ring.absarc(0, 1.9, 0.75, Math.PI, 0, true); ring.lineTo(1.0, 1.9);
+        k.plain.push([new THREE.ShapeGeometry(ring).translate(X(dx), 0.5, Z(dz) + 0.04), '#3a7bd0']);
+        for (let i = 0; i < 3; i++) c.push([B(dx - 1.1 - i * 0.2, dx + 1.1 + i * 0.2, 0, 0.5 - i * 0.16, dz, dz + 0.4 + i * 0.35), '#cfcac0']);
+        k.plain.push([B(-338.6, -337.8, 2.6, 3.15, dz, dz + 0.3), '#e9ebeb']); }
+      // the court before the church (photo 1): big square slabs of terracotta-coloured concrete, grass in the joints; the
+      // lawn on its west behind a white kerb, flowering oleanders by the church
+      const slabs = canvas(256, 256, (g) => {
+        g.fillStyle = '#6e8a3c'; g.fillRect(0, 0, 256, 256);
+        for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) {
+          const sh = ['#b9704c', '#c27b55', '#ad6646', '#bd7650'][(i * 3 + j) % 4];
+          g.fillStyle = sh; g.fillRect(i * 64 + 3, j * 64 + 3, 58, 58);
+          speckle(g, i * 64 + 3, j * 64 + 3, 58, 58, 60, ['rgba(80,40,20,0.2)', 'rgba(230,190,150,0.2)']);
+        }
+      });
+      slabs.wrapS = slabs.wrapT = THREE.RepeatWrapping; slabs.repeat.set(26 / 4, 15 / 4);
+      const court = new THREE.Mesh(new THREE.PlaneGeometry(26, 15).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ map: slabs, roughness: 0.95 }));
+      court.position.set(X(-349), 0.05, Z(-296.75)); court.receiveShadow = true; k.meshes.push(court);
+      k.plain.push([B(-368.5, -362, 0.02, 0.07, -311.5, -289.5), '#6f8f3c'], [B(-362.15, -361.85, 0, 0.18, -311.5, -289.5), '#f2f2ee']);
+      { const gg = garden([-370, -355, -315, -288]); gg.reseed(91);
+        for (const [x, z] of [[-367, -310], [-365.6, -309.2], [-367.4, -307.6], [-365.2, -306.8]]) { gg.bush(k, X(x), Z(z), 0.8); k.plain.push([new THREE.IcosahedronGeometry(0.35, 0).translate(X(x + 0.3), 1.2, Z(z)), '#e98aa8']); }
+        for (const [x, z] of [[-357.2, -304.6], [-362.8, -304.6], [-348.5, -321.6]]) { k.plain.push([new THREE.CylinderGeometry(0.28, 0.2, 0.5, 10).translate(X(x), 0.25, Z(z)), '#efeee8'], [new THREE.IcosahedronGeometry(0.35, 0).translate(X(x), 0.75, Z(z)), '#4f8a35']); } }
+      // ----- the house (photos 2 and 3): its maroon-edged red tile hip roof over both parts
+      k.roof.c = new THREE.Color(TILE_RED);
+      hipRoof(k, M, HOUSE_N[0] - 0.8, HOUSE_N[1] + 0.8, HOUSE_N[2] - 0.8, HOUSE_N[3] + 0.4, e2, 0.42, 'z', [hip, open], c, MAROON_T);
+      hipRoof(k, M, HOUSE_S[0] - 0.8, HOUSE_S[1] + 0.8, HOUSE_S[2] - 0.4, HOUSE_S[3] + 0.8, e2, 0.42, 'z', [open, hip], c, MAROON_T);
+      c.push([B(HOUSE_N[1] + 0.8, HOUSE_N[1] + 0.9, e2 - 0.35, e2 + 0.05, HOUSE_N[2] - 0.8, HOUSE_N[3] + 0.4), MAROON_T], [B(HOUSE_S[1] + 0.8, HOUSE_S[1] + 0.9, e2 - 0.35, e2 + 0.05, HOUSE_S[2] - 0.4, HOUSE_S[3] + 0.8), MAROON_T]);
+      // the open corner under the balcony (photo 2): two tall round columns at the corner, white over a yellow foot,
+      // the three open entrances (blue) to the hall inside, glass doors at its back; the balcony over it with a band of
+      // terracotta brick and a brown railing; a raised paved platform before it, steps, potted plants
+      const hx1 = HOUSE_N[1], hz0 = HOUSE_N[2];
+      for (const z of [hz0 + 0.5, HN_RZ - 0.5]) {
+        k.plain.push([new THREE.CylinderGeometry(0.3, 0.3, e2 - 1.2, 14).translate(X(hx1 - 0.4), 1.2 + (e2 - 1.2) / 2, Z(z)), WHITE], [new THREE.CylinderGeometry(0.31, 0.31, 1.2, 14).translate(X(hx1 - 0.4), 0.6, Z(z)), KHAKI]);
+        SOLIDS.add(hx1 - 0.4, z, 0.35);
+      }
+      c.push([B(HN_RX, hx1, SST - 0.1, SST + 0.25, hz0, HN_RZ), '#e8e4d8']);
+      c.push([B(hx1 - 0.25, hx1 + 0.05, SST + 0.25, SST + 0.8, hz0, HN_RZ), BRICK_T], [B(HN_RX, hx1 + 0.05, SST + 0.25, SST + 0.8, hz0, hz0 + 0.25), BRICK_T]);
+      for (const y of [SST + 1.1, SST + 1.5]) k.plain.push([B(hx1 - 0.14, hx1 - 0.08, y, y + 0.05, hz0, HN_RZ), '#5a2a22']);
+      for (let z = hz0 + 0.3; z < HN_RZ; z += 0.25) k.plain.push([B(hx1 - 0.13, hx1 - 0.09, SST + 0.8, SST + 1.55, z - 0.015, z + 0.015), '#5a2a22']);
+      for (const [za, zb] of [[hz0 + 1.0, hz0 + 3.0], [hz0 + 3.6, hz0 + 5.8], [hz0 + 6.4, HN_RZ - 0.6]] as [number, number][]) {
+        k.plain.push([B(HN_RX - 0.02, HN_RX, 0.55, 3.1, za, zb), '#2a2f33']);
+        k.glass.push(B(HN_RX, HN_RX + 0.02, 0.6, 3.05, za + 0.05, zb - 0.05));
+        k.plain.push([B(HN_RX, HN_RX + 0.03, 0.55, 3.1, (za + zb) / 2 - 0.02, (za + zb) / 2 + 0.02), '#5a3826']);
+      }
+      // (the raised platform runs out into the narrow paved yard between the house and the church; steps down from it)
+      c.push([B(HN_RX, hx1 + 1.6, 0, 0.55, hz0 + 0.2, HN_RZ + 1.0), '#cfcac0']);
+      for (let i = 0; i < 3; i++) c.push([B(hx1 + 0.4, hx1 + 1.6, 0, 0.55 - (i + 1) * 0.16, HN_RZ + 1.0 + i * 0.35, HN_RZ + 1.35 + i * 0.35), '#cfcac0']);
+      for (const z of [hz0 + 2.5, hz0 + 8.0]) k.plain.push([new THREE.CylinderGeometry(0.3, 0.22, 0.55, 10).translate(X(hx1 + 1.0), 0.82, Z(z)), '#f2f1ec'], [new THREE.IcosahedronGeometry(0.45, 0).translate(X(hx1 + 1.0), 1.3, Z(z)), '#4f8a35']);
+      k.plain.push([B(hx1, NAVE[0], 0.02, 0.06, hz0, -284.1), '#8f9294']);
+      for (const z of [-312.5, -305.0, -297.5]) k.plain.push([B(hx1, hx1 + 0.3, SST + 2.2, SST + 2.75, z - 0.4, z + 0.4), '#e9ebeb']);
+      // the verandah along the south part's east face (photo 3): dark brown square posts under the upper floor, its
+      // floor raised, steps up to the doors with black railings of scrolls, beds of red and orange flowers along it
+      const vx = HOUSE_S[1], vy = 0.75;
+      c.push([B(HS_VX, vx, 0, vy, HOUSE_S[2], HOUSE_S[3]), '#cfc6b4'], [B(vx - 0.05, vx + 0.05, 0, vy + 0.02, HOUSE_S[2], HOUSE_S[3]), '#f2f2ee']);
+      c.push([B(HS_VX, vx, SST - 0.05, SST + 0.4, HOUSE_S[2], HOUSE_S[3]), '#e8e4d8']);
+      for (let z = HOUSE_S[2] + 0.3; z <= HOUSE_S[3] - 0.2; z += 3.3) { c.push([B(vx - 0.45, vx - 0.1, vy, SST, z - 0.18, z + 0.18), '#4a2a1e']); SOLIDS.add(vx - 0.27, z, 0.3); }
+      const scroll = (x: number, z0: number, z1: number, y0: number, y1: number) => {
+        // a black iron railing along z at x: posts, rails, scrolls between them, rising from y0 to y1
+        const n = Math.max(2, Math.round(Math.abs(z1 - z0) / 0.5));
+        for (let i = 0; i <= n; i++) { const t = i / n, z = z0 + (z1 - z0) * t, y = y0 + (y1 - y0) * t; k.plain.push([B(x - 0.02, x + 0.02, y, y + 0.95, z - 0.02, z + 0.02), '#121212']); }
+        const len = Math.hypot(z1 - z0, y1 - y0), ang = Math.atan2(y1 - y0, Math.abs(z1 - z0)) * Math.sign(z1 - z0);
+        for (const h of [0.15, 0.95]) k.plain.push([new THREE.BoxGeometry(0.04, 0.05, len).rotateX(-ang).translate(X(x), (y0 + y1) / 2 + h, Z((z0 + z1) / 2)), '#121212']);
+        for (let i = 0; i < n; i++) { const t = (i + 0.5) / n, z = z0 + (z1 - z0) * t, y = y0 + (y1 - y0) * t + 0.55; k.plain.push([new THREE.TorusGeometry(0.16, 0.018, 5, 14).rotateY(Math.PI / 2).translate(X(x), y, Z(z)), '#121212']); }
+      };
+      for (const zc of [-280.0, -268.5, -257.0]) {
+        for (let i = 0; i < 4; i++) c.push([B(vx + i * 0.32, vx + (i + 1) * 0.32, 0, vy - i * 0.19, zc - 0.9, zc + 0.9), '#d4cdbd']);
+        for (const zz of [zc - 0.95, zc + 0.95]) {
+          const n = 6;
+          for (let i = 0; i <= n; i++) { const x = vx + 1.28 * (1 - i / n), y = vy * (i / n); k.plain.push([B(x - 0.02, x + 0.02, y, y + 0.95, zz - 0.02, zz + 0.02), '#121212']); }
+          for (const h of [0.2, 0.95]) k.plain.push([new THREE.BoxGeometry(1.45, 0.05, 0.04).rotateZ(-Math.atan2(vy, 1.28)).translate(X(vx + 0.64), vy / 2 + h, Z(zz)), '#121212']);
+          for (let i = 0; i < 3; i++) k.plain.push([new THREE.TorusGeometry(0.15, 0.018, 5, 14).translate(X(vx + 0.2 + i * 0.42), vy * (1 - (0.2 + i * 0.42) / 1.28) + 0.55, Z(zz)), '#121212']);
+        }
+        scroll(vx - 0.05, zc + 1.0, zc + 3.6, vy, vy); scroll(vx - 0.05, zc - 3.6, zc - 1.0, vy, vy);
+      }
+      { const gg = garden([-375, -360, -290, -248]); gg.reseed(97);
+        for (let z = -283.5; z < -251.5; z += 0.9) {
+          if ([-280.0, -268.5, -257.0].some((q) => Math.abs(z - q) < 1.3)) continue;
+          k.plain.push([new THREE.IcosahedronGeometry(0.42, 0).scale(1.2, 0.7, 1).translate(X(vx + 0.75), 0.3, Z(z)), (Math.round(z * 2) % 3) ? '#3f6f2c' : '#355f26']);
+          k.plain.push([new THREE.IcosahedronGeometry(0.16, 0).translate(X(vx + 0.65 + (z % 0.3)), 0.62, Z(z + 0.2)), ['#d93a2a', '#f08a2a', '#e8c23a'][Math.abs(Math.round(z * 3)) % 3]]);
+        }
+        k.plain.push([B(vx + 0.2, vx + 1.4, 0, 0.12, -283.8, -251.2), '#f2f2ee']);
+        gg.tree(k, X(-360), Z(-252.5), 1.6); }
+      // the balcony at the south end of the upper floor (photo 3)
+      c.push([B(vx, vx + 1.6, SST + 0.25, SST + 0.45, HOUSE_S[3] - 4.0, HOUSE_S[3]), '#e8e4d8'], [B(vx + 1.45, vx + 1.6, SST + 0.45, SST + 1.4, HOUSE_S[3] - 4.0, HOUSE_S[3]), WHITE]);
+      // the gravel car park before it (photo 3)
+      const gravel = canvas(128, 128, (g) => { g.fillStyle = '#a6a29a'; g.fillRect(0, 0, 128, 128); speckle(g, 0, 0, 128, 128, 2600, ['#8c8880', '#bdb9b0', '#79756e', '#c9c5bc']); });
+      gravel.wrapS = gravel.wrapT = THREE.RepeatWrapping; gravel.repeat.set(10, 12);
+      const gr = new THREE.Mesh(new THREE.PlaneGeometry(22, 29).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ map: gravel, roughness: 1 }));
+      gr.position.set(X(-357.2), 0.045, Z(-269.5)); gr.receiveShadow = true; k.meshes.push(gr);
       // ----- along the road: a low white wall, dark grey piers, white railings stepped along the top (photo 2)
       const fence = (z0: number, z1: number) => {
         for (let z = z0; z < z1 - 0.1; z += 3.2) {
@@ -274,7 +448,20 @@ const stThomas: Spec = (() => {
           for (let s = za; s <= zb; s += 0.4) SOLIDS.add(fenceX(s), s, 0.25);
         }
       };
-      fence(-354.8, -288.5); fence(-277.0, -262.5);
+      fence(-348.6, -288.5); fence(-277.0, -262.5);
+      // the gateway where the service lane comes in from the road (owner: open, a metal gate of horizontal slats):
+      // two leaves swung in against the inside of the fence
+      const GN = -354.8, GS = -348.6;
+      for (const z of [GN, GS]) c.push([B(fenceX(z) - 0.3, fenceX(z) + 0.3, 0, 2.0, z - 0.3, z + 0.3), '#5d6064']);
+      const slatLeaf = (hz: number, dir: number) => {
+        // hinged at the pier at hz, swung through a right angle: the leaf lies along -x (inside), dir: which side of the hinge
+        const hx = fenceX(hz) - 0.3, w = (GS - GN) / 2 - 0.35, z = hz + dir * 0.35;
+        k.plain.push([B(hx - w, hx, 0.1, 0.16, z - 0.03, z + 0.03), '#8d9196'], [B(hx - w, hx, 1.74, 1.8, z - 0.03, z + 0.03), '#8d9196']);
+        for (const x of [hx - w, hx - 0.06]) k.plain.push([B(x, x + 0.06, 0.1, 1.8, z - 0.03, z + 0.03), '#8d9196']);
+        for (let y = 0.24; y < 1.72; y += 0.12) k.plain.push([B(hx - w + 0.06, hx - 0.06, y, y + 0.08, z - 0.015, z + 0.015), '#b3b8bd']);
+        for (let x = hx - w; x <= hx; x += 0.4) SOLIDS.add(x, z, 0.12);
+      };
+      slatLeaf(GN, 1); slatLeaf(GS, -1);
       for (const z of [-288.5, -277.0]) c.push([B(fenceX(z) - 0.3, fenceX(z) + 0.3, 0, 2.0, z - 0.3, z + 0.3), '#5d6064']);
       // ----- the wall of pierced blocks to the Interdenominational Church on the north (photo 3)
       const bz = -355.0, bx0 = -382.0, bx1 = fenceX(bz);
@@ -432,21 +619,21 @@ const lic: Spec = (() => {
 // to the paved court, steps; the two-storey block on its west under red tiles. Norfolk Island pines and bushy coconut
 // palms; along the road a low red brick wall, white piers and maroon iron railings arched along their tops; the gates
 // on red brick piers with white globe lamps: the drive's gate swung open, the one beside it shut (owner).
-const MAROON = '#7a2f33', HALL_W = '#e4e7e8', BRICK = '#a4513a', IRON = '#4a2620';
+const MAROON = '#7a2f33', ANG_CREAM = '#efe4c6', HALL_W = '#e4e7e8', BRICK = '#a4513a', IRON = '#4a2620';
 /** the church's long sides: pierced blocks under the eaves, white wall, a dark window between pillars */
 const ANG_SIDE: Style = {
   bay: 3.2, up: [], ground: [[60, 256 + 150, 136, 70]],
   draw: (g) => {
-    render(g, WHITE); speckle(g, 0, 0, 256, 512, 300, ['rgba(140,134,120,0.12)']);
-    g.fillStyle = '#cfcbbf'; g.fillRect(14, 256 + 24, 228, 92);
+    render(g, ANG_CREAM); speckle(g, 0, 0, 256, 512, 300, ['rgba(140,134,120,0.12)']);
+    g.fillStyle = '#d8cdb0'; g.fillRect(14, 256 + 24, 228, 92);
     g.fillStyle = '#2a2622'; for (let x = 22; x < 236; x += 22) for (let y = 256 + 32; y < 256 + 110; y += 26) g.fillRect(x, y, 12, 16);
-    g.fillStyle = '#efeeea'; g.fillRect(0, 0, 14, 512); g.fillRect(242, 0, 14, 512);
+    g.fillStyle = '#f2e9cf'; g.fillRect(0, 0, 14, 512); g.fillRect(242, 0, 14, 512);
     g.fillStyle = 'rgba(120,116,104,0.35)'; g.fillRect(14, 0, 2, 512); g.fillRect(240, 0, 2, 512);
     darkWin(g, 60, 256 + 150, 136, 70);
   },
 };
 /** the church's east end to the road: plain white (the windows are modelled) */
-const ANG_END: Style = { bay: 4, up: [], ground: [], draw: (g) => { render(g, WHITE); speckle(g, 0, 0, 256, 512, 300, ['rgba(140,134,120,0.12)']); g.fillStyle = '#cfcac0'; g.fillRect(0, 512 - 20, 256, 20); } };
+const ANG_END: Style = { bay: 4, up: [], ground: [], draw: (g) => { render(g, ANG_CREAM); speckle(g, 0, 0, 256, 512, 300, ['rgba(140,134,120,0.12)']); g.fillStyle = '#cfcac0'; g.fillRect(0, 512 - 20, 256, 20); } };
 /** the hall's walls: cool white between pilasters, a small window high */
 const HALL_WALL: Style = {
   bay: 6.0, up: [], ground: [[96, 256 + 40, 64, 30]],
@@ -477,9 +664,11 @@ const anglicanChurch: Spec = (() => {
       const c: Part[] = [];
       const e = k.wallTop(1);
       // the steep maroon roof, deep eaves, hipped at the west, the gable to the road on the east
-      const top = hipRoof(k, M, ACH[0] - 1.4, ACH[1] + 1.2, ACH[2] - 1.4, ACH[3] + 1.4, e, 0.7, 'x', [hip, open], c, '#3a2422');
+      // (the gable is the building's own wall, flush under the roof's edge: owner)
+      const top = hipRoof(k, M, ACH[0] - 1.4, ACH[1] + 0.35, ACH[2] - 1.4, ACH[3] + 1.4, e, 0.7, 'x', [hip, open], c, '#3a2422');
       const zm = (ACH[2] + ACH[3]) / 2, ex = ACH[1];
-      c.push([tri2([X(ex), e - 0.02, Z(ACH[2])], [X(ex), e - 0.02, Z(ACH[3])], [X(ex), top - 0.2, Z(zm)]), WHITE]);
+      c.push([tri2([X(ex), e - 0.02, Z(ACH[2] - 1.4)], [X(ex), e - 0.02, Z(ACH[3] + 1.4)], [X(ex), top - 0.05, Z(zm)]), ANG_CREAM]);
+      c.push([B(ex, ex + 0.3, e - 0.3, e, ACH[2] - 1.4, ACH[2]), ANG_CREAM], [B(ex, ex + 0.3, e - 0.3, e, ACH[3], ACH[3] + 1.4), ANG_CREAM]);
       // the stained-glass window high on the gable (picture 4): a cross on blue and gold on the left, the figure in red
       // on the right, in white frames; three small arched windows under it, lit
       const gx = X(ex) + 0.04, sy0 = e + 0.4, sy1 = e + 4.6, sz0 = zm - 3.4, sz1 = zm + 3.4;
@@ -632,11 +821,10 @@ const anglicanHall: Spec = (() => {
       };
       // the drive's gate: hinged on the south pier, swung in against the inside of the wall (open)
       const hzS = P0 + PW / 2, gw1 = PM - PW / 2 - hzS;
-      leaf(fenceX(hzS) - 0.3, hzS, gw1, -Math.PI * 0.42 + Math.PI);
-      // the gate beside it: shut across its opening
-      const hzN = PM + PW / 2, gw2 = P1 - PW / 2 - hzN;
-      leaf(fenceX(hzN), hzN, gw2, 0);
-      for (let z = hzN; z <= hzN + gw2; z += 0.4) SOLIDS.add(fenceX(z), z, 0.25);
+      leaf(fenceX(hzS) - 0.3, hzS, gw1, -Math.PI * 0.45);
+      // the gate beside it: swung open too (owner)
+      const hzN = P1 - PW / 2, gw2 = hzN - (PM + PW / 2);
+      leaf(fenceX(hzN) - 0.3, hzN, gw2, Math.PI * 1.45);
       // the church's board on its posts outside the drive's north pier (picture 4): navy, lines in yellow
       const bx = fenceX(P1) + 1.6, bz = P1 + 1.8;
       for (const dz of [-0.9, 0.9]) k.plain.push([B(bx - 0.05, bx + 0.05, 0, 3.4, bz + dz - 0.05, bz + dz + 0.05), '#2a3a8a']);

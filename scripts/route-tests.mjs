@@ -440,6 +440,8 @@ try {
     if ((await server.ssrLoadModule('/src/game/churches.ts')).churchSite.frames().length !== 6) fail('expected St. Thomas Aquinas, the Interdenominational Church, the Anglican church and hall, and the open grounds (owner)');
     for (const [x, z, what] of [[-356, -528, 'the Anglican church'], [-365, -464, 'the Anglican church hall']]) if (!buildingAt(x, z)) fail(`${what} is not where the owner's aerial shows it`);
     if (buildingAt(-416.8, -507.3)) fail('a building still stands on the Anglican car park (owner)');
+    if (buildingAt(-373.8, -320)) fail('no paved yard between St. Thomas Aquinas and the house west of it (owner)');
+    if (!buildingAt(-359.25, -306)) fail('St. Thomas Aquinas\' porch is not centred on its gable (owner)');
     for (const [x, z, what] of [[-365, -330, 'St. Thomas Aquinas'], [-370, -426, 'the Interdenominational Church']]) if (!buildingAt(x, z)) fail(`${what} is not where the owner's aerial shows it`);
     for (const [x, z] of [[-410, -380], [-440, -300]]) if (buildingAt(x, z)) fail(`a building stands on the open ground west of the churches at ${x},${z} (owner)`);
   }

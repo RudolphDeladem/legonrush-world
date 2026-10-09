@@ -1325,6 +1325,32 @@ and church (blue), and a marked aerial (registered to the Interdenominational Ch
   dry grass in patches, the tracks across it, bushes and trees, the woods to the north round the Miracle Centre; roads
   and paths through it left clear; the part read before at 2 m kept.
 
+## 56. St. Thomas Aquinas from its photos: the front, the porch, the court, the house; the gates open
+
+From the owner's photos of St. Thomas Aquinas' front, the house beside it (its open corner and its verandah side), a
+game screenshot of the gateway from the road, and a screenshot of the Anglican church (`churches.ts`):
+
+- **The church's front** (photo 1): its **gable to the court** (the roof hipped at the north), white over a
+  **yellow-beige base**, the middle stepped forward between two broad piers, the **stained-glass window** high in the
+  gable; maroon barge boards, red-brown sheets. The **porch**: a steep maroon gable on **two pairs of round columns**,
+  white over a yellow foot, a **timber ceiling** under it, the **wooden double door** (blue) in the front and windows
+  either side; the church narrowed to its roof in the aerial, the porch centred on the gable.
+- **The court**: big square slabs of **terracotta-coloured concrete with grass in the joints**; the lawn on its west
+  behind a white kerb, pink oleanders, potted plants; the central lawn strip and statue drawn before are gone.
+- The east range's south end: the **arched wooden door** (blue) up steps, an air-conditioner; windows in **dark brown
+  wooden frames** on all the church's ranges.
+- **The house west of the church** (photos 2 and 3), pulled back to leave the **narrow paved yard** between them:
+  cream walls, a **base of terracotta brick**, brown-framed windows below, **glass louvre blade windows in white frames**
+  above, maroon fascias under the red tiles; at its north-east corner the **open corner under the balcony**: two tall
+  round columns, the **three open entrances** (blue) with glass doors behind, the balcony's terracotta brick band and
+  brown railing, a raised platform with steps and potted plants. Along its south part the **verandah** on dark brown
+  posts, its floor raised, **steps with black scrolled railings** up to the doors, beds of red, orange and yellow flowers
+  behind a white kerb, a balcony at the south end, the **gravel car park** before it.
+- **The gateway from the road** (picture 4): where the service lane comes in, the fence now stops at two dark piers and
+  a **metal gate of horizontal slats** stands **open**, both leaves swung in.
+- **The Anglican church**: its walls and the gable are **cream**, the gable the building's own wall under the roof's
+  edge (not part of the roof); **both its gates now open**.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

@@ -69,3 +69,4 @@
 67. Faculty of Arts and Economic Policy office on raised ground behind a rubble-stone wall with stairs; UGCS back stair; Alumni Association and First Bank hotspot comfort zones
 68. St. Thomas Aquinas Catholic Church and the Legon Interdenominational Church from photos and aerial (fences, gates, car parks, planters); the open red-soil ground west of them
 69. UGCS stair moved to the east end; the Anglican church and hall (stained glass, maroon roofs, fence, open and shut gates, Norfolk pines, palms); the open red-soil ground behind the three churches
+70. St. Thomas Aquinas front, porch, court slabs, the house (open corner, verandah, louvre windows), the open slatted gate; the Anglican church cream with both gates open
