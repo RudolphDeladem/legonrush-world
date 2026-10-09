@@ -185,7 +185,7 @@ try {
   // (west) and Absa (east, by the road) doors on the north face of their one-floor building, the ATMs on its south face
   // (the Post Office's door and the long block's are where the owner's later photos show them: the porch in the west
   // gable, the portico on the car park)
-  for (const [n, x, z] of [['Cedi Conference Centre', -152.5, 10.6], ['University of Ghana Computing Systems (UGCS)', -111.8, -32.8], ['Department of Economics, University of Ghana', -44, 77], ['University of Ghana Bookshop', 58.7, 74.7], ['Faculty of Arts, Languages', -161, 98.5], ['Office of The Dean of Students', -55.6, 58.9], ['Legon Post Office', -69.8, 102], ['Standard Chartered', 70.2, 94.7], ['Absa (near Balme Library Fountain)', 78, 94.7], ['Standard Chartered ATM (near Balme Library Fountain)', 70.2, 106.3]]) {
+  for (const [n, x, z] of [['Cedi Conference Centre', -152.5, 10.6], ['University of Ghana Computing Systems (UGCS)', -111.8, -32.8], ['Department of Economics, University of Ghana', -44, 77], ['University of Ghana Bookshop', 58.7, 74.7], ['Faculty of Arts, Languages', -165.9, 94.9], ['Office of The Dean of Students', -55.6, 58.9], ['Legon Post Office', -69.8, 102], ['Standard Chartered', 70.2, 94.7], ['Absa (near Balme Library Fountain)', 78, 94.7], ['Standard Chartered ATM (near Balme Library Fountain)', 70.2, 106.3]]) {
     const e = ann(n);
     if (!e || Math.hypot(e[0] - x, e[1] - z) > 2) fail(`${n}: the entrance is not where the owner marks it`);
   }
@@ -335,8 +335,8 @@ try {
   // Department two
   { const p = ann('Legon Post Office'); if (!p || Math.hypot(p[0] - -69.8, p[1] - 102) > 3) fail('Legon Post Office: the entrance is not the porch in the west gable (owner)');
     const e = ann('Department of Economics, University of Ghana'); if (!e || Math.hypot(e[0] - -44, e[1] - 77) > 3) fail('the long block by the car park: the entrance is not the portico (owner)');
-    for (const [x, z, f] of [[-58.5, 53, 1], [-59, 101, 1], [-34.5, 77, 2], [-104, 95, 2]]) { const b = buildingAt(x, z); if (!b || (f === 1 ? b.height > 5 : b.height < 6.5)) fail(`the building at ${x},${z} is not ${f} floor(s) (owner)`); }
-    if ((await server.ssrLoadModule('/src/game/balmewest.ts')).balmeWest.frames().length !== 3) fail('expected the French Department, the buildings in the owner\'s white circle and the Bookshop'); }
+    for (const [x, z, f] of [[-58.5, 53, 1], [-59, 101, 1], [-34.5, 77, 2], [-114, 95, 2]]) { const b = buildingAt(x, z); if (!b || (f === 1 ? b.height > 5 : b.height < 6.5)) fail(`the building at ${x},${z} is not ${f} floor(s) (owner)`); }
+    if ((await server.ssrLoadModule('/src/game/balmewest.ts')).balmeWest.frames().length !== 4) fail('expected the French Department, the Economic Policy office, the buildings in the owner\'s white circle and the Bookshop'); }
   // owner: WACCBIP's back is the whole west range along the road behind it (the yellow mark), the road clear of it;
   // the School of Pharmacy entered from its car park, one-floor wings round a three-storey block
   { const b = buildingAt(-298, -332); if (!b || b.height < 11) fail('WACCBIP: the back range along the road behind it is missing (owner)');
@@ -392,7 +392,7 @@ try {
     await server.ssrLoadModule('/src/game/physics.ts'); await server.ssrLoadModule('/src/game/balmewest.ts');
     const through = (x, z0, z1) => { for (let z = z0; z <= z1; z += 0.25) if (cm.buildingNear(x, z, 0.35) && !so.inPassage(x, z)) return false; return true; };
     if (!through(149.1, -136.4, -112)) fail('the bike cannot ride through the Frank Torto Building\'s open passage (owner)');
-    if (!through(-161.2, 84, 101)) fail('the bike cannot ride through the French Department\'s open passage (owner)');
+    if (!through(-172.75, 84.6, 95.0)) fail('the bike cannot ride through the French Department\'s open passage (owner)');
     if (!so.inPassage(149.1, -125) || so.inPassage(145, -125)) fail('the Frank Torto passage is not where the model has it');
     const lane = ROADS.find((r) => r.nodes.some((n) => { const [x, z] = nodeXZ(n); return Math.hypot(x - 209.5, z + 83.9) < 0.3; }));
     if (!lane) fail('the lane round the Frank Torto Building is missing');
@@ -416,6 +416,15 @@ try {
     if (upper(gh.legon) < 12) fail(`Legon Hall has ${upper(gh.legon)} gallery floors, fewer than the owner's purple lines (12)`);
     if (upper(gh.akuafo) < 11) fail(`Akuafo Hall has ${upper(gh.akuafo)} gallery floors, fewer than the owner's purple lines (11)`);
     for (const [x, z, what] of [[-114.7, 164, 'the gap east of Legon Hall\'s front'], [-198.6, 168, 'Legon Hall\'s west range by the north-west corner']]) if (!buildingAt(x, z)) fail(`${what} is open (owner: the buildings are joined)`);
+  }
+  // owner: the French Department and the Economic Policy Management office where the aerial shows them (west of their
+  // old outlines); the office three floors; the French Department's door beside the passage pavilion
+  {
+    { const b = buildingAt(-180, 90); if (!b || !(b.name ?? '').includes('Faculty of Arts')) fail('the French Department is not where the owner\'s aerial shows it'); }
+    if (!buildingAt(-146, 62)) fail('the Economic Policy office is not where the owner\'s aerial shows it');
+    if (buildingAt(-100, 90) || buildingAt(-102, 60)) fail('the French Department or the Economic Policy office still stands on its old outline');
+    { const b = buildingAt(-146, 62); if (!b || b.height < 11 || b.height > 14) fail('the Economic Policy Management office is not three floors (owner)'); }
+    const fa = ACCESS.get('Faculty of Arts, Languages'); if (!fa || Math.hypot(fa.entrance[0] + 165.9, fa.entrance[1] - 94.7) > 2) fail('the Faculty of Arts is not entered by the door beside the passage (owner)');
   }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between

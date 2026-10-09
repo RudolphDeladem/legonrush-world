@@ -1213,6 +1213,38 @@ each hall and game screenshots (`galleries.ts`, `greathalls.ts`, `chalets.ts`, `
   the entrance (`reshape`); no join is built over the gable block itself.
 - **The University Bookshop**: the red railings on its entrance platform are gone (owner).
 
+## 52. The French Department rebuilt where the aerial shows it; the Economic Policy Management office
+
+From the owner's aerial of the CEDI Conference Centre, the Economic Policy Management office (green) and the French
+Department, registered to the conference centre and the roads at 0.235 m/px, and street photos of the office's east
+side and of the French Department's south and west sides (`balmewest.ts`, `galleries.ts`, `blocks.ts`):
+
+- **Both buildings stood east of where they are**: the French Department 9.4 m east and 3.9 m south, the office 8.8 m
+  east (Google Open Buildings agreed with the mapped outlines only 39 % and 45 %). Both outlines are moved onto their
+  roofs (`reshape`), and the curated entrances with them.
+- **French Department**: the west wing, the one-floor pavilion with the open passage, the two-storey range and the
+  east wing, as the roofs show. White walls with the wine band at the foot, black wooden windows.
+  - The west wing's south end (photo 3) is hipped and has **one door** (blue) under a small hood and a **small window
+    over it** (violet), no other windows; a low rubble-stone platform along its foot.
+  - **The open passage** (blue) is the one-floor pavilion between the west wing and the range: its own tiled hip roof,
+    white square pillars with wine feet either side of the open way, dark lattice panels lit yellow behind them, a
+    yellow-framed lattice gate folded back, paved through; the bike rides through it.
+  - The range's south face (photo 4): its west end a gable boarded in dark timber over the pavilion; a black shutter and
+    a barred window upstairs, the **door** (blue) with its grille and transom, the department's plate and an
+    air-conditioner beside it; the **balcony** upstairs further east: pillars, a parapet, barred windows lit behind over
+    a yellow base; black lattice windows below.
+  - The west wing's west face (photo 5): the **balconies** upstairs with **yellow-footed pillars** and pilasters under
+    them down the ground floor, barred windows behind, the wine band at the foot.
+  - Before it: the paved walk from the road to the passage and along the range, the School of Languages board, shrubs
+    and flowering bushes, a potted plant, the big tree before the west wing's south end.
+- **Economic Policy Management Programme office** (green): **three floors** (photo 2; an earlier note had four), an H of
+  two wings and the block between them under hip roofs of dark old tiles; white walls a little streaked, **wide glass
+  windows in dark frames divided by bars** into small panes, air-conditioners, its board on the east face, the
+  entrance in the middle of the south side under a flat canopy. Before its east face a brick walk with a stone kerb, a
+  clipped conifer, round shrubs, flowering bushes and a shade tree.
+- A block's plinth can now take its own colour (`Block.plinth`): the upper floors behind the galleries no longer show
+  the base colour as a band under the gallery floor.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

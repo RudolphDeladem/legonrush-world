@@ -7,13 +7,13 @@
   "path-access": 2,
   "drive-access": 17,
   "area-entry": 8,
-  "frontage": 206,
-  "point": 111
+  "frontage": 208,
+  "point": 109
  },
  "byConfidence": {
   "high": 86,
-  "low": 209,
-  "medium": 141
+  "low": 211,
+  "medium": 139
  },
  "campusGates": 5,
  "problems": [],
@@ -361,10 +361,10 @@
  ],
  "byStatus": {
   "verified": 85,
-  "inferred": 201,
+  "inferred": 203,
   "partial": 6,
   "unverified": 9,
-  "mapped": 135
+  "mapped": 133
  },
  "curated": [
   {
@@ -854,8 +854,8 @@
    "place": "Faculty of Arts, Languages",
    "type": "public entrance",
    "arrivalOn": "footway",
-   "arrivalDistance": 24.1,
-   "facing": 308
+   "arrivalDistance": 18.5,
+   "facing": 0
   },
   {
    "place": "Kuffour Quadrangle",
@@ -986,9 +986,9 @@
   {
    "place": "Economic Policy Management Programme Office",
    "type": "public entrance",
-   "arrivalOn": "W.E.B. Dubois Road",
-   "arrivalDistance": 42.2,
-   "facing": 266
+   "arrivalOn": "service",
+   "arrivalDistance": 2.2,
+   "facing": 96
   },
   {
    "place": "School of Pharmacy",

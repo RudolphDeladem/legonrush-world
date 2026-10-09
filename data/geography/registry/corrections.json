@@ -1990,10 +1990,10 @@
     },
     {
       "id": "osm:way/492099503",
-      "place": "building south of the CEDI Conference Centre",
-      "levels": 4,
-      "height": 12.5,
-      "reason": "Owner (aerial of the CEDI Conference Centre, circled violet): four floors, almost as tall as the conference centre."
+      "place": "Economic Policy Management Programme Office",
+      "levels": 3,
+      "height": 13.0,
+      "reason": "Owner's street photo of its east side (green mark): three floors under a tile hip roof (an earlier aerial note had four). Modelled in src/game/balmewest.ts."
     },
     {
       "id": "osm:way/1005034746",
@@ -3793,6 +3793,134 @@
         ]
       ],
       "reason": "Owner's marked aerial of Legon and Akuafo halls (purple lines along the outward faces): the north-west corner block and the range along the hall's west side joining it to the block south of it, as the roofs show."
+    },
+    {
+      "id": "osm:way/440338448",
+      "place": "Faculty of Arts, Languages (French Department)",
+      "source": "owner's marked aerial",
+      "ring": [
+        [
+          -185.0,
+          74.4
+        ],
+        [
+          -175.0,
+          74.4
+        ],
+        [
+          -175.0,
+          85.6
+        ],
+        [
+          -170.6,
+          85.6
+        ],
+        [
+          -170.6,
+          83.6
+        ],
+        [
+          -119.7,
+          83.6
+        ],
+        [
+          -119.7,
+          75.0
+        ],
+        [
+          -108.4,
+          75.0
+        ],
+        [
+          -108.4,
+          106.0
+        ],
+        [
+          -119.7,
+          106.0
+        ],
+        [
+          -119.7,
+          94.7
+        ],
+        [
+          -170.6,
+          94.7
+        ],
+        [
+          -170.6,
+          93.8
+        ],
+        [
+          -175.0,
+          93.8
+        ],
+        [
+          -175.0,
+          105.0
+        ],
+        [
+          -185.0,
+          105.0
+        ]
+      ],
+      "reason": "Owner's aerial of the CEDI Conference Centre, the Economic Policy Management office and the French Department, registered to the CEDI Conference Centre and the roads at 0.235 m/px: the block stands 9.4 m west and 3.9 m north of the mapped outline (Google Open Buildings agreed with it only 39 %): the west wing, the one-floor pavilion with the open passage, the range and the east wing as the roofs show."
+    },
+    {
+      "id": "osm:way/492099503",
+      "place": "Economic Policy Management Programme Office",
+      "source": "owner's marked aerial",
+      "ring": [
+        [
+          -151.7,
+          51.5
+        ],
+        [
+          -141.1,
+          51.5
+        ],
+        [
+          -141.1,
+          56.0
+        ],
+        [
+          -120.5,
+          56.0
+        ],
+        [
+          -120.5,
+          51.5
+        ],
+        [
+          -108.4,
+          51.5
+        ],
+        [
+          -108.4,
+          73.5
+        ],
+        [
+          -120.5,
+          73.5
+        ],
+        [
+          -120.5,
+          68.0
+        ],
+        [
+          -141.1,
+          68.0
+        ],
+        [
+          -141.1,
+          73.5
+        ],
+        [
+          -151.7,
+          73.5
+        ]
+      ],
+      "reason": "Owner's marked aerial (green mark), registered as above: the H of two wings and the block between them stands 8.8 m west of the mapped outline (Google Open Buildings agreed with it only 45 %)."
     }
   ],
   "addAreas": [

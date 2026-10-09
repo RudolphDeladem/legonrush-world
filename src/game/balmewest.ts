@@ -23,7 +23,8 @@ import { BAND, PL, createSite, render, type Block, type Kit, type Spec, type Sty
 import { concrete } from './concrete';
 import { garden } from './gardens';
 import { hipRoof } from './waccbip';
-import { PASSAGES } from './solids';
+import { PASSAGES, SOLIDS } from './solids';
+import { FRENCH_SOUTH, FRENCH_WEST, galleryBlocks, galleryParts } from './galleries';
 
 const WALL = '#f4f2ec', DADO = '#9b2b25', TILE = '#c4623d', BARGE = '#2b221c', TIMBER: [string, string] = ['#33251b', '#4a3526'];
 
@@ -134,56 +135,186 @@ const frame = (O: [number, number]) => ({
 });
 const gableEnd = { gw: 99, tri: true }, buried = { gw: 99, tri: false }, hip = { gw: 0, tri: false };
 
-// ---------- the French Department ----------
-const FO: [number, number] = [-137, 94];
+// ---------- the French Department (the Faculty of Arts' H-shaped block) ----------
+// On the owner's aerial (registered to the CEDI Conference Centre at 0.235 m/px) the whole block stands 9.4 m west and
+// 3.9 m north of its mapped outline (moved: corrections.json reshape). The west wing and the east wing run north-south;
+// between them the two-storey range (its west end a gable boarded in dark timber over the passage), and between the
+// west wing and the range the one-floor tiled pavilion with the open passage through it (owner's photos 3 and 4).
+const FO: [number, number] = [-147, 90];
 const FST = 3.0, FE = PL + 2 * FST + BAND;
-/** the open passage through the range's ground floor, beside the west wing */
-const PX = [-162.6, -159.8];
+const FW = [-185.0, -175.0, 74.4, 105.0], LINK = [-175.0, -170.6, 85.6, 93.8], FBAR = [-170.6, -119.7, 83.6, 94.7], FEW = [-119.7, -108.4, 75.0, 106.0];
+/** the open passage through the pavilion (no door, no gate: owner) */
+const PX = [-173.95, -171.55];
 // the free-ridden bike rides through it
-PASSAGES.push([PX[0] + 0.4, PX[1] - 0.4, 86.2, 99.1]);
-const W_BLANK: Style = { bay: 3.4, up: [], ground: [], draw: (g) => paint(g) };
-const FW = [-176.0, -163.6, 78.9, 110.7], FEW = [-110.0, -97.8, 77.4, 109.2], FBAR = [-163.6, -110.0, 87.0, 98.3];
+PASSAGES.push([PX[0] + 0.35, PX[1] - 0.35, LINK[2] - 0.8, LINK[3] + 0.8]);
+/** the range's loggia upstairs on its south face (owner's photo 4) */
+const LOG = [-162.0, -149.0];
+const W_FR = winStyle(true, 3.4, 92);
+const W_BLANK: Style = { bay: 3.4, up: [], ground: [], draw: (g) => { paint(g); dado(g); } };
 const french: Spec = (() => {
   const { X, Z, B, M } = frame(FO);
   const blk = (r: number[], more: Partial<Block> = {}): Block => ({ x0: X(r[0]), x1: X(r[1]), z0: Z(r[2]), z1: Z(r[3]), floors: 2, roof: 'none', ...more });
+  // the west wing's west face: the gallery with yellow-footed pillars over its middle and south (photo 5); its south end
+  // blank but for the door and the small window over it (photo 3)
+  const west = galleryBlocks(blk(FW, { faces: { z1: W_BLANK } }), 'x0', FST, FRENCH_WEST, W_FR, [Z(83.0), Z(102.0)], false);
+  // the range: the loggia upstairs on its south face (photo 4)
+  const bar = galleryBlocks(blk(FBAR), 'z1', FST, FRENCH_SOUTH, W_FR, [X(LOG[0]), X(LOG[1])], false);
   return {
     name: 'Faculty of Arts, Languages',
-    axis: [1, 0], origin: FO, storey: FST, style: W_PLAIN, roofColor: TILE, fascia: BARGE, pitch: 0.5, plinth: '#d9d6cc',
-    // the range split round the open passage (owner's yellow mark): over it only the upper floor
-    blocks: [
-      blk(FW), blk(FEW),
-      blk([FBAR[0], PX[0], FBAR[2], FBAR[3]], { faces: { x1: W_BLANK } }),
-      blk([PX[0] + 0.02, PX[1] - 0.02, FBAR[2], FBAR[3]], { floors: 1, y: FST }),
-      blk([PX[1], FBAR[1], FBAR[2], FBAR[3]], { faces: { x0: W_BLANK } }),
-    ],
-    keep: [[X(-111), X(-95.5), Z(109), Z(113)]],
+    axis: [1, 0], origin: FO, storey: FST, style: W_FR, roofColor: TILE, fascia: BARGE, pitch: 0.5, plinth: DADO,
+    blocks: [...west.blocks, ...bar.blocks, blk(FEW)],
+    keep: [[X(-177), X(-168.5), Z(93.8), Z(98)], [X(-186), X(-175), Z(105), Z(107.5)]],
     extras: (k: Kit) => {
       const c: Part[] = [], st: Part[] = [];
-      // the roofs: the wings' ridges north-south, their gable ends boarded in dark timber; the range between them
-      hipRoof(k, M, FW[0] - 0.7, FW[1] + 0.7, FW[2] - 0.6, FW[3] + 0.6, FE, 0.55, 'z', [gableEnd, gableEnd], c, BARGE, TIMBER);
+      galleryParts(k, west.job, FRENCH_WEST, { pitch: 0.5, fascia: BARGE });
+      galleryParts(k, bar.job, FRENCH_SOUTH, { pitch: 0.5, fascia: BARGE });
+      // the roofs: the wings' ridges north-south (the west wing hipped at its south end: photo 3), the range's along it,
+      // its west end a gable boarded in dark timber over the pavilion, its east end buried in the east wing's roof
+      hipRoof(k, M, FW[0] - 0.7, FW[1] + 0.7, FW[2] - 0.6, FW[3] + 0.7, FE, 0.55, 'z', [gableEnd, hip], c, BARGE, TIMBER);
       hipRoof(k, M, FEW[0] - 0.7, FEW[1] + 0.7, FEW[2] - 0.6, FEW[3] + 0.6, FE, 0.55, 'z', [gableEnd, gableEnd], c, BARGE, TIMBER);
-      hipRoof(k, M, (FW[0] + FW[1]) / 2, (FEW[0] + FEW[1]) / 2, FBAR[2] - 0.7, FBAR[3] + 0.7, FE, 0.5, 'x', [buried, buried], c, BARGE, TIMBER);
+      hipRoof(k, M, FBAR[0] - 0.6, (FEW[0] + FEW[1]) / 2, FBAR[2] - 0.7, FBAR[3] + 0.7, FE, 0.5, 'x', [gableEnd, buried], c, BARGE, TIMBER);
       const F1 = PL + FST;
-      // (the porch with the balcony over it, once here, belongs to the long block by the Post Office: owner)
-      // the door at the west end of the west wing's south end (owner's blue mark), on a step
-      const zw = FW[3];
-      k.plain.push([B(-175.0, -173.4, PL, PL + 2.4, zw, zw + 0.06), '#2a2522'], [B(-174.23, -174.17, PL, PL + 2.4, zw + 0.06, zw + 0.08), '#4a4440']);
-      k.plain.push([B(-175.2, -173.2, PL + 2.4, PL + 2.55, zw, zw + 0.5), WALL], [B(-175.4, -173.0, 0, PL, zw, zw + 0.9), '#cfcac0']);
-      // the open passage through the range's ground floor beside the west wing (owner's yellow mark): no door, no
-      // gate; a paved floor through to the court, a white lintel each side under the upper floor, a lamp in its ceiling
-      const zb = FBAR[3], [px0, px1] = PX;
-      k.plain.push([B(px0, px1, 0.02, 0.07, FBAR[2] - 1.2, zb + 0.8), '#a9a497']);
-      for (const z of [FBAR[2], zb]) c.push([B(px0 - 0.02, px1 + 0.02, PL + 2.8, F1 + PL, z - 0.08, z + 0.08), WALL]);
-      c.push([B(px0, px1, PL + 2.8, PL + 2.88, FBAR[2], zb), '#e6e3dc']);
-      k.plain.push([B(px0 + 1.0, px1 - 1.0, PL + 2.74, PL + 2.8, (FBAR[2] + zb) / 2 - 0.3, (FBAR[2] + zb) / 2 + 0.3), '#f6efd6']);
-      // the door just east of it (owner's blue mark)
-      k.plain.push([B(-158.9, -157.4, PL, PL + 2.4, zb, zb + 0.06), '#2a2522'], [B(-159.1, -157.2, PL + 2.4, PL + 2.55, zb, zb + 0.45), WALL]);
-      // the loggia in the range's south face, upstairs (photo 1)
-      k.plain.push([B(-152, -141, F1 + 0.1, FE - 0.6, FBAR[3] - 0.02, FBAR[3] + 0.01), '#26241f']);
-      c.push([B(-152.2, -140.8, F1, F1 + 1.0, FBAR[3], FBAR[3] + 0.25), WALL]);
-      for (const x of [-148.3, -144.6]) c.push([B(x - 0.18, x + 0.18, F1 + 1.0, FE - 0.6, FBAR[3], FBAR[3] + 0.25), WALL]);
+      // ----- the west wing's south end (photo 3): one door (blue) under a small hood, a small window over it (violet),
+      // no other windows; a low platform faced in rubble stone along its foot, a step up to the door
+      const zs = FW[3], dx = -182.2;
+      k.plain.push([B(dx - 0.55, dx + 0.55, 0.35, 2.55, zs, zs + 0.05), '#2b2420'], [B(dx - 0.02, dx + 0.02, 0.4, 2.5, zs + 0.05, zs + 0.07), '#4a403a']);
+      c.push([B(dx - 0.7, dx + 0.7, 2.55, 2.7, zs, zs + 0.06), WALL], [B(dx - 0.8, dx + 0.8, 2.7, 2.82, zs, zs + 0.7), '#9a4a32']);
+      k.plain.push([B(dx + 0.25, dx + 0.95, F1 + 1.1, F1 + 1.8, zs, zs + 0.04), '#1b1a18']);
+      for (let x = dx + 0.35; x < dx + 0.95; x += 0.14) k.plain.push([B(x - 0.015, x + 0.015, F1 + 1.1, F1 + 1.8, zs + 0.04, zs + 0.06), '#3a3633']);
+      stoneWall(k, FO, st, FW[0], FW[1], zs, zs + 1.3, 0.35);
+      k.plain.push([B(dx - 0.8, dx + 0.8, 0, 0.18, zs + 1.3, zs + 1.75), '#cfcac0']);
+      // ----- the pavilion between the west wing and the range (photos 3 and 4): one floor under its own tiled hip roof,
+      // white square pillars with wine feet either side of the open passage, dark lattice panels lit yellow behind
+      // between them and the walls, a yellow-framed lattice gate folded back; paved through
+      const [l0, l1, lz0, lz1] = LINK, ph = 3.1, [p0, p1] = PX;
+      k.plain.push([B(l0, l1, 0.02, 0.08, lz0 - 1.2, lz1 + 1.5), '#a9a497']);
+      for (const z of [lz0, lz1]) {
+        const s = z === lz0 ? 1 : -1, zi = z + s * 0.25;
+        for (const [a, b] of [[p0 - 0.3, p0], [p1, p1 + 0.3]]) c.push([B(a, b, 0, ph, Math.min(z, zi), Math.max(z, zi)), WALL], [B(a - 0.02, b + 0.02, 0, 0.75, Math.min(z, zi) - 0.02, Math.max(z, zi) + 0.02), DADO]);
+        for (const [a, b] of [[l0, p0 - 0.3], [p1 + 0.3, l1]]) {
+          c.push([B(a, b, 0, 0.75, Math.min(z, zi), Math.max(z, zi)), DADO]);
+          k.plain.push([B(a + 0.05, b - 0.05, 0.75, ph - 0.3, z + s * 0.1, z + s * 0.12), '#e6c25a']);
+          for (let x = a + 0.12; x < b - 0.05; x += 0.15) k.plain.push([B(x - 0.02, x + 0.02, 0.75, ph - 0.3, z + s * 0.06, z + s * 0.1), '#1d1b19']);
+          for (let y = 0.9; y < ph - 0.3; y += 0.18) k.plain.push([B(a, b, y - 0.02, y + 0.02, z + s * 0.06, z + s * 0.1), '#1d1b19']);
+        }
+        c.push([B(l0, l1, ph - 0.3, ph, Math.min(z, zi), Math.max(z, zi)), WALL]);
+      }
+      // the gate folded back against the east pillar inside the front: yellow frame, dark lattice
+      k.plain.push([B(p1 - 0.08, p1, 0.08, 2.6, lz1 - 1.1, lz1 - 0.25), '#d7a83a']);
+      for (let z = lz1 - 1.05; z < lz1 - 0.3; z += 0.15) k.plain.push([B(p1 - 0.1, p1 - 0.08, 0.1, 2.55, z - 0.015, z + 0.015), '#1d1b19']);
+      c.push([B(l0, l1, ph - 0.05, ph, lz0, lz1), '#ecebe6']);
+      k.plain.push([B((p0 + p1) / 2 - 0.25, (p0 + p1) / 2 + 0.25, ph - 0.1, ph - 0.05, (lz0 + lz1) / 2 - 0.25, (lz0 + lz1) / 2 + 0.25), '#fff3d0']);
+      k.roof.c = new THREE.Color('#a24e33');
+      hipRoof(k, M, l0 - 0.3, l1 + 0.3, lz0 - 0.7, lz1 + 0.8, ph + 0.05, 0.5, 'z', [hip, hip], c, BARGE, TIMBER);
+      k.roof.c = new THREE.Color(TILE);
+      // ----- the range's south face (photo 4): from its west end a black shutter up, a barred window over the door
+      // (blue) with its grille gate and transom, the department's plate and an air-conditioner beside it, a step
+      const zb = FBAR[3], ex = -165.9;
+      k.plain.push([B(-169.2, -168.1, F1 + 0.9, F1 + 2.4, zb, zb + 0.04), '#141312']);
+      for (let y = F1 + 0.95; y < F1 + 2.35; y += 0.1) k.plain.push([B(-169.15, -168.15, y, y + 0.05, zb + 0.04, zb + 0.06), '#2c2a27']);
+      k.plain.push([B(ex - 0.45, ex + 0.45, F1 + 0.9, F1 + 2.4, zb, zb + 0.04), '#e9dca6']);
+      for (let x = ex - 0.4; x < ex + 0.45; x += 0.15) k.plain.push([B(x - 0.02, x + 0.02, F1 + 0.9, F1 + 2.4, zb + 0.04, zb + 0.06), '#141312']);
+      for (const y of [F1 + 0.9, F1 + 1.65, F1 + 2.4]) k.plain.push([B(ex - 0.5, ex + 0.5, y - 0.03, y + 0.03, zb + 0.04, zb + 0.06), '#141312']);
+      k.plain.push([B(ex - 0.55, ex + 0.55, 0.15, 2.65, zb, zb + 0.04), '#1a1715']);
+      for (let x = ex - 0.5; x < ex + 0.55; x += 0.13) k.plain.push([B(x - 0.015, x + 0.015, 2.2, 2.65, zb + 0.04, zb + 0.06), '#3a3633']);
+      c.push([B(ex - 0.75, ex - 0.55, 0.15, 2.85, zb, zb + 0.12), WALL], [B(ex + 0.55, ex + 0.75, 0.15, 2.85, zb, zb + 0.12), WALL], [B(ex - 0.75, ex + 0.75, 2.65, 2.85, zb, zb + 0.12), WALL]);
+      k.plain.push([B(ex - 0.9, ex + 0.9, 0, 0.15, zb, zb + 0.6), '#cfcac0']);
+      k.plain.push([B(-167.9, -166.9, 2.75, 3.05, zb, zb + 0.03), '#ecebe6']);
+      k.signs.push({ text: 'DEPARTMENT OF AFRICAN & ASIAN LANGUAGES', x: X(-167.4), y: 2.9, z: Z(zb) + 0.035, ry: 0, w: 0.95, colors: ['#ecebe6', '#2a2a2a'] });
+      k.plain.push([B(-169.3, -168.4, 2.6, 3.15, zb, zb + 0.3), '#eceeed'], [B(-169.2, -168.5, 2.65, 3.1, zb + 0.3, zb + 0.31), '#8d9196']);
+      // ----- before it (photos 3 and 4): the paved walk from the road to the passage and along the range, the School
+      // of Languages board on two white posts on the lawn, shrubs and flowering bushes along the walls, a potted plant,
+      // the big tree before the west wing's south end
+      k.plain.push([B(p0 - 0.6, p1 + 0.6, 0.02, 0.07, lz1 + 1.5, 114), '#a9a497'], [B(-170.6, -150, 0.02, 0.07, zb + 0.6, zb + 2.4), '#a9a497']);
+      const bx = -158.5, bz = 101.5;
+      for (const s of [-1, 1]) k.plain.push([B(bx + s * 1.35 - 0.06, bx + s * 1.35 + 0.06, 0, 2.9, bz - 0.06, bz + 0.06), '#f3f3f0']);
+      k.plain.push([B(bx - 1.25, bx + 1.25, 1.5, 3.0, bz - 0.05, bz + 0.05), '#f2f0e8'], [B(bx - 1.15, bx - 0.75, 2.3, 2.85, bz + 0.05, bz + 0.07), '#1d3f7a']);
+      k.signs.push({ text: 'SCHOOL OF LANGUAGES', x: X(bx + 0.2), y: 2.75, z: Z(bz) + 0.06, ry: 0, w: 1.6, colors: ['#f2f0e8', '#1d2a44'] });
+      k.signs.push({ text: 'AFRICAN AND ASIAN LANGUAGES', x: X(bx + 0.2), y: 2.35, z: Z(bz) + 0.06, ry: 0, w: 1.6, colors: ['#f2f0e8', '#1d2a44'] });
+      k.signs.push({ text: 'EUROPEAN LANGUAGES', x: X(bx + 0.2), y: 2.0, z: Z(bz) + 0.06, ry: 0, w: 1.6, colors: ['#f2f0e8', '#1d2a44'] });
+      k.signs.push({ text: 'DEPARTMENT OF FRENCH', x: X(bx + 0.2), y: 1.7, z: Z(bz) + 0.06, ry: 0, w: 1.6, colors: ['#f2f0e8', '#1d2a44'] });
+      const g = garden([-200, -100, 70, 120]);
+      g.reseed(23);
+      for (let x = -163; x < -148; x += 1.8) g.bush(k, X(x), Z(zb + 3.0), 0.55 + g.rand() * 0.25);
+      for (const [x, z] of [[-169.6, 96.4], [-176.5, 96.5], [-184, 107.2], [-177, 107.4]]) g.bush(k, X(x), Z(z), 0.7);
+      k.plain.push([new THREE.CylinderGeometry(0.3, 0.22, 0.55, 10).translate(X(l0 - 0.6), 0.27, Z(lz1 + 0.6)), '#6a5a4a'], [new THREE.IcosahedronGeometry(0.42, 0).translate(X(l0 - 0.6), 0.8, Z(lz1 + 0.6)), '#4f7f35']);
+      g.tree(k, X(-180.5), Z(109.6), 2.2);
       stoneMesh(k, st);
       const m = new THREE.Mesh(merge(c), concrete(0.15));
+      m.castShadow = true; m.receiveShadow = true;
+      k.meshes.push(m);
+    },
+  };
+})();
+
+// ---------- the Economic Policy Management Programme office, between the CEDI Conference Centre and the French
+// Department (owner's green mark and photo 2): three floors, an H of two wings north-south and the block between them,
+// tile hip roofs of dark old tiles; white walls a little streaked; wide glass windows in dark frames divided by bars
+// into small panes; air-conditioners on the walls; its board on the east face; the entrance in the middle of the
+// south side. Before its east face a walk of brick pavers, a clipped conifer, round shrubs and flowering bushes.
+const EO: [number, number] = [-130, 62.5];
+const EST = 3.3;
+const EW = [-151.7, -141.1, 51.5, 73.5], EC = [-141.1, -120.5, 56.0, 68.0], EE = [-120.5, -108.4, 51.5, 73.5];
+const paned = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, cols: number, rows: number) => {
+  g.fillStyle = 'rgba(90,86,80,0.35)'; g.fillRect(x - 6, y - 6, w + 12, h + 12);
+  g.fillStyle = '#1e2124'; g.fillRect(x - 4, y - 4, w + 8, h + 8);
+  const gl = g.createLinearGradient(0, y, 0, y + h); gl.addColorStop(0, '#5f7184'); gl.addColorStop(1, '#232b33');
+  g.fillStyle = gl; g.fillRect(x, y, w, h);
+  g.fillStyle = '#1e2124';
+  for (let i = 1; i < cols; i++) g.fillRect(x + (w * i) / cols - 1.5, y, 3, h);
+  for (let j = 1; j < rows; j++) g.fillRect(x, y + (h * j) / rows - 1.5, w, 3);
+  g.fillStyle = '#e8e6e0'; g.fillRect(x - 7, y + h + 4, w + 14, 5);
+};
+const E_WALL: Style = {
+  bay: 3.8, up: [[44, 70, 168, 104]], ground: [[38, 256 + 64, 180, 116]],
+  draw: (g) => {
+    paint(g, '#f1f0eb');
+    for (let i = 0; i < 12; i++) { const x = (i * 47 + 9) % 250, gr = g.createLinearGradient(0, 0, 0, 160); gr.addColorStop(0, 'rgba(120,116,106,0.14)'); gr.addColorStop(1, 'rgba(120,116,106,0)'); g.fillStyle = gr; g.fillRect(x, 0, 3 + (i % 3), 160); }
+    paned(g, 44, 70, 168, 104, 5, 3);
+    paned(g, 38, 256 + 64, 180, 116, 6, 3);
+    g.fillStyle = '#b84a3a'; g.fillRect(0, 512 - 22, 256, 22);
+  },
+};
+const E_END: Style = {
+  bay: 4.2, up: [[92, 70, 72, 104]], ground: [[92, 256 + 64, 72, 116]],
+  draw: (g) => { paint(g, '#f1f0eb'); paned(g, 92, 70, 72, 104, 2, 3); paned(g, 92, 256 + 64, 72, 116, 2, 3); g.fillStyle = '#b84a3a'; g.fillRect(0, 512 - 22, 256, 22); },
+};
+const epmo: Spec = (() => {
+  const { X, Z, B } = frame(EO);
+  const blk = (r: number[], faces: Partial<Record<'x0' | 'x1' | 'z0' | 'z1', Style>> = {}): Block => ({ x0: X(r[0]), x1: X(r[1]), z0: Z(r[2]), z1: Z(r[3]), floors: 3, faces });
+  return {
+    name: 'Economic Policy Management Programme Office',
+    axis: [1, 0], origin: EO, storey: EST, style: E_WALL, roofColor: '#6e3428', fascia: '#3a2a22', pitch: 0.42, plinth: '#b84a3a',
+    replaces: [[-146.4, 62.5]],
+    blocks: [blk(EW, { z0: E_END, z1: E_END }), blk(EC), blk(EE, { z0: E_END, z1: E_END })],
+    keep: [[X(-104.5), X(-101), Z(48), Z(80)], [X(-134), X(-127.6), Z(68), Z(71)]],
+    extras: (k: Kit) => {
+      const c: Part[] = [];
+      const ex = EE[1];
+      // air-conditioners on the east face (photo 2), its board on the ground floor, a downpipe
+      for (const [z, f] of [[57.2, 1], [64.6, 1], [71.0, 0], [62.0, 0]]) c.push([B(ex, ex + 0.3, PL + f * EST + 2.3, PL + f * EST + 2.85, z - 0.4, z + 0.4), '#eceeed']);
+      k.plain.push([B(ex, ex + 0.05, 2.75, 3.25, 66.0, 69.2), '#e2e3df']);
+      k.signs.push({ text: 'ECONOMIC POLICY MANAGEMENT PROGRAMME', x: X(ex) + 0.06, y: 3.1, z: Z(67.6), ry: Math.PI / 2, w: 3.0, colors: ['#e2e3df', '#2b3442'] });
+      k.signs.push({ text: 'DEPARTMENT OF ECONOMICS', x: X(ex) + 0.06, y: 2.88, z: Z(67.6), ry: Math.PI / 2, w: 2.0, colors: ['#e2e3df', '#2b3442'] });
+      k.plain.push([B(ex, ex + 0.12, 0, PL + 3 * EST, 62.9, 63.0), '#e7e7e2']);
+      // the entrance in the middle of the south side: glass doors in dark frames under a flat canopy, steps
+      const dx = (EC[0] + EC[1]) / 2, dz = EC[3];
+      k.plain.push([B(dx - 1.1, dx + 1.1, 0.4, 2.7, dz, dz + 0.04), '#1e2124']);
+      k.glass.push(B(dx - 1.0, dx - 0.05, 0.45, 2.6, dz + 0.04, dz + 0.06), B(dx + 0.05, dx + 1.0, 0.45, 2.6, dz + 0.04, dz + 0.06));
+      c.push([B(dx - 2.0, dx + 2.0, 3.0, 3.2, dz, dz + 1.8), '#f1f0eb']);
+      for (let i = 0; i < 3; i++) c.push([B(dx - 1.6 - i * 0.3, dx + 1.6 + i * 0.3, 0, 0.4 - i * 0.13, dz, dz + 0.9 + i * 0.35), '#cfcac0']);
+      // before its east face: the brick walk with a stone kerb, a clipped conifer, round shrubs, flowering bushes
+      k.plain.push([B(-104.2, -101.6, 0.02, 0.07, 48, 80), '#9a6a52']);
+      for (let z = 48.4; z < 80; z += 0.8) k.plain.push([B(-104.2, -101.6, 0.07, 0.072, z, z + 0.03), '#7d523e']);
+      k.plain.push([B(-101.6, -101.3, 0, 0.3, 48, 80), '#8f8676']);
+      k.plain.push([new THREE.ConeGeometry(1.6, 5.2, 9).translate(X(-105.6), 2.9, Z(65.6)), '#20401f'], [new THREE.CylinderGeometry(0.15, 0.2, 0.5, 6).translate(X(-105.6), 0.25, Z(65.6)), '#4e3d30']);
+      SOLIDS.add(-105.6, 65.6, 0.5);
+      const g = garden([-112, -98, 45, 85]);
+      g.reseed(29);
+      g.bush(k, X(-106.0), Z(70.2), 1.2);
+      for (const z of [54, 58, 61, 69.5, 72.5]) g.bush(k, X(-105.2), Z(z), 0.65 + g.rand() * 0.3);
+      g.tree(k, X(-103.0), Z(80.5), 2.0);
+      const m = new THREE.Mesh(merge(c), concrete(0.3));
       m.castShadow = true; m.receiveShadow = true;
       k.meshes.push(m);
     },
@@ -480,4 +611,4 @@ const bookshop: Spec = (() => {
 })();
 
 /** the French Department, the buildings in the owner's white circle, and the Bookshop across the square */
-export const balmeWest = createSite('balme-west', [french, circle, bookshop]);
+export const balmeWest = createSite('balme-west', [french, epmo, circle, bookshop]);

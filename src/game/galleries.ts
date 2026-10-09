@@ -18,9 +18,18 @@ export interface GalleryLook {
   foot: string;
   /** the burglar-proofing: a wooden fret (Legon) or bars (Akuafo) */
   fret: boolean;
+  /** the parapet's height (default 1.05 m) */
+  parapet?: number;
+  /** barred windows on the gallery's back wall instead of doors (the French Department) */
+  windows?: boolean;
+  /** paint round the foot of the pillars, and pilasters under them on the ground floor (the French Department) */
+  pillarFoot?: string;
 }
 export const LEGON_GALLERY: GalleryLook = { wall: '#f1efe8', grime: 0.1, base: '#2f6f9f', foot: '#e4d5b2', fret: true };
 export const AKUAFO_GALLERY: GalleryLook = { wall: '#e9e7e0', grime: 0.2, base: '#a6d2b8', foot: '#a6d2b8', fret: false };
+/** the French Department (owner's photos): white, a wine band at the foot, the pillars' feet and the gallery's base yellow */
+export const FRENCH_WEST: GalleryLook = { wall: '#f2f0ea', grime: 0.12, base: '#e2b53e', foot: '#8e2a26', fret: false, parapet: 0.6, pillarFoot: '#e2b53e', windows: true };
+export const FRENCH_SOUTH: GalleryLook = { ...FRENCH_WEST, fret: true, parapet: 0.9 };
 
 const grime = (g: CanvasRenderingContext2D, y0: number, h: number, a: number) => {
   for (let i = 0; i < 16; i++) {
@@ -70,6 +79,19 @@ export function galleryBack(look: GalleryLook): Style {
       g.fillStyle = look.base; g.fillRect(0, 512 - 30 - 96, 256, 96);
       g.fillStyle = 'rgba(0,0,0,0.14)'; g.fillRect(0, 512 - 30 - 98, 256, 2);
       const [x, y, w, h] = D;
+      if (look.windows) {
+        // a barred window over the base, lit warm behind (the French Department's photos)
+        const wy = 512 - 30 - 96 - 4 - 110;
+        g.fillStyle = '#d9d6cd'; g.fillRect(x - 8, wy - 8, w + 16, 126);
+        g.fillStyle = '#e8d69a'; g.fillRect(x, wy, w, 110);
+        g.fillStyle = '#6b6050'; g.fillRect(x + 6, wy + 8, w / 2 - 8, 96);
+        g.fillStyle = '#16140f'; g.fillRect(x - 3, wy - 3, w + 6, 5); g.fillRect(x - 3, wy + 108, w + 6, 5); g.fillRect(x - 3, wy, 5, 110); g.fillRect(x + w - 2, wy, 5, 110);
+        for (let bx = x + 10; bx < x + w - 4; bx += 12) g.fillRect(bx, wy, 3, 110);
+        g.fillRect(x, wy + 54, w, 3);
+        const sh = g.createLinearGradient(0, 256, 0, 330); sh.addColorStop(0, 'rgba(50,46,40,0.45)'); sh.addColorStop(1, 'rgba(50,46,40,0)');
+        g.fillStyle = sh; g.fillRect(0, 256, 256, 74);
+        return;
+      }
       g.fillStyle = '#d9d6cd'; g.fillRect(x - 8, y - 8, w + 16, h + 8);
       g.fillStyle = '#211c18'; g.fillRect(x, y, w, h);
       g.fillStyle = '#342b24'; g.fillRect(x + 8, y + 40, w / 2 - 12, h - 44); g.fillRect(x + w / 2 + 4, y + 40, w / 2 - 12, h - 44);
@@ -101,8 +123,9 @@ export function galleryBlocks(b: Block, side: Face, storey: number, look: Galler
   const a = Math.max(lo, range?.[0] ?? lo), e = Math.min(hi, range?.[1] ?? hi);
   const D = GAL_DEPTH, UP = upperOnly(upper), back = galleryBack(look);
   const ground: Block = { ...b, floors: 1, roof: 'none', faces: { ...b.faces, [side]: burglarWall(look) } };
-  const all = { x0: UP, x1: UP, z0: UP, z1: UP };
-  const up = (x0: number, x1: number, z0: number, z1: number, faces: Partial<Record<Face, Style>>): Block => ({ x0, x1, z0, z1, floors: 1, roof: 'none', y: (b.y ?? 0) + storey, faces: { ...all, ...faces } });
+  const own = (f: Face) => (b.faces?.[f] ? upperOnly(b.faces[f]!) : UP);
+  const all = { x0: own('x0'), x1: own('x1'), z0: own('z0'), z1: own('z1') };
+  const up = (x0: number, x1: number, z0: number, z1: number, faces: Partial<Record<Face, Style>>): Block => ({ x0, x1, z0, z1, floors: 1, roof: 'none', y: (b.y ?? 0) + storey, faces: { ...all, ...faces }, plinth: look.wall });
   const blocks: Block[] = [ground];
   if (side === 'x0') blocks.push(up(b.x0 + D, b.x1, b.z0, b.z1, { x0: back }));
   if (side === 'x1') blocks.push(up(b.x0, b.x1 - D, b.z0, b.z1, { x1: back }));
@@ -132,9 +155,18 @@ export function galleryParts(k: Kit, j: GalleryJob, look: GalleryLook, roof: { p
   };
   const wall = look.wall, len = j.b - j.a;
   k.plain.push([B(j.a, j.b, 0, D, G - 0.18, G + 0.02), '#d6d2c8']);
-  k.plain.push([B(j.a, j.b, 0, 0.22, G, G + 1.05), wall], [B(j.a - 0.02, j.b + 0.02, -0.03, 0.25, G + 1.05, G + 1.12), '#dedbd3']);
-  const n = Math.max(1, Math.round(len / 4.2));
-  for (let i = 1; i < n; i++) { const p = j.a + (len * i) / n; k.plain.push([B(p - 0.19, p + 0.19, 0, 0.38, G, eave - 0.5), wall]); }
+  const ph = look.parapet ?? 1.05;
+  k.plain.push([B(j.a, j.b, 0, 0.22, G, G + ph), wall], [B(j.a - 0.02, j.b + 0.02, -0.03, 0.25, G + ph, G + ph + 0.07), '#dedbd3']);
+  const n = Math.max(1, Math.round(len / (look.pillarFoot ? 3.3 : 4.2)));
+  for (let i = 1; i < n; i++) {
+    const p = j.a + (len * i) / n;
+    k.plain.push([B(p - 0.19, p + 0.19, 0, 0.38, G, eave - 0.5), wall]);
+    if (look.pillarFoot) {
+      // the pillar's painted foot over the parapet; a pilaster under it down the ground floor, its foot painted too
+      k.plain.push([B(p - 0.21, p + 0.21, -0.02, 0.4, G + ph + 0.07, G + ph + 0.6), look.pillarFoot]);
+      k.plain.push([B(p - 0.22, p + 0.22, -0.16, 0, 0, G - 0.2), wall], [B(p - 0.24, p + 0.24, -0.18, 0, 0, 0.7), look.pillarFoot]);
+    }
+  }
   k.plain.push([B(j.a, j.b, -0.02, 0.3, eave - 0.55, eave), wall]);
   k.plain.push([B(j.a, j.b, 0.3, D, eave - 0.12, eave - 0.04), '#e6e3dc']);
   for (const p of [j.a, j.b]) k.plain.push([B(p - (p === j.a ? 0 : 0.25), p + (p === j.a ? 0.25 : 0), 0, D, G, eave), wall]);

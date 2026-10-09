@@ -120,6 +120,8 @@ export interface Block {
   faces?: Partial<Record<Face, Style>>;
   /** height of the block's base (on a site standing on sloping ground: the lowest ground under its corners) */
   y?: number;
+  /** colour of the plinth round its foot (default: the building's) */
+  plinth?: string;
 }
 export interface Spec {
   name: string;
@@ -255,7 +257,7 @@ function buildSpec(f: Frame) {
   const k: Kit = { plain, glass, roof, signs: [], meshes: [], wallTop, storey: st, ground, world };
 
   /** one face of a block: window bays storey by storey, then plinth and eave band */
-  const run = (ax: number, az: number, bx: number, bz: number, floors: number, style: Style, floorStyle: Record<number, Style> | undefined, yb: number) => {
+  const run = (ax: number, az: number, bx: number, bz: number, floors: number, style: Style, floorStyle: Record<number, Style> | undefined, yb: number, plinth = spec.plinth ?? PLINTH) => {
     const len = Math.hypot(bx - ax, bz - az);
     if (len < 0.5) return;
     for (let s = 0; s < floors; s++) {
@@ -268,17 +270,17 @@ function buildSpec(f: Frame) {
     const ang = -Math.atan2(bz - az, bx - ax), mx = (ax + bx) / 2, mz = (az + bz) / 2, top = yb + wallTop(floors);
     // the plinth reaches down to the ground at the low end of a block on a slope
     const drop = spec.onGround ? Math.max(0, yb - Math.min(ground(ax, az), ground(bx, bz))) + 0.6 : 0;
-    plain.push([new THREE.BoxGeometry(len + 0.1, PL + drop, 0.2).rotateY(ang).translate(mx, yb + (PL - drop) / 2, mz), spec.plinth ?? PLINTH]);
+    plain.push([new THREE.BoxGeometry(len + 0.1, PL + drop, 0.2).rotateY(ang).translate(mx, yb + (PL - drop) / 2, mz), plinth]);
     plain.push([new THREE.BoxGeometry(len + 0.1, BAND, 0.12).rotateY(ang).translate(mx, top - BAND / 2, mz), WHITE]);
   };
 
   for (const b of spec.blocks) {
     const sty = (face: Face) => b.faces?.[face] ?? spec.style;
     const yb = b.y ?? (spec.onGround ? Math.min(ground(b.x0, b.z0), ground(b.x1, b.z0), ground(b.x0, b.z1), ground(b.x1, b.z1)) : 0);
-    run(b.x0, b.z0, b.x1, b.z0, b.floors, sty('z0'), b.floorStyle, yb);
-    run(b.x0, b.z1, b.x1, b.z1, b.floors, sty('z1'), b.floorStyle, yb);
-    run(b.x0, b.z0, b.x0, b.z1, b.floors, sty('x0'), b.floorStyle, yb);
-    run(b.x1, b.z0, b.x1, b.z1, b.floors, sty('x1'), b.floorStyle, yb);
+    run(b.x0, b.z0, b.x1, b.z0, b.floors, sty('z0'), b.floorStyle, yb, b.plinth);
+    run(b.x0, b.z1, b.x1, b.z1, b.floors, sty('z1'), b.floorStyle, yb, b.plinth);
+    run(b.x0, b.z0, b.x0, b.z1, b.floors, sty('x0'), b.floorStyle, yb, b.plinth);
+    run(b.x1, b.z0, b.x1, b.z1, b.floors, sty('x1'), b.floorStyle, yb, b.plinth);
     const eave = yb + wallTop(b.floors);
     roof.c = new THREE.Color(b.roofColor ?? spec.roofColor);
     const pitchB = b.pitch ?? spec.pitch;

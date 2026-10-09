@@ -1448,29 +1448,40 @@
   {
    "place": "Economic Policy Management Programme Office",
    "footprint": "osm:way/492099503",
+   "arrival": {
+    "way": "way/1152363129",
+    "near": [
+     -199,
+     70
+    ]
+   },
    "entrance": {
     "at": [
-     -124.6,
-     67.5
+     -130.8,
+     68.0
     ]
    },
    "type": "public entrance",
    "status": "verified",
    "confidence": "high",
    "cite": "owner-balme",
-   "approach": "Along the gap between the office and the Faculty of Arts to the notch in the middle of the office's south face.",
+   "approach": "From the lane on the west round the north end of the Faculty of Arts' west wing, along the gap between the office and the Faculty of Arts to the notch in the middle of the office's south face.",
    "evidence": "Blue mark on the owner's aerial.",
    "refs": [
     "owner's marked aerial of the Balme Library surroundings"
    ],
    "via": [
     [
-     -147,
-     74.5
+     -181,
+     72.0
     ],
     [
-     -124.6,
-     74.5
+     -160,
+     78.5
+    ],
+    [
+     -130.8,
+     78.5
     ]
    ]
   },
@@ -1479,16 +1490,16 @@
    "footprint": "osm:way/440338448",
    "entrance": {
     "at": [
-     -161,
-     98.3
+     -165.9,
+     94.7
     ]
    },
    "type": "public entrance",
    "status": "verified",
    "confidence": "high",
    "cite": "owner-balme",
-   "approach": "To the west end of the north face.",
-   "evidence": "Blue mark on the owner's aerial (circled red: two floors).",
+   "approach": "Along the walk on its south side to the door just east of the passage (the Department of African and Asian Languages).",
+   "evidence": "Blue mark on the owner's aerial (circled red: two floors); the owner's photo of the door (blue mark).",
    "refs": [
     "owner's marked aerial of the Balme Library surroundings"
    ]
