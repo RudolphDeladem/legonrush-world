@@ -106,6 +106,18 @@ export const breeze = () => (breezeMat ??= (() => {
   });
   return new THREE.MeshStandardMaterial({ map: t, transparent: true, alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.95 });
 })());
+let piercedMat: THREE.MeshStandardMaterial | null = null;
+/** a white screen wall pierced all over by small square holes (the chemistry extension's west side, owner) */
+export const pierced = () => (piercedMat ??= (() => {
+  const t = canvas(128, 128, (g) => {
+    g.fillStyle = '#ecebe5'; g.fillRect(0, 0, 128, 128);
+    speckle(g, 0, 0, 128, 128, 300, ['#d9d6cc', '#cbc7bc']);
+    g.globalCompositeOperation = 'destination-out';
+    for (const x of [16, 80]) for (const y of [16, 80]) g.fillRect(x, y, 32, 32);
+    g.globalCompositeOperation = 'source-over';
+  });
+  return new THREE.MeshStandardMaterial({ map: t, transparent: true, alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.95 });
+})());
 let railMat: THREE.MeshStandardMaterial | null = null;
 /** a thin dark railing: balusters 15 cm apart between a top and a bottom rail */
 export const rails = () => (railMat ??= (() => {

@@ -2850,6 +2850,13 @@
       "reason": "Owner's street photo of the chemistry department's west entrance on Cruise O'Brien Road and its yellow mark on the aerial: one floor on a stone-faced base, a recessed porch between two square pillars with the black wooden lattice door, a paved forecourt with stone-faced beds, steps down to the road. Modelled in src/game/physics.ts."
     },
     {
+      "id": "ml:fa697e32-9aaa-4066-a0e4-9a7660d94e13",
+      "place": "building behind the Frank Torto Building",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner's street photo of the Frank Torto Building with the building behind it circled violet: one floor, white, a flat roof with a deep fascia, black grille doors to the lane. Modelled in src/game/physics.ts."
+    },
+    {
       "id": "osm:way/773892127",
       "place": "Frank Torto Chemistry Building",
       "levels": 5,

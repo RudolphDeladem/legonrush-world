@@ -1140,6 +1140,24 @@ Office (`physics.ts`, `balmewest.ts`):
   **open passage** through the range's ground floor beside the west wing, with no door or gate, through to the court
   behind (paved, a white lintel each side under the upper floor, a lamp in its ceiling); a **door just east of it**.
 
+## 49. The chemistry extension joined up; the Frank Torto passage and the building behind it; Nsia Road by Earth Science
+
+From the owner's marked aerial, game screenshots and street photo (`physics.ts`, `relief.ts`, `earthscience.ts`):
+
+- **The west side of the chemistry extension is closed** (blue line): a single white **screen wall pierced all over by
+  small square holes**, with a coping and end piers, joins the west entrance to the extension's west range on the
+  north and to the range on the south. The bike can't pass it.
+- **Frank Torto Building:** an **open passage** (no door, no gate) through its ground floor at the west end of the
+  car-park side, between two columns, paved through to the extension behind, with lamps in its ceiling (blue circle).
+  The tower's south end to the lane (street photo) has a stack of open landings in white frames at its west part and
+  the **DEPARTMENT OF CHEMISTRY / FRANK TORTO BUILDING** board; its east side has windows with hoods over them.
+- **The building behind it** (violet, along the lane east of the tower): **one floor**, white, under a flat roof with
+  a deep fascia, **black iron grille doors** in deep white openings, air-conditioners on the wall, a step along its
+  foot (it had been drawn as two floors).
+- **Nsia Road by Earth Science is flat** (red): the raised ground and its rubble-stone wall stand clear of the road and
+  its pavement, so the road no longer rises at its edge or swallows the bike. The kerb and gutter strip that had been
+  pushed up the bank (violet) is gone; they run flat along the road.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

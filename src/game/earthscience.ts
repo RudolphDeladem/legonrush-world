@@ -91,7 +91,7 @@ const earthScience: Spec = {
     R(WR, 1, {}, { floorStyle: { 0: O_WIN } }), R(NR, 1, {}, { floorStyle: { 0: O_WIN } }), R(SR, 1, {}, { floorStyle: { 0: O_WIN } }),
     R(EB, 1, {}, { floorStyle: { 0: O_WIN } }), R(ER, 1, {}, { floorStyle: { 0: O_WIN } }),
   ],
-  keep: [[X(238), X(357), Z(20), Z(100)], [X(320), X(334), Z(99), Z(107)]],
+  keep: [[X(240.5), X(357), Z(20), Z(100)], [X(320), X(334), Z(99), Z(107)]],
   extras: (k: Kit) => {
     const c: Part[] = [], st: Part[] = [];
     // ---- the storey building's roofs: a hip along the bar, the arms buried in it, the cross block taller ----
@@ -147,8 +147,8 @@ const earthScience: Spec = {
     k.signs.push({ text: 'DEPARTMENT OF EARTH SCIENCE', x: X(327.4), y: OE - 0.38, z: Z(99.43), ry: 0, w: 3.4, colors: ['#f2f2ee', '#2a2a2a'] });
     // ---- the front: rubble-stone retaining walls along the raised ground, the stair in two flights between planters ----
     const s = stairsOf().find((q) => q.alongZ && q.z0 === 322.5)!;
-    for (const [a, b] of [[238.4, s.z0 - 1.6], [s.z1 + 1.6, 356.2]]) st.push([B(a, b, -RISE, 0.35, 99.3, 99.75), '#ffffff']);
-    for (const [a, b, z0, z1] of [[238.0, 238.45, 26, 99.75], [356.0, 356.45, 26, 99.75]]) st.push([B(a, b, -RISE, 0.35, z0, z1), '#ffffff']);
+    for (const [a, b] of [[240.9, s.z0 - 1.6], [s.z1 + 1.6, 356.2]]) st.push([B(a, b, -RISE, 0.35, 99.3, 99.75), '#ffffff']);
+    for (const [a, b, z0, z1] of [[240.55, 241.0, 26, 99.75], [356.0, 356.45, 26, 99.75]]) st.push([B(a, b, -RISE, 0.35, z0, z1), '#ffffff']);
     for (let z = s.x1; z < s.x0 - 1e-3; z += 0.45) {
       const y = s.at(Math.min(s.x0 - 0.01, z + 0.22)) - RISE;
       c.push([B(s.z0, s.z1, -RISE, y, z, Math.min(s.x0, z + 0.46)), '#cfcac0']);
@@ -181,7 +181,7 @@ const earthScience: Spec = {
     const roadZ = (x: number) => 19.6 - ((x - 234.9) * 9.9) / 138.6 + 2.3;
     const nx = 56, nz = 16;
     for (let i = 0; i <= nx; i++) for (let j = 0; j <= nz; j++) {
-      const x = 240 + (110 * i) / nx, z0 = roadZ(x), z = z0 + ((BAR[2] - z0) * j) / nz;
+      const x = 241.2 + (108.8 * i) / nx, z0 = roadZ(x), z = z0 + ((BAR[2] - z0) * j) / nz;
       pos.push(X(x), k.ground(X(x), Z(z)) - RISE + 0.05, Z(z)); uv.push(x / 2, z / 2);
     }
     for (let i = 0; i < nx; i++) for (let j = 0; j < nz; j++) { const a0 = i * (nz + 1) + j, b0 = a0 + nz + 1; idx.push(a0, a0 + 1, b0, a0 + 1, b0 + 1, b0); }
@@ -191,7 +191,7 @@ const earthScience: Spec = {
     pm.receiveShadow = true;
     k.meshes.push(pm);
     // the lawn raised behind the walls in front of the ranges
-    k.plain.push([B(238.5, 356, 0, 0.03, 97.7, 99.3), '#6b9440']);
+    k.plain.push([B(241, 356, 0, 0.03, 97.7, 99.3), '#6b9440']);
     stoneMesh(k, st);
     const m = new THREE.Mesh(merge(c), concrete(0.3));
     m.castShadow = true; m.receiveShadow = true;

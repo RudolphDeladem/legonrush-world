@@ -18,7 +18,8 @@
 import * as THREE from 'three';
 import { box, merge, speckle, tri2, type Part } from './modelkit';
 import { BAND, PL, createSite, render, type Block, type Kit, type Spec, type Style } from './blocks';
-import { concrete, stoneMesh } from './concrete';
+import { concrete, panel, pierced, stoneMesh } from './concrete';
+import { SOLIDS } from './solids';
 import { hipRoof } from './waccbip';
 import { stairsOf } from './relief';
 import { garden } from './gardens';
@@ -204,6 +205,8 @@ function range(r: Range): Spec {
 const CW = [112.4, 121.7, -92.0, -79.0];
 const CR = 114.6, CZ = [-87.6, -83.4];
 const CY = 0.6;
+/** the line of the screen walls (owner's blue line on the aerial) */
+const WX = 114.0;
 const C_BLANK: Style = { bay: 3.4, up: [], ground: [], draw: (g) => oldWall(g, 512 - 62) };
 const chemWest: Spec = (() => {
   const O: [number, number] = [117.0, -85.5];
@@ -279,6 +282,14 @@ const chemWest: Spec = (() => {
       // palms by the road, shade trees round the building
       for (const z of [-93.5, -77.5]) g.palm(k, X(104.5), Z(z), 7.5);
       for (const [x, z] of [[108.5, -96.5], [109.0, -75.0], [124.5, -95.5]]) g.tree(k, X(x), Z(z), 1.3);
+      // the screen walls joining it to the extension's west range on the north and the range on the south (owner's
+      // blue line): one white wall pierced all over by small square holes, a coping on top, piers at the ends
+      for (const [z0, z1] of [[-98.2, CW[2]], [CW[3], -74.6]]) {
+        for (const x of [WX - 0.1, WX + 0.1]) panel(O, k, pierced(), x, z0, x, z1, CY - 0.1, CY + 2.9, 0.4);
+        c.push([B(WX - 0.16, WX + 0.16, CY + 2.9, CY + 3.08, z0, z1), WHITE_OLD], [B(WX - 0.12, WX + 0.12, -0.1, CY + 0.15, z0, z1), WHITE_OLD]);
+        for (const z of [z0 + 0.15, z1 - 0.15]) c.push([B(WX - 0.18, WX + 0.18, -0.1, CY + 2.95, z - 0.15, z + 0.15), WHITE_OLD]);
+        for (let z = z0; z <= z1; z += 0.35) SOLIDS.add(WX, z, 0.25);
+      }
       // air-conditioners in two of the shutters on the south end
       k.plain.push([B(116.6, 117.4, F + 1.0, F + 1.55, CW[2] - 0.3, CW[2]), '#e9ebeb']);
       stoneMesh(k, st);
@@ -317,6 +328,8 @@ const walk: Spec = (() => {
 const TO: [number, number] = [168, -117];
 const TB = [133.2, 185.6, -133.7, -115.5], TW = [185.5, 203.4, -135.2, -98.2];
 const TST = 3.4;
+/** the open passage through the ground floor, from the car park to the extension behind (owner) */
+const TPX = [147.2, 151.0];
 const glassBand = (g: CanvasRenderingContext2D, y: number, h: number, frame: string) => {
   g.fillStyle = frame; g.fillRect(0, y - 4, 256, h + 8);
   const gl = g.createLinearGradient(0, y, 0, y + h); gl.addColorStop(0, '#6a7c8a'); gl.addColorStop(1, '#1d242b');
@@ -363,9 +376,11 @@ const torto: Spec = ((): Spec => {
     replaces: [[168.8, -120.5]],
     blocks: <Block[]>[
       // the ground floor set back behind its columns, the four floors over it
-      { x0: X(TB[0] + 2.2), x1: X(TB[1]), z0: Z(TB[2] + 2.4), z1: Z(TB[3] - 2.4), floors: 1, roof: 'none', faces: { x0: T_END } },
+      // (split round the open passage through it to the extension behind: owner)
+      { x0: X(TB[0] + 2.2), x1: X(TPX[0]), z0: Z(TB[2] + 2.4), z1: Z(TB[3] - 2.4), floors: 1, roof: 'none', faces: { x0: T_END, x1: T_END } },
+      { x0: X(TPX[1]), x1: X(TB[1]), z0: Z(TB[2] + 2.4), z1: Z(TB[3] - 2.4), floors: 1, roof: 'none', faces: { x0: T_END } },
       { x0: X(TB[0]), x1: X(TB[1]), z0: Z(TB[2]), z1: Z(TB[3]), floors: 4, roof: 'flat', y: UP - PL, faces: { x0: T_END }, floorStyle: { 0: T_GLASS } },
-      { x0: X(TW[0]), x1: X(TW[1]), z0: Z(TW[2]), z1: Z(TW[3]), floors: 5, roof: 'none', faces: { x0: T_TOWER, x1: T_END, z0: T_TOWER, z1: T_TOWER } },
+      { x0: X(TW[0]), x1: X(TW[1]), z0: Z(TW[2]), z1: Z(TW[3]), floors: 5, roof: 'none', faces: { x0: T_TOWER, x1: T_TOWER, z0: T_TOWER, z1: T_END } },
     ],
     keep: [[X(130), X(206), Z(-137), Z(-95)]],
     extras: (k: Kit) => {
@@ -374,6 +389,9 @@ const torto: Spec = ((): Spec => {
       for (let x = TB[0] + 0.5; x < TB[1] - 0.5; x += 4.4) for (const z of [TB[2] + 0.4, TB[3] - 0.4]) c.push([B(x - 0.25, x + 0.25, 0, UP, z - 0.25, z + 0.25), '#f4f4f1']);
       c.push([B(TB[0], TB[1], UP - 0.4, UP, TB[2], TB[3]), '#ecebe6']);
       for (let x = TB[0] + 3; x < TB[1] - 2; x += 4.4) for (const z of [TB[2] + 1.2, TB[3] - 1.2]) k.plain.push([B(x - 0.4, x + 0.4, UP - 0.43, UP - 0.4, z - 0.15, z + 0.15), '#fff3d0']);
+      // the open passage: no door, no gate; paved through to the extension behind, lamps in its ceiling
+      k.plain.push([B(TPX[0], TPX[1], 0.02, 0.07, TB[2] - 3.6, TB[3] + 1.5), '#bdb7aa']);
+      for (const z of [-128, -121]) k.plain.push([B(TPX[0] + 1.2, TPX[1] - 1.2, UP - 0.46, UP - 0.4, z - 0.3, z + 0.3), '#fff3d0']);
       // the department's name on the band over the ground floor, south and west
       k.signs.push({ text: 'UG DEPARTMENT OF CHEMISTRY - FRANK TORTO BUILDING', x: X(152), y: UP + 0.15, z: Z(TB[3]) + 0.05, ry: 0, w: 6.0, colors: ['#f4f4f1', '#1d3f7a'] });
       k.signs.push({ text: 'UG DEPARTMENT OF CHEMISTRY - FRANK TORTO BUILDING', x: X(TB[0]) - 0.05, y: UP + TST * 1.4, z: Z(-124.6), ry: -Math.PI / 2, w: 5.0, colors: ['#f4f4f1', '#1d3f7a'] });
@@ -400,6 +418,19 @@ const torto: Spec = ((): Spec => {
         for (let z = TW[2] + 1.6; z < TW[3] - 1; z += 3.2) c.push([new THREE.BoxGeometry(0.9, 0.12, 2.8).rotateZ(-0.35).translate(X(TW[0]) - 0.35, y, Z(z)), '#f4f4f1']);
       }
       hipRoof(k, M, TW[0] - 0.6, TW[1] + 0.6, TW[2] - 0.6, TW[3] + 0.6, TT, 0.25, 'z', [hip, hip], c, '#e9e8e3');
+      // its south end to the lane (owner's street photo): a stack of open landings in white frames at its west part,
+      // the open ground floor under them, the department's board on the wall; hoods over the east windows
+      for (let f = 0; f < 5; f++) {
+        const y = PL + f * TST;
+        k.plain.push([B(TW[0] + 1.2, TW[0] + 4.4, y + (f ? 0.9 : 0), y + TST - 0.35, TW[3] - 0.02, TW[3] + 0.01), f ? '#3c3c3a' : '#2c2c2a']);
+        c.push([B(TW[0] + 1.0, TW[0] + 4.6, y + 0.75, y + 0.9, TW[3], TW[3] + 0.35), '#f4f4f1']);
+        for (const x of [TW[0] + 1.0, TW[0] + 4.45]) c.push([B(x, x + 0.15, y, y + TST, TW[3], TW[3] + 0.35), '#f4f4f1']);
+      }
+      k.plain.push([B(TW[0] + 7.2, TW[0] + 13.2, PL + 2 * TST + 1.0, PL + 2 * TST + 2.0, TW[3], TW[3] + 0.05), '#f4f6f8']);
+      k.plain.push([B(TW[0] + 7.4, TW[0] + 8.1, PL + 2 * TST + 1.2, PL + 2 * TST + 1.8, TW[3] + 0.05, TW[3] + 0.07), '#1d3f8f']);
+      k.signs.push({ text: 'DEPARTMENT OF CHEMISTRY', x: X(TW[0] + 10.8), y: PL + 2 * TST + 1.65, z: Z(TW[3]) + 0.07, ry: 0, w: 4.4, colors: ['#f4f6f8', '#1d3f7a'] });
+      k.signs.push({ text: 'FRANK TORTO BUILDING', x: X(TW[0] + 10.8), y: PL + 2 * TST + 1.25, z: Z(TW[3]) + 0.07, ry: 0, w: 3.6, colors: ['#f4f6f8', '#1d3f7a'] });
+      for (let f = 1; f < 5; f++) for (let z = TW[2] + 1.6; z < TW[3] - 1; z += 3.2) c.push([B(TW[1], TW[1] + 0.5, PL + f * TST - 0.12, PL + f * TST, z - 1.2, z + 1.2), '#f4f4f1']);
       const m = new THREE.Mesh(merge(c), concrete(0.2));
       m.castShadow = true; m.receiveShadow = true;
       k.meshes.push(m);
@@ -407,5 +438,53 @@ const torto: Spec = ((): Spec => {
   };
 })();
 
+// ---------- the one-floor building on the lane behind the Frank Torto Building (owner's photo, violet) ----------
+// White, under a flat roof whose slab stands out past the walls in a deep fascia, black iron grille doors in deep
+// openings along its front to the lane, air-conditioners on the wall, a raised step along its foot.
+const BT = [210.5, 216.9, -94.3, -84.5];
+const BT_WALL: Style = {
+  bay: 3.3, up: [], ground: [[100, 256 + 70, 56, 70]],
+  draw: (g) => {
+    render(g, '#f1f0ea'); speckle(g, 0, 0, 256, 512, 500, ['rgba(130,126,116,0.16)', 'rgba(110,106,96,0.1)']);
+    for (let i = 0; i < 8; i++) { const x = (i * 37) % 250, gr = g.createLinearGradient(0, 256, 0, 400); gr.addColorStop(0, 'rgba(110,106,96,0.18)'); gr.addColorStop(1, 'rgba(110,106,96,0)'); g.fillStyle = gr; g.fillRect(x, 256, 3, 144); }
+    g.fillStyle = '#2a2724'; g.fillRect(96, 256 + 66, 64, 78); g.fillStyle = '#4d4a46'; for (let x = 104; x < 160; x += 10) g.fillRect(x, 256 + 66, 2, 78);
+    g.fillStyle = '#b9b5ab'; g.fillRect(0, 512 - 26, 256, 26);
+  },
+};
+const behindTorto: Spec = (() => {
+  const O: [number, number] = [213.7, -89.4];
+  const X = (x: number) => x - O[0], Z = (z: number) => z - O[1];
+  const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
+  const E = PL + 3.2 + BAND;
+  return {
+    name: 'building behind the Frank Torto Building',
+    axis: [1, 0], origin: O, storey: 3.2, style: BT_WALL, roofColor: '#9a968c', fascia: '#f1f0ea', pitch: 0.1, plinth: '#b9b5ab',
+    replaces: [[213.7, -89.4]],
+    blocks: [{ x0: X(BT[0]), x1: X(BT[1]), z0: Z(BT[2]), z1: Z(BT[3]), floors: 1, roof: 'none', faces: { x0: T_END } }],
+    keep: [],
+    extras: (k: Kit) => {
+      const c: Part[] = [];
+      // the flat roof: its slab out past the walls, a deep fascia round it
+      c.push([B(BT[0] - 0.9, BT[1] + 0.5, E - 0.1, E + 0.1, BT[2] - 0.5, BT[3] + 0.5), '#e6e4dd']);
+      for (const [a, b, z0, z1] of [[BT[0] - 0.9, BT[1] + 0.5, BT[2] - 0.5, BT[2] - 0.35], [BT[0] - 0.9, BT[1] + 0.5, BT[3] + 0.35, BT[3] + 0.5], [BT[0] - 0.9, BT[0] - 0.75, BT[2] - 0.5, BT[3] + 0.5], [BT[1] + 0.35, BT[1] + 0.5, BT[2] - 0.5, BT[3] + 0.5]] as number[][]) c.push([B(a, b, E - 0.35, E + 0.45, z0, z1), '#f1f0ea']);
+      // the front to the lane: black grille doors in deep white openings, a step along the foot, air-conditioners
+      const fx = BT[0];
+      c.push([B(fx - 0.6, fx, 0, PL, BT[2] - 0.2, BT[3] + 0.2), '#d6d2c8']);
+      for (const zc of [-92.2, -88.6, -85.6]) {
+        const w = zc === -85.6 ? 0.9 : 1.3;
+        k.plain.push([B(fx - 0.02, fx, PL, PL + 2.5, zc - w, zc + w), '#16130f']);
+        for (let z = zc - w + 0.1; z < zc + w; z += 0.16) k.plain.push([B(fx - 0.06, fx - 0.02, PL, PL + 2.5, z - 0.015, z + 0.015), '#2e2b28']);
+        for (let y = PL + 0.3; y < PL + 2.5; y += 0.5) k.plain.push([B(fx - 0.06, fx - 0.02, y - 0.02, y + 0.02, zc - w, zc + w), '#2e2b28']);
+        for (const z of [zc - w - 0.18, zc + w]) c.push([B(fx - 0.25, fx, PL, PL + 2.7, z, z + 0.18), '#f4f3ee']);
+        c.push([B(fx - 0.25, fx, PL + 2.5, PL + 2.7, zc - w - 0.18, zc + w + 0.18), '#f4f3ee']);
+      }
+      for (const z of [-90.4, -87.1]) k.plain.push([B(fx - 0.3, fx, PL + 2.0, PL + 2.55, z - 0.4, z + 0.4), '#e9ebeb'], [B(fx - 0.31, fx - 0.3, PL + 2.08, PL + 2.47, z - 0.32, z + 0.32), '#9aa0a3']);
+      const m = new THREE.Mesh(merge(c), concrete(0.6));
+      m.castShadow = true; m.receiveShadow = true;
+      k.meshes.push(m);
+    },
+  };
+})();
+
 /** the Department of Physics, the chemistry buildings, the Frank Torto Building */
-export const physicsSite = createSite('physics-chemistry', [physics, ...RANGES.map(range), chemWest, walk, torto]);
+export const physicsSite = createSite('physics-chemistry', [physics, ...RANGES.map(range), chemWest, walk, torto, behindTorto]);

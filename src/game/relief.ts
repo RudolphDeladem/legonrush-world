@@ -83,7 +83,8 @@ const ZONES: Zone[] = [
   { kind: 'hollow', x0: 236, x1: 334, z0: -446, z1: -342, depth: 1.2, w: 4, e: 5, n: 8, s: 3 },
   // the Department of Earth Science stands on ground raised 1.5 m behind rubble-stone retaining walls on its front and
   // sides (owner's photos), a broad stair up to its entrance; behind it the ground falls gently to the road on the north
-  { kind: 'terrace', x0: 238.5, x1: 356, z0: 28, z1: 99.3, depth: 1.5, w: 0.3, e: 0.3, n: 5, s: 0.3 },
+  // (its west wall stands clear of Nsia Road's pavement: the road and its kerb run flat past it, owner)
+  { kind: 'terrace', x0: 241, x1: 356, z0: 28, z1: 99.3, depth: 1.5, w: 0.3, e: 0.3, n: 5, s: 0.3 },
   // the Department of Physics stands up the hill from Danquah Avenue (owner's photos): its ranges 1.5 m up, a grass
   // bank down to a low stone wall along the pavement and to Cruise O'Brien Road; a stone retaining wall on the east
   { kind: 'terrace', x0: 106, x1: 205.3, z0: 52, z1: 106.5, depth: 1.5, w: 5, e: 0.3, n: 5, s: 5.6 },
