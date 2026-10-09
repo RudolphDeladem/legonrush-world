@@ -256,6 +256,26 @@
     {
       "id": "osm:way/892262792",
       "reason": "Owner: the cars in the ISSER Annex car park covered the drive and the walk to the entrance; cars park in two rows, along the palms before the range and along the south edge, the aisle between them and the walk to the porch kept clear (replaced by owner:isser-annex-parking-*)."
+    },
+    {
+      "id": "ml:e7f16526-033c-4f8e-90b6-a025de4afa98",
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos: part of St. Thomas Aquinas' low range north of the church (its outline now covers it)."
+    },
+    {
+      "id": "ml:c1027ca7-952b-4da7-80c1-ec44e9f41139",
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos: part of St. Thomas Aquinas' low range west of the church (its outline now covers it)."
+    },
+    {
+      "id": "ml:f74ce5f7-944a-4857-9615-fc328a962ec1",
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos: no building on the open ground there, red soil only."
+    },
+    {
+      "id": "osm:way/1184502102",
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos: no building there, bushes on the edge of the open ground."
+    },
+    {
+      "id": "osm:way/631051064",
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos: the mapped car park ran over the lawn south of the Interdenominational Church's cross-shaped block (replaced by owner:lic-parking-south)."
     }
   ],
   "heights": [
@@ -2876,6 +2896,55 @@
       "levels": 1,
       "height": 4.2,
       "reason": "Owner's street photo (white mark): one floor, white walls a little dirty by the road, a red-brown band at the foot, a dark sheet gable roof, a dark door. Modelled in src/game/liciad.ts."
+    },
+    {
+      "id": "osm:way/394125232",
+      "place": "Legon Interdenominational Church",
+      "levels": 2,
+      "height": 16.5,
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos. Modelled in src/game/churches.ts."
+    },
+    {
+      "id": "osm:way/631051068",
+      "place": "Legon Interdenominational Church, the cross-shaped block",
+      "levels": 2,
+      "height": 10.5,
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos. Modelled in src/game/churches.ts."
+    },
+    {
+      "id": "osm:way/394125211",
+      "place": "St. Thomas Aquinas Catholic Church",
+      "levels": 2,
+      "height": 12.0,
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos. Modelled in src/game/churches.ts."
+    },
+    {
+      "id": "osm:way/1184505270",
+      "place": "St. Thomas Aquinas, the house west of the church",
+      "levels": 2,
+      "height": 10.0,
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos. Modelled in src/game/churches.ts."
+    },
+    {
+      "id": "osm:way/714957466",
+      "place": "St. Thomas Aquinas, the small house north-west",
+      "levels": 1,
+      "height": 5.0,
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos. Modelled in src/game/churches.ts."
+    },
+    {
+      "id": "ml:7d5c4013-635d-4f9b-8a7d-a85f2596109b",
+      "place": "water tank west of the churches",
+      "levels": 1,
+      "height": 2.2,
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos. Modelled in src/game/churches.ts."
+    },
+    {
+      "id": "osm:way/714957465",
+      "place": "shed west of the churches",
+      "levels": 1,
+      "height": 2.6,
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos. Modelled in src/game/churches.ts."
     }
   ],
   "reclass": [
@@ -3921,6 +3990,302 @@
         ]
       ],
       "reason": "Owner's marked aerial (green mark), registered as above: the H of two wings and the block between them stands 8.8 m west of the mapped outline (Google Open Buildings agreed with it only 45 %)."
+    },
+    {
+      "id": "osm:way/394125232",
+      "place": "Legon Interdenominational Church",
+      "source": "owner's marked aerial",
+      "ring": [
+        [
+          -400.8,
+          -440.4
+        ],
+        [
+          -351.4,
+          -440.4
+        ],
+        [
+          -351.4,
+          -412.8
+        ],
+        [
+          -400.8,
+          -412.8
+        ]
+      ],
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos: the church and the lower hall behind it as the roofs show (square to north; the outline was turned 6 degrees)."
+    },
+    {
+      "id": "osm:way/1184505271",
+      "place": "Legon Interdenominational Church, the link",
+      "source": "owner's marked aerial",
+      "ring": [
+        [
+          -387.8,
+          -412.8
+        ],
+        [
+          -378.4,
+          -412.8
+        ],
+        [
+          -378.4,
+          -401.0
+        ],
+        [
+          -387.8,
+          -401.0
+        ]
+      ],
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos: the small link behind the church."
+    },
+    {
+      "id": "osm:way/1184505272",
+      "place": "Legon Interdenominational Church, the west block",
+      "source": "owner's marked aerial",
+      "ring": [
+        [
+          -396.1,
+          -405.2
+        ],
+        [
+          -384.9,
+          -405.2
+        ],
+        [
+          -384.9,
+          -389.3
+        ],
+        [
+          -396.1,
+          -389.3
+        ]
+      ],
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos: the small block west of the link."
+    },
+    {
+      "id": "osm:way/631051068",
+      "place": "Legon Interdenominational Church, the cross-shaped block",
+      "source": "owner's marked aerial",
+      "ring": [
+        [
+          -384.9,
+          -401.0
+        ],
+        [
+          -375.0,
+          -401.0
+        ],
+        [
+          -375.0,
+          -404.0
+        ],
+        [
+          -358.0,
+          -404.0
+        ],
+        [
+          -358.0,
+          -409.0
+        ],
+        [
+          -349.0,
+          -409.0
+        ],
+        [
+          -349.0,
+          -397.0
+        ],
+        [
+          -355.5,
+          -397.0
+        ],
+        [
+          -355.5,
+          -372.8
+        ],
+        [
+          -375.0,
+          -372.8
+        ],
+        [
+          -375.0,
+          -387.0
+        ],
+        [
+          -384.9,
+          -387.0
+        ]
+      ],
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos: the two-storey cross-shaped block and the gabled building in scaffolding at its north-east corner."
+    },
+    {
+      "id": "osm:way/394125211",
+      "place": "St. Thomas Aquinas Catholic Church",
+      "source": "owner's marked aerial",
+      "ring": [
+        [
+          -382.0,
+          -350.5
+        ],
+        [
+          -336.0,
+          -350.5
+        ],
+        [
+          -336.0,
+          -321.0
+        ],
+        [
+          -346.5,
+          -321.0
+        ],
+        [
+          -346.5,
+          -312.0
+        ],
+        [
+          -350.2,
+          -312.0
+        ],
+        [
+          -350.2,
+          -303.5
+        ],
+        [
+          -360.8,
+          -303.5
+        ],
+        [
+          -360.8,
+          -312.0
+        ],
+        [
+          -373.5,
+          -312.0
+        ],
+        [
+          -373.5,
+          -329.0
+        ],
+        [
+          -382.0,
+          -329.0
+        ]
+      ],
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos: the church, its porch and the lower flat-roofed range round its north, east and west."
+    },
+    {
+      "id": "osm:way/1184505270",
+      "place": "St. Thomas Aquinas, the house west of the church",
+      "source": "owner's marked aerial",
+      "ring": [
+        [
+          -397.0,
+          -326.0
+        ],
+        [
+          -372.5,
+          -326.0
+        ],
+        [
+          -372.5,
+          -284.1
+        ],
+        [
+          -371.0,
+          -284.1
+        ],
+        [
+          -371.0,
+          -251.0
+        ],
+        [
+          -389.6,
+          -251.0
+        ],
+        [
+          -389.6,
+          -284.1
+        ],
+        [
+          -397.0,
+          -284.1
+        ]
+      ],
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos: the long two-storey house under red tiles, both its parts."
+    },
+    {
+      "id": "osm:way/714957466",
+      "place": "St. Thomas Aquinas, the small house north-west",
+      "source": "owner's marked aerial",
+      "ring": [
+        [
+          -392.0,
+          -354.0
+        ],
+        [
+          -384.0,
+          -354.0
+        ],
+        [
+          -384.0,
+          -343.0
+        ],
+        [
+          -392.0,
+          -343.0
+        ]
+      ],
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos: the small house with the dark roof."
+    },
+    {
+      "id": "ml:7d5c4013-635d-4f9b-8a7d-a85f2596109b",
+      "place": "water tank west of the churches",
+      "source": "owner's marked aerial",
+      "ring": [
+        [
+          -430.1,
+          -404.0
+        ],
+        [
+          -422.5,
+          -404.0
+        ],
+        [
+          -422.5,
+          -398.1
+        ],
+        [
+          -430.1,
+          -398.1
+        ]
+      ],
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos: the small blue-grey water tank on the open ground."
+    },
+    {
+      "id": "osm:way/714957465",
+      "place": "shed west of the churches",
+      "source": "owner's marked aerial",
+      "ring": [
+        [
+          -429.5,
+          -388.1
+        ],
+        [
+          -426.0,
+          -388.1
+        ],
+        [
+          -426.0,
+          -383.4
+        ],
+        [
+          -429.5,
+          -383.4
+        ]
+      ],
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos: the small white shed on the open ground."
     }
   ],
   "addAreas": [
@@ -8252,6 +8617,60 @@
         ]
       ],
       "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: the car park before the Frank Torto Building (photo 4)."
+    },
+    {
+      "id": "owner:lic-parking-south",
+      "class": "parking",
+      "ring": [
+        [
+          -355.0,
+          -372.5
+        ],
+        [
+          -318.0,
+          -372.5
+        ],
+        [
+          -318.0,
+          -356.5
+        ],
+        [
+          -355.0,
+          -356.5
+        ]
+      ],
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos: the Interdenominational Church's south car park, grey pavers."
+    },
+    {
+      "id": "owner:st-thomas-parking",
+      "class": "parking",
+      "ring": [
+        [
+          -335.0,
+          -351.5
+        ],
+        [
+          -318.0,
+          -351.5
+        ],
+        [
+          -318.0,
+          -262.5
+        ],
+        [
+          -368.0,
+          -262.5
+        ],
+        [
+          -368.0,
+          -289.5
+        ],
+        [
+          -335.0,
+          -289.5
+        ]
+      ],
+      "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos: St. Thomas Aquinas' car parks of grey pavers east and south of the church."
     }
   ],
   "addWays": [

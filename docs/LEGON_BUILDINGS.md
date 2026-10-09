@@ -1271,6 +1271,32 @@ of the two hotspot comfort zones (`relief.ts`, `balmewest.ts`, `balme.ts`, `hots
   - **First Bank Ghana** (red): FIRST BANK GHANA / HOTSPOT COMFORT ZONE on navy over a warm brown band, the ceilings
     painted blue with a yellow frame round the deck's opening, ceiling fans, a colourful mural of patterns and faces.
 
+## 54. St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them
+
+From the owner's marked aerial (registered to the Interdenominational Church at 0.235 m/px) and street photos of St.
+Thomas Aquinas' east side (toward the back of WACCBIP) and the Interdenominational Church from its gate and its car
+park (`churches.ts`; outlines moved onto the roofs in the aerial: `corrections.json reshape`, phantom outlines removed).
+
+- **St. Thomas Aquinas**: the church, one tall storey under a brown-red tile hip roof with a broad white fascia, its
+  porch and doors on the south to a paved court with a lawn strip and a statue; round its north, east and west the
+  lower flat-roofed range: white over a **khaki base**, wide dark windows, a white railing round its roof, the door up
+  steps with black handrails in its east face; tall white fins on the church's north-east; the **screen of pierced
+  blocks** south of the range; a covered walk on posts at the north-east corner. West of it the long two-storey house
+  under red tile hip roofs, a small house with a dark roof north-west. Car parks of grey pavers east and south, palms
+  along the range, the big rain tree south-east of the church. Along the road a **low white wall with dark grey piers
+  and white railings stepped along the top**; a wall of pierced blocks to the Interdenominational Church on the north.
+- **Legon Interdenominational Church**: the church, two storeys high under a **steep dark brown tile roof**, its white
+  gable to the car park on the east with the **lavender pentagon panel and fan window**, louvred windows either side,
+  a lavender band low down, the entrance on a landing between rubble-stone panels with **two white ramps** sweeping down
+  either side behind solid white parapets; the lower hall behind it under orange tiles; south of it the two-storey
+  cross-shaped block (louvred windows up, glazed doors lit below), the small links, and the **gabled building in
+  scaffolding** with its gable faced in stone. A hedge along the church; the car parks of grey pavers with **round
+  planters in white kerbs**, palms and trees. Along the road a **red brick wall on brick piers**, the **black iron gates**
+  hung on brick piers carrying **white globe lamps**.
+- **The open ground west of both** (green line): read cell by cell (2 m) from the aerial: **red laterite soil**, soil
+  with grass, and dry grass, softened into patches, with bushes and trees where the aerial shows them; the small water
+  tank and the white shed on it.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

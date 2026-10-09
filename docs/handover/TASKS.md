@@ -67,3 +67,4 @@
 65. Galleries (parapet, pillars, doors over a blue/green base) and black burglar-proofing on Legon's and Akuafo's outward faces; Legon's front and west side joined up; Bookshop railings removed
 66. French Department moved onto its roofs and rebuilt from photos (passage pavilion, door and window, balconies with yellow-footed pillars); Economic Policy Management office, three floors
 67. Faculty of Arts and Economic Policy office on raised ground behind a rubble-stone wall with stairs; UGCS back stair; Alumni Association and First Bank hotspot comfort zones
+68. St. Thomas Aquinas Catholic Church and the Legon Interdenominational Church from photos and aerial (fences, gates, car parks, planters); the open red-soil ground west of them

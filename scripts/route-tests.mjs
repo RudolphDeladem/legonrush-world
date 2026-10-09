@@ -435,6 +435,12 @@ try {
     if (!rl.stairsOf().some((q) => q.alongZ && q.z0 === -146 && q.top > 0.9 && q.foot < 0.1)) fail('no stairs up through the Faculty of Arts\' wall (owner)');
     if ((await server.ssrLoadModule('/src/game/hotspots.ts')).hotspotSite.frames().length !== 2) fail('expected the two hotspot comfort zones (owner)');
   }
+  // owner: St. Thomas Aquinas, the Interdenominational Church and the open ground of red soil west of them
+  {
+    if ((await server.ssrLoadModule('/src/game/churches.ts')).churchSite.frames().length !== 3) fail('expected St. Thomas Aquinas, the Interdenominational Church and the open ground (owner)');
+    for (const [x, z, what] of [[-365, -330, 'St. Thomas Aquinas'], [-370, -426, 'the Interdenominational Church']]) if (!buildingAt(x, z)) fail(`${what} is not where the owner's aerial shows it`);
+    for (const [x, z] of [[-410, -380], [-440, -300]]) if (buildingAt(x, z)) fail(`a building stands on the open ground west of the churches at ${x},${z} (owner)`);
+  }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

@@ -88,31 +88,31 @@
   "fromSupplement": 414
  },
  "buildings": {
-  "total": 2827,
-  "onCampus": 1761,
+  "total": 2824,
+  "onCampus": 1758,
   "bySource": {
    "osm": 1603,
    "osm-via-overture": 930,
-   "microsoft-ml-buildings": 155,
-   "google-open-buildings": 139
+   "microsoft-ml-buildings": 153,
+   "google-open-buildings": 138
   },
   "osmOnCampusChecked": 1467,
-  "osmValidatedByGoogleOpenBuildings": 1329,
-  "validatedShare": 0.906,
+  "osmValidatedByGoogleOpenBuildings": 1327,
+  "validatedShare": 0.905,
   "medianCentroidOffsetToGoogleM": {
    "x": 0.6,
    "z": 0.4,
-   "n": 1208
+   "n": 1206
   },
-  "mlAdded": 294,
+  "mlAdded": 291,
   "mlRejected": {
    "offCampus": 2058,
-   "small": 1449,
+   "small": 1450,
    "lowConfidence": 58,
-   "overlapsOsm": 2
+   "overlapsOsm": 4
   },
   "byCategory": {
-   "unknown": 2323,
+   "unknown": 2320,
    "housing": 291,
    "academic": 103,
    "residence": 75,
@@ -123,8 +123,8 @@
    "health": 2
   },
   "byConfidence": {
-   "medium": 1498,
-   "high": 1329
+   "medium": 1497,
+   "high": 1327
   },
   "osmNotSeenBySatellite": [
    {
@@ -316,7 +316,12 @@
    "ml:322743a6-38a0-4580-9281-49df1cbe5242",
    "ml:d2c5c185-91b8-4472-a0e6-07beb813dd0b",
    "ml:5196126c-f877-4c87-9799-d5e9b7895337",
-   "osm:way/892262792"
+   "osm:way/892262792",
+   "ml:e7f16526-033c-4f8e-90b6-a025de4afa98",
+   "ml:c1027ca7-952b-4da7-80c1-ec44e9f41139",
+   "ml:f74ce5f7-944a-4857-9615-fc328a962ec1",
+   "osm:way/1184502102",
+   "osm:way/631051064"
   ]
  },
  "areas": {
@@ -345,8 +350,8 @@
    "ha": 1.5
   },
   "parking": {
-   "count": 110,
-   "ha": 9.9
+   "count": 112,
+   "ha": 10.2
   },
   "track": {
    "count": 3,
@@ -2597,7 +2602,7 @@
    "ha": 56,
    "shareOutsideCampus": 0,
    "places": 74,
-   "buildings": 149,
+   "buildings": 147,
    "anchorsMissing": []
   },
   {
