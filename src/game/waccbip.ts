@@ -286,38 +286,14 @@ const waccbip: Spec = {
     k.glass.push(B(PAV[1] + 0.01, PAV[1] + 0.05, F0, F0 + 2.7, ENZ - 1.6, ENZ + 1.6));
     k.plain.push([B(PAV[1], PAV[1] + 0.08, F0 + 2.7, F0 + 2.85, ENZ - 1.7, ENZ + 1.7), FRAME], [B(PAV[1], PAV[1] + 0.08, F0, F0 + 2.7, ENZ - 0.04, ENZ + 0.04), FRAME]);
     c.push([B(PAV[1], PAV[1] + 0.25, F0, F0 + 3.1, ENZ - 2.0, ENZ - 1.7), PAINT], [B(PAV[1], PAV[1] + 0.25, F0, F0 + 3.1, ENZ + 1.7, ENZ + 2.0), PAINT], [B(PAV[1], PAV[1] + 0.25, F0 + 2.85, F0 + 3.1, ENZ - 2.0, ENZ + 2.0), PAINT]);
-    k.signs.push({ text: 'WACCBIP', x: WX(PE + 0.08), y: F1 + 0.55, z: WZ(ENZ), ry: Math.PI / 2, w: 3.0, colors: ['#f4f6f8', '#1d3f7a'] });
-
-    // ---- the tall glazed stair windows up the wings' east ends ----
-    for (const [x, za, zb] of [[NW[1], -360.6, -358.2], [SW[1], -296.6, -294.2]] as [number, number, number][]) {
-      k.glass.push(B(x, x + 0.08, F0 + 0.6, EAVE - 0.9, za, zb));
-      c.push([B(x, x + 0.14, F0 + 0.45, F0 + 0.6, za - 0.15, zb + 0.15), PAINT], [B(x, x + 0.14, EAVE - 0.9, EAVE - 0.75, za - 0.15, zb + 0.15), PAINT]);
-      for (const z of [za - 0.06, (za + zb) / 2, zb + 0.06]) k.plain.push([B(x + 0.05, x + 0.12, F0 + 0.6, EAVE - 0.9, z - 0.04, z + 0.04), FRAME]);
-      for (let y = F0 + 0.6 + 1.8; y < EAVE - 1; y += 1.8) k.plain.push([B(x + 0.05, x + 0.12, y - 0.03, y + 0.03, za, zb), FRAME]);
-    }
-    // air-conditioners on the wings' outer walls
-    for (const [z, y] of [[-355.5, F0 + 0.4], [-352.4, F1 + 0.4], [-355.5, F2 + 0.4]]) k.plain.push([B(-249.6, -249.3, y, y + 0.55, z - 0.4, z + 0.4), '#eceeee']);
-    for (const x of [-284, -276, -268, -260]) for (const y of [F0 + 0.3, F1 + 0.3]) {
-      k.plain.push([B(x - 0.4, x + 0.4, y, y + 0.55, NW[2] - 0.3, NW[2]), '#eceeee']);
-      k.plain.push([B(x + 2 - 0.4, x + 2 + 0.4, y + 0.2, y + 0.75, SW[3], SW[3] + 0.3), '#eceeee']);
-    }
-
-    // ---- the back (owner's marked aerial, yellow, and photo 4): the whole west face of the west range, the two arms'
-    // gablets at its ends, the entrance near the middle up three steps, the centre's full board over it ----
-    const bx = WR[0], bz = -330.0;
-    for (let i = 1; i <= 3; i++) c.push([B(bx - 0.35 * i, bx, 0, (F0 * (4 - i)) / 3, bz - 1.9, bz + 1.9), '#d9d6ce']);
-    c.push([B(bx - 0.5, bx, F0 + 2.75, F0 + 3.0, bz - 1.7, bz + 1.7), PAINT]);
-    for (const s of [-1, 1]) c.push([B(bx - 0.5, bx, F0, F0 + 2.75, bz + s * 1.6 - 0.1, bz + s * 1.6 + 0.1), PAINT]);
-    k.plain.push([B(bx - 0.04, bx, F0, F0 + 2.75, bz - 1.5, bz + 1.5), '#f3e6c4']);
-    k.glass.push(B(bx - 0.1, bx - 0.06, F0, F0 + 2.6, bz - 1.2, bz + 1.2));
-    // (owner's photo of the door: a collapsible lattice gate drawn across the top of the opening, the glass door under
-    // it with the university's plate, a camera in the corner, a gold strip light under the board)
-    panel(WO, k, grille(), bx - 0.08, bz - 1.2, bx - 0.08, bz + 1.2, F0 + 1.35, F0 + 2.6, 0.45);
-    k.plain.push([B(bx - 0.12, bx - 0.06, F0 + 1.3, F0 + 1.38, bz - 1.25, bz + 1.25), '#9a9d9f'], [B(bx - 0.14, bx - 0.08, F0 + 0.8, F0 + 1.15, bz - 0.55, bz + 0.15), '#1d3f7a']);
-    k.signs.push({ text: 'UNIVERSITY OF GHANA', x: WX(bx) - 0.15, y: F0 + 0.98, z: WZ(bz - 0.2), ry: -Math.PI / 2, w: 0.62, colors: ['#1d3f7a', '#ffffff'] });
-    k.plain.push([B(bx - 0.3, bx - 0.5, F0 + 2.45, F0 + 2.6, bz + 1.15, bz + 1.35), '#e9e9e6']);
-    k.plain.push([B(bx - 0.14, bx - 0.02, F0 + 3.06, F0 + 3.14, bz - 0.95, bz + 0.95), '#d8b24a']);
-    // the centre's board as it reads (owner's photo): the university's and WACCBIP's marks, the centre's name, the
+    // (owner's photo of the front door: a collapsible lattice gate drawn across the top of the opening, the glass door
+    // under it with the university's plate, a camera in the corner, a gold strip light under the centre's board)
+    const dx = PAV[1] + 0.07;
+    panel(WO, k, grille(), dx, ENZ - 1.6, dx, ENZ + 1.6, F0 + 1.35, F0 + 2.7, 0.45);
+    k.plain.push([B(dx, dx + 0.06, F0 + 1.3, F0 + 1.38, ENZ - 1.65, ENZ + 1.65), '#9a9d9f'], [B(dx, dx + 0.06, F0 + 0.8, F0 + 1.15, ENZ - 0.15, ENZ + 0.55), '#1d3f7a']);
+    k.signs.push({ text: 'UNIVERSITY OF GHANA', x: WX(dx) + 0.07, y: F0 + 0.98, z: WZ(ENZ + 0.2), ry: Math.PI / 2, w: 0.62, colors: ['#1d3f7a', '#ffffff'] });
+    k.plain.push([B(PAV[1] + 0.3, PAV[1] + 0.5, F0 + 2.55, F0 + 2.7, ENZ - 1.45, ENZ - 1.25), '#e9e9e6']);
+    k.plain.push([B(PE + 0.02, PE + 0.14, F1 - 0.42, F1 - 0.34, ENZ - 0.95, ENZ + 0.95), '#d8b24a']);
     // African Centre of Excellence, the department (annex), the college, the addresses
     const boardTex = canvas(1024, 560, (g) => {
       g.fillStyle = '#9aa0a6'; g.fillRect(0, 0, 1024, 560);
@@ -338,10 +314,37 @@ const waccbip: Spec = {
       g.fillStyle = '#3a3d42'; g.font = '22px sans-serif'; g.fillText('waccbipleader@ug.edu.gh  |  waccbipadmin@ug.edu.gh', 512, 420); g.fillText('www.waccbip.org', 512, 456);
     });
     const board = new THREE.Mesh(new THREE.PlaneGeometry(3.0, 1.64), new THREE.MeshStandardMaterial({ map: boardTex, roughness: 0.6 }));
-    board.position.set(WX(bx) - 0.11, F0 + 4.0, WZ(bz));
-    board.rotation.y = -Math.PI / 2;
+    board.position.set(WX(PE) + 0.09, F1 + 0.52, WZ(ENZ));
+    board.rotation.y = Math.PI / 2;
     k.meshes.push(board);
-    k.plain.push([B(bx - 0.1, bx, F0 + 3.15, F0 + 4.85, bz - 1.56, bz + 1.56), '#9aa0a6']);
+    k.plain.push([B(PE, PE + 0.08, F1 - 0.31, F1 + 1.35, ENZ - 1.56, ENZ + 1.56), '#9aa0a6']);
+
+    // ---- the tall glazed stair windows up the wings' east ends ----
+    for (const [x, za, zb] of [[NW[1], -360.6, -358.2], [SW[1], -296.6, -294.2]] as [number, number, number][]) {
+      k.glass.push(B(x, x + 0.08, F0 + 0.6, EAVE - 0.9, za, zb));
+      c.push([B(x, x + 0.14, F0 + 0.45, F0 + 0.6, za - 0.15, zb + 0.15), PAINT], [B(x, x + 0.14, EAVE - 0.9, EAVE - 0.75, za - 0.15, zb + 0.15), PAINT]);
+      for (const z of [za - 0.06, (za + zb) / 2, zb + 0.06]) k.plain.push([B(x + 0.05, x + 0.12, F0 + 0.6, EAVE - 0.9, z - 0.04, z + 0.04), FRAME]);
+      for (let y = F0 + 0.6 + 1.8; y < EAVE - 1; y += 1.8) k.plain.push([B(x + 0.05, x + 0.12, y - 0.03, y + 0.03, za, zb), FRAME]);
+    }
+    // air-conditioners on the wings' outer walls
+    for (const [z, y] of [[-355.5, F0 + 0.4], [-352.4, F1 + 0.4], [-355.5, F2 + 0.4]]) k.plain.push([B(-249.6, -249.3, y, y + 0.55, z - 0.4, z + 0.4), '#eceeee']);
+    for (const x of [-284, -276, -268, -260]) for (const y of [F0 + 0.3, F1 + 0.3]) {
+      k.plain.push([B(x - 0.4, x + 0.4, y, y + 0.55, NW[2] - 0.3, NW[2]), '#eceeee']);
+      k.plain.push([B(x + 2 - 0.4, x + 2 + 0.4, y + 0.2, y + 0.75, SW[3], SW[3] + 0.3), '#eceeee']);
+    }
+
+    // ---- the back (owner's marked aerial, yellow, and photo 4): the whole west face of the west range, the two arms'
+    // gablets at its ends, the entrance near the middle up three steps, the centre's board over it ----
+    const bx = WR[0], bz = -330.0;
+    for (let i = 1; i <= 3; i++) c.push([B(bx - 0.35 * i, bx, 0, (F0 * (4 - i)) / 3, bz - 1.9, bz + 1.9), '#d9d6ce']);
+    c.push([B(bx - 0.5, bx, F0 + 2.75, F0 + 3.0, bz - 1.7, bz + 1.7), PAINT]);
+    for (const s of [-1, 1]) c.push([B(bx - 0.5, bx, F0, F0 + 2.75, bz + s * 1.6 - 0.1, bz + s * 1.6 + 0.1), PAINT]);
+    k.plain.push([B(bx - 0.04, bx, F0, F0 + 2.75, bz - 1.5, bz + 1.5), '#f3e6c4']);
+    k.glass.push(B(bx - 0.1, bx - 0.06, F0, F0 + 2.6, bz - 1.2, bz + 1.2));
+    // (the centre's board over the back door: the university's and the centre's names over its full name)
+    k.plain.push([B(bx - 0.08, bx, F0 + 3.15, F0 + 4.25, bz - 1.4, bz + 1.4), '#f2f4f6'], [B(bx - 0.1, bx - 0.02, F0 + 3.12, F0 + 3.17, bz - 1.42, bz + 1.42), '#9aa0a6']);
+    k.signs.push({ text: 'UNIVERSITY OF GHANA | WACCBIP', x: WX(bx) - 0.1, y: F0 + 3.98, z: WZ(bz), ry: -Math.PI / 2, w: 2.3, colors: ['#f2f4f6', '#1d3f7a'] });
+    k.signs.push({ text: 'WEST AFRICAN CENTRE FOR CELL BIOLOGY OF INFECTIOUS PATHOGENS', x: WX(bx) - 0.1, y: F0 + 3.55, z: WZ(bz), ry: -Math.PI / 2, w: 2.5, colors: ['#f2f4f6', '#1d3f7a'] });
     // the planters each side, the window with its brown grille over the door, iron grilles each side of it
     for (const [s, w] of [[-1, 1.0], [1, 1.8]] as [number, number][]) {
       const zc = bz + s * (2.0 + w / 2);

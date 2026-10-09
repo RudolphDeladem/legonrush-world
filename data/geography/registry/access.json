@@ -40,7 +40,8 @@
   "owner-balme-southwest": "The owner's marked aerial of the buildings south-west of the Balme Library (circled white, view directions marked) and their photos of the French Department's south end, the road side of the Office of the Dean of Student Affairs, the Post Office with the GCB ATM, and the long block from the car park.",
   "owner-pharmacy": "Owner's photos of the School of Pharmacy (its side to the road from WACCBIP, and its front to Volta Hall Road with the doors marked blue).",
   "owner-food-science": "Owner's photos of the Department of Nutrition and Food Science (front, to the Larway Oraca Building, and side).",
-  "owner-isser-annex": "Owner's marked aerial of the ISSER Annex and the ground west of it to Botanical Gardens Road, registered to the annex's outlines at 0.25 m/px, and owner's photos of the ISSER Annex (from the air, and from the road on the east); the entrances marked blue, the walk from the engineering school marked with a blue arrow."
+  "owner-isser-annex": "Owner's marked aerial of the ISSER Annex and the ground west of it to Botanical Gardens Road, registered to the annex's outlines at 0.25 m/px, and owner's photos of the ISSER Annex (from the air, and from the road on the east); the entrances marked blue, the walk from the engineering school marked with a blue arrow.",
+  "owner-earth-science": "Owner's marked aerial of the Department of Earth Science (storey building yellow, one-floor ranges violet, the entrance blue), registered at 0.25 m/px, and photos of its front and back."
  },
  "campusGates": [
   {
@@ -2135,6 +2136,31 @@
    "evidence": "Owner's aerial (entrances marked blue, the walk from the engineering school a blue arrow).",
    "refs": [
     "owner's aerial and photos of the ISSER Annex"
+   ]
+  },
+  {
+   "place": "Earth Science",
+   "footprint": "osm:way/394125204",
+   "entrance": {
+    "at": [
+     327.4,
+     99.0
+    ]
+   },
+   "via": [
+    [
+     327.4,
+     113.8
+    ]
+   ],
+   "type": "main entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-earth-science",
+   "approach": "From the footway along Danquah Avenue up the broad stair between the stone-faced planters to the door in the entrance block's porch.",
+   "evidence": "Owner's aerial and photos of the front (the door marked blue).",
+   "refs": [
+    "owner's aerial and photos of the Department of Earth Science"
    ]
   }
  ],

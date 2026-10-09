@@ -2732,6 +2732,69 @@
       "levels": 1,
       "height": 3.0,
       "reason": "Owner (circled purple): the three huts behind the annex are open one-floor shelters to sit in, under pyramid roofs. Modelled in src/game/isserannex.ts."
+    },
+    {
+      "id": "osm:way/618247084",
+      "place": "Earth Science (storey building)",
+      "levels": 3,
+      "height": 11.6,
+      "reason": "Owner's marked aerial of the Department of Earth Science (storey building yellow, one-floor ranges violet, the entrance blue), registered at 0.25 m/px, and photos of its front and back: one connected storey building of three floors. Modelled in src/game/earthscience.ts."
+    },
+    {
+      "id": "osm:way/618249623",
+      "place": "Earth Science (storey building, middle)",
+      "levels": 3,
+      "height": 12.6,
+      "reason": "Owner's marked aerial of the Department of Earth Science (storey building yellow, one-floor ranges violet, the entrance blue), registered at 0.25 m/px, and photos of its front and back: one connected storey building of three floors. Modelled in src/game/earthscience.ts."
+    },
+    {
+      "id": "osm:way/696866925",
+      "place": "Earth Science (storey building)",
+      "levels": 3,
+      "height": 11.6,
+      "reason": "Owner's marked aerial of the Department of Earth Science (storey building yellow, one-floor ranges violet, the entrance blue), registered at 0.25 m/px, and photos of its front and back: one connected storey building of three floors. Modelled in src/game/earthscience.ts."
+    },
+    {
+      "id": "osm:way/696866926",
+      "place": "Earth Science (storey building, west arm)",
+      "levels": 3,
+      "height": 11.6,
+      "reason": "Owner's marked aerial of the Department of Earth Science (storey building yellow, one-floor ranges violet, the entrance blue), registered at 0.25 m/px, and photos of its front and back: one connected storey building of three floors. Modelled in src/game/earthscience.ts."
+    },
+    {
+      "id": "osm:way/696866927",
+      "place": "Earth Science (storey building, east arm)",
+      "levels": 3,
+      "height": 11.6,
+      "reason": "Owner's marked aerial of the Department of Earth Science (storey building yellow, one-floor ranges violet, the entrance blue), registered at 0.25 m/px, and photos of its front and back: one connected storey building of three floors. Modelled in src/game/earthscience.ts."
+    },
+    {
+      "id": "osm:way/394125233",
+      "place": "Earth Science (one-floor range)",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's marked aerial of the Department of Earth Science (storey building yellow, one-floor ranges violet, the entrance blue), registered at 0.25 m/px, and photos of its front and back: the one-floor ranges connected round the courtyard. Modelled in src/game/earthscience.ts."
+    },
+    {
+      "id": "osm:way/394125216",
+      "place": "Earth Science",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's marked aerial of the Department of Earth Science (storey building yellow, one-floor ranges violet, the entrance blue), registered at 0.25 m/px, and photos of its front and back: the one-floor ranges connected round the courtyard. Modelled in src/game/earthscience.ts."
+    },
+    {
+      "id": "osm:way/394125204",
+      "place": "Earth Science (front range and entrance)",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's marked aerial of the Department of Earth Science (storey building yellow, one-floor ranges violet, the entrance blue), registered at 0.25 m/px, and photos of its front and back: the one-floor ranges connected round the courtyard. Modelled in src/game/earthscience.ts."
+    },
+    {
+      "id": "osm:way/394125222",
+      "place": "Earth Science (one-floor range)",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's marked aerial of the Department of Earth Science (storey building yellow, one-floor ranges violet, the entrance blue), registered at 0.25 m/px, and photos of its front and back: the one-floor ranges connected round the courtyard. Modelled in src/game/earthscience.ts."
     }
   ],
   "reclass": [
@@ -7285,6 +7348,75 @@
         ]
       ],
       "reason": "Owner's marked aerial of the ISSER Annex and the ground west of it to Botanical Gardens Road, registered to the annex's outlines at 0.25 m/px: cars park along the west end of the car park before the annex too."
+    },
+    {
+      "id": "owner:woods-earth-science-south-west",
+      "class": "wood",
+      "ring": [
+        [
+          238,
+          101.5
+        ],
+        [
+          316,
+          101.5
+        ],
+        [
+          316,
+          110.5
+        ],
+        [
+          238,
+          110.5
+        ]
+      ],
+      "reason": "Owner's marked aerial of the Department of Earth Science (storey building yellow, one-floor ranges violet, the entrance blue), registered at 0.25 m/px, and photos of its front and back: trees south of the front, west of the stair."
+    },
+    {
+      "id": "owner:woods-earth-science-south-east",
+      "class": "wood",
+      "ring": [
+        [
+          339,
+          101.5
+        ],
+        [
+          366,
+          101.5
+        ],
+        [
+          366,
+          110.5
+        ],
+        [
+          339,
+          110.5
+        ]
+      ],
+      "reason": "Owner's marked aerial of the Department of Earth Science (storey building yellow, one-floor ranges violet, the entrance blue), registered at 0.25 m/px, and photos of its front and back: trees south of the front, east of the stair."
+    },
+    {
+      "id": "owner:woods-earth-science-east",
+      "class": "wood",
+      "ring": [
+        [
+          359,
+          28
+        ],
+        [
+          372,
+          28
+        ],
+        [
+          372,
+          100
+        ],
+        [
+          359,
+          100
+        ]
+      ],
+      "reason": "Owner's marked aerial of the Department of Earth Science (storey building yellow, one-floor ranges violet, the entrance blue), registered at 0.25 m/px, and photos of its front and back: the trees along its east side."
     }
   ],
   "addWays": [

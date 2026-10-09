@@ -206,7 +206,7 @@ try {
   }
   for (const [x, z] of [[145, 1050], [160, 1072], [176, 1078], [140, 1045]]) if (buildingAt(x, z)) fail(`the old Night Market site (${x},${z}) still has a building (the owner: grass, trees and soil)`);
   const nmModels = (await server.ssrLoadModule('/src/game/nightmarket.ts')).nightMarket.frames().map((f) => f.name);
-  if (!nmModels.includes('Night Market') || !nmModels.includes('Supermart (Night Market)') || nmModels.length < 25) fail(`expected the market, the supermarket and the one-floor buildings round them, found ${nmModels.length} models`);
+  if (!nmModels.includes('Night Market') || !nmModels.includes('Supermart (Night Market)') || nmModels.length < 9) fail(`expected the market, the supermarket and the one-floor buildings round them (the Basic School's blocks are basicschool.ts's), found ${nmModels.length} models`);
   if ((await server.ssrLoadModule('/src/game/valco.ts')).valco.frames().length !== 2) fail('expected the two Valco Trust Hostel models');
   // the route's pavements stop where other roads join (a kerb across a road's mouth blocks it)
   {
@@ -336,7 +336,7 @@ try {
   { const p = ann('Legon Post Office'); if (!p || Math.hypot(p[0] - -69.8, p[1] - 102) > 3) fail('Legon Post Office: the entrance is not the porch in the west gable (owner)');
     const e = ann('Department of Economics, University of Ghana'); if (!e || Math.hypot(e[0] - -44, e[1] - 77) > 3) fail('the long block by the car park: the entrance is not the portico (owner)');
     for (const [x, z, f] of [[-58.5, 53, 1], [-59, 101, 1], [-34.5, 77, 2], [-104, 95, 2]]) { const b = buildingAt(x, z); if (!b || (f === 1 ? b.height > 5 : b.height < 6.5)) fail(`the building at ${x},${z} is not ${f} floor(s) (owner)`); }
-    if ((await server.ssrLoadModule('/src/game/balmewest.ts')).balmeWest.frames().length !== 2) fail('expected the French Department and the buildings in the owner\'s white circle'); }
+    if ((await server.ssrLoadModule('/src/game/balmewest.ts')).balmeWest.frames().length !== 3) fail('expected the French Department, the buildings in the owner\'s white circle and the Bookshop'); }
   // owner: WACCBIP's back is the whole west range along the road behind it (the yellow mark), the road clear of it;
   // the School of Pharmacy entered from its car park, one-floor wings round a three-storey block
   { const b = buildingAt(-298, -332); if (!b || b.height < 11) fail('WACCBIP: the back range along the road behind it is missing (owner)');
@@ -362,6 +362,15 @@ try {
     for (const [x, z, lo, hi] of [[250, -390, 11, 13], [301.4, -428.5, 0, 3.5], [320, -392.9, 0, 5], [149.5, -362.7, 0, 6]]) { const b = buildingAt(x, z); if (!b || b.height < lo || b.height > hi) fail(`the building at ${x},${z} is not the height the owner shows`); }
     for (const [x, z] of [[100, -450], [215, -460], [150, -405], [268, -425]]) if (!cm.AREAS.some((a) => a.kind === 'wood' && inA(a, x, z))) fail(`no trees at ${x},${z} round the ISSER Annex (owner)`);
     if ((await server.ssrLoadModule('/src/game/isserannex.ts')).isserAnnexSite.frames().length !== 3) fail('expected the ISSER Annex, the frame going up and the hall'); }
+  // owner: Earth Science entered up the stair to the one-floor entrance block, its storey building three floors, the
+  // ranges one floor, the whole on ground raised behind stone walls; the Bookshop and the Basic School modelled once
+  { const { groundHeight: gh } = await server.ssrLoadModule('/src/game/relief.ts');
+    if (!(gh(300, 60) > 1.2)) fail('Earth Science does not stand on its raised ground (owner)');
+    const e = ann('Earth Science'); if (!e || Math.hypot(e[0] - 327.4, e[1] - 99) > 3) fail('Earth Science: the entrance is not the door up the front stair (owner)');
+    for (const [x, z, lo, hi] of [[263.3, 40.1, 10, 14], [296.4, 38.1, 10, 14], [247, 73.9, 0, 5], [323.3, 91.7, 0, 5]]) { const b = buildingAt(x, z); if (!b || b.height < lo || b.height > hi) fail(`Earth Science at ${x},${z} is not the height the owner shows`); }
+    if ((await server.ssrLoadModule('/src/game/earthscience.ts')).earthScienceSite.frames().length !== 1) fail('expected the Earth Science model');
+    const S = (await server.ssrLoadModule('/src/game/sites.ts')).BLOCK_SITES;
+    for (const b of BUILDINGS) if (S.filter((s) => s.replaces(b)).length > 1) fail(`the building at ${Math.round((b.minX + b.maxX) / 2)},${Math.round((b.minZ + b.maxZ) / 2)} is modelled twice (its walls flicker)`); }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

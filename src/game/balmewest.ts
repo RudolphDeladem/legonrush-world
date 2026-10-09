@@ -378,5 +378,81 @@ function mast(k: Kit, O: [number, number], x: number, z: number, h: number) {
   k.plain.push([box(cx + 1.0, cx + 2.0, 0, 1.6, cz - 0.5, cz + 0.4), '#cfd2d4']);
 }
 
-/** the French Department, and the long block, the Dean of Students, the Post Office, the GCB ATM and the mast */
-export const balmeWest = createSite('balme-west', [french, circle]);
+// ---------- the University Bookshop, east across the square (owner's street view: its south end and west side) ----------
+// The twin of the long block opposite: two floors under orange tiles, its gables north and south boarded in dark timber,
+// the raised lantern over its middle; along the west side a tiled pent roof over the ground floor's tall dark shop
+// windows; at the south end the entrance under a first-floor balcony with a solid white parapet, a step up from a
+// platform faced in rubble stone (the owner's yellow marks) between low red railings.
+const KO: [number, number] = [49.3, 75];
+/** the shop's ground floor along the square: tall dark glass windows in black frames */
+const W_SHOP: Style = {
+  bay: 3.2, up: [[128 - 38, 50, 76, 126]], ground: [[20, 256 + 30, 216, 200]],
+  draw: (g) => {
+    paint(g);
+    blackLouvre(g, 128 - 38, 50, 76, 126);
+    g.fillStyle = '#121212'; g.fillRect(16, 256 + 26, 224, 208);
+    const gl = g.createLinearGradient(0, 256 + 30, 0, 256 + 230); gl.addColorStop(0, '#46525c'); gl.addColorStop(1, '#14191e');
+    g.fillStyle = gl; g.fillRect(20, 256 + 30, 216, 200);
+    g.fillStyle = '#121212'; g.fillRect(126, 256 + 30, 4, 200); g.fillRect(20, 256 + 96, 216, 4);
+  },
+};
+const bookshop: Spec = (() => {
+  const { X, Z, B, M } = frame(KO);
+  const BN = [42.7, 55.7, 44.4, 63.8], BM = [39.8, 58.9, 63.8, 87.6], BS = [42.7, 56.0, 87.6, 106.2];
+  const blk = (r: number[], more: Partial<Block> = {}): Block => ({ x0: X(r[0]), x1: X(r[1]), z0: Z(r[2]), z1: Z(r[3]), floors: 2, roof: 'none', ...more });
+  return {
+    name: 'University of Ghana Bookshop',
+    axis: [1, 0], origin: KO, storey: LST, style: W_PLAIN, roofColor: TILE, fascia: BARGE, pitch: 0.5, plinth: '#cfcac0',
+    blocks: [blk(BN, { faces: { x0: W_SHOP } }), blk(BM, { faces: { x0: W_SHOP } }), blk(BS, { faces: { x0: W_SHOP } })],
+    keep: [[X(37), X(60), Z(106), Z(111)]],
+    extras: (k: Kit) => {
+      const c: Part[] = [], st: Part[] = [];
+      // the roofs: gables north and south, the hip over the middle with its lantern
+      hipRoof(k, M, BN[0] - 0.7, BN[1] + 0.7, BN[2] - 0.6, 71, LE, 0.5, 'z', [gableEnd, buried], c, BARGE, TIMBER);
+      hipRoof(k, M, BS[0] - 0.7, BS[1] + 0.7, 80.5, BS[3] + 0.6, LE, 0.5, 'z', [buried, gableEnd], c, BARGE, TIMBER);
+      const mTop = hipRoof(k, M, BM[0] - 0.7, BM[1] + 0.7, BM[2] - 0.7, BM[3] + 0.7, LE, 0.5, 'z', [hip, hip], c, BARGE, TIMBER);
+      const lx0 = 47.2, lx1 = 51.4, lz0 = 70.5, lz1 = 81.0, lb = mTop - 0.55, lt = lb + 0.95;
+      c.push([B(lx0, lx1, LE + 2, lb, lz0, lz1), WALL]);
+      k.plain.push([B(lx0 - 0.02, lx1 + 0.02, lb, lt, lz0 - 0.02, lz1 + 0.02), '#1d1b19']);
+      for (let y = lb + 0.12; y < lt - 0.05; y += 0.16) {
+        k.plain.push([B(lx0 - 0.07, lx1 + 0.07, y, y + 0.06, lz0 - 0.07, lz0 - 0.02), '#3a3631'], [B(lx0 - 0.07, lx1 + 0.07, y, y + 0.06, lz1 + 0.02, lz1 + 0.07), '#3a3631']);
+        k.plain.push([B(lx0 - 0.07, lx0 - 0.02, y, y + 0.06, lz0, lz1), '#3a3631'], [B(lx1 + 0.02, lx1 + 0.07, y, y + 0.06, lz0, lz1), '#3a3631']);
+      }
+      hipRoof(k, M, lx0 - 0.6, lx1 + 0.6, lz0 - 0.6, lz1 + 0.6, lt, 0.45, 'z', [hip, hip], c, BARGE, TIMBER);
+      // the tiled pent roof along the west side over the shop windows
+      const pe = PL + LST - 0.15, po = 1.6;
+      for (const [x, z0, z1] of [[BN[0], BN[2] + 0.6, BN[3]], [BM[0], BM[2], BM[3]], [BS[0], BS[2], BS[3] - 0.6]] as [number, number, number][]) {
+        k.roof.quad([X(x - po), pe - 0.75, Z(z1)], [X(x - po), pe - 0.75, Z(z0)], [X(x), pe, Z(z0)], [X(x), pe, Z(z1)]);
+        k.plain.push([B(x - po - 0.05, x - po + 0.05, pe - 0.95, pe - 0.7, z0, z1), BARGE]);
+      }
+      // the south end: the entrance under the first-floor balcony on two columns, the balcony's solid white parapet
+      const zs = BS[3], F1 = PL + LST, xa = 47.0, xb = 54.6, xm = (xa + xb) / 2;
+      c.push([B(xa, xb, F1 - 0.25, F1, zs, zs + 2.0), WALL]);
+      c.push([B(xa, xb, F1, F1 + 1.05, zs + 1.82, zs + 2.0), WALL], [B(xa, xa + 0.18, F1, F1 + 1.05, zs, zs + 2.0), WALL], [B(xb - 0.18, xb, F1, F1 + 1.05, zs, zs + 2.0), WALL]);
+      c.push([B(xa - 0.04, xb + 0.04, F1 + 1.05, F1 + 1.12, zs, zs + 2.06), '#e2dfd8']);
+      for (const x of [xa + 0.3, xb - 0.3]) c.push([B(x - 0.22, x + 0.22, 0.6, F1 - 0.25, zs + 1.55, zs + 1.95), WALL]);
+      k.plain.push([B(xm - 1.0, xm + 1.0, 0.6, 0.6 + 2.4, zs, zs + 0.05), '#22272c'], [B(xm - 0.03, xm + 0.03, 0.6, 3.0, zs + 0.05, zs + 0.07), '#4a5258']);
+      k.glass.push(B(xm - 0.9, xm + 0.9, 1.5, 2.9, zs + 0.06, zs + 0.08));
+      k.plain.push([B(xm - 1.1, xm + 1.1, 3.2, 3.55, zs, zs + 0.06), '#f4f4f1']);
+      k.signs.push({ text: 'UNIVERSITY OF GHANA BOOKSHOP', x: X(xm), y: 3.37, z: Z(zs) + 0.07, ry: 0, w: 2.0, colors: ['#f4f4f1', '#1d3f7a'] });
+      // the platform before it faced in rubble stone, the step up in the middle, red railings either side
+      stoneWall(k, KO, st, 43.0, xm - 1.6, zs, zs + 3.4, 0.6);
+      stoneWall(k, KO, st, xm + 1.6, 56.0, zs, zs + 2.8, 0.6);
+      for (let i = 0; i < 4; i++) k.plain.push([B(xm - 1.6, xm + 1.6, 0, 0.6 - 0.15 * i, zs, zs + 2.0 + 0.35 * i), '#cfcac0']);
+      for (const [a, b2] of [[43.4, 46.6], [52.2, 55.4]]) {
+        k.plain.push([B(a, b2, 1.45, 1.5, zs + 3.6, zs + 3.65), '#a8312b'], [B(a, b2, 1.0, 1.04, zs + 3.6, zs + 3.65), '#a8312b']);
+        for (let x = a; x <= b2 + 0.01; x += 0.4) k.plain.push([B(x - 0.02, x + 0.02, 0.6, 1.5, zs + 3.6, zs + 3.65), '#a8312b']);
+      }
+      // a stone-faced bed along the west front, shrubs in it
+      stoneWall(k, KO, st, 37.8, 39.6, 64.5, 87.0, 0.45);
+      for (let z = 66; z < 86; z += 4) k.plain.push([new THREE.IcosahedronGeometry(0.55, 0).scale(1.2, 0.8, 1).translate(X(38.7), 0.85, Z(z)), '#3f6f2c']);
+      stoneMesh(k, st);
+      const m = new THREE.Mesh(merge(c), concrete(0.15));
+      m.castShadow = true; m.receiveShadow = true;
+      k.meshes.push(m);
+    },
+  };
+})();
+
+/** the French Department, the buildings in the owner's white circle, and the Bookshop across the square */
+export const balmeWest = createSite('balme-west', [french, circle, bookshop]);

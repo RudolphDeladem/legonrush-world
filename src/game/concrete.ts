@@ -1,7 +1,7 @@
 // Old painted concrete for the block-modelled buildings (mathstat.ts, issercs.ts): a stain map laid in world
 // metres (rain streaks, mottling, mildew), grime for facade canvases, breeze-block screens and thin railings.
 import * as THREE from 'three';
-import { canvas, rnd, speckle } from './modelkit';
+import { canvas, merge, rnd, speckle } from './modelkit';
 import type { Kit } from './blocks';
 import { groundShade } from './shading';
 
@@ -153,3 +153,50 @@ export const grille = () => (grilleMat ??= (() => {
   });
   return new THREE.MeshStandardMaterial({ map: t, transparent: true, alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.6, metalness: 0.5 });
 })());
+
+// ---------- rubble stone facing (low walls, plinths, kerbs: the owner's "stone-like" slabs) ----------
+let rubbleMat: THREE.MeshStandardMaterial | null = null;
+/** irregular stones in browns, buffs and greys with dark mortar, laid in world metres on every face (vertex colour
+ *  white keeps the stones' own colours) */
+export function rubble() {
+  if (rubbleMat) return rubbleMat;
+  let s = 11;
+  const r = () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
+  const tex = canvas(256, 256, (g) => {
+    g.fillStyle = '#5f5a52'; g.fillRect(0, 0, 256, 256);
+    const cols = ['#b49a7a', '#a08868', '#c2ad8e', '#8f7a62', '#9c9384', '#b8a58a', '#c9a77f', '#a9a08f', '#d1bf9c'];
+    for (let j = 0; j < 8; j++) for (let i = 0; i < 7; i++) {
+      const cx = i * 37 + (j % 2) * 18 + r() * 8, cy = j * 32 + r() * 6, rx = 15 + r() * 6, ry = 11 + r() * 5, n = 6 + ((r() * 3) | 0);
+      const col = cols[(r() * cols.length) | 0];
+      for (const [ox, oy] of [[0, 0], [256, 0], [-256, 0], [0, 256], [0, -256]]) {
+        g.beginPath();
+        for (let k = 0; k < n; k++) { const a = (k / n) * Math.PI * 2 + r() * 0.3, f = 0.75 + r() * 0.3; g[k ? 'lineTo' : 'moveTo'](cx + ox + Math.cos(a) * rx * f, cy + oy + Math.sin(a) * ry * f); }
+        g.closePath(); g.fillStyle = col; g.fill();
+        g.strokeStyle = 'rgba(40,36,30,0.55)'; g.lineWidth = 2; g.stroke();
+      }
+    }
+    speckle(g, 0, 0, 256, 256, 1200, ['rgba(50,46,40,0.25)', 'rgba(220,210,190,0.15)']);
+  });
+  const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95 });
+  m.onBeforeCompile = (sh) => {
+    sh.uniforms.ruTex = { value: tex };
+    sh.vertexShader = sh.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vRuP;\nvarying vec3 vRuN;')
+      .replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvRuP = (modelMatrix * vec4(transformed, 1.0)).xyz;\nvRuN = normalize(mat3(modelMatrix) * objectNormal);');
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vRuP;\nvarying vec3 vRuN;\nuniform sampler2D ruTex;')
+      .replace('#include <map_fragment>', `#include <map_fragment>
+  vec3 ruA = abs(vRuN);
+  vec2 ruUv = ruA.y > 0.6 ? vRuP.xz / 1.6 : vec2((ruA.x > ruA.z ? vRuP.z : vRuP.x) / 1.6, vRuP.y / 1.6);
+  diffuseColor.rgb *= texture2D(ruTex, ruUv).rgb;`);
+  };
+  m.customProgramCacheKey = () => 'rubble-stone-shared';
+  return (rubbleMat = m);
+}
+/** stone-faced parts (white vertex colour) as one mesh in the kit */
+export function stoneMesh(k: Kit, parts: [THREE.BufferGeometry, string][]) {
+  if (!parts.length) return;
+  const m = new THREE.Mesh(merge(parts), rubble());
+  m.castShadow = true; m.receiveShadow = true;
+  k.meshes.push(m);
+}

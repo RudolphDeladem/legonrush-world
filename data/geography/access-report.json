@@ -1,18 +1,18 @@
 {
  "destinations": 436,
  "byMethod": {
-  "curated": 90,
+  "curated": 91,
   "osm-entrance": 0,
   "gate": 1,
   "path-access": 2,
   "drive-access": 17,
   "area-entry": 8,
-  "frontage": 207,
+  "frontage": 206,
   "point": 111
  },
  "byConfidence": {
-  "high": 85,
-  "low": 210,
+  "high": 86,
+  "low": 209,
   "medium": 141
  },
  "campusGates": 5,
@@ -360,8 +360,8 @@
   }
  ],
  "byStatus": {
-  "verified": 84,
-  "inferred": 202,
+  "verified": 85,
+  "inferred": 201,
   "partial": 6,
   "unverified": 9,
   "mapped": 135
@@ -786,6 +786,13 @@
    "arrivalOn": "Legon Hall Annex walk",
    "arrivalDistance": 0,
    "facing": 140
+  },
+  {
+   "place": "Earth Science",
+   "type": "main entrance",
+   "arrivalOn": "footway",
+   "arrivalDistance": 13.7,
+   "facing": 6
   },
   {
    "place": "Legon Hall Annex B",

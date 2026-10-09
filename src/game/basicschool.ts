@@ -9,12 +9,13 @@
 //
 // The entrance (owner's photo) faces Valco across La Road, on the road into the school: two red-brick pillars, a small
 // gatehouse with a brown hipped roof on red pillars, a black iron sliding gate, the school's sign board on posts, a
-// paved apron. The fence along La Road: a low wall of grey stone under a coping, white square pillars at intervals and
+// paved apron. The fence along La Road: a low wall of rubble stone under a coping, white square pillars at intervals and
 // black iron railings between them.
 import * as THREE from 'three';
 import { box, speckle } from './modelkit';
 import { PL, createSite, type Block, type Kit, type Spec, type Style } from './blocks';
 import { rectsOf } from './rectilinear';
+import { stoneMesh } from './concrete';
 
 const ORANGE = '#c0613f', BROWN = '#5c4a40', GREY = '#77736e', PALE = '#a8a095', HALL = '#cf6a5e';
 const DADO = '#7f8c94', DOOR = '#8a4a2e';
@@ -123,13 +124,13 @@ function block(b: Bld): Spec {
 
 // ---------- the entrance and the fence along La Road ----------
 const GO: [number, number] = [-113, 900.5];
-const STONE = '#8f8b82', PILLAR = '#f2f1ec', RAIL = '#1d1e20', BRICK = '#b5532f';
+const PILLAR = '#f2f1ec', RAIL = '#1d1e20', BRICK = '#b5532f';
 /** the fence from x0 to x1 along z (world x, model z = 0): stone wall, white pillars, iron railings */
 function fence(k: Kit, x0: number, x1: number) {
   const X = (x: number) => x - GO[0];
-  k.plain.push([box(X(x0), X(x1), 0, 0.85, -0.22, 0.22), STONE], [box(X(x0), X(x1), 0.85, 0.95, -0.27, 0.27), '#6f6b64']);
-  // stone courses
-  for (let x = x0 + 0.5; x < x1; x += 0.9) k.plain.push([box(X(x), X(x + 0.04), 0.05, 0.8, -0.23, 0.23), '#7d796f']);
+  // the low wall of rubble stone (owner's photo of the entrance) under a grey coping
+  stoneMesh(k, [[box(X(x0), X(x1), 0, 0.85, -0.22, 0.22), '#ffffff']]);
+  k.plain.push([box(X(x0), X(x1), 0.85, 0.95, -0.27, 0.27), '#8d8a83']);
   const n = Math.max(1, Math.round((x1 - x0) / 3.4));
   for (let i = 0; i <= n; i++) {
     const x = x0 + ((x1 - x0) * i) / n;

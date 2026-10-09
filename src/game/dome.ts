@@ -6,7 +6,7 @@
 // few green-roofed cabins beside them, inside a dark green fence along the road.
 //
 // International House: a four-storey white block round a courtyard under a low dark-brown hipped
-// roof; recessed bays of brown louvred windows on the upper floors, a strip of dark glazing on the
+// roof; recessed bays of glass windows in silver-grey frames on the upper floors (owner), a strip of glazing on the
 // ground floor, AC units; the entrance porch on the west face (toward the law-school road) has a
 // tile roof and a white arched gable.
 import * as THREE from 'three';
@@ -104,7 +104,7 @@ const dome: Spec = {
 };
 
 // ---------- International House ----------
-/** upper floors: a recessed bay of brown louvred windows between white piers; ground floor: dark glazing */
+/** upper floors: a recessed bay of glass windows in silver-grey frames between white piers; ground floor: glazing */
 const IH_WIN: Style = {
   bay: 3.4,
   up: [[56, 50, 144, 140]],
@@ -114,13 +114,10 @@ const IH_WIN: Style = {
     // the recess round the window, shaded at the top
     g.fillStyle = '#e4e2dc'; g.fillRect(44, 24, 168, 200);
     g.fillStyle = 'rgba(70,60,50,0.25)'; g.fillRect(44, 24, 168, 12);
-    g.fillStyle = '#6b4a2f'; g.fillRect(56, 50, 144, 140);
-    g.fillStyle = '#a07a4e';
-    for (let y = 56; y < 186; y += 9) { g.fillRect(60, y, 66, 4); g.fillRect(130, y, 66, 4); }
-    g.fillStyle = '#6b4a2f'; g.fillRect(126, 50, 4, 140);
-    g.fillStyle = '#ffffff'; g.fillRect(48, 196, 160, 8);
+    // glass in silver-grey aluminium frames (owner: glass, not wood)
+    window_(g, [56, 50, 144, 140], '#a9aeb2', 2, 0.3);
     g.fillStyle = '#f2f1ec'; g.fillRect(0, 232, 256, 24);
-    window_(g, [24, 256 + 70, 208, 120], '#2a2d33', 4, 0.25);
+    window_(g, [24, 256 + 70, 208, 120], '#a9aeb2', 4, 0.25);
   },
 };
 

@@ -1068,6 +1068,33 @@ school, of the building site and of the hall (`isserannex.ts`; the ground in `re
   the west end, a dark louvred vent in it, solar panels; a big tree and a red earth track before it.
 - **Trees** wherever the owner circled them light green.
 
+## 46. WACCBIP's board at the front; International House's windows; the Bookshop; Earth Science; the Basic School
+
+- **WACCBIP:** the centre's full board, the gold strip light, the lattice gate, the university's plate and the camera
+  are on the **front entrance** (by the car-park shades), over the door up the stair; the back door keeps a plainer
+  board.
+- **International House:** its windows are **glass in silver-grey frames**, not brown wood (owner).
+- **University of Ghana Bookshop** (owner's street view; `balmewest.ts`): the twin of the long block across the square,
+  two floors, orange tiles, gables boarded in dark timber, the lantern over its middle; a tiled pent roof along its west
+  side over tall dark shop windows; at its south end the entrance under a first-floor balcony with a solid parapet, up a
+  step from a platform **faced in rubble stone** (yellow marks) between low red railings; a stone-faced bed along the
+  west front.
+- **Department of Earth Science** (owner's marked aerial and photos; `earthscience.ts`, ground in `relief.ts`): the whole
+  complex on ground raised 1.5 m behind **rubble-stone retaining walls**.
+  - The **storey building** (yellow): one connected building of three floors, a long bar along the north, a taller cross
+    block in its middle with a porch of tall columns, two arms south; white, **glass windows in grey frames**, a deep red
+    band round its foot; along its back **galleries on both upper floors behind railings of square-gridded metal
+    bars**, over a covered walk on columns with red feet; interlocking paving down to the road behind.
+  - The **one-floor ranges** (violet) connected without gaps round the courtyard (west, middle, front, east), white,
+    **black wooden lattice windows**, verandahs on square white columns with red feet.
+  - The **entrance** (blue): the one-floor entrance block in the middle of the front, its door between two columns with
+    black lattice windows either side and the department's name over it; the **broad stair** up to it in two flights
+    between planters faced in stone, palms in them; the department's board beside it; trees in front and on the east.
+- **UG Basic School:** the paint flickered because its blocks were modelled twice (an older one-floor model of the
+  buildings round the Night Market covered them too); they are modelled once now, and a check keeps any footprint from
+  being modelled twice. The fence along La Road is a low wall of **rubble stone** under a coping, white pillars, black
+  railings (owner's photo of the entrance).
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

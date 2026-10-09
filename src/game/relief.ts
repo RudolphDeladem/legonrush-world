@@ -81,6 +81,9 @@ const ZONES: Zone[] = [
   // that road): its buildings, the huts' plaza and the car park on a floor 1.2 m down, the slopes up to the road on
   // the east, to the road on the south (short of it) and to the open ground west and north
   { kind: 'hollow', x0: 236, x1: 334, z0: -446, z1: -342, depth: 1.2, w: 4, e: 5, n: 8, s: 3 },
+  // the Department of Earth Science stands on ground raised 1.5 m behind rubble-stone retaining walls on its front and
+  // sides (owner's photos), a broad stair up to its entrance; behind it the ground falls gently to the road on the north
+  { kind: 'terrace', x0: 238.5, x1: 356, z0: 28, z1: 99.3, depth: 1.5, w: 0.3, e: 0.3, n: 5, s: 0.3 },
 ];
 const STAIRS: Stairs[] = [
   // Commonwealth: from the gate houses up Legon Hill to the drive
@@ -97,6 +100,8 @@ const STAIRS: Stairs[] = [
   { x0: -277.5, x1: -275.4, z0: 336.6, z1: 339.4, flights: 1, steps: 7, tread: 0.3, alongZ: true },
   // the GCB Lecture Building: the broad stair up the middle between the two ramps, to the gallery (owner)
   { x0: -415, x1: -395, z0: -138.7, z1: -133.7, flights: 4, steps: 4, tread: 0.45, alongZ: true },
+  // Earth Science: the broad stair from the lawn up to the entrance, in two flights (owner's photos)
+  { x0: 106.5, x1: 99.3, z0: 322.5, z1: 331.5, flights: 2, steps: 5, tread: 0.45, alongZ: true },
 ];
 
 const boxOf = (q: Zone) => q.kind !== 'hill'
