@@ -371,6 +371,14 @@ try {
     if ((await server.ssrLoadModule('/src/game/earthscience.ts')).earthScienceSite.frames().length !== 1) fail('expected the Earth Science model');
     const S = (await server.ssrLoadModule('/src/game/sites.ts')).BLOCK_SITES;
     for (const b of BUILDINGS) if (S.filter((s) => s.replaces(b)).length > 1) fail(`the building at ${Math.round((b.minX + b.maxX) / 2)},${Math.round((b.minZ + b.maxZ) / 2)} is modelled twice (its walls flicker)`); }
+  // owner: physics up the hill from Danquah Avenue, one floor; the tall one-floor building north of it; the chemistry
+  // ranges one floor round the five-floor Frank Torto Building; the ISSER Annex car park keeps the walk to its porch clear
+  { const { groundHeight: gh } = await server.ssrLoadModule('/src/game/relief.ts');
+    if (!(gh(156, 79) > 1.2) || gh(150, 117) !== 0) fail('the Department of Physics is not up the hill from Danquah Avenue (owner)');
+    for (const [x, z, lo, hi] of [[150, 98, 0, 5], [134.3, 17.1, 6.5, 8.5], [112, -120, 0, 5], [128.5, -66, 0, 5], [184.3, -69, 0, 5], [168.8, -120.5, 17, 20]]) { const b = buildingAt(x, z); if (!b || b.height < lo || b.height > hi) fail(`the building at ${x},${z} is not the height the owner shows`); }
+    const inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
+    for (const z of [-360, -350, -340]) if (cm.AREAS.some((a) => a.kind === 'parking' && inA(a, 301.5, z))) fail(`cars park on the walk to the ISSER Annex at z ${z} (owner)`);
+    if ((await server.ssrLoadModule('/src/game/physics.ts')).physicsSite.frames().length !== 9) fail('expected physics, the chemistry ranges, the covered walk and the Frank Torto Building'); }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

@@ -136,11 +136,12 @@ const earthScience: Spec = {
     const cols = (x0: number, x1: number, z: number) => { for (let x = x0; x <= x1 + 0.01; x += (x1 - x0) / Math.max(1, Math.round((x1 - x0) / 3.2))) c.push([B(x - 0.18, x + 0.18, 0, OE - 0.3, z - 0.18, z + 0.18), WALL], [B(x - 0.2, x + 0.2, 0, 0.55, z - 0.2, z + 0.2), RED]); };
     cols(SR[0] + 0.4, EB[0] - 0.4, SR[3] + 0.5); cols(EB[1] + 0.4, SR[1] - 0.4, SR[3] + 0.5); cols(NR[0] + 0.4, NR[1] - 0.4, NR[2] - 0.6);
     // ---- the entrance block's porch (owner's blue mark): the door between two columns, lattice windows each side ----
-    const pz = EB[3];
+    // (the porch stands before the front range's face: the door on that face, owner)
+    const pz = SR[3];
     k.plain.push([B(EB[0] + 0.5, EB[1] - 0.5, 0, 0.05, pz, 99.4), '#c9c4b8']);
     for (const x of [324.6, 330.2]) c.push([B(x - 0.25, x + 0.25, 0, OE - 0.2, 98.8, 99.3), WALL], [B(x - 0.27, x + 0.27, 0, 0.6, 98.78, 99.32), RED]);
     k.plain.push([B(326.0, 328.8, 0, 2.4, pz, pz + 0.05), '#1c1a18'], [B(327.37, 327.43, 0, 2.4, pz + 0.05, pz + 0.07), '#3a3430']);
-    k.plain.push([B(326.4, 327.3, 1.3, 2.0, pz + 0.07, pz + 0.09), '#f2f0e8']);
+    k.plain.push([B(326.6, 327.1, 1.6, 1.9, pz + 0.07, pz + 0.09), '#e8e2d0']);
     for (const x of [321.8, 333.0]) k.plain.push([B(x - 1.6, x + 1.6, 0.6, 2.6, pz, pz + 0.05), '#141210'], ...Array.from({ length: 7 }, (_, i) => [B(x - 1.6 + i * 0.53, x - 1.55 + i * 0.53, 0.6, 2.6, pz + 0.05, pz + 0.08), '#3a332c'] as Part), ...Array.from({ length: 5 }, (_, i) => [B(x - 1.6, x + 1.6, 0.6 + i * 0.5, 0.65 + i * 0.5, pz + 0.05, pz + 0.08), '#3a332c'] as Part));
     k.plain.push([B(325.6, 329.2, OE - 0.6, OE - 0.15, 99.35, 99.42), '#f2f2ee']);
     k.signs.push({ text: 'DEPARTMENT OF EARTH SCIENCE', x: X(327.4), y: OE - 0.38, z: Z(99.43), ry: 0, w: 3.4, colors: ['#f2f2ee', '#2a2a2a'] });

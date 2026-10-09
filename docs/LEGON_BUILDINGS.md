@@ -1095,6 +1095,31 @@ school, of the building site and of the hall (`isserannex.ts`; the ground in `re
   being modelled twice. The fence along La Road is a low wall of **rubble stone** under a coping, white pillars, black
   railings (owner's photo of the entrance).
 
+## 47. Physics, the chemistry buildings and the Frank Torto Building; the ISSER car park; Earth Science's door
+
+From the owner's photos and marked aerial of the chemistry buildings (registered at 0.23 m/px; `physics.ts`, the hill
+in `relief.ts`):
+
+- **Department of Physics:** one-floor ranges round a court, **1.5 m up the hill** from Danquah Avenue: a grass bank
+  down to a **low wall of rubble stone** along the pavement (and up Cruise O'Brien Road), the walls on a stone plinth,
+  a stone retaining wall and steps up from the lane on the east to its door. Faded white, a deep red-brown band round
+  the foot with the paint flaking off in patches, **brown wooden louvred shutters**, small square vents under the eaves,
+  orange tile gable roofs with dark bargeboards and a small window in each white gable, verandahs on posts round the
+  court, the department's board at the corner, a wooden electricity pole.
+- **North of it** (red line): a one-floor building **as tall as two floors**, small oblong windows high up, wooden
+  shutters and doors below; a one-floor range beside it.
+- **Chemistry** (black lines): the extension's U round the Frank Torto Building and the ranges across the middle, all
+  one floor, like the physics ranges; a **covered walk** on posts under a tile roof (green line) from the extension to
+  the chemistry block; trees where the owner circled them; the car park before the Frank Torto Building.
+- **Frank Torto Building** (purple; photos 3 and 4): five floors, white, the ground floor set back behind columns, a
+  band of glazing on the first floor, the department's name over the ground floor and on the west end, galleries on
+  the floors above behind solid parapets with brown-framed windows, a stack of open landings at the west end, plant on
+  the roof; the tower on its east with stepped sills and brown-framed windows.
+- **ISSER Annex car park:** cars in two rows, along the palms and along the south edge, the aisle and the walk to the
+  porch clear (they had covered it).
+- **Earth Science:** the entrance porch stands on the front range's face, so its door (between the lattice windows)
+  shows.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

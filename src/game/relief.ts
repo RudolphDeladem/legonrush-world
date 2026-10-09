@@ -84,6 +84,9 @@ const ZONES: Zone[] = [
   // the Department of Earth Science stands on ground raised 1.5 m behind rubble-stone retaining walls on its front and
   // sides (owner's photos), a broad stair up to its entrance; behind it the ground falls gently to the road on the north
   { kind: 'terrace', x0: 238.5, x1: 356, z0: 28, z1: 99.3, depth: 1.5, w: 0.3, e: 0.3, n: 5, s: 0.3 },
+  // the Department of Physics stands up the hill from Danquah Avenue (owner's photos): its ranges 1.5 m up, a grass
+  // bank down to a low stone wall along the pavement and to Cruise O'Brien Road; a stone retaining wall on the east
+  { kind: 'terrace', x0: 106, x1: 205.3, z0: 52, z1: 106.5, depth: 1.5, w: 5, e: 0.3, n: 5, s: 5.6 },
 ];
 const STAIRS: Stairs[] = [
   // Commonwealth: from the gate houses up Legon Hill to the drive
@@ -102,6 +105,8 @@ const STAIRS: Stairs[] = [
   { x0: -415, x1: -395, z0: -138.7, z1: -133.7, flights: 4, steps: 4, tread: 0.45, alongZ: true },
   // Earth Science: the broad stair from the lawn up to the entrance, in two flights (owner's photos)
   { x0: 106.5, x1: 99.3, z0: 322.5, z1: 331.5, flights: 2, steps: 5, tread: 0.45, alongZ: true },
+  // Physics: the steps from the end of the lane on the east up to its door
+  { x0: 207.6, x1: 205.4, z0: 84, z1: 89, flights: 1, steps: 7, tread: 0.3 },
 ];
 
 const boxOf = (q: Zone) => q.kind !== 'hill'

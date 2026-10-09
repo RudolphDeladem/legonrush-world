@@ -252,6 +252,10 @@
     {
       "id": "ml:5196126c-f877-4c87-9799-d5e9b7895337",
       "reason": "Owner's marked aerial of the ISSER Annex and the ground west of it to Botanical Gardens Road, registered to the annex's outlines at 0.25 m/px: bare red earth north of the huts' plaza, no building."
+    },
+    {
+      "id": "osm:way/892262792",
+      "reason": "Owner: the cars in the ISSER Annex car park covered the drive and the walk to the entrance; cars park in two rows, along the palms before the range and along the south edge, the aisle between them and the walk to the porch kept clear (replaced by owner:isser-annex-parking-*)."
     }
   ],
   "heights": [
@@ -2795,6 +2799,62 @@
       "levels": 1,
       "height": 4.5,
       "reason": "Owner's marked aerial of the Department of Earth Science (storey building yellow, one-floor ranges violet, the entrance blue), registered at 0.25 m/px, and photos of its front and back: the one-floor ranges connected round the courtyard. Modelled in src/game/earthscience.ts."
+    },
+    {
+      "id": "osm:way/425289611",
+      "place": "Physics Department, University of Ghana",
+      "levels": 1,
+      "height": 4.4,
+      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: one-floor ranges round a court, up the hill from Danquah Avenue. Modelled in src/game/physics.ts."
+    },
+    {
+      "id": "osm:way/318247936",
+      "place": "tall one-floor building north of physics",
+      "levels": 1,
+      "height": 7.4,
+      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: one floor as tall as two (owner's red line): small oblong windows high up, wooden windows and doors below. Modelled in src/game/physics.ts."
+    },
+    {
+      "id": "osm:way/394125235",
+      "place": "range north of physics",
+      "levels": 1,
+      "height": 4.4,
+      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: one floor. Modelled in src/game/physics.ts."
+    },
+    {
+      "id": "osm:way/394125201",
+      "place": "Chemistry Department Extension",
+      "levels": 1,
+      "height": 4.4,
+      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: one floor, like the physics ranges (owner's black lines). Modelled in src/game/physics.ts."
+    },
+    {
+      "id": "osm:way/318247934",
+      "place": "chemistry range west",
+      "levels": 1,
+      "height": 4.4,
+      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: one floor (owner's black lines). Modelled in src/game/physics.ts."
+    },
+    {
+      "id": "osm:way/628958898",
+      "place": "chemistry range east",
+      "levels": 1,
+      "height": 4.4,
+      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: one floor (owner's black lines). Modelled in src/game/physics.ts."
+    },
+    {
+      "id": "osm:way/394125226",
+      "place": "chemistry small block",
+      "levels": 1,
+      "height": 4.4,
+      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: one floor (owner's black lines). Modelled in src/game/physics.ts."
+    },
+    {
+      "id": "osm:way/773892127",
+      "place": "Frank Torto Chemistry Building",
+      "levels": 5,
+      "height": 18.6,
+      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: five floors (owner's purple line, photos 3 and 4). Modelled in src/game/physics.ts."
     }
   ],
   "reclass": [
@@ -7327,29 +7387,6 @@
       "reason": "Owner's marked aerial of the ISSER Annex and the ground west of it to Botanical Gardens Road, registered to the annex's outlines at 0.25 m/px: trees, circled light green."
     },
     {
-      "id": "owner:isser-annex-parking-west",
-      "class": "parking",
-      "ring": [
-        [
-          239.5,
-          -362
-        ],
-        [
-          271,
-          -362
-        ],
-        [
-          271,
-          -337.5
-        ],
-        [
-          239.5,
-          -337.5
-        ]
-      ],
-      "reason": "Owner's marked aerial of the ISSER Annex and the ground west of it to Botanical Gardens Road, registered to the annex's outlines at 0.25 m/px: cars park along the west end of the car park before the annex too."
-    },
-    {
       "id": "owner:woods-earth-science-south-west",
       "class": "wood",
       "ring": [
@@ -7417,6 +7454,511 @@
         ]
       ],
       "reason": "Owner's marked aerial of the Department of Earth Science (storey building yellow, one-floor ranges violet, the entrance blue), registered at 0.25 m/px, and photos of its front and back: the trees along its east side."
+    },
+    {
+      "id": "owner:isser-annex-parking-1",
+      "class": "parking",
+      "ring": [
+        [
+          240,
+          -361.8
+        ],
+        [
+          298.8,
+          -361.8
+        ],
+        [
+          298.8,
+          -356.2
+        ],
+        [
+          240,
+          -356.2
+        ]
+      ],
+      "reason": "Owner: the cars in the ISSER Annex car park covered the drive and the walk to the entrance; cars park in two rows, along the palms before the range and along the south edge, the aisle between them and the walk to the porch kept clear."
+    },
+    {
+      "id": "owner:isser-annex-parking-2",
+      "class": "parking",
+      "ring": [
+        [
+          304.2,
+          -361.8
+        ],
+        [
+          330.8,
+          -361.8
+        ],
+        [
+          330.8,
+          -356.2
+        ],
+        [
+          304.2,
+          -356.2
+        ]
+      ],
+      "reason": "Owner: the cars in the ISSER Annex car park covered the drive and the walk to the entrance; cars park in two rows, along the palms before the range and along the south edge, the aisle between them and the walk to the porch kept clear."
+    },
+    {
+      "id": "owner:isser-annex-parking-3",
+      "class": "parking",
+      "ring": [
+        [
+          240,
+          -343.0
+        ],
+        [
+          298.8,
+          -343.0
+        ],
+        [
+          298.8,
+          -337.4
+        ],
+        [
+          240,
+          -337.4
+        ]
+      ],
+      "reason": "Owner: the cars in the ISSER Annex car park covered the drive and the walk to the entrance; cars park in two rows, along the palms before the range and along the south edge, the aisle between them and the walk to the porch kept clear."
+    },
+    {
+      "id": "owner:isser-annex-parking-4",
+      "class": "parking",
+      "ring": [
+        [
+          304.2,
+          -343.0
+        ],
+        [
+          330.8,
+          -343.0
+        ],
+        [
+          330.8,
+          -337.4
+        ],
+        [
+          304.2,
+          -337.4
+        ]
+      ],
+      "reason": "Owner: the cars in the ISSER Annex car park covered the drive and the walk to the entrance; cars park in two rows, along the palms before the range and along the south edge, the aisle between them and the walk to the porch kept clear."
+    },
+    {
+      "id": "owner:woods-chemistry-1",
+      "class": "wood",
+      "ring": [
+        [
+          120.7,
+          -153.9
+        ],
+        [
+          119.7,
+          -151.5
+        ],
+        [
+          117.3,
+          -150.5
+        ],
+        [
+          114.9,
+          -151.5
+        ],
+        [
+          113.9,
+          -153.9
+        ],
+        [
+          114.9,
+          -156.3
+        ],
+        [
+          117.3,
+          -157.3
+        ],
+        [
+          119.7,
+          -156.3
+        ]
+      ],
+      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: trees, circled yellow."
+    },
+    {
+      "id": "owner:woods-chemistry-2",
+      "class": "wood",
+      "ring": [
+        [
+          138.6,
+          -153.9
+        ],
+        [
+          137.0,
+          -150.0
+        ],
+        [
+          133.1,
+          -148.4
+        ],
+        [
+          129.2,
+          -150.0
+        ],
+        [
+          127.6,
+          -153.9
+        ],
+        [
+          129.2,
+          -157.8
+        ],
+        [
+          133.1,
+          -159.4
+        ],
+        [
+          137.0,
+          -157.8
+        ]
+      ],
+      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: trees, circled yellow."
+    },
+    {
+      "id": "owner:woods-chemistry-3",
+      "class": "wood",
+      "ring": [
+        [
+          150.8,
+          -153.5
+        ],
+        [
+          149.8,
+          -151.1
+        ],
+        [
+          147.4,
+          -150.1
+        ],
+        [
+          145.0,
+          -151.1
+        ],
+        [
+          144.0,
+          -153.5
+        ],
+        [
+          145.0,
+          -155.9
+        ],
+        [
+          147.4,
+          -156.9
+        ],
+        [
+          149.8,
+          -155.9
+        ]
+      ],
+      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: trees, circled yellow."
+    },
+    {
+      "id": "owner:woods-chemistry-4",
+      "class": "wood",
+      "ring": [
+        [
+          167.1,
+          -154.4
+        ],
+        [
+          165.8,
+          -151.2
+        ],
+        [
+          162.6,
+          -149.9
+        ],
+        [
+          159.4,
+          -151.2
+        ],
+        [
+          158.1,
+          -154.4
+        ],
+        [
+          159.4,
+          -157.6
+        ],
+        [
+          162.6,
+          -158.9
+        ],
+        [
+          165.8,
+          -157.6
+        ]
+      ],
+      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: trees, circled yellow."
+    },
+    {
+      "id": "owner:woods-chemistry-5",
+      "class": "wood",
+      "ring": [
+        [
+          174.2,
+          -105.2
+        ],
+        [
+          172.8,
+          -101.8
+        ],
+        [
+          169.4,
+          -100.4
+        ],
+        [
+          166.0,
+          -101.8
+        ],
+        [
+          164.6,
+          -105.2
+        ],
+        [
+          166.0,
+          -108.6
+        ],
+        [
+          169.4,
+          -110.0
+        ],
+        [
+          172.8,
+          -108.6
+        ]
+      ],
+      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: trees, circled yellow."
+    },
+    {
+      "id": "owner:woods-chemistry-6",
+      "class": "wood",
+      "ring": [
+        [
+          149.8,
+          -89.4
+        ],
+        [
+          146.6,
+          -81.6
+        ],
+        [
+          138.8,
+          -78.4
+        ],
+        [
+          131.0,
+          -81.6
+        ],
+        [
+          127.8,
+          -89.4
+        ],
+        [
+          131.0,
+          -97.2
+        ],
+        [
+          138.8,
+          -100.4
+        ],
+        [
+          146.6,
+          -97.2
+        ]
+      ],
+      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: trees, circled yellow."
+    },
+    {
+      "id": "owner:woods-chemistry-7",
+      "class": "wood",
+      "ring": [
+        [
+          177.0,
+          -83.7
+        ],
+        [
+          175.1,
+          -79.1
+        ],
+        [
+          170.5,
+          -77.2
+        ],
+        [
+          165.9,
+          -79.1
+        ],
+        [
+          164.0,
+          -83.7
+        ],
+        [
+          165.9,
+          -88.3
+        ],
+        [
+          170.5,
+          -90.2
+        ],
+        [
+          175.1,
+          -88.3
+        ]
+      ],
+      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: trees, circled yellow."
+    },
+    {
+      "id": "owner:woods-chemistry-8",
+      "class": "wood",
+      "ring": [
+        [
+          181.8,
+          -65.1
+        ],
+        [
+          180.5,
+          -61.9
+        ],
+        [
+          177.3,
+          -60.6
+        ],
+        [
+          174.1,
+          -61.9
+        ],
+        [
+          172.8,
+          -65.1
+        ],
+        [
+          174.1,
+          -68.3
+        ],
+        [
+          177.3,
+          -69.6
+        ],
+        [
+          180.5,
+          -68.3
+        ]
+      ],
+      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: trees, circled yellow."
+    },
+    {
+      "id": "owner:woods-chemistry-9",
+      "class": "wood",
+      "ring": [
+        [
+          203.4,
+          -52.4
+        ],
+        [
+          201.2,
+          -47.1
+        ],
+        [
+          195.9,
+          -44.9
+        ],
+        [
+          190.6,
+          -47.1
+        ],
+        [
+          188.4,
+          -52.4
+        ],
+        [
+          190.6,
+          -57.7
+        ],
+        [
+          195.9,
+          -59.9
+        ],
+        [
+          201.2,
+          -57.7
+        ]
+      ],
+      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: trees, circled yellow."
+    },
+    {
+      "id": "owner:woods-chemistry-10",
+      "class": "wood",
+      "ring": [
+        [
+          171.1,
+          -46.3
+        ],
+        [
+          169.9,
+          -43.5
+        ],
+        [
+          167.1,
+          -42.3
+        ],
+        [
+          164.3,
+          -43.5
+        ],
+        [
+          163.1,
+          -46.3
+        ],
+        [
+          164.3,
+          -49.1
+        ],
+        [
+          167.1,
+          -50.3
+        ],
+        [
+          169.9,
+          -49.1
+        ]
+      ],
+      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: trees, circled yellow."
+    },
+    {
+      "id": "owner:frank-torto-parking",
+      "class": "parking",
+      "ring": [
+        [
+          166.5,
+          -112.5
+        ],
+        [
+          184.5,
+          -112.5
+        ],
+        [
+          184.5,
+          -92.5
+        ],
+        [
+          166.5,
+          -92.5
+        ]
+      ],
+      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: the car park before the Frank Torto Building (photo 4)."
     }
   ],
   "addWays": [
