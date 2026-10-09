@@ -251,7 +251,7 @@ const french: Spec = (() => {
 // Department (owner's green mark and photo 2): three floors, an H of two wings north-south and the block between them,
 // tile hip roofs of dark old tiles; white walls a little streaked; wide glass windows in dark frames divided by bars
 // into small panes; air-conditioners on the walls; its board on the east face; the entrance in the middle of the
-// south side. Before its east face a walk of brick pavers, a clipped conifer, round shrubs and flowering bushes.
+// south side; fully white, no coloured band at its foot (owner). Before its east face a walk of brick pavers, a clipped conifer, round shrubs and flowering bushes.
 const EO: [number, number] = [-130, 62.5];
 const EST = 3.3;
 const EW = [-151.7, -141.1, 51.5, 73.5], EC = [-141.1, -120.5, 56.0, 68.0], EE = [-120.5, -108.4, 51.5, 73.5];
@@ -272,19 +272,18 @@ const E_WALL: Style = {
     for (let i = 0; i < 12; i++) { const x = (i * 47 + 9) % 250, gr = g.createLinearGradient(0, 0, 0, 160); gr.addColorStop(0, 'rgba(120,116,106,0.14)'); gr.addColorStop(1, 'rgba(120,116,106,0)'); g.fillStyle = gr; g.fillRect(x, 0, 3 + (i % 3), 160); }
     paned(g, 44, 70, 168, 104, 5, 3);
     paned(g, 38, 256 + 64, 180, 116, 6, 3);
-    g.fillStyle = '#b84a3a'; g.fillRect(0, 512 - 22, 256, 22);
   },
 };
 const E_END: Style = {
   bay: 4.2, up: [[92, 70, 72, 104]], ground: [[92, 256 + 64, 72, 116]],
-  draw: (g) => { paint(g, '#f1f0eb'); paned(g, 92, 70, 72, 104, 2, 3); paned(g, 92, 256 + 64, 72, 116, 2, 3); g.fillStyle = '#b84a3a'; g.fillRect(0, 512 - 22, 256, 22); },
+  draw: (g) => { paint(g, '#f1f0eb'); paned(g, 92, 70, 72, 104, 2, 3); paned(g, 92, 256 + 64, 72, 116, 2, 3); },
 };
 const epmo: Spec = (() => {
   const { X, Z, B } = frame(EO);
   const blk = (r: number[], faces: Partial<Record<'x0' | 'x1' | 'z0' | 'z1', Style>> = {}): Block => ({ x0: X(r[0]), x1: X(r[1]), z0: Z(r[2]), z1: Z(r[3]), floors: 3, faces });
   return {
     name: 'Economic Policy Management Programme Office',
-    axis: [1, 0], origin: EO, storey: EST, style: E_WALL, roofColor: '#6e3428', fascia: '#3a2a22', pitch: 0.42, plinth: '#b84a3a',
+    axis: [1, 0], origin: EO, storey: EST, style: E_WALL, roofColor: '#6e3428', fascia: '#3a2a22', pitch: 0.42, plinth: '#e9e8e3',
     replaces: [[-146.4, 62.5]],
     blocks: [blk(EW, { z0: E_END, z1: E_END }), blk(EC), blk(EE, { z0: E_END, z1: E_END })],
     keep: [[X(-104.5), X(-101), Z(48), Z(80)], [X(-134), X(-127.6), Z(68), Z(71)]],

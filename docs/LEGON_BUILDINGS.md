@@ -1237,7 +1237,7 @@ side and of the French Department's south and west sides (`balmewest.ts`, `galle
     them down the ground floor, barred windows behind, the wine band at the foot.
   - Before it: the paved walk from the road to the passage and along the range, the School of Languages board, shrubs
     and flowering bushes, a potted plant, the big tree before the west wing's south end.
-- **Economic Policy Management Programme office** (green): **three floors** (photo 2; an earlier note had four), an H of
+- **Economic Policy Management Programme office** (green): **three floors** (photo 2; an earlier note had four), **fully white** with no coloured band at its foot (owner), an H of
   two wings and the block between them under hip roofs of dark old tiles; white walls a little streaked, **wide glass
   windows in dark frames divided by bars** into small panes, air-conditioners, its board on the east face, the
   entrance in the middle of the south side under a flat canopy. Before its east face a brick walk with a stone kerb, a
