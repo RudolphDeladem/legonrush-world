@@ -19,7 +19,7 @@ import * as THREE from 'three';
 import { box, merge, speckle, tri2, type Part } from './modelkit';
 import { BAND, PL, createSite, render, type Block, type Kit, type Spec, type Style } from './blocks';
 import { concrete, panel, pierced, stoneMesh } from './concrete';
-import { SOLIDS } from './solids';
+import { PASSAGES, SOLIDS } from './solids';
 import { hipRoof } from './waccbip';
 import { stairsOf } from './relief';
 import { garden } from './gardens';
@@ -164,7 +164,8 @@ const RANGES: Range[] = [
   { name: 'Chemistry Department Extension', rects: [[108.2, 207.0, -149.7, -137.4], [108.0, 116.7, -137.4, -98.2], [116.7, 156.8, -109.4, -100.0]], ridge: ['x', 'z', 'x'], replaces: [[141.1, -118.9], [112, -120]] },
   // the ranges across the middle
   { name: 'chemistry range west', rects: [[106.0, 151.1, -74.6, -57.4]], ridge: ['x'], replaces: [[128.5, -66.0]] },
-  { name: 'chemistry range east', rects: [[161.3, 208.6, -75.9, -62.2], [161.3, 168.5, -80.8, -75.9], [199.1, 208.6, -80.8, -75.9]], ridge: ['x', 'z', 'z'], replaces: [[184.3, -69]] },
+  // (moved 2 m west and its east end 3 m shorter, clear of the lane round the Frank Torto Building: owner)
+  { name: 'chemistry range east', rects: [[159.3, 203.6, -75.9, -62.2], [159.3, 166.5, -80.8, -75.9], [194.1, 203.6, -80.8, -75.9]], ridge: ['x', 'z', 'z'], replaces: [[184.3, -69]] },
 ];
 function range(r: Range): Spec {
   const xs = r.rects.flatMap((q) => [q[0], q[1]]), zs = r.rects.flatMap((q) => [q[2], q[3]]);
@@ -330,6 +331,8 @@ const TB = [133.2, 185.6, -133.7, -115.5], TW = [185.5, 203.4, -135.2, -98.2];
 const TST = 3.4;
 /** the open passage through the ground floor, from the car park to the extension behind (owner) */
 const TPX = [147.2, 151.0];
+// the free-ridden bike rides through it (the columns either side still stop it)
+PASSAGES.push([TPX[0] + 0.3, TPX[1] - 0.3, -134.4, -114.6]);
 const glassBand = (g: CanvasRenderingContext2D, y: number, h: number, frame: string) => {
   g.fillStyle = frame; g.fillRect(0, y - 4, 256, h + 8);
   const gl = g.createLinearGradient(0, y, 0, y + h); gl.addColorStop(0, '#6a7c8a'); gl.addColorStop(1, '#1d242b');
@@ -441,7 +444,8 @@ const torto: Spec = ((): Spec => {
 // ---------- the one-floor building on the lane behind the Frank Torto Building (owner's photo, violet) ----------
 // White, under a flat roof whose slab stands out past the walls in a deep fascia, black iron grille doors in deep
 // openings along its front to the lane, air-conditioners on the wall, a raised step along its foot.
-const BT = [210.5, 216.9, -94.3, -84.5];
+// (pushed back 5.6 m east, off the lane and its pavement: owner)
+const BT = [216.1, 222.5, -94.3, -84.5];
 const BT_WALL: Style = {
   bay: 3.3, up: [], ground: [[100, 256 + 70, 56, 70]],
   draw: (g) => {
@@ -452,14 +456,14 @@ const BT_WALL: Style = {
   },
 };
 const behindTorto: Spec = (() => {
-  const O: [number, number] = [213.7, -89.4];
+  const O: [number, number] = [219.3, -89.4];
   const X = (x: number) => x - O[0], Z = (z: number) => z - O[1];
   const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
   const E = PL + 3.2 + BAND;
   return {
     name: 'building behind the Frank Torto Building',
     axis: [1, 0], origin: O, storey: 3.2, style: BT_WALL, roofColor: '#9a968c', fascia: '#f1f0ea', pitch: 0.1, plinth: '#b9b5ab',
-    replaces: [[213.7, -89.4]],
+    replaces: [[219.3, -89.4]],
     blocks: [{ x0: X(BT[0]), x1: X(BT[1]), z0: Z(BT[2]), z1: Z(BT[3]), floors: 1, roof: 'none', faces: { x0: T_END } }],
     keep: [],
     extras: (k: Kit) => {

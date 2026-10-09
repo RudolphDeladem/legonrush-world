@@ -23,6 +23,7 @@ import { BAND, PL, createSite, render, type Block, type Kit, type Spec, type Sty
 import { concrete } from './concrete';
 import { garden } from './gardens';
 import { hipRoof } from './waccbip';
+import { PASSAGES } from './solids';
 
 const WALL = '#f4f2ec', DADO = '#9b2b25', TILE = '#c4623d', BARGE = '#2b221c', TIMBER: [string, string] = ['#33251b', '#4a3526'];
 
@@ -138,6 +139,8 @@ const FO: [number, number] = [-137, 94];
 const FST = 3.0, FE = PL + 2 * FST + BAND;
 /** the open passage through the range's ground floor, beside the west wing */
 const PX = [-162.6, -159.8];
+// the free-ridden bike rides through it
+PASSAGES.push([PX[0] + 0.4, PX[1] - 0.4, 86.2, 99.1]);
 const W_BLANK: Style = { bay: 3.4, up: [], ground: [], draw: (g) => paint(g) };
 const FW = [-176.0, -163.6, 78.9, 110.7], FEW = [-110.0, -97.8, 77.4, 109.2], FBAR = [-163.6, -110.0, 87.0, 98.3];
 const french: Spec = (() => {

@@ -63,3 +63,4 @@
 61. ISSER car park aisle; Earth Science door; Physics on its hill; Chemistry ranges, Frank Torto, covered walk, trees
 62. Chemistry west entrance pavilion; balcony porch moved to the Economics long block by the Post Office; French Dept doors + open passage
 63. Chemistry extension joined by pierced screen walls; Frank Torto open passage; one-floor building behind Frank Torto; Earth Science lane flat
+64. Bike through the open passages; lane round Frank Torto cleared (building behind it and chemistry range east pushed back); LECIAD, the two small square buildings, the power plant and the tree west of it

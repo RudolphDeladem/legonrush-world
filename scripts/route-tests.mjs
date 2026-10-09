@@ -381,9 +381,33 @@ try {
     if ((await server.ssrLoadModule('/src/game/physics.ts')).physicsSite.frames().length !== 10) fail('expected physics, the chemistry ranges, the west entrance, the covered walk, the Frank Torto Building and the building behind it');
     // the chemistry department's west entrance on its stone-faced base (owner's photo)
     { const b = buildingAt(117, -85.5); if (!b || b.height < 4.5 || b.height > 5.5) fail('the chemistry west entrance is not the one floor on its raised base the owner shows'); }
-    { const b = buildingAt(213.7, -89.4); if (!b || b.height > 4.6) fail('the building behind the Frank Torto Building is not one floor (owner)'); }
+    { const b = buildingAt(219.3, -89.4); if (!b || b.height > 4.6) fail('the building behind the Frank Torto Building is not one floor (owner)'); }
     // Nsia Road runs flat past Earth Science's west wall, its kerb and pavement too (owner)
     { const { groundHeight } = await server.ssrLoadModule('/src/game/relief.ts'); for (const z of [30, 60, 98, 104]) for (const x of [235, 238.5, 240.2]) if (Math.abs(groundHeight(x, z)) > 0.02) fail(`Nsia Road by Earth Science is not flat at ${x},${z} (owner)`); } }
+  // owner: the free-ridden bike rides through the open passages (Frank Torto Building, French Department); the lane
+  // round the Frank Torto Building runs clear of the building behind it and the chemistry range east, pavements too;
+  // LECIAD four storeys at its south block; the small square buildings west of it one floor
+  {
+    const so = await server.ssrLoadModule('/src/game/solids.ts');
+    await server.ssrLoadModule('/src/game/physics.ts'); await server.ssrLoadModule('/src/game/balmewest.ts');
+    const through = (x, z0, z1) => { for (let z = z0; z <= z1; z += 0.25) if (cm.buildingNear(x, z, 0.35) && !so.inPassage(x, z)) return false; return true; };
+    if (!through(149.1, -136.4, -112)) fail('the bike cannot ride through the Frank Torto Building\'s open passage (owner)');
+    if (!through(-161.2, 84, 101)) fail('the bike cannot ride through the French Department\'s open passage (owner)');
+    if (!so.inPassage(149.1, -125) || so.inPassage(145, -125)) fail('the Frank Torto passage is not where the model has it');
+    const lane = ROADS.find((r) => r.nodes.some((n) => { const [x, z] = nodeXZ(n); return Math.hypot(x - 209.5, z + 83.9) < 0.3; }));
+    if (!lane) fail('the lane round the Frank Torto Building is missing');
+    else for (let k = 0; k < lane.nodes.length - 1; k++) {
+      const [ax, az] = nodeXZ(lane.nodes[k]), [bx, bz] = nodeXZ(lane.nodes[k + 1]), len = Math.hypot(bx - ax, bz - az);
+      for (let s = 0; s <= len; s += 0.5) {
+        const x = ax + ((bx - ax) * s) / len, z = az + ((bz - az) * s) / len;
+        if (x < 195 || z < -95 || z > -45) continue;
+        const b = cm.buildingNear(x, z, 5.5);
+        if (b) { fail(`the lane round the Frank Torto Building runs within 5.5 m of ${b.name ?? 'a building'} at ${x.toFixed(1)},${z.toFixed(1)} (owner)`); break; }
+      }
+    }
+    { const b = buildingAt(313, -25); if (!b || b.height < 14 || b.height > 17) fail('LECIAD is not four storeys at its south block (owner)'); }
+    { const b = buildingAt(252.3, -12.9); if (!b || b.height > 4.6) fail('the small square building west of LECIAD is not one floor (owner)'); }
+  }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

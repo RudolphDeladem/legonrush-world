@@ -1158,6 +1158,35 @@ From the owner's marked aerial, game screenshots and street photo (`physics.ts`,
   its pavement, so the road no longer rises at its edge or swallows the bike. The kerb and gutter strip that had been
   pushed up the bank (violet) is gone; they run flat along the road.
 
+## 50. LECIAD and the small buildings west of it; the lane round the Frank Torto Building; riding through the passages
+
+From the owner's game screenshots, street photo (taken from the west at night) and marked aerial, registered to
+LECIAD's outline at 0.225 m/px (`liciad.ts`, `physics.ts`, `solids.ts`, `Game.ts`):
+
+- **Riding through the open passages** (blue): the free-ridden bike was stopped at the Frank Torto Building's open
+  passage, because a building's outline blocks the bike wherever no mapped path runs through it. An open passage now
+  lets it through (`solids.ts → PASSAGES`, checked in `Game.ts → freeBlocked`); the columns and walls either side still
+  stop it. The French Department's open passage (section 48) gets the same.
+- **The lane round the Frank Torto Building** (red): the building behind the Frank Torto Building and the east end of
+  the chemistry range east stood on the ridden road and its pavement at the bend. The building behind is pushed back
+  5.6 m east; the range is moved 2 m west (clear of the covered walk) with its east end 3 m shorter
+  (`corrections.json → reshape`). Road and pavements now pass at least 5.5 m clear of both.
+- **LECIAD** (violet; mapped "LECIAD, Legon"): four parts round a paved service court full of air-conditioning
+  condensers: the broad **south block, four storeys** (the tallest and nearest in the photo); the **west wing**, the
+  **north-east wing** and the range between them (a cross gable buried in its neighbours' roofs), **three storeys**;
+  a flat-roofed strip on the east side. **Cream walls** with pale piers and slab lines, the **red-brown band** round
+  their foot, **glass windows in dark frames** set in white surrounds (in pairs on the south block),
+  air-conditioners on the walls, **terracotta hip roofs** on dark fascias (as the aerial shows). Glass doors under a
+  flat canopy on two columns in the west wing's west face; a small door under a canopy at the north-east wing's west end.
+- **The two small square buildings** (white; the same design): **one floor**, white walls about **15 % dirty** from the
+  road (grime splashed up from the foot, streaks from the eaves), the **red-brown band** at the foot, a low **gable roof
+  of dark sheets** with dark barge boards, the **dark barred door** in the west face (blue) on a step and a **small square
+  window** high beside it. The southern one's detected outline is moved onto its roof in the aerial; the northern one
+  has no mapped outline, so its walls block the bike through `SOLIDS`.
+- **The power plant** (light green): a generator (cream canopy, dark louvres, an exhaust stack) on a concrete pad under a
+  dark hipped roof on six black posts.
+- **The tree** (red): a big shade tree east of the first small building, its wide dark crown over that building's roof.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

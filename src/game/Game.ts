@@ -10,7 +10,7 @@ import { groundHeight, inStairs } from './relief';
 import { Tufts } from './tufts';
 import { buildCampus, buildRouteLayer, buildSky, disposeLayer, lampGlow, LANES, ROAD_HALF } from './world';
 import { AREAS, buildingAt, buildingNear, mapBounds } from './campusmap';
-import { solidAt } from './solids';
+import { inPassage, solidAt } from './solids';
 import { roadClearance, setNightLights } from './life';
 import { createWeatherFx, type WeatherFx } from './weatherfx';
 
@@ -258,12 +258,13 @@ const inPts = (pts: Float32Array, x: number, z: number) => {
  * their bounding boxes), trees and water. The grass of a wood is rideable between its trees (owner: the
  * wooded lawns round the GCB Lecture Building); each trunk stops the bike, which slides off it. Every
  * mapped road and path is rideable end to end: a tree at its edge, a water area mapped across it, or a
- * building outline it runs through (an archway, a gate canopy, a passage) doesn't close it.
+ * building outline it runs through (an archway, a gate canopy, a passage) doesn't close it, nor does a building's
+ * outline across an open passage through its ground floor (solids.ts: PASSAGES).
  */
 function freeBlocked(x: number, z: number) {
   if (inStairs(x, z)) return true;
   if (roadClearance(x, z, 6, -1, true) <= 0) return false;
-  if (buildingNear(x, z, 0.35) || solidAt(x, z, 0.3)) return true;
+  if ((buildingNear(x, z, 0.35) && !inPassage(x, z)) || solidAt(x, z, 0.3)) return true;
   if (!wilds) {
     wilds = AREAS.filter((a) => a.kind === 'water').map((a) => {
       let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;

@@ -2862,6 +2862,20 @@
       "levels": 5,
       "height": 18.6,
       "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: five floors (owner's purple line, photos 3 and 4). Modelled in src/game/physics.ts."
+    },
+    {
+      "id": "osm:way/278303025",
+      "place": "LECIAD, Legon",
+      "levels": 4,
+      "height": 15.5,
+      "reason": "Owner's street photo of LECIAD (violet) from the west and marked aerial: the south block four storeys, the west wing, north-east wing and the range between them three; cream walls with a red-brown band at the foot, glass windows in dark frames, tile hip roofs. Modelled in src/game/liciad.ts."
+    },
+    {
+      "id": "ml:02ba2729-9bdb-4097-8910-aab22508b946",
+      "place": "small square building west of LECIAD (south)",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner's street photo (white mark): one floor, white walls a little dirty by the road, a red-brown band at the foot, a dark sheet gable roof, a dark door. Modelled in src/game/liciad.ts."
     }
   ],
   "reclass": [
@@ -3635,6 +3649,94 @@
         ]
       ],
       "reason": "Owner's top view of the School of Pharmacy (the three-storey block marked yellow), registered at 0.25 m/px, and photos: the one-floor front wing at the back of the car park is 14 m wide, its face to the car park 4 m west of the outline."
+    },
+    {
+      "id": "ml:fa697e32-9aaa-4066-a0e4-9a7660d94e13",
+      "place": "building behind the Frank Torto Building",
+      "source": "owner's game screenshot",
+      "ring": [
+        [
+          216.1,
+          -84.5
+        ],
+        [
+          222.5,
+          -84.5
+        ],
+        [
+          222.5,
+          -94.3
+        ],
+        [
+          216.1,
+          -94.3
+        ]
+      ],
+      "reason": "Owner's game screenshot (red mark): the building stood on the lane where it bends round the Frank Torto Building, its front over the road and pavement; pushed back 5.6 m east, clear of the road and its pavement."
+    },
+    {
+      "id": "osm:way/628958898",
+      "place": "chemistry range east",
+      "source": "owner's game screenshot",
+      "ring": [
+        [
+          203.6,
+          -62.2
+        ],
+        [
+          203.6,
+          -80.8
+        ],
+        [
+          194.1,
+          -80.8
+        ],
+        [
+          194.1,
+          -75.9
+        ],
+        [
+          166.5,
+          -75.9
+        ],
+        [
+          166.5,
+          -80.8
+        ],
+        [
+          159.3,
+          -80.8
+        ],
+        [
+          159.3,
+          -62.2
+        ]
+      ],
+      "reason": "Owner's game screenshot (red mark): the range's east end stood on the lane at the bend by the Frank Torto Building; moved 2 m west (clear of the covered walk) and its east end 3 m shorter, so the road and its pavement pass clear of it."
+    },
+    {
+      "id": "ml:02ba2729-9bdb-4097-8910-aab22508b946",
+      "place": "small square building west of LECIAD (south)",
+      "source": "owner's marked aerial",
+      "ring": [
+        [
+          248.2,
+          -17.2
+        ],
+        [
+          256.4,
+          -17.2
+        ],
+        [
+          256.4,
+          -8.6
+        ],
+        [
+          248.2,
+          -8.6
+        ]
+      ],
+      "reason": "Owner's marked aerial of LECIAD and the small structures west of it (registered to LECIAD's outline at 0.225 m/px) and street photo: the southern of the two small square one-floor buildings (white mark), the same size as the northern one; the detected outline sat 4 m south of its roof."
     }
   ],
   "addAreas": [

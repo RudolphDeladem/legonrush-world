@@ -28,3 +28,8 @@ export const SOLIDS = new SolidGrid();
 /** trees along the current ridden route (rebuilt with each route) */
 export const ROUTE_SOLIDS = new SolidGrid();
 export const solidAt = (x: number, z: number, pad = 0) => SOLIDS.at(x, z, pad) || ROUTE_SOLIDS.at(x, z, pad);
+
+/** open passages through a building's ground floor (no door, no gate: owner), world [x0, x1, z0, z1]: the free-ridden
+ *  bike rides through the building's outline there; the passage's own walls and columns lie outside the rectangle */
+export const PASSAGES: [number, number, number, number][] = [];
+export const inPassage = (x: number, z: number) => PASSAGES.some(([x0, x1, z0, z1]) => x > x0 && x < x1 && z > z0 && z < z1);
