@@ -3737,6 +3737,62 @@
         ]
       ],
       "reason": "Owner's marked aerial of LECIAD and the small structures west of it (registered to LECIAD's outline at 0.225 m/px) and street photo: the southern of the two small square one-floor buildings (white mark), the same size as the northern one; the detected outline sat 4 m south of its roof."
+    },
+    {
+      "id": "osm:way/320073417",
+      "place": "Legon Hall, the long block east of the front",
+      "source": "owner's game screenshot",
+      "ring": [
+        [
+          -116.7,
+          158.7
+        ],
+        [
+          -52.4,
+          158.7
+        ],
+        [
+          -52.4,
+          170.2
+        ],
+        [
+          -116.7,
+          170.2
+        ]
+      ],
+      "reason": "Owner's game screenshot of Legon Hall's front (violet mark): the long block east of the front is joined to the gable block beside the entrance; the 4 m gap between them is closed (all of Legon's and Akuafo's buildings are joined: owner)."
+    },
+    {
+      "id": "ml:0806129e-84a3-41c5-919f-52e0f7767ae1",
+      "place": "Legon Hall, the north-west corner block",
+      "source": "owner's marked aerial",
+      "ring": [
+        [
+          -201.5,
+          152.6
+        ],
+        [
+          -187.9,
+          152.6
+        ],
+        [
+          -187.9,
+          160.2
+        ],
+        [
+          -195.8,
+          160.2
+        ],
+        [
+          -195.8,
+          176.4
+        ],
+        [
+          -201.5,
+          176.4
+        ]
+      ],
+      "reason": "Owner's marked aerial of Legon and Akuafo halls (purple lines along the outward faces): the north-west corner block and the range along the hall's west side joining it to the block south of it, as the roofs show."
     }
   ],
   "addAreas": [

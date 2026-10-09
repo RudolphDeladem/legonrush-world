@@ -411,7 +411,7 @@ function mast(k: Kit, O: [number, number], x: number, z: number, h: number) {
 // The twin of the long block opposite: two floors under orange tiles, its gables north and south boarded in dark timber,
 // the raised lantern over its middle; along the west side a tiled pent roof over the ground floor's tall dark shop
 // windows; at the south end the entrance under a first-floor balcony with a solid white parapet, a step up from a
-// platform faced in rubble stone (the owner's yellow marks) between low red railings.
+// platform faced in rubble stone (the owner's yellow marks); no railings on it (owner).
 const KO: [number, number] = [49.3, 75];
 /** the shop's ground floor along the square: tall dark glass windows in black frames */
 const W_SHOP: Style = {
@@ -464,14 +464,10 @@ const bookshop: Spec = (() => {
       k.glass.push(B(xm - 0.9, xm + 0.9, 1.5, 2.9, zs + 0.06, zs + 0.08));
       k.plain.push([B(xm - 1.1, xm + 1.1, 3.2, 3.55, zs, zs + 0.06), '#f4f4f1']);
       k.signs.push({ text: 'UNIVERSITY OF GHANA BOOKSHOP', x: X(xm), y: 3.37, z: Z(zs) + 0.07, ry: 0, w: 2.0, colors: ['#f4f4f1', '#1d3f7a'] });
-      // the platform before it faced in rubble stone, the step up in the middle, red railings either side
+      // the platform before it faced in rubble stone, the step up in the middle (no railings: owner)
       stoneWall(k, KO, st, 43.0, xm - 1.6, zs, zs + 3.4, 0.6);
       stoneWall(k, KO, st, xm + 1.6, 56.0, zs, zs + 2.8, 0.6);
       for (let i = 0; i < 4; i++) k.plain.push([B(xm - 1.6, xm + 1.6, 0, 0.6 - 0.15 * i, zs, zs + 2.0 + 0.35 * i), '#cfcac0']);
-      for (const [a, b2] of [[43.4, 46.6], [52.2, 55.4]]) {
-        k.plain.push([B(a, b2, 1.45, 1.5, zs + 3.6, zs + 3.65), '#a8312b'], [B(a, b2, 1.0, 1.04, zs + 3.6, zs + 3.65), '#a8312b']);
-        for (let x = a; x <= b2 + 0.01; x += 0.4) k.plain.push([B(x - 0.02, x + 0.02, 0.6, 1.5, zs + 3.6, zs + 3.65), '#a8312b']);
-      }
       // a stone-faced bed along the west front, shrubs in it
       stoneWall(k, KO, st, 37.8, 39.6, 64.5, 87.0, 0.45);
       for (let z = 66; z < 86; z += 4) k.plain.push([new THREE.IcosahedronGeometry(0.55, 0).scale(1.2, 0.8, 1).translate(X(38.7), 0.85, Z(z)), '#3f6f2c']);

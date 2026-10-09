@@ -1187,6 +1187,32 @@ LECIAD's outline at 0.225 m/px (`liciad.ts`, `physics.ts`, `solids.ts`, `Game.ts
   dark hipped roof on six black posts.
 - **The tree** (red): a big shade tree east of the first small building, its wide dark crown over that building's roof.
 
+## 51. The galleries on Legon's and Akuafo's outward faces; Legon's front joined up; the Bookshop's railings gone
+
+From the owner's marked aerial of the two halls (purple lines on the outward faces), night photos of an outward face of
+each hall and game screenshots (`galleries.ts`, `greathalls.ts`, `chalets.ts`, `balmewest.ts`):
+
+- **The outward faces** (purple lines): the upper floor is an **open gallery**. The wall below runs up into a **solid
+  parapet**, **square pillars** rise from it to a deep beam under the eaves, and the upper floor's wall stands 1.9 m
+  back with a **dark door** (fanlight over it) to each room over a painted base, **blue at Legon**, **light green at
+  Akuafo**; lamps in the gallery ceiling, walls closing its ends. The ground floor's windows are covered by **black
+  wooden burglar-proofing**: a fret of squares and crosses at Legon, upright bars at Akuafo (photos). The tile hip roof
+  still runs out over the gallery to the outer face. Each marked block is split into its ground floor and the set-back
+  upper floor (`galleryBlocks`), with the gallery and roof added by `galleryParts`.
+  - Legon: the north faces of the north-west corner block and the long block east of the front; the west faces of the
+    range down the hall's west side; the south faces of the long block behind it and of the small block at the west
+    end; the outer faces of the four long lanes; the south faces along the bottom of the hall.
+  - Akuafo: the north and south faces of the long west blocks; the east faces of the blocks on the east side; the
+    outer faces of the four long lanes; the south faces along the bottom; the west faces of the long roadside blocks
+    (chalets.ts; their lean-to replaced by the gallery), joined by an upper-floor **bridge over the footpath** between them.
+  - The entrances are not changed.
+- **Legon's small blocks** at the north-west and on the west side, too small for the hall's model before, are now part
+  of it (`min` 85 m²); the north-west corner block's outline runs down the west side to the range below it (the aerial's
+  roofs), and the joins add the links between them, so the hall is closed there.
+- **The gap beside Legon's front** (violet): the long block east of the front now runs west to the gable block beside
+  the entrance (`reshape`); no join is built over the gable block itself.
+- **The University Bookshop**: the red railings on its entrance platform are gone (owner).
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

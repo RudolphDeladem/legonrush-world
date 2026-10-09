@@ -320,7 +320,7 @@ try {
     if ((await server.ssrLoadModule('/src/game/nblock.ts')).nBlockGcb.frames().length !== 2) fail('expected the New N Block and GCB models'); }
   // owner: the chalet blocks along the road south of the roundabout (two floors, cottages one) and Legon's gable block
   { for (const [x, z, f] of [[33.7, 166.6, 2], [27.8, 176.6, 1], [-26.6, 163.6, 2], [-13.8, 202.5, 1], [-122.3, 168.9, 2]]) { const b = buildingAt(x, z); if (!b || (f === 1 ? b.height > 6 : b.height < 8)) fail(`the chalet block at ${x},${z} is not ${f} floor(s) (owner)`); }
-    if ((await server.ssrLoadModule('/src/game/chalets.ts')).chaletSite.frames().length !== 13) fail('expected the chalet blocks, Legon\'s gable block and the verges'); }
+    if ((await server.ssrLoadModule('/src/game/chalets.ts')).chaletSite.frames().length !== 14) fail('expected the chalet blocks, the bridge between Akuafo\'s west blocks, Legon\'s gable block and the verges'); }
   // owner: WACCBIP entered up the stair at its front (F, to Volta Hall Road), three floors; the blue shades before it are
   // car parks, not buildings; the old shed one floor; the structures circled yellow gone, trees there
   { const inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
@@ -407,6 +407,15 @@ try {
     }
     { const b = buildingAt(313, -25); if (!b || b.height < 14 || b.height > 17) fail('LECIAD is not four storeys at its south block (owner)'); }
     { const b = buildingAt(252.3, -12.9); if (!b || b.height > 4.6) fail('the small square building west of LECIAD is not one floor (owner)'); }
+  }
+  // owner: Legon's and Akuafo's outward faces have the open gallery upstairs (purple lines); Legon's long block east of
+  // the front meets the gable block beside it; its north-west corner block joins the range down its west side
+  {
+    const gh = await server.ssrLoadModule('/src/game/greathalls.ts');
+    const upper = (s) => s.blocks.filter((b) => b.y === 3.6 && b.floors === 1).length;
+    if (upper(gh.legon) < 12) fail(`Legon Hall has ${upper(gh.legon)} gallery floors, fewer than the owner's purple lines (12)`);
+    if (upper(gh.akuafo) < 11) fail(`Akuafo Hall has ${upper(gh.akuafo)} gallery floors, fewer than the owner's purple lines (11)`);
+    for (const [x, z, what] of [[-114.7, 164, 'the gap east of Legon Hall\'s front'], [-198.6, 168, 'Legon Hall\'s west range by the north-west corner']]) if (!buildingAt(x, z)) fail(`${what} is open (owner: the buildings are joined)`);
   }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between

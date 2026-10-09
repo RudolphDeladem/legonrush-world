@@ -31,6 +31,7 @@ import { PAVE, WHITE, box } from './modelkit';
 import { PL, createSite, louvre, render, slab, type Block, type Kit, type Spec, type Style } from './blocks';
 import { garden } from './gardens';
 import { rectsOf, type Rect } from './rectilinear';
+import { AKUAFO_GALLERY, LEGON_GALLERY, galleryBlocks, galleryParts, type GalleryJob, type GalleryLook } from './galleries';
 
 const ROOF = '#b85a37', FASCIA = '#5a3a2c', STONE = '#8f7a63';
 
@@ -162,7 +163,7 @@ function crossed(r: Rect) {
  * across a gap of up to `maxGap` m, over the width they share (a block end, 3 to 16 m), unless something
  * already stands in the gap. A join a path runs through is a gateway: raised over an open passage.
  */
-function joins(ps: Piece[], maxGap = 15): { r: Rect; floors: number; gate: boolean }[] {
+function joins(ps: Piece[], maxGap = 15, avoid: Rect[] = []): { r: Rect; floors: number; gate: boolean }[] {
   const out: { r: Rect; floors: number; gate: boolean }[] = [];
   for (let i = 0; i < ps.length; i++) for (let j = i + 1; j < ps.length; j++) {
     const a = ps[i], b = ps[j];
@@ -177,16 +178,16 @@ function joins(ps: Piece[], maxGap = 15): { r: Rect; floors: number; gate: boole
       const g0 = A[1] <= B[0] ? A[1] : B[1] <= A[0] ? B[1] : NaN, g1 = A[1] <= B[0] ? B[0] : A[0];
       if (g1 - g0 > 0.2 && g1 - g0 <= maxGap) r = [g0, g1, oz0, oz1];
     }
-    if (!r || ps.some((p) => p !== a && p !== b && overlaps(p.r, r!)) || out.some((o) => overlaps(o.r, r!))) continue;
+    if (!r || ps.some((p) => p !== a && p !== b && overlaps(p.r, r!)) || out.some((o) => overlaps(o.r, r!)) || avoid.some((v) => overlaps(v, r!))) continue;
     out.push({ r, floors: Math.min(a.floors, b.floors), gate: crossed(r) });
   }
   return out;
 }
 /** pieces and their joins as blocks in a frame at origin o; a gateway stands on an open passage 3.2 m high */
-function blocksOf(ps: Piece[], o: [number, number], storey: number, joinFloors?: number) {
+function blocksOf(ps: Piece[], o: [number, number], storey: number, joinFloors?: number, avoid: Rect[] = []) {
   const L = (r: Rect): Pick<Block, 'x0' | 'x1' | 'z0' | 'z1'> => ({ x0: r[0] - o[0], x1: r[1] - o[0], z0: r[2] - o[1], z1: r[3] - o[1] });
   const blocks: Block[] = ps.map((p) => ({ ...L(p.r), floors: p.floors, ...p.extra }));
-  const js = joins(ps);
+  const js = joins(ps, 15, avoid);
   for (const j of js) {
     const floors = joinFloors ?? j.floors;
     blocks.push(j.gate ? { ...L(j.r), floors: Math.max(1, floors - 1), y: 3.2 } : { ...L(j.r), floors });
@@ -293,7 +294,10 @@ const TWIN_ST = 3.6;
  * footprint takes `frontStyle` on its north face (the back of the loggias), the entrance model stands before it.
  * (Both fronts face north, so a viewer facing one has east on the left.)
  */
-const twin = (name: string, o: [number, number], box_: [number, number, number, number], front: [number, number, number, number], skip: RegExp | null, drop: [number, number][], entrance: (k: Kit) => void, frontStyle: Style, wall: Style, roof: string, plinth: string, keep: [number, number, number, number][], min = 120): Spec => {
+/** an outward face with the gallery upstairs (owner's purple lines): a world point inside the block, the face, and
+ *  optionally the stretch of it (world, along the face) the gallery runs */
+interface Gal { at: [number, number]; side: 'x0' | 'x1' | 'z0' | 'z1'; range?: [number, number] }
+const twin = (name: string, o: [number, number], box_: [number, number, number, number], front: [number, number, number, number], skip: RegExp | null, drop: [number, number][], entrance: (k: Kit) => void, frontStyle: Style, wall: Style, roof: string, plinth: string, keep: [number, number, number, number][], min = 120, gals: Gal[] = [], look: GalleryLook = LEGON_GALLERY): Spec => {
   const fps = footprints(...box_, min, skip, drop).filter(({ b }) => !inRect((b.minX + b.maxX) / 2, (b.minZ + b.maxZ) / 2, front));
   const fr = footprints(...front, 120);
   const frontPieces = piecesOf(fr, 2, {}, fps.length);
@@ -301,13 +305,25 @@ const twin = (name: string, o: [number, number], box_: [number, number, number, 
   const fore = frontPieces.reduce((m, p) => (p.r[2] < m.r[2] - 0.01 || (Math.abs(p.r[2] - m.r[2]) < 0.01 && p.r[1] - p.r[0] > m.r[1] - m.r[0]) ? p : m), frontPieces[0]);
   fore.extra = { faces: { z0: frontStyle } };
   const ps = [...piecesOf(fps, 2), ...frontPieces];
-  const bl = blocksOf(ps, o, TWIN_ST);
+  // (no join over Legon's gable block beside the front, modelled in chalets.ts)
+  const bl = blocksOf(ps, o, TWIN_ST, undefined, [[-131.4, -116.7, 155.2, 182.6]]);
+  // the galleries on the outward faces: each block split into its ground floor and the upper floor set back
+  const jobs: GalleryJob[] = [];
+  for (const g of gals) {
+    const lx = g.at[0] - o[0], lz = g.at[1] - o[1];
+    const i = bl.blocks.findIndex((b) => b.y === undefined && b.floors === 2 && lx > b.x0 && lx < b.x1 && lz > b.z0 && lz < b.z1);
+    if (i < 0) throw new Error(`${name}: no block for the gallery at ${g.at}`);
+    const off = g.side === 'z0' || g.side === 'z1' ? o[0] : o[1];
+    const { blocks, job } = galleryBlocks(bl.blocks[i], g.side, TWIN_ST, look, wall, g.range && [g.range[0] - off, g.range[1] - off]);
+    bl.blocks.splice(i, 1, ...blocks);
+    jobs.push(job);
+  }
   return {
     name, axis: [1, 0], origin: o, storey: TWIN_ST, style: wall, roofColor: roof, fascia: FASCIA, pitch: 0.5, plinth,
     replaces: pointsOf(ps),
     blocks: bl.blocks,
     keep,
-    extras: (k) => { gateways(k, bl.gates); entrance(k); },
+    extras: (k) => { gateways(k, bl.gates); entrance(k); for (const j of jobs) galleryParts(k, j, look, { pitch: 0.5, fascia: FASCIA }); },
   };
 };
 const WHITE_T = '#f4f3ef', LEDGE = '#3a3532', IRON = '#1b1c1e';
@@ -340,7 +356,7 @@ const AO: [number, number] = [157, 165];
 const AK_ROOF = '#b4532f';
 // the front block's middle (x 147.9..167, north face z 156.2) carries the loggia; its porch stands 1.6 m forward
 const AK = { x0: 147.9 - AO[0], x1: 167 - AO[0], P: 156.2 - AO[1], F: 154.6 - AO[1] };
-const akuafo = twin('Akuafo Hall Main', AO, [85, 215, 150, 390], [140, 175, 154, 174], null, [], (k) => {
+export const akuafo = twin('Akuafo Hall Main', AO, [85, 215, 150, 390], [140, 175, 154, 174], null, [], (k) => {
   const { x0, x1, P, F } = AK, xm = (x0 + x1) / 2;
   const X = (x: number) => x - AO[0], Z = (z: number) => z - AO[1];
   // the porch block: white over a light green base (owner's photos)
@@ -407,14 +423,19 @@ const akuafo = twin('Akuafo Hall Main', AO, [85, 215, 150, 390], [140, 175, 154,
   k.plain.push([new THREE.CylinderGeometry(1.4, 0.4, 0.4, 14).translate(0, 1.7, fz), '#e8e2d6']);
   greenCourts(k, AO, [[128, 186, 222, 287], [128, 186, 301, 351]]);
   // (the small blocks in and round the south courts are part of the hall too, white like the rest: owner)
-}, AK_LOGGIA, AKUAFO_WALL, AK_ROOF, '#8fc0a3', [[147.9 - 157, 167 - 157, 152.8 - 165, 156.2 - 165], [172 - 157, 189 - 157, 148 - 165, 157 - 165]], 60);
+}, AK_LOGGIA, AKUAFO_WALL, AK_ROOF, '#8fc0a3', [[147.9 - 157, 167 - 157, 152.8 - 165, 156.2 - 165], [172 - 157, 189 - 157, 148 - 165, 157 - 165]], 60, [
+  // the outward faces with galleries (owner's purple lines on the aerial; picture 2)
+  { at: [90, 165], side: 'z0' }, { at: [90, 216], side: 'z1' }, { at: [210, 190], side: 'x1' }, { at: [210, 209], side: 'x1' },
+  { at: [130, 255], side: 'x0' }, { at: [182, 255], side: 'x1' }, { at: [130, 325], side: 'x0' }, { at: [182, 325], side: 'x1' },
+  { at: [138, 357], side: 'z1', range: [136.6, 150.3] }, { at: [155, 357], side: 'z1' }, { at: [170, 358], side: 'z1', range: [161.4, 176.8] },
+], AKUAFO_GALLERY);
 
 const LO: [number, number] = [-147, 165];
 const LG_ROOF = '#8c4a32';
 const LG = { x0: -156.7 - LO[0], x1: -137.7 - LO[0], P: 156.6 - LO[1], F: 154.6 - LO[1] };
 // (the hall mirrors Akuafo across the avenue's axis; the satellite-detected outline at (-82, 378) is not part of it)
 // (the gable block east of the front, at (-122.3, 168.9), is modelled from the owner's photo in chalets.ts)
-const legon = twin('Legon Hall', LO, [-215, -50, 150, 390], [-165, -129, 154, 174], /Maison/, [[-82, 378], [-122.3, 168.9]], (k) => {
+export const legon = twin('Legon Hall', LO, [-215, -50, 150, 390], [-165, -129, 154, 174], /Maison/, [[-82, 378], [-122.3, 168.9]], (k) => {
   const { x0, x1, P, F } = LG, xm = (x0 + x1) / 2;
   const X = (x: number) => x - LO[0], Z = (z: number) => z - LO[1];
   const G = PL + TWIN_ST, r = 1.75, spring = 1.35, bw = (x1 - x0) / 3;
@@ -475,7 +496,13 @@ const legon = twin('Legon Hall', LO, [-215, -50, 150, 390], [-165, -129, 154, 17
   gs.tree(k, X(-121), Z(146.5), 1.9);
   gs.palm(k, X(-160), Z(151), 8);
   greenCourts(k, LO, [[-175, -119, 222, 287], [-175, -119, 298, 350]]);
-}, LG_LOGGIA, LEGON_WALL, LG_ROOF, '#d4c29a', [[-166 - -147, -128 - -147, 141 - 165, 156.6 - 165], [-137 - -147, -128.8 - -147, 146 - 165, 155 - 165]]);
+}, LG_LOGGIA, LEGON_WALL, LG_ROOF, '#d4c29a', [[-166 - -147, -128 - -147, 141 - 165, 156.6 - 165], [-137 - -147, -128.8 - -147, 146 - 165, 155 - 165]], 85, [
+  // the outward faces with galleries (owner's purple lines on the aerial; picture 3)
+  { at: [-195, 156], side: 'z0' }, { at: [-198.5, 168], side: 'x0' }, { at: [-199, 192], side: 'x0' }, { at: [-194, 214], side: 'z1' },
+  { at: [-82, 164], side: 'z0' }, { at: [-84, 213], side: 'z1' },
+  { at: [-173, 250], side: 'x0' }, { at: [-122, 255], side: 'x1' }, { at: [-172, 320], side: 'x0' }, { at: [-122, 325], side: 'x1' },
+  { at: [-160, 355], side: 'z1', range: [-166.8, -152.2] }, { at: [-130, 356], side: 'z1', range: [-141.9, -126.6] },
+], LEGON_GALLERY);
 
 /** the long courts between the lanes: a walk down the middle, lawns, palms and bushes */
 function greenCourts(k: Kit, o: [number, number], courts: [number, number, number, number][]) {

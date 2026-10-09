@@ -11,7 +11,8 @@
 // passage with an iron lattice joining it to the front block.
 import * as THREE from 'three';
 import { box, speckle, tri2 } from './modelkit';
-import { PL, createSite, louvre, render, type Kit, type Spec, type Style } from './blocks';
+import { PL, createSite, louvre, render, type Block, type Kit, type Spec, type Style } from './blocks';
+import { AKUAFO_GALLERY, GAL_DEPTH, galleryBlocks, galleryParts, upperOnly, type GalleryJob } from './galleries';
 import { garden } from './gardens';
 
 const TILE = '#c4623d', TIMBER = '#4a3526', BOARD = '#33251b', BARGE = '#2e241e', WALL = '#f3f1ea';
@@ -53,15 +54,22 @@ interface Chalet {
   balcony?: 'z0' | 'z1' | 'x0' | 'x1';
   leanTo?: boolean;
   legonGable?: boolean;
+  /** the outward face with the open gallery upstairs and burglar-proofed windows below (owner's purple line) */
+  gallery?: 'x0' | 'x1' | 'z0' | 'z1';
+  /** only the upper floor, a bridge over the footpath between two blocks */
+  gate?: boolean;
 }
 const CHALETS: Chalet[] = [
   // Akuafo's side, east of the road (owner's green mark, picture 4)
   { r: [26.6, 40.7, 160.7, 172.4], floors: 2, ridge: 'x', road: 'x0', balcony: 'z0' },
   { r: [24.1, 31.5, 174.7, 178.5], floors: 1, ridge: 'x', road: 'x0' },
-  { r: [46.7, 57.5, 159.2, 187.0], floors: 2, ridge: 'z', road: 'x0', leanTo: true },
+  // the long blocks behind them: their west faces have the gallery upstairs like the hall's outward faces, joined by
+  // a bridge over the footpath between them (owner's purple line on the aerial, picture 2)
+  { r: [46.7, 57.5, 159.2, 187.0], floors: 2, ridge: 'z', road: 'x0', gallery: 'x0' },
+  { r: [46.7, 57.5, 187.0, 196.4], floors: 2, ridge: 'z', road: 'x0', gallery: 'x0', gate: true },
   { r: [23.5, 31.6, 200.5, 205.3], floors: 1, ridge: 'x', road: 'x0' },
   { r: [27.1, 42.1, 208.6, 221.3], floors: 2, ridge: 'x', road: 'x0', balcony: 'z1', leanTo: true },
-  { r: [46.8, 57.6, 196.4, 222.2], floors: 2, ridge: 'z', road: 'x0', leanTo: true },
+  { r: [46.8, 57.6, 196.4, 222.2], floors: 2, ridge: 'z', road: 'x0', gallery: 'x0' },
   // Legon's side, west of the road (owner's purple mark, picture 3)
   { r: [-33.6, -19.5, 157.8, 169.5], floors: 2, ridge: 'x', road: 'x1', balcony: 'z0' },
   { r: [-49.0, -38.1, 160.2, 187.9], floors: 2, ridge: 'z', road: 'x1', leanTo: true },
@@ -76,12 +84,21 @@ function chalet(c: Chalet): Spec {
   const [wx0, wx1, wz0, wz1] = c.r, o: [number, number] = [(wx0 + wx1) / 2, (wz0 + wz1) / 2];
   const x0 = wx0 - o[0], x1 = wx1 - o[0], z0 = wz0 - o[1], z1 = wz1 - o[1];
   const faces = { [c.road]: CHALET_DOORS };
+  let blocks: Block[] = [{ x0, x1, z0, z1, floors: c.floors, roof: 'none', faces }];
+  let job: GalleryJob | null = null;
+  if (c.gallery && !c.gate) ({ blocks, job } = galleryBlocks({ x0, x1, z0, z1, floors: 2, roof: 'none' }, c.gallery, ST, AKUAFO_GALLERY, CHALET_WALL, undefined, false));
+  if (c.gate) {
+    // the bridge: the upper floor over the footpath, set back behind its gallery like the blocks either side
+    const UP = upperOnly(CHALET_WALL);
+    blocks = [{ x0: x0 + GAL_DEPTH, x1, z0, z1, floors: 1, roof: 'none', y: ST, faces: { x0: UP, x1: UP, z0: UP, z1: UP } }];
+    job = { rect: [x0, x1, z0, z1], side: 'x0', a: z0, b: z1, storey: ST, hip: false };
+  }
   return {
     name: c.legonGable ? 'Legon Hall gable block' : `chalet ${o[0].toFixed(0)},${o[1].toFixed(0)}`,
     axis: [1, 0], origin: o, storey: ST, style: CHALET_WALL, roofColor: TILE, fascia: BARGE, pitch: 0.6,
     plinth: '#cfc9bb',
     replaces: [o],
-    blocks: [{ x0, x1, z0, z1, floors: c.floors, roof: 'none', faces }],
+    blocks,
     keep: c.legonGable ? [[-131.5 - o[0], x0, 160 - o[1], 171 - o[1]], [x0, x1, z0 - 3.5, z0]] : [],
     extras: (k: Kit) => {
       const eave = k.wallTop(c.floors), OV = 0.75, GO = 0.95, pitch = 0.62;
@@ -99,9 +116,16 @@ function chalet(c: Chalet): Spec {
       }
       const ridgeBox = along ? box(a0 - GO, a1 + GO, top - 0.05, top + 0.14, bm - 0.18, bm + 0.18) : box(bm - 0.18, bm + 0.18, top - 0.05, top + 0.14, a0 - GO, a1 + GO);
       k.plain.push([ridgeBox, '#9c4a2c']);
-      // the gable triangles clad in dark timber boards, bargeboards along the verges
+      if (job) galleryParts(k, job, AKUAFO_GALLERY, { pitch, fascia: BARGE });
+      if (c.gate) {
+        // the passage under the bridge: a dark soffit, a white lintel each side
+        const G = PL + ST;
+        k.plain.push([box(x0, x1, G - 0.25, G, z0, z1), '#3a3430']);
+        for (const z of [z0, z1]) k.plain.push([box(x0, x1, G - 0.45, G + 0.4, z - 0.12, z + 0.12), WALL]);
+      }
+      // the gable triangles clad in dark timber boards, bargeboards along the verges (a bridge between two blocks has none)
       const slope = Math.atan(pitch), vl = Math.hypot(half, half * pitch);
-      for (const [a, s] of [[a0, -1], [a1, 1]] as [number, number][]) {
+      for (const [a, s] of (c.gate ? [] : [[a0, -1], [a1, 1]]) as [number, number][]) {
         const geo = tri2(P(a + s * 0.03, eave, b0 - 0.02) as [number, number, number], P(a + s * 0.03, eave, b1 + 0.02) as [number, number, number], P(a + s * 0.03, top - 0.08, bm) as [number, number, number]);
         k.plain.push([geo, TIMBER]);
         for (let t = b0 + 0.4; t < b1 - 0.2; t += 0.45) {
