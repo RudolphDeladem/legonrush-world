@@ -5,9 +5,9 @@
   "osm-entrance": 0,
   "gate": 1,
   "path-access": 2,
-  "drive-access": 17,
+  "drive-access": 18,
   "area-entry": 8,
-  "frontage": 208,
+  "frontage": 207,
   "point": 109
  },
  "byConfidence": {
@@ -25,6 +25,7 @@
   "Mensah Sarbah Main Hall Females' Laundromat: the last few metres from the network to the entrance cross Block F (an enclosed courtyard or a mapping gap)",
   "SalmaRise: the last few metres from the network to the entrance cross osm:way/1137230518 (an enclosed courtyard or a mapping gap)",
   "Didi Jollof: the last few metres from the network to the entrance cross Jubilee Hall (an enclosed courtyard or a mapping gap)",
+  "Anglican Church Legon Hall: the last few metres from the network to the entrance cross Anglican Church Legon Hall (an enclosed courtyard or a mapping gap)",
   "RIPS building: the last few metres from the network to the entrance cross ISSER Building (an enclosed courtyard or a mapping gap)"
  ],
  "priority": [
@@ -361,10 +362,10 @@
  ],
  "byStatus": {
   "verified": 85,
-  "inferred": 203,
+  "inferred": 202,
   "partial": 6,
   "unverified": 9,
-  "mapped": 133
+  "mapped": 134
  },
  "curated": [
   {
@@ -1116,6 +1117,11 @@
    "way": "osm:way/394125243",
    "wayName": "Vice Chancellor's Crescent",
    "building": "ml:e8d980c4-af2e-4b8e-9c3d-27529c7e68d0"
+  },
+  {
+   "way": "osm:way/690589808",
+   "building": "osm:way/278303045",
+   "buildingName": "Anglican Church Legon Hall"
   },
   {
    "way": "osm:way/958782146",

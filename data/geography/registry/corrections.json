@@ -276,6 +276,10 @@
     {
       "id": "osm:way/631051064",
       "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos: the mapped car park ran over the lawn south of the Interdenominational Church's cross-shaped block (replaced by owner:lic-parking-south)."
+    },
+    {
+      "id": "ml:1aca4480-578f-49e4-920d-29241909ea07",
+      "reason": "Owner's marked aerial of the ground behind the three churches (red line), the Anglican church (blue) and its hall (yellow), registered to the Interdenominational Church and St. Thomas Aquinas at 0.45 m/px, and street photos: no building there: the Anglican car park west of the church, tents and vans on it (replaced by owner:anglican-parking-west)."
     }
   ],
   "heights": [
@@ -2945,6 +2949,20 @@
       "levels": 1,
       "height": 2.6,
       "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos. Modelled in src/game/churches.ts."
+    },
+    {
+      "id": "osm:way/394125205",
+      "place": "Anglican Church- Main Church",
+      "levels": 1,
+      "height": 13.5,
+      "reason": "Owner's marked aerial of the ground behind the three churches (red line), the Anglican church (blue) and its hall (yellow), registered to the Interdenominational Church and St. Thomas Aquinas at 0.45 m/px, and street photos: one tall storey under a steep roof. Modelled in src/game/churches.ts."
+    },
+    {
+      "id": "osm:way/278303045",
+      "place": "Anglican Church Legon Hall",
+      "levels": 1,
+      "height": 10.0,
+      "reason": "Owner's marked aerial of the ground behind the three churches (red line), the Anglican church (blue) and its hall (yellow), registered to the Interdenominational Church and St. Thomas Aquinas at 0.45 m/px, and street photos: one tall storey under a steep roof. Modelled in src/game/churches.ts."
     }
   ],
   "reclass": [
@@ -4286,6 +4304,70 @@
         ]
       ],
       "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos: the small white shed on the open ground."
+    },
+    {
+      "id": "osm:way/394125205",
+      "place": "Anglican Church- Main Church",
+      "source": "owner's marked aerial",
+      "ring": [
+        [
+          -373.5,
+          -538.5
+        ],
+        [
+          -338.5,
+          -538.5
+        ],
+        [
+          -338.5,
+          -517.5
+        ],
+        [
+          -373.5,
+          -517.5
+        ]
+      ],
+      "reason": "Owner's marked aerial of the ground behind the three churches (red line), the Anglican church (blue) and its hall (yellow), registered to the Interdenominational Church and St. Thomas Aquinas at 0.45 m/px, and street photos: the church stands 5 m east and 6 m north of the mapped outline, as its roof shows."
+    },
+    {
+      "id": "osm:way/278303045",
+      "place": "Anglican Church Legon Hall",
+      "source": "owner's marked aerial",
+      "ring": [
+        [
+          -404.0,
+          -481.0
+        ],
+        [
+          -391.0,
+          -481.0
+        ],
+        [
+          -390.0,
+          -489.0
+        ],
+        [
+          -376.0,
+          -489.0
+        ],
+        [
+          -376.0,
+          -475.0
+        ],
+        [
+          -339.0,
+          -475.0
+        ],
+        [
+          -339.0,
+          -453.0
+        ],
+        [
+          -404.0,
+          -453.5
+        ]
+      ],
+      "reason": "Owner's marked aerial of the ground behind the three churches (red line), the Anglican church (blue) and its hall (yellow), registered to the Interdenominational Church and St. Thomas Aquinas at 0.45 m/px, and street photos: the hall (its long bar and the wing north of its west end) and the two-storey block west of it, as the roofs show."
     }
   ],
   "addAreas": [
@@ -8671,6 +8753,52 @@
         ]
       ],
       "reason": "Owner's marked aerial of St. Thomas Aquinas Catholic Church, the Legon Interdenominational Church and the open ground west of them (green line), registered to the Interdenominational Church at 0.235 m/px, and street photos: St. Thomas Aquinas' car parks of grey pavers east and south of the church."
+    },
+    {
+      "id": "owner:anglican-parking-west",
+      "class": "parking",
+      "ring": [
+        [
+          -411.0,
+          -545.0
+        ],
+        [
+          -396.5,
+          -545.0
+        ],
+        [
+          -396.5,
+          -500.0
+        ],
+        [
+          -411.0,
+          -500.0
+        ]
+      ],
+      "reason": "Owner's marked aerial of the ground behind the three churches (red line), the Anglican church (blue) and its hall (yellow), registered to the Interdenominational Church and St. Thomas Aquinas at 0.45 m/px, and street photos: the car park west of the Anglican church."
+    },
+    {
+      "id": "owner:anglican-court",
+      "class": "parking",
+      "ring": [
+        [
+          -372.0,
+          -515.0
+        ],
+        [
+          -341.0,
+          -515.0
+        ],
+        [
+          -341.0,
+          -503.0
+        ],
+        [
+          -372.0,
+          -503.0
+        ]
+      ],
+      "reason": "Owner's marked aerial of the ground behind the three churches (red line), the Anglican church (blue) and its hall (yellow), registered to the Interdenominational Church and St. Thomas Aquinas at 0.45 m/px, and street photos: the paved court between the Anglican church and its hall, parking bays."
     }
   ],
   "addWays": [

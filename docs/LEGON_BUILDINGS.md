@@ -1297,6 +1297,34 @@ park (`churches.ts`; outlines moved onto the roofs in the aerial: `corrections.j
   with grass, and dry grass, softened into patches, with bushes and trees where the aerial shows them; the small water
   tank and the white shed on it.
 
+## 55. UGCS's stair to the east end; the Anglican church and its hall; the open ground behind the three churches
+
+From the owner's game screenshot (green: where UGCS's stair belongs), street photos of the Anglican church hall (yellow)
+and church (blue), and a marked aerial (registered to the Interdenominational Church and St. Thomas Aquinas at 0.45 m/px)
+(`balme.ts`, `churches.ts`):
+
+- **UGCS's red-brown stair** stands at the **east** end of its back face (it had been put at the west): the landings
+  and doors by the east end wall, the board on its posts east of the stair, the generator further west.
+- **The Anglican church** (blue; its outline moved 5 m east and 6 m north onto its roof): one tall storey under a
+  **steep roof of maroon sheets** with deep eaves, hipped at the west; the **white gable to the road** with the big
+  **stained-glass window** (a cross, the figure in red, panes of gold, blue and red in white frames) over **three small
+  arched windows**, lit, a door and steps under them; the long sides a band of **pierced blocks** under the eaves over
+  white wall and dark windows between pillars; a porch on two pillars on the south toward the paved court and its bays.
+- **The hall** (yellow; its outline redrawn from the roofs): a tall single storey of **cool white walls between
+  pilasters**, small windows high, air-conditioners to the road, a **maroon hip roof with a small louvred gablet** at
+  each end of its ridge, the **arched glazed entrance** lit in its north face to the paved court, steps; the wing north of
+  its west end; the **two-storey block** on its west under red tiles.
+- **Trees**: **Norfolk Island pines** by the hall's entrance, south of the church and in the car park; **bushy coconut
+  palms** between the church and the road; shade trees north of the church.
+- **Along the road**: a **low red brick wall, white piers, maroon iron railings arched along their tops**; at the drive,
+  **three red brick piers with white globe lamps** and an IN plate: **the drive's gate swung open inward, the gate beside
+  it shut** (owner); the church's navy board with yellow lines outside; flowering bushes; numbered parking bays of grey
+  pavers with yellow lines outside the fence. The car park west of the church (a phantom building removed there) and
+  the paved court between church and hall.
+- **The open ground behind the three churches** (red line): read cell by cell (3 m) from the aerial: **red soil** mostly,
+  dry grass in patches, the tracks across it, bushes and trees, the woods to the north round the Miracle Centre; roads
+  and paths through it left clear; the part read before at 2 m kept.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

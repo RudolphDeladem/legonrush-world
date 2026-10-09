@@ -131,7 +131,7 @@ const FIELD = [
 const FX0 = -486, FZ0 = -445, FC = 2;
 const hip = { gw: 0, tri: false }, open = { gw: 99, tri: false };
 /** the road behind WACCBIP (corrections: owner:waccbip-back-road): the boundary walls stand 6 m west of its middle */
-const ROAD: [number, number][] = [[-446.3, -315.3], [-418.4, -313.5], [-382.5, -309.5], [-352.5, -308.9], [-312, -308.0], [-292, -306.6], [-284.6, -304.6]];
+const ROAD: [number, number][] = [[-542.8, -320.0], [-517.9, -320.0], [-501.5, -319.0], [-446.3, -315.3], [-418.4, -313.5], [-382.5, -309.5], [-352.5, -308.9], [-312, -308.0], [-292, -306.6], [-284.6, -304.6]];
 const fenceX = (z: number) => {
   for (let i = 0; i < ROAD.length - 1; i++) { const [za, xa] = ROAD[i], [zb, xb] = ROAD[i + 1]; if (z >= za && z <= zb) return xa + ((xb - xa) * (z - za)) / (zb - za) - 6; }
   return (z < ROAD[0][0] ? ROAD[0][1] : ROAD[ROAD.length - 1][1]) - 6;
@@ -401,7 +401,7 @@ const lic: Spec = (() => {
           for (let s = za; s <= zb; s += 0.4) SOLIDS.add(fenceX(s), s, 0.25);
         }
       };
-      wallRun(-446.0, gz0); wallRun(gz1, -355.2);
+      wallRun(-443.5, gz0); wallRun(gz1, -355.2);
       for (const z of [gz0, gz1]) {
         const x = fenceX(z);
         c.push([B(x - 0.45, x + 0.45, 0, 2.1, z - 0.45, z + 0.45), brick], [B(x - 0.5, x + 0.5, 2.1, 2.2, z - 0.5, z + 0.5), brickD]);
@@ -423,56 +423,289 @@ const lic: Spec = (() => {
   };
 })();
 
-// ---------- the open ground west of the churches (the owner's green line) ----------
+// ---------- the Anglican church and its hall, north of the Interdenominational Church (owner's pictures 2 to 5) ----------
+// The church (blue): one tall storey under a steep roof of maroon sheets with deep eaves, hipped at the west, its gable
+// to the road on the east carrying the big stained-glass window (a cross, the figure in red) over three small arched
+// windows; its long sides a band of pierced blocks under the eaves over white wall and windows between pillars. The
+// hall (yellow): a tall single storey, cool white walls between pilasters, small windows high, air-conditioners, a
+// maroon hip roof with a small louvred gablet at each end of its ridge; the arched glazed entrance in its north face
+// to the paved court, steps; the two-storey block on its west under red tiles. Norfolk Island pines and bushy coconut
+// palms; along the road a low red brick wall, white piers and maroon iron railings arched along their tops; the gates
+// on red brick piers with white globe lamps: the drive's gate swung open, the one beside it shut (owner).
+const MAROON = '#7a2f33', HALL_W = '#e4e7e8', BRICK = '#a4513a', IRON = '#4a2620';
+/** the church's long sides: pierced blocks under the eaves, white wall, a dark window between pillars */
+const ANG_SIDE: Style = {
+  bay: 3.2, up: [], ground: [[60, 256 + 150, 136, 70]],
+  draw: (g) => {
+    render(g, WHITE); speckle(g, 0, 0, 256, 512, 300, ['rgba(140,134,120,0.12)']);
+    g.fillStyle = '#cfcbbf'; g.fillRect(14, 256 + 24, 228, 92);
+    g.fillStyle = '#2a2622'; for (let x = 22; x < 236; x += 22) for (let y = 256 + 32; y < 256 + 110; y += 26) g.fillRect(x, y, 12, 16);
+    g.fillStyle = '#efeeea'; g.fillRect(0, 0, 14, 512); g.fillRect(242, 0, 14, 512);
+    g.fillStyle = 'rgba(120,116,104,0.35)'; g.fillRect(14, 0, 2, 512); g.fillRect(240, 0, 2, 512);
+    darkWin(g, 60, 256 + 150, 136, 70);
+  },
+};
+/** the church's east end to the road: plain white (the windows are modelled) */
+const ANG_END: Style = { bay: 4, up: [], ground: [], draw: (g) => { render(g, WHITE); speckle(g, 0, 0, 256, 512, 300, ['rgba(140,134,120,0.12)']); g.fillStyle = '#cfcac0'; g.fillRect(0, 512 - 20, 256, 20); } };
+/** the hall's walls: cool white between pilasters, a small window high */
+const HALL_WALL: Style = {
+  bay: 6.0, up: [], ground: [[96, 256 + 40, 64, 30]],
+  draw: (g) => {
+    render(g, HALL_W); speckle(g, 0, 0, 256, 512, 400, ['rgba(120,124,128,0.14)']);
+    g.fillStyle = '#d3d7d9'; g.fillRect(0, 0, 18, 512);
+    g.fillStyle = 'rgba(90,96,100,0.35)'; g.fillRect(18, 0, 2, 512);
+    g.fillStyle = '#2b2d30'; g.fillRect(96, 256 + 40, 64, 30); g.fillStyle = '#c9cdcf'; g.fillRect(92, 256 + 72, 72, 4);
+    g.fillStyle = '#b9b3a6'; g.fillRect(0, 512 - 24, 256, 24);
+  },
+};
+/** with a lower window and a door here and there (its west and north sides) */
+const HALL_LOW: Style = {
+  bay: 4.2, up: [], ground: [[96, 256 + 40, 64, 30], [70, 256 + 150, 116, 70]],
+  draw: (g) => { HALL_WALL.draw(g); darkWin(g, 70, 256 + 150, 116, 70); },
+};
+const AO: [number, number] = [-356, -528];
+const ACH = [-373.5, -338.5, -538.5, -517.5];
+const AST = 5.0;
+const anglicanChurch: Spec = (() => {
+  const { X, Z, B, M } = frameOf(AO);
+  return {
+    name: 'Anglican Church- Main Church',
+    axis: [1, 0], origin: AO, storey: AST, style: ANG_SIDE, roofColor: MAROON, fascia: '#efeeea', pitch: 0.7, plinth: '#cfcac0',
+    blocks: [{ x0: X(ACH[0]), x1: X(ACH[1]), z0: Z(ACH[2]), z1: Z(ACH[3]), floors: 1, roof: 'none', faces: { x1: ANG_END } }],
+    keep: [[X(ACH[1]), X(ACH[1] + 4), Z(-536), Z(-519)]],
+    extras: (k: Kit) => {
+      const c: Part[] = [];
+      const e = k.wallTop(1);
+      // the steep maroon roof, deep eaves, hipped at the west, the gable to the road on the east
+      const top = hipRoof(k, M, ACH[0] - 1.4, ACH[1] + 1.2, ACH[2] - 1.4, ACH[3] + 1.4, e, 0.7, 'x', [hip, open], c, '#3a2422');
+      const zm = (ACH[2] + ACH[3]) / 2, ex = ACH[1];
+      c.push([tri2([X(ex), e - 0.02, Z(ACH[2])], [X(ex), e - 0.02, Z(ACH[3])], [X(ex), top - 0.2, Z(zm)]), WHITE]);
+      // the stained-glass window high on the gable (picture 4): a cross on blue and gold on the left, the figure in red
+      // on the right, in white frames; three small arched windows under it, lit
+      const gx = X(ex) + 0.04, sy0 = e + 0.4, sy1 = e + 4.6, sz0 = zm - 3.4, sz1 = zm + 3.4;
+      k.plain.push([B(ex, ex + 0.04, sy0 - 0.15, sy1 + 0.15, sz0 - 0.15, sz1 + 0.15), '#f4f4f0']);
+      const panes: [number, number, string][] = [[0, 0.22, '#e8c23a'], [0.22, 0.45, '#2f5fae'], [0.45, 0.72, '#c23b2e'], [0.72, 1, '#e2b04a']];
+      for (const [a, b, col] of panes) k.plain.push([B(ex + 0.04, ex + 0.06, sy0, sy1, sz1 - (sz1 - sz0) * b, sz1 - (sz1 - sz0) * a), col]);
+      // the cross (left as seen from the road) and the figure (right)
+      const czc = sz1 - (sz1 - sz0) * 0.22;
+      k.plain.push([B(ex + 0.06, ex + 0.08, sy0 + 0.4, sy1 - 0.4, czc - 0.12, czc + 0.12), '#f6f1dc'], [B(ex + 0.06, ex + 0.08, sy1 - 1.6, sy1 - 1.35, czc - 0.7, czc + 0.7), '#f6f1dc']);
+      const fz = sz1 - (sz1 - sz0) * 0.6;
+      k.plain.push([B(ex + 0.06, ex + 0.08, sy0 + 0.4, sy1 - 1.4, fz - 0.6, fz + 0.6), '#d23a2a'], [new THREE.CircleGeometry(0.35, 12).rotateY(Math.PI / 2).translate(gx + 0.05, sy1 - 1.0, Z(fz)), '#f0c8a0']);
+      for (let i = 1; i < 6; i++) k.plain.push([B(ex + 0.06, ex + 0.09, sy0, sy1, sz1 - ((sz1 - sz0) * i) / 6 - 0.03, sz1 - ((sz1 - sz0) * i) / 6 + 0.03), '#f4f4f0']);
+      for (const dz of [-1.3, 0, 1.3]) {
+        const z = zm + dz;
+        k.plain.push([B(ex, ex + 0.05, 1.8, 3.0, z - 0.35, z + 0.35), '#f0d27a'], [new THREE.CircleGeometry(0.35, 12, 0, Math.PI).rotateY(Math.PI / 2).translate(gx + 0.01, 3.0, Z(z)), '#f0d27a']);
+        k.plain.push([B(ex + 0.05, ex + 0.07, 1.8, 3.0, z - 0.02, z + 0.02), '#3a3633']);
+      }
+      // a door under them, steps
+      k.plain.push([B(ex, ex + 0.04, 0.4, 1.6, zm + 2.4, zm + 3.6), '#3a2620']);
+      for (let i = 0; i < 2; i++) c.push([B(ex, ex + 0.8 - i * 0.3, 0, 0.4 - i * 0.2, zm + 2.2, zm + 3.8), '#cfcac0']);
+      // the porch on the south side toward the court: a flat canopy on two pillars over double doors
+      const pz = ACH[3];
+      k.plain.push([B(-357, -354, 0.4, 3.0, pz, pz + 0.04), '#3a2620']);
+      c.push([B(-358.5, -352.5, 3.3, 3.55, pz, pz + 2.6), WHITE]);
+      for (const x of [-358.2, -352.8]) { c.push([B(x - 0.18, x + 0.18, 0, 3.3, pz + 2.2, pz + 2.56), WHITE]); SOLIDS.add(x, pz + 2.4, 0.3); }
+      // the paved court south of it, its parking bays marked in white
+      for (let x = -371; x < -342; x += 2.6) k.plain.push([B(x, x + 0.08, 0.06, 0.07, -514.5, -509.5), '#f2f2ee']);
+      const m = new THREE.Mesh(merge(c), concrete(0.2));
+      m.castShadow = true; m.receiveShadow = true;
+      k.meshes.push(m);
+    },
+  };
+})();
+
+const HO: [number, number] = [-370, -470];
+const HBAR = [-390.0, -339.0, -475.0, -453.0], HWING = [-390.0, -376.0, -489.0, -475.0], HWEST = [-404.0, -391.0, -481.0, -453.5];
+const HST = 6.6;
+/** a Norfolk Island pine: a straight trunk, tiers of flat branches shrinking upward */
+function araucaria(k: Kit, x: number, z: number, h: number) {
+  const y = k.ground(x, z);
+  k.plain.push([new THREE.CylinderGeometry(0.12, 0.32, h, 7).translate(x, y + h / 2, z), '#5a4436']);
+  const tiers = Math.round(h / 1.3);
+  for (let i = 2; i < tiers; i++) {
+    const t = i / tiers, r = (1 - t) * h * 0.22 + 0.35, yy = y + h * t;
+    k.plain.push([new THREE.ConeGeometry(r, 0.7, 9).translate(x, yy, z), i % 2 ? '#26402a' : '#2d4a30']);
+  }
+  k.plain.push([new THREE.ConeGeometry(0.35, 1.2, 7).translate(x, y + h + 0.3, z), '#2d4a30']);
+}
+/** a bushy coconut palm: a leaning trunk, a big head of long drooping fronds (picture 4) */
+function coconut(k: Kit, x: number, z: number, h: number, lean: number) {
+  const y = k.ground(x, z);
+  k.plain.push([new THREE.CylinderGeometry(0.16, 0.24, h, 7).rotateZ(lean).translate(x - Math.sin(lean) * h / 2, y + h / 2, z), '#7d6e5c']);
+  const tx = x - Math.sin(lean) * h, ty = y + h * Math.cos(lean);
+  for (let i = 0; i < 14; i++) {
+    const a = (i / 14) * Math.PI * 2, droop = 0.5 + (i % 3) * 0.25;
+    const f = new THREE.ConeGeometry(0.5, 4.2, 3, 1).rotateX(Math.PI / 2).translate(0, 0, 2.1).scale(1, 0.15, 1).rotateX(droop).rotateY(a);
+    k.plain.push([f.translate(tx, ty, z), i % 2 ? '#3f6a2c' : '#4d7a34']);
+  }
+  SOLIDS.add(x, z, 0.3);
+}
+const anglicanHall: Spec = (() => {
+  const { X, Z, B, M } = frameOf(HO);
+  const R = (r: number[], floors: number, more: object = {}) => ({ x0: X(r[0]), x1: X(r[1]), z0: Z(r[2]), z1: Z(r[3]), floors, roof: 'none' as const, ...more });
+  return {
+    name: 'Anglican Church Legon Hall',
+    axis: [1, 0], origin: HO, storey: HST, style: HALL_WALL, roofColor: MAROON, fascia: '#efeeea', pitch: 0.4, plinth: '#b9b3a6',
+    blocks: [R(HBAR, 1, { faces: { z0: HALL_LOW } }), R(HWING, 1, { faces: { x0: HALL_LOW, z0: HALL_LOW } }), R(HWEST, 2, { roof: 'hip', roofColor: TILE_RED, faces: { x0: ST_HOUSE, x1: ST_HOUSE, z0: ST_HOUSE, z1: ST_HOUSE } }, )],
+    keep: [[X(-352), X(-341), Z(-482), Z(-475)]],
+    extras: (k: Kit) => {
+      const c: Part[] = [];
+      const e = k.wallTop(1);
+      // the maroon hip roofs, a louvred gablet at each end of the ridge (picture 2)
+      const gab = { gw: 1.4, tri: true };
+      hipRoof(k, M, HBAR[0] - 1.0, HBAR[1] + 1.0, HBAR[2] - 1.0, HBAR[3] + 1.0, e, 0.4, 'x', [gab, gab], c, '#3a2422', ['#2a2624', '#4a4440']);
+      hipRoof(k, M, HWING[0] - 1.0, HWING[1] + 1.0, HWING[2] - 1.0, HBAR[2] + 1.0, e, 0.4, 'z', [hip, { gw: 99, tri: false }], c, '#3a2422');
+      // the arched glazed entrance in the bar's north face near its east end, lit; steps down to the court
+      const ax = -349.5, fz = HBAR[2];
+      const arch = new THREE.Shape(); arch.moveTo(-1.6, 0); arch.lineTo(1.6, 0); arch.lineTo(1.6, 3.4); arch.absarc(0, 3.4, 1.6, 0, Math.PI, false); arch.lineTo(-1.6, 0);
+      k.plain.push([new THREE.ShapeGeometry(arch).rotateY(Math.PI).translate(X(ax), 0.5, Z(fz) - 0.03), '#f0d088']);
+      for (let i = -2; i <= 2; i++) k.plain.push([B(ax + i * 0.64 - 0.03, ax + i * 0.64 + 0.03, 0.5, 4.9 - Math.abs(i) * 0.25, fz - 0.06, fz - 0.03), '#3a3633']);
+      for (const y of [1.6, 3.0]) k.plain.push([B(ax - 1.6, ax + 1.6, y - 0.03, y + 0.03, fz - 0.06, fz - 0.03), '#3a3633']);
+      for (let i = 0; i < 3; i++) c.push([B(ax - 2.2 - i * 0.3, ax + 2.2 + i * 0.3, 0, 0.5 - i * 0.16, fz - 0.6 - i * 0.4, fz), '#cfcac0']);
+      // air-conditioners on its east face (to the road), a lamp
+      for (const [z, y] of [[-470.5, 2.2], [-466.0, 2.2], [-459.5, 1.0]]) k.plain.push([B(HBAR[1], HBAR[1] + 0.3, y, y + 0.55, z - 0.4, z + 0.4), '#e9ebeb']);
+      k.plain.push([B(HBAR[1], HBAR[1] + 0.2, 5.4, 5.6, -468.5, -468.1), '#fff6dc']);
+      // the court north of it: pavers, a bed of shrubs
+      k.plain.push([B(-376, -341, 0.02, 0.06, -489, -475.6), '#a7a399']);
+      const g = garden([-380, -335, -495, -470]);
+      g.reseed(83);
+      for (const [x, z] of [[-366, -482], [-363, -480.5], [-360, -482], [-357, -480.5]]) g.bush(k, X(x), Z(z), 0.8);
+      const m = new THREE.Mesh(merge(c), concrete(0.15));
+      m.castShadow = true; m.receiveShadow = true;
+      k.meshes.push(m);
+      // ----- the trees: Norfolk Island pines by the hall and the church, bushy coconut palms along the road
+      for (const [x, z, h] of [[-344.5, -479.5, 16], [-362, -513.5, 17], [-344, -513, 15], [-392, -492, 14]] as [number, number, number][]) { araucaria(k, X(x), Z(z), h); SOLIDS.add(x, z, 0.35); }
+      for (const [x, z, h, l] of [[-333.8, -534, 6.5, 0.15], [-334.2, -527, 7.5, -0.1], [-333.6, -520.5, 6.8, 0.2], [-334, -462, 6.0, -0.12]] as [number, number, number, number][]) coconut(k, X(x), Z(z), h, l);
+      for (const [x, z, s] of [[-385, -545, 2.0], [-368, -545.5, 1.8], [-352, -544, 1.9]] as [number, number, number][]) g.tree(k, X(x), Z(z), s);
+      // ----- along the road: a low red brick wall, white piers, maroon iron railings with arched tops (pictures 2 to 4)
+      const fence = (z0: number, z1: number) => {
+        for (let z = z0; z < z1 - 0.1; z += 3.4) {
+          const za = z, zb = Math.min(z1, z + 3.4), xa = fenceX(za), xb = fenceX(zb), len = Math.hypot(zb - za, xb - xa), ry = Math.atan2(xb - xa, zb - za);
+          k.plain.push([new THREE.BoxGeometry(0.3, 0.5, len).rotateY(ry).translate(X((xa + xb) / 2), 0.25, Z((za + zb) / 2)), BRICK]);
+          k.plain.push([B(xa - 0.2, xa + 0.2, 0, 1.95, za - 0.2, za + 0.2), '#f0efea'], [B(xa - 0.24, xa + 0.24, 1.95, 2.05, za - 0.24, za + 0.24), '#dcdad3']);
+          const n = 14;
+          for (let i = 1; i < n; i++) {
+            const t = i / n, zz = za + (zb - za) * t, xx = xa + (xb - xa) * t, h = 1.5 + 0.35 * Math.sin(t * Math.PI);
+            k.plain.push([B(xx - 0.018, xx + 0.018, 0.5, h, zz - 0.018, zz + 0.018), IRON]);
+          }
+          k.plain.push([new THREE.BoxGeometry(0.05, 0.05, len).rotateY(ry).translate(X((xa + xb) / 2), 0.62, Z((za + zb) / 2)), IRON]);
+          // the arched top rail in short pieces
+          for (let i = 0; i < 8; i++) {
+            const t0 = i / 8, t1 = (i + 1) / 8, ya = 1.5 + 0.35 * Math.sin(t0 * Math.PI), yb = 1.5 + 0.35 * Math.sin(t1 * Math.PI);
+            const pa = [xa + (xb - xa) * t0, za + (zb - za) * t0], pb = [xa + (xb - xa) * t1, za + (zb - za) * t1], l = Math.hypot(pb[0] - pa[0], pb[1] - pa[1], yb - ya);
+            const geo = new THREE.BoxGeometry(0.05, 0.06, l).rotateX(-Math.atan2(yb - ya, Math.hypot(pb[0] - pa[0], pb[1] - pa[1]))).rotateY(ry);
+            k.plain.push([geo.translate(X((pa[0] + pb[0]) / 2), (ya + yb) / 2, Z((pa[1] + pb[1]) / 2)), IRON]);
+          }
+          for (let s = za; s <= zb; s += 0.4) SOLIDS.add(fenceX(s), s, 0.25);
+        }
+      };
+      // the gates by the drive (owner's blue marks): three red brick piers with white globe lamps; the drive's gate
+      // swung open inward, the one beside it shut
+      const P0 = -504.4, PM = -497.8, P1 = -492.6, PW = 0.8;
+      fence(-540.0, P0 - PW / 2); fence(P1 + PW / 2, -448.6);
+      for (const z of [P0, PM, P1]) {
+        const x = fenceX(z);
+        k.plain.push([B(x - 0.4, x + 0.4, 0, 2.2, z - PW / 2, z + PW / 2), BRICK], [B(x - 0.45, x + 0.45, 2.2, 2.3, z - 0.45, z + 0.45), '#8a4230']);
+        k.plain.push([new THREE.SphereGeometry(0.3, 14, 10).translate(X(x), 2.6, Z(z)), '#f6f6f2']);
+        for (let y = 0.15; y < 2.2; y += 0.15) k.plain.push([B(x - 0.41, x + 0.41, y, y + 0.012, z - PW / 2 - 0.01, z + PW / 2 + 0.01), '#c9a58f']);
+        SOLIDS.add(x, z, 0.5);
+      }
+      // the IN plate on the drive's north pier
+      k.plain.push([B(fenceX(PM) + 0.4, fenceX(PM) + 0.42, 1.3, 1.7, PM - 0.3, PM + 0.3), '#f4f4f0']);
+      k.signs.push({ text: 'IN', x: X(fenceX(PM)) + 0.43, y: 1.5, z: Z(PM), ry: Math.PI / 2, w: 0.5, colors: ['#f4f4f0', '#c22a2a'] });
+      // a gate leaf: arched, maroon iron, hinged at (hx, hz); `ang` 0 = shut across the opening toward +z
+      const leaf = (hx: number, hz: number, w: number, ang: number) => {
+        const dir = new THREE.Vector3(Math.sin(ang), 0, Math.cos(ang)), n = 10;
+        for (let i = 0; i <= n; i++) {
+          const t = i / n, x = hx + dir.x * w * t, z = hz + dir.z * w * t, h = 1.7 + 0.4 * Math.sin(t * Math.PI);
+          k.plain.push([B(x - 0.022, x + 0.022, 0.08, h, z - 0.022, z + 0.022), IRON]);
+        }
+        for (const y of [0.1, 0.9]) {
+          const geo = new THREE.BoxGeometry(0.05, 0.06, w).rotateY(ang);
+          k.plain.push([geo.translate(X(hx + dir.x * w / 2), y, Z(hz + dir.z * w / 2)), IRON]);
+        }
+        for (let i = 0; i < 6; i++) {
+          const t0 = i / 6, t1 = (i + 1) / 6, ya = 1.7 + 0.4 * Math.sin(t0 * Math.PI), yb = 1.7 + 0.4 * Math.sin(t1 * Math.PI), l = Math.hypot(w / 6, yb - ya);
+          const geo = new THREE.BoxGeometry(0.05, 0.06, l).rotateX(-Math.atan2(yb - ya, w / 6)).rotateY(ang);
+          k.plain.push([geo.translate(X(hx + dir.x * w * (t0 + t1) / 2), (ya + yb) / 2, Z(hz + dir.z * w * (t0 + t1) / 2)), IRON]);
+        }
+      };
+      // the drive's gate: hinged on the south pier, swung in against the inside of the wall (open)
+      const hzS = P0 + PW / 2, gw1 = PM - PW / 2 - hzS;
+      leaf(fenceX(hzS) - 0.3, hzS, gw1, -Math.PI * 0.42 + Math.PI);
+      // the gate beside it: shut across its opening
+      const hzN = PM + PW / 2, gw2 = P1 - PW / 2 - hzN;
+      leaf(fenceX(hzN), hzN, gw2, 0);
+      for (let z = hzN; z <= hzN + gw2; z += 0.4) SOLIDS.add(fenceX(z), z, 0.25);
+      // the church's board on its posts outside the drive's north pier (picture 4): navy, lines in yellow
+      const bx = fenceX(P1) + 1.6, bz = P1 + 1.8;
+      for (const dz of [-0.9, 0.9]) k.plain.push([B(bx - 0.05, bx + 0.05, 0, 3.4, bz + dz - 0.05, bz + dz + 0.05), '#2a3a8a']);
+      k.plain.push([B(bx - 0.05, bx + 0.05, 1.5, 3.3, bz - 1.0, bz + 1.0), '#1d2a5a']);
+      for (let y = 1.8; y < 3.2; y += 0.28) k.plain.push([B(bx + 0.05, bx + 0.06, y, y + 0.12, bz - 0.8, bz + 0.8), '#e8c23a']);
+      // flowering bushes at the foot of the pier, the paved bays outside the fence, numbered, yellow lines
+      for (const dz of [1.0, 2.2, 3.4]) g.bush(k, X(fenceX(P1) + 0.9), Z(P1 + dz), 0.55);
+      const px0 = fenceX(-520) + 0.3;
+      k.plain.push([B(px0, px0 + 2.6, 0.03, 0.05, -540, -505.5), '#a9a59c']);
+      for (let z = -539; z < -506; z += 2.6) k.plain.push([B(px0, px0 + 2.6, 0.05, 0.055, z, z + 0.08), '#e2c23a']);
+    },
+  };
+})();
+
+// ---------- the open ground west of the churches (the owner's green and red lines) ----------
+/** paint ground cells (s soil, m soil and grass, g dry grass, t bushes and trees, . nothing) from a cell grid at x0, z0
+ *  (world) of cs-metre cells onto the ground, and plant the bushes and trees (a tree on one cell in treeEvery) */
+function openGround(k: Kit, O: [number, number], rows: string[], x0: number, z0: number, cs: number, seed: number, treeEvery: number, bushEvery: number) {
+  const X = (x: number) => x - O[0], Z = (z: number) => z - O[1];
+  const H = rows.length, W = rows[0].length, P = cs >= 3 ? 8 : 10;
+  const soil = ['#a8714a', '#b27d52', '#9d6943'], mixed = ['#9a7c4c', '#8d7a49', '#a2814f'], grass = ['#7c8a45', '#6e7f3e', '#879348', '#8a8a4c'];
+  const tex = canvas(W * P, H * P, (g) => {
+    g.clearRect(0, 0, W * P, H * P);
+    for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) {
+      const ch = rows[j][i];
+      if (ch === '.') continue;
+      const pal = ch === 's' ? soil : ch === 'm' ? mixed : grass;
+      g.fillStyle = pal[(i * 7 + j * 13) % pal.length]; g.fillRect(i * P, j * P, P, P);
+    }
+    // soften the cells into patches: blobs of each cell's colour overlapping its neighbours
+    for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) {
+      const ch = rows[j][i];
+      if (ch === '.') continue;
+      const pal = ch === 's' ? soil : ch === 'm' ? mixed : grass;
+      g.fillStyle = pal[((i + 1) * (j + 3)) % pal.length]; g.globalAlpha = 0.6;
+      g.beginPath(); g.ellipse((i + 0.5) * P + (rnd() - 0.5) * 4, (j + 0.5) * P + (rnd() - 0.5) * 4, P * 0.9, P * 0.75, rnd() * 3, 0, Math.PI * 2); g.fill();
+    }
+    g.globalAlpha = 1;
+    speckle(g, 0, 0, W * P, H * P, Math.round(W * H * 2), ['rgba(70,90,40,0.35)', 'rgba(150,100,60,0.35)', 'rgba(200,170,120,0.25)']);
+    // tracks worn across it: the soil cells that run in lines show through a little lighter
+    g.globalCompositeOperation = 'destination-out';
+    for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) if (rows[j][i] === '.') g.fillRect(i * P - 2, j * P - 2, P + 4, P + 4);
+    g.globalCompositeOperation = 'source-over';
+  });
+  const mat = new THREE.MeshStandardMaterial({ map: tex, roughness: 1, transparent: true, alphaTest: 0.5 });
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(W * cs, H * cs).rotateX(-Math.PI / 2), mat);
+  ground.position.set(X(x0 + (W * cs) / 2), 0.03, Z(z0 + (H * cs) / 2));
+  ground.receiveShadow = true;
+  k.meshes.push(ground);
+  // the bushes and trees where the aerial shows them
+  const g = garden([x0 - 5, x0 + W * cs + 5, z0 - 5, z0 + H * cs + 5]);
+  g.reseed(seed);
+  for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) {
+    if (rows[j][i] !== 't') continue;
+    const x = x0 + (i + 0.5) * cs + (g.rand() - 0.5) * cs * 0.6, z = z0 + (j + 0.5) * cs + (g.rand() - 0.5) * cs * 0.6;
+    if ((i + 2 * j) % treeEvery === 0) g.tree(k, X(x), Z(z), 1.3 + g.rand() * 0.8);
+    else if ((i + j) % bushEvery === 0) g.bush(k, X(x), Z(z), 0.8 + g.rand() * 0.6);
+  }
+}
 const FO: [number, number] = [-436, -348];
 const field: Spec = (() => {
   const { X, Z, B } = frameOf(FO);
-  const H = FIELD.length, W = FIELD[0].length;
   return {
     name: 'open ground west of the churches', axis: [1, 0], origin: FO, storey: 2.4, style: ST_HOUSE, roofColor: '#7d7a72', fascia: '#e9e8e3', pitch: 0.2,
     replaces: [[-428, -400], [-427.7, -385.7]],
     blocks: [],
     keep: [],
     extras: (k: Kit) => {
-      const P = 10;
-      const soil = ['#a8714a', '#b27d52', '#9d6943'], mixed = ['#9a7c4c', '#8d7a49', '#a2814f'], grass = ['#7c8a45', '#6e7f3e', '#879348', '#8a8a4c'];
-      const tex = canvas(W * P, H * P, (g) => {
-        g.clearRect(0, 0, W * P, H * P);
-        for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) {
-          const ch = FIELD[j][i];
-          if (ch === '.') continue;
-          const pal = ch === 's' ? soil : ch === 'm' ? mixed : grass;
-          g.fillStyle = pal[(i * 7 + j * 13) % pal.length]; g.fillRect(i * P, j * P, P, P);
-        }
-        // soften the cells into patches: blobs of each cell's colour overlapping its neighbours
-        for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) {
-          const ch = FIELD[j][i];
-          if (ch === '.') continue;
-          const pal = ch === 's' ? soil : ch === 'm' ? mixed : grass;
-          g.fillStyle = pal[((i + 1) * (j + 3)) % pal.length]; g.globalAlpha = 0.6;
-          g.beginPath(); g.ellipse((i + 0.5) * P + (rnd() - 0.5) * 4, (j + 0.5) * P + (rnd() - 0.5) * 4, P * 0.9, P * 0.75, rnd() * 3, 0, Math.PI * 2); g.fill();
-        }
-        g.globalAlpha = 1;
-        speckle(g, 0, 0, W * P, H * P, 9000, ['rgba(70,90,40,0.35)', 'rgba(150,100,60,0.35)', 'rgba(200,170,120,0.25)']);
-        // a little gap round the outside cells keeps them transparent
-        g.globalCompositeOperation = 'destination-out';
-        for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) if (FIELD[j][i] === '.') g.fillRect(i * P - 2, j * P - 2, P + 4, P + 4);
-        g.globalCompositeOperation = 'source-over';
-      });
-      const mat = new THREE.MeshStandardMaterial({ map: tex, roughness: 1, transparent: true, alphaTest: 0.5 });
-      const ground = new THREE.Mesh(new THREE.PlaneGeometry(W * FC, H * FC).rotateX(-Math.PI / 2), mat);
-      ground.position.set(X(FX0 + (W * FC) / 2), 0.03, Z(FZ0 + (H * FC) / 2));
-      ground.receiveShadow = true;
-      k.meshes.push(ground);
-      // the bushes and trees where the aerial shows them: a tree on some cells, bushes on the others
-      const g = garden([FX0 - 5, FX0 + W * FC + 5, FZ0 - 5, FZ0 + H * FC + 5]);
-      g.reseed(71);
-      for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) {
-        if (FIELD[j][i] !== 't') continue;
-        const x = FX0 + (i + 0.5) * FC + (g.rand() - 0.5) * 1.2, z = FZ0 + (j + 0.5) * FC + (g.rand() - 0.5) * 1.2;
-        if ((i + 2 * j) % 5 === 0) g.tree(k, X(x), Z(z), 1.3 + g.rand() * 0.8);
-        else if ((i + j) % 2 === 0) g.bush(k, X(x), Z(z), 0.8 + g.rand() * 0.6);
-      }
+      openGround(k, FO, FIELD, FX0, FZ0, FC, 71, 5, 2);
       // the small water tank and the shed on it (aerial)
       const c: Part[] = [];
       c.push([B(-430.1, -422.5, 0, 2.0, -404.0, -398.1), '#8fa7ad'], [B(-430.3, -422.3, 2.0, 2.15, -404.2, -397.9), '#7d939a']);
@@ -484,6 +717,148 @@ const field: Spec = (() => {
     },
   };
 })();
+/** the wider open ground behind the three churches (the owner's red line): red soil mostly, grass in patches, tracks,
+ *  bushes and trees, and the woods to the north round the Miracle Centre; 3 m cells from the aerial (0.45 m/px), the
+ *  part read before at 2 m left out; x -849.., z -636.. */
+const FIELD2 = [
+  '.............................................................................................................................................................................................',
+  '..tssssssssmggmmsmgmmmmgggmmggm...sgmsssmtgggtttggtttg...................................................................................................tttttttttttttttttttttttttttttttss...',
+  '..sssmsssssssssssssmmmmmmssmgmmm...sssgtttgggttttgtttttttgtttggggtttggmmmgggmssssmmggmsssssssssssssssssssssssssssss....stttttttttttttttggttttttttttttttmmmmmmsssmmmmmmmmmmmgggggggggtttttt...',
+  '..sssssssssmggmmsmgmmmmgggmmggmg...smsssmtgggtttggtttgggggggggggggtgggmmmgttgsssmmmmggmssssssssssssssssssssssssssss....ttttttttttttttggtttttttttttttttttttttttttttttttttttttttttttttttttst...',
+  '..sssssssgggmmmmggggmmmmmmmgggmg...gtggmsssssmttggggtgggtgtttggggtttggmmmgggmssssmmggmsssssssssssssssssssssssssssss....ttttttttttttttttggttttttttttttttttttttttttttttttttttttttttttttttttt...',
+  '..msmssssggggmmgggggggmmggggggmg...tttttttgsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssmmmssssssss....ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt...',
+  '..msmsssssmggmgggggggggmggggmmm...tmtttttttttttggsgggggggtttttggggggggggggmsssssssmgmssssssssssssggmssssmssssssssss...tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt...',
+  '..sssssmssssmggmmmmmgggggggmsms...gsgttttttttttggsmgggtgggttttggggggtgggggsssssmsmggmssssssssssssmgmssssmmsssssssss...tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt...',
+  '..sgsssmsmmssmmssmgmmgttgggmmmm...gmgttttttttttggsmgggggmgggggggggggggggggsssssmmmgmsssssssssssssmmssssmmmssmssssms...ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt..',
+  '..mtmmssmmmmmmssssmsmgtttgmssss...tmtttttttttttggssgggmmsmggmmmgmmmmmsmgggmssssmmgmssssssssssssssmsssssmmmsssssssgs...ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt..',
+  '..gtggmsmmmmmssssssssmgtggmssss...gmgttttttttttgmsmgggmsssgmsssmsssssssmmssssssmmgmssssssssssssssssssssmmsssssssmgm...ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt..',
+  '..gtggmsmmssssssmsssssggggmmsm...msmgttttttttttgmgmmmmmssgmsssssssssssmssssssssmmgmssssssssssssssssssssssssssssmggg...ttttttttttttttgtttttttttttttttttttttttttttttttttttttttttttttttttttttt..',
+  '..mtmssmmmsssssmgmsssmggggmmsm...gmgtgmgtttttttggmmsmmsmggmssssssssssmmmsssssssmmmmssssssmmmsssssssssssssssssssmgmg...tgttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt..',
+  '..mtmssmggmssssgtgmssmmmmmmmm....ttttsmtttttttttmmgggmsmmmgmmssssssssmmmssssssssmmssssssssmssssssmmmmssssssssssmmsm....tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt..',
+  '..mtmssmmmgmsssgtgmssssmmmmmm...gmgttmmttttttttgmmgggmsssmmgmsssmmmssmssssssssssssssssssssssssssmggmmmsssssssssssss.....ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt..',
+  '..mtmsmmmmmmsssmmmsmmmsmmmmm....gggggggttttttttgsmggmmsssssmmssssssmmgsssssssssssssssssssssssssmggmmmmsssssssssmssss....tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttgt..',
+  '..mtmmmmmsmssssmmsmmgggggmmm...tttttttgggggttttgmgggmssssssmgmmgsssgmgsssssmssssssssssssssssssmggggmmsssssssssmmmmsss...tttttttttttgggttttttttttttttttttttttttttttttttttttggtttgtttttttttgt..',
+  '..mtmgmmssmssmmmmsmmggggmmm....ttttgtttgttttttggggmmmmsssssgttttmsmgmgsssssmsmmmssssssssssssssmgggggmssssssssmggmmsss....ttttttttttgttttttttttttttttttttttttttttttttttttttgtttggtggggttggggg.',
+  '..mtmmmssmmssmmmsssssmmsss....tttttttttttttttgggggmmmmssssgtttttgsmgmmsmsssmmmgmsssssssssssssmmgggtgmssssssssmmmmssss....tttttttttgttttttttttttttttgtttttttttttttttttttttttttttttttttttttttt.',
+  '..mtmmmsssssssmmsssssssss....tttttttttttttttggmgtggmmmsssmgttttttmsmmssmsssmgmmmsssssssssssssmmggggmmsssssssmmmmsssss....tttttttttgttttttttttttttttttttttttttttttttttttttttttttttttttttttttt.',
+  '..mtmmmssssssssmmsssssss....ttttttttttttttttgsmtttggggsssmgtttttttmmmmsmsssmggggmsssssssssssssmmgggggsssssssmmmsssssss...tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttgt.',
+  '..mtmmmssssssssssssmmsss...ttttttttttgtttttgssgtttggggmssmtttttttttggmsssssmgggggmmmmmssssssssssmmmgmsssssssssssssssss...tgttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt.',
+  '..mtmmssmgssssssssmmmsm...ttttttttttgttttttmsmttttggmmsssmttttttttttgmsssssmmggggmgmmmssmsssssssssmmssssssssssssssssss....tttttttttttttttgttttttttttttssssssssssssssssssssmttttttttttttttttt.',
+  '..mtmmsmgtgsssssmmmmmsm...ttttttttttttttggmssgtttggssssssmttttttttttgmssssmmmmgggmgmmmsmmmsssssssssssssssssssssssssmgm....ttttttttttttttttttttttttt.....ttttttttttttgtgtttmsssstttttttttttgt.',
+  '..mtmssssgmsssssmmmmmm...gggttttttttttttgssssttggtgggmsmsmgtttttttttgmsssssmmmmggggmmssmmmssssssssssssssssssssssssmgggg...ttttttttgggttttttttggttt....................ssssmttttttttttttttttt.',
+  '..gtgssssssssssmmmmmmm...smsgttttttggttgmsssmttgggggggggmsmtttttttttgmssssssssmggggmmsssgmssssssssssssssssmmmssssssgggg...ttttttttttttttttttttgtg....................................tttttgs.',
+  '...mtmsssssssssmmmmmm...gggmsmtttggggggsssssmggggggggtttgmmgtttttttggmssssssssmggggggsssmgmmmmmssssssssssmgttgsssssmmmm....ttttttttttttttttttttt.............................................',
+  '....sgsssssssssmmmmmm...ggggmsmtttggggmsssssmgttttgggtttmmgttttttttgmmssssssssmggggggsssmgggttgssssssssssmmttggmsssssss....tttttttttttttttttttt..............................................',
+  '.....smsssssssssmmmm...gggggggsgttggggggssssmgtttttgggggmggttttttttgmmssssssssmgggggmssmmgttttmssssssssmmmmggtgggmmssss.....tttttttttttttttttt...............................................',
+  '......msmsssssmsmmm....ggggggggmttgmmgtgssssmgttmmgggggggggtttttttggmmmsssssssggggggmssmmgttttmssssssssmgggggtggggmsssss.....tttttttttttttttt................................................',
+  '..s....gggssssmsms....mgmmggtggmsmgmmggmssssmggmssmmggggttggttttttggmmmssssssmgggmmmsssmmgggggssssssssmggggggttggggmsssss.....tttttttttttttt.................................................',
+  '..st....sssssssmmm...gtggmggggtgssggggmsssmmmmmssmggggtgtttgtttttttgmmsssssssmmmgmssssmmmmggggmsssssssmgggtgtttgmmmssssmtm.....ttttttttttttt.................................................',
+  '..sts...sssssssms....gtgggggggtggmsmggmssmgmmggmmgggggtttttgttttttttmsssssssssmmmmssssgmmggggtggmssssssmggttttttggmmmmgtttt.....tttttttttttt.................................................',
+  '..stst...sssssss....tgtggggggggggmsssmssgggmmggggggttggggtgmgtttttttmssssssssmmgmmmssmgggggggtgggmssssssmgtttttttttttttttttt.....ttttttttttt.................................................',
+  '..stst....smsss....mmmmgtgggggtggmmmsssgggsssgggggtttttggggmgtttttttmssssssmggggggmssmggggggtgggggmsssssmgggttttttttttttttttt.....tttttttttt.................................................',
+  '..mtmmm...smsm....ggggmmtttgggtggggggmgggmsmggttttttttggtttggtttttttgssssssgggggggssmggggggtttttggmssssssmmggtttttttttttttttgt......tttttttt.................................................',
+  '..tttttt...ms....ggggtgmgtttggtmgggggtttgmmgggtttttttgggtttttgttttttgmsssmmgtggggmssmggggmgttttttgmssssssmmmstttttttttttttttmsm........ttttt.................................................',
+  '..tttttt........gggmgttgmgtgggtggggggtttgssmgggttttttggttttttttttttttmssmggtttgggsssggggmmgttttttgsssssssmmssttttttttttttttgssss...........tt................................................',
+  '..gtgggtg......gggmssmggmmgmmgttgggmgttttgssmggttttttttttttttttttttttmssgtttttgggmssmgmgmgtttttttmsssssssmsssgtttttttttttttsssssss...........................................................',
+  '..gtgmmsms....tmttgmssmmmssmggttttgmmgttttgmgggtttttggttttttttttttgttmsmgtttttttgssmggmmgggtttttgmssssssmmsssmttttttttttttgsmmmssgsgt........................................................',
+  '..gtgmmmsss..sssmgtmggmmmgggggttttgmmmgtttttgggtttttggttttttttttggtttssgttttttttmsmggggmmggtttttgsssssssmmmggmtttttttttttgmsggggsgtttttt.....................................................',
+  '..gtgssmssssssssssmggggmmgtggtttttgmmmgttttttgttttttgttttttttttggtttgssgttttttttmsgggggmgggttttgssssssssmggggggtttttttttgmssmgggmgttttttttttt................................................',
+  '..gtgmmmsssssssssssggggggggggttggggmmgtttttttgtttttttttttttttttgttgggssgtttttttgmsmgmmmmggtttttmmsssssssmggggggtttttttttmsssssmgggttttttttttt................................................',
+  '..tttggmsssssssssssmgggttgmmgtgggtggggttttttttgggtttttttttttttttttggmsmggttttttgssmgmmsgggtttttmmmsssssmmmgggggttttttttgsssssssmmgttttttttttt................................................',
+  '..ttttmmsssssssssssmggtttgssgttgtttgggtggtttttgmmtggtgggtttttttttttgssmgtttttttgssmgmmmgtttttttggmsssssmmgggggtttttttttmssssssmssmgtttttttttt................................................',
+  '..tttgmmsssssssssssmggggtgmmgtttgttggggggtttttgmmmggtgttttttttttttttmsmgtttttttgsgmmmsmggttttttgggsssssmggggggtttttttttgsssssssssmgtttttttttt................................................',
+  '..tttmsmsssssssssssmgggggttgttttgttggggggtttttggmggtttttttttttttttttmssgggtttttgmggmssmmgtttttggggssssmmggmmmgttttttttttmssssssssmttttttttttt................................................',
+  '..mgmmssssssssssssmmmmggggtgttttgggmmggggtttttgtggtttttttttttttttttgssssggggtttgmggmssmmgtggtggggmssssssmmmmmgttttttttttgssssssssmttttttttttt................................................',
+  '..mgmssssssssssssggmmmggmggggttggggmsgggggtttttttgtttttttttttttttttmssssggmmgggmmgggmmmgttggtttggmssssssggmssmgtttttttttgsssssssssgtttttttttt................................................',
+  '..mgmmssmmmssssssmgmgggmmggmggggmmmsssmmmggggttttttttttggtttttttttgsssssmmmssmgmggggmmmgttggtttgmssssssmggmsmggtttttttttgmmsssssssstttttttttt................................................',
+  '..gmggsssmgmmssssggmmggmsssmgggmmmssssssmgggggtttttttggggtgtttttttmssssssmsmssmggggggggggtggtttgmsssssmmmmmmgtttttttttttgggmsssssssgttttttttt................................................',
+  '..tstgmssmgggmsssggmmmgmssssmggmmmmsssssmggggttttttgggggggggtttttgssssssssmmmssmmmmggggggttttttgmssssmmmmssgttttttttttttggtmsssssssmtttttttttt...............................................',
+  '..gsggsssmggggmsssmmmggmsssssgggmmmsssssmggtggttgggggggggggggtttgmssssssssmmmssmmmgggggmgttttttgmssssgggmssmgttgttttttttgggmsssssssmtttggttttt...............................................',
+  '..tstgggggggggmsssmmgggmsssssggggmmssssssmggggggssmgggggggggggggmssmmsssssmmssmggggggtgmmgttgggmssssmgggmsssmmgggttttttttmsssssssssmttttggtttt...............................................',
+  '..tstggggggggggmsmgggggmmmmsmgggggmssssssmmmggmsssgtggmggggggggssssmmmsssmmsssgtttgggtgggttgggmsssssmgggmsssmmmmmgtttttttgsssssssssgtttttgtttt...............................................',
+  '..tstgggggtgggggmgggmmmssmmmgtgggmsssmssssssmmmssmgtgggggggggggssssmmgmmmmmssmgtttgggggggttggmsssssssmmmssssmmmmmmgggttttgmsssssssgttttttttttt...............................................',
+  '..tstttgggtgmgggggggsssssssmggmmsssssmmsssssssmmmgggtttgggggggmsssmmmggmgggmmgggttgggggmmgttgssssssssssmssmmmmmsssmmmmgtttgmmmsmggtttttttttttt...............................................',
+  '..tsttggggtgsssmggggsssssssssmmmmssssmsssssssssmggggtttgggggggmsssmmgggggggggmmsmgttggggmgtgmmmsssmmmssmmmmmmgmmmmmmmmmmgggmmmmgtttttttttttttt...............................................',
+  '..tsttggggggsssmggtgmsssssmmsmgggmssmmssssmssmmgggggttggmgggggmmmmgggttgggggmgggggttgmmmgttmsggmsmggmmsmmmmmgggmmmmssmmmssmmmmgttttttttttttttt...............................................',
+  '..gsgttggmmmmssmgttgmssmmmmmmmgtggmmmmssssmmmggggmgggggggggggggggmggtttggggmmgttttttgmsmgtggggggggggmssmmmgggggmmmmssmmmmmmmmmgttttttttttttttt...............................................',
+  '..gsggggggggggggttggmssggmmmsgggggggmmmssssggtttgmggggmmgggmmmggggggttggggmssmgggggggmmmgggggggggttggsssmmgggmmmmmmmmmmmmmmmmsmgtttttttttttttt...............................................',
+  '..msmssmtttgggggttggmgmggmsssmggmmgggmmsssmgttttgggggmgmggmsmmmgggggtggggmsmgggmmggggggggtgggmgttttggmmmmmmggmmssmmmmmmmmmmgmmmggttttttttttttt...............................................',
+  '..ssssssgtttggmmgttgggmsgmsssmmmmmmggmmsmgttttttggggmmmmmsssssssmmgggggggmsmgggggggggttgtttgmmgtttgmgmmsssmmmsssssmmmsssmmmmmmmgggtgtttttttttt...............................................',
+  '..sssssmgttttgsssggttgssmgsssmmsssmggggggtttttttmggmmmmmssssssssssmggggggssgtggttttgttttttttgggttggmmsssssmmmssssmmssssssssgmmmggttttttttttttg...............................................',
+  '..sssssggtttttmssmggtgsssmmssmmsssmmgttttttttttgmggmmmmssssmmssmssmgggggmssgtttttttggtttttttggtttgmmmsssssmgmssssmmssssss....................................................................',
+  '..sgsssmgtttttgssgggggmsssssmgmsssmggttttttttttgggggggsssmmmmmmgmmmmggggssmggggttttgggttttttgggttgmmgsssssmgmssmmmmmmmsss....................................................................',
+  '..stsssmggtttgggssggmmmssssmggmmmsmgttttttttttttggggggssmggggggggggggggmssgttgggtttgggttttttgggtgmmggmmmmmmmmmmggmmmmmmsm....................................................................',
+  '..stsssmmsgttgttssssssmmsssmgmsgggttttttttttttttggggggssmgggggttgttggmsssmgtgtttttgggggggttggmgggmmmmmggmggmmggggggmmmsss....................................................................',
+  '..stsssssmttttttgssssmgtgmmmmmmgttttttttttttttttggttgmmmmggttttttttggmsssmgggttttggmggggttggmmmmmggmmmgggmggggggggggmgmsm....................................................................',
+  '..mtmmsssgtttttttgmsmggttgssmmmgtttttttttttttggggtttgsmggmgttttggggmmmmsssgggtttggggggggttgggggmmmgmmmmmmmmmggggggggggmmm....................................................................',
+  '..tttggsmgtttttttttgmgtgggmsssmgtttttttttttttttttttgssmgmmggttgmmmmmgttgmmgggttgggggttggttgmgtttgmsmmmmmmmmgggggggggggmmm....................................................................',
+  '..ttttgsggtgggttttttgmgmsmmssmgggttttttttttttttttggsssmggggttggmmmmgttttgmgggttgggggtttttgmsgtttmssmmmmmmmmggggggggggggmg....................................................................',
+  '..ttttgstttggtttttttgsssssssgtgmgtttttttttttttttgmsssmggttggggggggggttttgggggtgggggttttggmssmgggsssmmmmmmmmggggmmgggggggg....................................................................',
+  '..ttttgsttttttttttttggmsssmgttgmggtttttttttttttggssssmmggggmmmggggtggttgmmgggttggmmgtttgmmmgggsssssmggggmmgggggmmgggggggg....................................................................',
+  '..ttttgsttttttttttttttgssmggtggggtttttttttttttggmsssssssmmmsssmmmmggmmmmgggggtttggmgtttgggggtgggmsmmggggmmgttggggggmggggg....................................................................',
+  '..ttttgsttttttttttttttgmmmggttggtttttttttttttgggmssssssssmmssssssmggmsssggggttgggggttttggggttggmsmggggggmmggtgggggtgggggg....................................................................',
+  '..ttttgsttttttttttttttttgggtttmgttttgtttggmttttgmssssssssssmmmssssmggsssmgggtttttttttttgmmggggmssmggmmmmmmgggggggtttgmmmm....................................................................',
+  '..ttttmsttttttttgttttttggttttgggtttttgggssmttttgsssssssssssmmmmsssmmmsssmgtttttttttttttgmmsmmmsssmgmmmmmmggggggggtttmssss....................................................................',
+  '..ttttsstttttgtgttttttgggttttttggttttgmgmmgtggggmssssssssssmmmmmmsmmmgmssgggttttttgttttggmsmmssssmgmmmmgggggggtgggtgssmmm....................................................................',
+  '..ttttsstttttggttttttgggtttttgggmgtttgggmmttggggsssssssssssmsssmmmmggggmsmggggggttttttttggmmsssssmmsmmmgggtgggttggggmgggg....................................................................',
+  '..ttttsstttttgggttttgggtttttgttgmttgggggggttggggssssssmmmmmmssssmmmgggmmmmggmmmmtttttttttgmsssssssmsmsmgggggggttggggggggg....................................................................',
+  '..ttttssttttggggtttgggttttgtttttgtggggggggttgggmssssssmgmmmmmssmmgggggmggmggmmmgtttttttttgmssssssmmsssmmggggggggggggggggg....................................................................',
+  '..tttgssttggtgtgggggggttttttttttggggggtgggttggggssssssmgmmmmmmmmmgtggggggmmgggggttttttggggssssssmmmsssmmggggggggggggggggg....................................................................',
+  '..stsssstttggttggggggttttttttttttggggggggttgggtgmssssmmmmmmmmgggggttttgmmmmgggtttttttgmmggmsssmsmgmsmmmgggggggggggggggggg....................................................................',
+  '..mtmsssttttttgtgmmttttttttttttttgggggggggggggggmmmssmmmmmmmgtttggggggssmmmmgtttttttgmsmmmmsssssmmmmmmmggggggggmggggggggg....................................................................',
+  '..mtmssmttttttgtgmmtttttttttttttttggtttggtggggggmmmmsmmmmmmmggtggggggmssssmggttttttggmmmmmsssssssmmmmmmgggggggggggggggggg....................................................................',
+  '..gtgmsgttttttgggggtttttttttttttttgggtggggggggggmsmmmmmmmmssmmmmmgggmmsssmggtttttttggsmmmmsssmmmmmmmmsmgggggggggggggggggg....................................................................',
+  '..gtgmsttttttttttgmgttttttttttttttgggtggggggggggmssmmmmmmmsssssssggggmsssmggtttttttmmmmggmsssggggmmssmmgggggggggggggggggg....................................................................',
+  '..gtgmstttttttttttmmmggttttttttttttggtggggggggggmsssmmmmmmggmmmssmgttgmsssmgggttttgmssmmmsssmgggmmmsmgggggggggggmmmgggmmm....................................................................',
+  '..gtgmsgtttttggtttgmsmggttttttttttttggggggggggggmmsmmmmmmggggggsmggttttgggmggggggmsssssssssgttttgggmmmmmggmgggggggmgggmmm....................................................................',
+  '..gtggsgtgtttgggtggmmmmgttttttttttttgggggggggmgmmmmmmmmmgggtttgmmgttttttttggggmmssssssssssmtttttgttggssmmmmmgggggggggmmmm....................................................................',
+  '..tttgstttttttgggggmmmmggttttttttttttttgggggmmgggggmmmmmgggtttgmmtttttttgttttgggmmssssssssgtttttgtttgsssmmmmggggmmgggmmmm....................................................................',
+  '..tttgsttttttttggggmmmmmmgttttttttttttttggggggggggggmmmgggggtttggggtttttggtttttgttgssssssgtttttggttttgmmmmmmggggmmggmmggg....................................................................',
+  '..gtggsttgttttgggggmmmmsssggggttttttttttggttgmmmmggmmmmmgtgtttttgggttttttttttttttttggssssgttttttgtttttmmsmmgggggmmggmmggg....................................................................',
+  '..tttgstggttgggggggmmgmsssmgggttttttttggggttgssssmgmsssmgttttttggggtttttttttttttttttttgggttttggttgttttmmsmggggggggggggggg....................................................................',
+  '..gtggsggggttgggtggmggmsssssgtttttttttggggtttggggttgggggtttttttmsmggttttttttttttttttttttttttttggggttttgssmggggggggggggggg....................................................................',
+  '..tttmstgggttgggggggggggmsssmgtttttttggttttttttttttttttttttttttmsmmmgttttttttttgtttttttttttttggggtttttgmsmmmmgggggggggggg....................................................................',
+  '..tttmstggggtttggggmmggggmmssmgttttgggtttttttttttttttttttttttttmsmmsmttttttttttggtttttttgttttgggtttgttgmsssssggmmmmgggggg....................................................................',
+  '..tttmstgmggtttggggmmggggggmmmgtgggtttttttttttttgttgtttttttttttmsssmgttttttttttgttttttttggtttggttttttttgmssssmgmmsmgggmmm....................................................................',
+  '..tttsstggggtttgggmmmggggggggggtgttttttttttttttgmttttttttttttttgssmgttttttttttttttttttttttttttttttttttttmssssmmmmmmmmsmmm....................................................................',
+  '..tttssgggggttttgmmmggggggggggttttttttttttttttgmmttttttttttttttmssmtttttttttttttttttttttttttttttttttttttgssssssmmmmmmgggg....................................................................',
+  '..tttssggtgtttttmmmgggggggggggtgtttttgtttttttgmsmtttttttttttgmssssgttttttttttttttttttttggggttttttttttttttgggmssmmmmssmggg....................................................................',
+  '..tttssgttggggggmmmggggttttggttgttttggttttttgggsmtttttgmmmgmssssssgtttttttttgmggtttggttgmmggttttttttggtttttttgggmmmsssmmm....................................................................',
+  '..gtgsmtttgggggggmggggttttttggtggttgsgttttttmggmmtttttmsssssssssssgtttttgtttmmsmgtttttttmmsmggmsmtttggggttttttttgggmmmmgm....................................................................',
+  '..tttsgttgggtttttgggggggtgggggggtgtmsmmmgtttsmgmmggttgmsssssssssssgtttttgtttmmmmmgttttttgssssssssggmgggtttttttttttttttttt....................................................................',
+  '..gtgsttttgttttttggggggggggggttttttgsmsssgtgssssgtttgsssssggggmssmgttttgmgggmmggggggtttttsssssmsmgmggmgtttttttttttttttttt....................................................................',
+  '..gtgsggttgtttttgggggmmmgggggttttttgssssmgmsssssgttgmssssgttttttggttgtgmssssgttgggggtttttgssssmsmggttmmgttttttttttttttttt....................................................................',
+  '..mtmsgggggttttgmmgggmmgggggggtttttgmssssssssssssmmmssssstttttttttttttgmmgggtttttgmgtttttgsmmggmmttttmmggmmgttttttttttttt....................................................................',
+  '..mtmsgggggtttgmmmmggmmgggggggtgttttgsssssssssssssssssssgttttttttttttttgttttttttttmsgttttgmttttggttttggtgmsmtttgggttttttt....................................................................',
+  '..stssmmmmtttgmmmmggmggggggggggggttttgssssssssssssssmmggttttttttttttttttttttttttttgmgtttgmmtttttggttttttttggttttgtttttttt....................................................................',
+  '..stssmmsstttgmmmmgggggggggtttmmsgttttmssssssssssssmtttttttttttttttttttttttttttttttttttggmstttttgmgtttttttttttttttttttttt....................................................................',
+  '..stssmssmtttgmmmmmmgggggttgggmmsmtttttmmgggmssssssgttttttttttttttttttttttttttttttttttttgmmgttttmmgtttttttttttttttttttttt....................................................................',
+  '..stssmgggggggmmmmmmggggggggmsmmmgttttttttttgssssssgtttttttttttttttttttttttttttttttttttgmmmggtttggttttttttttttttttttttttt....................................................................',
+  '..stsstttttgggggggggggggggggmsmggtttttgttttttmmssssgttttttttttttttttttttttttttttttttttttgttggggttttgttgttttttttttttttttgt....................................................................',
+  '..stsstttttttgmgggggggggggmggmmgtttgtgggtttttttgsssttttttttttttttttttttttttttttttttttttttttttggttttggggtttttttttttttttttt....................................................................',
+  '..stsstttttttgmgggggggggggsmgggtttgggggggtttggggmsmttttttttttttttttttttttttttttttttttttttttttttgttggmgttttttttttttttttttt....................................................................',
+  '..stsstttttttgsmmgggggggggmgttggtggggggggttggggggggtttttttttttttttttttttttttttttttttttttttttttttgttggtttttttttttttttttttt....................................................................',
+  '..stsstttttttggttttgggggggmgttmmgttggggggtgggmmmmgttttttttggttttttttttttttttttttttttttttttttttttgtttttttttttttttttttttttt....................................................................',
+  '..stsmtttttttttttttgggggggggtgmsgttggggggggggmmmmggttttttttgtttttttttttttttttttttttttttttgggtttttgttttttttttttttttttttttt....................................................................',
+  '..stsgttttttttttttttttttggggtgmsgtgmggggggggmsmsssmggttgttttttttttttttttttttttttttttttttttggtttttggggtttttttttttttttttttt....................................................................',
+  '..stsmtttttttttttttttttttgggtmssmtggggggggggsssssssmmtttttttttttttttttttttgtttttttttttttttggtttttggmgggttttttttttttgttttt....................................................................',
+  '..stssttttttttttttttttttttggggssmgggggggttgmsssssssmsggggttttttgtttttttttggtttttttttttttttgtttttgggmgttttttttttttttgttttt....................................................................',
+  '..stssgttttttttttttttttttttgggmsmgggggggttggmsssssssssssmtttgggmsmgtttttttgtttttttttgtttttttttttttttttttttttttttttttttttt....................................................................',
+  '..stssttttttttggttttttttttttgggmmgggmgggttggmsssssssssssmggsssssssssssssssmtttttttttgtttttttttttttttttttttttttttttttttttt....................................................................',
+  '..stssttttttttggttttttttttttgttmsggmmgggtggmsssssssssssmmmsssssmgmssssssmssssttttttggtggggtttgttttttttttttttttttttttttttt....................................................................',
+  '..stssttttttttgtttttttttttttgggmmgggggggggmssssssssssmmmmssmmgggggggggmmmgttssssgtttggggggtttttttttttttttttttttttttgttmsm....................................................................',
+  '..gtgsttttttttgtttttttttttgggggmmmmgggggggsssssssssssmmssssggg..gtgtggggmsmggggssssssmggggttttttttttttttttttttgssssssssss....................................................................',
+  '..tttgsmttttttgttttttttttgggmmmmmmmmmgtgtgmssssssssssmmmmssmmg.....gggmmmgttssssgtttggggggtttttttttttttttttttttttttgttmst....................................................................',
+  '..ttttgsssgttgggttttttttttgggggmmmmgggg......................................................................................................................................................',
+  '..tttgsmttttttgtttttt........................................................................................................................................................................',
+  '..t..........................................................................................................................................................................................'
+];
+const F2O: [number, number] = [-560, -440];
+const field2: Spec = {
+  name: 'open ground behind the churches', axis: [1, 0], origin: F2O, storey: 2.4, style: ST_HOUSE, roofColor: '#7d7a72', fascia: '#e9e8e3', pitch: 0.2,
+  blocks: [], keep: [],
+  extras: (k: Kit) => openGround(k, F2O, FIELD2, -849, -636, 3, 73, 9, 4),
+};
 
-/** St. Thomas Aquinas, the Interdenominational Church and the open ground west of them */
-export const churchSite = createSite('churches', [stThomas, lic, field]);
+/** St. Thomas Aquinas, the Interdenominational Church, the Anglican church and hall, and the open ground west of them */
+export const churchSite = createSite('churches', [stThomas, lic, anglicanChurch, anglicanHall, field, field2]);
