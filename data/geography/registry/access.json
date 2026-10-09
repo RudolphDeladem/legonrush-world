@@ -41,7 +41,8 @@
   "owner-pharmacy": "Owner's photos of the School of Pharmacy (its side to the road from WACCBIP, and its front to Volta Hall Road with the doors marked blue).",
   "owner-food-science": "Owner's photos of the Department of Nutrition and Food Science (front, to the Larway Oraca Building, and side).",
   "owner-isser-annex": "Owner's marked aerial of the ISSER Annex and the ground west of it to Botanical Gardens Road, registered to the annex's outlines at 0.25 m/px, and owner's photos of the ISSER Annex (from the air, and from the road on the east); the entrances marked blue, the walk from the engineering school marked with a blue arrow.",
-  "owner-earth-science": "Owner's marked aerial of the Department of Earth Science (storey building yellow, one-floor ranges violet, the entrance blue), registered at 0.25 m/px, and photos of its front and back."
+  "owner-earth-science": "Owner's marked aerial of the Department of Earth Science (storey building yellow, one-floor ranges violet, the entrance blue), registered at 0.25 m/px, and photos of its front and back.",
+  "owner-nblock-front": "The owner's marked aerial of the ground round the front of the N Block (eleven numbered views) and a street photo of each view: Plant Biology's entrance terrace (views 9 to 11), the Centre for Biodiversity Conservation Research (view 2)."
  },
  "campusGates": [
   {
@@ -2172,6 +2173,64 @@
    "evidence": "Owner's aerial and photos of the front (the door marked blue).",
    "refs": [
     "owner's aerial and photos of the Department of Earth Science"
+   ]
+  },
+  {
+   "place": "Department of Plant and Environmental Biology",
+   "footprint": "osm:relation/3697980",
+   "entrance": {
+    "at": [
+     51.7,
+     -217.0
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-nblock-front",
+   "approach": "From the avenue's east carriageway across the parking bays and up the steps of the stone-walled terrace to the glazed double door in the open court on the west.",
+   "evidence": "The owner's views 9 to 11 (street photos of the entrance) on the marked aerial.",
+   "refs": [
+    "owner's marked aerial of the N Block front"
+   ],
+   "via": [
+    [
+     30.0,
+     -217.0
+    ],
+    [
+     42.0,
+     -217.0
+    ]
+   ]
+  },
+  {
+   "place": "Centre for Biodiversity Conservation Research",
+   "footprint": "osm:way/1051755653",
+   "entrance": {
+    "at": [
+     -26.2,
+     -277.6
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-nblock-front",
+   "approach": "From the avenue past the forecourt to the red stair up to the north door at the east end.",
+   "evidence": "The owner's view 2 (street photos of the east end and the forecourt) on the marked aerial.",
+   "refs": [
+    "owner's marked aerial of the N Block front"
+   ],
+   "via": [
+    [
+     -8.0,
+     -281.0
+    ],
+    [
+     -24.0,
+     -281.0
+    ]
    ]
   }
  ],

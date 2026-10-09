@@ -453,6 +453,16 @@ try {
     if (!rl.stairsOf().some((q) => !q.alongZ && q.x1 === 70.1 && q.top > 1.1)) fail('no stair up to the raised ground by the K. Folson Building (owner, view 2)');
     for (const [x, z, lo, hi, what] of [[60, -408, 8, 11, 'the K. Folson Building two storeys'], [78, -340, 0, 5.5, 'the long range one floor'], [-55, -350, 0, 5, 'Social Work one floor']]) { const b = buildingAt(x, z); if (!b || b.height < lo || b.height > hi) fail(`${what} (owner)`); }
     if (buildingAt(-14.3, -302.5)) fail('the phantom building on Ebenezer Laing Road is still there');
+  }
+  // owner: round the front of the N Block (eleven views): Plant Biology like Animal Biology, its entrance on the west;
+  // the Centre for Biodiversity; the Ocean Margins Initiative; the ashoka row (no wood over the verge)
+  {
+    if ((await server.ssrLoadModule('/src/game/biology.ts')).biologySite.frames().length !== 3) fail('expected Plant Biology, the Centre for Biodiversity and the grounds round them (owner)');
+    const pa = ACCESS.get('Department of Plant and Environmental Biology'); if (!pa || Math.hypot(pa.entrance[0] - 51.7, pa.entrance[1] + 217) > 2) fail('Plant Biology is not entered by its terrace on the west (owner, views 9 to 11)');
+    const ca = ACCESS.get('Centre for Biodiversity Conservation Research'); if (!ca || Math.hypot(ca.entrance[0] + 26.2, ca.entrance[1] + 277.6) > 2) fail('the Centre for Biodiversity is not entered up its red stair (owner, view 2)');
+    { const b = buildingAt(-177, -251); if (!b || b.height > 5) fail('the Ocean Margins Initiative is not one floor where the aerial shows it (owner, view 6)'); }
+    const inA2 = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
+    if (cm.AREAS.some((a) => a.kind === 'wood' && inA2(a, -90, -287))) fail('the verge before the biology complex is still a wood, not the ashoka row (owner, view 3)');
     for (const [x, z, what] of [[-365, -330, 'St. Thomas Aquinas'], [-370, -426, 'the Interdenominational Church']]) if (!buildingAt(x, z)) fail(`${what} is not where the owner's aerial shows it`);
     for (const [x, z] of [[-410, -380], [-440, -300]]) if (buildingAt(x, z)) fail(`a building stands on the open ground west of the churches at ${x},${z} (owner)`);
   }

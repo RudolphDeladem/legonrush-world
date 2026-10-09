@@ -72,3 +72,4 @@
 70. St. Thomas Aquinas front, porch, court slabs, the house (open corner, verandah, louvre windows), the open slatted gate; the Anglican church cream with both gates open
 71. St. Thomas Aquinas: the verandah building is the east range facing WACCBIP (two floors), the house west of it white with the open porch and three entrances; the court concrete squares
 72. N Block compound from ten numbered views: N Block (hall, wings, verandahs, ICT Literacy wing), the long range, the K. Folson Building, the raised ground with stone banks and stair, the court, Social Work, School of Social Sciences, Information Studies
+73. N Block front, GCB back, Plant and Animal Biology from eleven views: one biology-range kit for both buildings, the Plant Biology entrance terrace, the Centre for Biodiversity Conservation Research, Ocean Margins Initiative, ashoka row, Financial Aid Office front, the lane's rubble wall, the avenue median

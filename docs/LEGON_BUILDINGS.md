@@ -1403,6 +1403,35 @@ From the owner's aerial of the N Block compound with ten numbered, coloured view
 - The car parks (east, before the K. Folson Building, between the N Block and the long range, west) are kept **nearly
   empty** as the photos show them; a phantom outline on Ebenezer Laing Road removed.
 
+## 59. The N Block front, the GCB's back, Plant and Animal Biology from eleven numbered views
+
+From the owner's aerial (picture 1, `images/271.jpg`) with eleven numbered view lines and a PDF of street photos
+(`images/272-285.jpg`; view 2 has two photos, view 8 three) (`biology.ts`, `labs.ts`, `nblock.ts`):
+
+- **Plant and Animal Biology are the same building type** (the owner's key note: the two lines marked view 8 show the
+  same street view and the same structure). Both are built from one kit, `bioBlocks` / `bioParts`: long one-floor
+  ranges, white with a red-brown base, **hipped red-brown tile roofs**, open **verandahs on white columns with red-brown
+  feet** along the court sides, and rows of louvred windows. Animal Biology (`labs.ts`) now uses the kit; Plant Biology
+  is new.
+- **Plant Biology entrance** (view 10): the **entrance terrace** on its west side, with **steps between rubble-stone
+  walls**, two **Norfolk pines** and clipped round trees, pots and a bench, the lit glazed door. The asphalt car park
+  in front has empty bays and a round bed with a tree (view 11). Entrance in `access.json`.
+- **Centre for Biodiversity Conservation Research** (view 2, two photos): a one-floor block on a **rubble-stone base**,
+  a **dark brown tile gable roof** with a deep brown fascia, its sign and windows on the east gable, a **red stair with
+  black rails** on the north face. In front: a **white pierced screen wall** with stone beds and steps, the **open black
+  gate**, the board, asphalt. It is no longer part of Animal Biology's footprint, and it has its own entrance.
+- **Ocean Margins Initiative** (view 6): a small flat-roofed box with a **deep white fascia**, its name, a red base,
+  a glass door and a blue plaque, caged air-conditioners, a red cordyline. Next to it is a **blue shed with a red roof**,
+  and **ashoka trees** (tall, columnar, drooping).
+- **The ashoka row** (view 3): a dense row of ashokas along the road south of Animal Biology, on a low kerb; the
+  generic wood mapped there was removed.
+- **The GCB's back / the Students Financial Aid Office** (view 5): white galleries on round and square columns with a
+  dark band, a parapet, a brown soffit, the **drum** with its sign, and an **open stair** along the front with a steel
+  rail. A white wall with a purple bed and young trees runs in front.
+- **The lane** (view 7): the **rubble-stone retaining wall** along its west side, with a grass wedge on top.
+- **The avenue's median** (views 1 and 4): grass, **brick paving strips** along both kerbs, **conifers** and **tall
+  lamp poles** every 14 m. The generic street trees no longer grow on it (the median is kept clear).
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

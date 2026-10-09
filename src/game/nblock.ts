@@ -21,6 +21,7 @@ import { BAND, PL, createSite, render, type Block, type Kit, type Spec, type Sty
 import { concrete, pane, wall } from './concrete';
 import { garden } from './gardens';
 import { stairsOf } from './relief';
+import { SOLIDS } from './solids';
 
 // ---------- the New N Block ----------
 const NO: [number, number] = [-95, -459];
@@ -138,11 +139,24 @@ const LOBBY: Style = {
     g.fillStyle = '#3a3a38'; g.fillRect(0, 512 - 40, 256, 40);
   },
 };
+/** the south face behind its galleries (owner's photo: the Students Financial Aid Office): up, dark windows and notice
+ *  boards; down, a band of dark grilles high in the wall */
+const GCB_S: Style = {
+  bay: 3.6, up: [[70, 60, 100, 150]], ground: [[20, 256 + 40, 216, 60]],
+  draw: (g) => {
+    wall(g, OLDW);
+    g.fillStyle = '#2a2d31'; g.fillRect(70, 60, 100, 150); g.fillStyle = '#4b5056'; g.fillRect(118, 60, 4, 150);
+    g.fillStyle = '#f2f2ee'; g.fillRect(186, 90, 52, 70); g.fillStyle = '#1d3f7a'; g.fillRect(190, 94, 44, 10);
+    g.fillStyle = '#1b1c1e'; g.fillRect(20, 256 + 40, 216, 60);
+    g.fillStyle = '#5e6268'; for (let x = 20; x < 236; x += 12) g.fillRect(x, 256 + 40, 3, 60); g.fillRect(20, 256 + 68, 216, 3);
+  },
+};
 const W = (x0: number, x1: number, z0: number, z1: number, floors = 2, more: Partial<Block> = {}): Block => ({ x0: GX(x0), x1: GX(x1), z0: GZ(z0), z1: GZ(z1), floors, y: GT, roof: 'none', ...more });
 const gcbBlocks: Block[] = [
   W(-156.5, -119.8, -380.5, -361.5),
   W(-158, -121, -344.3, -324.6),
-  W(-155.3, -126, -324.6, -309.5),
+  // (its south face stands back behind the galleries of the Students Financial Aid Office: owner's photo)
+  W(-155.3, -126, -324.6, -312.6, 2, { faces: { z1: GCB_S } }),
   // the core between the west and east lobbies (the lobbies open to the colonnades)
   W(-146, -132, -361.5, -344.3, 1, { faces: { x0: LOBBY, x1: LOBBY } }),
 ];
@@ -295,6 +309,40 @@ const gcb: Spec = {
     c.push([B(-159, -118.5, EAVE - 0.35, EAVE + 0.02, -395.5, -395.3), '#e8e5dd'], [B(-159, -118.5, EAVE - 0.35, EAVE + 0.02, -308.8, -308.6), '#e8e5dd']);
     c.push([B(-159.1, -158.9, EAVE - 0.35, EAVE + 0.02, -395.4, -308.7), '#e8e5dd'], [B(-118.6, -118.4, EAVE - 0.35, EAVE + 0.02, -395.4, -308.7), '#e8e5dd']);
 
+    // ---- the south face, the Students Financial Aid Office (owner's photo from Ebenezer Laing Road): galleries on
+    // both floors behind round columns down and square ones up (a dark band round their middle), a solid parapet, the
+    // roof's beams standing out under a deep soffit of brown boards, the round drum in the middle carrying the office's
+    // name, the stair along the front up to the first floor with a steel rail; at the foot of the slope a white wall,
+    // a bed of purple-leaved plants, young trees
+    {
+      const sx0 = -155.3, sx1 = -126, zb = -312.6, zf = -309.5, cxs = [-154.6, -149.6, -144.8, -136.2, -131.4, -126.7];
+      c.push([B(sx0, sx1, F1 - 0.3, F1, zb, zf), OLDW], [B(sx0, sx1, F1, F1 + 1.05, zf - 0.25, zf), OLDW], [B(sx0 - 0.05, sx1 + 0.05, F1 + 1.05, F1 + 1.12, zf - 0.3, zf + 0.05), '#d9d5cb']);
+      for (const x of [sx0, sx1 - 0.25]) c.push([B(x, x + 0.25, F1, F1 + 1.05, zb, zf), OLDW]);
+      for (const x of cxs) {
+        col(x, zf - 0.5, GT, F1 - 0.3, 0.26);
+        c.push([B(x - 0.22, x + 0.22, F1, EAVE - 0.1, zf - 0.72, zf - 0.28), OLDW], [B(x - 0.24, x + 0.24, F1 + 1.2, F1 + 2.3, zf - 0.74, zf - 0.26), '#3c4045']);
+        c.push([B(x - 0.2, x + 0.2, EAVE - 0.55, EAVE - 0.1, zb, -307.9), OLDW]);
+      }
+      c.push([B(-159, -118.5, EAVE - 0.12, EAVE - 0.05, zb, -308.7), '#8a6a4e']);
+      k.plain.push([B(sx0, sx1, GT + 0.02, GT + 0.05, zb, zf), TILES]);
+      // the drum
+      c.push([new THREE.CylinderGeometry(2.6, 2.6, EAVE - 0.1 - GT, 28).translate(GX(-140.5), (GT + EAVE - 0.1) / 2, GZ(-311.4)), OLDW]);
+      k.plain.push([new THREE.BoxGeometry(2.8, 0.55, 0.04).translate(GX(-140.5), F1 + 1.7, GZ(-308.78)), '#f4f4f1']);
+      k.signs.push({ text: 'STUDENTS FINANCIAL AID OFFICE', x: GX(-140.5), y: F1 + 1.7, z: GZ(-308.75), ry: 0, w: 2.6, colors: ['#f4f4f1', '#1d2a3a'] });
+      // the stair along the front from the ground up to the first floor's gallery, a steel rail
+      const s0 = -152.2, s1 = -144.6, n = 16;
+      // (a flight on its own sloping slab, open under it)
+      for (let i = 0; i < n; i++) { const yt = GT + ((F1 - GT) * (i + 1)) / n; c.push([B(s0 + ((s1 - s0) * i) / n, s0 + ((s1 - s0) * (i + 1)) / n, yt - 0.22, yt, zf + 0.05, zf + 1.1), '#d7cdbd']); }
+      { const sl = Math.hypot(s1 - s0, F1 - GT); c.push([new THREE.BoxGeometry(sl, 0.2, 1.05).rotateZ(Math.atan2(F1 - GT, s1 - s0)).translate(GX((s0 + s1) / 2) + 0.15, (GT + F1) / 2 - 0.32, GZ(zf + 0.575)), '#c9c2b4']); }
+      const len = Math.hypot(s1 - s0, F1 - GT);
+      k.plain.push([new THREE.BoxGeometry(len, 0.04, 0.04).rotateZ(Math.atan2(F1 - GT, s1 - s0)).translate(GX((s0 + s1) / 2), (GT + F1) / 2 + 0.95, GZ(zf + 1.1)), '#c9ccce']);
+      for (let i = 0; i <= 6; i++) { const x = s0 + ((s1 - s0) * i) / 6, y = GT + ((F1 - GT) * i) / 6; k.plain.push([B(x - 0.02, x + 0.02, y, y + 0.95, zf + 1.08, zf + 1.12), '#c9ccce']); }
+      // the white wall at the foot of the slope, the bed before it, young trees
+      c.push([B(-160, -118, 0, 1.3, -304.3, -304.0), '#f2f1ec'], [B(-160, -118, 1.3, 1.38, -304.35, -303.95), '#d9d5cb']);
+      for (let x = -160; x <= -118; x += 0.4) SOLIDS.add(x, -304.15, 0.25);
+      k.plain.push([B(-160, -118, 0.02, 0.22, -304.0, -303.0), '#3a2230'], [B(-160, -118, 0, 0.25, -303.0, -302.8), '#e9e7e2']);
+      for (let x = -159.6; x < -118.4; x += 0.7) k.plain.push([new THREE.IcosahedronGeometry(0.3, 0).scale(1.2, 0.5, 1).translate(GX(x), 0.3, GZ(-303.5 + ((x * 7) % 0.4))), (Math.round(x) % 2) ? '#5a2a4a' : '#6a3456']);
+    }
     // ---- round it ----
     k.signs.push({ text: 'UG GCB LECTURE BUILDING', x: GX(-158.1) - 0.05, y: GT + 5.6, z: GZ(-330), ry: -Math.PI / 2, w: 3.6, colors: ['#f6f6f3', '#1d3f7a'] });
     // the black water tank on its stand by the west wing
@@ -308,6 +356,7 @@ const gcb: Spec = {
     const g = garden([-190, -100, -420, -300]);
     g.reseed(41);
     for (const [x, z, sc] of [[-170, -404, 1.4], [-176, -396, 1.2], [-113, -382, 1.6], [-113, -350, 1.5], [-113, -318, 1.4], [-162, -312, 1.2]]) g.tree(k, GX(x), GZ(z), sc);
+    for (const x of [-152, -138, -124]) g.tree(k, GX(x), GZ(-303.5), 0.55);
 
     const m = new THREE.Mesh(merge(c), concrete(0.12));
     m.castShadow = true; m.receiveShadow = true;

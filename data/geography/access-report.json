@@ -1,18 +1,18 @@
 {
  "destinations": 436,
  "byMethod": {
-  "curated": 91,
+  "curated": 93,
   "osm-entrance": 0,
   "gate": 1,
   "path-access": 2,
   "drive-access": 18,
   "area-entry": 8,
-  "frontage": 207,
+  "frontage": 205,
   "point": 109
  },
  "byConfidence": {
-  "high": 86,
-  "low": 211,
+  "high": 88,
+  "low": 209,
   "medium": 139
  },
  "campusGates": 5,
@@ -361,8 +361,8 @@
   }
  ],
  "byStatus": {
-  "verified": 85,
-  "inferred": 202,
+  "verified": 87,
+  "inferred": 200,
   "partial": 6,
   "unverified": 9,
   "mapped": 134
@@ -472,6 +472,13 @@
    "arrivalOn": "residential",
    "arrivalDistance": 16.5,
    "facing": 176
+  },
+  {
+   "place": "Department of Plant and Environmental Biology",
+   "type": "public entrance",
+   "arrivalOn": "residential",
+   "arrivalDistance": 30.4,
+   "facing": 87
   },
   {
    "place": "University of Ghana Business School",
@@ -584,6 +591,13 @@
    "arrivalOn": "residential",
    "arrivalDistance": 11.3,
    "facing": 359
+  },
+  {
+   "place": "Centre for Biodiversity Conservation Research",
+   "type": "public entrance",
+   "arrivalOn": "Ebenezer Laing Road",
+   "arrivalDistance": 18.7,
+   "facing": 136
   },
   {
    "place": "Institute of Statistical and Social and Economic Research (ISSER) Annex",

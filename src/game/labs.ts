@@ -22,6 +22,7 @@ import { box, canvas, merge, speckle, tri2, type Part } from './modelkit';
 import { BAND, PL, createSite, render, type Block, type Kit, type Spec, type Style } from './blocks';
 import { concrete } from './concrete';
 import { garden } from './gardens';
+import { BIO_WALL, bioBlocks, bioParts, type BioRange } from './biology';
 
 /** rain streaks hanging down a facade canvas from the top of each storey */
 const streaks = (g: CanvasRenderingContext2D, n: number, a: number, tops: number[]) => {
@@ -237,42 +238,25 @@ const nursing: Spec = (() => {
 
 // ---------- Animal Biology and the Centre for Biodiversity: one-floor ranges round courts ----------
 const AO: [number, number] = [-90, -230];
-const A_WALL: Style = {
-  bay: 3.2, up: [], ground: [[50, 256 + 70, 56, 104], [150, 256 + 70, 56, 104]],
-  draw: (g) => {
-    render(g, '#f2f1ec');
-    streaks(g, 14, 0.25, [256]);
-    g.fillStyle = '#e4e2db'; g.fillRect(0, 256, 22, 256); g.fillRect(234, 256, 22, 256);
-    g.fillStyle = 'rgba(90,88,82,0.22)'; g.fillRect(22, 256, 3, 256); g.fillRect(231, 256, 3, 256);
-    for (const x of [50, 150]) { g.fillStyle = '#d6d4cc'; g.fillRect(x - 5, 256 + 65, 66, 114); g.fillStyle = '#1d2024'; g.fillRect(x, 256 + 70, 56, 104); g.fillStyle = '#3a4048'; g.fillRect(x + 27, 256 + 70, 2, 104); g.fillRect(x, 256 + 110, 56, 2); }
-    g.fillStyle = '#a7a39a'; g.fillRect(0, 512 - 18, 256, 18);
-  },
-};
 const animal: Spec = (() => {
   const X = (x: number) => x - AO[0], Z = (z: number) => z - AO[1];
-  const R = (x0: number, x1: number, z0: number, z1: number): Block => ({ x0: X(x0), x1: X(x1), z0: Z(z0), z1: Z(z1), floors: 1 });
+  // (owner: the same design as Plant Biology east of the avenue, biology.ts: verandahs along the court sides)
+  const RANGES_A: BioRange[] = [
+    { r: [-113.2, -102.7, -262.5, -242.4] },
+    { r: [-154.7, -142.3, -266.5, -241.0], ver: ['x1'] }, { r: [-154.7, -142.3, -241.0, -202.7] }, { r: [-142.6, -136.4, -240.5, -229.7] },
+    { r: [-118.9, -23.8, -239.9, -229.6], ver: ['z1'] }, { r: [-108.6, -98.3, -229.6, -202.7], ver: ['x1'] }, { r: [-53.0, -40.4, -229.6, -202.7], ver: ['x0'] },
+    { r: [-156.0, -26.7, -202.7, -191.0], ver: ['z0'] }, { r: [-108.1, -96.6, -191.0, -176.7] }, { r: [-52.3, -40.3, -191.0, -176.4] },
+  ];
   return {
     name: 'Department of Animal Biology and Conservation Science',
-    axis: [1, 0], origin: AO, storey: 3.5, style: A_WALL, roofColor: '#a65b3c', fascia: '#efede6', pitch: 0.4, plinth: '#a7a39a',
-    replaces: [[-130, -197], [-148, -230], [-70, -270], [-108, -252]],
-    blocks: [
-      // the Centre for Biodiversity along the north, Nature and Food beside the north court
-      R(-113.2, -24.9, -277.5, -263.3), R(-113.2, -102.7, -262.5, -242.4),
-      // the west range by the car park, its arm east
-      R(-154.7, -142.3, -266.5, -202.7), R(-142.6, -136.4, -240.5, -229.7),
-      // the range across the middle, the two ranges down either side of the court, the range along the south and the
-      // two wings beyond it toward the road
-      R(-118.9, -23.8, -239.9, -229.6), R(-108.6, -98.3, -229.6, -202.7), R(-53.0, -40.4, -229.6, -202.7),
-      R(-156.0, -26.7, -202.7, -191.0), R(-108.1, -96.6, -191.0, -176.7), R(-52.3, -40.3, -191.0, -176.4),
-    ],
+    axis: [1, 0], origin: AO, storey: 3.5, style: BIO_WALL, roofColor: '#a65b3c', fascia: '#efede6', pitch: 0.4, plinth: '#a7a39a',
+    // (the Centre for Biodiversity along the north is its own model in biology.ts)
+    replaces: [[-130, -197], [-148, -230], [-108, -252]],
+    blocks: bioBlocks(X, Z, RANGES_A),
     keep: [[X(-155), X(-28), Z(-168.6), Z(-163.9)]],
     extras: (k: Kit) => {
-      const st: Part[] = [];
-      // a covered walk round the court on posts (its edge is lit at night)
-      for (const [x0, x1, z0, z1] of [[-98.3, -53.0, -229.6, -227.6], [-98.3, -53.0, -204.7, -202.7], [-98.3, -96.3, -227.6, -204.7], [-55.0, -53.0, -227.6, -204.7]]) {
-        k.plain.push([box(X(x0), X(x1), 3.3, 3.45, Z(z0), Z(z1)), '#c9c4b8'], [box(X(x0), X(x1), 0, 0.1, Z(z0), Z(z1)), '#c2bdb2']);
-      }
-      for (let x = -96.5; x < -54; x += 3.4) for (const z of [-227.8, -204.5]) k.plain.push([box(X(x) - 0.12, X(x) + 0.12, 0, 3.3, Z(z) - 0.12, Z(z) + 0.12), '#efede6']);
+      const st: Part[] = [], st2: Part[] = [];
+      bioParts(k, AO, RANGES_A, st2);
       // the walk along J.K.M. Hodasi Road (photo 4): brick paving between two low walls faced in rubble stone, young
       // palms in the verge
       const tex = canvas(128, 128, (g) => {
@@ -311,6 +295,9 @@ const animal: Spec = (() => {
         }
       }
       for (let x = -148; x < -32; x += 9 + (Math.abs(x) % 3)) g.palm(k, X(x), Z(-164.9), 2.2 + (Math.abs(x * 7) % 10) / 10);
+      const cm = new THREE.Mesh(merge(st2), concrete(0.3));
+      cm.castShadow = true; cm.receiveShadow = true;
+      k.meshes.push(cm);
       const sm = new THREE.Mesh(merge(st), stoneMat());
       sm.castShadow = true; sm.receiveShadow = true;
       k.meshes.push(sm);
