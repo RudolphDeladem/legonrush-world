@@ -2844,10 +2844,10 @@
     },
     {
       "id": "osm:way/394125226",
-      "place": "chemistry small block",
+      "place": "Department of Chemistry west entrance",
       "levels": 1,
-      "height": 4.4,
-      "reason": "Owner's marked aerial of the chemistry buildings (registered at 0.23 m/px) and photos of the Department of Physics and the Frank Torto Building: one floor (owner's black lines). Modelled in src/game/physics.ts."
+      "height": 5.0,
+      "reason": "Owner's street photo of the chemistry department's west entrance on Cruise O'Brien Road and its yellow mark on the aerial: one floor on a stone-faced base, a recessed porch between two square pillars with the black wooden lattice door, a paved forecourt with stone-faced beds, steps down to the road. Modelled in src/game/physics.ts."
     },
     {
       "id": "osm:way/773892127",

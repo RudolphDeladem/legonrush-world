@@ -1120,6 +1120,26 @@ in `relief.ts`):
 - **Earth Science:** the entrance porch stands on the front range's face, so its door (between the lattice windows)
   shows.
 
+## 48. The chemistry department's west entrance; the porch by the Post Office; the French Department's doors
+
+From the owner's street photo, marked aerial and photos of the French Department and the long block by the UG Post
+Office (`physics.ts`, `balmewest.ts`):
+
+- **Department of Chemistry, west entrance** (yellow; on Cruise O'Brien Road, opposite the turning): one floor, white
+  with the red-brown band, an orange tile hip roof, standing on a **stone-faced base**. Its front is recessed between
+  **two square white pillars with red-brown feet**, the **black wooden lattice double door** in the middle under a
+  lintel with **DEPARTMENT OF CHEMISTRY** and the university's crest, a lamp in the porch ceiling; dark wooden
+  shutters either side. Steps up to the porch from a **paved forecourt** with **stone-faced beds** of flowering shrubs
+  and agaves either side, and a short flight down between stone cheeks to a paved apron at the road; palms by the
+  road and shade trees round it.
+- **The porch with the balcony over it** (violet) is no longer on the French Department: it stands on the **south
+  gable of the Economics long block beside the Post Office** (green), in the gable's third bay: two columns, a
+  balcony with a solid parapet over the doors, black double doors below and above, three steps, beds of rubble
+  stone either side.
+- **French Department** (blue and yellow): a **door at the west end of the west wing's south end**, on a step; an
+  **open passage** through the range's ground floor beside the west wing, with no door or gate, through to the court
+  behind (paved, a white lintel each side under the upper floor, a lamp in its ceiling); a **door just east of it**.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

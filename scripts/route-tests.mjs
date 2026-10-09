@@ -378,7 +378,9 @@ try {
     for (const [x, z, lo, hi] of [[150, 98, 0, 5], [134.3, 17.1, 6.5, 8.5], [112, -120, 0, 5], [128.5, -66, 0, 5], [184.3, -69, 0, 5], [168.8, -120.5, 17, 20]]) { const b = buildingAt(x, z); if (!b || b.height < lo || b.height > hi) fail(`the building at ${x},${z} is not the height the owner shows`); }
     const inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
     for (const z of [-360, -350, -340]) if (cm.AREAS.some((a) => a.kind === 'parking' && inA(a, 301.5, z))) fail(`cars park on the walk to the ISSER Annex at z ${z} (owner)`);
-    if ((await server.ssrLoadModule('/src/game/physics.ts')).physicsSite.frames().length !== 9) fail('expected physics, the chemistry ranges, the covered walk and the Frank Torto Building'); }
+    if ((await server.ssrLoadModule('/src/game/physics.ts')).physicsSite.frames().length !== 9) fail('expected physics, the chemistry ranges, the west entrance, the covered walk and the Frank Torto Building');
+    // the chemistry department's west entrance on its stone-faced base (owner's photo)
+    { const b = buildingAt(117, -85.5); if (!b || b.height < 4.5 || b.height > 5.5) fail('the chemistry west entrance is not the one floor on its raised base the owner shows'); } }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

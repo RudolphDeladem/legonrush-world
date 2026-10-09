@@ -7,9 +7,8 @@
 // gable ends boarded in dark timber; a deep red band round the foot of the walls on the blocks inside the circle; low
 // walls and platforms faced in rubble stone with a concrete cap (owner's yellow marks).
 //
-// French Department (photo 1): two floors; at the south end of its east wing, toward the corner of Dubois Road and
-// Danquah Avenue, a porch on two columns under a first-floor balcony with a solid white parapet, steps up between
-// two stone-faced planters.
+// French Department: two floors; a door at the south end of its west wing, an open passage (no door, no gate) through
+// the range's ground floor beside it, a door next to that (owner's marks).
 // The long block (photos 2 and 5): two floors along the square, its gables to the roads north and south, a raised
 // lantern with a band of dark louvres over its middle; on the car park side a portico of two tall columns before
 // the door in the middle, verandahs with square columns along the upper floor either side, water tanks.
@@ -137,6 +136,9 @@ const gableEnd = { gw: 99, tri: true }, buried = { gw: 99, tri: false }, hip = {
 // ---------- the French Department ----------
 const FO: [number, number] = [-137, 94];
 const FST = 3.0, FE = PL + 2 * FST + BAND;
+/** the open passage through the range's ground floor, beside the west wing */
+const PX = [-162.6, -159.8];
+const W_BLANK: Style = { bay: 3.4, up: [], ground: [], draw: (g) => paint(g) };
 const FW = [-176.0, -163.6, 78.9, 110.7], FEW = [-110.0, -97.8, 77.4, 109.2], FBAR = [-163.6, -110.0, 87.0, 98.3];
 const french: Spec = (() => {
   const { X, Z, B, M } = frame(FO);
@@ -144,7 +146,13 @@ const french: Spec = (() => {
   return {
     name: 'Faculty of Arts, Languages',
     axis: [1, 0], origin: FO, storey: FST, style: W_PLAIN, roofColor: TILE, fascia: BARGE, pitch: 0.5, plinth: '#d9d6cc',
-    blocks: [blk(FW), blk(FEW), blk(FBAR)],
+    // the range split round the open passage (owner's yellow mark): over it only the upper floor
+    blocks: [
+      blk(FW), blk(FEW),
+      blk([FBAR[0], PX[0], FBAR[2], FBAR[3]], { faces: { x1: W_BLANK } }),
+      blk([PX[0] + 0.02, PX[1] - 0.02, FBAR[2], FBAR[3]], { floors: 1, y: FST }),
+      blk([PX[1], FBAR[1], FBAR[2], FBAR[3]], { faces: { x0: W_BLANK } }),
+    ],
     keep: [[X(-111), X(-95.5), Z(109), Z(113)]],
     extras: (k: Kit) => {
       const c: Part[] = [], st: Part[] = [];
@@ -152,20 +160,21 @@ const french: Spec = (() => {
       hipRoof(k, M, FW[0] - 0.7, FW[1] + 0.7, FW[2] - 0.6, FW[3] + 0.6, FE, 0.55, 'z', [gableEnd, gableEnd], c, BARGE, TIMBER);
       hipRoof(k, M, FEW[0] - 0.7, FEW[1] + 0.7, FEW[2] - 0.6, FEW[3] + 0.6, FE, 0.55, 'z', [gableEnd, gableEnd], c, BARGE, TIMBER);
       hipRoof(k, M, (FW[0] + FW[1]) / 2, (FEW[0] + FEW[1]) / 2, FBAR[2] - 0.7, FBAR[3] + 0.7, FE, 0.5, 'x', [buried, buried], c, BARGE, TIMBER);
-      // the porch at the south end of the east wing: two columns, the balcony over it with a solid white parapet
-      const zf = FEW[3], F1 = PL + FST;
-      c.push([B(-104.8, -97.5, F1 - 0.25, F1, zf, zf + 2.0), WALL]);
-      c.push([B(-104.8, -97.5, F1, F1 + 1.0, zf + 1.8, zf + 2.0), WALL], [B(-104.8, -104.6, F1, F1 + 1.0, zf, zf + 2.0), WALL], [B(-97.7, -97.5, F1, F1 + 1.0, zf, zf + 2.0), WALL]);
-      c.push([B(-104.9, -97.4, F1 + 1.0, F1 + 1.08, zf, zf + 2.08), '#e2dfd8']);
-      for (const x of [-104.3, -98.0]) c.push([B(x - 0.22, x + 0.22, 0, F1 - 0.25, zf + 1.5, zf + 1.94), WALL]);
-      k.plain.push([B(-102.1, -100.1, PL, PL + 2.4, zf, zf + 0.06), '#141414'], [B(-101.13, -101.07, PL, PL + 2.4, zf + 0.06, zf + 0.08), '#2c2a27']);
-      k.signs.push({ text: 'FRENCH DEPARTMENT', x: X(-101.1), y: PL + 2.75, z: Z(zf) + 0.07, ry: 0, w: 1.9, colors: ['#f4f4f1', '#1d3f7a'] });
-      // up a step between two stone-faced planters (owner's yellow marks)
-      for (let i = 1; i <= 3; i++) c.push([B(-102.7, -99.5, 0, (PL * (4 - i)) / 3 + 0.05, zf, zf + 2.0 + 0.32 * i), '#cfcac0']);
-      stoneWall(k, FO, st, -110.6, -103.4, zf + 0.1, zf + 2.9, 0.75);
-      stoneWall(k, FO, st, -98.9, -96.0, zf + 2.0, zf + 3.1, 0.6);
-      k.plain.push([B(-110.4, -103.6, 0.75, 0.95, zf + 0.3, zf + 2.7), '#4a6b2e'], [B(-98.7, -96.2, 0.6, 0.8, zf + 2.2, zf + 2.9), '#4a6b2e']);
-      for (const x of [-109, -106.5, -104.4]) k.plain.push([new THREE.IcosahedronGeometry(0.55, 0).scale(1.2, 0.8, 1).translate(X(x), 1.2, Z(zf + 1.5)), '#3f6f2c']);
+      const F1 = PL + FST;
+      // (the porch with the balcony over it, once here, belongs to the long block by the Post Office: owner)
+      // the door at the west end of the west wing's south end (owner's blue mark), on a step
+      const zw = FW[3];
+      k.plain.push([B(-175.0, -173.4, PL, PL + 2.4, zw, zw + 0.06), '#2a2522'], [B(-174.23, -174.17, PL, PL + 2.4, zw + 0.06, zw + 0.08), '#4a4440']);
+      k.plain.push([B(-175.2, -173.2, PL + 2.4, PL + 2.55, zw, zw + 0.5), WALL], [B(-175.4, -173.0, 0, PL, zw, zw + 0.9), '#cfcac0']);
+      // the open passage through the range's ground floor beside the west wing (owner's yellow mark): no door, no
+      // gate; a paved floor through to the court, a white lintel each side under the upper floor, a lamp in its ceiling
+      const zb = FBAR[3], [px0, px1] = PX;
+      k.plain.push([B(px0, px1, 0.02, 0.07, FBAR[2] - 1.2, zb + 0.8), '#a9a497']);
+      for (const z of [FBAR[2], zb]) c.push([B(px0 - 0.02, px1 + 0.02, PL + 2.8, F1 + PL, z - 0.08, z + 0.08), WALL]);
+      c.push([B(px0, px1, PL + 2.8, PL + 2.88, FBAR[2], zb), '#e6e3dc']);
+      k.plain.push([B(px0 + 1.0, px1 - 1.0, PL + 2.74, PL + 2.8, (FBAR[2] + zb) / 2 - 0.3, (FBAR[2] + zb) / 2 + 0.3), '#f6efd6']);
+      // the door just east of it (owner's blue mark)
+      k.plain.push([B(-158.9, -157.4, PL, PL + 2.4, zb, zb + 0.06), '#2a2522'], [B(-159.1, -157.2, PL + 2.4, PL + 2.55, zb, zb + 0.45), WALL]);
       // the loggia in the range's south face, upstairs (photo 1)
       k.plain.push([B(-152, -141, F1 + 0.1, FE - 0.6, FBAR[3] - 0.02, FBAR[3] + 0.01), '#26241f']);
       c.push([B(-152.2, -140.8, F1, F1 + 1.0, FBAR[3], FBAR[3] + 0.25), WALL]);
@@ -209,6 +218,23 @@ const circle: Spec = (() => {
       hipRoof(k, M, LN[0] - 0.7, LN[1] + 0.7, LN[2] - 0.6, 72, LE, 0.5, 'z', [gableEnd, buried], c, BARGE, TIMBER);
       hipRoof(k, M, LS[0] - 0.7, LS[1] + 0.7, 81.5, LS[3] + 0.6, LE, 0.5, 'z', [buried, gableEnd], c, BARGE, TIMBER);
       const mTop = hipRoof(k, M, LM[0] - 0.7, LM[1] + 0.7, LM[2] - 0.7, LM[3] + 0.7, LE, 0.5, 'z', [hip, hip], c, BARGE, TIMBER);
+      // the porch at the south end of the long block by the Post Office (owner: moved here from the French Department):
+      // two columns, the first-floor balcony over it with a solid white parapet, steps up between stone-faced planters
+      {
+        const zf = LS[3], F1 = PL + LST, xa = -36.5, xb = -29.1, xm = (xa + xb) / 2;
+        c.push([B(xa, xb, F1 - 0.25, F1, zf, zf + 2.0), WALL]);
+        c.push([B(xa, xb, F1, F1 + 1.0, zf + 1.8, zf + 2.0), WALL], [B(xa, xa + 0.2, F1, F1 + 1.0, zf, zf + 2.0), WALL], [B(xb - 0.2, xb, F1, F1 + 1.0, zf, zf + 2.0), WALL]);
+        c.push([B(xa - 0.1, xb + 0.1, F1 + 1.0, F1 + 1.08, zf, zf + 2.08), '#e2dfd8']);
+        for (const x of [xa + 0.5, xb - 0.5]) c.push([B(x - 0.22, x + 0.22, 0, F1 - 0.25, zf + 1.5, zf + 1.94), WALL]);
+        // (the doors stand in the gable's third bay, where its windows were)
+        k.plain.push([B(xm - 1.0, xm + 1.0, PL, PL + 2.7, zf, zf + 0.06), '#141414'], [B(xm - 0.03, xm + 0.03, PL, PL + 2.7, zf + 0.06, zf + 0.08), '#2c2a27']);
+        k.plain.push([B(xm - 1.0, xm + 1.0, F1, F1 + 2.8, zf, zf + 0.06), '#1d1b19'], [B(xm - 0.03, xm + 0.03, F1, F1 + 2.8, zf + 0.06, zf + 0.08), '#2c2a27']);
+        for (let i = 1; i <= 3; i++) c.push([B(xm - 1.6, xm + 1.6, 0, (PL * (4 - i)) / 3 + 0.05, zf, zf + 2.0 + 0.32 * i), '#cfcac0']);
+        stoneWall(k, CO, st, xa - 3.2, xm - 1.7, zf + 0.1, zf + 2.6, 0.7);
+        stoneWall(k, CO, st, xm + 1.7, xb + 1.2, zf + 2.0, zf + 3.0, 0.6);
+        k.plain.push([B(xa - 3.0, xm - 1.9, 0.7, 0.9, zf + 0.3, zf + 2.4), '#4a6b2e'], [B(xm + 1.9, xb + 1.0, 0.6, 0.8, zf + 2.2, zf + 2.8), '#4a6b2e']);
+        for (const x of [xa - 2.2, xa - 0.6]) k.plain.push([new THREE.IcosahedronGeometry(0.55, 0).scale(1.2, 0.8, 1).translate(X(x), 1.15, Z(zf + 1.3)), '#3f6f2c']);
+      }
       // the lantern: white walls rising out of the roof, a band of dark louvres all round under its own hip
       const lx0 = -36.6, lx1 = -32.4, lz0 = 72.0, lz1 = 82.5, lb = mTop - 0.55, lt = lb + 0.95;
       c.push([B(lx0, lx1, LE + 2, lb, lz0, lz1), WALL]);

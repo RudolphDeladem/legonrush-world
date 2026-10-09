@@ -21,6 +21,7 @@ import { BAND, PL, createSite, render, type Block, type Kit, type Spec, type Sty
 import { concrete, stoneMesh } from './concrete';
 import { hipRoof } from './waccbip';
 import { stairsOf } from './relief';
+import { garden } from './gardens';
 
 const TILE = '#b8583a', BARGE = '#3a2a22', WHITE_OLD = '#f0eee8', DADO = '#8a3a25';
 const RISE = 1.5;
@@ -163,7 +164,6 @@ const RANGES: Range[] = [
   // the ranges across the middle
   { name: 'chemistry range west', rects: [[106.0, 151.1, -74.6, -57.4]], ridge: ['x'], replaces: [[128.5, -66.0]] },
   { name: 'chemistry range east', rects: [[161.3, 208.6, -75.9, -62.2], [161.3, 168.5, -80.8, -75.9], [199.1, 208.6, -80.8, -75.9]], ridge: ['x', 'z', 'z'], replaces: [[184.3, -69]] },
-  { name: 'chemistry small block', rects: [[112.4, 121.7, -92.0, -79.0]], ridge: ['z'], replaces: [[117.0, -85.5]] },
 ];
 function range(r: Range): Spec {
   const xs = r.rects.flatMap((q) => [q[0], q[1]]), zs = r.rects.flatMap((q) => [q[2], q[3]]);
@@ -194,6 +194,100 @@ function range(r: Range): Spec {
     },
   };
 }
+
+// ---------- the department's west entrance on Cruise O'Brien Road (owner's photo and yellow mark) ----------
+// One floor, white with the red-brown band, an orange tile hip roof; the front recessed between two square white
+// pillars with red-brown feet, the black wooden lattice double door in the middle of it under the department's name
+// and the university's crest; dark shutters either side. It stands on a stone-faced base: steps up to the porch from
+// a paved forecourt, stone-faced beds of flowering shrubs and agaves either side of them, and a short flight down
+// from the forecourt to the road opposite the turning; palms and trees round it.
+const CW = [112.4, 121.7, -92.0, -79.0];
+const CR = 114.6, CZ = [-87.6, -83.4];
+const CY = 0.6;
+const C_BLANK: Style = { bay: 3.4, up: [], ground: [], draw: (g) => oldWall(g, 512 - 62) };
+const chemWest: Spec = (() => {
+  const O: [number, number] = [117.0, -85.5];
+  const X = (x: number) => x - O[0], Z = (z: number) => z - O[1];
+  const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
+  const M = (x: number, z: number): [number, number] => [X(x), Z(z)];
+  const R = (r: number[], faces: Partial<Record<'x0' | 'x1' | 'z0' | 'z1', Style>> = {}): Block => ({ x0: X(r[0]), x1: X(r[1]), z0: Z(r[2]), z1: Z(r[3]), floors: 1, roof: 'none', faces, y: CY });
+  const E = CY + PL + 3.4 + BAND, F = CY + PL, zm = (CZ[0] + CZ[1]) / 2;
+  return {
+    name: 'Department of Chemistry west entrance',
+    axis: [1, 0], origin: O, storey: 3.4, style: P_WALL, roofColor: TILE, fascia: BARGE, pitch: 0.42, plinth: DADO,
+    replaces: [[117.0, -85.5]],
+    // the body behind the porch, and the two ends either side of it
+    blocks: [
+      R([CR, CW[1], CW[2], CW[3]], { x0: C_BLANK }),
+      R([CW[0], CR, CW[2], CZ[0]], { z1: C_BLANK }),
+      R([CW[0], CR, CZ[1], CW[3]], { z0: C_BLANK }),
+    ],
+    keep: [[X(101), X(CW[0]), Z(-92), Z(-79)]],
+    extras: (k: Kit) => {
+      const c: Part[] = [], st: Part[] = [];
+      hipRoof(k, M, CW[0] - 0.7, CW[1] + 0.7, CW[2] - 0.7, CW[3] + 0.7, E, 0.42, 'z', [hip, hip], c, BARGE);
+      // the stone-faced base under the walls and the porch floor
+      st.push([B(CW[0] - 0.15, CW[1] + 0.15, -0.2, CY, CW[2] - 0.15, CW[3] + 0.15), '#ffffff']);
+      c.push([B(CW[0] - 0.15, CR, F - 0.04, F, CZ[0], CZ[1]), '#c9c4b8']);
+      // the porch's ceiling, the two pillars at its mouth, the lintel across with the department's name and the crest
+      c.push([B(CW[0], CR, E - 0.62, E - 0.55, CZ[0], CZ[1]), '#ebe8e0']);
+      for (const z of [CZ[0] + 0.45, CZ[1] - 0.45]) c.push([B(CW[0] - 0.05, CW[0] + 0.45, F, E - 0.55, z - 0.25, z + 0.25), WHITE_OLD], [B(CW[0] - 0.08, CW[0] + 0.48, F, F + 0.6, z - 0.28, z + 0.28), DADO]);
+      c.push([B(CW[0] - 0.08, CW[0] + 0.5, E - 0.95, E - 0.05, CZ[0], CZ[1]), WHITE_OLD]);
+      k.plain.push([B(CW[0] - 0.1, CW[0] - 0.08, E - 0.88, E - 0.18, zm - 1.75, zm + 1.75), '#f6f6f3']);
+      k.signs.push({ text: 'DEPARTMENT OF CHEMISTRY', x: X(CW[0]) - 0.11, y: E - 0.62, z: Z(zm) + 0.25, ry: -Math.PI / 2, w: 2.7, colors: ['#f6f6f3', '#1d3f7a'] });
+      // the crest: a blue shield with a gold rim
+      k.plain.push([B(CW[0] - 0.12, CW[0] - 0.1, E - 0.82, E - 0.24, zm - 1.62, zm - 1.12), '#e0b84a'], [B(CW[0] - 0.14, CW[0] - 0.12, E - 0.77, E - 0.29, zm - 1.57, zm - 1.17), '#1d3f8f']);
+      k.plain.push([B(CW[0] - 0.15, CW[0] - 0.14, E - 0.62, E - 0.44, zm - 1.43, zm - 1.31), '#e0b84a']);
+      // the black wooden lattice double door
+      const dz0 = zm - 0.95, dz1 = zm + 0.95, dt = F + 2.55;
+      k.plain.push([B(CR - 0.06, CR, F, dt + 0.12, dz0 - 0.12, dz1 + 0.12), '#2a1d14'], [B(CR - 0.08, CR - 0.02, F, dt, dz0, dz1), '#121110']);
+      for (let z = dz0 + 0.19; z < dz1 - 0.1; z += 0.19) k.plain.push([B(CR - 0.12, CR - 0.06, F + 0.1, dt - 0.1, z - 0.025, z + 0.025), '#24201c']);
+      for (let y = F + 0.25; y < dt - 0.1; y += 0.24) k.plain.push([B(CR - 0.12, CR - 0.06, y - 0.025, y + 0.025, dz0 + 0.05, dz1 - 0.05), '#24201c']);
+      k.plain.push([B(CR - 0.14, CR - 0.06, F, dt, zm - 0.04, zm + 0.04), '#0d0c0b']);
+      // a lamp in the porch ceiling
+      k.plain.push([B(CW[0] + 0.8, CW[0] + 1.3, E - 0.68, E - 0.62, zm - 0.25, zm + 0.25), '#f6efd6']);
+      // the forecourt: paved, its edges faced in stone, a little above the road
+      const FX = [103.6, CW[0] - 0.15], FZ = [-91.0, -80.0], FY = 0.3;
+      k.plain.push([B(FX[0], FX[1], FY - 0.05, FY, FZ[0], FZ[1]), '#cbc5b8']);
+      for (let x = FX[0] + 1.2; x < FX[1]; x += 1.2) k.plain.push([B(x - 0.02, x + 0.02, FY, FY + 0.005, FZ[0], FZ[1]), '#b3ad9f']);
+      st.push([B(FX[0], FX[1], -0.2, FY - 0.05, FZ[0], FZ[1]), '#ffffff']);
+      // the steps up to the porch
+      const n = 4, rise = (F - FY) / n;
+      for (let i = 0; i < n; i++) c.push([B(CW[0] - 0.15 - 0.32 * (n - i), CW[0] - 0.15, FY, FY + rise * (i + 1), zm - 1.3, zm + 1.3), '#d2cdc2']);
+      // the short flight down to the road opposite the turning, between stone cheeks
+      for (let i = 0; i < 2; i++) c.push([B(FX[0] - 0.34 * (2 - i), FX[0], -0.1, (FY * (i + 1)) / 3, zm - 1.6, zm + 1.6), '#d2cdc2']);
+      k.plain.push([B(100.3, FX[0] - 0.6, 0, 0.05, zm - 1.6, zm + 1.6), '#bdb7aa']);
+      for (const z of [zm - 1.8, zm + 1.6]) st.push([B(FX[0] - 0.75, FX[0] + 0.3, -0.1, FY + 0.35, z, z + 0.2), '#ffffff']);
+      // the stone-faced beds either side of the porch steps: flowering shrubs and agaves
+      const g = garden([95, 125, -100, -70]);
+      g.reseed(62);
+      for (const [z0, z1] of [[FZ[0] + 0.3, zm - 1.5], [zm + 1.5, FZ[1] - 0.3]]) {
+        const x0 = CW[0] - 3.4, x1 = CW[0] - 0.4;
+        st.push([B(x0, x1, FY, FY + 0.55, z0, z1), '#ffffff']);
+        k.plain.push([B(x0 + 0.15, x1 - 0.15, FY + 0.55, FY + 0.6, z0 + 0.15, z1 - 0.15), '#4a3a2a']);
+        for (let z = z0 + 0.7; z < z1 - 0.4; z += 1.25) {
+          const x = x0 + 0.8 + ((z * 7) % 1.4 + 1.4) % 1.4, flower = ((z * 13) | 0) % 3 === 0;
+          k.plain.push([new THREE.IcosahedronGeometry(0.42, 0).scale(1.2, 0.75, 1).translate(X(x), FY + 0.82, Z(z)), ['#3f6f2c', '#4f7f34'][((z * 5) | 0) & 1]]);
+          if (flower) for (let i = 0; i < 4; i++) k.plain.push([new THREE.IcosahedronGeometry(0.14, 0).translate(X(x) + 0.28 * Math.cos(i * 1.6), FY + 1.0 + 0.06 * (i & 1), Z(z) + 0.24 * Math.sin(i * 1.6)), i & 1 ? '#d6487e' : '#e8a33a']);
+        }
+        // an agave at each end: stiff grey-green blades
+        for (const z of [z0 + 0.6, z1 - 0.6]) for (let i = 0; i < 7; i++) {
+          const b = new THREE.ConeGeometry(0.09, 0.95, 3).translate(0, 0.47, 0).rotateZ(0.55).rotateY((i / 7) * Math.PI * 2);
+          k.plain.push([b.translate(X(x1 - 0.55), FY + 0.6, Z(z)), '#6f8f74']);
+        }
+      }
+      // palms by the road, shade trees round the building
+      for (const z of [-93.5, -77.5]) g.palm(k, X(104.5), Z(z), 7.5);
+      for (const [x, z] of [[108.5, -96.5], [109.0, -75.0], [124.5, -95.5]]) g.tree(k, X(x), Z(z), 1.3);
+      // air-conditioners in two of the shutters on the south end
+      k.plain.push([B(116.6, 117.4, F + 1.0, F + 1.55, CW[2] - 0.3, CW[2]), '#e9ebeb']);
+      stoneMesh(k, st);
+      const m = new THREE.Mesh(merge(c), concrete(0.45));
+      m.castShadow = true; m.receiveShadow = true;
+      k.meshes.push(m);
+    },
+  };
+})();
 
 // ---------- the covered walk from the extension to the chemistry block (green line) ----------
 const walk: Spec = (() => {
@@ -314,4 +408,4 @@ const torto: Spec = ((): Spec => {
 })();
 
 /** the Department of Physics, the chemistry buildings, the Frank Torto Building */
-export const physicsSite = createSite('physics-chemistry', [physics, ...RANGES.map(range), walk, torto]);
+export const physicsSite = createSite('physics-chemistry', [physics, ...RANGES.map(range), chemWest, walk, torto]);
