@@ -75,17 +75,20 @@ export function concrete(strength = 1) {
   m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95 });
   m.onBeforeCompile = (sh) => {
     sh.uniforms.msTex = { value: tex };
+    sh.uniforms.msStrength = { value: strength };
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', '#include <common>\nvarying vec3 vMsP;\nvarying vec3 vMsN;')
       .replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvMsP = (modelMatrix * vec4(transformed, 1.0)).xyz;\nvMsN = normalize(mat3(modelMatrix) * objectNormal);');
     sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', '#include <common>\nvarying vec3 vMsP;\nvarying vec3 vMsN;\nuniform sampler2D msTex;')
+      .replace('#include <common>', '#include <common>\nvarying vec3 vMsP;\nvarying vec3 vMsN;\nuniform sampler2D msTex;\nuniform float msStrength;')
       .replace('#include <map_fragment>', `#include <map_fragment>
   vec3 msA = abs(vMsN);
   vec2 msUv = msA.y > 0.6 ? vMsP.xz / 7.0 : vec2((msA.x > msA.z ? vMsP.z : vMsP.x) / 7.0, vMsP.y / 7.0);
-  diffuseColor.rgb *= clamp(mix(vec3(1.0), texture2D(msTex, msUv).rgb, ${strength.toFixed(2)}), 0.0, 1.0);`);
+  diffuseColor.rgb *= clamp(mix(vec3(1.0), texture2D(msTex, msUv).rgb, msStrength), 0.0, 1.0);`);
   };
-  m.customProgramCacheKey = () => `old-concrete-${strength}`;
+  // one shader program for every strength (a uniform): a program per value compiled mid-ride, the first time each
+  // site came into view, and made the guided ride stutter
+  m.customProgramCacheKey = () => 'old-concrete';
   m = groundShade(m, 2.2, 0.3, 'wall');
   concreteMats.set(strength, m);
   return m;

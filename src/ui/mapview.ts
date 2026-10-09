@@ -69,17 +69,23 @@ function campusCanvas() {
   return base;
 }
 
+/** the route's line as a path, built once per route (the mini map draws it every frame) */
+const routePaths = new WeakMap<Route, Path2D>();
 function drawRoute(ctx: CanvasRenderingContext2D, route: Route, lineWidth: number) {
-  const pts = route.track.outline(6);
+  let path = routePaths.get(route);
+  if (!path) {
+    path = new Path2D();
+    const p = path;
+    route.track.outline(6).forEach(([x, z], i) => (i ? p.lineTo(x, z) : p.moveTo(x, z)));
+    routePaths.set(route, path);
+  }
   ctx.lineCap = ctx.lineJoin = 'round';
-  ctx.beginPath();
-  pts.forEach(([x, z], i) => (i ? ctx.lineTo(x, z) : ctx.moveTo(x, z)));
   ctx.strokeStyle = '#ffffff';
   ctx.lineWidth = lineWidth * 1.8;
-  ctx.stroke();
+  ctx.stroke(path);
   ctx.strokeStyle = '#1a73e8';
   ctx.lineWidth = lineWidth;
-  ctx.stroke();
+  ctx.stroke(path);
 }
 
 function pin(ctx: CanvasRenderingContext2D, x: number, z: number, r: number, color: string) {

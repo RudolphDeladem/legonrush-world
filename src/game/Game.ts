@@ -480,6 +480,25 @@ export class Game {
     this.resize();
     addEventListener('resize', () => this.resize());
     this.renderer.setAnimationLoop(() => this.frame());
+    this.warmUp();
+  }
+
+  /**
+   * Compiles every shader program and uploads every texture the campus uses, once, before anyone rides: done lazily they
+   * were built the first time a site came into view, in the middle of a ride, and the guided ride stuttered (owner).
+   * Everything is made visible for the pass (the fog cull and night lamps hide some), then put back as it was.
+   */
+  private warmUp() {
+    const hidden: THREE.Object3D[] = [];
+    this.scene.traverse((o) => { if (!o.visible) { hidden.push(o); o.visible = true; } });
+    const seen = new Set<THREE.Texture>();
+    this.scene.traverse((o) => {
+      const m = (o as THREE.Mesh).material;
+      if (m) for (const mat of Array.isArray(m) ? m : [m]) for (const v of Object.values(mat)) if ((v as THREE.Texture)?.isTexture && !seen.has(v as THREE.Texture)) { seen.add(v as THREE.Texture); this.renderer.initTexture(v as THREE.Texture); }
+    });
+    // the programs are gathered at once; only their readiness is awaited
+    this.renderer.compileAsync(this.scene, this.camera).catch(() => undefined);
+    for (const o of hidden) o.visible = false;
   }
 
   /** low: no shadows and a lower resolution, for cheap phones */
@@ -496,6 +515,7 @@ export class Game {
       const m = (o as THREE.Mesh).material;
       if (m) for (const mat of Array.isArray(m) ? m : [m]) mat.needsUpdate = true;
     });
+    this.warmUp();
   }
 
   get currentQuality() {
