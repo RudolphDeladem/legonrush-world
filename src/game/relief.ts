@@ -77,6 +77,10 @@ const ZONES: Zone[] = [
   // Ebenezer Laing Road on the south. Before the gallery, at road level, the stair and the two ramps climb to it.
   { kind: 'terrace', x0: -160, x1: -117.5, z0: -395, z1: -306, depth: 2.4, w: 0.3, e: 0.3, n: 0.3, s: 2 },
   { kind: 'terrace', x0: -178, x1: -160, z0: -360, z1: -306, depth: 2.4, w: 2, e: 0.3, n: 6, s: 2 },
+  // the ISSER Annex, like the engineering school east of it, lies below the road between them (owner's photo from
+  // that road): its buildings, the huts' plaza and the car park on a floor 1.2 m down, the slopes up to the road on
+  // the east, to the road on the south (short of it) and to the open ground west and north
+  { kind: 'hollow', x0: 236, x1: 334, z0: -446, z1: -342, depth: 1.2, w: 4, e: 5, n: 8, s: 3 },
 ];
 const STAIRS: Stairs[] = [
   // Commonwealth: from the gate houses up Legon Hill to the drive

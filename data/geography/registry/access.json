@@ -39,7 +39,8 @@
   "owner-waccbip": "The owner's marked aerial of WACCBIP (front F to Volta Hall Road, back B, car-park shades circled red, the old shed white, the unfinished frame green, structures to delete yellow) and their photos of the front, the back, the unfinished frame and the old shed.",
   "owner-balme-southwest": "The owner's marked aerial of the buildings south-west of the Balme Library (circled white, view directions marked) and their photos of the French Department's south end, the road side of the Office of the Dean of Student Affairs, the Post Office with the GCB ATM, and the long block from the car park.",
   "owner-pharmacy": "Owner's photos of the School of Pharmacy (its side to the road from WACCBIP, and its front to Volta Hall Road with the doors marked blue).",
-  "owner-food-science": "Owner's photos of the Department of Nutrition and Food Science (front, to the Larway Oraca Building, and side)."
+  "owner-food-science": "Owner's photos of the Department of Nutrition and Food Science (front, to the Larway Oraca Building, and side).",
+  "owner-isser-annex": "Owner's marked aerial of the ISSER Annex and the ground west of it to Botanical Gardens Road, registered to the annex's outlines at 0.25 m/px, and owner's photos of the ISSER Annex (from the air, and from the road on the east); the entrances marked blue, the walk from the engineering school marked with a blue arrow."
  },
  "campusGates": [
   {
@@ -2109,6 +2110,31 @@
    "evidence": "Owner's photo of the front, the entrance lit on the ground floor.",
    "refs": [
     "owner's photos of the Department of Nutrition and Food Science"
+   ]
+  },
+  {
+   "place": "Institute of Statistical and Social and Economic Research (ISSER) Annex",
+   "footprint": "osm:way/1073936065",
+   "entrance": {
+    "at": [
+     301.5,
+     -365.5
+    ]
+   },
+   "via": [
+    [
+     301.5,
+     -361.4
+    ]
+   ],
+   "type": "main entrance",
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-isser-annex",
+   "approach": "From the road toward the engineering school up through the car park to the small gabled porch in the middle of the long range.",
+   "evidence": "Owner's aerial (entrances marked blue, the walk from the engineering school a blue arrow).",
+   "refs": [
+    "owner's aerial and photos of the ISSER Annex"
    ]
   }
  ],

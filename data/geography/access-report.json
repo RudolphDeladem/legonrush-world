@@ -1,18 +1,18 @@
 {
  "destinations": 436,
  "byMethod": {
-  "curated": 89,
+  "curated": 90,
   "osm-entrance": 0,
   "gate": 1,
   "path-access": 2,
   "drive-access": 17,
   "area-entry": 8,
-  "frontage": 208,
+  "frontage": 207,
   "point": 111
  },
  "byConfidence": {
-  "high": 84,
-  "low": 211,
+  "high": 85,
+  "low": 210,
   "medium": 141
  },
  "campusGates": 5,
@@ -360,8 +360,8 @@
   }
  ],
  "byStatus": {
-  "verified": 83,
-  "inferred": 203,
+  "verified": 84,
+  "inferred": 202,
   "partial": 6,
   "unverified": 9,
   "mapped": 135
@@ -583,6 +583,13 @@
    "arrivalOn": "residential",
    "arrivalDistance": 11.3,
    "facing": 359
+  },
+  {
+   "place": "Institute of Statistical and Social and Economic Research (ISSER) Annex",
+   "type": "main entrance",
+   "arrivalOn": "footway",
+   "arrivalDistance": 2.6,
+   "facing": 91
   },
   {
    "place": "University of Ghana Computing Systems (UGCS)",

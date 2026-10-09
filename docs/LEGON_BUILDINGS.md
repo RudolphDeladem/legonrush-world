@@ -1040,6 +1040,34 @@ From the owner's photos and top view (`labs.ts`; the trees in `corrections.json`
   bare columns with their rebar standing out, a ring beam begun on one side, weeds inside, sand and new blocks
   stacked by it.
 
+## 45. The ISSER Annex, the frame going up beside it, and the hall with the stone dado
+
+From the owner's marked aerial (registered at 0.25 m/px) and photos from the air, from the road toward the engineering
+school, of the building site and of the hall (`isserannex.ts`; the ground in `relief.ts`, the trees in
+`corrections.json`):
+
+- **ISSER Annex:** white walls, dark windows in white frames, terracotta tiles with dark brown fascias, the whole
+  compound **1.2 m down** below the road to the engineering school (owner: like the engineering school, below the
+  hill). **Three floors** in the west wing, a gabled porch with a maroon panel at its south end; **two floors** in the
+  long range along the car park, a small gabled porch in its middle (**entered here**: the owner's blue arrow, the walk
+  from the engineering school along the road and up through the car park), more doors along it and along the west
+  wing's court (blue marks); the **conference hall** behind it, two tall floors under a big hip; the east wing **one
+  floor**; paved courts with planters, a covered walk north of the hall.
+- **The huts** (purple marks): three open one-floor shelters, white columns under pyramid tile roofs, benches round
+  three sides and a round table, on a paved plaza between white bench walls and small trees; bare red earth beyond.
+- Palms along the front, cars filling the car park (its west end too; two car rows the satellite outlines took for
+  buildings are dropped), a **white fence** along the road on the east: square piers, a low wall and black fret panels,
+  a hedge outside it.
+- **The frame going up** west of the annex (yellow mark): a two-storey concrete frame, its ground floor open between
+  the columns, the first floor propped with orange shores, rebar over the top slab, behind **blue corrugated
+  hoarding** (dark sheets at the west end of the front), the contractor's MARLEYROSSI boards and site notices, a gate,
+  red and white barriers, sand, gravel and blocks, red earth round it, a tree before it.
+- **The hall beyond it** (red mark): one floor, white walls over a **rubble-stone dado** with a red line at its foot,
+  white panelled double doors up a stone step (the owner's blue marks), a breeze-block screen, a panel of glass
+  blocks, small dark windows, air-conditioners in black cages; an orange-red sheet hip roof with a raised gable over
+  the west end, a dark louvred vent in it, solar panels; a big tree and a red earth track before it.
+- **Trees** wherever the owner circled them light green.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

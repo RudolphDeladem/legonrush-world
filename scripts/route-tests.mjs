@@ -352,6 +352,16 @@ try {
     for (const [x, z] of [[-80, -255], [-120, -220], [-28, -215], [-100, -180]]) if (!cm.AREAS.some((a) => a.kind === 'wood' && inA(a, x, z))) fail(`no trees at ${x},${z} round the Animal Biology ranges (owner)`);
     if ((await server.ssrLoadModule('/src/game/labs.ts')).labsSite.frames().length !== 4) fail('expected Food Science, Nursing, Animal Biology and the unfinished block building');
     { const u = buildingAt(-189.6, -224.2); if (!u || u.height > 4) fail('the unfinished building north of Food Science is not one floor (owner)'); } }
+  // owner: the ISSER Annex below the road toward the engineering school, entered at the porch the walk from there
+  // reaches; three floors in its west wing, the huts and the east wing one floor; trees where the owner circled them
+  { const inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
+    const { groundHeight: gh } = await server.ssrLoadModule('/src/game/relief.ts');
+    if (!(gh(285, -395) < -1)) fail('the ISSER Annex is not below the road toward the engineering school (owner)');
+    if (gh(344, -390) !== 0 || gh(320, -333.5) !== 0) fail('the roads round the ISSER Annex are not at road level');
+    const e = ann('Institute of Statistical and Social and Economic Research (ISSER) Annex'); if (!e || Math.hypot(e[0] - 301.5, e[1] - -365.5) > 3) fail('ISSER Annex: the entrance is not the porch the walk from the engineering school reaches (owner)');
+    for (const [x, z, lo, hi] of [[250, -390, 11, 13], [301.4, -428.5, 0, 3.5], [320, -392.9, 0, 5], [149.5, -362.7, 0, 6]]) { const b = buildingAt(x, z); if (!b || b.height < lo || b.height > hi) fail(`the building at ${x},${z} is not the height the owner shows`); }
+    for (const [x, z] of [[100, -450], [215, -460], [150, -405], [268, -425]]) if (!cm.AREAS.some((a) => a.kind === 'wood' && inA(a, x, z))) fail(`no trees at ${x},${z} round the ISSER Annex (owner)`);
+    if ((await server.ssrLoadModule('/src/game/isserannex.ts')).isserAnnexSite.frames().length !== 3) fail('expected the ISSER Annex, the frame going up and the hall'); }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)
