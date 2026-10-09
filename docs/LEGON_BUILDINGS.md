@@ -1368,6 +1368,41 @@ The owner pointed out that two photos had been put on the wrong buildings (`chur
   paved platform with steps and potted plants; the narrow yard of grey pavers to the church.
 - **The court before the church** is **concrete paving in big squares** (grey, a little grass in the joints), not red.
 
+## 58. The N Block compound from ten numbered views
+
+From the owner's aerial of the N Block compound with ten numbered, coloured view lines (registered to the N Block at
+0.287 m/px; the map's outlines already sat on the roofs) and a PDF of a street photo for each view (`socsci.ts`,
+`relief.ts`):
+
+- **N Block** (view 6): the tall hall in the middle, its **gable to Ebenezer Laing Road**, a **band of dark louvred
+  windows** high on the white wall over the verandah, dark grey walls below with black doors and windows; one-floor
+  wings either side; a **verandah on grey square columns** along the front and round the wings; red-brown corrugated
+  roofs; the paved walk to the hall's glass doors, clipped hedges, two conifers, a yellow-flowered bush.
+- **The east wing is the NASCO ICT Literacy Project** (view 9): its verandah's columns flare into a flat white frame,
+  the board on it.
+- **The long range on the east car park** (views 1 and 8): one floor, **white over a dark grey base**, red-brown
+  corrugated gable roof; on the east louvred windows and air-conditioners and a **pitched rubble-stone bank** along its
+  north half; on the west its eaves on **diagonal brackets** and **metal lattice grilles** over the windows and doors; a
+  bed of agaves before its south end.
+- **The K. Folson Building** (views 3 and 4; the board reads DEPARTMENT OF POLITICAL SCIENCE and DEPARTMENT OF
+  PHILOSOPHY): an L of **two storeys, white piers between dark grey panels** holding louvred windows in black frames,
+  air-conditioners in steel cages, red-brown roofs with white gables; **glass-block panels** at the west end of the
+  north face, the **black water tank on its steel stand** with a ladder; its entrance near the north end of the east
+  face under a small canopy, the board on two posts.
+- **The raised ground at the north-east** (view 2; relief.ts): the range behind the court (one floor, white over a dark
+  red base, louvred windows) and the ground east of it stand **1.2 m up** behind rubble-stone faces, **pitched rubble-stone
+  banks** down to the lane on the east, the **stair between dark red cheek walls** up to the platform with the **blue
+  tent**.
+- **The court** (view 7, the panorama): **concrete pavers**, the **big rain trees**, the **red hexagonal kiosk** with
+  benches, the **blue canopy** with its benches.
+- **West** (view 5): the **Department of Social Work**, one floor, its **verandah on dark posts with diagonal braces**,
+  a dark old roof, the **LIBRARY** board; the **School of Social Sciences**, one floor, white, a **bright red roof**, the
+  porch at its west end with the **UG SSS** board, hedges.
+- **North-west** (view 10): the **Information Studies** blocks, one floor, white, **dark roofs**, louvred windows,
+  air-conditioners; a row of trees along the north edge, groups of big trees between the buildings.
+- The car parks (east, before the K. Folson Building, between the N Block and the long range, west) are kept **nearly
+  empty** as the photos show them; a phantom outline on Ebenezer Laing Road removed.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

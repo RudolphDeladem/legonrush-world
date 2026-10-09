@@ -443,6 +443,16 @@ try {
     if (buildingAt(-373.8, -320)) fail('no paved yard between St. Thomas Aquinas and the house west of it (owner)');
     if (!buildingAt(-359.25, -306)) fail('St. Thomas Aquinas\' porch is not centred on its gable (owner)');
     { const b = buildingAt(-341, -335); if (!b || b.height < 9) fail('St. Thomas Aquinas\' east range (facing WACCBIP) is not two floors (owner)'); }
+  }
+  // owner: the N Block compound from the ten numbered views
+  {
+    const rl = await server.ssrLoadModule('/src/game/relief.ts');
+    if ((await server.ssrLoadModule('/src/game/socsci.ts')).socSciSite.frames().length !== 10) fail('expected the N Block compound\'s ten models (owner)');
+    if (Math.abs(rl.groundHeight(40, -364) - 1.2) > 0.01) fail('the range behind the N Block court is not up on its raised ground (owner, view 2)');
+    for (const [x, z] of [[40, -345], [6, -305], [80, -320], [60, -395], [-40, -320]]) if (rl.groundHeight(x, z) !== 0) fail(`the N Block compound is not flat at ${x},${z}`);
+    if (!rl.stairsOf().some((q) => !q.alongZ && q.x1 === 70.1 && q.top > 1.1)) fail('no stair up to the raised ground by the K. Folson Building (owner, view 2)');
+    for (const [x, z, lo, hi, what] of [[60, -408, 8, 11, 'the K. Folson Building two storeys'], [78, -340, 0, 5.5, 'the long range one floor'], [-55, -350, 0, 5, 'Social Work one floor']]) { const b = buildingAt(x, z); if (!b || b.height < lo || b.height > hi) fail(`${what} (owner)`); }
+    if (buildingAt(-14.3, -302.5)) fail('the phantom building on Ebenezer Laing Road is still there');
     for (const [x, z, what] of [[-365, -330, 'St. Thomas Aquinas'], [-370, -426, 'the Interdenominational Church']]) if (!buildingAt(x, z)) fail(`${what} is not where the owner's aerial shows it`);
     for (const [x, z] of [[-410, -380], [-440, -300]]) if (buildingAt(x, z)) fail(`a building stands on the open ground west of the churches at ${x},${z} (owner)`);
   }

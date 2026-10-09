@@ -280,6 +280,10 @@
     {
       "id": "ml:1aca4480-578f-49e4-920d-29241909ea07",
       "reason": "Owner's marked aerial of the ground behind the three churches (red line), the Anglican church (blue) and its hall (yellow), registered to the Interdenominational Church and St. Thomas Aquinas at 0.45 m/px, and street photos: no building there: the Anglican car park west of the church, tents and vans on it (replaced by owner:anglican-parking-west)."
+    },
+    {
+      "id": "ml:3e19bdc3-7ef1-4402-a98e-03ebcd9334ca",
+      "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: no building there, the edge of Ebenezer Laing Road before the N Block."
     }
   ],
   "heights": [
@@ -2963,6 +2967,83 @@
       "levels": 1,
       "height": 10.0,
       "reason": "Owner's marked aerial of the ground behind the three churches (red line), the Anglican church (blue) and its hall (yellow), registered to the Interdenominational Church and St. Thomas Aquinas at 0.45 m/px, and street photos: one tall storey under a steep roof. Modelled in src/game/churches.ts."
+    },
+    {
+      "id": "osm:way/335456883",
+      "place": "N Block",
+      "levels": 2,
+      "height": 8.6,
+      "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: the hall two storeys high, the wings one floor (view 6). Modelled in src/game/socsci.ts."
+    },
+    {
+      "id": "osm:way/672669959",
+      "place": "N Block, the east wing (ICT Literacy Project)",
+      "levels": 1,
+      "height": 4.6,
+      "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: one floor (view 9). Modelled in src/game/socsci.ts."
+    },
+    {
+      "id": "osm:way/672669960",
+      "place": "N Block, the west wing",
+      "levels": 1,
+      "height": 4.6,
+      "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: one floor (view 6). Modelled in src/game/socsci.ts."
+    },
+    {
+      "id": "osm:way/335456886",
+      "place": "the long range on the east car park",
+      "levels": 1,
+      "height": 5.0,
+      "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: one floor (views 1 and 8). Modelled in src/game/socsci.ts."
+    },
+    {
+      "id": "osm:way/278303043",
+      "place": "K Folson Building",
+      "levels": 2,
+      "height": 9.6,
+      "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: two storeys (views 3 and 4). Modelled in src/game/socsci.ts."
+    },
+    {
+      "id": "osm:way/335456881",
+      "place": "the range behind the N Block court",
+      "levels": 1,
+      "height": 4.6,
+      "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: one floor, on ground 1.2 m up (view 2). Modelled in src/game/socsci.ts."
+    },
+    {
+      "id": "osm:way/335456887",
+      "place": "School of Social Science",
+      "levels": 1,
+      "height": 4.6,
+      "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: one floor (view 5). Modelled in src/game/socsci.ts."
+    },
+    {
+      "id": "osm:way/439907842",
+      "place": "Social Work Department",
+      "levels": 1,
+      "height": 4.6,
+      "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: one floor (view 5). Modelled in src/game/socsci.ts."
+    },
+    {
+      "id": "osm:way/335456882",
+      "place": "Information Studies Labs",
+      "levels": 1,
+      "height": 4.6,
+      "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: one floor (view 10). Modelled in src/game/socsci.ts."
+    },
+    {
+      "id": "osm:way/335456884",
+      "place": "Information Studies Department",
+      "levels": 1,
+      "height": 4.6,
+      "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: one floor (view 10). Modelled in src/game/socsci.ts."
+    },
+    {
+      "id": "osm:way/672669961",
+      "place": "building north of the N Block",
+      "levels": 1,
+      "height": 4.4,
+      "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: one floor. Modelled in src/game/socsci.ts."
     }
   ],
   "reclass": [
@@ -8799,6 +8880,98 @@
         ]
       ],
       "reason": "Owner's marked aerial of the ground behind the three churches (red line), the Anglican church (blue) and its hall (yellow), registered to the Interdenominational Church and St. Thomas Aquinas at 0.45 m/px, and street photos: the paved court between the Anglican church and its hall, parking bays."
+    },
+    {
+      "id": "owner:nblock-parking-east",
+      "class": "parking",
+      "ring": [
+        [
+          84.6,
+          -379.0
+        ],
+        [
+          91.7,
+          -379.0
+        ],
+        [
+          100.6,
+          -304.0
+        ],
+        [
+          84.6,
+          -304.0
+        ]
+      ],
+      "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: the car park east of the long range (view 1)."
+    },
+    {
+      "id": "owner:kfolson-parking-east",
+      "class": "parking",
+      "ring": [
+        [
+          70.0,
+          -412.5
+        ],
+        [
+          70.0,
+          -379.6
+        ],
+        [
+          92.4,
+          -379.6
+        ],
+        [
+          77.8,
+          -412.5
+        ]
+      ],
+      "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: the car park before the K. Folson Building's east face (view 3)."
+    },
+    {
+      "id": "owner:nblock-parking-court",
+      "class": "parking",
+      "ring": [
+        [
+          48.0,
+          -330.4
+        ],
+        [
+          71.8,
+          -330.4
+        ],
+        [
+          71.8,
+          -303.0
+        ],
+        [
+          48.0,
+          -303.0
+        ]
+      ],
+      "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: the car park between the N Block's east wing and the long range (views 8 and 9)."
+    },
+    {
+      "id": "owner:nblock-parking-west",
+      "class": "parking",
+      "ring": [
+        [
+          -48.6,
+          -331.0
+        ],
+        [
+          -34.6,
+          -331.0
+        ],
+        [
+          -34.6,
+          -303.0
+        ],
+        [
+          -48.6,
+          -303.0
+        ]
+      ],
+      "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: the car park between the Department of Social Work and the N Block (view 5)."
     }
   ],
   "addWays": [

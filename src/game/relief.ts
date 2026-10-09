@@ -92,6 +92,9 @@ const ZONES: Zone[] = [
   // Avenue (owner's street photo from before Legon Hall): a rubble-stone retaining wall along the road, kept back
   // behind the footway and its pavement, and down the east side; the ground slopes down to the lane on the west
   { kind: 'terrace', x0: -188.5, x1: -101.3, z0: 50.6, z1: 108.0, depth: 1.0, w: 3, e: 0.3, n: 0.3, s: 0.3 },
+  // the N Block compound (owner's view 2): the range behind the court and the ground east of it to the lane stand 1.2 m
+  // up behind rubble-stone faces on the court and the north, pitched rubble-stone banks down to the lane on the east
+  { kind: 'terrace', x0: 16.5, x1: 70.2, z0: -376.8, z1: -357.5, depth: 1.2, w: 3, e: 2.0, n: 0.3, s: 0.3 },
 ];
 const STAIRS: Stairs[] = [
   // Commonwealth: from the gate houses up Legon Hill to the drive
@@ -114,6 +117,8 @@ const STAIRS: Stairs[] = [
   { x0: 207.6, x1: 205.4, z0: 84, z1: 89, flights: 1, steps: 7, tread: 0.3 },
   // the Faculty of Arts: the stairs up through the retaining wall from the footway along Danquah Avenue (owner)
   { x0: 110.0, x1: 107.9, z0: -146.0, z1: -143.0, flights: 1, steps: 6, tread: 0.35, alongZ: true },
+  // the N Block compound: the stair between dark red cheek walls from the lane up to the platform with the blue tent
+  { x0: 73.0, x1: 70.1, z0: -376.0, z1: -373.6, flights: 1, steps: 8, tread: 0.36 },
 ];
 
 const boxOf = (q: Zone) => q.kind !== 'hill'

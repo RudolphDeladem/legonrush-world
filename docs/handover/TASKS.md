@@ -71,3 +71,4 @@
 69. UGCS stair moved to the east end; the Anglican church and hall (stained glass, maroon roofs, fence, open and shut gates, Norfolk pines, palms); the open red-soil ground behind the three churches
 70. St. Thomas Aquinas front, porch, court slabs, the house (open corner, verandah, louvre windows), the open slatted gate; the Anglican church cream with both gates open
 71. St. Thomas Aquinas: the verandah building is the east range facing WACCBIP (two floors), the house west of it white with the open porch and three entrances; the court concrete squares
+72. N Block compound from ten numbered views: N Block (hall, wings, verandahs, ICT Literacy wing), the long range, the K. Folson Building, the raised ground with stone banks and stair, the court, Social Work, School of Social Sciences, Information Studies
