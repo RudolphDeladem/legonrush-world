@@ -1,0 +1,403 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;height:100%;overflow:hidden;background:#9cc}</style></head>
+<body><canvas id="c" style="width:100%;height:100%;display:block"></canvas>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { buildCampus } from '/src/game/world.ts';
+import { diasporaFrames } from '/src/game/halls.ts';
+import { hostels } from '/src/game/hostels.ts';
+import { banking } from '/src/game/banking.ts';
+import { vikingsLaw } from '/src/game/vikingslaw.ts';
+import { engineeringSite } from '/src/game/engineering.ts';
+import { domeHouse } from '/src/game/dome.ts';
+import { pentagon } from '/src/game/pentagon.ts';
+import { groundHeight } from '/src/game/relief.ts';
+import { buildLandmarks } from '/src/game/landmarks.ts';
+const hostelFrames = () => hostels.frames();
+import { setNightLights } from '/src/game/life.ts';
+import { exploreRoute } from '/src/game/routes.ts';
+import { buildRouteLayer } from '/src/game/world.ts';
+import { walkGaps } from '/src/game/junctions.ts';
+import { placeByName } from '/src/game/campusmap.ts';
+const canvas = document.getElementById('c');
+const r = new THREE.WebGLRenderer({ canvas, antialias: true });
+r.setSize(innerWidth, innerHeight, false);
+r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
+r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFShadowMap;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#9fc3e6');
+const pm = new THREE.PMREMGenerator(r); scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.35;
+scene.add(new THREE.HemisphereLight('#cfe3ff', '#5a6b3a', 1.1));
+const sun = new THREE.DirectionalLight('#fff1d6', 2.6);
+sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096);
+const sc = sun.shadow.camera; sc.left = -220; sc.right = 220; sc.top = 220; sc.bottom = -220; sc.near = 1; sc.far = 800; sun.shadow.bias = -0.0008;
+scene.add(sun, sun.target);
+scene.add(buildCampus(), buildLandmarks());
+const q = new URLSearchParams(location.search);
+const F = diasporaFrames();
+const byName = (n) => F.find((f) => f.name.includes(n));
+const hall = byName(q.get('hall') ?? 'Limann');
+const W = (f, lx, y, lz) => new THREE.Vector3(f.cx + f.ax * lx + f.fx * lz, y, f.cz + f.az * lx + f.fz * lz);
+const cam = new THREE.PerspectiveCamera(+(q.get('fov') ?? 45), innerWidth / innerHeight, 0.5, 3000);
+const v = q.get('view') ?? 'front';
+let eye, look;
+if (v === 'front') { eye = W(hall, 0, 75, hall.hz + 95); look = W(hall, 0, 0, 0); }
+if (v === 'back') { eye = W(hall, 0, 75, -hall.hz - 95); look = W(hall, 0, 0, 0); }
+if (v === 'porch') { eye = W(hall, 26, 7, hall.hz + 34); look = W(hall, 0, 8, hall.hz); }
+if (v === 'porchback') { eye = W(hall, -18, 5, -hall.hz - 26); look = W(hall, 0, 7, -hall.hz); }
+if (v === 'court') { eye = W(hall, 0, 34, hall.iz + 14); look = W(hall, 0, 0, -6); }
+if (v === 'top') { eye = W(hall, 0, 260, 1); look = W(hall, 0, 0, 0); }
+if (v === 'row') { const a = byName('Limann'), b = byName('Jean'); const mid = new THREE.Vector3((a.cx + b.cx) / 2, 0, (a.cz + b.cz) / 2); const d = new THREE.Vector3(a.cx - b.cx, 0, a.cz - b.cz).normalize(); eye = new THREE.Vector3(a.cx, 0, a.cz).addScaledVector(d, 170); eye.y = 190; look = mid.clone().addScaledVector(d, 40); }
+if (v === 'gable') { eye = W(hall, 9, 15, hall.hz + 16); look = W(hall, 0, 12, hall.hz + 2); }
+if (v === 'sign') { eye = W(hall, 3, 4.5, hall.hz + 10); look = W(hall, 0, 5, hall.hz + 2); }
+const HF = hostelFrames(); const hf = (n) => HF.find((f) => f.name.includes(n));
+const H = (f, lx, y, lz) => new THREE.Vector3(f.cx + lx * f.ux - lz * f.uz, y, f.cz + lx * f.uz + lz * f.ux);
+const J = hf('Jubilee'), I1 = hf('ISH 1'), I2 = hf('ISH 2');
+if (v === 'jub') { eye = H(J, 150, 70, -120); look = H(J, 25, 0, -15); }
+if (v === 'jubent') { eye = H(J, 95, 18, -95); look = H(J, 66, 4, -55); }
+if (v === 'jubcourt') { eye = H(J, 62, 9, -12); look = H(J, -40, 3, -12); }
+if (v === 'jubeast') { eye = H(J, 30, 6, -90); look = H(J, 10, 4, -52); }
+if (v === 'ish1') { eye = H(I1, 5, 9, -110); look = H(I1, 5, 7, -20); }
+if (v === 'ish2') { eye = H(I2, 40, 6, 60); look = H(I2, 0, 6, 25); }
+if (v === 'ishair') { eye = H(I1, 60, 70, -90); look = H(I1, 0, 0, 0); }
+if (v === 'trio') { eye = H(J, 30, 330, 1); look = H(J, 30, 0, 0); }
+const BF = banking.frames(); const bf = (n) => BF.find((f) => f.name.includes(n));
+const C = bf('banking square'), U = bf('Union'), AH = bf('ADB');
+if (v === 'bank') { eye = H(C, 40, 120, 150); look = H(C, 45, 0, 10); }
+if (v === 'banktop') { eye = H(C, 45, 260, 21); look = H(C, 45, 0, 20); }
+if (v === 'cbg') { eye = H(C, -20, 3.5, 40); look = H(C, -24.5, 2.5, 23); }
+if (v === 'south') { eye = H(C, 0, 5, 50); look = H(C, 0, 2, 20); }
+if (v === 'gate') { eye = H(C, 5, 5, -45); look = H(C, 0, 2, -20); }
+if (v === 'stanbic') { eye = H(C, 22, 4, -42); look = H(C, 17, 2, -25); }
+if (v === 'east') { eye = H(C, 55, 6, -5); look = H(C, 25, 2, -5); }
+if (v === 'union') { eye = H(U, 40, 6, -2); look = H(U, 10, 3, 0); }
+if (v === 'ecobank') { eye = H(U, 2, 6, -40); look = H(U, 0, 3, -12); }
+if (v === 'unionair') { eye = H(U, 40, 45, -45); look = H(U, 0, 0, 0); }
+if (v === 'adb') { eye = H(AH, -40, 25, 50); look = H(AH, 0, 2, 5); }
+const VF = vikingsLaw.frames(); const vf = (n) => VF.find((f) => f.name.includes(n));
+const VK = vf('Vikings'), LW = vf('Law');
+if (v === 'vikfront') { eye = H(VK, 6, 4, 70); look = H(VK, 0, 8, 15); }
+if (v === 'vikend') { eye = H(VK, -45, 3, 55); look = H(VK, -12, 9, 26); }
+if (v === 'vikair') { eye = H(VK, 50, 70, 70); look = H(VK, 0, 0, 5); }
+if (v === 'lawfront') { eye = H(LW, 25, 3, 32); look = H(LW, -10, 6, 0); }
+if (v === 'lawdoor') { eye = H(LW, 8, 2.5, 14); look = H(LW, -8, 5, 6); }
+if (v === 'lawair') { eye = H(LW, 60, 60, 70); look = H(LW, 0, 0, 5); }
+const EN = engineeringSite.frames()[0];
+const E = (lx, y, lz) => new THREE.Vector3(EN.cx + lx, y + groundHeight(EN.cx + lx, EN.cz + lz), EN.cz + lz);
+if (v === 'engair') { eye = E(70, 60, 110); look = E(5, 0, 5); }
+if (v === 'engfront') { eye = E(4, 14, 75); look = E(0, 5, 25); }
+if (v === 'engporch') { eye = E(6, 3, 48); look = E(0, 3, 30); }
+if (v === 'engplane') { eye = E(42, 5, 32); look = E(30, 1, 17); }
+const DF = domeHouse.frames(); const DM = DF.find((f) => f.name.includes('Dome')), IH = DF.find((f) => f.name.includes('International'));
+if (v === 'domeair') { eye = H(DM, 10, 70, 110); look = H(DM, 5, 0, 0); }
+if (v === 'domefront') { eye = H(DM, -2, 6, 45); look = H(DM, 0, 2, 0); }
+if (v === 'domewide') { eye = new THREE.Vector3(140, 110, 1760); look = new THREE.Vector3(30, 0, 1620); }
+if (v === 'kwsey') { eye = new THREE.Vector3(180, 60, 1820); look = new THREE.Vector3(60, 0, 1700); }
+if (v === 'ihfront') { eye = H(IH, -70, 8, -10); look = H(IH, -10, 6, 0); }
+if (v === 'ihporch') { eye = H(IH, -45, 3, 4); look = H(IH, -22, 3, -1); }
+if (v === 'ihair') { eye = new THREE.Vector3(470, 140, -120); look = new THREE.Vector3(500, 0, -215); }
+const PF = pentagon.frames(); const pf = (n) => PF.find((f) => f.name.includes(n));
+if (v === 'pentair') { eye = new THREE.Vector3(640, 170, -400); look = new THREE.Vector3(630, 0, -620); }
+if (v === 'oldpent') { eye = new THREE.Vector3(600, 14, -585); look = new THREE.Vector3(620, 4, -520); }
+if (v === 'court') { const c = pf('Addis'); eye = H(c, 12, 4, -42); look = H(c, 0, 6, -10); }
+if (v === 'admin') { const c = pf('Admin'); eye = H(c, 2, 5, -42); look = H(c, 2, 7, -10); }
+if (v === 'newpent') { const c = pf('Block A'); eye = H(c, -4, 6, 34); look = H(c, 0, 7, 0); }
+if (v === 'newpentc') { const c = pf('Block C'); eye = H(c, 25, 14, 50); look = H(c, 0, 6, -10); }
+if (v === 'enghill') { eye = new THREE.Vector3(415, 2.4, -333); look = new THREE.Vector3(452, -2, -392); }
+if (v === 'engside') { eye = new THREE.Vector3(540, 3, -360); look = new THREE.Vector3(470, -3, -400); }
+if (v === 'engroad') { eye = E(-16, 5, 85); look = E(-10, -2, 30); }
+const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+if (v === 'cwair') { eye = V3(-330, 150, 330); look = V3(-570, 10, 128); }
+if (v === 'cwfront') { eye = V3(-405, 38, 128); look = V3(-520, 12, 128); }
+if (v === 'cwstairs') { eye = V3(-345, 2.2, 128); look = V3(-470, 12, 128); }
+if (v === 'cwmid') { eye = V3(-400, 7, 132); look = V3(-470, 12, 128); }
+if (v === 'cwgate') { eye = V3(-468, 11.2, 131); look = V3(-497, 14, 128); }
+if (v === 'cwcourt') { eye = V3(-545, 22, 128); look = V3(-660, 12, 128); }
+if (v === 'cwtop') { eye = V3(-590, 420, 129); look = V3(-590, 0, 128); }
+if (v === 'cwside') { eye = V3(-560, 60, 330); look = V3(-600, 10, 128); }
+if (v === 'cwback') { eye = V3(-800, 45, 128); look = V3(-640, 12, 128); }
+if (v === 'vtfront') { eye = V3(-215, 9, 66); look = V3(-262, 4, 66); }
+if (v === 'vtsteps') { eye = V3(-236, 2.0, 63); look = V3(-260, 4.5, 66); }
+if (v === 'vtair') { eye = V3(-170, 130, 150); look = V3(-290, 0, 10); }
+if (v === 'vttop') { eye = V3(-290, 330, 6); look = V3(-290, 0, 5); }
+if (v === 'vtwalk') { eye = V3(-289, 4.2, 30); look = V3(-289, 6, -60); }
+if (v === 'vtannex') { eye = V3(-230, 25, -120); look = V3(-286, 6, -62); }
+if (v === 'sbfront') { eye = V3(5, 38, 560); look = V3(5, 2, 628); }
+if (v === 'sbcourt') { eye = V3(5, 3.5, 668); look = V3(5, 5, 612); }
+if (v === 'sbair') { eye = V3(150, 160, 520); look = V3(5, 0, 645); }
+if (v === 'akgate') { eye = V3(152, 3.5, 138); look = V3(157, 4, 160); }
+if (v === 'akair') { eye = V3(300, 170, 120); look = V3(150, 0, 270); }
+if (v === 'lggate') { eye = V3(-152, 3.5, 138); look = V3(-147, 4, 160); }
+if (v === 'lgair') { eye = V3(-300, 170, 120); look = V3(-140, 0, 270); }
+if (v === 'sbtop') { eye = V3(5, 230, 652); look = V3(5, 0, 651); }
+if (v === 'aktop') { eye = V3(152, 300, 271); look = V3(152, 0, 270); }
+if (v === 'lgtop') { eye = V3(-140, 300, 271); look = V3(-140, 0, 270); }
+if (v === 'sbpano') { eye = V3(-90, 70, 560); look = V3(10, 0, 660); }
+if (v === 'lgpano') { eye = V3(-60, 90, 420); look = V3(-150, 0, 270); }
+if (v === 'akpano') { eye = V3(60, 70, 420); look = V3(160, 0, 250); }
+if (v === 'ovtop') { eye = V3(5, 330, 386); look = V3(5, 0, 385); }
+if (v === 'ovair') { eye = V3(150, 120, 560); look = V3(0, 0, 380); }
+if (v === 'ovpic5') { eye = V3(-20, 150, 600); look = V3(-40, 0, 330); }
+if (v === 'ovcourts') { eye = V3(-30, 25, 420); look = V3(-72, 0, 390); }
+if (v === 'ovseats') { eye = V3(10, 6, 380); look = V3(55, 2, 400); }
+if (v === 'lxtop') { eye = V3(-150, 260, 482); look = V3(-150, 0, 481); }
+if (v === 'lxb') { eye = V3(-130, 32, 470); look = V3(-145, 8, 540); }
+if (v === 'akxobl') { eye = V3(40, 70, 480); look = V3(170, 4, 480); }
+if (v === 'akxface') { eye = V3(150, 4, 395); look = V3(150, 9, 425); }
+if (v === 'akxtop') { eye = V3(165, 260, 481); look = V3(165, 0, 480); }
+if (v === 'ccnorth') { eye = V3(-40, 14, 492); look = V3(0, 3, 525); }
+if (v === 'ccair') { eye = V3(-110, 70, 470); look = V3(-25, 0, 535); }
+if (v === 'ccstair') { eye = V3(-12, 3, 508); look = V3(-14, 5, 516); }
+if (v === 'sbxobl') { eye = V3(60, 70, 708); look = V3(180, 4, 708); }
+if (v === 'cediwest') { eye = V3(-190, 7, -2); look = V3(-150, 7, 14); }
+if (v === 'cediporch') { eye = V3(-170, 3, 2); look = V3(-154, 3, 10.6); }
+if (v === 'cedieast') { eye = V3(-75, 9, 35); look = V3(-108, 8, 24); }
+if (v === 'cediair') { eye = V3(-205, 80, -40); look = V3(-130, 0, 25); }
+if (v === 'cedidown') { eye = V3(-130, 200, 26); look = V3(-130, 0, 25); }
+if (v === 'banks') { eye = V3(80, 4, 80); look = V3(73, 2.5, 95); }
+if (v === 'atm') { eye = V3(66, 3, 120); look = V3(70, 1.8, 106); }
+if (v === 'balmeair') { eye = V3(-40, 160, -120); look = V3(-40, 0, 50); }
+if (v === 'libfront') { eye = V3(5, 7, 80); look = V3(5, 12, -10); }
+if (v === 'libdoor') { eye = V3(9, 3, 50); look = V3(5, 3, 31); }
+if (v === 'libair') { eye = V3(5, 75, 105); look = V3(5, 5, -25); }
+if (v === 'libnw') { eye = V3(-110, 28, -95); look = V3(-50, 8, -35); }
+if (v === 'libnorth') { eye = V3(5, 4, -140); look = V3(5, 14, -40); }
+if (v === 'libpool') { eye = V3(8, 3, 100); look = V3(7, 6, 20); }
+if (v === 'quadfount') { eye = V3(18, 6, -138); look = V3(5, 1, -124); }
+if (v === 'libtop') { eye = V3(5, 230, -24); look = V3(5, 0, -25); }
+if (v === 'libtower') { eye = V3(30, 30, 30); look = V3(5, 24, -25); }
+if (v === 'bball') { eye = V3(108, 5, 352); look = V3(85, 1, 385); }
+if (v === 'bballne') { eye = V3(102, 7, 250); look = V3(70, 1, 276); }
+if (v === 'soccer') { eye = V3(130, 14, 560); look = V3(178, 0, 604); }
+if (v === 'nmair') { eye = V3(150, 70, 930); look = V3(95, 0, 1015); }
+if (v === 'nmtop') { eye = V3(97, 150, 1016); look = V3(97, 0, 1015); }
+if (v === 'smart') { eye = V3(135, 5, 1010); look = V3(112, 3.5, 995); }
+if (v === 'nmlane') { eye = V3(121, 3, 1050); look = V3(105, 1.8, 1020); }
+if (v === 'nmround') { eye = V3(30, 90, 900); look = V3(-80, 0, 1020); }
+if (v === 'oldnm') { eye = V3(200, 30, 1000); look = V3(160, 0, 1075); }
+if (v === 'valco') { eye = V3(-20, 32, 700); look = V3(28, 7, 790); }
+if (v === 'valcoair') { eye = V3(110, 70, 760); look = V3(26, 5, 810); }
+if (v === 'valco2') { eye = V3(30, 6, 885); look = V3(24, 8, 845); }
+if (v === 'smart2') { eye = V3(121.5, 3.5, 978); look = V3(113, 3.5, 996); }
+if (v === 'gap') {
+  const r = exploreRoute(placeByName(q.get('from') ?? 'Volta Hall'), placeByName(q.get('to') ?? 'Great Hall'), 'cycle');
+  scene.add(buildRouteLayer(r.track, { start: r.lead, finish: r.lead + r.length, startText: 'START', finishText: 'FINISH', labels: [] }));
+  const g = walkGaps(r.track, 3.8, [9, 7.4, 6.2, 4.6, 2.6]);
+  const all = [...g[0], ...g[1]].sort((a, b) => a[0] - b[0]);
+  const k = +(q.get('i') ?? 0), [a, b] = all[Math.min(k, all.length - 1)], d = (a + b) / 2;
+  const p0 = r.track.pose(d - 16, 0), p1 = r.track.pose(d + 4, 0);
+  eye = new THREE.Vector3(p0.x, 4, p0.z); look = new THREE.Vector3(p1.x, 0.5, p1.z);
+}
+if (v === 'rend') {
+  const r = exploreRoute(placeByName(q.get('from') ?? 'Volta Hall'), placeByName(q.get('to') ?? 'Great Hall'), 'cycle');
+  scene.add(buildRouteLayer(r.track, { start: r.lead, finish: r.lead + r.length, startText: 'START', finishText: 'FINISH', labels: [] }));
+  const d = r.lead + r.length - +(q.get('back') ?? 20), p0 = r.track.pose(d - 12, 0), p1 = r.track.pose(d + 8, 0);
+  eye = new THREE.Vector3(p0.x, groundHeight(p0.x, p0.z) + 3, p0.z); look = new THREE.Vector3(p1.x, groundHeight(p1.x, p1.z) + 0.5, p1.z);
+  if (q.get('top')) { const e = r.track.pose(r.lead + r.length, 0); eye = new THREE.Vector3(e.x, +q.get('top'), e.z + 0.1); look = new THREE.Vector3(e.x, 0, e.z); }
+}
+if (v === 'wlair') { eye = V3(-370, 70, 420); look = V3(-295, 5, 285); }
+if (v === 'wlml') { eye = V3(-240, 20, 290); look = V3(-295, 8, 262); }
+if (v === 'wltop') { eye = V3(-370, 260, 360); look = V3(-370, 0, 359); }
+if (v === 'wlhouse') { eye = V3(-420, 22, 330); look = V3(-455, 3, 355); }
+if (v === 'wlhouse2') { eye = V3(-300, 12, 440); look = V3(-330, 2, 425); }
+if (v === 'shed') { eye = V3(-372, 7, 386); look = V3(-381, 1, 371.6); }
+if (v === 'booths') { eye = V3(168, 90, 950); look = V3(168, 0, 949); }
+if (v === 'dome') { eye = V3(-40, 120, 1595); look = V3(-40, 0, 1594); }
+if (v === 'sphfront') { eye = V3(545, 8, 1630); look = V3(505, 6, 1642); }
+if (v === 'sphair') { eye = V3(560, 70, 1560); look = V3(475, 0, 1650); }
+if (v === 'sphtop') { eye = V3(470, 160, 1641); look = V3(470, 0, 1640); }
+if (v === 'booth') { eye = V3(150, 6, 945); look = V3(142.6, 1.5, 930.5); }
+if (v === 'smart3') { eye = V3(122, 4, 975); look = V3(113, 3, 995); }
+if (v === 'nmaisle') { eye = V3(86.3, 2.5, 1052); look = V3(86.3, 1.5, 1010); }
+if (v === 'nmlanes') { eye = V3(96, 9, 1062); look = V3(96, 0, 1030); }
+if (v === 'wshed') { eye = V3(152, 4, 904); look = V3(146.9, 1.4, 893.5); }
+if (v === 'boothlook') { eye = V3(122, 3.5, 930); look = V3(165, 2, 925); }
+if (v === 'booth2') { eye = V3(148, 4, 942); look = V3(142.6, 1.5, 930.5); }
+if (v === 'cediE') { eye = V3(-80, 3, 32); look = V3(-108, 6, 22); }
+if (v === 'balmeW') { eye = V3(-100, 3, 10); look = V3(-55, 8, -25); }
+if (v === 'ugcsS') { eye = V3(-96, 3, -8); look = V3(-108, 8, -42); }
+if (v === 'ugcsFar') { eye = V3(-92, 9, 5); look = V3(-108, 8, -42); }
+if (v === 'cediFar') { eye = V3(-60, 8, 45); look = V3(-120, 7, 22); }
+if (v === 'ugbsF') { eye = V3(-222, 6, -112); look = V3(-190, 8, -112); }
+if (v === 'ugbsNW') { eye = V3(-212, 3, -150); look = V3(-170, 8, -114); }
+if (v === 'ugbsN') { eye = V3(-100, 3, -165); look = V3(-118, 9, -122); }
+if (v === 'ugbsTop') { eye = V3(-148, 170, -111); look = V3(-148, 0, -110); }
+if (v === 'balmeFront') { eye = V3(8, -0.5, 92.5); look = V3(7, 5, 10); }
+if (v === 'balmeSteps') { eye = V3(30, 10, 78); look = V3(8, -1, 52); }
+if (v === 'stadAir') { eye = V3(900, 120, 1590); look = V3(776, 0, 1411); }
+if (v === 'stadOut') { eye = V3(905, 25, 1540); look = V3(800, 6, 1450); }
+if (v === 'stadMain') { eye = V3(800, 12, 1412); look = V3(712, 8, 1412); }
+if (v === 'stadEntr') { eye = V3(650, 6, 1440); look = V3(690, 8, 1414); }
+if (v === 'stadTop') { eye = V3(640, 330, 1471); look = V3(640, 0, 1470); }
+if (v === 'sphPark') { eye = V3(570, 30, 1700); look = V3(510, 0, 1630); }
+if (v === 'balmeTop') { eye = V3(5, 200, 31); look = V3(5, 0, 30); }
+if (v === 'balmeFwd') { eye = V3(-60, 14, 50); look = V3(-20, 2, 20); }
+if (v === 'akxA') { eye = V3(100, 6, 400); look = V3(140, 5, 420); }
+if (v === 'akSW') { eye = V3(110, 6, 400); look = V3(150, 5, 360); }
+if (v === 'akTop') { eye = V3(160, 200, 361); look = V3(160, 0, 360); }
+if (v === 'balmeSW') { eye = V3(-16, 4, 104); look = V3(4, 0, 82); }
+if (v === 'balmeW') { eye = V3(-12, 3, 100); look = V3(-8, 0, 60); }
+if (v === 'pool') { eye = V3(546, 3, 1350); look = V3(500, 3, 1330); }
+if (v === 'resVolta') { eye = V3(-240, 12, -10); look = V3(-208, 2, -30); }
+if (v === 'resUgbs') { eye = V3(-225, 14, -110); look = V3(-262, 2, -165); }
+if (v === 'resUgbs2') { eye = V3(-215, 4, -135); look = V3(-255, 3, -130); }
+if (v === 'resWood') { eye = V3(330, 60, 760); look = V3(345, 0, 560); }
+if (v === 'resWoodTop') { eye = V3(345, 330, 561); look = V3(345, 0, 560); }
+if (v === 'resLane') { eye = V3(310, 3, 600); look = V3(360, 3, 560); }
+if (v === 'ms1') { eye = V3(296, 1.7, -251); look = V3(287, 5, -226); }
+if (v === 'ms2') { eye = V3(338, 1.7, -257); look = V3(318, 5, -239); }
+if (v === 'ms3') { eye = V3(374, 1.7, -263); look = V3(350, 5, -238); }
+if (v === 'msTop') { eye = V3(331, 170, -231); look = V3(331, 0, -232); }
+if (v === 'msAir') { eye = V3(300, 55, -295); look = V3(332, 0, -232); }
+if (v === 'msSouth') { eye = V3(345, 30, -180); look = V3(335, 0, -228); }
+if (v === 'msHeavy') { eye = V3(292, 1.7, -247); look = V3(306, 5, -238); }
+if (v === 'cs1') { eye = V3(354, 1.7, -262); look = V3(358, 6, -285); }
+if (v === 'cs2') { eye = V3(373, 1.7, -266); look = V3(360, 8, -285); }
+if (v === 'is3') { eye = V3(285, 1.7, -305); look = V3(330, 4, -299); }
+if (v === 'is4') { eye = V3(313, 1.7, -266); look = V3(311, 6, -285); }
+if (v === 'isAir') { eye = V3(330, 70, -225); look = V3(335, 0, -292); }
+if (v === 'isTop') { eye = V3(336, 170, -296); look = V3(336, 0, -297); }
+if (v === 'isBack') { eye = V3(330, 50, -360); look = V3(335, 0, -295); }
+if (v === 'cediS') { eye = V3(-125, 60, 170); look = V3(-125, 0, 60); }
+if (v === 'cediW') { eye = V3(-200, 4, 70); look = V3(-130, 6, 60); }
+if (v === 'voltaLink') { eye = V3(-222, 2.2, -20); look = V3(-262, 6, -33); }
+if (v === 'ie4') { eye = V3(468, 1.7, -347); look = V3(474, 3, -322); }
+if (v === 'ie5') { eye = V3(444, 3.8, -297); look = V3(470, 3.5, -312); }
+if (v === 'ieAir') { eye = V3(450, 55, -385); look = V3(450, 0, -312); }
+if (v === 'issEnt') { eye = V3(312.5, 1.8, -272); look = V3(312.5, 2.6, -283); }
+if (v === 'issDrive') { eye = V3(315, 3.2, -258); look = V3(318, 4, -285); }
+if (v === 'ripsLow') { eye = V3(322, 2.5, -270); look = V3(338, 0, -283); }
+if (v === 'csPark') { eye = V3(326, 2.2, -284); look = V3(345, 1, -272); }
+if (v === 'engS') { eye = V3(445, 3, -348); look = V3(500, 0, -340); }
+if (v === 'engS2') { eye = V3(420, 6, -330); look = V3(440, 0, -365); }
+if (v === 'ieBase') { eye = V3(430, 1.8, -339); look = V3(420, 1, -333); }
+if (v === 'cwFore') { eye = V3(-455, 14, 140); look = V3(-478, 9, 128); }
+if (v === 'csDoor') { eye = V3(330, 2.5, -312); look = V3(349, 2, -309.5); }
+if (v === 'ripsDrop') { eye = V3(330, 1.2, -272); look = V3(334, -1, -284); }
+if (v === 'kwE') { eye = V3(330, 60, 1560); look = V3(410, 0, 1470); }
+if (v === 'gym') { eye = V3(600, 4, 1372); look = V3(617, 4, 1340); }
+if (v === 'sportsAir') { eye = V3(560, 90, 1500); look = V3(590, 0, 1360); }
+if (v === 'stHouses') { eye = V3(760, 60, 1580); look = V3(840, 0, 1720); }
+if (v === 'stHouse') { eye = V3(905, 3, 1700); look = V3(933, 2, 1682); }
+if (v === 'chalets') { eye = V3(760, 70, 1560); look = V3(850, 0, 1700); }
+if (v === 'chalet') { eye = V3(860, 3, 1700); look = V3(885, 2, 1712); }
+if (v === 'apaloo') { eye = V3(-200, 60, 1330); look = V3(-330, 0, 1480); }
+if (v === 'apalooH') { eye = V3(-300, 3, 1500); look = V3(-288, 2, 1473); }
+if (v === 'bsAir') { eye = V3(-60, 70, 900); look = V3(-90, 0, 1020); }
+if (v === 'bsGate') { eye = V3(-122, 1.8, 887); look = V3(-110, 1.6, 902); }
+if (v === 'bsBlock') { eye = V3(-140, 2, 1000); look = V3(-140, 2, 1010); }
+if (v === 'akFront') { eye = V3(152, 1.7, 136); look = V3(158, 4, 157); }
+if (v === 'akFront2') { eye = V3(170, 1.7, 141); look = V3(162, 4, 157); }
+if (v === 'lgFront') { eye = V3(-147, 1.8, 138); look = V3(-147, 4, 157); }
+if (v === 'lgPano') { eye = V3(-133, 1.6, 141); look = V3(-163, 4, 155); }
+if (v === 'lgPano2') { eye = V3(-160, 1.6, 141); look = V3(-128, 3, 152); }
+if (v === 'valcoTop') { eye = V3(25, 160, 805); look = V3(25, 0, 804); }
+if (v === 'nnb1') { eye = V3(-40, 3, -425); look = V3(-80, 3, -452); }
+if (v === 'nnb2') { eye = V3(-125, 1.7, -432); look = V3(-95, 3, -446); }
+if (v === 'gcbN') { eye = V3(-118, 1.7, -440); look = V3(-138, 5, -392); }
+if (v === 'gcbW') { eye = V3(-195, 2.5, -350); look = V3(-150, 5, -352); }
+if (v === 'nbAir') { eye = V3(-60, 80, -520); look = V3(-120, 0, -400); }
+if (v === 'lgGable') { eye = V3(-108, 1.7, 143); look = V3(-122, 5, 160); }
+if (v === 'lgGable2') { eye = V3(-140, 1.7, 147); look = V3(-120, 5, 158); }
+if (v === 'chE') { eye = V3(10, 1.8, 228); look = V3(30, 5, 185); }
+if (v === 'chW') { eye = V3(2, 1.8, 225); look = V3(-25, 5, 180); }
+if (v === 'chAir') { eye = V3(5, 75, 290); look = V3(5, 0, 170); }
+if (v === 'sarbahWin') { eye = V3(-30, 3, 660); look = V3(5, 5, 660); }
+if (v === 'voltaWin') { eye = V3(-240, 3, 20); look = V3(-262, 5, 10); }
+if (v === 'gcbNE') { eye = V3(-100, 1.7, -420); look = V3(-138, 5, -385); }
+if (v === 'gcbN2') { eye = V3(-108, 3, -428); look = V3(-136, 7, -388); }
+if (v === 'gcbFar') { eye = V3(-95, 6, -432); look = V3(-138, 6, -380); }
+if (v === 'gcbW2') { eye = V3(-172, 3.6, -352.9); look = V3(-150, 5, -352.9); }
+if (v === 'gcbTop') { eye = V3(-136, 110, -360); look = V3(-136, 0, -361); }
+if (v === 'gcbUnder') { eye = V3(-150, 4.2, -398); look = V3(-128, 4, -383); }
+if (v === 'nnbDoor') { eye = V3(-100, 1.7, -436); look = V3(-100, 2.5, -447); }
+if (v === 'wcF') { eye = V3(-216, 1.6, -333.5); look = V3(-262, 7, -333.5); }
+if (v === 'wcF2') { eye = V3(-238, 1.7, -333.5); look = V3(-262, 7, -333.5); }
+if (v === 'wcB') { eye = V3(-303, 1.6, -330.4); look = V3(-288, 6, -330.4); }
+if (v === 'wcNE') { eye = V3(-224, 1.6, -392); look = V3(-250, 7, -350); }
+if (v === 'wcShed') { eye = V3(-228, 1.6, -381); look = V3(-238, 2.5, -377); }
+if (v === 'wcFrame') { eye = V3(-206, 1.6, -392); look = V3(-228, 4, -432); }
+if (v === 'wcTop') { eye = V3(-250, 210, -400); look = V3(-250, 0, -401); }
+if (v === 'wcAir') { eye = V3(-200, 60, -300); look = V3(-260, 0, -350); }
+if (v === 'frS') { eye = V3(-90, 1.6, 127); look = V3(-108, 5, 105); }
+if (v === 'frDean') { eye = V3(-36, 1.7, 35); look = V3(-60, 3.5, 58); }
+if (v === 'frPost') { eye = V3(-79, 1.6, 87); look = V3(-58, 3, 101); }
+if (v === 'frCar') { eye = V3(-67, 1.6, 71); look = V3(-38, 5, 77); }
+if (v === 'frAir') { eye = V3(-5, 55, 135); look = V3(-60, 0, 75); }
+if (v === 'frTop') { eye = V3(-90, 170, 80); look = V3(-90, 0, 79); }
+if (v === 'wcBack') { eye = V3(-310.5, 1.6, -332); look = V3(-300, 6.5, -332); }
+if (v === 'wcBack2') { eye = V3(-326, 5, -332); look = V3(-296, 6, -332); }
+if (v === 'phN') { eye = V3(-300, 1.6, -277); look = V3(-255, 5, -262); }
+if (v === 'ph3') { eye = V3(-312, 1.6, -276); look = V3(-275, 6, -252); }
+if (v === 'phF') { eye = V3(-222, 1.6, -244); look = V3(-262, 6, -246); }
+if (v === 'phAir') { eye = V3(-205, 60, -300); look = V3(-265, 0, -245); }
+if (v === 'larS') { eye = V3(-229, 1.6, -214); look = V3(-262, 2.5, -200); }
+if (v === 'fsF') { eye = V3(-224, 1.6, -205); look = V3(-195, 7, -205); }
+if (v === 'fsSW') { eye = V3(-224, 1.6, -178); look = V3(-195, 6, -200); }
+if (v === 'nuS') { eye = V3(-300, 1.6, -160); look = V3(-335, 5, -188); }
+if (v === 'abS') { eye = V3(-95, 1.6, -160.5); look = V3(-95, 3, -195); }
+if (v === 'abAir') { eye = V3(-90, 130, -230); look = V3(-90, 0, -231); }
+if (v === 'labsAir') { eye = V3(-150, 70, -130); look = V3(-220, 0, -200); }
+if (v === 'fsTop') { eye = V3(-190, 120, -225); look = V3(-190, 0, -226); }
+if (v === 'unf') { eye = V3(-205, 7, -238); look = V3(-189, 1.5, -224); }
+if (v === 'iaAir') { eye = V3(215, 55, -315); look = V3(285, 0, -395); }
+if (v === 'iaE') { eye = V3(350, 1.6, -345); look = V3(300, 4, -395); }
+if (v === 'iaS') { eye = V3(301.5, 2, -333); look = V3(295, 5, -375); }
+if (v === 'iaHut') { eye = V3(292, 3, -410); look = V3(301, 1.5, -430); }
+if (v === 'iaPlot') { eye = V3(214, 1.6, -318); look = V3(215, 4, -370); }
+if (v === 'iaHall') { eye = V3(152, 1.8, -335); look = V3(148, 3, -362); }
+if (v === 'iaTop') { eye = V3(215, 230, -405); look = V3(215, 0, -406); }
+if (v === 'bs1') { eye = V3(-120, 1.7, 960); look = V3(-120, 3, 990); }
+if (v === 'bs2') { eye = V3(-60, 1.7, 1050); look = V3(-68, 3, 1080); }
+if (v === 'bs3') { eye = V3(-150, 30, 950); look = V3(-120, 0, 1010); }
+if (v === 'wcDoor') { eye = V3(-248, 2.2, -333.5); look = V3(-262, 4, -333.5); }
+if (v === 'ihW') { eye = V3(530, 2, -195); look = V3(560, 6, -200); }
+if (v === 'bsFence') { eye = V3(-125, 1.7, 893); look = V3(-108, 1.5, 901); }
+if (v === 'bookSW') { eye = V3(18, 2, 128); look = V3(48, 5, 95); }
+if (v === 'esF') { eye = V3(327.4, 3.0, 116); look = V3(327.4, 3, 96); }
+if (v === 'esFL') { eye = V3(305, 2.2, 112); look = V3(320, 2.5, 96); }
+if (v === 'esBack') { eye = V3(352, 3, 20); look = V3(300, 6, 32); }
+if (v === 'esAir') { eye = V3(380, 70, 150); look = V3(300, 0, 60); }
+if (v === 'esTop') { eye = V3(298, 160, 60); look = V3(298, 0, 59); }
+if (v === 'phSW') { eye = V3(92, 1.8, 126); look = V3(130, 3, 100); }
+if (v === 'phAir') { eye = V3(240, 45, 150); look = V3(150, 0, 60); }
+if (v === 'chTop') { eye = V3(158, 200, -55); look = V3(158, 0, -56); }
+if (v === 'ftW') { eye = V3(118, 2, -106); look = V3(140, 8, -120); }
+if (v === 'ftS') { eye = V3(172, 1.8, -88); look = V3(165, 9, -118); }
+if (v === 'chWalk') { eye = V3(160, 2, -44); look = V3(156.5, 2, -80); }
+if (v === 'iaCar') { eye = V3(301.5, 8, -325); look = V3(301.5, 0, -360); }
+if (v === 'tallH') { eye = V3(135, 2, 45); look = V3(135, 4, 20); }
+if (v === 'ftW2') { eye = V3(122, 3, -113); look = V3(150, 9, -124); }
+if (v === 'gcbRamp') { eye = V3(-128, 2.2, -428); look = V3(-137, 1.5, -411); }
+if (v === 'lsPorch') { eye = V3(-28, 1.7, 124); look = V3(-34, 4, 108); }
+if (v === 'frSW') { eye = V3(-150, 1.7, 128); look = V3(-162, 4, 100); }
+if (v === 'frPass') { eye = V3(-161.2, 1.7, 104); look = V3(-161.2, 1.5, 80); }
+if (v === 'chWE') { eye = V3(99, 1.7, -82); look = V3(116, 3.5, -85.5); }
+if (v === 'chWE2') { eye = V3(96, 6, -96); look = V3(116, 2, -84); }
+if (v === 'chWTop') { eye = V3(108, 70, -85); look = V3(108, 0, -85.5); }
+if (v === 'chWDoor') { eye = V3(106.5, 2.0, -84.2); look = V3(114.6, 2.4, -85.5); }
+if (v === 'esLane') { eye = V3(234, 3.2, 8); look = V3(242, 0.5, 40); }
+if (v === 'esLane2') { eye = V3(234, 3.2, 125); look = V3(240, 0.5, 90); }
+if (v === 'ftS') { eye = V3(194, 1.7, -60); look = V3(198, 8, -100); }
+if (v === 'ftCar') { eye = V3(178, 2.2, -98); look = V3(150, 1.5, -112); }
+if (v === 'chWwall') { eye = V3(107.5, 1.8, -95.6); look = V3(116, 1.6, -95); }
+if (v === 'ftLane') { eye = V3(206.8, 1.7, -82.5); look = V3(211, 2.5, -96); }
+if (v === 'ftPass') { eye = V3(149.1, 1.7, -112.5); look = V3(149.1, 1.6, -140); }
+if (v === 'ftPhoto3') { eye = V3(182, 2.0, -84); look = V3(200, 7, -100); }
+if (v === 'ftPassS') { eye = V3(158, 2.0, -111); look = V3(149, 2.0, -118); }
+if (v === 'chWwall2') { eye = V3(124, 1.8, -95.5); look = V3(112, 1.6, -95); }
+if (v === 'phAir2') { eye = V3(-262, 120, -246); look = V3(-262, 0, -247); }
+if (v === 'fsN') { eye = V3(-215, 3, -232); look = V3(-188, 3, -222); }
+if (v === 'csTop') { eye = V3(355, 90, -268); look = V3(355, 0, -269); }
+if (v === 'street') { eye = W(hall, -60, 1.7, hall.hz + 40); look = W(hall, 0, 6, hall.hz); }
+cam.position.copy(eye); cam.lookAt(look);
+sun.position.copy(look).add(new THREE.Vector3(-90, 160, 70)); sun.target.position.copy(look);
+if (q.get('night')) { setNightLights(true); scene.background = new THREE.Color('#0b1426'); scene.environmentIntensity = 0.05; sun.intensity = 0.05; }
+scene.updateMatrixWorld(true);
+r.render(scene, cam);
+r.render(scene, cam);
+let nb=0; scene.traverse(o=>{ if (o.isMesh && o.material.isMeshBasicMaterial && o.material.map) nb++; }); console.log('basic meshes', nb); scene.traverse(o=>{ if (o.name==='hall-sign') { const p=new THREE.Vector3(); o.getWorldPosition(p); console.log('sign', p.x.toFixed(1), p.y.toFixed(1), p.z.toFixed(1), o.geometry.parameters.width, o.geometry.parameters.height, o.material.map.image.width, o.visible, o.parent.name); } });
+scene.traverse(o=>{ if (o.name==='School of Engineering Sciences' || o.name==='relief-ground') { const b=new THREE.Box3().setFromObject(o); console.log('DBG', o.name, o.position.y.toFixed(2), b.min.y.toFixed(2), b.max.y.toFixed(2)); } });
+console.log('DBG gh', groundHeight(452,-380), groundHeight(429,-345), groundHeight(429,-360));
+window.__done = true;
+</script></body></html>

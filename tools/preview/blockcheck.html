@@ -1,0 +1,28 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body><script type="module">
+import { buildCampus, buildRouteLayer } from '/src/game/world.ts';
+import { ROADS, NODE_XZ, AREAS, buildingNear } from '/src/game/campusmap.ts';
+import { SOLIDS, ROUTE_SOLIDS } from '/src/game/solids.ts';
+import { inStairs } from '/src/game/relief.ts';
+buildCampus();
+const inPts = (pts, x, z) => { let c = false; for (let i = 0, j = pts.length - 2; i < pts.length; j = i, i += 2) { const zi = pts[i + 1], zj = pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((pts[j] - pts[i]) * (z - zi)) / (zj - zi) + pts[i]) c = !c; } return c; };
+const wilds = AREAS.filter((a) => a.kind === 'wood' || a.kind === 'water');
+const hits = { building: [], solid: [], stairs: [], wild: [] };
+let n = 0;
+for (const [ri, r] of ROADS.entries()) {
+  if (r.surface === 'steps') continue;
+  for (let i = 0; i < r.nodes.length - 1; i++) {
+    const ax = NODE_XZ[r.nodes[i] * 2], az = NODE_XZ[r.nodes[i] * 2 + 1], bx = NODE_XZ[r.nodes[i + 1] * 2], bz = NODE_XZ[r.nodes[i + 1] * 2 + 1];
+    const len = Math.hypot(bx - ax, bz - az), k = Math.max(1, Math.ceil(len / 1.5));
+    for (let s = 0; s <= k; s++) {
+      const x = ax + (bx - ax) * s / k, z = az + (bz - az) * s / k; n++;
+      const tag = `${r.cls}|${r.name ?? ''}|${x.toFixed(1)},${z.toFixed(1)}`;
+      const b = buildingNear(x, z, 0.35); if (b) hits.building.push(tag + '|' + (b.name ?? '-'));
+      
+      if (inStairs(x, z)) hits.stairs.push(tag);
+      
+    }
+  }
+}
+window.__result = { n, counts: Object.fromEntries(Object.entries(hits).map(([k, v]) => [k, v.length])), solid: hits.solid, building: hits.building, wild: hits.wild };
+window.__done = true;
+</script></body></html>
