@@ -1351,6 +1351,23 @@ game screenshot of the gateway from the road, and a screenshot of the Anglican c
 - **The Anglican church**: its walls and the gable are **cream**, the gable the building's own wall under the roof's
   edge (not part of the roof); **both its gates now open**.
 
+## 57. St. Thomas Aquinas: the photos put on the right buildings; the court concrete
+
+The owner pointed out that two photos had been put on the wrong buildings (`churches.ts`):
+
+- **The range facing the back of WACCBIP** (the east range by the gravel car park; the owner's yellow mark) is the
+  **two-storey building with the verandah**: cream, **glass louvre blade windows** upstairs, a balcony at its south end,
+  its ground floor behind the **verandah on dark brown posts**, its floor raised, **steps with black scrolled railings** up
+  to the doors (blue), beds of red, orange and yellow flowers behind a white kerb; red-brown tiles with maroon fascias;
+  the **gravel car park** before it. (It had been a one-floor flat-roofed range; the verandah had been put on the house
+  west of the church.)
+- **The house west of the church** (the owner's photo with three entrances in blue): white over a **terracotta brick
+  base**, big brown-framed windows on both floors; its **open porch** before the north part's east face, where the south
+  part stands forward: two tall round columns, white over a yellow foot, **three open entrances** with glass doors behind,
+  the **balcony** over it with its terracotta brick band, brown railing and a glass door, the roof over it; the raised
+  paved platform with steps and potted plants; the narrow yard of grey pavers to the church.
+- **The court before the church** is **concrete paving in big squares** (grey, a little grass in the joints), not red.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

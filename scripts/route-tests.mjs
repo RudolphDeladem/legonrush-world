@@ -442,6 +442,7 @@ try {
     if (buildingAt(-416.8, -507.3)) fail('a building still stands on the Anglican car park (owner)');
     if (buildingAt(-373.8, -320)) fail('no paved yard between St. Thomas Aquinas and the house west of it (owner)');
     if (!buildingAt(-359.25, -306)) fail('St. Thomas Aquinas\' porch is not centred on its gable (owner)');
+    { const b = buildingAt(-341, -335); if (!b || b.height < 9) fail('St. Thomas Aquinas\' east range (facing WACCBIP) is not two floors (owner)'); }
     for (const [x, z, what] of [[-365, -330, 'St. Thomas Aquinas'], [-370, -426, 'the Interdenominational Church']]) if (!buildingAt(x, z)) fail(`${what} is not where the owner's aerial shows it`);
     for (const [x, z] of [[-410, -380], [-440, -300]]) if (buildingAt(x, z)) fail(`a building stands on the open ground west of the churches at ${x},${z} (owner)`);
   }
