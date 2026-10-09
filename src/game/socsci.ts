@@ -27,7 +27,7 @@ import { createSite, render, type Kit, type Spec, type Style } from './blocks';
 import { concrete, stoneMesh } from './concrete';
 import { garden } from './gardens';
 import { SOLIDS } from './solids';
-import { stairsOf } from './relief';
+import { groundHeight, stairsOf } from './relief';
 import { hipRoof } from './waccbip';
 
 const WHITE = '#f1f0ec', GREY = '#55595c', GREY_L = '#8d9195', ROOF_RB = '#9a4630', ROOF_DK = '#4a4542', BARGE = '#5a2a22', DADO_R = '#7e2a24';
@@ -105,6 +105,19 @@ const NB_HALL: Style = {
 const PSY_WALL: Style = {
   bay: 3.6, up: [], ground: [[86, 256 + 76, 84, 84]],
   draw: (g) => { render(g, WHITE); grime(g); louvres(g, 86, 256 + 76, 84, 84); g.fillStyle = DADO_R; g.fillRect(0, 512 - 52, 256, 52); acUnit(g, 180, 256 + 40); },
+};
+/** the court side behind the verandah (the owner's photo of the court): a white band under the eaves, grey walls below
+ *  with barred windows and grey doors, a darker grey base */
+const PSY_S: Style = {
+  bay: 3.6, up: [], ground: [],
+  draw: (g) => {
+    render(g, WHITE); grime(g, 0.08);
+    g.fillStyle = '#7e8387'; g.fillRect(0, 256 + 64, 256, 192); g.fillStyle = '#5c6164'; g.fillRect(0, 512 - 56, 256, 56);
+    g.fillStyle = '#3c4246'; g.fillRect(26, 256 + 84, 150, 112);
+    g.fillStyle = '#a3a9ad'; for (let x = 30; x < 176; x += 11) g.fillRect(x, 256 + 84, 3, 112);
+    g.fillRect(26, 256 + 138, 150, 3); g.fillStyle = '#2e3337'; g.fillRect(24, 256 + 82, 154, 3);
+    g.fillStyle = '#4b5862'; g.fillRect(194, 256 + 80, 46, 176); g.fillStyle = '#3a454e'; g.fillRect(216, 256 + 80, 2, 176);
+  },
 };
 /** white, glass windows in white frames (the School of Social Sciences, view 5) */
 const SSS_WALL: Style = {
@@ -231,7 +244,7 @@ const range: Spec = (() => {
     name: 'Political Science Department', axis: [1, 0], origin: O, storey: 3.5, style: RANGE_E, roofColor: ROOF_RB, fascia: BARGE, pitch: 0.3, plinth: GREY,
     replaces: [O],
     blocks: [{ x0: X(PR[0]), x1: X(PR[1]), z0: Z(PR[2]), z1: Z(PR[3]), floors: 1, roof: 'none', faces: { x0: RANGE_W, x1: RANGE_E, z0: END_GREY, z1: END_GREY } }],
-    keep: [[X(PR[1]), X(PR[1] + 3.2), Z(-368), Z(-345)], [X(73), X(85), Z(-311), Z(-306.5)]],
+    keep: [[X(PR[1]), X(PR[1] + 3.2), Z(-377), Z(-345)], [X(73), X(85), Z(-311), Z(-306.5)]],
     extras: (k: Kit) => {
       const c: Part[] = [], st: Part[] = [];
       const e = k.wallTop(1);
@@ -246,11 +259,14 @@ const range: Spec = (() => {
       }
       c.push([B(PR[0] - 1.8, PR[0], 0, 0.12, PR[2], PR[3]), '#bdb9b0']);
       // the pitched bank of rubble stone along the north part of its east side (view 1), sloping down to the car park
-      for (let z = -368; z < -345; z += 1) {
-        const w = 2.8, h = 0.85, len = Math.hypot(w, h);
-        st.push([new THREE.BoxGeometry(len, 0.12, 1.02).rotateZ(-Math.atan2(h, w)).translate(X(PR[1] + w / 2), h / 2, Z(z + 0.5)), '#ffffff']);
+      // (the car park falls toward the K. Folson Building, relief.ts: the bank is deepest at the north, and runs on past
+      // the platform with the blue tent)
+      for (let z = -376.8; z < -345; z += 1) {
+        const w = 2.8, h = -groundHeight(PR[1] + w + 0.1, z + 0.5), len = Math.hypot(w, h);
+        if (h < 0.05) continue;
+        st.push([new THREE.BoxGeometry(len, 0.12, 1.02).rotateZ(-Math.atan2(h, w)).translate(X(PR[1] + w / 2), -h / 2 + 0.06, Z(z + 0.5)), '#ffffff']);
       }
-      solidLine(PR[1] + 1.4, -368, PR[1] + 1.4, -345, 0.9);
+      solidLine(PR[1] + 1.4, -376.8, PR[1] + 1.4, -350, 0.9);
       // the bed of agaves and shrubs before its south end, a white kerb (view 8)
       c.push([B(73.5, 84.2, 0, 0.18, -308.6, -306.6), '#efeee8']);
       for (let x = 74.5; x < 84; x += 1.3) {
@@ -318,49 +334,64 @@ const kFolson: Spec = (() => {
   };
 })();
 
-// ---------- the raised ground at the north-east (view 2): the range behind the court, the banks, the stair, the tent
+// ---------- the range behind the court (the Department of Psychology) and the bank north of it (view 2) ----------
 const PSY: R4 = [17.3, 63.6, -369.9, -357.9];
-const TER: R4 = [16.5, 70.2, -376.8, -357.5];
+/** the bank down to the ground round the K. Folson Building: its top, its foot (relief.ts) */
+const BANK_T = -374.5, BANK_F = -376.8;
 const psy: Spec = (() => {
   const O: [number, number] = [40.5, -364];
   const { X, Z, B } = frame(O);
+  const wz = PSY[3] - VER;
   return {
     name: 'Psychology Department', axis: [1, 0], origin: O, storey: 3.4, style: PSY_WALL, roofColor: '#8e3a30', fascia: BARGE, pitch: 0.3, plinth: DADO_R,
     replaces: [O],
-    blocks: [{ x0: X(PSY[0]), x1: X(PSY[1]), z0: Z(PSY[2]), z1: Z(PSY[3]), floors: 1, roof: 'none' }],
-    keep: [[X(TER[0]), X(TER[1] + 2), Z(TER[2]), Z(TER[3] + 0.4)]],
+    // the court side (the owner's photo of the court): its verandah on white square posts, the walls behind grey
+    blocks: [{ x0: X(PSY[0]), x1: X(PSY[1]), z0: Z(PSY[2]), z1: Z(wz), floors: 1, roof: 'none', faces: { z1: PSY_S } }],
+    keep: [[X(PSY[0] - 1), X(86.5), Z(BANK_F - 0.6), Z(PSY[2])]],
     extras: (k: Kit) => {
       const c: Part[] = [], st: Part[] = [];
-      const e = k.wallTop(1), lift = k.ground(0, 0);
+      const e = k.wallTop(1);
       gable(k, O, PSY, e, 0.3, 'x', 0.8, '#8e3a30', c);
-      // the rubble-stone face of the raised ground along the court (south) and toward the K. Folson Building (north)
-      st.push([B(TER[0], TER[1], -lift - 0.1, 0.05, TER[3], TER[3] + 0.35), '#ffffff'], [B(TER[0], TER[1], -lift - 0.1, 0.05, TER[2] - 0.35, TER[2]), '#ffffff']);
-      // the pitched banks of rubble stone down to the lane on the east (view 2), leaving the stair
-      const s = stairsOf().find((q) => !q.alongZ && q.x1 === 70.1)!;
-      for (let z = TER[2]; z < TER[3]; z += 0.8) {
-        if (z + 0.8 > s.z0 - 0.3 && z < s.z1 + 0.3) continue;
-        const w = 2.0, len = Math.hypot(w, lift);
-        st.push([new THREE.BoxGeometry(len, 0.14, 0.82).rotateZ(-Math.atan2(lift, w)).translate(X(TER[1] + w / 2), -lift / 2, Z(z + 0.4)), '#ffffff']);
+      // the verandah: a raised floor, white square posts, a white beam under the eaves
+      c.push([B(PSY[0], PSY[1], 0, 0.4, wz, PSY[3]), '#8d8f8c']);
+      for (let x = PSY[0] + 0.3; x <= PSY[1] - 0.2; x += 3.6) { c.push([B(x - 0.13, x + 0.13, 0.4, e, PSY[3] - 0.4, PSY[3] - 0.14), '#efeee9']); SOLIDS.add(x, PSY[3] - 0.27, 0.22); }
+      c.push([B(PSY[0], PSY[1], e - 0.3, e, PSY[3] - 0.45, PSY[3] - 0.1), '#efeee9']);
+      // the board over the middle of the verandah: UNIVERSITY OF GHANA, DEPARTMENT OF PSYCHOLOGY
+      const bx = 44.5;
+      k.plain.push([B(bx - 1.3, bx + 1.3, e - 0.95, e + 0.05, PSY[3] - 0.1, PSY[3] - 0.06), '#f4f4f0'], [B(bx - 1.25, bx - 0.85, e - 0.75, e - 0.25, PSY[3] - 0.06, PSY[3] - 0.04), '#2b4a8c']);
+      k.signs.push({ text: 'UNIVERSITY OF GHANA  DEPARTMENT OF PSYCHOLOGY', x: X(bx + 0.2), y: e - 0.45, z: Z(PSY[3] - 0.04), ry: 0, w: 2.1, colors: ['#f4f4f0', '#1d2a5a'] });
+      // the pitched bank of rubble stone north of the range and of the platform with the tent, down to the ground
+      // round the K. Folson Building (relief.ts), leaving the two stairs
+      const stairs = stairsOf().filter((q) => q.alongZ && q.x0 === -377.1);
+      const drop = 1.2, dz = BANK_F - BANK_T, len = Math.hypot(dz, drop);
+      for (let x = 31; x < 83.7; x += 0.8) {
+        if (stairs.some((q) => x + 0.8 > q.z0 - 0.35 && x < q.z1 + 0.35)) continue;
+        st.push([new THREE.BoxGeometry(0.82, 0.14, len).rotateX(-Math.atan2(drop, -dz)).translate(X(x + 0.4), -drop / 2 + 0.08, Z((BANK_T + BANK_F) / 2)), '#ffffff']);
       }
-      // the stair between dark red cheek walls (relief.ts), concrete treads
-      for (let u = s.x1; u < s.x0 - 1e-3; u += 0.34) {
-        const y = s.at(Math.min(s.x0 - 0.01, u + 0.17)) - lift;
-        c.push([B(u, Math.min(s.x0, u + 0.35), -lift, y, s.z0, s.z1), '#bdb9b0']);
+      // the stairs between dark red cheek walls with black caps, concrete treads
+      for (const q of stairs) {
+        for (let u = q.x0; u < q.x1 - 1e-3; u += 0.34) {
+          const y = q.at(Math.min(q.x1 - 0.01, u + 0.17));
+          c.push([B(q.z0, q.z1, -drop, y, u, Math.min(q.x1, u + 0.35)), '#bdb9b0']);
+        }
+        for (const x of [q.z0 - 0.3, q.z1]) {
+          const l = Math.hypot(q.x1 - q.x0, drop), a = Math.atan2(drop, q.x1 - q.x0);
+          c.push([new THREE.BoxGeometry(0.3, 0.9, l).rotateX(-a).translate(X(x + 0.15), -drop / 2 + 0.45, Z((q.x0 + q.x1) / 2)), '#8a2e28']);
+          c.push([new THREE.BoxGeometry(0.34, 0.08, l).rotateX(-a).translate(X(x + 0.15), -drop / 2 + 0.92, Z((q.x0 + q.x1) / 2)), '#2a2a2a']);
+          solidLine(x + 0.15, q.x0, x + 0.15, q.x1, 0.2);
+        }
       }
-      for (const z of [s.z0 - 0.3, s.z1]) {
-        const len = Math.hypot(s.x0 - s.x1, lift);
-        c.push([new THREE.BoxGeometry(len, 0.9, 0.3).rotateZ(-Math.atan2(lift, s.x0 - s.x1)).translate(X((s.x0 + s.x1) / 2), -lift / 2 + 0.45, Z(z + 0.15)), '#8a2e28']);
-        c.push([new THREE.BoxGeometry(len, 0.08, 0.34).rotateZ(-Math.atan2(lift, s.x0 - s.x1)).translate(X((s.x0 + s.x1) / 2), -lift / 2 + 0.92, Z(z + 0.15)), '#2a2a2a']);
-        solidLine(s.x1, z + 0.15, s.x0, z + 0.15, 0.2);
-      }
-      // the blue tent on the platform: a blue sheet roof on white posts, dark drapes at the back, a table
-      const [t0, t1, u0, u1] = [61.5, 68.5, -376.0, -371.5];
-      for (const [x, z] of [[t0, u0], [t1, u0], [t0, u1], [t1, u1]]) { c.push([B(x - 0.05, x + 0.05, 0, 2.5, z - 0.05, z + 0.05), '#e8e8e4']); SOLIDS.add(x, z, 0.15); }
+      // the blue tent on the platform before the north end of the long range: a blue sheet roof on white posts, dark
+      // drapes at the back, a table with pots
+      const [t0, t1, u0, u1] = [73.6, 82.4, -374.0, -369.2];
+      for (const [x, z] of [[t0, u0], [t1, u0], [t0, u1], [t1, u1], [(t0 + t1) / 2, u0]]) { c.push([B(x - 0.05, x + 0.05, 0, 2.6, z - 0.05, z + 0.05), '#e8e8e4']); SOLIDS.add(x, z, 0.15); }
       k.roof.c = new THREE.Color('#2a5ab8');
-      k.roof.quad([X(t0 - 0.3), 2.5, Z(u1 + 0.3)], [X(t1 + 0.3), 2.5, Z(u1 + 0.3)], [X(t1 + 0.3), 3.1, Z((u0 + u1) / 2)], [X(t0 - 0.3), 3.1, Z((u0 + u1) / 2)]);
-      k.roof.quad([X(t1 + 0.3), 2.5, Z(u0 - 0.3)], [X(t0 - 0.3), 2.5, Z(u0 - 0.3)], [X(t0 - 0.3), 3.1, Z((u0 + u1) / 2)], [X(t1 + 0.3), 3.1, Z((u0 + u1) / 2)]);
-      k.plain.push([B(t0, t1, 0.1, 2.4, u0, u0 + 0.04), '#3a3433'], [B(t0 + 1, t0 + 3.2, 0.75, 0.8, u0 + 0.6, u0 + 1.4), '#6b5444']);
-      for (let x = t0 + 0.4; x < t1; x += 1.5) c.push([B(x - 0.03, x + 0.03, 0, 0.8, u1 - 0.03, u1 + 0.03), '#6b5444']);
+      k.roof.quad([X(t1 + 0.3), 2.5, Z(u0 - 0.3)], [X(t0 - 0.3), 2.5, Z(u0 - 0.3)], [X(t0 - 0.3), 3.0, Z(u1 + 0.3)], [X(t1 + 0.3), 3.0, Z(u1 + 0.3)]);
+      k.roof.quad([X(t0 - 0.3), 2.5, Z(u0 - 0.3)], [X(t1 + 0.3), 2.5, Z(u0 - 0.3)], [X(t1 + 0.3), 3.0, Z(u1 + 0.3)], [X(t0 - 0.3), 3.0, Z(u1 + 0.3)]);
+      k.plain.push([B(t0 - 0.3, t1 + 0.3, 2.2, 2.5, u0 - 0.32, u0 - 0.28), '#1f4796'], [B(t0 - 0.32, t0 - 0.28, 2.2, 2.5, u0 - 0.3, u1 + 0.3), '#1f4796'], [B(t1 + 0.28, t1 + 0.32, 2.2, 2.5, u0 - 0.3, u1 + 0.3), '#1f4796']);
+      k.plain.push([B(t0, t1, 0.3, 2.1, u1 - 0.04, u1), '#4b3f3c'], [B(t0 + 0.8, t0 + 3.4, 0.75, 0.8, u0 + 0.7, u0 + 1.5), '#6b5444']);
+      for (const x of [t0 + 0.9, t0 + 3.3]) for (const z of [u0 + 0.75, u0 + 1.45]) c.push([B(x - 0.03, x + 0.03, 0, 0.75, z - 0.03, z + 0.03), '#6b5444']);
+      k.plain.push([new THREE.CylinderGeometry(0.2, 0.16, 0.4, 10).translate(X(t0 + 0.6), 0.2, Z(u0 + 0.5)), '#c0602e']);
       finish(k, c, st);
     },
   };
@@ -442,20 +473,83 @@ const court: Spec = (() => {
       for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2; c.push([B(kx + Math.cos(a) * 2.2 - 0.07, kx + Math.cos(a) * 2.2 + 0.07, 0, 2.5, kz + Math.sin(a) * 2.2 - 0.07, kz + Math.sin(a) * 2.2 + 0.07), '#4a3a32']); SOLIDS.add(kx + Math.cos(a) * 2.2, kz + Math.sin(a) * 2.2, 0.15); }
       k.plain.push([new THREE.ConeGeometry(3.1, 1.6, 6).translate(X(kx), 3.3, Z(kz)), '#a8302a'], [new THREE.CylinderGeometry(3.1, 3.1, 0.12, 6).translate(X(kx), 2.5, Z(kz)), '#8a2622']);
       for (let i = 0; i < 6; i++) { const a = ((i + 0.5) / 6) * Math.PI * 2; c.push([new THREE.BoxGeometry(1.8, 0.06, 0.35).rotateY(-a).translate(X(kx + Math.cos(a) * 1.6), 0.45, Z(kz + Math.sin(a) * 1.6)), '#6b5444']); }
-      // the blue canopy with its benches (PUSSY EXECUTIVES on its valance)
-      const [a0, a1, b0, b1] = [48.5, 55.5, -345.5, -340.5];
-      for (const [x, z] of [[a0, b0], [a1, b0], [a0, b1], [a1, b1]]) { c.push([B(x - 0.05, x + 0.05, 0, 2.6, z - 0.05, z + 0.05), '#d9dcdf']); SOLIDS.add(x, z, 0.15); }
-      k.roof.c = new THREE.Color('#2a4f9a');
-      k.roof.quad([X(a0 - 0.4), 2.6, Z(b1 + 0.4)], [X(a1 + 0.4), 2.6, Z(b1 + 0.4)], [X(a1 + 0.4), 3.4, Z((b0 + b1) / 2)], [X(a0 - 0.4), 3.4, Z((b0 + b1) / 2)]);
-      k.roof.quad([X(a1 + 0.4), 2.6, Z(b0 - 0.4)], [X(a0 - 0.4), 2.6, Z(b0 - 0.4)], [X(a0 - 0.4), 3.4, Z((b0 + b1) / 2)], [X(a1 + 0.4), 3.4, Z((b0 + b1) / 2)]);
-      k.plain.push([B(a0 - 0.4, a1 + 0.4, 2.3, 2.6, b1 + 0.38, b1 + 0.42), '#1d2f5a']);
-      k.signs.push({ text: 'PUSSY EXECUTIVES', x: X((a0 + a1) / 2), y: 2.45, z: Z(b1 + 0.43), ry: 0, w: 3.2, colors: ['#1d2f5a', '#f4f4f0'] });
-      for (const z of [b0 + 1.2, b1 - 1.2]) for (const x of [a0 + 1.4, a1 - 1.4]) c.push([B(x - 1.0, x + 1.0, 0.45, 0.5, z - 0.25, z + 0.25), '#2a4f9a'], [B(x - 0.95, x + 0.95, 0, 0.45, z - 0.2, z - 0.15), '#2a4f9a']);
+      // the canopy of the POSSA executives (the owner's photo of the court and its close-up): a low hipped roof of grey-brown
+      // corrugated sheet on thin white posts, a deep blue fascia all round lettered 2023/2024 POSSA EXECUTIVES in white,
+      // swags of purple and white striped cloth slung from its corners to the posts, rows of blue steel benches under it
+      const [a0, a1, b0, b1] = [48.5, 56.5, -346.0, -340.0], am = (a0 + a1) / 2, bm = (b0 + b1) / 2, ce = 2.55;
+      const posts: [number, number][] = [[a0, b0], [am, b0], [a1, b0], [a0, b1], [am, b1], [a1, b1]];
+      for (const [x, z] of posts) { c.push([new THREE.CylinderGeometry(0.045, 0.045, ce, 8).translate(X(x), ce / 2, Z(z)), '#eef0f1']); SOLIDS.add(x, z, 0.15); }
+      k.roof.c = new THREE.Color('#7b736a');
+      const ov = 0.35, rh = ce + 0.55 + 1.1, hr = (b1 - b0) / 2 + ov;
+      const A0 = a0 - ov, A1 = a1 + ov, B0 = b0 - ov, B1 = b1 + ov, top = ce + 0.55;
+      k.roof.quad([X(A0), top, Z(B1)], [X(A1), top, Z(B1)], [X(A1 - hr), rh, Z(bm)], [X(A0 + hr), rh, Z(bm)]);
+      k.roof.quad([X(A1), top, Z(B0)], [X(A0), top, Z(B0)], [X(A0 + hr), rh, Z(bm)], [X(A1 - hr), rh, Z(bm)]);
+      k.roof.quad([X(A0), top, Z(B0)], [X(A0), top, Z(B1)], [X(A0 + hr), rh, Z(bm)], [X(A0 + hr), rh, Z(bm)]);
+      k.roof.quad([X(A1), top, Z(B1)], [X(A1), top, Z(B0)], [X(A1 - hr), rh, Z(bm)], [X(A1 - hr), rh, Z(bm)]);
+      c.push([B(A0, A1, ce, top, B1 - 0.06, B1), '#1f3f8f'], [B(A0, A1, ce, top, B0, B0 + 0.06), '#1f3f8f'], [B(A0, A0 + 0.06, ce, top, B0, B1), '#1f3f8f'], [B(A1 - 0.06, A1, ce, top, B0, B1), '#1f3f8f']);
+      k.signs.push({ text: '2023/2024   POSSA   EXECUTIVES', x: X(A0 - 0.01), y: ce + 0.27, z: Z(bm), ry: -Math.PI / 2, w: 4.2, colors: ['#1f3f8f', '#f4f4f0'] });
+      k.signs.push({ text: '2023/2024   POSSA   EXECUTIVES', x: X(am), y: ce + 0.27, z: Z(B1 + 0.01), ry: 0, w: 5.2, colors: ['#1f3f8f', '#f4f4f0'] });
+      // the swags: slanting strips of cloth from the top of a corner down to the foot of the next post
+      const swag = (x0: number, z0: number, x1: number, z1: number) => {
+        const T = new THREE.Vector3(X(x0), ce, Z(z0)), Bt = new THREE.Vector3(X(x1), 0.9, Z(z1));
+        const D = Bt.clone().sub(T).normalize(), H = new THREE.Vector3(x1 - x0, 0, z1 - z0).normalize();
+        const N = new THREE.Vector3().crossVectors(H, new THREE.Vector3(0, 1, 0)), Wd = new THREE.Vector3().crossVectors(D, N).normalize();
+        const strip = (w: number, off: number, col: string) => {
+          const n = N.clone().multiplyScalar(off), q = [T.clone().addScaledVector(Wd, -w).add(n), T.clone().addScaledVector(Wd, w).add(n), Bt.clone().addScaledVector(Wd, w * 0.3).add(n), Bt.clone().addScaledVector(Wd, -w * 0.3).add(n)];
+          const g = new THREE.BufferGeometry().setFromPoints([q[0], q[1], q[2], q[0], q[2], q[3], q[0], q[2], q[1], q[0], q[3], q[2]]);
+          g.computeVertexNormals();
+          k.plain.push([g, col]);
+        };
+        strip(0.32, 0, '#6b4d8f'); strip(0.1, 0.012, '#e6e2ec'); strip(0.1, -0.012, '#e6e2ec');
+      };
+      swag(a0, b1, am, b1); swag(a1, b1, am, b1); swag(a0, b0, a0, bm + 0.4); swag(a1, b0, a1, bm + 0.4);
+      for (const z of [b0 + 1.0, bm, b1 - 1.0]) for (const x of [a0 + 1.9, a1 - 1.9]) {
+        c.push([B(x - 1.3, x + 1.3, 0.43, 0.48, z - 0.2, z + 0.2), '#2a46a8'], [B(x - 1.3, x + 1.3, 0.5, 0.85, z - 0.24, z - 0.2), '#2a46a8']);
+        for (const dx of [-1.2, 1.2]) c.push([B(x + dx - 0.03, x + dx + 0.03, 0, 0.85, z - 0.24, z + 0.18), '#22388a']);
+      }
+      // the memorial before the court's south-west (red arrow): a block of grey granite, its black plaque; behind it the
+      // blue U on a red stand; the RESERVED H.O.D. board on its post; broken bricks at its foot
+      const mx0 = 41.0, mz0 = -337.8;
+      k.plain.push([B(mx0 - 0.5, mx0 + 0.5, 0, 1.45, mz0 - 0.35, mz0 + 0.35), '#b4b1ab'], [B(mx0 - 0.3, mx0 + 0.3, 0.55, 1.15, mz0 + 0.35, mz0 + 0.37), '#1c1c1c']);
+      for (let i = 0; i < 40; i++) k.plain.push([B(mx0 - 0.5 + ((i * 37) % 97) / 97, mx0 - 0.47 + ((i * 37) % 97) / 97, 0.1 + ((i * 53) % 89) / 70, 0.13 + ((i * 53) % 89) / 70, mz0 + 0.35, mz0 + 0.36), '#7f7c77']);
+      SOLIDS.add(mx0, mz0, 0.6);
+      const ux = 39.6, uz = -340.6;
+      c.push([B(ux - 0.12, ux + 0.12, 0, 1.2, uz - 0.12, uz + 0.12), '#b4282c']);
+      for (const dx of [-0.4, 0.4]) c.push([B(ux + dx - 0.12, ux + dx + 0.12, 1.45, 2.3, uz - 0.1, uz + 0.1), '#2856b8']);
+      c.push([new THREE.TorusGeometry(0.4, 0.12, 6, 12, Math.PI).rotateZ(Math.PI).translate(X(ux), 1.45, Z(uz)), '#2856b8']);
+      SOLIDS.add(ux, uz, 0.5);
+      c.push([B(41.85, 41.9, 0, 1.9, -336.4, -336.35), '#d9dcdf']);
+      k.plain.push([B(41.45, 42.3, 1.25, 1.85, -336.36, -336.33), '#f4f4f0']);
+      k.signs.push({ text: 'RESERVED  H.O.D.', x: X(41.87), y: 1.6, z: Z(-336.32), ry: 0, w: 0.8, colors: ['#f4f4f0', '#b4282c'] });
+      for (let i = 0; i < 9; i++) c.push([new THREE.BoxGeometry(0.22, 0.08, 0.11).rotateY(i).translate(X(mx0 + 0.75 + (i % 3) * 0.25), 0.04 + (i % 2) * 0.08, Z(mz0 + 0.2 + Math.floor(i / 3) * 0.2)), '#a0523a']);
+      // the stump of a felled tree in the paving before it, broken pavers and earth round it
+      k.plain.push([new THREE.CylinderGeometry(1.4, 1.6, 0.06, 14).translate(X(45.2), 0.04, Z(-334.8)), '#6d4a33']);
+      c.push([new THREE.CylinderGeometry(0.75, 0.85, 0.3, 11).translate(X(45.2), 0.15, Z(-334.8)), '#7a5236']);
+      k.plain.push([new THREE.CylinderGeometry(0.62, 0.62, 0.01, 11).translate(X(45.2), 0.305, Z(-334.8)), '#b98a5c']);
+      for (let i = 0; i < 12; i++) { const a = i * 0.52; c.push([new THREE.BoxGeometry(0.3, 0.08, 0.15).rotateY(a * 1.7).translate(X(45.2 + Math.cos(a) * 1.3), 0.06, Z(-334.8 + Math.sin(a) * 1.1)), '#9a9488']); }
+      SOLIDS.add(45.2, -334.8, 0.8);
+      // the trunks of felled trees cut into rough blocks, piled under the big rain tree (orange)
+      for (let i = 0; i < 14; i++) {
+        const row = i < 6 ? 0 : i < 11 ? 1 : 2, n = row === 0 ? i : row === 1 ? i - 6 : i - 11;
+        const w = 0.42 + ((i * 13) % 7) / 40, h = 0.36 + ((i * 7) % 5) / 30, d = 0.5 + ((i * 11) % 9) / 30;
+        const x = 47.6 + n * 0.5 + row * 0.22 + ((i * 3) % 4) / 30, z = -353.6 + ((i * 5) % 3) * 0.12;
+        c.push([new THREE.BoxGeometry(w, h, d).rotateY(((i * 17) % 9) / 30 - 0.15).rotateZ(((i * 7) % 5) / 50 - 0.04).translate(X(x), row * 0.38 + h / 2, Z(z)), ['#7d3b2a', '#8e4a33', '#6f3324'][i % 3]]);
+      }
+      SOLIDS.add(48.6, -353.5, 1.3);
       // the trees (the aerial): the big rain trees over the court's east, a row along the north, the groups between the
       // buildings on the west and north
       const g = garden([-70, 100, -432, -300]); g.reseed(107);
-      for (const [x, z, s] of [[52, -352, 2.8], [63.5, -343.5, 3.3], [44.5, -338.5, 2.2], [40, -379.5, 2.6], [49, -382.5, 2.4], [-43, -380, 3.0], [-32, -375.5, 2.6], [-25, -386.5, 2.4], [-30.5, -355, 1.6], [9.5, -353.5, 1.6], [-45, -343, 2.0], [-38, -332, 1.6]] as [number, number, number][]) g.tree(k, X(x), Z(z), s);
+      for (const [x, z, s] of [[52.4, -355.6, 3.7], [35.5, -352.4, 3.3], [63.5, -343.5, 3.3], [40, -379.5, 2.6], [49, -382.5, 2.4], [-43, -380, 3.0], [-32, -375.5, 2.6], [-25, -386.5, 2.4], [-30.5, -355, 1.6], [9.5, -353.5, 1.6], [-45, -343, 2.0], [-38, -332, 1.6]] as [number, number, number][]) g.tree(k, X(x), Z(z), s);
       for (let x = -40; x <= 60; x += 12.5) g.tree(k, X(x), Z(-424.5), 1.3);
+      // the two huge rain trees over the court (yellow arrows): massive trunks forking low into heavy limbs
+      for (const [x, z, s, a0] of [[52.4, -355.6, 3.7, 0.4], [35.5, -352.4, 3.3, 2.1]] as [number, number, number, number][]) {
+        c.push([new THREE.CylinderGeometry(0.55 * s / 3, 0.75 * s / 3, 2.6, 9).translate(X(x), 1.3, Z(z)), '#5f4b3c']);
+        for (let i = 0; i < 4; i++) {
+          const a = a0 + i * 1.6, l = 3.6 + (i % 2) * 1.2, tilt = 0.75 + (i % 3) * 0.12;
+          c.push([new THREE.CylinderGeometry(0.16 * s / 3, 0.34 * s / 3, l, 7).translate(0, l / 2, 0).rotateZ(-tilt).rotateY(-a).translate(X(x), 2.3, Z(z)), '#5f4b3c']);
+        }
+        SOLIDS.add(x, z, 0.8 * s / 3);
+      }
       finish(k, c);
     },
   };

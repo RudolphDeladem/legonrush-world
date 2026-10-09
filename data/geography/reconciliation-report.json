@@ -323,13 +323,14 @@
    "osm:way/1184502102",
    "osm:way/631051064",
    "ml:1aca4480-578f-49e4-920d-29241909ea07",
-   "ml:3e19bdc3-7ef1-4402-a98e-03ebcd9334ca"
+   "ml:3e19bdc3-7ef1-4402-a98e-03ebcd9334ca",
+   "osm:way/1186045144"
   ]
  },
  "areas": {
   "wood": {
-   "count": 75,
-   "ha": 497.5
+   "count": 76,
+   "ha": 497.9
   },
   "water": {
    "count": 26,

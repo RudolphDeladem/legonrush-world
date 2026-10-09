@@ -92,9 +92,18 @@ const ZONES: Zone[] = [
   // Avenue (owner's street photo from before Legon Hall): a rubble-stone retaining wall along the road, kept back
   // behind the footway and its pavement, and down the east side; the ground slopes down to the lane on the west
   { kind: 'terrace', x0: -188.5, x1: -101.3, z0: 50.6, z1: 108.0, depth: 1.0, w: 3, e: 0.3, n: 0.3, s: 0.3 },
-  // the N Block compound (owner's view 2): the range behind the court and the ground east of it to the lane stand 1.2 m
-  // up behind rubble-stone faces on the court and the north, pitched rubble-stone banks down to the lane on the east
-  { kind: 'terrace', x0: 16.5, x1: 70.2, z0: -376.8, z1: -357.5, depth: 1.2, w: 3, e: 2.0, n: 0.3, s: 0.3 },
+  // the N Block compound (owner's views 2 and 1, and the photo of the court): the court, the range behind it (the
+  // Department of Psychology) and the long range stand at the level of Ebenezer Laing Road; the ground north of them
+  // round the K. Folson Building lies 1.2 m lower, below a pitched bank of rubble stone along the north of the range and
+  // of the platform with the blue tent (two stairs climb it), and the car park east of the long range falls toward it
+  { kind: 'hollow', x0: 13, x1: 104, z0: -418, z1: -391, depth: 1.2, w: 4, e: 6, n: 6, s: 2.8 },
+  { kind: 'hollow', x0: 31, x1: 104, z0: -391, z1: -376.8, depth: 1.2, w: 2, e: 6, n: 0.3, s: 2.3 },
+  { kind: 'hollow', x0: 86.5, x1: 104, z0: -418, z1: -368, depth: 1.2, w: 2.8, e: 6, n: 6, s: 23 },
+  // the lane past the Department of Nutrition and Food Sciences (owner's photo up the lane from J.K.M. Hodasi Road):
+  // it runs down a little toward its north end, below the lawn held up behind its rubble-stone wall on the west, and
+  // climbs gently back along its leg east to Animal Biology
+  { kind: 'hollow', x0: -162, x1: -157, z0: -275, z1: -262, depth: 1.0, w: 0.6, e: 2.5, n: 6, s: 96 },
+  { kind: 'hollow', x0: -157, x1: -150, z0: -279, z1: -271, depth: 1.0, w: 0.6, e: 18, n: 4, s: 3 },
 ];
 const STAIRS: Stairs[] = [
   // Commonwealth: from the gate houses up Legon Hill to the drive
@@ -117,8 +126,10 @@ const STAIRS: Stairs[] = [
   { x0: 207.6, x1: 205.4, z0: 84, z1: 89, flights: 1, steps: 7, tread: 0.3 },
   // the Faculty of Arts: the stairs up through the retaining wall from the footway along Danquah Avenue (owner)
   { x0: 110.0, x1: 107.9, z0: -146.0, z1: -143.0, flights: 1, steps: 6, tread: 0.35, alongZ: true },
-  // the N Block compound: the stair between dark red cheek walls from the lane up to the platform with the blue tent
-  { x0: 73.0, x1: 70.1, z0: -376.0, z1: -373.6, flights: 1, steps: 8, tread: 0.36 },
+  // the N Block compound (owner's view 2): the two stairs between dark red cheek walls up the bank from the ground round
+  // the K. Folson Building, one into the lane between the range behind the court and the long range, one before the range
+  { x0: -377.1, x1: -374.3, z0: 68.6, z1: 71.0, flights: 1, steps: 8, tread: 0.34, alongZ: true },
+  { x0: -377.1, x1: -374.3, z0: 58.8, z1: 61.2, flights: 1, steps: 8, tread: 0.34, alongZ: true },
 ];
 
 const boxOf = (q: Zone) => q.kind !== 'hill'

@@ -448,9 +448,11 @@ try {
   {
     const rl = await server.ssrLoadModule('/src/game/relief.ts');
     if ((await server.ssrLoadModule('/src/game/socsci.ts')).socSciSite.frames().length !== 10) fail('expected the N Block compound\'s ten models (owner)');
-    if (Math.abs(rl.groundHeight(40, -364) - 1.2) > 0.01) fail('the range behind the N Block court is not up on its raised ground (owner, view 2)');
-    for (const [x, z] of [[40, -345], [6, -305], [80, -320], [60, -395], [-40, -320]]) if (rl.groundHeight(x, z) !== 0) fail(`the N Block compound is not flat at ${x},${z}`);
-    if (!rl.stairsOf().some((q) => !q.alongZ && q.x1 === 70.1 && q.top > 1.1)) fail('no stair up to the raised ground by the K. Folson Building (owner, view 2)');
+    // (corrected from the owner's photo of the court: the court and the range behind it are level; the ground round the
+    // K. Folson Building lies 1.2 m below them, two stairs climb the bank, view 2)
+    for (const [x, z] of [[40, -364], [40, -345], [6, -305], [80, -320], [-40, -320], [78, -372], [5, -383]]) if (rl.groundHeight(x, z) !== 0) fail(`the N Block compound is not level at ${x},${z} (owner)`);
+    for (const [x, z] of [[60, -395], [45, -410], [75, -385]]) if (Math.abs(rl.groundHeight(x, z) + 1.2) > 0.01) fail(`the ground round the K. Folson Building is not 1.2 m below the court at ${x},${z} (owner)`);
+    if (rl.stairsOf().filter((q) => q.alongZ && q.x0 === -377.1 && q.top - q.foot > 1.1).length !== 2) fail('expected the two stairs up the bank from the K. Folson Building (owner, view 2)');
     for (const [x, z, lo, hi, what] of [[60, -408, 8, 11, 'the K. Folson Building two storeys'], [78, -340, 0, 5.5, 'the long range one floor'], [-55, -350, 0, 5, 'Social Work one floor']]) { const b = buildingAt(x, z); if (!b || b.height < lo || b.height > hi) fail(`${what} (owner)`); }
     if (buildingAt(-14.3, -302.5)) fail('the phantom building on Ebenezer Laing Road is still there');
   }
@@ -465,6 +467,19 @@ try {
     if (cm.AREAS.some((a) => a.kind === 'wood' && inA2(a, -90, -287))) fail('the verge before the biology complex is still a wood, not the ashoka row (owner, view 3)');
     for (const [x, z, what] of [[-365, -330, 'St. Thomas Aquinas'], [-370, -426, 'the Interdenominational Church']]) if (!buildingAt(x, z)) fail(`${what} is not where the owner's aerial shows it`);
     for (const [x, z] of [[-410, -380], [-440, -300]]) if (buildingAt(x, z)) fail(`a building stands on the open ground west of the churches at ${x},${z} (owner)`);
+  }
+  // owner: the corrections round the N Block: the market between the GCB and the N Block, the greenhouse, the woods
+  // where a building had been mapped, the lane past Food and Nutrition running down to its north end
+  {
+    const rl = await server.ssrLoadModule('/src/game/relief.ts');
+    const mk = (await server.ssrLoadModule('/src/game/market.ts')).marketSite, gr = (await server.ssrLoadModule('/src/game/greenhouse.ts')).greenhouseSite;
+    if (!mk.keepsOut(-85, -312) || mk.frames().length !== 1) fail('the market between the GCB and the N Block is missing (owner)');
+    if (gr.frames().length !== 1 || !gr.keepsOut(122.2, -396)) fail('the greenhouse is missing (owner)');
+    if (buildingAt(21, -452)) fail('a building still stands in the woods east of the New N Block (owner)');
+    const inA3 = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
+    if (!cm.AREAS.some((a) => a.kind === 'wood' && inA3(a, 21, -452))) fail('the ground east of the New N Block is not woodland (owner)');
+    const lane = [-167, -200, -230, -262].map((z) => rl.groundHeight(-160.3 - (z < -202.5 ? (z + 202.5) * 0.0406 : 0), z));
+    if (!(lane[0] > -0.05 && lane[1] < lane[0] && lane[2] < lane[1] && lane[3] < -0.9)) fail(`the lane past Food and Nutrition does not run down to its north end (owner): ${lane.map((h) => h.toFixed(2))}`);
   }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between

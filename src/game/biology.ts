@@ -334,7 +334,9 @@ const grounds: Spec = (() => {
       const lane = (z: number) => (z > -202.5 ? -160.3 + ((-162.0 + 160.3) * (z + 202.5)) / (-161.5 + 202.5) : -160.3 + ((-157.6 + 160.3) * (z + 202.5)) / (-269 + 202.5));
       for (let z = -244; z < -166; z += 2) {
         const xa = lane(z) - 3.5, xb = lane(z + 2) - 3.5, xm = (xa + xb) / 2;
-        st.push([new THREE.BoxGeometry(0.4, 1.05, 2.02).translate(X(xm), 0.52, Z(z + 1)), '#ffffff']);
+        // the lane runs down toward its north end (relief.ts): the wall's foot follows it, its top stays level
+        const yb = Math.min(0, k.ground(X(xm + 0.3), Z(z + 1)), k.ground(X(xm + 0.3), Z(z + 2))) - 0.05;
+        st.push([new THREE.BoxGeometry(0.4, 1.05 - yb, 2.02).translate(X(xm), (1.05 + yb) / 2, Z(z + 1)), '#ffffff']);
         k.plain.push([new THREE.BoxGeometry(0.5, 0.08, 2.02).translate(X(xm), 1.09, Z(z + 1)), '#c9c4b8']);
         const wedge = new THREE.BufferGeometry();
         const p = [X(xm - 0.2), 1.0, Z(z), X(xm - 0.2), 1.0, Z(z + 2), X(xm - 3.2), 0.02, Z(z + 2), X(xm - 3.2), 0.02, Z(z)];

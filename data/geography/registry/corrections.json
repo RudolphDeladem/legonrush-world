@@ -284,6 +284,10 @@
     {
       "id": "ml:3e19bdc3-7ef1-4402-a98e-03ebcd9334ca",
       "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: no building there, the edge of Ebenezer Laing Road before the N Block."
+    },
+    {
+      "id": "osm:way/1186045144",
+      "reason": "Owner's marked aerial round the New N Block (registered to the K. Folson Building at 0.25 m/px): no building there; the whole place is woodland, trees as the aerial shows (red box)."
     }
   ],
   "heights": [
@@ -8971,6 +8975,29 @@
         ]
       ],
       "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: the car park between the Department of Social Work and the N Block (view 5)."
+    },
+    {
+      "id": "owner:woods-nnb-east",
+      "class": "wood",
+      "ring": [
+        [
+          -40,
+          -502
+        ],
+        [
+          38,
+          -502
+        ],
+        [
+          40,
+          -446
+        ],
+        [
+          -40,
+          -446
+        ]
+      ],
+      "reason": "Owner's marked aerial round the New N Block (registered to the K. Folson Building at 0.25 m/px): the woods east of the New N Block, north of the road past the K. Folson Building, where a building had been mapped (red box)."
     }
   ],
   "addWays": [

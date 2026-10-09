@@ -1432,6 +1432,44 @@ From the owner's aerial (picture 1, `images/271.jpg`) with eleven numbered view 
 - **The avenue's median** (views 1 and 4): grass, **brick paving strips** along both kerbs, **conifers** and **tall
   lamp poles** every 14 m. The generic street trees no longer grow on it (the median is kept clear).
 
+## 60. Corrections round the N Block: the market, the greenhouse, the woods, the court and its levels, the lane
+
+From five marked pictures and a PDF of three photos (`images/286-293.jpg`; `market.ts`, `greenhouse.ts`, `socsci.ts`,
+`relief.ts`, `biology.ts`, `corrections.json`):
+
+- **The market between the GCB and the N Block** (picture 1, green circle; picture 2): north of Ebenezer Laing Road,
+  on bare earth under tall trees with thin trunks and flat feathery crowns: **two stalls under orange canopies** (the
+  near one with a counter of printed panels and coolers), a **white and a blue tent** behind them, **rows of blue
+  benches on concrete posts** west of the footpath to the north, a grassy hump along the road, a utility pole with
+  posters. The generic woods keep off it (`keep`).
+- **The greenhouse** (picture 1, yellow; picture 3, blue): the mapped block east of the road past the K. Folson
+  Building is a **tunnel of clear plastic film on hoops**, 9.8 by 29.5 m, its benches of plants seen through the film,
+  the door, a louvred vent and a fan box in its south end, a **black water tank on a steel stand** beside it.
+- **The woods east of the New N Block** (picture 4, red box): no building there (the mapped one is excluded); the
+  ground is woodland (`owner:woods-nnb-east`).
+- **Levels of the N Block compound** (picture 5 and the court photo): the court and the range behind it (the
+  **Department of Psychology**) are **level with the road** (batch 58 had raised the range 1.2 m above the court;
+  wrong). The ground **north of them round the K. Folson Building lies 1.2 m lower**, below a **pitched bank of rubble
+  stone** along the north of the range and of the platform before the long range; the car park east of the long range
+  falls toward it (its bank grows to the north).
+- **The two stairs and the blue tent** (picture 5): the stairs between dark red cheek walls climb the bank **south**,
+  one into the lane between the range and the long range, one before the range; the **blue tent stands on the platform
+  before the north end of the long range** (it had been put north of the range's east end, by the K. Folson Building).
+- **The Department of Psychology** (PDF picture 1, blue arrow): on the court side a **verandah on white square posts**,
+  a white band under the eaves, **grey walls** below with barred windows and grey doors, a darker **grey base** (it had
+  a wine base); its board UNIVERSITY OF GHANA DEPARTMENT OF PSYCHOLOGY. Its north side keeps the dark red base the view-2
+  photo shows.
+- **The court** (PDF picture 1): the **two huge rain trees** (yellow arrows) with massive trunks forking low; the
+  **memorial** (red arrow), a block of grey granite with a black plaque, the blue U on a red stand behind it, the
+  RESERVED H.O.D. board; the **trunks of felled trees cut into rough blocks**, piled under the big tree (orange); the
+  stump of a felled tree in the paving; the open court with no tree in the middle.
+- **The POSSA canopy** (PDF picture 1 image 2, green arrow): a low **hipped roof of grey-brown corrugated sheet** on
+  thin white posts, a **deep blue fascia lettered 2023/2024 POSSA EXECUTIVES**, swags of purple and white striped cloth
+  slung from its corners to the posts, rows of blue steel benches.
+- **The lane past the Department of Nutrition and Food Sciences** (PDF picture 2): it **runs down toward its north
+  end** (about 1 m), below the lawn held up behind its rubble-stone wall (the wall grows taller to the north), and
+  climbs gently back along its leg east to Animal Biology.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain
