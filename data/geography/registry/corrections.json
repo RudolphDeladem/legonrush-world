@@ -9090,6 +9090,61 @@
         ]
       ],
       "reason": "Owner's marked aerial round the New N Block (registered to the K. Folson Building at 0.25 m/px): the woods east of the New N Block, north of the road past the K. Folson Building, where a building had been mapped (red box)."
+    },
+    {
+      "id": "owner:woods-behind-engineering",
+      "class": "wood",
+      "ring": [
+        [
+          497.5,
+          -528.0
+        ],
+        [
+          500.5,
+          -505.0
+        ],
+        [
+          502.5,
+          -484.0
+        ],
+        [
+          503.0,
+          -460.0
+        ],
+        [
+          490.0,
+          -455.5
+        ],
+        [
+          470.0,
+          -456.0
+        ],
+        [
+          452.0,
+          -459.0
+        ],
+        [
+          440.0,
+          -468.0
+        ],
+        [
+          446.0,
+          -486.0
+        ],
+        [
+          462.0,
+          -500.0
+        ],
+        [
+          478.0,
+          -516.0
+        ],
+        [
+          489.0,
+          -529.0
+        ]
+      ],
+      "reason": "Owner's second Pent corrections: the wood behind the School of Engineering Sciences seen from the Pent entrance, along the west side of Annie Jiagge Road up to the school (street photo with the trees circled)."
     }
   ],
   "addWays": [

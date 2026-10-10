@@ -1610,11 +1610,12 @@ Round the blocks:
   - a bare concrete frame of three floors on round columns, the curved tiers of its front, a dark roof edge, and
     blockwork at the back;
   - the round gate house under a conical tiled roof;
-  - corrugated sheets round the site, the timber-slat gate, red earth and heaps of paving blocks.
+  - corrugated sheets along the road and the south side, the rusted slat gate, red earth and heaps of paving blocks
+    (corrected in section 66).
 - **The hoarding** of poster-covered corrugated sheets along Annie Jiagge Road from the Kufuor Centre to the Pent
   entrance.
-- **The building behind Old Pent** (the Y north of Addis Ababa and Dar es Salaam): four storeys, yellow, red roofs,
-  with round balconies and a black spiral stair on its east end behind a palisade on white concrete posts.
+- **The building behind Old Pent** (the Y behind Addis Ababa and Dar es Salaam): four storeys, yellow, red roofs,
+  with round balconies and a black spiral stair on its west wing's end (moved there in section 66).
 
 **Engineering** (`engineering.ts`, `enclave.ts`)
 - **The jet trainer** now faces east, the right way round: sand, brown and green camouflage, a pale belly, the Ghana
@@ -1710,6 +1711,53 @@ blocks, so each change below is made once for every court or block.
   - seven steps lead up from the gravel car park, between cheek walls with rails;
   - benches and trees stand on the road;
   - the road ramps back down to Pent Road (`relief.ts` terrace and stairs).
+
+## 66. The second Pent corrections (the owner's message, the 15-page PDF and the top view of the food joint)
+
+The owner's pictures are `images/563-581.jpg`.
+
+- **Windows**: the glass louvres of every Pent building, old and new, are dark grey, as they look from outside
+  (`pentagon.ts`, `newpent.ts`).
+- **Car parks** (`newpent.ts`), concrete with marked bays and parked cars:
+  - before Block A's front structures, toward the road;
+  - below the rise behind Block A (the gravel replaced);
+  - before Block B's front structures, either side of its entrance;
+  - along the drive on Block C's west side.
+- **The MoMo kiosk** stands in the middle of the space between Addis Ababa and Dar es Salaam, by the road, its counter
+  and lean-to facing west toward Addis Ababa.
+- **The entrance**:
+  - the two gates are red frames with white upright bars and red braces zigzagging between the rails;
+  - the security post has a door on its face toward the road into Pent.
+- **Pent's fence** is cream metal: flat bars on two rails, with no red pillars. It runs:
+  - along Annie Jiagge Road from behind Old Pent, past the entrance and Blocks A and B;
+  - behind Block B east to Pent Road, and beyond Pent Road along the back of Block C;
+  - behind Old Pent, between the courts and the yellow building's grounds, to the drive into them;
+  - beyond the drive, behind the admin block and Kampala, to the food joint.
+- **The gates in the brick walls between the Old Pent wings** are built like the fence: cream bars with open gaps.
+- **The wood behind the School of Engineering Sciences**, seen from the Pent entrance, fills the ground west of Annie
+  Jiagge Road up to the school (`corrections.json`).
+- **The yellow building behind Old Pent** (`kufuor.ts`):
+  - its round balconies and spiral stair are on the end of its west wing, toward Annie Jiagge Road (the owner's
+    arrows on the top view), not on the east end;
+  - a cream rendered wall closes its grounds and car park, with the drive coming in on the north.
+- **The Kufuor Centre's sheet fence** follows the owner's red line:
+  - it runs along Annie Jiagge Road from the corner behind Old Pent, then turns east along the south side to the small
+    building there;
+  - the rusted slat gate is in the roadside run, just north of the round gate house, which now stands on that line;
+  - the sheets that boxed the centre in on its other sides are gone.
+- **Behind Kampala**: the blue generator stands behind the gap between Kampala and Nairobi, beyond the slab walk.
+- **The Shell station's south edge**, west to east (the owner's photo from the forecourt):
+  - the small white store, then the open way in;
+  - the Sweet Top Bites restaurant (black, red awning, its name on a red lattice on the roof) with the delivery
+    motorbikes before it;
+  - the blue tent, a small kiosk and the palm (`fuelstation.ts`).
+- **The food joint behind Nairobi** (the owner's top view): the mapped footprint holds two parts.
+  - On the east, the food building under its red gable roof.
+  - On the west, a yard walled in white over red, with the black kiosk in its north half and the white kiosk in its
+    south half.
+  - The yard has two open entrances up red steps: one in the north wall by the building, one in the west wall between
+    the kiosks.
+  - The walk from the gap between Kampala and Nairobi, and along Kampala, is concrete.
 
 ## Explore: drone view
 

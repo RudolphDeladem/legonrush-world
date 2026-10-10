@@ -48,6 +48,8 @@ const ADMIN_WIN: Style = {
 // the trees, a black water tank on its plinth.
 const COURT_AXIS: [number, number] = [0.9964, -0.085];
 const C3 = 3, CST = 3.2, CREAM = '#efe9da', CREAM2 = '#e9dfc4', DEEP_RED = '#a8382c', LOUVRE = '#1f1d1b';
+/** Pent's metal fence and gates: cream painted bars (the owner's second Pent corrections) */
+export const PENT_CREAM = '#ddd0ac';
 /** cream render, a pilaster at each bay's edge, a dark louvred window in each bay, the deep red base */
 const OLD_WIN: Style = {
   bay: 3.0,
@@ -59,9 +61,9 @@ const OLD_WIN: Style = {
       g.fillStyle = '#f6f2e7'; g.fillRect(0, y0, 22, 256); g.fillRect(234, y0, 22, 256);
       g.fillStyle = 'rgba(120,110,90,0.22)'; g.fillRect(22, y0, 4, 256); g.fillRect(230, y0, 4, 256);
       g.fillStyle = '#d8d1bf'; g.fillRect(80, y0 + 52, 96, 132);
-      // glass louvre blades in a dark frame (the owner: Pent's windows are glass louvres)
+      // glass louvre blades in a dark frame (the owner: Pent's windows are glass louvres, dark grey to the eye)
       g.fillStyle = LOUVRE; g.fillRect(86, y0 + 58, 84, 120);
-      for (let y = y0 + 62; y < y0 + 174; y += 9) { g.fillStyle = '#9db3bf'; g.fillRect(89, y, 78, 6); g.fillStyle = '#5f7682'; g.fillRect(89, y + 6, 78, 2); }
+      for (let y = y0 + 62; y < y0 + 174; y += 9) { g.fillStyle = '#3d4246'; g.fillRect(89, y, 78, 6); g.fillStyle = '#565d62'; g.fillRect(89, y, 78, 1); g.fillStyle = '#1d2023'; g.fillRect(89, y + 6, 78, 2); }
       g.fillStyle = LOUVRE; g.fillRect(126, y0 + 58, 4, 120);
       g.fillStyle = '#e6e1d4'; g.fillRect(80, y0 + 180, 96, 6);
     }
@@ -83,7 +85,7 @@ function court(name: string, origin: [number, number], replaces: [number, number
       // the stair core, standing back between the wings
       { x0: -2.5, x1: 2.5, z0: -14, z1: 14, floors: C3, roof: 'none' },
     ],
-    keep: [[-9.5, 9.5, -24, -14], [-21, 21, 16, 26], [-31, -19.5, -18, 18], [19.5, 31, -18, 18]],
+    keep: [[-9.5, 9.5, -24, -14], [-21, 21, 16, 26], [-31, -19.5, -18, 18], [19.5, 31, -22, 18]],
     extras: (k) => {
       const e = k.wallTop(C3), c: Part[] = [];
       // the core's low hip
@@ -111,7 +113,7 @@ function court(name: string, origin: [number, number], replaces: [number, number
           for (const dx of [0, -2.9, 2.9]) {
             const w = dx === 0 ? 0.65 : 0.55, zz = out + s * 0.03;
             k.plain.push([box(xm + dx - w, xm + dx + w, y, y + 1.55, zz - 0.012, zz + 0.012), LOUVRE]);
-            for (let yy = y + 0.12; yy < y + 1.5; yy += 0.16) k.plain.push([box(xm + dx - w + 0.05, xm + dx + w - 0.05, yy, yy + 0.09, zz - 0.02 + (s > 0 ? 0.03 : 0), zz + 0.02 - (s > 0 ? 0 : 0.03)), '#9db3bf']);
+            for (let yy = y + 0.12; yy < y + 1.5; yy += 0.16) k.plain.push([box(xm + dx - w + 0.05, xm + dx + w - 0.05, yy, yy + 0.09, zz - 0.02 + (s > 0 ? 0.03 : 0), zz + 0.02 - (s > 0 ? 0 : 0.03)), '#3d4246']);
           }
         }
       }
@@ -153,8 +155,11 @@ function court(name: string, origin: [number, number], replaces: [number, number
           for (let y = 0.5; y < h; y += 0.3) k.plain.push([B2(p0, p1, y, y + 0.02, -0.125, 0.125), '#c7b6a3']);
         }
         if (door) {
-          k.plain.push([B2(d0, d1, 0.05, h - 0.1, -0.05, 0.05), '#8c3328']);
-          for (let p = d0 + 0.1; p < d1; p += 0.14) k.plain.push([B2(p, p + 0.05, 0.1, h - 0.15, -0.07, 0.07), '#6f261e']);
+          // the gate built like Pent's cream metal fence: rails top and bottom, open bars between (the owner's second Pent
+          // corrections PDF, page 11)
+          for (const [y0, y1] of [[0.12, 0.2], [1.25, 1.31], [h - 0.2, h - 0.12]]) k.plain.push([B2(d0, d1, y0, y1, -0.04, 0.04), PENT_CREAM]);
+          for (const p of [d0, d1 - 0.06]) k.plain.push([B2(p, p + 0.06, 0.08, h - 0.1, -0.04, 0.04), PENT_CREAM]);
+          for (let p = d0 + 0.17; p < d1 - 0.08; p += 0.13) k.plain.push([B2(p, p + 0.028, 0.15, h - 0.15, -0.025, 0.025), PENT_CREAM]);
         }
         const n = Math.ceil((a1 - a0) / 0.5);
         for (let i = 0; i <= n; i++) { const p = a0 + ((a1 - a0) * i) / n; SOLIDS.add(...k.world(alongX ? p : at, alongX ? at : p), 0.2); }
@@ -194,52 +199,59 @@ function court(name: string, origin: [number, number], replaces: [number, number
   };
 }
 
-/** the kiosk before Addis Ababa toward Dar es Salaam (owner's third reference PDF, pages 6 and 14): white boards over
- *  a dark red base, a rusty corrugated lean-to reaching out over its counter on the parking, the mobile-money boards
- *  along its eaves, a grilled window, kerbed beds of red and purple shrubs round it (Addis's court frame) */
+/** the kiosk in the middle of the space between Addis Ababa and Dar es Salaam, by the road (owner's third reference PDF,
+ *  pages 6 and 14; the owner's second Pent corrections: not before Addis's porch, and its counter faces west toward
+ *  Addis, not the road): white boards over a dark red base, a rusty corrugated lean-to reaching out over its counter,
+ *  the mobile-money boards along its eaves, a grilled window, kerbed beds of red and purple shrubs round it (built
+ *  facing -z in its own frame, then turned to face west; Addis's court frame) */
 function addisKiosk(k: Kit) {
-  const X0 = 10.2, X1 = 14.8, Z0 = -21.0, Z1 = -18.2, H = 2.5, y = k.ground(12.5, -19.6);
-  const c: Part[] = [];
+  const CX = 24.6, CZ = -17.6, X0 = -2.3, X1 = 2.3, Z0 = -1.4, Z1 = 1.4, H = 2.5, y = k.ground(CX, CZ);
+  const c: Part[] = [], p: Part[] = [];
   c.push([box(X0, X1, y, y + 0.85, Z0, Z1), '#6f2621']);
   c.push([box(X0, X1, y + 0.85, y + H, Z0, Z1), '#eeede7']);
-  for (let x = X0 + 0.15; x < X1; x += 0.3) k.plain.push([box(x, x + 0.03, y + 0.9, y + H - 0.05, Z0 - 0.015, Z0), '#cfcec7']);
+  for (let x = X0 + 0.15; x < X1; x += 0.3) p.push([box(x, x + 0.03, y + 0.9, y + H - 0.05, Z0 - 0.015, Z0), '#cfcec7']);
   // the counter window with its grille, the lean-to over it, the boards along the eaves
-  k.plain.push([box(X0 + 1.2, X0 + 3.2, y + 1.1, y + 2.1, Z0 - 0.02, Z0), '#2b2d30']);
-  for (let x = X0 + 1.25; x < X0 + 3.2; x += 0.16) k.plain.push([box(x, x + 0.025, y + 1.1, y + 2.1, Z0 - 0.04, Z0 - 0.02), '#d9d9d4']);
-  k.plain.push([box(X0 + 1.1, X0 + 3.3, y + 1.05, y + 1.12, Z0 - 0.45, Z0), '#8a6a4a']);
+  p.push([box(X0 + 1.2, X0 + 3.2, y + 1.1, y + 2.1, Z0 - 0.02, Z0), '#2b2d30']);
+  for (let x = X0 + 1.25; x < X0 + 3.2; x += 0.16) p.push([box(x, x + 0.025, y + 1.1, y + 2.1, Z0 - 0.04, Z0 - 0.02), '#d9d9d4']);
+  p.push([box(X0 + 1.1, X0 + 3.3, y + 1.05, y + 1.12, Z0 - 0.45, Z0), '#8a6a4a']);
   const roof = new THREE.BufferGeometry(), ra = y + H + 0.45, rb = y + H + 0.05;
   roof.setAttribute('position', new THREE.Float32BufferAttribute([X0 - 0.3, rb, Z1 + 0.2, X1 + 0.3, rb, Z1 + 0.2, X1 + 0.3, ra, Z0 - 1.3, X0 - 0.3, ra, Z0 - 1.3], 3));
   roof.setIndex([0, 2, 1, 0, 3, 2, 0, 1, 2, 0, 2, 3]); roof.computeVertexNormals();
-  k.plain.push([roof, '#8e5b3e']);
-  for (const x of [X0 - 0.1, X1 + 0.1]) k.plain.push([box(x - 0.04, x + 0.04, y, ra, Z0 - 1.25, Z0 - 1.17), '#3a3c3e']);
+  p.push([roof, '#8e5b3e']);
+  for (const x of [X0 - 0.1, X1 + 0.1]) p.push([box(x - 0.04, x + 0.04, y, ra, Z0 - 1.25, Z0 - 1.17), '#3a3c3e']);
+  // the turn: the kiosk's own -z (its front) to the court frame's -x (west), centred on CX, CZ
+  const at = (u: number, v: number): [number, number] => [CX + v, CZ - u];
   for (const [x0, x1, col, text] of [[X0, X0 + 1.5, '#f5c400', 'MoMo'], [X0 + 1.55, X0 + 3.0, '#e60000', 'Telecel Cash'], [X0 + 3.05, X1, '#1f5fa8', 'AT Money']] as [number, number, string, string][]) {
-    k.plain.push([box(x0, x1, ra - 0.05, ra + 0.45, Z0 - 1.32, Z0 - 1.27), col]);
-    k.signs.push({ text, x: (x0 + x1) / 2, y: ra + 0.2, z: Z0 - 1.33, ry: Math.PI, w: (x1 - x0) * 0.85, colors: [col, col === '#f5c400' ? '#1b1b1b' : '#ffffff'] });
+    p.push([box(x0, x1, ra - 0.05, ra + 0.45, Z0 - 1.32, Z0 - 1.27), col]);
+    const [sx, sz] = at((x0 + x1) / 2, Z0 - 1.33);
+    k.signs.push({ text, x: sx, y: ra + 0.2, z: sz, ry: Math.PI * 1.5, w: (x1 - x0) * 0.85, colors: [col, col === '#f5c400' ? '#1b1b1b' : '#ffffff'] });
   }
   // the A-board and the beds round it
-  k.plain.push([new THREE.BoxGeometry(0.6, 1.0, 0.04).rotateX(0.2).translate(X1 + 0.6, y + 0.5, Z0 - 1.6), '#2a2a2a']);
-  for (const [x0, x1, z0, z1] of [[X0 - 2.6, X0 - 0.1, -21.6, -18.0], [X0 - 0.1, X1 + 0.6, Z1, -16.2]]) {
-    k.plain.push([box(x0, x1, y, y + 0.18, z0, z1), '#c7c3b8'], [box(x0 + 0.1, x1 - 0.1, y + 0.18, y + 0.2, z0 + 0.1, z1 - 0.1), '#5a4632']);
-    for (let x = x0 + 0.5; x < x1 - 0.3; x += 0.8) for (let z = z0 + 0.5; z < z1 - 0.3; z += 0.9) k.plain.push([new THREE.IcosahedronGeometry(0.38, 0).scale(1.2, 0.8, 1).translate(x, y + 0.45, z), (((x * 3 + z * 7) | 0) & 1) ? '#5d2b4f' : '#3f6a2e']);
+  p.push([new THREE.BoxGeometry(0.6, 1.0, 0.04).rotateX(0.2).translate(X1 + 0.6, y + 0.5, Z0 - 1.6), '#2a2a2a']);
+  for (const [x0, x1, z0, z1] of [[X1 + 0.1, X1 + 2.4, Z0 - 0.2, Z1 + 0.2], [X0 - 0.4, X1 + 0.1, Z1, Z1 + 1.6]]) {
+    p.push([box(x0, x1, y, y + 0.18, z0, z1), '#c7c3b8'], [box(x0 + 0.1, x1 - 0.1, y + 0.18, y + 0.2, z0 + 0.1, z1 - 0.1), '#5a4632']);
+    for (let x = x0 + 0.5; x < x1 - 0.3; x += 0.8) for (let z = z0 + 0.5; z < z1 - 0.3; z += 0.9) p.push([new THREE.IcosahedronGeometry(0.38, 0).scale(1.2, 0.8, 1).translate(x, y + 0.45, z), (((x * 3 + z * 7) | 0) & 1) ? '#5d2b4f' : '#3f6a2e']);
   }
-  SOLIDS.add(...k.world(12.5, -19.6), 2.4);
+  for (const [g] of [...c, ...p]) g.rotateY(Math.PI / 2).translate(CX, 0, CZ);
+  k.plain.push(...p);
+  SOLIDS.add(...k.world(CX, CZ), 2.4);
   const m = new THREE.Mesh(merge(c), concrete(0.3)); m.castShadow = true; k.meshes.push(m);
 }
 
-/** the walk of brick pavers along Kampala's east side from the road on to the food joint behind (the owner's Pent PDF,
+/** the concrete walk along Kampala's east side from the road on to the food joint behind (the owner's Pent PDF,
  *  pages 1-3; Kampala's court frame) */
 function kampalaWalk(k: Kit) {
-  for (let z = -18; z < 24; z += 2) { const y = k.ground(20.8, z + 1) + 0.03; k.plain.push([box(19.7, 21.9, y - 0.03, y, z, z + 2.02), '#9e5843']); }
+  for (let z = -18; z < 24; z += 2) { const y = k.ground(20.8, z + 1) + 0.03; k.plain.push([box(19.7, 21.9, y - 0.03, y, z, z + 2.02), CONCRETE_WALK]); }
 }
 
 /** behind Nairobi (owner's third reference PDF, pages 15-17): the ground spread with gravel; the blue standby generator
- *  under a corrugated lean-to on four thin posts in the gap toward Kampala, by the side wall (Nairobi's court frame) */
+ *  under a corrugated lean-to on four thin posts behind the gap toward Kampala (Nairobi's court frame) */
 function nairobiBack(k: Kit) {
   const gy = (x: number, z: number) => k.ground(x, z) + 0.03;
   for (let z = -2; z < 14; z += 4) k.plain.push([box(-29, -21.5, gy(-25, z + 2) - 0.02, gy(-25, z + 2), z, z + 4), '#958f85']);
   for (let x = -21; x < 21; x += 6) for (let z = 17.3; z < 30; z += 4) k.plain.push([box(x, x + 6, gy(x + 3, z + 2) - 0.02, gy(x + 3, z + 2), z, z + 4), ((x + z) | 0) % 2 ? '#9a948a' : '#8f897f']);
-  // (in the gap toward Kampala, beside the court's side wall: the owner's Pent PDF, pages 1 and 4)
-  const gx = -25.2, gz = 6.5, y = gy(gx, gz);
+  // (behind the gap toward Kampala, beyond the slab walk along the backs: the owner's second Pent corrections, page 10)
+  const gx = -24.5, gz = 21.5, y = gy(gx, gz);
   k.plain.push([box(gx - 1.9, gx + 1.9, y, y + 0.2, gz - 0.9, gz + 0.9), '#b9b4aa'], [box(gx - 1.7, gx + 1.7, y + 0.2, y + 1.9, gz - 0.7, gz + 0.7), '#21507e']);
   for (let x = gx - 1.5; x < gx + 1.6; x += 0.25) k.plain.push([box(x, x + 0.06, y + 0.5, y + 1.6, gz - 0.72, gz - 0.7), '#173b5e']);
   k.signs.push({ text: 'SDMO', x: gx - 0.6, y: y + 1.55, z: gz - 0.73, ry: Math.PI, w: 1.0, colors: ['#21507e', '#ffffff'] });
@@ -252,15 +264,15 @@ function nairobiBack(k: Kit) {
 }
 
 // ---------- the Pent entrance on Annie Jiagge Road (owner's third reference PDF, pages 1-7 and 19-20) ----------
-// Old Pent is fenced along Annie Jiagge Road by white palisade on deep red posts; the way in is the road along the
+// Old Pent is fenced along Annie Jiagge Road by Pent's cream metal fence (pentFence below); the way in is the road along the
 // courts' fronts. At its mouth: the security post on the south side before Addis Ababa (cream walls, a red tiled roof
 // with its gables east and west, a grey door and a dark louvred window toward the court, a window on the road), the
-// red and white trellis gates swung back against the fence either side, grey bollards wrapped in posters on the
+// red and white gates swung back against the fence either side, grey bollards wrapped in posters on the
 // footway, a poster-covered kiosk on the north side of the mouth (a rusty roof on thin posts over its counter), grey
 // pavers, big shade trees, feather flags on the corner and the zebra crossing on Annie Jiagge Road south of it.
 /** Annie Jiagge Road's centre line by Old Pent (from the map), x at a given z */
 const annieX = (z: number) => {
-  const p: [number, number][] = [[-488, 509], [-523, 505], [-537, 503], [-551, 501], [-575, 500]];
+  const p: [number, number][] = [[-488, 509], [-523, 505], [-537, 503], [-551, 501], [-575, 500], [-626, 500], [-643, 499], [-657, 498], [-737, 496], [-842, 492]];
   for (let i = 0; i < p.length - 1; i++) if (z <= p[i][0] && z >= p[i + 1][0]) return p[i][1] + ((p[i + 1][1] - p[i][1]) * (z - p[i][0])) / (p[i + 1][0] - p[i][0]);
   return z > p[0][0] ? p[0][1] : p[p.length - 1][1];
 };
@@ -278,24 +290,17 @@ const entrance: Spec = {
     const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
     const gy = (x: number, z: number) => k.ground(X(x), Z(z));
     const c: Part[] = [];
-    // ----- the palisade along the road, south and north of the mouth
+    // ----- the gates at the mouth (the fence itself: pentFence below), swung back against the fence either side: each
+    // leaf a red frame, white upright bars, red braces zigzagging between the rails (the owner's photo of the gate,
+    // second Pent corrections)
     const MOUTH = [-541.4, -533.9];
-    const run = (za: number, zb: number) => {
-      for (let z = za; z > zb; z -= 2.5) {
-        const z1 = Math.max(zb, z - 2.5), xa = pentFenceX(z), xb = pentFenceX(z1), y = gy(xa, z);
-        c.push([B(xa - 0.12, xa + 0.12, y - 0.1, y + 1.9, z - 0.12, z + 0.12), DEEP_RED]);
-        k.plain.push([B(Math.min(xa, xb) - 0.1, Math.max(xa, xb) + 0.1, y - 0.1, y + 0.3, z1, z), '#d9d6cf']);
-        for (const h of [0.45, 1.55]) k.plain.push([B(Math.min(xa, xb) - 0.02, Math.max(xa, xb) + 0.02, y + h, y + h + 0.05, z1, z), '#f4f4f1']);
-        for (let zz = z - 0.12; zz > z1; zz -= 0.14) { const xx = xa + ((xb - xa) * (z - zz)) / (z - z1 || 1); k.plain.push([B(xx - 0.02, xx + 0.02, y + 0.3, y + 1.75, zz - 0.02, zz + 0.02), '#f4f4f1']); }
-        for (let zz = z; zz > z1; zz -= 0.8) SOLIDS.add(xa + ((xb - xa) * (z - zz)) / (z - z1 || 1), zz, 0.15);
-      }
-    };
-    run(-468, MOUTH[1]); run(MOUTH[0], -588);
-    // the trellis gates, red frames and white diagonals, swung back against the fence either side of the mouth
     for (const [za, zb] of [[MOUTH[1], MOUTH[1] + 3.2], [MOUTH[0], MOUTH[0] - 3.2]]) {
-      const x = pentFenceX(za) + 0.35, y = gy(x, za);
-      k.plain.push([B(x - 0.04, x + 0.04, y + 0.15, y + 1.35, Math.min(za, zb), Math.max(za, zb)), '#c8261e']);
-      for (let i = 0; i < 6; i++) { const z = Math.min(za, zb) + (i + 0.5) * 0.53; k.plain.push([new THREE.BoxGeometry(0.05, 1.3, 0.06).rotateX(i & 1 ? 0.75 : -0.75).translate(X(x + 0.05), y + 0.75, Z(z)), '#f4f4f1']); }
+      const x = pentFenceX(za) + 0.35, y = gy(x, za), z0 = Math.min(za, zb), z1 = Math.max(za, zb);
+      for (const [y0, y1] of [[0.15, 0.24], [1.3, 1.4]]) k.plain.push([B(x - 0.04, x + 0.04, y + y0, y + y1, z0, z1), '#c8261e']);
+      for (const z of [z0, z1 - 0.08]) k.plain.push([B(x - 0.04, x + 0.04, y + 0.1, y + 1.45, z, z + 0.08), '#c8261e']);
+      for (let z = z0 + 0.2; z < z1 - 0.1; z += 0.2) k.plain.push([B(x - 0.02, x + 0.02, y + 0.24, y + 1.3, z, z + 0.035), '#f4f4f1']);
+      const n = 4, w = (z1 - z0) / n, L = Math.hypot(w, 1.06), ang = Math.atan2(w, 1.06);
+      for (let i = 0; i < n; i++) k.plain.push([new THREE.BoxGeometry(0.05, L, 0.06).rotateX(i & 1 ? ang : -ang).translate(X(x + 0.04), y + 0.77, Z(z0 + (i + 0.5) * w)), '#c8261e']);
       SOLIDS.add(x, (za + zb) / 2, 0.2);
     }
     // ----- the security post south of the mouth, before Addis Ababa
@@ -306,7 +311,10 @@ const entrance: Spec = {
     // the door and louvred window toward the court, a window on the road and one on Annie Jiagge Road
     k.plain.push([B(516.1, 517.0, sy + 0.4, sy + 2.45, SP[3], SP[3] + 0.04), '#6d7680'], [B(514.6, 515.7, sy + 1.2, sy + 2.25, SP[3], SP[3] + 0.04), '#2a2826']);
     for (let y = sy + 1.28; y < sy + 2.2; y += 0.12) k.plain.push([B(514.65, 515.65, y, y + 0.05, SP[3] + 0.04, SP[3] + 0.06), '#45403a']);
-    k.plain.push([B(514.9, 516.9, sy + 1.2, sy + 2.2, SP[2] - 0.04, SP[2]), '#2c3640'], [B(SP[0] - 0.04, SP[0], sy + 1.2, sy + 2.2, -531.8, -530.2), '#2c3640']);
+    k.plain.push([B(514.6, 515.8, sy + 1.2, sy + 2.2, SP[2] - 0.04, SP[2]), '#2c3640'], [B(SP[0] - 0.04, SP[0], sy + 1.2, sy + 2.2, -531.8, -530.2), '#2c3640']);
+    // the door on the face toward the road into Pent (the owner's second Pent corrections, picture 2), its frame and step
+    k.plain.push([B(516.2, 517.25, sy + 0.35, sy + 2.5, SP[2] - 0.06, SP[2]), '#d9d2bd'], [B(516.3, 517.15, sy + 0.38, sy + 2.42, SP[2] - 0.08, SP[2] - 0.06), '#6d7680']);
+    k.plain.push([B(516.95, 517.05, sy + 1.3, sy + 1.36, SP[2] - 0.12, SP[2] - 0.08), '#c9c9c9'], [B(516.0, 517.45, sy + 0.2, sy + 0.35, SP[2] - 0.6, SP[2] - 0.3), '#d4cfc4']);
     k.plain.push([B(516.0, 517.1, sy + 0.2, sy + 0.35, SP[3] + 0.3, SP[3] + 0.6), '#d4cfc4']);
     { const e = sy + 2.85, top = e + 1.2, x0 = SP[0] - 0.5, x1 = SP[1] + 0.5, z0 = SP[2] - 0.55, z1 = SP[3] + 0.55, zm = (z0 + z1) / 2;
       k.roof.c = new THREE.Color('#9a3a2c');
@@ -354,12 +362,66 @@ const entrance: Spec = {
   },
 };
 
-// ---------- behind Nairobi: the low building where food is sold (owner's third reference PDF, page 18) ----------
-// One floor on a raised base: white walls over a deep red foot; on the west a red sheet gable roof; in the middle a
-// raised box of dark vertical boards under a shallow roof, a small sign on it; on the east plain white under a low
-// grey roof. Red-painted steps climb to its doors on the side toward the courts; a brick path along it, gravel round.
+// ---------- Pent's metal fence (the owner's second Pent corrections: the whole of Pent is fenced) ----------
+// Cream-painted flat bars on two rails, posts of the same doubled bar, on a low kerb: no coloured pillars. It runs along
+// Annie Jiagge Road from the corner behind Old Pent north past the entrance (the gates there) and on past Blocks A and
+// B; behind Block B it turns east to Pent Road, and beyond Pent Road it runs along the back of Block C. Behind Old Pent
+// it turns east from the road between the courts and the walled grounds of the yellow building to the drive into them,
+// and beyond the drive runs on behind the admin block and Kampala, along the road there, to the food building.
+const FO2: [number, number] = [560, -650];
+/** the fence's runs, world x, z */
+const PENT_FENCE_RUNS: [number, number][][] = (() => {
+  const road = (za: number, zb: number) => { const r: [number, number][] = []; for (let z = za; z > zb; z -= 2.5) r.push([pentFenceX(z), z]); r.push([pentFenceX(zb), zb]); return r; };
+  return [
+    road(-468, -533.9),
+    [...road(-541.4, -845), [611, -845]],
+    [[626, -781.5], [737, -781.5]],
+    [[pentFenceX(-483), -483], [619, -483]],
+    [[626, -490.5], [664, -490.5], [680, -486], [687.4, -483]],
+  ];
+})();
+const pentFenceSpec: Spec = {
+  name: 'Pent metal fence',
+  axis: [1, 0], origin: FO2, storey: 3, style: OLD_WIN, roofColor: '#888', fascia: '#888', pitch: 0.1,
+  onGround: true,
+  blocks: [],
+  keep: [],
+  extras: (k) => {
+    const X = (x: number) => x - FO2[0], Z = (z: number) => z - FO2[1];
+    const gy = (x: number, z: number) => k.ground(X(x), Z(z));
+    /** a bar of the fence from a to b (world), its section w across and its height y0..y1 */
+    const bar = (ax: number, az: number, bx: number, bz: number, w: number, y0: number, y1: number, col: string) => {
+      const len = Math.hypot(bx - ax, bz - az);
+      k.plain.push([new THREE.BoxGeometry(Math.max(len, w), y1 - y0, w).rotateY(Math.atan2(-(bz - az), bx - ax)).translate(X((ax + bx) / 2), (y0 + y1) / 2, Z((az + bz) / 2)), col]);
+    };
+    for (const run of PENT_FENCE_RUNS) for (let i = 0; i + 1 < run.length; i++) {
+      const [ax, az] = run[i], [bx, bz] = run[i + 1], len = Math.hypot(bx - ax, bz - az);
+      for (let t = 0; t < len - 0.01; t += 2.5) {
+        const t1 = Math.min(len, t + 2.5), f0 = t / len, f1 = t1 / len;
+        const x0 = ax + (bx - ax) * f0, z0 = az + (bz - az) * f0, x1 = ax + (bx - ax) * f1, z1 = az + (bz - az) * f1, y = gy(x0, z0), y1 = gy(x1, z1), ym = Math.min(y, y1);
+        bar(x0, z0, x1, z1, 0.22, ym - 0.15, ym + 0.25, '#d8d1c0');
+        bar(x0, z0, x0 + 0.001, z0, 0.09, ym, ym + 2.05, PENT_CREAM);
+        for (const h of [0.5, 1.75]) bar(x0, z0, x1, z1, 0.05, ym + h, ym + h + 0.06, PENT_CREAM);
+        const n = Math.round((t1 - t) / 0.13);
+        for (let j = 1; j < n; j++) { const f = j / n, px = x0 + (x1 - x0) * f, pz = z0 + (z1 - z0) * f; bar(px, pz, px + ((x1 - x0) / (t1 - t)) * 0.04, pz + ((z1 - z0) / (t1 - t)) * 0.04, 0.02, ym + 0.25, ym + 1.95, PENT_CREAM); }
+        for (let d = 0; d < t1 - t; d += 0.8) SOLIDS.add(x0 + ((x1 - x0) * d) / (t1 - t), z0 + ((z1 - z0) * d) / (t1 - t), 0.15);
+      }
+      bar(bx, bz, bx + 0.001, bz, 0.09, gy(bx, bz), gy(bx, bz) + 2.05, PENT_CREAM);
+    }
+  },
+};
+
+// ---------- behind Nairobi: the food joint (owner's third reference PDF, page 18; second Pent corrections, pages 13-14
+// and the owner's marked top view) ----------
+// The mapped footprint holds two parts. On the east the food building: one floor on a raised base, white walls over a
+// deep red foot under a red sheet gable roof, red-painted steps up to its doors toward the courts. On the west a yard
+// walled in white over a red foot: in its north half the black kiosk of dark grey aluminium sheet standing above the
+// wall, its yellow board toward the courts; in its south half the white kiosk; between them the way through from the
+// open entrance in the west wall (up red steps), and another open entrance in the north wall by the building. The
+// concrete walk from the gap between Kampala and Nairobi runs down the yard's west side to the west entrance.
 const FO: [number, number] = [712.35, -486.25];
-const FOOD = [700.3, 724.4, -494.2, -478.3];
+const FOOD = [713.0, 724.4, -494.2, -478.3], YARD = [700.3, 713.0, -494.2, -478.3];
+const CONCRETE_WALK = '#b5b1a8';
 const FOOD_WALL: Style = {
   bay: 3.0, up: [], ground: [[90, 256 + 70, 76, 90]],
   draw: (g) => { render(g, '#f2f0ea'); g.fillStyle = '#2a2420'; g.fillRect(90, 256 + 70, 76, 90); g.fillStyle = '#5a4a3c'; for (let y = 256 + 76; y < 256 + 158; y += 9) g.fillRect(92, y, 72, 3); g.fillStyle = DEEP_RED; g.fillRect(0, 512 - 80, 256, 80); },
@@ -375,51 +437,53 @@ const food: Spec = {
     const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
     const e = k.wallTop(1), c: Part[] = [];
     const M = (x: number, z: number): [number, number] => [X(x), Z(z)];
-    // the west part's red sheet gable roof, the timber box in the middle, the east part's low grey roof
-    hipRoof(k, M, FOOD[0] - 0.6, 709.5, FOOD[2] - 0.6, FOOD[3] + 0.6, e, 0.35, 'z', [{ gw: 99, tri: false }, { gw: 99, tri: false }], c, '#4a3a30');
-    for (const z of [FOOD[2], FOOD[3]]) k.plain.push([tri2([X(FOOD[0] - 0.5), e, Z(z)], [X(709.4), e, Z(z)], [X((FOOD[0] + 709.4) / 2), e + 4.6 * 0.35, Z(z)]), '#f2f0ea']);
-    c.push([B(709.5, 717.5, e, e + 1.5, FOOD[2] + 1.5, FOOD[3] - 1.5), '#2a2622']);
-    for (let x = 709.6; x < 717.5; x += 0.35) k.plain.push([B(x, x + 0.06, e + 0.05, e + 1.45, FOOD[2] + 1.47, FOOD[2] + 1.5), '#45403a']);
-    k.roof.c = new THREE.Color('#5b5f60');
-    k.roof.quad([X(709.2), e + 1.5, Z(FOOD[2] + 1.2)], [X(717.8), e + 1.5, Z(FOOD[2] + 1.2)], [X(717.8), e + 1.8, Z(FOOD[3] - 1.2)], [X(709.2), e + 1.8, Z(FOOD[3] - 1.2)]);
-    k.plain.push([B(711.5, 714.5, e + 0.5, e + 1.2, FOOD[2] + 1.4, FOOD[2] + 1.47), '#e8c23a']);
-    k.roof.quad([X(709.5), e, Z(FOOD[2] - 0.6)], [X(FOOD[1] + 0.6), e, Z(FOOD[2] - 0.6)], [X(FOOD[1] + 0.6), e + 0.6, Z((FOOD[2] + FOOD[3]) / 2)], [X(709.5), e + 0.6, Z((FOOD[2] + FOOD[3]) / 2)]);
-    k.roof.quad([X(FOOD[1] + 0.6), e, Z(FOOD[3] + 0.6)], [X(709.5), e, Z(FOOD[3] + 0.6)], [X(709.5), e + 0.6, Z((FOOD[2] + FOOD[3]) / 2)], [X(FOOD[1] + 0.6), e + 0.6, Z((FOOD[2] + FOOD[3]) / 2)]);
-    // red-painted steps up to the two doors on the north, white grille doors
-    for (const dx of [704.0, 719.5]) {
+    // the food building's red sheet gable roof, gables to the courts and to the road
+    hipRoof(k, M, FOOD[0] - 0.6, FOOD[1] + 0.6, FOOD[2] - 0.6, FOOD[3] + 0.6, e, 0.35, 'z', [{ gw: 99, tri: false }, { gw: 99, tri: false }], c, '#4a3a30');
+    const xm = (FOOD[0] + FOOD[1]) / 2, rise = ((FOOD[1] - FOOD[0]) / 2 + 0.6) * 0.35;
+    for (const z of [FOOD[2], FOOD[3]]) k.plain.push([tri2([X(FOOD[0] - 0.5), e, Z(z)], [X(FOOD[1] + 0.5), e, Z(z)], [X(xm), e + rise - 0.1, Z(z)]), '#f2f0ea']);
+    // red-painted steps up to the two doors toward the courts, white grille doors
+    for (const dx of [716.0, 721.6]) {
       for (let i = 0; i < 3; i++) c.push([B(dx - 1.1, dx + 1.1, 0, PL - (PL / 3) * i, FOOD[2] - 0.4 * (i + 1), FOOD[2] - 0.4 * i), '#b23a2e']);
       k.plain.push([B(dx - 0.55, dx + 0.55, PL, PL + 2.2, FOOD[2] - 0.03, FOOD[2]), '#e9e7e0']);
       for (let x = dx - 0.5; x < dx + 0.55; x += 0.14) k.plain.push([B(x, x + 0.025, PL + 0.1, PL + 2.1, FOOD[2] - 0.05, FOOD[2] - 0.03), '#7d7a74']);
     }
-    // ----- the yard joined to its west end (the owner's Pent PDF, pages 3-4): a white wall over a red foot round it with two
-    // open doorways up red steps, and inside it two kiosks of aluminium sheet standing above the wall, one dark grey with
-    // a yellow board and a timber-edged roof, one silver; the walk of brick pavers passes along its west side
-    { const A = [691.0, FOOD[0], FOOD[2], -484.0], h = 2.2;
-      const wallSeg = (x0: number, x1: number, z0: number, z1: number) => { c.push([B(x0, x1, 0, 0.9, z0, z1), '#b23a2e'], [B(x0, x1, 0.9, h, z0, z1), '#f1efe8'], [B(x0 - 0.03, x1 + 0.03, h, h + 0.08, z0 - 0.03, z1 + 0.03), '#e2ded4']); };
-      const doors = [[692.2, 693.3], [698.6, 699.7]];
-      wallSeg(A[0], doors[0][0], A[2], A[2] + 0.2); wallSeg(doors[0][1], doors[1][0], A[2], A[2] + 0.2); wallSeg(doors[1][1], A[1], A[2], A[2] + 0.2);
-      wallSeg(A[0], A[0] + 0.2, A[2], A[3]); wallSeg(A[0], A[1], A[3] - 0.2, A[3]);
-      for (const [d0, d1] of doors) {
-        for (let i = 0; i < 3; i++) c.push([B(d0 - 0.2, d1 + 0.2, 0, PL - (PL / 3) * i, A[2] - 0.35 * (i + 1), A[2] - 0.35 * i), '#b23a2e']);
-        k.plain.push([B(d0 - 0.15, d0, 0, h + 0.1, A[2] - 0.05, A[2] + 0.25), '#3a3a38'], [B(d1, d1 + 0.15, 0, h + 0.1, A[2] - 0.05, A[2] + 0.25), '#3a3a38']);
-      }
-      for (let x = A[0]; x < A[1]; x += 0.8) { SOLIDS.add(x, A[2] + 0.1, 0.2); }
-      for (let z = A[2]; z < A[3]; z += 0.8) SOLIDS.add(A[0] + 0.1, z, 0.2);
-      // the kiosks
-      const kiosk = (x0: number, x1: number, z0: number, z1: number, hh: number, col: string, rib: string) => {
-        c.push([B(x0, x1, 0, hh, z0, z1), col]);
-        for (let x = x0 + 0.1; x < x1; x += 0.2) k.plain.push([B(x, x + 0.06, 0.2, hh - 0.1, z0 - 0.02, z0), rib]);
-        k.plain.push([B(x0 - 0.4, x1 + 0.4, hh, hh + 0.12, z0 - 0.6, z1 + 0.3), '#8a6a4a']);
+    // ----- the yard: its walls with the two open entrances (north by the building, west between the kiosks), its
+    // concrete floor, the black kiosk in the north half and the white kiosk in the south half
+    { const [x0, x1, z0, z1] = YARD, h = 2.2, N = [709.6, 711.8], W = [-488.4, -484.4];
+      const wallSeg = (a0: number, a1: number, b0: number, b1: number) => {
+        c.push([B(a0, a1, 0, 0.9, b0, b1), '#b23a2e'], [B(a0, a1, 0.9, h, b0, b1), '#f1efe8'], [B(a0 - 0.03, a1 + 0.03, h, h + 0.08, b0 - 0.03, b1 + 0.03), '#e2ded4']);
+        for (let x = a0; x <= a1; x += 0.8) for (let z = b0; z <= b1; z += 0.8) SOLIDS.add(x, z, 0.2);
       };
-      kiosk(694.0, 698.2, -492.6, -488.2, 3.4, '#3d4246', '#2a2e31');
-      k.plain.push([B(695.2, 697.0, 2.5, 3.1, -492.65, -492.62), '#f2c41e']);
-      kiosk(691.6, 693.8, -492.4, -489.4, 3.0, '#c9ced2', '#aeb4b8');
-      SOLIDS.add(696, -490.4, 2.4); SOLIDS.add(692.7, -490.9, 1.6);
-      // the walk on from Kampala's east side, along the yard's west side
-      for (let i = 0; i < 12; i++) { const t = i / 11, x = 694.6 + (689.6 - 694.6) * t, z = -500 + (-478 + 500) * t; k.plain.push([B(x - 1.1, x + 1.1, 0.01, 0.045, z - 1.2, z + 1.2), '#9e5843']); } }
+      wallSeg(x0, N[0], z0, z0 + 0.2); wallSeg(N[1], x1, z0, z0 + 0.2);
+      wallSeg(x0, x0 + 0.2, z0, W[0]); wallSeg(x0, x0 + 0.2, W[1], z1);
+      wallSeg(x0, x1, z1 - 0.2, z1);
+      for (const [a0, a1] of [[N[0], N[0] + 0.15], [N[1] - 0.15, N[1]]]) k.plain.push([B(a0, a1, 0, h + 0.1, z0 - 0.02, z0 + 0.22), '#3a3a38']);
+      for (const [b0, b1] of [[W[0], W[0] + 0.15], [W[1] - 0.15, W[1]]]) k.plain.push([B(x0 - 0.02, x0 + 0.22, 0, h + 0.1, b0, b1), '#3a3a38']);
+      for (let i = 0; i < 3; i++) {
+        c.push([B(N[0] - 0.2, N[1] + 0.2, 0, PL - (PL / 3) * i, z0 - 0.35 * (i + 1), z0 - 0.35 * i), '#b23a2e']);
+        c.push([B(x0 - 0.35 * (i + 1), x0 - 0.35 * i, 0, PL - (PL / 3) * i, W[0] - 0.2, W[1] + 0.2), '#b23a2e']);
+      }
+      k.plain.push([B(x0 + 0.2, x1, 0.005, PL - 0.02, z0 + 0.2, z1 - 0.2), '#bdb9b0']);
+      // the black kiosk, against the north wall, standing above it
+      const BK = [701.0, 708.0, -493.9, -488.4];
+      c.push([B(BK[0], BK[1], 0, 3.4, BK[2], BK[3]), '#3d4246']);
+      for (let x = BK[0] + 0.1; x < BK[1]; x += 0.2) k.plain.push([B(x, x + 0.06, 2.2, 3.3, BK[2] - 0.02, BK[2]), '#2a2e31']);
+      for (let z = BK[2] + 0.1; z < BK[3]; z += 0.2) k.plain.push([B(BK[0] - 0.02, BK[0], 2.2, 3.3, z, z + 0.06), '#2a2e31']);
+      k.plain.push([B(BK[0] - 0.4, BK[1] + 0.4, 3.4, 3.52, BK[2] - 0.5, BK[3] + 0.4), '#8a6a4a'], [B(703.4, 705.6, 2.5, 3.1, BK[2] - 0.05, BK[2] - 0.02), '#f2c41e']);
+      k.plain.push([B(703.0, 706.0, PL + 0.6, PL + 1.6, BK[3], BK[3] + 0.03), '#1f2225'], [B(702.9, 706.1, PL + 0.55, PL + 0.6, BK[3], BK[3] + 0.4), '#8a6a4a']);
+      // the white kiosk in the south half, its door and window toward the way through
+      const WK = [701.0, 708.0, -484.4, -478.7];
+      c.push([B(WK[0], WK[1], 0, 3.0, WK[2], WK[3]), '#ebe7da']);
+      for (let x = WK[0] + 0.1; x < WK[1]; x += 0.25) if (x < 703.8 || x > 705.0) k.plain.push([B(x, x + 0.06, PL, 2.9, WK[2] - 0.02, WK[2]), '#d6d1c2']);
+      k.plain.push([B(703.9, 704.9, PL, PL + 2.1, WK[2] - 0.04, WK[2]), '#d9d6cc'], [B(705.6, 707.2, PL + 0.9, PL + 1.8, WK[2] - 0.03, WK[2]), '#2e3236']);
+      k.plain.push([B(WK[0] - 0.3, WK[1] + 0.3, 3.0, 3.12, WK[2] - 0.5, WK[3] + 0.2), '#8a6a4a']);
+      SOLIDS.add(704.5, -491.1, 3.2); SOLIDS.add(704.5, -481.5, 3.2); }
+    // ----- the concrete walk from the gap between Kampala and Nairobi (it meets Kampala's walk) down the yard's west side
+    // to the west entrance's steps
+    k.plain.push([B(691.7, 698.8, 0.01, 0.045, -500.4, -498.2), CONCRETE_WALK], [B(696.6, 698.8, 0.01, 0.045, -498.2, -484.6), CONCRETE_WALK]);
     // the brick path along the east end and the gravel round it
     k.plain.push([B(FOOD[1] + 0.8, FOOD[1] + 2.3, 0.01, 0.04, FOOD[2] - 6, FOOD[3] + 1), '#a5563f']);
-    k.plain.push([B(FOOD[0] - 2.5, FOOD[1] + 0.8, 0.005, 0.02, FOOD[2] - 4, FOOD[2] - 1.3), '#9b9488']);
+    k.plain.push([B(699.0, FOOD[1] + 0.8, 0.005, 0.02, FOOD[2] - 4, FOOD[2] - 1.3), '#9b9488']);
     const m = new THREE.Mesh(merge(c), concrete(0.3)); m.castShadow = true; k.meshes.push(m);
   },
 };
@@ -532,6 +596,7 @@ export const pentagon = createSite('pentagon', [
   admin,
   entrance,
   food,
+  pentFenceSpec,
 ]);
 
 /** where the New Pent blocks stand (the yellow zone on the owner's aerial) */

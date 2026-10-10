@@ -366,7 +366,7 @@ export function createSite(name: string, specs: Spec[]) {
           cull.push(mesh);
         };
         for (const [st, fac] of g.facades) add(fac.geometry(), wallMaterial(st));
-        add(merge(g.plain), plain);
+        if (g.plain.length) add(merge(g.plain), plain);
         if (g.glass.length) add(mergeGeometries(g.glass.map((x) => { const n = x.index ? x.toNonIndexed() : x; for (const a of Object.keys(n.attributes)) if (a !== 'position' && a !== 'normal') n.deleteAttribute(a); return n; })), glass, false);
         if (g.roof.pos.length) add(g.roof.geometry(), roofMat);
         for (const extra of g.meshes) { node.add(extra); cull.push(extra); }

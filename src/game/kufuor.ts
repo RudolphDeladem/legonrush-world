@@ -4,14 +4,13 @@
 //   round columns, open between them, its front toward Annie Jiagge Road curved in tiers of round slab edges, the
 //   top under a dark sheet roof edge; a few walls of grey blockwork filled in at the back with small window holes.
 //   Beside it the round drum of the gate house, rendered but unpainted, under a deep conical roof of brown tiles.
-//   The site is closed by corrugated metal sheets, a sliding gate of timber slats in a steel frame at its west, a
-//   curved herringbone-paved apron before the gate; inside, red earth with heaps and scattered paving blocks.
+//   Inside, red earth with heaps and scattered paving blocks. (Its sheet fence and rusted gate: hoarding below.)
 // - Along Annie Jiagge Road from the Kufuor Centre south to the Pent entrance, the footway runs beside a long
 //   hoarding of corrugated aluminium sheets plastered with posters (page 66).
-// - The building behind Old Pent (the Y-shaped one north of Addis Ababa and Dar es Salaam, pages 57-60): four storeys
-//   painted yellow under red roofs; on its east end round balconies one over another and a black spiral stair beside
-//   them, behind a palisade on square white concrete posts. Its walls are painted by the generic builder
-//   (behindPentStyle); this module adds the end with its balconies and stair.
+// - The building behind Old Pent (the Y-shaped one behind Addis Ababa and Dar es Salaam, pages 57-60): four storeys
+//   painted yellow under red roofs; on its west wing's end round balconies one over another and a black spiral stair
+//   beside them; a rendered wall round its grounds. Its walls are painted by the generic builder (behindPentStyle);
+//   this module adds the end with its balconies and stair, and the wall.
 import * as THREE from 'three';
 import type { Building } from './campusmap';
 import { box, merge, type Part } from './modelkit';
@@ -48,6 +47,8 @@ function sheets() {
 
 // ---------- the Kufuor Centre (frame: map axes) ----------
 const KO: [number, number] = [548, -380];
+/** the gate house, and the rusted gate in the roadside sheets north of it (z from, to) */
+const GH: [number, number] = [519.2, -392.2], GATE: [number, number] = [-401.4, -395.6];
 const kufuor: Spec = {
   name: 'The Kufuor Centre For Leadership and Governance',
   axis: [1, 0], origin: KO, storey: 3.5, style: { bay: 3, up: [], ground: [], draw: (g) => { g.fillStyle = RAW; g.fillRect(0, 0, 256, 512); } }, roofColor: '#3a3532', fascia: '#2a2624', pitch: 0.2,
@@ -82,13 +83,14 @@ const kufuor: Spec = {
     }
     // stair cores rising through the frame
     c.push([B(552.5, 556.6, y0, y0 + F[3] + 1.5, -387.6, -384.4), BLOCKWORK]);
-    // the round gate house south-west of it: a drum under a conical roof of brown tiles, the door on the gate side
-    { const gx = X(535.5), gz = Z(-392.5);
+    // the round gate house on the roadside line, the gate beside it to the north (the owner's second Pent corrections,
+    // page 1: the blue mark): a drum under a conical roof of brown tiles, the door on the gate side
+    { const gx = X(GH[0]), gz = Z(GH[1]);
       c.push([new THREE.CylinderGeometry(3.0, 3.0, 3.0, 24).translate(gx, y0 + 1.5, gz), '#c9c3b6']);
       c.push([new THREE.CylinderGeometry(3.4, 3.4, 2.6, 24).translate(gx, y0 + 4.3, gz), '#bfb9ac']);
       k.plain.push([new THREE.ConeGeometry(4.8, 2.4, 24).translate(gx, y0 + 6.8, gz), '#5b3a2c'], [new THREE.CylinderGeometry(4.8, 4.8, 0.2, 24, 1, true).translate(gx, y0 + 5.62, gz), '#f1efe8']);
-      k.plain.push([box(gx - 3.05, gx - 2.98, y0, y0 + 2.4, gz - 0.7, gz + 0.7), '#2a2624']);
-      SOLIDS.add(535.5, -392.5, 3.2); }
+      k.plain.push([box(gx - 0.7, gx + 0.7, y0, y0 + 2.4, gz - 3.05, gz - 2.98), '#2a2624']);
+      SOLIDS.add(GH[0], GH[1], 3.2); }
     for (const [x, z] of [[541, -381], [549, -381], [556, -381], [549, -375], [549, -387]]) SOLIDS.add(x, z, 3.0);
     // the ground inside: red earth, heaps of paving blocks
     k.plain.push([B(528, 566, y0 + 0.005, y0 + 0.03, -397, -364), '#a4583a']);
@@ -96,64 +98,69 @@ const kufuor: Spec = {
       for (let i = 0; i < n; i++) { const dx = ((i * 37) % 13) / 5 - 1.3, dz = ((i * 53) % 11) / 5 - 1.1, h = ((i * 7) % 4) * 0.1; k.plain.push([B(x + dx, x + dx + 0.22, y0 + h, y0 + h + 0.1, z + dz, z + dz + 0.11), '#c2b49c']); }
       k.plain.push([B(x - 1.2, x + 1.2, y0, y0 + 0.6, z - 0.6, z + 0.6), '#b9ab93']);
     }
-    // the corrugated sheets round the site, the timber gate on the west, the paved apron before it
-    const W = [527.5, 566.5, -397.5, -363.5], G0 = -384.5, G1 = -378.5;
-    const run = (ax: number, az: number, bx: number, bz: number) => {
-      const len = Math.hypot(bx - ax, bz - az), geo = new THREE.PlaneGeometry(len, 2.4);
-      const uv = geo.attributes.uv as THREE.BufferAttribute;
-      for (let i = 0; i < uv.count; i++) uv.setX(i, (uv.getX(i) * len) / 12);
-      const m = new THREE.Mesh(geo, sheets());
-      m.position.set(X((ax + bx) / 2), y0 + 1.2, Z((az + bz) / 2)); m.rotation.y = -Math.atan2(bz - az, bx - ax); m.castShadow = true;
-      k.meshes.push(m);
-      for (let t = 0; t <= len; t += 2.5) { const x = ax + ((bx - ax) * t) / len, z = az + ((bz - az) * t) / len; k.plain.push([B(x - 0.04, x + 0.04, y0, y0 + 2.45, z - 0.04, z + 0.04), '#6c6c66']); SOLIDS.add(x, z, 0.2); }
-    };
-    run(W[0], W[2], W[1], W[2]); run(W[1], W[2], W[1], W[3]); run(W[1], W[3], W[0], W[3]); run(W[0], W[3], W[0], G1); run(W[0], G0, W[0], W[2]);
-    k.plain.push([B(W[0] - 0.1, W[0] + 0.1, y0, y0 + 2.6, G0, G1), '#3a3a38']);
-    for (let z = G0 + 0.1; z < G1; z += 0.18) k.plain.push([B(W[0] - 0.08, W[0] + 0.08, y0 + 0.15, y0 + 2.45, z, z + 0.13), '#7a4a32']);
-    for (let z = G0; z < G1; z += 0.6) SOLIDS.add(W[0], z, 0.2);
-    { const g = new THREE.RingGeometry(3, 9, 20, 1, Math.PI * 0.5, Math.PI).rotateX(-Math.PI / 2).translate(X(W[0]), y0 + 0.03, Z((G0 + G1) / 2));
-      k.plain.push([g, '#8f8a82']); }
     const m = new THREE.Mesh(merge(c), concrete(0.9)); m.castShadow = true; m.receiveShadow = true; k.meshes.push(m);
   },
 };
 
-// ---------- the hoarding along Annie Jiagge Road from the Kufuor Centre to the Pent entrance ----------
+// ---------- the sheet fence round the Kufuor Centre's ground (the owner's second Pent corrections, page 1: the red line;
+// the sheets that boxed the centre in on its other sides are gone) ----------
+// Along Annie Jiagge Road from the corner behind Old Pent south past the gate house, the long hoarding of corrugated
+// aluminium sheets plastered with posters, the rusted gate of slats in it just north of the gate house with the curved
+// paved apron before it on the footway (page 8); at the south end it turns east along the ground's south side to the
+// small building there.
 const HO: [number, number] = [518, -420];
 const hoarding: Spec = {
   name: 'hoarding along Annie Jiagge Road',
   axis: [1, 0], origin: HO, storey: 3, style: kufuor.style, roofColor: '#3a3532', fascia: '#2a2624', pitch: 0.2,
   onGround: true,
   blocks: [],
-  keep: [[513 - HO[0], 527 - HO[0], -466 - HO[1], -362 - HO[1]]],
+  keep: [[513 - HO[0], 527 - HO[0], -466 - HO[1], -360 - HO[1]], [513 - HO[0], 584 - HO[0], -364 - HO[1], -359 - HO[1]]],
   extras: (k) => {
     const X = (x: number) => x - HO[0], Z = (z: number) => z - HO[1];
-    // the sheets lean and buckle a little from panel to panel, as in the photo
-    for (let z = -362; z > -466; z -= 2.4) {
-      const z1 = Math.max(-466, z - 2.4), xa = pentFenceX(z), xb = pentFenceX(z1), y = k.ground(X(xa), Z(z));
-      const geo = new THREE.PlaneGeometry(z - z1, 2.4);
-      const uv = geo.attributes.uv as THREE.BufferAttribute;
-      const off = ((z * 7) % 5 + 5) % 5 / 5;
-      for (let i = 0; i < uv.count; i++) uv.setX(i, off + (uv.getX(i) * (z - z1)) / 12);
-      const m = new THREE.Mesh(geo, sheets());
-      m.position.set(X((xa + xb) / 2), y + 1.2, Z((z + z1) / 2));
-      m.rotation.y = Math.PI / 2 + Math.atan2(xb - xa, z - z1); m.rotation.z = (((z * 13) | 0) % 3 - 1) * 0.03;
-      m.castShadow = true;
-      k.meshes.push(m);
-      k.plain.push([box(X(xa) - 0.05, X(xa) + 0.05, y, y + 2.45, Z(z) - 0.05, Z(z) + 0.05), '#6c6c66']);
-      SOLIDS.add(xa, z, 0.2); SOLIDS.add((xa + xb) / 2, (z + z1) / 2, 0.2);
-    }
+    /** the sheets from a to b (world), in panels that lean and buckle a little from one to the next, as in the photo */
+    const sheetRun = (ax: number, az: number, bx: number, bz: number) => {
+      const L = Math.hypot(bx - ax, bz - az), n = Math.max(1, Math.round(L / 2.4));
+      for (let i = 0; i < n; i++) {
+        const xa = ax + ((bx - ax) * i) / n, za = az + ((bz - az) * i) / n, xb = ax + ((bx - ax) * (i + 1)) / n, zb = az + ((bz - az) * (i + 1)) / n;
+        const y = k.ground(X(xa), Z(za)), len = L / n, geo = new THREE.PlaneGeometry(len, 2.4);
+        const uv = geo.attributes.uv as THREE.BufferAttribute;
+        const off = ((((xa + za) * 7) % 5) + 5) % 5 / 5;
+        for (let j = 0; j < uv.count; j++) uv.setX(j, off + (uv.getX(j) * len) / 12);
+        const m = new THREE.Mesh(geo, sheets());
+        m.position.set(X((xa + xb) / 2), y + 1.2, Z((za + zb) / 2));
+        m.rotation.y = -Math.atan2(zb - za, xb - xa); m.rotation.z = ((((xa * 5 + za * 13) | 0) % 3) - 1) * 0.03;
+        m.castShadow = true;
+        k.meshes.push(m);
+        k.plain.push([box(X(xa) - 0.05, X(xa) + 0.05, y, y + 2.45, Z(za) - 0.05, Z(za) + 0.05), '#6c6c66']);
+        SOLIDS.add(xa, za, 0.2); SOLIDS.add((xa + xb) / 2, (za + zb) / 2, 0.2);
+      }
+    };
+    const F = pentFenceX, SOUTH = -362, ghN = GH[1] - 3.4, ghS = GH[1] + 3.4;
+    sheetRun(F(-466), -466, F(GATE[0]), GATE[0]);
+    sheetRun(F(ghS), ghS, F(SOUTH), SOUTH);
+    sheetRun(F(SOUTH), SOUTH, 583, SOUTH);
+    // the rusted gate between the sheets and the gate house: slats in a steel frame, rust streaked
+    { const x = F(-398), y = k.ground(X(x), Z(-398));
+      k.plain.push([box(X(x) - 0.1, X(x) + 0.1, y, y + 2.6, Z(GATE[0]), Z(GATE[0]) + 0.12), '#3a3a38'], [box(X(x) - 0.1, X(x) + 0.1, y, y + 2.6, Z(GATE[1]) - 0.12, Z(GATE[1])), '#3a3a38']);
+      k.plain.push([box(X(x) - 0.06, X(x) + 0.06, y + 2.4, y + 2.5, Z(GATE[0]), Z(GATE[1])), '#4a3a30'], [box(X(x) - 0.06, X(x) + 0.06, y + 0.12, y + 0.2, Z(GATE[0]), Z(GATE[1])), '#4a3a30']);
+      for (const z of [GATE[0] + 1.45, GATE[0] + 2.9, GATE[0] + 4.35]) k.plain.push([box(X(x) - 0.07, X(x) + 0.07, y + 0.12, y + 2.5, Z(z) - 0.04, Z(z) + 0.04), '#4a3a30']);
+      for (let z = GATE[0] + 0.15; z < GATE[1] - 0.1; z += 0.2) k.plain.push([box(X(x) - 0.05, X(x) + 0.05, y + 0.22, y + 2.38, Z(z), Z(z) + 0.14), (((z * 10) | 0) % 3) ? '#7a4a32' : '#8a5236']);
+      for (let z = GATE[0]; z < GATE[1]; z += 0.6) SOLIDS.add(x, z, 0.2);
+      const g = new THREE.RingGeometry(1.5, 6.5, 20, 1, Math.PI * 0.5, Math.PI).rotateX(-Math.PI / 2).translate(X(x), y + 0.03, Z((GATE[0] + GATE[1]) / 2));
+      k.plain.push([g, '#8f8a82']); }
   },
 };
 
-// ---------- the building behind Old Pent: its east end with the round balconies and the spiral stair ----------
-// frame: x out of the east end wall (which runs on a slant), z along it
-const YO: [number, number] = [595.45, -467];
-/** the yellow building's footprint (the Y north of Addis Ababa and Dar es Salaam) */
+// ---------- the building behind Old Pent: the end with the round balconies and the spiral stair ----------
+// The owner's second Pent corrections (pages 1-4): they are on the end of the west wing, toward Annie Jiagge Road (the
+// white arrows on the top view), not on the east end. Frame: x out of that end wall (which runs on a slant), z along it.
+const YO: [number, number] = [550.2, -467.3];
+/** the yellow building's footprint (the Y behind Addis Ababa and Dar es Salaam) */
 const isBehindPent = (b: Building) => b.minX > 546 && b.maxX < 599 && b.minZ > -475 && b.maxZ < -428 && b.maxX - b.minX > 40;
 export const behindPentStyle = (b: Building) => (isBehindPent(b) ? { wall: '#ecd48a', roof: '#b4472f' } : undefined);
 const yellow: Spec = {
-  name: 'building behind Old Pent (east end)',
-  axis: [0.93, -0.367], origin: YO, storey: 3.3, style: kufuor.style, roofColor: '#b4472f', fascia: '#3a2a22', pitch: 0.4,
+  name: 'building behind Old Pent (west end)',
+  axis: [-0.928, -0.371], origin: YO, storey: 3.3, style: kufuor.style, roofColor: '#b4472f', fascia: '#3a2a22', pitch: 0.4,
   onGround: true,
   blocks: [],
   keep: [[-2, 6, -6, 6]],
@@ -168,7 +175,7 @@ const yellow: Spec = {
       k.plain.push([new THREE.TorusGeometry(1.5, 0.03, 4, 20, Math.PI).rotateX(-Math.PI / 2).rotateY(-Math.PI / 2).translate(0, y + 1.0, 0), '#3a2a22']);
     }
     // the spiral stair beside them: a black column, its treads winding up, a rail
-    const sx = 2.2, sz = 2.4;
+    const sx = 2.2, sz = -2.4;
     k.plain.push([new THREE.CylinderGeometry(0.08, 0.08, 4 * 3.3, 8).translate(sx, y0 + 2 * 3.3, sz), '#1b1b1b']);
     for (let i = 0; i < 64; i++) {
       const a = i * 0.45, y = y0 + 0.2 + i * 0.2;
@@ -176,15 +183,40 @@ const yellow: Spec = {
       k.plain.push([new THREE.BoxGeometry(0.02, 0.9, 0.02).translate(0.9, 0.45, 0).rotateY(a).translate(sx, y, sz), '#2a1d18']);
     }
     SOLIDS.add(...k.world(sx, sz), 1.0);
-    // the palisade on square white concrete posts before it
-    for (let z = -6; z <= 6; z += 2.4) {
-      c.push([box(4.6, 4.95, y0, y0 + 2.4, z - 0.17, z + 0.17), '#e9e4d6']);
-      for (let zz = z + 0.25; zz < z + 2.3 && zz < 6; zz += 0.16) k.plain.push([box(4.74, 4.78, y0, y0 + 2.0, zz, zz + 0.04), '#bfc3c6']);
-      SOLIDS.add(...k.world(4.8, z), 0.3);
-    }
     const m = new THREE.Mesh(merge(c), concrete(0.3)); m.castShadow = true; k.meshes.push(m);
   },
 };
 
-/** the Kufuor Centre, the hoarding to the Pent entrance and the building behind Old Pent */
-export const kufuorSite = createSite('kufuor', [kufuor, hoarding, yellow]);
+// ---------- the wall round the yellow building's grounds (the owner's second Pent corrections, pages 5-7) ----------
+// Cream render over a grey foot under a coping, round the building and its car park east of it; on the north the drive
+// from behind Old Pent comes in through an opening (Pent's metal fence runs along outside it: pentagon.ts).
+const WO: [number, number] = [585, -453];
+const YARD = [543, 628, -480, -426], DRIVE = [619, 628];
+const yardWall: Spec = {
+  name: 'wall round the grounds of the building behind Old Pent',
+  axis: [1, 0], origin: WO, storey: 3, style: kufuor.style, roofColor: '#888', fascia: '#888', pitch: 0.1,
+  onGround: true,
+  blocks: [],
+  keep: [],
+  extras: (k) => {
+    const X = (x: number) => x - WO[0], Z = (z: number) => z - WO[1], c: Part[] = [];
+    const seg = (ax: number, az: number, bx: number, bz: number) => {
+      const len = Math.hypot(bx - ax, bz - az), ang = Math.atan2(-(bz - az), bx - ax);
+      for (let t = 0; t < len - 0.01; t += 3) {
+        const t1 = Math.min(len, t + 3), x0 = ax + ((bx - ax) * t) / len, z0 = az + ((bz - az) * t) / len, x1 = ax + ((bx - ax) * t1) / len, z1 = az + ((bz - az) * t1) / len;
+        const y = Math.min(k.ground(X(x0), Z(z0)), k.ground(X(x1), Z(z1))), mx = X((x0 + x1) / 2), mz = Z((z0 + z1) / 2), l = t1 - t;
+        c.push([new THREE.BoxGeometry(l, 0.5, 0.26).rotateY(ang).translate(mx, y + 0.1, mz), '#a9a59c']);
+        c.push([new THREE.BoxGeometry(l, 2.0, 0.22).rotateY(ang).translate(mx, y + 1.35, mz), '#ece3c9']);
+        c.push([new THREE.BoxGeometry(l + 0.04, 0.1, 0.3).rotateY(ang).translate(mx, y + 2.4, mz), '#d9cfb3']);
+        c.push([new THREE.BoxGeometry(0.34, 2.5, 0.34).rotateY(ang).translate(X(x0), y + 1.2, Z(z0)), '#e4dac0']);
+        for (let d = 0; d < l; d += 0.8) SOLIDS.add(x0 + ((x1 - x0) * d) / l, z0 + ((z1 - z0) * d) / l, 0.2);
+      }
+    };
+    const [x0, x1, z0, z1] = YARD;
+    seg(x0, z0, DRIVE[0], z0); seg(DRIVE[1], z0, x1, z0); seg(x1, z0, x1, z1); seg(x1, z1, x0, z1); seg(x0, z1, x0, z0);
+    const m = new THREE.Mesh(merge(c), concrete(0.3)); m.castShadow = true; m.receiveShadow = true; k.meshes.push(m);
+  },
+};
+
+/** the Kufuor Centre, its sheet fence along Annie Jiagge Road, the building behind Old Pent and the wall round it */
+export const kufuorSite = createSite('kufuor', [kufuor, hoarding, yellow, yardWall]);

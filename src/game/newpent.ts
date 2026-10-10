@@ -24,6 +24,7 @@ import { concrete } from './concrete';
 import { rectsOf, type Rect } from './rectilinear';
 import { SOLIDS } from './solids';
 import { stairsOf } from './relief';
+import { car } from './cc';
 
 const NST = 3.2, NF = 4, WHITE_NP = '#f3f2ee', GREY_BASE = '#55585c', ROOF_NP = '#a9472f', FASCIA_NP = '#2f2a28';
 /** where the New Pent blocks stand (the yellow zone on the owner's aerial) */
@@ -42,7 +43,8 @@ function bricks(g: CanvasRenderingContext2D, x: number, y: number, w: number, h:
 /** glass louvre blades in a dark frame (the owner: Pent's windows are glass louvres) */
 function louvres(g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, cols = 2) {
   g.fillStyle = '#2b2e31'; g.fillRect(x - 4, y - 4, w + 8, h + 8);
-  for (let yy = y; yy < y + h - 4; yy += 9) { g.fillStyle = '#a3b8c4'; g.fillRect(x, yy, w, 6); g.fillStyle = '#62798a'; g.fillRect(x, yy + 6, w, 3); }
+  // dark grey glass blades, a faint sheen along each edge (the owner: the louvres look black / dark from outside)
+  for (let yy = y; yy < y + h - 4; yy += 9) { g.fillStyle = '#3d4246'; g.fillRect(x, yy, w, 6); g.fillStyle = '#565d62'; g.fillRect(x, yy, w, 1); g.fillStyle = '#1d2023'; g.fillRect(x, yy + 6, w, 3); }
   g.fillStyle = '#2b2e31'; for (let i = 1; i < cols; i++) g.fillRect(x + (w * i) / cols - 2, y, 4, h);
 }
 /** the long sides behind the balconies (the balconies themselves are geometry): in each bay the balcony's shaded recess,
@@ -215,7 +217,7 @@ const grounds: Spec = {
   axis: [1, 0], origin: SO, storey: 3, style: NP_LONG, roofColor: ROOF_NP, fascia: FASCIA_NP, pitch: 0.4,
   onGround: true,
   blocks: [],
-  keep: [[608 - SO[0], 619 - SO[0], -712 - SO[1], -595 - SO[1]], [633 - SO[0], 650 - SO[0], -770 - SO[1], -650 - SO[1]], [552 - SO[0], 573 - SO[0], -622 - SO[1], -596 - SO[1]], [563 - SO[0], 614 - SO[0], -716 - SO[1], -697 - SO[1]]],
+  keep: [[608 - SO[0], 619 - SO[0], -712 - SO[1], -595 - SO[1]], [633 - SO[0], 656 - SO[0], -770 - SO[1], -650 - SO[1]], [552 - SO[0], 573 - SO[0], -622 - SO[1], -596 - SO[1]], [563 - SO[0], 614 - SO[0], -716 - SO[1], -697 - SO[1]], [557 - SO[0], 613 - SO[0], -601 - SO[1], -586 - SO[1]], [549 - SO[0], 613 - SO[0], -746 - SO[1], -731 - SO[1]]],
   extras: (k) => {
     const X = (x: number) => x - SO[0], Z = (z: number) => z - SO[1];
     const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
@@ -301,8 +303,7 @@ const grounds: Spec = {
         const len = Math.hypot(st.x0 - st.x1, 1.3), ang = Math.atan2(1.3, st.x0 - st.x1);
         k.plain.push([new THREE.BoxGeometry(0.05, 0.05, len).rotateX(ang).translate(X(x + 0.1), 1.0 + 0.65, Z((st.x0 + st.x1) / 2)), '#a9adb1']);
       }
-      // the gravel car park
-      k.plain.push([B(563, 614, 0.01, 0.035, -711.1, -697.6), '#8a8178']);
+      // (the car park below it: carParks below)
       // benches and trees on top
       for (const x of [578, 584.5, 591, 604]) {
         const z = -714.0, y = gy(x, z);
@@ -316,6 +317,44 @@ const grounds: Spec = {
         for (const [dx, dy, dz, r] of [[0, 7.2, 0, 3.4], [2.2, 6.4, -1.3, 2.4], [-2.0, 6.6, 1.4, 2.6]]) k.plain.push([new THREE.IcosahedronGeometry(r, 1).scale(1, 0.65, 1).translate(X(x) + dx, y + dy, Z(z) + dz), '#3f6b2c']);
         SOLIDS.add(x, z, 0.45);
       } }
+    // ----- the car parks (the owner's second Pent corrections: the blocks' car parks paved in concrete, cars parked in
+    // them; photos of Block A's front and of the car park along its back wing): before the front structures of Blocks A
+    // and B toward the road, below the rise behind Block A, and along the drive on Block C's west side
+    { const CAR = ['#e9e9ea', '#1b1d22', '#9aa1a8', '#7a1e1e', '#2b3b5a', '#c9ccd0', '#3d4a3f', '#a33a2a'];
+      let ci = 0;
+      const pad = (x0: number, x1: number, z0: number, z1: number) => {
+        const y = Math.min(gy(x0, z0), gy(x1, z1), gy(x0, z1), gy(x1, z0));
+        k.plain.push([B(x0, x1, y + 0.005, y + 0.04, z0, z1), '#b3afa6']);
+        for (let x = x0 + 6; x < x1 - 1; x += 6) k.plain.push([B(x - 0.02, x + 0.02, y + 0.04, y + 0.043, z0, z1), '#8f8b83']);
+        return y;
+      };
+      /** a row of bays along x at z (the bays' lines from za to zb), a car in most; the cars nose toward zb */
+      const rowX = (x0: number, x1: number, za: number, zb: number, y: number, skip: [number, number][] = []) => {
+        for (let x = x0; x + 2.6 <= x1; x += 2.7) {
+          if (skip.some(([a, b]) => x + 2.6 > a && x < b)) continue;
+          k.plain.push([B(x, x + 0.1, y + 0.04, y + 0.045, Math.min(za, zb), Math.max(za, zb)), '#ecebe4']);
+          if ((ci * 7 + 3) % 5 !== 0) car(k, X(x + 1.35), Z((za + zb) / 2), CAR[ci % CAR.length], y + 0.04, zb < za ? 0 : Math.PI);
+          ci++;
+        }
+      };
+      /** the same along z at x, the cars nosing toward xb */
+      const rowZ = (z0: number, z1: number, xa: number, xb: number, y: number) => {
+        for (let z = z0; z + 2.6 <= z1; z += 2.7) {
+          k.plain.push([B(Math.min(xa, xb), Math.max(xa, xb), y + 0.04, y + 0.045, z, z + 0.1), '#ecebe4']);
+          if ((ci * 7 + 3) % 5 !== 0) car(k, X((xa + xb) / 2), Z(z + 1.35), CAR[ci % CAR.length], y + 0.04, xb < xa ? Math.PI / 2 : -Math.PI / 2);
+          ci++;
+        }
+      };
+      // Block A, before the front structures
+      { const y = pad(557.5, 612, -600.5, -586.5); rowX(557.5, 612, -593.8, -599.4, y, [[561.5, 566.5]]); }
+      // below the rise behind Block A, along the back wing and the retaining wall (clear of the steps)
+      { const y = pad(563, 614, -711.1, -697.6); rowX(565, 612, -703.4, -697.8, y); rowX(565, 612, -705.2, -710.8, y, [[593.5, 601]]); }
+      // Block B, before the front structures either side of the entrance
+      { const y = pad(549.5, 567.5, -740, -731.5); rowX(550, 567.5, -733, -738.6, y); }
+      { const y = pad(585.5, 612, -745, -731.5); rowX(586, 612, -733, -738.6, y); rowX(586, 612, -744.6, -739.2, y); }
+      // Block C, along the drive on its west side
+      { const y = pad(636.5, 643.8, -690, -664); rowZ(-689.5, -664, 643.6, 638.0, y); }
+      { const y = pad(650.5, 655.0, -690, -672); rowZ(-689.5, -672, 650.6, 655.0, y); } }
     // ----- before Block A's entrance (the owner's Pent PDF, pages 21-24): the forecourt of red hexagonal pavers; the open
     // way through the ground floor of the front structure east of the porch (no gate); west of the porch, before the
     // other front structure's large ground-floor windows, a terrace closed by low walls of brick panels in grey frames,

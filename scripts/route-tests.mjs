@@ -544,6 +544,17 @@ try {
     if (fs.frames().length !== 3) fail('expected the Shell Select supermarket, the tyre shop and the filling station forecourt (owner PDF)');
     for (const [x, z] of [[735, -601], [795, -640]]) { const b = buildingAt(x, z); if (!b || !fs.replaces(b)) fail(`the building at ${x},${z} by the filling station is not the one the owner shows`); }
   }
+  // owner's second Pent corrections: Pent's cream metal fence all round (past Blocks B and C, behind Old Pent), the
+  // Kufuor Centre's sheets only along the road and its south side, the wall round the yellow building's grounds, the
+  // wood behind the School of Engineering Sciences
+  {
+    const names = (s) => s.frames().map((f) => f.name);
+    const pn = names((await server.ssrLoadModule('/src/game/pentagon.ts')).pentagon), kn = names((await server.ssrLoadModule('/src/game/kufuor.ts')).kufuorSite);
+    if (!pn.includes('Pent metal fence')) fail('Pent: the cream metal fence round Pent is missing (owner)');
+    if (!kn.includes('wall round the grounds of the building behind Old Pent')) fail('the wall round the yellow building\'s grounds is missing (owner)');
+    const inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
+    for (const [x, z] of [[490, -500], [470, -470]]) if (!cm.AREAS.some((a) => a.kind === 'wood' && inA(a, x, z))) fail(`no wood at ${x},${z} behind the School of Engineering Sciences (owner)`);
+  }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

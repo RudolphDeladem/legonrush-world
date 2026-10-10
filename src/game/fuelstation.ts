@@ -8,9 +8,10 @@
 //   doors, the Select sign, blue bollards before it.
 // - The tyre and mechanic shop north of the forecourt road (red mark): a white one-floor building behind a long canopy
 //   on posts, its fascia a row of purple boards with tyre adverts, red tyre racks under it.
-// - On the south edge: the red and black Sweet Top Bites container kiosk, a blue tent beside it, a coconut palm, a small
-//   white store; the site closed by a short white wall (the black line on the owner's map) with an open way in on its
-//   south side (blue).
+// - On the south edge: a small white store, the open way in, then the red and black Sweet Top Bites restaurant with the
+//   delivery motorbikes before it, a blue tent, a small kiosk and a coconut palm (the owner's second Pent corrections);
+//   the site closed by a short white wall (the black line on the owner's map) with an open way in on its south side
+//   (blue).
 import * as THREE from 'three';
 import { box, merge, tri2, type Part } from './modelkit';
 import { PL, createSite, render, type Spec, type Style } from './blocks';
@@ -135,24 +136,56 @@ const forecourt: Spec = {
       k.signs.push({ text: 'V-Power', x: X(762.5), y: 3.6, z: Z(z) + 0.06, ry: 0, w: 0.55, colors: [RED, '#ffffff'] });
       k.plain.push([B(762.47, 762.53, 0.22, 3.2, z - 0.03, z + 0.03), '#9aa0a5']);
     }
-    // the Sweet Top Bites container kiosk, the blue tent, the palm, the small white store
-    { const x0 = 736.5, x1 = 742.5, z0 = -581.0, z1 = -578.6;
-      c.push([B(x0, x1, 0, 2.6, z0, z1), '#1b1b1b']);
-      k.plain.push([B(x0 - 0.1, x1 + 0.1, 2.6, 3.4, z0 - 0.05, z0 + 0.1), RED]);
-      k.signs.push({ text: 'SWEET TOP BITES', x: X((x0 + x1) / 2), y: 3.0, z: Z(z0) - 0.06, ry: Math.PI, w: 4.0, colors: [RED, '#ffffff'] });
-      const g = new THREE.BufferGeometry(), y0 = 2.5, y1 = 2.1;
-      g.setAttribute('position', new THREE.Float32BufferAttribute([X(x0), y0, Z(z0), X(x1), y0, Z(z0), X(x1), y1, Z(z0 - 1.4), X(x0), y1, Z(z0 - 1.4)], 3));
+    // along the south edge east of the white store and the way in (the owner's second Pent corrections, pages 11-13): the
+    // Sweet Top Bites restaurant, black under a red awning, its name on a red lattice along the roof, the delivery
+    // motorbikes parked before it; then the blue tent, the small kiosk with its board, the coconut palm behind
+    pave(760, 792, -584.5, -577.2);
+    { const x0 = 767.0, x1 = 775.0, z0 = -582.6, z1 = -577.8, h = 2.9;
+      c.push([B(x0, x1, 0, h, z0, z1), '#1b1b1b']);
+      k.plain.push([B(x0 + 0.4, x1 - 0.4, 0.5, 2.3, z0 - 0.02, z0), '#2a2d31']);
+      for (let x = x0 + 1.4; x < x1 - 0.4; x += 1.4) k.plain.push([B(x, x + 0.05, 0.5, 2.3, z0 - 0.04, z0 - 0.02), '#555a5f']);
+      k.plain.push([B(x0 + 1.0, x1 - 1.0, 1.95, 2.15, z0 - 0.05, z0 - 0.03), '#c8261e']);
+      const g = new THREE.BufferGeometry(), ya = 2.75, yb = 2.35;
+      g.setAttribute('position', new THREE.Float32BufferAttribute([X(x0 - 0.2), ya, Z(z0), X(x1 + 0.2), ya, Z(z0), X(x1 + 0.2), yb, Z(z0 - 1.5), X(x0 - 0.2), yb, Z(z0 - 1.5)], 3));
       g.setIndex([0, 2, 1, 0, 3, 2, 0, 1, 2, 0, 2, 3]); g.computeVertexNormals(); k.plain.push([g, '#e8352a']);
-      k.plain.push([B(x0 + 0.5, x1 - 0.5, 0.9, 1.9, z0 - 0.02, z0), '#3a3f44']);
-      SOLIDS.add(739.5, -579.8, 3.0); }
-    { const x0 = 729.0, x1 = 735.6, z0 = -581.5, z1 = -577.8;
-      k.plain.push([B(x0, x1, 2.4, 2.6, z0, z1), '#1f4fa8'], [B(x0, x1, 0.6, 2.4, z1 - 0.05, z1), '#1f4fa8']);
+      k.plain.push([B(x0 - 0.2, x1 + 0.2, yb - 0.25, yb, z0 - 1.52, z0 - 1.48), '#c8261e']);
+      // the red lattice on the roof, the name board on it
+      const lz = z0 + 0.3, ly = h, lh = 1.3;
+      for (const [y0, y1] of [[0, 0.08], [lh - 0.08, lh]]) k.plain.push([B(x0, x1, ly + y0, ly + y1, lz - 0.04, lz + 0.04), '#d42a22']);
+      for (let x = x0; x <= x1 + 0.01; x += 1) k.plain.push([B(x - 0.04, x + 0.04, ly, ly + lh, lz - 0.04, lz + 0.04), '#d42a22']);
+      for (let x = x0; x < x1 - 0.01; x += 0.5) k.plain.push([new THREE.BoxGeometry(0.04, Math.hypot(0.5, lh), 0.04).rotateZ((((x - x0) / 0.5) | 0) % 2 ? 0.37 : -0.37).translate(X(x + 0.25), ly + lh / 2, Z(lz)), '#d42a22']);
+      k.plain.push([B(x0 + 1.4, x1 - 1.4, ly + 0.3, ly + 1.0, lz - 0.1, lz - 0.05), '#1b1b1b']);
+      k.signs.push({ text: 'SWEET TOP BITES', x: X((x0 + x1) / 2), y: ly + 0.65, z: Z(lz) - 0.11, ry: Math.PI, w: 4.6, colors: ['#1b1b1b', '#e8352a'] });
+      SOLIDS.add(769, -580.2, 2.4); SOLIDS.add(773, -580.2, 2.4);
+      // the delivery motorbikes before it, their boxes on the back
+      const moto = (x: number, z: number, ry: number, col: string, boxCol: string) => {
+        const parts: [THREE.BufferGeometry, string][] = [
+          [new THREE.CylinderGeometry(0.3, 0.3, 0.1, 12).rotateZ(Math.PI / 2).translate(0, 0.3, 0.65), '#18191b'],
+          [new THREE.CylinderGeometry(0.3, 0.3, 0.1, 12).rotateZ(Math.PI / 2).translate(0, 0.3, -0.65), '#18191b'],
+          [box(-0.13, 0.13, 0.35, 0.72, -0.6, 0.5), col], [box(-0.16, 0.16, 0.72, 0.84, -0.5, 0.15), '#1b1b1b'],
+          [box(-0.05, 0.05, 0.4, 1.05, 0.5, 0.6), '#3a3a3a'], [box(-0.36, 0.36, 1.0, 1.05, 0.52, 0.58), '#2a2a2a'],
+          [box(-0.26, 0.26, 0.84, 1.3, -0.9, -0.42), boxCol],
+        ];
+        for (const [gg, cc] of parts) k.plain.push([gg.rotateY(ry).translate(X(x), 0.03, Z(z)), cc]);
+        SOLIDS.add(x, z, 0.6);
+      };
+      [[767.8, '#c8261e', '#c8261e'], [769.3, '#1b1b1b', '#e8352a'], [770.8, '#2b62b8', '#f2c400'], [772.4, '#c8261e', '#1b1b1b'], [774.1, '#e9e9e6', '#e8352a']].forEach(([x, col, bc], i) => moto(x as number, -585.0, 0.15 - (i % 2) * 0.3, col as string, bc as string)); }
+    { const x0 = 776.4, x1 = 782.6, z0 = -582.0, z1 = -578.2;
+      k.plain.push([B(x0, x1, 2.4, 2.6, z0, z1), '#1f4fa8'], [B(x0, x1, 0.6, 2.4, z1 - 0.05, z1), '#1f4fa8'], [B(x0, x0 + 0.05, 0.6, 2.4, z0, z1), '#1f4fa8']);
       for (const x of [x0, x1]) for (const z of [z0, z1]) k.plain.push([B(x - 0.04, x + 0.04, 0, 2.4, z - 0.04, z + 0.04), '#9aa0a5']);
-      SOLIDS.add(732.3, -579.6, 2.4); }
-    { const px = X(744.2), pz = Z(-578.4), h = 9;
+      for (const x of [778, 780.5]) k.plain.push([B(x - 0.4, x + 0.4, 0.7, 0.75, -580.6, -579.8), '#e9e9e6'], [B(x - 0.04, x + 0.04, 0, 0.7, -580.24, -580.16), '#9aa0a5']);
+      SOLIDS.add(779.5, -580.1, 2.4); }
+    { const x0 = 784.0, x1 = 786.6, z0 = -581.6, z1 = -578.6;
+      c.push([B(x0, x1, 0, 2.5, z0, z1), '#d9d6cc']);
+      k.plain.push([B(x0 + 0.3, x1 - 0.3, 1.0, 1.9, z0 - 0.02, z0), '#2b2d30'], [B(x0 + 0.25, x1 - 0.25, 0.95, 1.0, z0 - 0.4, z0), '#8a6a4a']);
+      k.plain.push([B(x0 - 0.2, x1 + 0.2, 2.5, 2.65, z0 - 0.6, z1 + 0.2), '#5b5f60'], [B(x0, x1, 2.65, 3.25, z0 - 0.04, z0), '#1b1b1b']);
+      k.signs.push({ text: 'FOOD', x: X((x0 + x1) / 2), y: 2.95, z: Z(z0) - 0.05, ry: Math.PI, w: 1.6, colors: ['#1b1b1b', '#f2c400'] });
+      SOLIDS.add(785.3, -580.1, 1.8); }
+    { const px = X(775.8), pz = Z(-577.4), h = 9;
       k.plain.push([new THREE.CylinderGeometry(0.17, 0.25, h, 7).translate(px, h / 2, pz), '#8a7d6b']);
       for (let i = 0; i < 11; i++) k.plain.push([new THREE.ConeGeometry(0.45, 3.6, 3).rotateX(Math.PI / 2).translate(0, 0, 1.8).scale(1, 0.22, 1).rotateX(0.25 + (i % 3) * 0.2).rotateY((i / 11) * Math.PI * 2).translate(px, h + 0.2, pz), '#4c8a2f']);
-      SOLIDS.add(744.2, -578.4, 0.3); }
+      SOLIDS.add(775.8, -577.4, 0.3); }
+    // the small white store west of the way in
     c.push([B(754.5, 760.0, 0, 2.6, -581.2, -578.0), WALL]);
     k.plain.push([B(754.4, 760.1, 2.6, 2.8, -581.3, -577.9), '#5b3f8a']);
     for (let x = 755; x < 759.5; x += 0.9) k.plain.push([B(x, x + 0.7, 0.2, 2.2, -581.25, -581.2), '#a9adb1']);
