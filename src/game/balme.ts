@@ -17,8 +17,8 @@
 // Quadrangle), on the OSM outline (relation 7304886) with its five courtyards: a tall centre block under a stack of
 // hipped roofs rising to the clock tower and its red spire, a one-floor entrance range in front of it, two-floor
 // inner wings running north-south either side with their hipped ends forward of the entrance, two-floor ranges
-// across the middle and along the north, and four-floor outer wings with arms reaching east and west. Behind the
-// library, the round fountain with its blue sculpture in the Kuffour Quadrangle.
+// across the middle and along the north, and four-floor outer wings with arms reaching east and west. The Kuffour
+// Quadrangle behind the library, its fountain and monuments: kuffourgarden.ts.
 import * as THREE from 'three';
 import { WHITE, box, canvas, merge, tri2, type Part } from './modelkit';
 import { BAND, PL, createSite, gableZ, render, window_, type Block, type Kit, type Spec, type Style } from './blocks';
@@ -464,6 +464,18 @@ const LIB_TALL: Style = {
   draw: (g) => { render(g, '#f7f5ef'); window_(g, [96, 18, 64, 220], '#ffffff', 1, 0.2); window_(g, [96, 256 + 24, 64, 214], '#ffffff', 1, 0.2); },
 };
 const TILE = '#b9592f';
+/** the pavilion on the north front before the tower (the owner's Kuffour Quadrangle brief, pair 2): round-arched dark
+ *  openings below, windows above */
+const LIB_ARCH: Style = {
+  bay: 3.4,
+  up: [[86, 48, 84, 150]],
+  ground: [[78, 256 + 40, 100, 216]],
+  draw: (g) => {
+    render(g, '#f7f5ef'); window_(g, [86, 48, 84, 150], '#ffffff', 2, 0.3);
+    g.fillStyle = '#2c2925'; g.beginPath(); g.moveTo(78, 512); g.lineTo(78, 256 + 90); g.arc(128, 256 + 90, 50, Math.PI, 0); g.lineTo(178, 512); g.closePath(); g.fill();
+    g.strokeStyle = '#e6e2d8'; g.lineWidth = 6; g.beginPath(); g.arc(128, 256 + 90, 53, Math.PI, 0); g.stroke();
+  },
+};
 /** a tiled roof sloping from an outer rectangle at y0 up to an inner one at y1 (round a tower stage) */
 function collar(k: Kit, [ox0, ox1, oz0, oz1]: number[], [ix0, ix1, iz0, iz1]: number[], y0: number, y1: number) {
   k.roof.quad([ox0, y0, oz0], [ox1, y0, oz0], [ix1, y1, iz0], [ix0, y1, iz0]);
@@ -496,6 +508,7 @@ const library: Spec = {
   axis: [1, 0], origin: LO, storey: 4.4, style: LIB_WALL, roofColor: TILE, fascia: '#f7f5ef', pitch: 0.62,
   blocks: [
     L(-45, 57.1, -56.3, -48.3, 2), // the north range
+    L(-3.6, 13.9, -61.6, -56.3, 2, { pitch: 0.55, faces: { z0: LIB_ARCH } }), // its pavilion before the tower, arched below (the Kuffour Quadrangle brief, pair 2)
     L(-23.9, -9.2, -58.3, 11.3, 2), // the inner west wing, its hipped end forward of the entrance
     L(19.6, 34.5, -58.3, 11.3, 2), // the inner east wing
     L(-45, -23.9, -32.7, -18.1, 2), // the range across the middle, west
@@ -683,28 +696,7 @@ const libraryWings: Spec = {
   },
 };
 
-// ---------- the fountain in the Kuffour Quadrangle, behind the library ----------
-const FO: [number, number] = [5.4, -124.8];
-const fountain: Spec = {
-  name: 'Kuffour Quadrangle fountain',
-  axis: [1, 0], origin: FO, storey: 3, style: LIB_WALL, roofColor: TILE, fascia: WHITE, pitch: 0.5,
-  blocks: [],
-  keep: [[-7, 7, -7, 7]],
-  extras: (k: Kit) => {
-    // a round basin with a white rim banded in blue, a blue-and-white pedestal under a square blue table, and on it
-    // the blue sculpture of interlocking rings (owner's photo from behind the library)
-    const basin = new THREE.Shape().absarc(0, 0, 6.4, 0, Math.PI * 2, false);
-    basin.holes.push(new THREE.Path().absarc(0, 0, 6.0, 0, Math.PI * 2, true));
-    k.plain.push([new THREE.ExtrudeGeometry(basin, { depth: 0.6, bevelEnabled: false, curveSegments: 40 }).rotateX(-Math.PI / 2), '#f3f1ec']);
-    k.plain.push([new THREE.CylinderGeometry(6.43, 6.43, 0.2, 40, 1, true).translate(0, 0.42, 0), '#2f7fc8']);
-    k.plain.push([new THREE.CircleGeometry(6.0, 40).rotateX(-Math.PI / 2).translate(0, 0.42, 0), '#4f9fcf']);
-    k.plain.push([box(-0.55, 0.55, 0.5, 2.4, -0.55, 0.55), '#3d7fc4']);
-    for (const y of [0.9, 1.5, 2.0]) k.plain.push([box(-0.58, 0.58, y, y + 0.18, -0.58, 0.58), '#f3f1ec']);
-    k.plain.push([box(-1.3, 1.3, 2.4, 2.7, -1.3, 1.3), '#2f7fc8']);
-    k.plain.push([new THREE.TorusGeometry(1.1, 0.2, 10, 28).translate(0, 3.9, 0), '#4a90d0']);
-    k.plain.push([new THREE.TorusGeometry(0.85, 0.18, 10, 24).rotateY(Math.PI / 2).rotateX(0.5).translate(0.2, 3.7, 0), '#9fd0ee']);
-  },
-};
+// (the Kuffour Quadrangle behind the library, its fountain and monuments: kuffourgarden.ts)
 
 // ---------- the long pool in front of the library (the mapped 'Balme Library Fountain') ----------
 const PO: [number, number] = [8, 78];
@@ -821,5 +813,5 @@ const steps: Spec = {
   },
 };
 
-/** the CEDI Conference Centre, the Standard Chartered and Absa building, the Balme Library, the pool in front of it and the Kuffour Quadrangle fountain */
-export const balmeSite = createSite('balme', [cedi, ugcs, banks, opposite, library, libraryWings, pool, steps, fountain]);
+/** the CEDI Conference Centre, the Standard Chartered and Absa building, the Balme Library and the pool in front of it */
+export const balmeSite = createSite('balme', [cedi, ugcs, banks, opposite, library, libraryWings, pool, steps]);

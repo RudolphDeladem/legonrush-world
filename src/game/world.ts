@@ -13,6 +13,7 @@ import { newPentStyle } from './pentagon';
 import { behindPentStyle } from './kufuor';
 import { RELIEF_BOXES, applyRelief, densify, inStairs, reliefGround } from './relief';
 import { NSIA } from './nsia';
+import { KQ } from './kuffour';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, roadClearance, ROAD_WIDTH } from './life';
 
 export const LANES = [-2.4, 0, 2.4];
@@ -494,7 +495,8 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
   // stays, plain, with no edge lines, centre dashes, pavements or decorative trees
   const plain: [number, number][] = [];
   {
-    const [px0, px1, pz0, pz1] = NSIA.plain, inPlain = (d: number) => { const p = track.pose(d); return p.x > px0 && p.x < px1 && p.z > pz0 && p.z < pz1; };
+    // (and by the Kuffour Quadrangle: Hodasi Road and Cruise O'Brien Road have their own edges, kuffourgarden.ts)
+    const inPlain = (d: number) => { const p = track.pose(d); return [NSIA.plain, ...KQ.plain].some(([px0, px1, pz0, pz1]) => p.x > px0 && p.x < px1 && p.z > pz0 && p.z < pz1); };
     let s0 = -1;
     for (let d = 0; d <= L; d += 1) {
       const on = inPlain(d);

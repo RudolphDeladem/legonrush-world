@@ -26,6 +26,9 @@ import { concrete, panel, pierced, stoneMesh } from './concrete';
 import { garden } from './gardens';
 import { SOLIDS } from './solids';
 import { hipRoof } from './waccbip';
+import { KQ } from './kuffour';
+import { broadleaf } from './nsiaroad';
+import { drapeAt, groundCover } from './kuffourgarden';
 
 type R4 = [number, number, number, number];
 const WHITE = '#f2f1ec', BASE = '#8a3a2a', WOODF = '#4a2c1c', TILE = '#b5603f';
@@ -59,6 +62,30 @@ export const BIO_VER: Style = {
     g.fillStyle = '#3a2418'; g.fillRect(24, 256 + 52, 66, 164); g.fillStyle = '#5a3826'; g.fillRect(29, 256 + 57, 56, 159);
     g.fillStyle = '#2a1a12'; g.fillRect(56, 256 + 57, 2, 159);
     paneWin(g, 124, 256 + 70, 104, 116); base(g);
+  },
+};
+/** a dark-framed window divided by horizontal bars (the owner's Kuffour Quadrangle brief, pairs 6 and 7: the department's
+ *  front behind its veranda) */
+const barWin = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) => {
+  g.fillStyle = 'rgba(90,80,70,0.3)'; g.fillRect(x - 6, y - 5, w + 12, h + 10);
+  g.fillStyle = '#2a2420'; g.fillRect(x - 4, y - 4, w + 8, h + 8);
+  const gl = g.createLinearGradient(0, y, 0, y + h); gl.addColorStop(0, '#4c565c'); gl.addColorStop(1, '#1d2226');
+  g.fillStyle = gl; g.fillRect(x, y, w, h);
+  g.fillStyle = '#2a2420';
+  g.fillRect(x + w / 2 - 2, y, 4, h);
+  for (let j = 1; j < 5; j++) g.fillRect(x, y + (h * j) / 5 - 2, w, 4);
+  g.fillStyle = '#ece9e1'; g.fillRect(x - 7, y + h + 4, w + 14, 5);
+};
+/** the department's front behind the veranda: a dark door and a barred window by turns, the vents high up */
+/** the wing's enclosed south end: plain white, the vents, the red-brown foot (its tall narrow opening is modelled) */
+const PB_RETURN: Style = { bay: 3.2, up: [], ground: [], draw: (g) => { render(g, WHITE); speckle(g, 0, 0, 256, 512, 500, ['rgba(130,124,110,0.15)']); vents(g); base(g); } };
+export const PB_FRONT: Style = {
+  bay: 3.4, up: [], ground: [[22, 256 + 50, 62, 166], [118, 256 + 66, 112, 104]],
+  draw: (g) => {
+    render(g, WHITE); speckle(g, 0, 0, 256, 512, 400, ['rgba(130,124,110,0.12)']); vents(g);
+    g.fillStyle = '#2a1d16'; g.fillRect(22, 256 + 50, 62, 166); g.fillStyle = '#4a3326'; g.fillRect(27, 256 + 55, 52, 161);
+    for (let y = 256 + 62; y < 256 + 120; y += 10) { g.fillStyle = '#2a1d16'; g.fillRect(30, y, 46, 4); }
+    barWin(g, 118, 256 + 66, 112, 104); base(g);
   },
 };
 export interface BioRange { r: R4; ver?: Face[] }
@@ -149,6 +176,52 @@ export function ashoka(k: Kit, x: number, z: number, h: number, seed: number) {
   k.plain.push([new THREE.ConeGeometry(0.28, 0.9, 7).translate(x, y + h + 0.35, z), '#3a5e2e']);
 }
 
+/** the department's frontage toward J.K.M. Hodasi Road (the owner's Kuffour Quadrangle brief, pairs 6 and 7; the
+ *  adjustable numbers in kuffour.ts): the veranda along the west wing's east face into the inside corner, the wing's
+ *  enclosed south end with its tall narrow dark opening, the air conditioner on the wall at one bay, the narrow concrete
+ *  edging between the shaded verge and the lawn, the verge's patchy grass, soil and litter, the trees and the shrubs
+ *  close to the walls */
+function kqFrontage(k: Kit, c: Part[]) {
+  const V = KQ.veranda, B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(x0 - PO[0], x1 - PO[0], y0, y1, z0 - PO[1], z1 - PO[1]);
+  frontVerandah(k, PO, c, V.z0, V.z1, V.x, 1, false);
+  // the enclosed return: its face toward the veranda, a tall narrow dark opening in it
+  const ex = 67.85, e = k.wallTop(1);
+  k.plain.push([B(ex, ex + 0.03, 0.25, 2.75, V.z1 + 0.5, V.z1 + 1.15), '#1d1a17'], [B(ex + 0.02, ex + 0.05, 0.25, 2.8, V.z1 + 0.42, V.z1 + 0.5), '#ece9e1'], [B(ex + 0.02, ex + 0.05, 0.25, 2.8, V.z1 + 1.15, V.z1 + 1.23), '#ece9e1']);
+  k.plain.push([B(ex - 0.2, ex + 0.05, e - 0.75, e - 0.62, V.z1 + 0.6, V.z1 + 2.2), '#2a2622']);
+  // the air conditioner on the wall at one bay, its pipe down to the ground
+  const ax = KQ.acBay, wz = -191.4 + 0.02;
+  c.push([B(ax - 0.42, ax + 0.42, 2.25, 2.78, wz, wz + 0.28), '#e4e3df'], [B(ax - 0.36, ax + 0.36, 2.3, 2.34, wz + 0.28, wz + 0.29), '#9b9a96']);
+  for (let y = 2.4; y < 2.7; y += 0.06) c.push([B(ax - 0.36, ax + 0.36, y, y + 0.02, wz + 0.28, wz + 0.295), '#b9b8b3']);
+  c.push([B(ax + 0.46, ax + 0.5, 0.2, 2.4, wz, wz + 0.04), '#d8d6cf'], [B(ax + 0.3, ax + 0.5, 2.36, 2.4, wz, wz + 0.04), '#d8d6cf']);
+  // the edging strip between the verge and the lawn
+  const [[sx0, sz0], [sx1, sz1]] = KQ.strip, len = Math.hypot(sx1 - sx0, sz1 - sz0);
+  c.push([new THREE.BoxGeometry(len, 0.12, 0.3).rotateY(-Math.atan2(sz1 - sz0, sx1 - sx0)).translate((sx0 + sx1) / 2 - PO[0], 0.04, (sz0 + sz1) / 2 - PO[1]), '#b5b0a5']);
+  // the verge between the strip and the road: patchy dry grass, red earth, leaf litter
+  const hs = (x: number, z: number) => { const v = Math.sin(x * 127.1 + z * 311.7) * 43758.5453; return v - Math.floor(v); };
+  k.meshes.push(new THREE.Mesh(drapeAt(PO, 42, 122, -173.85, -165.2, 0.5, 0.03, (x, z) => {
+    const n = Math.sin(x * 0.37 + Math.sin(z * 0.5)) * 0.5 + 0.5, m = hs(Math.floor(x * 1.3), Math.floor(z * 1.3));
+    return m > 0.72 ? [0.55, 0.42, 0.3] : n > 0.6 ? [0.5, 0.48, 0.3] : [0.36 + m * 0.08, 0.42 + m * 0.05, 0.24];
+  }), groundCover()));
+  k.meshes.push(new THREE.Mesh(drapeAt(PO, 42, 122, -188.9, -174.15, 1, 0.03, (x, z) => {
+    if (x > 65 && x < 68.2 && z < -180) return null;
+    const m = hs(Math.floor(x * 0.7), Math.floor(z * 0.7));
+    return [0.3 + m * 0.06, 0.45 + m * 0.04, 0.22];
+  }), groundCover()));
+  // shrubs close to the walls: the big ones east of the corner (pair 7), the smaller under the veranda's edge
+  const g = garden([40, 125, -195, -165]); g.reseed(173);
+  for (const [x, z, r] of [[96.5, -188.2, 1.25], [99.2, -187.8, 1.4], [101.8, -188.4, 1.1], [73.5, -188.4, 0.8], [79.8, -188.5, 0.7], [68.8, -186.5, 0.7]] as [number, number, number][]) {
+    k.plain.push([new THREE.IcosahedronGeometry(r, 1).scale(1.2, 0.9, 1).translate(x - PO[0], r * 0.75, z - PO[1]), ['#2f5226', '#3a632d', '#2a4a22'][Math.round(x) % 3]]);
+  }
+  // the trees: the slender forked tree before the corner (pair 6), the reddish trunk with low spreading limbs and the
+  // dense canopy further east (pair 7), more crowns along the frontage
+  const parts: Part[] = [];
+  broadleaf(null, parts, 74.5, -177.2, { h: 4.2, spread: 8, seed: 5, origin: PO });
+  broadleaf(null, parts, 90.5, -175.5, { h: 3.6, spread: 10, seed: 9, origin: PO, round: true });
+  broadleaf(null, parts, 104.5, -179.5, { h: 4.5, spread: 11, seed: 13, origin: PO, round: true });
+  broadleaf(null, parts, 57.5, -172.5, { h: 5, spread: 10, seed: 17, origin: PO, round: true });
+  const m = new THREE.Mesh(merge(parts), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.92 })); m.castShadow = true; m.receiveShadow = true; k.meshes.push(m);
+}
+
 // ---------- the Department of Plant and Environmental Biology (views 8 to 11) ----------
 const PO: [number, number] = [80, -210];
 const PLANT: BioRange[] = [
@@ -158,7 +231,7 @@ const PLANT: BioRange[] = [
   { r: [108.3, 122.3, -229.4, -205.4], ver: ['x0'] },
   { r: [38.9, 190.2, -205.4, -191.4], ver: ['z0'] },
   { r: [35.5, 38.9, -203.0, -193.3] },
-  { r: [51.7, 65.6, -191.4, -176.3] }, { r: [108.5, 122.2, -191.4, -176.5] },
+  { r: [51.7, 65.6, -191.4, -180.4] }, { r: [51.7, 67.85, -180.4, -176.3] }, { r: [108.5, 122.2, -191.4, -176.5] },
 ];
 const plant: Spec = (() => {
   const X = (x: number) => x - PO[0], Z = (z: number) => z - PO[1];
@@ -166,14 +239,16 @@ const plant: Spec = (() => {
   return {
     name: 'Department of Plant and Environmental Biology', axis: [1, 0], origin: PO, storey: 3.5, style: BIO_WALL, roofColor: TILE, fascia: '#f0eee8', pitch: 0.42, plinth: BASE,
     replaces: [[80, -198]],
-    blocks: bioBlocks(X, Z, PLANT),
-    keep: [[X(22), X(51.7), Z(-232), Z(-200)], [X(65.5), X(108.3), Z(-229.4), Z(-205.4)]],
+    blocks: bioBlocks(X, Z, PLANT).map((b, i) => (i === 5 ? { ...b, faces: { ...b.faces, z1: PB_FRONT } } : i === 7 ? { ...b, faces: { ...b.faces, x1: PB_FRONT } } : i === 8 ? { ...b, faces: { ...b.faces, z1: PB_RETURN, x1: PB_RETURN } } : b)),
+    // (and the frontage toward Hodasi Road, the owner's Kuffour Quadrangle brief: no generic trees or lamps on it)
+    keep: [[X(22), X(51.7), Z(-232), Z(-200)], [X(65.5), X(108.3), Z(-229.4), Z(-205.4)], [X(40), X(125), Z(-191), Z(-165)]],
     extras: (k: Kit) => {
       const c: Part[] = [], st: Part[] = [];
       bioParts(k, PO, PLANT, c);
       // the front toward J.K.M. Hodasi Road and the Chemistry Extension (the owner's corrections PDF, page 2): the long
       // range's south face behind its row of pillars, between the wings standing out south
       for (const [a0, a1] of [[38.9, 51.7], [65.6, 108.5], [122.2, 190.2]]) frontVerandah(k, PO, c, a0, a1, -191.4, 1, true);
+      kqFrontage(k, c);
       // ----- the entrance (views 9 to 11) in the open court on the west: the terrace, its rubble-stone walls, the steps
       const tx0 = 45.0, tx1 = 51.7, tz0 = -228.8, tz1 = -205.8, th = 0.75, sz0 = -219.2, sz1 = -214.8;
       c.push([B(tx0, tx1, 0, th, tz0, tz1), '#cfc9bc']);
@@ -207,7 +282,7 @@ const plant: Spec = (() => {
       k.plain.push([new THREE.CylinderGeometry(2.4, 2.4, 0.3, 24).translate(X(31.5), 0.15, Z(-236.5)), '#d8d4ca'], [new THREE.CylinderGeometry(2.2, 2.2, 0.32, 24).translate(X(31.5), 0.16, Z(-236.5)), '#3f5a2c']);
       g.tree(k, X(31.5), Z(-236.5), 2.6);
       k.plain.push([new THREE.TorusGeometry(2.2, 0.12, 6, 24).rotateX(Math.PI / 2).translate(X(92), 0.12, Z(-217.5)), '#e8e6e0']);
-      for (const [x, z, s] of [[72, -224, 1.3], [101, -210.5, 1.2], [58.5, -183.5, 1.6], [88, -183, 1.8], [100, -186, 1.4], [140, -183, 1.6], [168, -184, 1.5], [75, -210, 1.0]] as [number, number, number][]) g.tree(k, X(x), Z(z), s);
+      for (const [x, z, s] of [[72, -224, 1.3], [101, -210.5, 1.2], [140, -183, 1.6], [168, -184, 1.5], [75, -210, 1.0]] as [number, number, number][]) g.tree(k, X(x), Z(z), s);
       // the big trees between the complex and Ebenezer Laing Road (the aerial: dense), and along the avenue (view 1)
       g.reseed(137);
       g.scatter(26, 128, -294, -248, 70, (x, z) => g.tree(k, X(x), Z(z), 1.6 + g.rand() * 1.2));

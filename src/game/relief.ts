@@ -20,6 +20,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { NSIA, laneX } from './nsia';
+import { KQ } from './kuffour';
 
 interface Hollow {
   /** hollow: sunk `depth` below the ground; terrace: raised `depth` above it */
@@ -138,7 +139,15 @@ const ZONES: Zone[] = [
   // the Chemistry Department Extension behind the Balme Library (owner's reference PDF, pages 25-29): it stands about
   // 1 m up behind a rubble-stone retaining wall topped by a clipped hedge, along Cruise O'Brien Road on the west and
   // J.K.M. Hodasi Road on the north; the ground falls gently on the east and to the lane on the south
-  { kind: 'terrace', x0: 104.4, x1: 207.5, z0: -153.0, z1: -97.0, depth: 1.0, w: 0.3, e: 4, n: 0.3, s: 3.5 },
+  // (the owner's Kuffour Quadrangle brief, pair 5: the wall set back from Cruise O'Brien Road behind a narrow footway
+  // and a grassy rise up to its foot, so that it shows its stone above the grass, not flush with the road)
+  { kind: 'terrace', x0: KQ.croEast.wallX + 0.4, x1: 207.5, z0: -153.0, z1: -97.0, depth: 1.0, w: 0.3, e: 4, n: 0.3, s: 3.5 },
+  { kind: 'terrace', x0: KQ.croEast.wallX + 0.4, x1: 207.5, z0: KQ.croEast.z0, z1: KQ.croEast.z1, depth: KQ.croEast.rise, w: 3.6, e: 0.3, n: 0.3, s: 0.3 },
+  // the Kuffour Quadrangle (the owner's brief, pairs 1 to 3): the garden stands a little above the roads round it,
+  // held by the low stone walls along Hodasi Road and the road south of it, where they jog out toward the roads in the
+  // middle; on the west and east it falls gently to the paths
+  { kind: 'terrace', x0: KQ.garden.x0, x1: KQ.garden.x1, z0: KQ.garden.z0, z1: KQ.garden.z1, depth: KQ.garden.h, w: 1.6, e: 1.6, n: 0.3, s: 0.3, cell: 0.5 },
+  { kind: 'terrace', x0: KQ.garden.jx0, x1: KQ.garden.jx1, z0: KQ.garden.nz, z1: KQ.garden.sz, depth: KQ.garden.h, w: 0.3, e: 0.3, n: 0.3, s: 0.3, cell: 0.5 },
   // the back of Akuafo Hall Main: the lawn between the south wings stands 0.45 m up behind a low white concrete edge,
   // above the hexagonal pavers before it (owner's second reference PDF, pages 48-54)
   { kind: 'terrace', x0: 138.6, x1: 174.8, z0: 366.4, z1: 381.6, depth: 0.45, w: 0.15, e: 0.15, n: 0.15, s: 0.15 },

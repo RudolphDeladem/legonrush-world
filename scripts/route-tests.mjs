@@ -212,7 +212,7 @@ try {
     if (!b || (floors === 1 ? b.height > 5 : b.height < 5.5 || b.height > 10)) fail(`${n}: not ${floors === 1 ? 'a ground floor only' : 'two floors'} (owner's aerial)`);
   }
   const balmeModels = (await server.ssrLoadModule('/src/game/balme.ts')).balmeSite.frames().map((f) => f.name);
-  for (const n of ['Cedi Conference Centre', 'University of Ghana Computing Systems (UGCS)', 'Standard Chartered and Absa', 'The Balme Library', 'Balme Library wings', 'Balme Library pool', 'Kuffour Quadrangle fountain']) if (!balmeModels.includes(n)) fail(`missing the ${n} model`);
+  for (const n of ['Cedi Conference Centre', 'University of Ghana Computing Systems (UGCS)', 'Standard Chartered and Absa', 'The Balme Library', 'Balme Library wings', 'Balme Library pool']) if (!balmeModels.includes(n)) fail(`missing the ${n} model`);
   { const u = BUILDINGS.find((b) => b.name === 'University of Ghana Computing Systems (UGCS)'); if (!u || u.height < 13 || u.height > 18) fail(`UGCS: height ${u?.height}, the owner's photo shows four floors`); }
   // the Balme Library (owner's photos): entered by the arched door in the middle of the south front
   { const e = ann('The Balme Library'); if (!e || Math.hypot(e[0] - 5.2, e[1] - 6.9) > 2) fail('The Balme Library: the entrance is not the arched door on the south front'); }
@@ -586,6 +586,38 @@ try {
       if (worst > 0.12) fail(`NSIA brief: the ride from ${a} to ${b} jolts (${worst.toFixed(2)} m in half a metre)`);
     }
     if ((await server.ssrLoadModule('/src/game/nsiaroad.ts')).nsiaSite.frames().length !== 1) fail('expected the NSIA Road model');
+  }
+  // the owner's Kuffour Quadrangle brief: the garden a little above the roads behind its low walls, Hodasi Road and
+  // Cruise O'Brien Road at road level and smooth to ride both ways, the walls, kerbs and the open drain outside the
+  // riding lanes, the stone wall on Cruise O'Brien Road's east set back behind a grassy rise
+  {
+    const g = (await server.ssrLoadModule('/src/game/relief.ts')).groundHeight, { KQ, croX } = await server.ssrLoadModule('/src/game/kuffour.ts');
+    const ROAD_HALF = 3.8; // world.ts: the ridden road's half width
+    const G = KQ.garden;
+    for (const [x, z] of [[-20, -140], [30, -110], [5.7, -124.3], [0, -155.5], [10, -93]]) if (Math.abs(g(x, z) - G.h) > 0.02) fail(`Kuffour brief: the garden is not raised at ${x},${z} (${g(x, z).toFixed(2)})`);
+    const lines = {
+      'J.K.M. Hodasi Road': Array.from({ length: 280 }, (_, i) => [-40 + i * 0.5, -162]),
+      "Cruise O'Brien Road": Array.from({ length: 150 }, (_, i) => { const z = -160 + i * 0.5; return [croX(z), z]; }),
+    };
+    for (const [n, pts] of Object.entries(lines)) {
+      let worst = 0;
+      for (const lat of [-ROAD_HALF, 0, ROAD_HALF]) for (const [x, z] of pts) { const nx = n.startsWith('J') ? 0 : 1, nz = n.startsWith('J') ? 1 : 0; worst = Math.max(worst, Math.abs(g(x + nx * lat, z + nz * lat))); }
+      if (worst > 0.02) fail(`Kuffour brief: ${n} is not at road level across its riding width (${worst.toFixed(2)} m)`);
+    }
+    if (!(G.nz - KQ.wall.thick > -162 + ROAD_HALF && G.sz + KQ.wall.thick < -88 - 2.3)) fail('Kuffour brief: a garden wall stands in a road');
+    if (!(KQ.hoard.x1 < croX(-130) - ROAD_HALF - 1.2)) fail('Kuffour brief: the hoarding is too close to Cruise O\'Brien Road for its kerb and drain');
+    { const W = KQ.croEast.wallX, rise = g(W - 0.05, -125), foot = croX(-125) + 3.1 + KQ.croEast.foot;
+      if (!(rise > 0.3 && rise < 0.6 && g(foot, -125) < 0.05 && g(W + 0.5, -125) > 0.95)) fail(`Kuffour brief: the east wall does not stand set back above a grassy rise (${rise.toFixed(2)})`); }
+    const near = (p, [x0, x1, z0, z1]) => p.x > x0 && p.x < x1 && p.z > z0 && p.z < z1;
+    for (const [a, b, box] of [['Department of Animal Biology and Conservation Science', 'Chemistry Department Extension', [-30, 90, -166, -158]], ['Chemistry Department Extension', 'Department of Animal Biology and Conservation Science', [-30, 90, -166, -158]], ['Department of Plant and Environmental Biology', 'The Balme Library', [92, 103, -150, -95]], ['The Balme Library', 'Department of Plant and Environmental Biology', [92, 103, -150, -95]]]) {
+      const r = rt.exploreRoute(placeByName(a), placeByName(b), 'cycle');
+      if (!r) { fail(`Kuffour brief: no Explore ride from ${a} to ${b}`); continue; }
+      let on = 0, worst = 0;
+      for (const lat of [-2.4, 0, 2.4]) { let prev = null; for (let d = 0; d < r.track.length; d += 0.5) { const p = r.track.pose(d, lat), h = g(p.x, p.z); if (near(p, box)) { on++; if (prev !== null) worst = Math.max(worst, Math.abs(h - prev)); prev = h; } else prev = null; } }
+      if (on < 40) fail(`Kuffour brief: the ride from ${a} to ${b} does not run along the road the brief names`);
+      if (worst > 0.06) fail(`Kuffour brief: the ride from ${a} to ${b} jolts (${worst.toFixed(2)} m in half a metre)`);
+    }
+    if ((await server.ssrLoadModule('/src/game/kuffourgarden.ts')).kuffourSite.frames().length !== 1) fail('expected the Kuffour Quadrangle model');
   }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between

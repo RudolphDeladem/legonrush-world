@@ -146,7 +146,7 @@ function sheet(a: [number, number, number][], b: [number, number, number][]) {
 // ---------- the trees ----------
 /** a mature broadleaf tree (in the frame of a model whose origin is `origin`, NSIA Road's by default): a heavy rough trunk forking high into two or three limbs, a broad crown of overlapping masses
  *  (sparse: a pruned trunk with thin, broken foliage). Its trunk is solid to the bike; roots and litter are not. */
-export function broadleaf(_k: Kit | null, parts: Part[], x: number, z: number, o: { h?: number; spread?: number; sparse?: boolean; lean?: number; seed?: number; origin?: [number, number] } = {}) {
+export function broadleaf(_k: Kit | null, parts: Part[], x: number, z: number, o: { h?: number; spread?: number; sparse?: boolean; lean?: number; seed?: number; origin?: [number, number]; round?: boolean } = {}) {
   const org = o.origin ?? O, X = (v: number) => v - org[0], Z = (v: number) => v - org[1];
   const h = o.h ?? 7.5, spread = o.spread ?? 7, seed = o.seed ?? x * 3 + z, y = gh(x, z);
   const rr = (i: number) => hash(seed + i * 1.7, seed * 0.3 - i);
@@ -172,13 +172,13 @@ export function broadleaf(_k: Kit | null, parts: Part[], x: number, z: number, o
   }
   // the crown: overlapping masses over the limbs' ends and between them, darker underneath
   const greens = o.sparse ? ['#55663a', '#61703f', '#4a5c33'] : ['#2f4a25', '#36552a', '#3e5d2e', '#2a4322', '#45632f'];
-  const masses = o.sparse ? 6 : 14;
+  const masses = o.sparse ? 6 : o.round ? 22 : 14, flat = o.round ? 0.85 : 0.62;
   for (let i = 0; i < masses; i++) {
     const e = ends[i % ends.length], a = rr(20 + i) * Math.PI * 2, d = rr(40 + i) * spread * 0.35, r = (o.sparse ? 0.9 : 1.6) + rr(60 + i) * (o.sparse ? 0.8 : 1.6);
     const cx = e[0] + Math.cos(a) * d, cz = e[2] + Math.sin(a) * d, cy = e[1] + (rr(80 + i) - 0.3) * 1.4;
-    parts.push([new THREE.IcosahedronGeometry(r, 1).scale(1.25, 0.62, 1.25).translate(X(cx), cy, Z(cz)), greens[i % greens.length]]);
+    parts.push([new THREE.IcosahedronGeometry(r, 1).scale(1.25, flat, 1.25).translate(X(cx), cy + (o.round ? (rr(90 + i) - 0.2) * 1.6 : 0), Z(cz)), greens[i % greens.length]]);
   }
-  if (!o.sparse) parts.push([new THREE.IcosahedronGeometry(spread * 0.42, 1).scale(1.3, 0.45, 1.3).translate(X(x) + lean * top * 0.4, y + top + 2.6, Z(z)), '#2c4624']);
+  if (!o.sparse) parts.push([new THREE.IcosahedronGeometry(spread * 0.42, 1).scale(1.3, o.round ? 0.75 : 0.45, 1.3).translate(X(x) + lean * top * 0.4, y + top + (o.round ? 3.0 : 2.6), Z(z)), '#2c4624']);
   SOLIDS.add(x, z, tr * 1.1);
 }
 

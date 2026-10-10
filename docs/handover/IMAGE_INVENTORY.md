@@ -598,3 +598,22 @@ Every photo, screenshot, aerial and marked-up map the owner uploaded, in upload 
 | 592.jpg | 34 | 307x409 | 85 | 2026-10-10 | (NSIA Road reconstruction brief, 16 pages) image 10, pair 5 (real reference) |
 | 593.jpg | 38 | 533x409 | 85 | 2026-10-10 | (NSIA Road reconstruction brief, 16 pages) image 11, pair 6 (current game) |
 | 594.jpg | 37 | 307x409 | 85 | 2026-10-10 | (NSIA Road reconstruction brief, 16 pages) image 12, pair 6 (real reference) |
+| 595.jpg | 124 | 1422x532 | 86 | 2026-10-10 | (Volta Hall corrections, set 1) picture 1: the earlier view of the small buildings before Volta Hall; the owner withdraws the removal of the blue-circled building |
+| 596.jpg | 92 | 900x670 | 86 | 2026-10-10 | (Volta Hall corrections, set 1) image 2: the current game at Volta Hall's south-east section |
+| 597.jpg | 253 | 1280x719 | 86 | 2026-10-10 | (Volta Hall corrections, set 1) image 3: the real south-east section, the stone retaining wall, the Volta Road sign |
+| 598.jpg | 55 | 420x547 | 86 | 2026-10-10 | (Volta Hall corrections, set 1) image 4: the satellite view, yellow arrows along the south side and round the east end |
+| 599.jpg | 137 | 958x842 | 86 | 2026-10-10 | (Kuffour Quadrangle reconstruction brief, 18 pages) image 15, the layout map with the department side marked in yellow |
+| 600.jpg | 43 | 544x409 | 86 | 2026-10-10 | (Kuffour Quadrangle reconstruction brief, 18 pages) image 1, pair 1, the memorial approach (current game) |
+| 601.jpg | 77 | 728x409 | 86 | 2026-10-10 | (Kuffour Quadrangle reconstruction brief, 18 pages) image 2, pair 1 (real reference) |
+| 602.jpg | 37 | 508x409 | 86 | 2026-10-10 | (Kuffour Quadrangle reconstruction brief, 18 pages) image 3, pair 2, the roadside view of the quadrangle (current game) |
+| 603.jpg | 43 | 548x409 | 86 | 2026-10-10 | (Kuffour Quadrangle reconstruction brief, 18 pages) image 4, pair 2 (real reference) |
+| 604.jpg | 42 | 533x409 | 86 | 2026-10-10 | (Kuffour Quadrangle reconstruction brief, 18 pages) image 5, pair 3, the garden edge and zebra crossing (current game) |
+| 605.jpg | 51 | 728x409 | 86 | 2026-10-10 | (Kuffour Quadrangle reconstruction brief, 18 pages) image 6, pair 3 (real reference) |
+| 606.jpg | 36 | 445x409 | 86 | 2026-10-10 | (Kuffour Quadrangle reconstruction brief, 18 pages) image 7, pair 4, the unfinished building and hoarding (current game) |
+| 607.jpg | 60 | 728x409 | 86 | 2026-10-10 | (Kuffour Quadrangle reconstruction brief, 18 pages) image 8, pair 4 (real reference) |
+| 608.jpg | 50 | 564x409 | 86 | 2026-10-10 | (Kuffour Quadrangle reconstruction brief, 18 pages) image 9, pair 5, Cruise O'Brien Road (current game) |
+| 609.jpg | 61 | 728x409 | 86 | 2026-10-10 | (Kuffour Quadrangle reconstruction brief, 18 pages) image 10, pair 5 (real reference) |
+| 610.jpg | 57 | 805x409 | 86 | 2026-10-10 | (Kuffour Quadrangle reconstruction brief, 18 pages) image 11, pair 6, the department veranda (current game) |
+| 611.jpg | 90 | 728x409 | 86 | 2026-10-10 | (Kuffour Quadrangle reconstruction brief, 18 pages) image 12, pair 6 (real reference) |
+| 612.jpg | 39 | 506x409 | 86 | 2026-10-10 | (Kuffour Quadrangle reconstruction brief, 18 pages) image 13, pair 7, the department frontage (current game) |
+| 613.jpg | 102 | 728x409 | 86 | 2026-10-10 | (Kuffour Quadrangle reconstruction brief, 18 pages) image 14, pair 7 (real reference) |

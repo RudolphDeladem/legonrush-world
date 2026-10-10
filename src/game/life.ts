@@ -18,6 +18,7 @@ import { setBlockLights } from './blocks';
 import { SOLIDS } from './solids';
 import { BLOCK_SITES } from './sites';
 import { NSIA } from './nsia';
+import { KQ } from './kuffour';
 
 /** real road widths by class: main, through, residential, service lane, footpath */
 export const ROAD_WIDTH = [9, 7.4, 6.2, 4.6, 2.6];
@@ -116,6 +117,8 @@ for (const [name, hx, hz, dz] of [['Night Market', 22, 22, -6], ['Great Hall', 8
 const inKeepOut = (x: number, z: number, pad = 0) => keepOut.some(([kx, kz, hx, hz]) => Math.abs(x - kx) < hx + pad && Math.abs(z - kz) < hz + pad) || inDiasporaHall(x, z, pad) || BLOCK_SITES.some((s) => s.keepsOut(x, z, pad));
 /** inside a landmark model's footprint (Night Market roofs, Great Hall, Balme Library, the Diaspora halls' courtyards and porches, porches and annexes of the block-modelled buildings) */
 export const inLandmark = (x: number, z: number, pad = 0) => inKeepOut(x, z, pad);
+/** by the Kuffour Quadrangle, where the roads' kerbs, drains and lamps are modelled from the owner's photos */
+const inKqPlain = (x: number, z: number) => KQ.plain.some(([px0, px1, pz0, pz1]) => x > px0 && x < px1 && z > pz0 && z < pz1);
 const freeSpot = (x: number, z: number, r: number) => roadClearance(x, z, r + 6) > r && !buildingAt(x, z, r) && !inKeepOut(x, z, r);
 
 // ---------- the sign atlas ----------
@@ -767,7 +770,7 @@ export function buildCampusLife() {
           lampSide = -lampSide;
           const off = kerbAt + 1.7;
           const x = ax + ux * lt + nx * lampSide * off, z = az + uz * lt + nz * lampSide * off;
-          if (roadClearance(x, z, 8, ri) < 0.5 || buildingAt(x, z, 0.5)) continue;
+          if (roadClearance(x, z, 8, ri) < 0.5 || buildingAt(x, z, 0.5) || inKqPlain(x, z)) continue;
           // the arm reaches out over the road
           const yaw = Math.atan2(-nx * lampSide, -nz * lampSide) - Math.PI / 2;
           cells.p(x, z).add(M.lampPole, yawM(x, 0, z, yaw));
@@ -1083,7 +1086,7 @@ function kerbs(cells: Cells, r: (typeof ROADS)[number], ri: number, at: number) 
         const t = (j / n) * len;
         const x = ax + ux * t + nx * at, z = az + uz * t + nz * at;
         const nearJ = (junction[k] && t < 10) || (junction[k + 1] && len - t < 10);
-        const clear = roadClearance(x + nx * 0.1, z + nz * 0.1, 8, ri) > 0.3 && !onRouteSurface(x, z, ri) && !buildingAt(x, z);
+        const clear = roadClearance(x + nx * 0.1, z + nz * 0.1, 8, ri) > 0.3 && !onRouteSurface(x, z, ri) && !buildingAt(x, z) && !inKqPlain(x, z);
         if (!clear) { flush(); continue; }
         // straight runs away from junctions need only their ends
         const last = run[run.length - 1];
@@ -1141,7 +1144,7 @@ export function buildRoadEdges(map: THREE.Texture) {
         for (let j = 0; j <= n + 1; j++) {
           const t = (Math.min(j, n) / n) * len;
           const x = ax + ux * t, z = az + uz * t;
-          const ok = j <= n && roadClearance(x + nx * (at + 0.8), z + nz * (at + 0.8), 8, ri) > 0.3 && !onRouteSurface(x + nx * (at + 0.5), z + nz * (at + 0.5), ri) && !buildingAt(x + nx * (at + 1), z + nz * (at + 1));
+          const ok = j <= n && !inKqPlain(x, z) && roadClearance(x + nx * (at + 0.8), z + nz * (at + 0.8), 8, ri) > 0.3 && !onRouteSurface(x + nx * (at + 0.5), z + nz * (at + 0.5), ri) && !buildingAt(x + nx * (at + 1), z + nz * (at + 1));
           if (ok && start < 0) start = j;
           if (!ok && start >= 0) {
             const t0 = (start / n) * len, t1 = (Math.min(j - 1, n) / n) * len;

@@ -1848,6 +1848,150 @@ They read `NSIA_VIEWS` in `nsia.ts`. Their stations and headings are provisional
 Two jolts on the Explore rides were there before this work: the climb to Frank Torto's door over the Chemistry
 Extension terrace's edge, and Physics' steps.
 
+## 68. Volta Hall: the front restored and the south-east section (the owner's corrections, set 1)
+
+The pictures are `images/595-598.jpg`.
+
+**The front (picture 1).** In an earlier batch the owner asked for the building circled blue among the small
+buildings before Volta Hall to be deleted and the violet one moved into its place. The owner now says that was a
+mistake, so the section is back as it was (`voltafront.ts`): the substation and its pavilion, the cottage with the red
+iron cage and the big tree, beside the bus stop, the wide building, the fidelity building and BESTIES. In the registry
+the exclusion of `osm:way/773887685` and the reshape of `osm:way/665124067` are removed again, and the cottage keeps
+its one floor (4.5 m).
+
+**The south-east section (images 2-4: the yellow arrows along the south side and round the east end)**
+(`volta.ts`, `relief.ts`):
+
+- **Massing.** The section is three parts joined to the hall:
+  - the long south block, with cream walls, grilled openings upstairs, big black grille windows below, and a dark
+    weathered tile roof;
+  - the gable wing between it and the east end, its gable to the south;
+  - the porch building at the east end, raised onto its own terrace and joined to the hall's terrace. Its west half is
+    a deep porch on three columns, with grille windows behind. Upstairs there is a balcony with a solid parapet and a
+    dark capping, and the upper rooms are set back behind it under a dark hip roof with a deep overhang.
+- **The retaining wall** is a real two-tier stone structure, not a smooth face. It is made of irregular brown, tan and
+  reddish-grey stones (the NSIA Road stone), with pale ledges at each tier. It runs along the south side from x −336
+  to −241, then returns up the east end, with collision all along.
+- **Planting.** Dense dark-green shrubs with red flowers grow along its foot. There is a palm by the porch building,
+  and broadleaf trees stand along Volta Road, placed so the building stays visible.
+- **The sign.** The Volta Road sign is moved to where the photo shows it.
+- **Roof colour.** The satellite view shows terracotta roofs. The photo was taken at dusk, where they read dark. The
+  roofs are a darker weathered tile as a compromise.
+
+## 69. The Kuffour Quadrangle, Hodasi Road, Cruise O'Brien Road and the Plant Biology frontage (the owner's brief)
+
+The brief has seven game/photo pairs and a layout map (image 15); the pictures are `images/599-613.jpg`. The work
+followed the brief's order: layout first, then levels, then massing, then details. The adjustable numbers are in
+`src/game/kuffour.ts`:
+
+- the garden's outline and height;
+- the walls;
+- the approach, the landing, the memorial and the statue;
+- the fountain and the ring of features round it;
+- the zebra crossings;
+- the shell and the hoarding;
+- the kerbs and the drain;
+- the east verge's rise;
+- the veranda;
+- the edging strip;
+- the AC bay;
+- the plain road stretches;
+- the seven comparison cameras (`KQ_VIEWS`, `view=kq1` to `kq7` in the preview).
+
+The map was matched to the game at 4.23 px/m with north up. Nothing is surveyed.
+
+**The garden** (`kuffourgarden.ts`; the old fountain spec has left `balme.ts`):
+
+- **Outline and walls.** The outline comes from the map. A low wall of warm irregular stone with a pale coping runs
+  along Hodasi Road and along the road to the south. It jogs out toward the roads in the middle and is open on the
+  axis.
+- **Ground.** The garden stands 0.4 m above the roads (`relief.ts`, on a 0.5 m grid so the walls hide the banks). On
+  the west and east it falls gently to the paths. A strip of worn reddish earth lies between the asphalt and the wall.
+- **Inside.** A paved square sits behind white planter walls with low hedges.
+  - The round fountain at its centre carries the sculpture of interlocking loops. It is **pale**, as in the brief's
+    newer photos; the owner's earlier photo shows it blue, and `KQ.fountain.sculpture` switches between the two.
+  - Round it is the ring of segmented features from the map: curved water basins to the east, west and south, a
+    curved planted bed to the north, and eight round shrub beds edged in red.
+  - Outside the square are the lawns, the east–west path and the path to the south gate, with low red-painted
+    edging. There are short blue-and-white bollard lights, shrubs with red flowers behind the walls, a few small trees,
+    and the leaning tree by the north-east corner (pair 3).
+
+**The monuments, kept as three separate objects:**
+
+- **The memorial approach (pair 1).** From Hodasi Road a terracotta tiled floor, with pale mended patches, runs
+  between low stone side walls with a broad light coping. Two steps lead up to the red-paved landing with its raised
+  red edge. On the landing stands the black upright memorial on a three-tier pale plinth. Its face carries a portrait
+  in a thin frame; no inscription is invented, only faint lines where the photo shows lettering. Two Christmas palms
+  frame it, about 3 m tall like the photo's. Beside the approach are red-edged beds of variegated plants and flowering
+  shrubs.
+- **The statue (pair 2).** A dark standing figure on a rectangular stone pedestal stands west of the landing.
+- **The sculpture** is on the fountain at the centre.
+
+**Hodasi Road.** There are two zebra crossings: one on the approach's axis and one at x 26.4 from the map (pair 3). The
+generic kerbs, drains, lamps and route paint are off along Hodasi Road and Cruise O'Brien Road here
+(`KQ.plain`: `world.ts` and `life.ts`).
+
+**The library (pair 2).**
+
+- A two-floor pavilion now stands forward of the north range before the tower, with round-arched dark openings below
+  and its own hipped roof. The north front no longer reads as one repeated-window slab.
+- Mature broadleaf trees with rounder, denser crowns (a new `round` option on `broadleaf`) stand between the road and
+  the library and screen its north front.
+
+**The unfinished building and its hoarding (pairs 4 and 5)** (`behindbalme.ts`, rebuilt):
+
+- **The shell** is placed from the map's pale roof at x 70.6–81.4, z −133 to −116.4. It is a cream-grey concrete frame
+  with thick piers and the floor slabs' edges as projecting bands. The blockwork walls have big empty openings, and
+  there is a deep shadowed recess at the upper floor's east end. A dark core sits behind the openings; no interior is
+  invented and there is no scaffolding. The roof is a shallow dark hip with a 1.3 m overhang and a pale fascia.
+- **The hoarding** is pale blue ribbed sheet in panels of slightly varying tints, with worn panels and posts. Posters
+  hang in irregular clusters with torn remnants, on the sides facing the roads, and nothing on them is readable.
+- **The ground round it.**
+  - Small brick pavers run round the hoarding, and the broad brick apron lies to the south.
+  - A raised kerb sweeps round both corners, with the asphalt following it inside the curves.
+  - Along Cruise O'Brien Road there is an open drain beside the asphalt, outside the riding line.
+  - There are slim angular street lights, and a young tree over the sheeting.
+  - A parked pickup sits on the apron. It is a removable prop (`KQ.pickup`).
+  - The row of tall trees west of the hoarding is now slender, irregular drooping trees (`mastTree`) instead of
+    stacked cones.
+
+**Cruise O'Brien Road's east side (pair 5).** From the road out there is the edge, a gutter strip and a narrow footway.
+Then a grassy rise (a second terrace in `relief.ts`) climbs to the rubble wall, which now stands set back at x 105.6
+and shows its upper part. The dense hedge on top rises and falls. The slim angular lights stand on the footway.
+
+**The Plant Biology frontage (pairs 6 and 7)** (`biology.ts`):
+
+- **The veranda.** A veranda now runs along the west wing's east face into the inside corner. Its slender white
+  columns with red feet stand in front of the wall, and it has its own low roof with a reddish beam.
+- **The enclosed return.** The wing's south end is a separate range, so its roof turns the other way. Its plain face
+  has the tall narrow dark opening.
+- **The south front** behind the verandas has dark-framed windows divided by horizontal bars, alternating with dark
+  doors.
+- **Details.** An air conditioner is fixed to the wall at one bay. A narrow concrete edging runs between the verge and
+  the lawn, and the verge has patchy dry grass and red earth.
+- **Trees and shrubs.** Large shrubs stand against the walls. There is a slender forked tree before the corner and
+  dense broadleaf crowns further east. The tree that stood inside the wing is gone, and no generic tree or lamp stands
+  on the frontage.
+
+**Checks.** The route tests now check:
+
+- the garden is raised;
+- Hodasi Road and Cruise O'Brien Road are at road level across the riding width;
+- the walls and hoarding stand clear of the roads;
+- the east wall stands set back above its rise;
+- Explore rides along both roads both ways are smooth.
+
+**Assumptions and what would help.**
+
+- **Cameras.** They are estimated from landmarks (the wall's jog, the tree row, the tower). Pair 3's station, between
+  the map's crossing at x 26 and the photo's crossing near the camera, is the least certain.
+- **The statue.** Seen from pair 2's station, its position in the photo coincides with the memorial's bearing. It is
+  placed just west of the landing so the two read as separate objects. From pair 1 it shows beside the right palm
+  where the photo shows fronds.
+- **The shell.** Its footprint follows the map's pale roof, not the hoarding's middle.
+- **Still needed:** the garden wall's height and the step at the approach, the north road's lane positions, the
+  shell's real footprint and floor heights, and the department's veranda depth.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain
