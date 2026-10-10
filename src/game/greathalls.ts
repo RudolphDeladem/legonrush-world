@@ -510,7 +510,7 @@ export const legon = twin('Legon Hall', LO, [-215, -50, 150, 390], [-165, -129, 
 // lawn between the wings stands 0.45 m up behind a low whitewashed concrete edge (relief.ts), three steps up through it
 // in the middle to a walk of grey slabs to the cross range; clipped round bushes on the lawn, hedges along the walls.
 let hexMat: THREE.MeshStandardMaterial | null = null;
-const hexPavers = () => (hexMat ??= (() => {
+export const hexPavers = () => (hexMat ??= (() => {
   const t = canvas(128, 110, (g) => {
     g.fillStyle = '#5d5b57'; g.fillRect(0, 0, 128, 110);
     const r = 16, w = Math.sqrt(3) * r;

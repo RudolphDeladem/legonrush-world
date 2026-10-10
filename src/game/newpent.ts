@@ -23,6 +23,7 @@ import { PL, createSite, render, type Block, type Spec, type Style } from './blo
 import { concrete } from './concrete';
 import { rectsOf, type Rect } from './rectilinear';
 import { SOLIDS } from './solids';
+import { stairsOf } from './relief';
 
 const NST = 3.2, NF = 4, WHITE_NP = '#f3f2ee', GREY_BASE = '#55585c', ROOF_NP = '#a9472f', FASCIA_NP = '#2f2a28';
 /** where the New Pent blocks stand (the yellow zone on the owner's aerial) */
@@ -38,23 +39,32 @@ function bricks(g: CanvasRenderingContext2D, x: number, y: number, w: number, h:
     g.fillRect(Math.max(x, xx + 1), yy + 1, Math.min(course * 2.8 - 1.5, x + w - Math.max(x, xx + 1)), course - 1.5);
   }
 }
-/** the long sides: a balcony to each bay, its white front with a small brick panel, the dark recess and door behind */
+/** glass louvre blades in a dark frame (the owner: Pent's windows are glass louvres) */
+function louvres(g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, cols = 2) {
+  g.fillStyle = '#2b2e31'; g.fillRect(x - 4, y - 4, w + 8, h + 8);
+  for (let yy = y; yy < y + h - 4; yy += 9) { g.fillStyle = '#a3b8c4'; g.fillRect(x, yy, w, 6); g.fillStyle = '#62798a'; g.fillRect(x, yy + 6, w, 3); }
+  g.fillStyle = '#2b2e31'; for (let i = 1; i < cols; i++) g.fillRect(x + (w * i) / cols - 2, y, 4, h);
+}
+/** the long sides behind the balconies (the balconies themselves are geometry): in each bay the balcony's shaded recess,
+ *  a glass louvre window and a door with louvres over it */
 const NP_LONG: Style = {
-  bay: 3.3, up: [[60, 40, 136, 100]], ground: [[60, 256 + 40, 136, 100]],
+  bay: 3.3, up: [[30, 24, 196, 210]], ground: [[30, 256 + 24, 196, 210]],
   draw: (g) => {
     render(g, WHITE_NP);
     for (const y0 of [0, 256]) {
-      g.fillStyle = '#4c4f52'; g.fillRect(40, y0 + 30, 176, 190);
-      g.fillStyle = '#26282a'; g.fillRect(60, y0 + 40, 60, 150); g.fillRect(140, y0 + 40, 56, 100);
-      g.fillStyle = '#3a3c3e'; for (let y = y0 + 46; y < y0 + 136; y += 9) g.fillRect(142, y, 52, 3);
-      // the balcony front, white, its brick panel
-      g.fillStyle = '#f7f6f2'; g.fillRect(30, y0 + 150, 196, 76);
-      g.fillStyle = 'rgba(90,90,85,0.35)'; g.fillRect(30, y0 + 222, 196, 6);
-      bricks(g, 140, y0 + 160, 54, 46, 6);
+      g.fillStyle = '#8b8d8f'; g.fillRect(26, y0 + 16, 204, 224);
+      louvres(g, 42, y0 + 50, 80, 110);
+      g.fillStyle = '#3a2a22'; g.fillRect(146, y0 + 70, 62, 166);
+      louvres(g, 146, y0 + 36, 62, 30, 1);
     }
     g.fillStyle = GREY_BASE; g.fillRect(0, 512 - 60, 256, 60);
     speckle(g, 0, 0, 256, 512, 200, ['rgba(140,136,126,0.12)']);
   },
+};
+/** the front structures' ground floor: large windows of glass louvres, no balconies (the owner's Pent PDF, page 17) */
+const NP_LARGE: Style = {
+  bay: 3.3, up: [], ground: [[26, 256 + 46, 204, 170]],
+  draw: (g) => { render(g, WHITE_NP); louvres(g, 26, 256 + 46, 204, 170, 3); g.fillStyle = GREY_BASE; g.fillRect(0, 512 - 60, 256, 60); },
 };
 /** the end walls: facing brick from the grey base to the eaves */
 const NP_END: Style = {
@@ -90,7 +100,7 @@ function wing(i: number): Spec {
   const blocks: Block[] = rects.map((r) => {
     const faces: Block['faces'] = {};
     for (const f of ends(r)) faces[f] = NP_END;
-    return { x0: r[0] - O[0], x1: r[1] - O[0], z0: r[2] - O[1], z1: r[3] - O[1], floors: FL, faces };
+    return { x0: r[0] - O[0], x1: r[1] - O[0], z0: r[2] - O[1], z1: r[3] - O[1], floors: FL, faces, ...(front ? { floorStyle: { 0: NP_LARGE } } : {}) };
   });
   const biggest = rects.reduce((m, r) => ((r[1] - r[0]) * (r[3] - r[2]) > (m[1] - m[0]) * (m[3] - m[2]) ? r : m), rects[0]);
   return {
@@ -100,7 +110,34 @@ function wing(i: number): Spec {
     blocks,
     keep: [],
     extras: (k) => {
-      const e = k.wallTop(FL);
+      const e = k.wallTop(FL), c: Part[] = [];
+      // the balconies (the owner's Pent PDF, pages 17-20): on every floor of the long sides, one to each bay, the slab
+      // standing out, a white parapet with its panel of facing brick, white cheeks between them; not on a front
+      // structure's ground floor, which has large windows
+      for (const r of rects) for (const side of ['x0', 'x1', 'z0', 'z1'] as const) {
+        if (ends(r).includes(side) || all.some((o) => o !== r && touches(r, o, side))) continue;
+        const alongX = side[0] === 'z', s = side.endsWith('0') ? -1 : 1;
+        const face = (alongX ? (s < 0 ? r[2] : r[3]) - O[1] : (s < 0 ? r[0] : r[1]) - O[0]);
+        const [a0, a1] = alongX ? [r[0] - O[0], r[1] - O[0]] : [r[2] - O[1], r[3] - O[1]];
+        const len = a1 - a0, n = Math.max(1, Math.round(len / NP_LONG.bay)), bw = len / n, D = 1.1;
+        const Q = (p0: number, p1: number, y0: number, y1: number, d0: number, d1: number) => {
+          const [lo, hi] = [face + s * Math.min(d0, d1), face + s * Math.max(d0, d1)];
+          return alongX ? box(p0, p1, y0, y1, Math.min(lo, hi), Math.max(lo, hi)) : box(Math.min(lo, hi), Math.max(lo, hi), y0, y1, p0, p1);
+        };
+        for (let f = front ? 1 : 0; f < FL; f++) {
+          const y = PL + f * NST;
+          for (let i = 0; i < n; i++) {
+            const p0 = a0 + i * bw, p1 = p0 + bw;
+            c.push([Q(p0, p1, y - 0.18, y + 0.02, 0, D), WHITE_NP], [Q(p0 + 0.08, p1 - 0.08, y + 0.02, y + 1.05, D - 0.14, D), WHITE_NP]);
+            const m = (p0 + p1) / 2;
+            k.plain.push([Q(m + 0.05, m + 0.85, y + 0.25, y + 0.85, D, D + 0.02), '#a4482f']);
+            for (let yy = y + 0.33; yy < y + 0.85; yy += 0.12) k.plain.push([Q(m + 0.05, m + 0.85, yy, yy + 0.015, D + 0.02, D + 0.025), '#c7b6a3']);
+            c.push([Q(p0, p0 + 0.18, y, y + NST - 0.18, 0, D), WHITE_NP]);
+          }
+          c.push([Q(a1 - 0.18, a1, y, y + NST - 0.18, 0, D), WHITE_NP]);
+        }
+      }
+      if (c.length) { const m = new THREE.Mesh(merge(c), concrete(0.15)); m.castShadow = true; m.receiveShadow = true; k.meshes.push(m); }
       // the white strip up the middle of each open brick wall, the stair's tall barred windows in it under an arched head
       for (const r of rects) {
         for (const side of ends(r)) {
@@ -178,7 +215,7 @@ const grounds: Spec = {
   axis: [1, 0], origin: SO, storey: 3, style: NP_LONG, roofColor: ROOF_NP, fascia: FASCIA_NP, pitch: 0.4,
   onGround: true,
   blocks: [],
-  keep: [[608 - SO[0], 619 - SO[0], -712 - SO[1], -595 - SO[1]], [633 - SO[0], 650 - SO[0], -770 - SO[1], -655 - SO[1]]],
+  keep: [[608 - SO[0], 619 - SO[0], -712 - SO[1], -595 - SO[1]], [633 - SO[0], 650 - SO[0], -770 - SO[1], -650 - SO[1]], [552 - SO[0], 573 - SO[0], -622 - SO[1], -596 - SO[1]], [563 - SO[0], 614 - SO[0], -716 - SO[1], -697 - SO[1]]],
   extras: (k) => {
     const X = (x: number) => x - SO[0], Z = (z: number) => z - SO[1];
     const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
@@ -205,8 +242,10 @@ const grounds: Spec = {
       for (let zz = gate[1] + 0.5; zz < gate[0] - 0.3; zz += 0.5) k.plain.push([B(x - 0.07, x + 0.07, y + 0.05, y + h + 0.1, zz, zz + 0.04), '#8a8e92']);
       for (let zz = gate[1]; zz < gate[0]; zz += 0.9) SOLIDS.add(x, zz, 0.2);
     };
-    wall(611.6, -649.4, -672.2, [-664.6, -668.8]);
-    wall(605.6, -789.3, -810.4, [-802.4, -806.6]);
+    // (Block A's and Block B's walls joined to the wings at both ends, behind Block A's generator: the owner's Pent PDF,
+    // pages 19-20)
+    wall(604.7, -649.1, -672.4, [-652.6, -656.8]);
+    wall(598.5, -789.0, -810.6, [-792.6, -796.8]);
     wall(634.5, -709.4, -745.8, [-714, -720]);
     k.plain.push([B(625.5, 634.2, gy(630, -717), gy(630, -717) + 0.04, -720.2, -713.8), '#9a5644']);
     // the transformer in its caged pen beside the gate
@@ -227,7 +266,7 @@ const grounds: Spec = {
       for (let x = x0 + 0.5; x < x1 - 0.4; x += 0.25) k.plain.push([B(x, x + 0.06, y + 0.4, y + 1.6, z1 - 0.42, z1 - 0.4), '#b9bab5']);
       SOLIDS.add((x0 + x1) / 2, (z0 + z1) / 2, Math.max(x1 - x0, z1 - z0) / 2);
     };
-    genShed(606.0, 610.8, -679.5, -673.2, gy(608, -676), false);
+    genShed(612.4, 617.2, -642.0, -635.6, gy(614.8, -638.8), false);
     { const y = gy(640.5, -752) + 0.9;
       k.plain.push([B(636.2, 643.0, y - 1.2, y, -757.5, -746.5), '#b9b3a6']);
       genShed(637.0, 642.2, -756.5, -747.5, y, true); }
@@ -241,26 +280,134 @@ const grounds: Spec = {
       }
       for (const [dx, dz] of [[0.6, 0], [-0.6, 0], [0, 0.6]]) k.plain.push([box(mx + dx - 0.15, mx + dx + 0.15, y + mh - 3, y + mh - 1, mz + dz - 0.15, mz + dz + 0.15), '#e8e8e4']);
       SOLIDS.add(614.5, -706, 1.4); }
-    // the Boba tea kiosk on the corner by Block C: a yellow box with its awning, seats and planters round it
-    { const x0 = 637.0, x1 = 641.5, z0 = -659.2, z1 = -656.6, y = gy(639, -658);
-      k.plain.push([B(x0, x1, y, y + 0.3, z0, z1), '#3a3c3e'], [B(x0, x1, y + 0.3, y + 2.6, z0, z1), '#f2d22a']);
-      k.plain.push([B(x0 + 0.6, x1 - 0.6, y + 1.1, y + 2.1, z1, z1 + 0.04), '#2a2826'], [B(x0 + 0.5, x1 - 0.5, y + 1.0, y + 1.08, z1, z1 + 0.4), '#e9e7e0']);
-      const r = new THREE.BufferGeometry();
-      r.setAttribute('position', new THREE.Float32BufferAttribute([X(x0), y + 2.6, Z(z1), X(x1), y + 2.6, Z(z1), X(x1), y + 2.2, Z(z1 + 1.4), X(x0), y + 2.2, Z(z1 + 1.4)], 3));
-      r.setIndex([0, 2, 1, 0, 3, 2, 0, 1, 2, 0, 2, 3]); r.computeVertexNormals();
-      k.plain.push([r, '#f5d84a']);
-      k.plain.push([B(x0 + 0.6, x1 - 0.6, y + 2.6, y + 3.2, z1 - 0.05, z1), '#4a2a1a']);
-      k.signs.push({ text: 'BoBa', x: X((x0 + x1) / 2), y: y + 2.9, z: Z(z1) + 0.01, ry: 0, w: 1.8, colors: ['#4a2a1a', '#f2d22a'] });
-      for (const [tx, tz] of [[x0 - 1.4, z1 + 1.2], [x1 + 1.2, z1 + 1.6], [x1 + 1.0, z0 - 0.4]]) {
-        k.plain.push([new THREE.CylinderGeometry(0.35, 0.35, 0.05, 12).translate(X(tx), y + 1.05, Z(tz)), '#2a2a2a'], [new THREE.CylinderGeometry(0.04, 0.04, 1.05, 6).translate(X(tx), y + 0.52, Z(tz)), '#2a2a2a']);
-        for (const a of [0, Math.PI]) k.plain.push([new THREE.CylinderGeometry(0.18, 0.18, 0.04, 10).translate(X(tx) + Math.cos(a) * 0.6, y + 0.75, Z(tz) + Math.sin(a) * 0.6), '#2a2a2a']);
-        SOLIDS.add(tx, tz, 0.4);
+    // ----- the rise of the road to Block B (relief.ts): the rendered retaining wall along the car park, the steps up it
+    // with their rails, the gravel car park below, benches and trees on top (the owner's Pent PDF, pages 25-27)
+    { const zw = -711.35, s0 = 596.0, s1 = 598.4;
+      for (let x = 515; x < 613; x += 2) {
+        const x1 = Math.min(613, x + 2);
+        if (x1 > s0 && x < s1) continue;
+        const top = Math.max(gy(x, zw - 0.4), gy(x1, zw - 0.4)) + 0.15;
+        c.push([B(x, x1, -0.3, top, zw - 0.15, zw + 0.15), '#c19a85']);
+        for (let xx = x; xx < x1; xx += 0.8) SOLIDS.add(xx, zw, 0.2);
       }
-      for (const px of [x0 - 0.2, x1 + 0.2]) { k.plain.push([B(px - 0.5, px + 0.5, y, y + 0.5, z1 + 2.4, z1 + 2.9), '#2f3133']); for (let i = 0; i < 3; i++) k.plain.push([new THREE.ConeGeometry(0.25, 0.9, 5).translate(X(px - 0.3 + i * 0.3), y + 0.95, Z(z1 + 2.65)), '#3f7a35']); }
-      SOLIDS.add(639.2, -657.9, 2.4); }
+      const st = stairsOf().find((q) => q.alongZ && q.z0 === s0)!;
+      for (let i = 0; i < st.steps; i++) {
+        const za = st.x0 - i * st.tread, y = st.at(za - st.tread / 2);
+        c.push([B(s0, s1, -0.2, y, za - st.tread - 0.02, za), '#b9b2a6']);
+      }
+      for (const x of [s0 - 0.2, s1]) {
+        c.push([B(x, x + 0.2, -0.2, 1.6, st.x1 - 0.2, st.x0), '#c19a85']);
+        k.plain.push([B(x + 0.08, x + 0.12, 0.2, 1.3 + 1.0, st.x0 - 0.05, st.x0), '#a9adb1'], [B(x + 0.08, x + 0.12, 1.3, 2.3, st.x1 - 0.05, st.x1), '#a9adb1']);
+        const len = Math.hypot(st.x0 - st.x1, 1.3), ang = Math.atan2(1.3, st.x0 - st.x1);
+        k.plain.push([new THREE.BoxGeometry(0.05, 0.05, len).rotateX(ang).translate(X(x + 0.1), 1.0 + 0.65, Z((st.x0 + st.x1) / 2)), '#a9adb1']);
+      }
+      // the gravel car park
+      k.plain.push([B(563, 614, 0.01, 0.035, -711.1, -697.6), '#8a8178']);
+      // benches and trees on top
+      for (const x of [578, 584.5, 591, 604]) {
+        const z = -714.0, y = gy(x, z);
+        k.plain.push([B(x - 0.9, x + 0.9, y + 0.42, y + 0.48, z - 0.25, z + 0.25), '#8a5a36'], [B(x - 0.9, x + 0.9, y + 0.5, y + 0.9, z + 0.22, z + 0.28), '#8a5a36']);
+        for (const dx of [-0.75, 0.75]) k.plain.push([B(x + dx - 0.04, x + dx + 0.04, y, y + 0.45, z - 0.25, z + 0.25), '#3a3a3a']);
+        SOLIDS.add(x, z, 0.6);
+      }
+      for (const [x, z] of [[581, -713], [594.5, -713.4]]) {
+        const y = gy(x, z);
+        k.plain.push([new THREE.CylinderGeometry(0.25, 0.4, 6, 7).translate(X(x), y + 3, Z(z)), '#5b4636']);
+        for (const [dx, dy, dz, r] of [[0, 7.2, 0, 3.4], [2.2, 6.4, -1.3, 2.4], [-2.0, 6.6, 1.4, 2.6]]) k.plain.push([new THREE.IcosahedronGeometry(r, 1).scale(1, 0.65, 1).translate(X(x) + dx, y + dy, Z(z) + dz), '#3f6b2c']);
+        SOLIDS.add(x, z, 0.45);
+      } }
+    // ----- before Block A's entrance (the owner's Pent PDF, pages 21-24): the forecourt of red hexagonal pavers; the open
+    // way through the ground floor of the front structure east of the porch (no gate); west of the porch, before the
+    // other front structure's large ground-floor windows, a terrace closed by low walls of brick panels in grey frames,
+    // a glazed orange food cabinet on it, satellite dishes on the balconies above
+    { const hex = (x0: number, x1: number, z0: number, z1: number) => {
+        const g = new THREE.PlaneGeometry(x1 - x0, z1 - z0).rotateX(-Math.PI / 2);
+        const uv = g.attributes.uv as THREE.BufferAttribute;
+        for (let i = 0; i < uv.count; i++) uv.setXY(i, (uv.getX(i) * (x1 - x0)) / 1.1, (uv.getY(i) * (z1 - z0)) / 0.95);
+        const m = new THREE.Mesh(g, redHex()); m.position.set(X((x0 + x1) / 2), gy((x0 + x1) / 2, (z0 + z1) / 2) + 0.03, Z((z0 + z1) / 2)); m.receiveShadow = true; k.meshes.push(m);
+      };
+      hex(557.0, 572.6, -621.6, -612.0); hex(566.0, 572.6, -612.0, -606.5);
+      // the open passage through the east front structure's west face
+      k.plain.push([B(572.72, 572.8, 0, 2.7, -610.6, -607.8), '#1c1e20'], [B(572.6, 572.8, 2.7, 2.95, -610.8, -607.6), '#f3f2ee']);
+      for (const z of [-610.75, -607.65]) k.plain.push([B(572.45, 572.8, 0, 2.95, z - 0.15, z + 0.15), '#f3f2ee'], [B(572.44, 572.81, 0, 0.9, z - 0.16, z + 0.16), GREY_BASE]);
+      // the terrace with its low brick walls before the west front structure
+      const tw = (ax: number, az: number, bx: number, bz: number) => {
+        const len = Math.hypot(bx - ax, bz - az), a2 = Math.atan2(bz - az, bx - ax), mx = X((ax + bx) / 2), mz = Z((az + bz) / 2), y = gy((ax + bx) / 2, (az + bz) / 2);
+        k.plain.push([new THREE.BoxGeometry(len, 1.0, 0.24).rotateY(-a2).translate(mx, y + 0.5, mz), '#a4482f'], [new THREE.BoxGeometry(len + 0.1, 0.12, 0.34).rotateY(-a2).translate(mx, y + 1.06, mz), '#7f8285']);
+        for (const [px, pz] of [[ax, az], [bx, bz]]) c.push([B(px - 0.2, px + 0.2, y, y + 1.15, pz - 0.2, pz + 0.2), '#7f8285']);
+        const n = Math.ceil(len / 0.8);
+        for (let i = 0; i <= n; i++) SOLIDS.add(ax + ((bx - ax) * i) / n, az + ((bz - az) * i) / n, 0.2);
+      };
+      tw(552.2, -608.2, 556.8, -608.2); tw(556.8, -608.2, 556.8, -604.0); tw(556.8, -601.8, 556.8, -596.6); tw(556.8, -596.6, 552.2, -596.6);
+      k.plain.push([B(552.2, 556.8, 0.01, 0.06, -608.2, -596.6), '#9a5644']);
+      { const y = gy(554.6, -599.5);
+        k.plain.push([B(554.0, 555.2, y, y + 1.0, -599.9, -599.1), '#e8621f'], [B(554.0, 555.2, y + 1.0, y + 1.75, -599.9, -599.1), '#dfe6ea'], [B(553.95, 555.25, y + 1.75, y + 1.85, -599.95, -599.05), '#e8621f']);
+        SOLIDS.add(554.6, -599.5, 0.7); }
+      for (const [y, z] of [[PL + NST + 1.6, -605.5], [PL + NST + 1.6, -600.0], [PL + 2 * NST + 1.6, -603.0]]) k.plain.push([new THREE.CylinderGeometry(0.42, 0.42, 0.05, 16).rotateZ(Math.PI / 2).translate(X(553.4), gy(553, z) + y, Z(z)), '#e9e9e6']); }
+    // the Boba tea kiosk on the corner by Block C (the owner's Pent PDF, page 16): a yellow box on a dark base, painted
+    // with drinks, its wide serving window under a yellow awning, the BoBa logo board standing on its roof; before it a
+    // square of artificial turf with black high tables and stools, black planter boxes of spiky palms along its edges,
+    // a lamp post and a patch of gravel
+    { const x0 = 637.0, x1 = 641.4, z0 = -659.6, z1 = -657.0, y = gy(639, -658);
+      k.plain.push([B(633.6, 646.0, y + 0.01, y + 0.05, -660.4, -650.8), '#4f9a3a']);
+      k.plain.push([B(646.0, 648.5, y + 0.01, y + 0.04, -656, -651.5), '#9b9488']);
+      k.plain.push([B(x0, x1, y, y + 0.35, z0, z1), '#2a2c2e'], [B(x0, x1, y + 0.35, y + 2.7, z0, z1), '#f2d22a']);
+      // the serving window and its counter, the drinks painted on the sides
+      k.plain.push([B(x0 + 0.4, x1 - 0.4, y + 1.2, y + 2.3, z1, z1 + 0.03), '#2a2826'], [B(x0 + 0.3, x1 - 0.3, y + 1.1, y + 1.18, z1, z1 + 0.45), '#e9e7e0']);
+      for (const [x, col] of [[x0 + 0.25, '#7a4a2a'], [x1 - 0.85, '#f4efe2']] as [number, string][]) k.plain.push([B(x, x + 0.6, y + 0.6, y + 1.05, z1, z1 + 0.02), col]);
+      for (const xx of [x0 - 0.02, x1]) for (const [zz, col] of [[z0 + 0.4, '#7a4a2a'], [z0 + 1.3, '#f4efe2']] as [number, string][]) k.plain.push([B(xx, xx + 0.02, y + 0.8, y + 2.2, zz, zz + 0.7), col]);
+      const r = new THREE.BufferGeometry();
+      r.setAttribute('position', new THREE.Float32BufferAttribute([X(x0 - 0.1), y + 2.75, Z(z1), X(x1 + 0.1), y + 2.75, Z(z1), X(x1 + 0.1), y + 2.3, Z(z1 + 1.6), X(x0 - 0.1), y + 2.3, Z(z1 + 1.6)], 3));
+      r.setIndex([0, 2, 1, 0, 3, 2, 0, 1, 2, 0, 2, 3]); r.computeVertexNormals();
+      k.plain.push([r, '#f5d84a'], [B(x0 - 0.1, x1 + 0.1, y + 2.1, y + 2.32, z1 + 1.55, z1 + 1.62), '#e8c21a']);
+      // the logo board on the roof's west end
+      k.plain.push([B(x0 + 0.1, x0 + 2.4, y + 2.7, y + 3.5, z1 - 0.15, z1 - 0.1), '#f7f2e6'], [B(x0 + 0.15, x0 + 0.8, y + 2.75, y + 3.45, z1 - 0.1, z1 - 0.08), '#f2c41e']);
+      k.signs.push({ text: 'BoBa Udous', x: X(x0 + 1.4), y: y + 3.1, z: Z(z1 - 0.07), ry: 0, w: 2.1, colors: ['#f7f2e6', '#6a3a1e'] });
+      SOLIDS.add(639.2, -658.3, 2.3);
+      // high tables and stools on the turf
+      for (const [tx, tz] of [[635.2, -654.6], [638.0, -653.0], [641.8, -653.6], [644.4, -655.6]]) {
+        k.plain.push([new THREE.CylinderGeometry(0.32, 0.32, 0.05, 12).translate(X(tx), y + 1.05, Z(tz)), '#1d1d1d'], [new THREE.CylinderGeometry(0.04, 0.04, 1.05, 6).translate(X(tx), y + 0.52, Z(tz)), '#1d1d1d']);
+        for (const a of [0.4, 2.6, 4.4]) { const sx = X(tx) + Math.cos(a) * 0.62, sz = Z(tz) + Math.sin(a) * 0.62; k.plain.push([new THREE.CylinderGeometry(0.17, 0.17, 0.04, 10).translate(sx, y + 0.78, sz), '#1d1d1d'], [new THREE.CylinderGeometry(0.025, 0.025, 0.78, 5).translate(sx, y + 0.39, sz), '#1d1d1d']); }
+        SOLIDS.add(tx, tz, 0.5);
+      }
+      // black planter boxes of spiky palms along the turf's road edges
+      for (const [px, pz, alongX] of [[634.8, -651.3, true], [637.6, -651.3, true], [643.2, -651.3, true], [645.6, -653.2, false], [645.6, -656.4, false]] as [number, number, boolean][]) {
+        const hx = alongX ? 1.1 : 0.35, hz = alongX ? 0.35 : 1.1;
+        k.plain.push([B(px - hx, px + hx, y, y + 0.55, pz - hz, pz + hz), '#2c2e30']);
+        for (let i = 0; i < 4; i++) {
+          const lx = px + (alongX ? -0.7 + i * 0.46 : 0), lz = pz + (alongX ? 0 : -0.7 + i * 0.46);
+          for (let j = 0; j < 6; j++) k.plain.push([new THREE.ConeGeometry(0.05, 0.95, 3).translate(0, 0.47, 0).rotateZ(0.55).rotateY(j * 1.05 + i).translate(X(lx), y + 0.55, Z(lz)), j & 1 ? '#3f7a35' : '#4f8a3a']);
+        }
+        SOLIDS.add(px, pz, Math.max(hx, hz));
+      }
+      // the lamp post
+      k.plain.push([new THREE.CylinderGeometry(0.06, 0.09, 7, 8).translate(X(645.0), y + 3.5, Z(-652.0)), '#9ba0a4'], [B(644.6, 645.4, y + 6.9, y + 7.05, -652.15, -651.85), '#3a3c3e']);
+      SOLIDS.add(645.0, -652.0, 0.15); }
     const m = new THREE.Mesh(merge(c), concrete(0.3)); m.castShadow = true; m.receiveShadow = true; k.meshes.push(m);
   },
 };
+
+let redHexMat: THREE.MeshStandardMaterial | null = null;
+/** red-brown hexagonal pavers (Block A's forecourt) */
+function redHex() {
+  if (redHexMat) return redHexMat;
+  const cv = document.createElement('canvas');
+  cv.width = 128; cv.height = 110;
+  const g = cv.getContext('2d')!;
+  g.fillStyle = '#5b3328'; g.fillRect(0, 0, 128, 110);
+  const r = 16, w = Math.sqrt(3) * r;
+  for (let row = -1; row < 5; row++) for (let col = -1; col < 6; col++) {
+    const cx = col * w + (row & 1 ? w / 2 : 0), cy = row * r * 1.5;
+    g.beginPath();
+    for (let i = 0; i < 6; i++) { const a = Math.PI / 6 + (i * Math.PI) / 3; g.lineTo(cx + (r - 1.6) * Math.cos(a), cy + (r - 1.6) * Math.sin(a)); }
+    g.closePath(); g.fillStyle = ['#9a5444', '#93503f', '#a05a48', '#8c4b3c'][(row * 7 + col * 3 + 16) % 4]; g.fill();
+  }
+  const t = new THREE.CanvasTexture(cv);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  redHexMat = new THREE.MeshStandardMaterial({ map: t, roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 });
+  return redHexMat;
+}
 
 /** New Pent Blocks A, B and C: their wings, entrances, walls and services */
 export const newPentSite = createSite('new-pent', [

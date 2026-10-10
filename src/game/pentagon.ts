@@ -59,8 +59,10 @@ const OLD_WIN: Style = {
       g.fillStyle = '#f6f2e7'; g.fillRect(0, y0, 22, 256); g.fillRect(234, y0, 22, 256);
       g.fillStyle = 'rgba(120,110,90,0.22)'; g.fillRect(22, y0, 4, 256); g.fillRect(230, y0, 4, 256);
       g.fillStyle = '#d8d1bf'; g.fillRect(80, y0 + 52, 96, 132);
+      // glass louvre blades in a dark frame (the owner: Pent's windows are glass louvres)
       g.fillStyle = LOUVRE; g.fillRect(86, y0 + 58, 84, 120);
-      g.fillStyle = '#34302b'; for (let y = y0 + 64; y < y0 + 176; y += 10) g.fillRect(88, y, 80, 4);
+      for (let y = y0 + 62; y < y0 + 174; y += 9) { g.fillStyle = '#9db3bf'; g.fillRect(89, y, 78, 6); g.fillStyle = '#5f7682'; g.fillRect(89, y + 6, 78, 2); }
+      g.fillStyle = LOUVRE; g.fillRect(126, y0 + 58, 4, 120);
       g.fillStyle = '#e6e1d4'; g.fillRect(80, y0 + 180, 96, 6);
     }
     g.fillStyle = DEEP_RED; g.fillRect(0, 448, 256, 64);
@@ -81,7 +83,7 @@ function court(name: string, origin: [number, number], replaces: [number, number
       // the stair core, standing back between the wings
       { x0: -2.5, x1: 2.5, z0: -14, z1: 14, floors: C3, roof: 'none' },
     ],
-    keep: [[-9.5, 9.5, -24, -14], [-21, 21, 16, 26]],
+    keep: [[-9.5, 9.5, -24, -14], [-21, 21, 16, 26], [-31, -19.5, -18, 18], [19.5, 31, -18, 18]],
     extras: (k) => {
       const e = k.wallTop(C3), c: Part[] = [];
       // the core's low hip
@@ -109,7 +111,7 @@ function court(name: string, origin: [number, number], replaces: [number, number
           for (const dx of [0, -2.9, 2.9]) {
             const w = dx === 0 ? 0.65 : 0.55, zz = out + s * 0.03;
             k.plain.push([box(xm + dx - w, xm + dx + w, y, y + 1.55, zz - 0.012, zz + 0.012), LOUVRE]);
-            for (let yy = y + 0.12; yy < y + 1.5; yy += 0.16) k.plain.push([box(xm + dx - w + 0.05, xm + dx + w - 0.05, yy, yy + 0.04, zz - 0.02 + (s > 0 ? 0.03 : 0), zz + 0.02 - (s > 0 ? 0 : 0.03)), '#3a3530']);
+            for (let yy = y + 0.12; yy < y + 1.5; yy += 0.16) k.plain.push([box(xm + dx - w + 0.05, xm + dx + w - 0.05, yy, yy + 0.09, zz - 0.02 + (s > 0 ? 0.03 : 0), zz + 0.02 - (s > 0 ? 0 : 0.03)), '#9db3bf']);
           }
         }
       }
@@ -138,10 +140,27 @@ function court(name: string, origin: [number, number], replaces: [number, number
         const x0 = s > 0 ? pw : -pw - 2.2, x1 = s > 0 ? pw + 2.2 : -pw;
         k.plain.push([box(x0, x1, 0, 0.35, -16.4, -14), DEEP_RED], [box(x0 + 0.12, x1 - 0.12, 0.35, 0.37, -16.28, -14), '#8d8a84']);
       }
-      // ----- the back: the storerooms in the core's ground floor
-      k.plain.push([box(-2.5, 2.5, 0, PL + CST - 0.2, 14, 14.03), DEEP_RED]);
-      for (const x of [-2.4, -0.05, 2.25]) k.plain.push([box(x, x + 0.15, 0, PL + CST - 0.2, 14.03, 14.06), '#f3efe6']);
-      for (const x of [-1.25, 1.15]) k.plain.push([box(x - 0.55, x + 0.55, 0, 2.2, 14.04, 14.07), '#8e2a22']);
+      // ----- the brick walls closing the gaps between the wings (the owner's Pent PDF, pages 4-5): at each side, between
+      // the front and back wings, a wall of red brick in a grey frame with a metal door of vertical ribs in it; at the
+      // back, between the back wings behind the stair core, the same wall without a door
+      const brickWall = (alongX: boolean, at: number, a0: number, a1: number, door: boolean) => {
+        const h = 2.6, B2 = (p0: number, p1: number, y0: number, y1: number, d0: number, d1: number) => alongX ? box(p0, p1, y0, y1, at + d0, at + d1) : box(at + d0, at + d1, y0, y1, p0, p1);
+        c.push([B2(a0, a1, 0, 0.35, -0.16, 0.16), '#7f8285'], [B2(a0, a1, h, h + 0.15, -0.16, 0.16), '#8f9295']);
+        for (const p of [a0, a1]) c.push([B2(p - (p === a0 ? 0 : 0.25), p + (p === a0 ? 0.25 : 0), 0, h + 0.15, -0.17, 0.17), '#8f9295']);
+        const d0 = (a0 + a1) / 2 - 0.55, d1 = (a0 + a1) / 2 + 0.55;
+        for (const [p0, p1] of door ? [[a0 + 0.25, d0], [d1, a1 - 0.25]] : [[a0 + 0.25, a1 - 0.25]]) {
+          k.plain.push([B2(p0, p1, 0.35, h, -0.12, 0.12), '#a4482f']);
+          for (let y = 0.5; y < h; y += 0.3) k.plain.push([B2(p0, p1, y, y + 0.02, -0.125, 0.125), '#c7b6a3']);
+        }
+        if (door) {
+          k.plain.push([B2(d0, d1, 0.05, h - 0.1, -0.05, 0.05), '#8c3328']);
+          for (let p = d0 + 0.1; p < d1; p += 0.14) k.plain.push([B2(p, p + 0.05, 0.1, h - 0.15, -0.07, 0.07), '#6f261e']);
+        }
+        const n = Math.ceil((a1 - a0) / 0.5);
+        for (let i = 0; i <= n; i++) { const p = a0 + ((a1 - a0) * i) / n; SOLIDS.add(...k.world(alongX ? p : at, alongX ? at : p), 0.2); }
+      };
+      for (const x of [-19.5, 19.5]) brickWall(false, x, -1.5, 1.5, true);
+      brickWall(true, 15.85, -2.5, 2.5, false);
       // ----- before the front: brick walk, kerbed lawns, palms, lamp, asphalt parking with bays
       const gy = (x: number, z: number) => k.ground(x, z) + 0.02;
       k.plain.push([box(-1.9, 1.9, gy(0, -21) - 0.02, gy(0, -21), -23.5, P0 - 1.4), '#9d4f3a']);
@@ -207,12 +226,20 @@ function addisKiosk(k: Kit) {
   const m = new THREE.Mesh(merge(c), concrete(0.3)); m.castShadow = true; k.meshes.push(m);
 }
 
-/** behind Nairobi (owner's third reference PDF, pages 15-17): the blue standby generator under a corrugated lean-to
- *  on four thin posts, the ground spread with gravel (Nairobi's court frame) */
+/** the walk of brick pavers along Kampala's east side from the road on to the food joint behind (the owner's Pent PDF,
+ *  pages 1-3; Kampala's court frame) */
+function kampalaWalk(k: Kit) {
+  for (let z = -18; z < 24; z += 2) { const y = k.ground(20.8, z + 1) + 0.03; k.plain.push([box(19.7, 21.9, y - 0.03, y, z, z + 2.02), '#9e5843']); }
+}
+
+/** behind Nairobi (owner's third reference PDF, pages 15-17): the ground spread with gravel; the blue standby generator
+ *  under a corrugated lean-to on four thin posts in the gap toward Kampala, by the side wall (Nairobi's court frame) */
 function nairobiBack(k: Kit) {
   const gy = (x: number, z: number) => k.ground(x, z) + 0.03;
+  for (let z = -2; z < 14; z += 4) k.plain.push([box(-29, -21.5, gy(-25, z + 2) - 0.02, gy(-25, z + 2), z, z + 4), '#958f85']);
   for (let x = -21; x < 21; x += 6) for (let z = 17.3; z < 30; z += 4) k.plain.push([box(x, x + 6, gy(x + 3, z + 2) - 0.02, gy(x + 3, z + 2), z, z + 4), ((x + z) | 0) % 2 ? '#9a948a' : '#8f897f']);
-  const gx = -10, gz = 24.5, y = gy(gx, gz);
+  // (in the gap toward Kampala, beside the court's side wall: the owner's Pent PDF, pages 1 and 4)
+  const gx = -25.2, gz = 6.5, y = gy(gx, gz);
   k.plain.push([box(gx - 1.9, gx + 1.9, y, y + 0.2, gz - 0.9, gz + 0.9), '#b9b4aa'], [box(gx - 1.7, gx + 1.7, y + 0.2, y + 1.9, gz - 0.7, gz + 0.7), '#21507e']);
   for (let x = gx - 1.5; x < gx + 1.6; x += 0.25) k.plain.push([box(x, x + 0.06, y + 0.5, y + 1.6, gz - 0.72, gz - 0.7), '#173b5e']);
   k.signs.push({ text: 'SDMO', x: gx - 0.6, y: y + 1.55, z: gz - 0.73, ry: Math.PI, w: 1.0, colors: ['#21507e', '#ffffff'] });
@@ -342,7 +369,7 @@ const food: Spec = {
   axis: [1, 0], origin: FO, storey: 3.0, style: FOOD_WALL, roofColor: '#a8382c', fascia: '#4a3a30', pitch: 0.35, plinth: DEEP_RED,
   replaces: [[712, -486]],
   blocks: [{ x0: FOOD[0] - FO[0], x1: FOOD[1] - FO[0], z0: FOOD[2] - FO[1], z1: FOOD[3] - FO[1], floors: 1, roof: 'none' }],
-  keep: [[FOOD[0] - 3 - FO[0], FOOD[1] + 3 - FO[0], FOOD[2] - 4 - FO[1], FOOD[3] + 2 - FO[1]]],
+  keep: [[688 - FO[0], FOOD[1] + 3 - FO[0], FOOD[2] - 4 - FO[1], FOOD[3] + 2 - FO[1]]],
   extras: (k) => {
     const X = (x: number) => x - FO[0], Z = (z: number) => z - FO[1];
     const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
@@ -364,6 +391,32 @@ const food: Spec = {
       k.plain.push([B(dx - 0.55, dx + 0.55, PL, PL + 2.2, FOOD[2] - 0.03, FOOD[2]), '#e9e7e0']);
       for (let x = dx - 0.5; x < dx + 0.55; x += 0.14) k.plain.push([B(x, x + 0.025, PL + 0.1, PL + 2.1, FOOD[2] - 0.05, FOOD[2] - 0.03), '#7d7a74']);
     }
+    // ----- the yard joined to its west end (the owner's Pent PDF, pages 3-4): a white wall over a red foot round it with two
+    // open doorways up red steps, and inside it two kiosks of aluminium sheet standing above the wall, one dark grey with
+    // a yellow board and a timber-edged roof, one silver; the walk of brick pavers passes along its west side
+    { const A = [691.0, FOOD[0], FOOD[2], -484.0], h = 2.2;
+      const wallSeg = (x0: number, x1: number, z0: number, z1: number) => { c.push([B(x0, x1, 0, 0.9, z0, z1), '#b23a2e'], [B(x0, x1, 0.9, h, z0, z1), '#f1efe8'], [B(x0 - 0.03, x1 + 0.03, h, h + 0.08, z0 - 0.03, z1 + 0.03), '#e2ded4']); };
+      const doors = [[692.2, 693.3], [698.6, 699.7]];
+      wallSeg(A[0], doors[0][0], A[2], A[2] + 0.2); wallSeg(doors[0][1], doors[1][0], A[2], A[2] + 0.2); wallSeg(doors[1][1], A[1], A[2], A[2] + 0.2);
+      wallSeg(A[0], A[0] + 0.2, A[2], A[3]); wallSeg(A[0], A[1], A[3] - 0.2, A[3]);
+      for (const [d0, d1] of doors) {
+        for (let i = 0; i < 3; i++) c.push([B(d0 - 0.2, d1 + 0.2, 0, PL - (PL / 3) * i, A[2] - 0.35 * (i + 1), A[2] - 0.35 * i), '#b23a2e']);
+        k.plain.push([B(d0 - 0.15, d0, 0, h + 0.1, A[2] - 0.05, A[2] + 0.25), '#3a3a38'], [B(d1, d1 + 0.15, 0, h + 0.1, A[2] - 0.05, A[2] + 0.25), '#3a3a38']);
+      }
+      for (let x = A[0]; x < A[1]; x += 0.8) { SOLIDS.add(x, A[2] + 0.1, 0.2); }
+      for (let z = A[2]; z < A[3]; z += 0.8) SOLIDS.add(A[0] + 0.1, z, 0.2);
+      // the kiosks
+      const kiosk = (x0: number, x1: number, z0: number, z1: number, hh: number, col: string, rib: string) => {
+        c.push([B(x0, x1, 0, hh, z0, z1), col]);
+        for (let x = x0 + 0.1; x < x1; x += 0.2) k.plain.push([B(x, x + 0.06, 0.2, hh - 0.1, z0 - 0.02, z0), rib]);
+        k.plain.push([B(x0 - 0.4, x1 + 0.4, hh, hh + 0.12, z0 - 0.6, z1 + 0.3), '#8a6a4a']);
+      };
+      kiosk(694.0, 698.2, -492.6, -488.2, 3.4, '#3d4246', '#2a2e31');
+      k.plain.push([B(695.2, 697.0, 2.5, 3.1, -492.65, -492.62), '#f2c41e']);
+      kiosk(691.6, 693.8, -492.4, -489.4, 3.0, '#c9ced2', '#aeb4b8');
+      SOLIDS.add(696, -490.4, 2.4); SOLIDS.add(692.7, -490.9, 1.6);
+      // the walk on from Kampala's east side, along the yard's west side
+      for (let i = 0; i < 12; i++) { const t = i / 11, x = 694.6 + (689.6 - 694.6) * t, z = -500 + (-478 + 500) * t; k.plain.push([B(x - 1.1, x + 1.1, 0.01, 0.045, z - 1.2, z + 1.2), '#9e5843']); } }
     // the brick path along the east end and the gravel round it
     k.plain.push([B(FOOD[1] + 0.8, FOOD[1] + 2.3, 0.01, 0.04, FOOD[2] - 6, FOOD[3] + 1), '#a5563f']);
     k.plain.push([B(FOOD[0] - 2.5, FOOD[1] + 0.8, 0.005, 0.02, FOOD[2] - 4, FOOD[2] - 1.3), '#9b9488']);
@@ -474,7 +527,7 @@ const admin: Spec = {
 export const pentagon = createSite('pentagon', [
   court('Addis Ababa Court', [540.5, -510], [[530, -501], [552, -502], [551, -520], [529, -517], [541, -509]], { sign: 'ADDIS ABABA COURT', initials: 'AC', extras: addisKiosk }),
   court('Dar es Salaam Court', [589.75, -514], [[579, -522], [579, -505], [600, -523], [601, -506], [591, -515]], { sign: 'DAR ES SALAAM COURT', initials: 'DC' }),
-  court('Kampala Court', [672, -522.4], [[672, -525]], { sign: 'KAMPALA COURT', initials: 'KC' }),
+  court('Kampala Court', [672, -522.4], [[672, -525]], { sign: 'KAMPALA COURT', initials: 'KC', extras: kampalaWalk }),
   court('Nairobi Court', [722, -526.5], [[722, -529]], { sign: 'NAIROBI COURT', initials: 'NC', extras: nairobiBack }),
   admin,
   entrance,

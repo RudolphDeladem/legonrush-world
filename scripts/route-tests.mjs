@@ -534,6 +534,16 @@ try {
     if (bb.frames().length !== 3) fail('expected the Chemistry Extension terrace, the uncompleted building and the Chemistry Department (owner PDF)');
     if (cm.AREAS.some((a) => a.kind === 'parking' && a.pts.length && (() => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > -130) !== (zj > -130) && 82 < ((a.pts[j] - a.pts[i]) * (-130 - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; })())) fail('the car park behind the Balme Library is still there (owner PDF p. 30)');
   }
+  // owner's Pent corrections PDF: the road to Block B up on its hill behind a retaining wall, stairs up from the car
+  // park before Block A; the filling station, the Shell Select supermarket and the tyre shop modelled where Oando was
+  {
+    const rl = await server.ssrLoadModule('/src/game/relief.ts');
+    if (Math.abs(rl.groundHeight(560, -718) - 1.3) > 0.01 || rl.groundHeight(560, -705) !== 0 || rl.groundHeight(625, -718) !== 0) fail('New Pent: the road to Block B is not up on its hill above the car park, down at Pent Road (owner PDF)');
+    { let prev = -1, ok = true; for (let z = -709; z >= -712.2; z -= 0.1) { const h = rl.groundHeight(597.2, z); if (h < prev - 1e-6) ok = false; prev = h; } if (!ok || Math.abs(prev - 1.3) > 0.01) fail('New Pent: the stairs do not climb from the car park to the road to Block B (owner PDF)'); }
+    const fs = (await server.ssrLoadModule('/src/game/fuelstation.ts')).fuelSite;
+    if (fs.frames().length !== 3) fail('expected the Shell Select supermarket, the tyre shop and the filling station forecourt (owner PDF)');
+    for (const [x, z] of [[735, -601], [795, -640]]) { const b = buildingAt(x, z); if (!b || !fs.replaces(b)) fail(`the building at ${x},${z} by the filling station is not the one the owner shows`); }
+  }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

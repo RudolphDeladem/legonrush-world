@@ -145,7 +145,7 @@ const SPEC: Spec = {
 
     // the retaining wall along the road, white, with a parapet; gaps for the three flights of steps (it stands clear
     // of the road's verge and drain, which stay at road level)
-    const stairs = stairsOf().filter((s) => s.alongZ && s.z0 > 400);
+    const stairs = stairsOf().filter((s) => s.alongZ && s.z0 > 400 && s.z0 < 500 && s.x0 > -340 && s.x0 < -320);
     const gaps = stairs.map((s) => [s.z0, s.z1]).sort((a, b) => a[0] - b[0]);
     let from = 397;
     for (const [g0, g1] of [...gaps, [497, 497]]) {

@@ -1670,6 +1670,47 @@ The owner's pictures are `images/515-530.jpg`.
     west side the wall runs from the generator's platform to the transformer, its gate on the brick drive
     (`newpent.ts`).
 
+## 65. The Pent Hall corrections PDF (27 pages)
+
+The owner's pictures are `images/531-562.jpg`. All the Old Pent courts share one design, and so do all the New Pent
+blocks, so each change below is made once for every court or block.
+
+- **Old Pent courts** (`pentagon.ts`):
+  - the windows are glass louvre blades;
+  - the gaps between the side wings are closed by red brick walls in a grey frame, each with a ribbed red metal
+    door;
+  - the back is closed by the same brick wall without a door;
+  - the storerooms that stood behind the courts are gone.
+- **Behind Nairobi**:
+  - the generator stands where the small tent was, and gravel covers the gap;
+  - a brick-paved walk runs along Kampala's ground walls toward the food joint.
+- **The food building**: on its west end, a white annex wall with a red base and two open doorways with red steps.
+  Behind it stand two aluminium kiosks, one dark with a yellow board and one silver, under timber-edged roofs. A
+  brick walk leads to it.
+- **The filling station** (mapped "Oando", `fuelstation.ts`):
+  - a Shell forecourt on herringbone paving, its canopy with yellow and red fascia and Shell emblems, and three pump
+    islands with V-Power boards;
+  - the **Shell Select** supermarket with its red hip roof, yellow band and glazed doors;
+  - the tyre and mechanic shop east of it under its canopy, with purple banners (Goodyear, Apollo, Michelin) and
+    tyre racks;
+  - the Sweet Top Bites container, a blue tent, a palm and a small white store;
+  - a short white wall round the site, with the open entrance on the south.
+- **The Boba kiosk** is rebuilt from the photo: a small box with a serving window and painted drinks, a yellow
+  awning, the "BoBa" board on the roof, high tables with stools, black planters with spiky palms, a lamp and turf
+  (`newpent.ts`).
+- **New Pent blocks** (`newpent.ts`):
+  - every window section has a balcony: a slab, a brick parapet and side cheeks;
+  - the front structure's ground floor has large windows instead of balconies;
+  - the windows are glass louvre blades.
+- **Block A**:
+  - the brick fence walls join the building behind the generator, on Block B too;
+  - the front right is an open passage with no gate;
+  - the front left is a terrace on red hex pavers, with low brick walls and grey caps.
+- **The road to Block B** runs up on a hill 1.3 m above Block A's car park, behind a pink retaining wall:
+  - seven steps lead up from the gravel car park, between cheek walls with rails;
+  - benches and trees stand on the road;
+  - the road ramps back down to Pent Road (`relief.ts` terrace and stairs).
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain
