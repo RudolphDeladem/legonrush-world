@@ -161,18 +161,36 @@ const hall: Spec = {
 
 // ---------- the Annex (moved onto its roof in the owner's aerial: corrections.json reshape) ----------
 const A: [number, number] = [-286, -62];
-/** the ranges' plain white ends toward the road (the owner's PDF, page 21) */
+/** the ranges' plain white ends either side of the louvred back toward the Graduate School (the owner's PDF no. 1,
+ *  page 21; no. 2, page 1: that side is the back, not the front) */
 const ANNEX_END: Style = { bay: 4, up: [], ground: [], draw: (g) => { render(g, '#f3f3f1'); g.fillStyle = 'rgba(120,118,110,0.08)'; for (let i = 0; i < 40; i++) g.fillRect((i * 37) % 250, (i * 53) % 500, 3, 40); } };
-const WA = (x0: number, x1: number, z0: number, z1: number, end = false): Block => ({ x0: x0 - A[0], x1: x1 - A[0], z0: z0 - A[1], z1: z1 - A[1], floors: 4, faces: end ? { x1: ANNEX_END } : undefined });
-// (the east cross block stands back from the ends of the two ranges: its louvred front between them, the owner's PDF p. 21)
-const ANNEX: Block[] = [WA(-317.3, -255.7, -86, -74.8, true), WA(-317.4, -255.7, -49, -38.9, true), WA(-302.1, -288.7, -74.8, -49), WA(-267.3, -261.5, -74.8, -49)];
+/** the front toward the Business School (the owner's PDF no. 2, page 4): on the three floors over the ground floor a
+ *  recessed balcony to each bay, a window and a glazed door in dark frames behind a black railing, white piers between
+ *  with a cream band at their foot; the ground floor a plain white wall with a small window now and then */
+const ANNEX_BAL: Style = {
+  bay: 3.5, up: [[34, 34, 186, 186]], ground: [[150, 256 + 120, 40, 40]],
+  draw: (g) => {
+    render(g, '#f3f3f1');
+    g.fillStyle = '#d9d7d0'; g.fillRect(26, 20, 204, 210);
+    g.fillStyle = '#24282b'; g.fillRect(40, 40, 76, 120); g.fillRect(132, 40, 84, 176);
+    g.fillStyle = '#5d6a73'; g.fillRect(46, 46, 30, 108); g.fillRect(82, 46, 30, 108); g.fillRect(138, 46, 34, 164); g.fillRect(178, 46, 34, 164);
+    g.fillStyle = '#d7cdb2'; g.fillRect(0, 196, 26, 34); g.fillRect(230, 196, 26, 34);
+    g.fillStyle = '#1b1c1d'; g.fillRect(26, 160, 204, 6); for (let x = 30; x < 230; x += 12) g.fillRect(x, 160, 3, 70);
+    g.fillStyle = '#f6f6f3'; g.fillRect(0, 230, 256, 26);
+    g.fillStyle = 'rgba(110,108,100,0.12)'; for (let i = 0; i < 12; i++) g.fillRect((i * 41) % 250, 256 + (i * 29) % 200, 3, 50);
+    g.fillStyle = '#2a2e31'; g.fillRect(150, 256 + 120, 40, 40);
+  },
+};
+const WA = (x0: number, x1: number, z0: number, z1: number, end = false): Block => ({ x0: x0 - A[0], x1: x1 - A[0], z0: z0 - A[1], z1: z1 - A[1], floors: 4, faces: end ? { x0: ANNEX_END, x1: ANNEX_BAL } : { x1: ANNEX_BAL } });
+// the east front toward the Business School is continuous: the two ranges and the east cross block flush along it
+const ANNEX: Block[] = [WA(-317.3, -255.7, -86, -74.8, true), WA(-317.4, -255.7, -49, -38.9, true), WA(-302.1, -288.7, -74.8, -49), WA(-267.3, -255.7, -74.8, -49)];
 const annex: Spec = {
   name: 'Volta Hall Annex',
   axis: [1, 0], origin: A, storey: 3.1, style: ANNEX_WIN, roofColor: '#c46d4c', fascia: '#e9e7e2', pitch: 0.22,
   onGround: true,
   replaces: [[-310, -80]],
   blocks: ANNEX,
-  keep: [[-256 - A[0], -222 - A[0], -88 - A[1], -37 - A[1]]],
+  keep: [[-256 - A[0], -224 - A[0], -88 - A[1], -37 - A[1]], [-328 - A[0], -317 - A[0], -88 - A[1], -37 - A[1]]],
   extras: (k: Kit) => {
     const y = k.ground(0, 0);
     // balconies along the court sides, on every upper floor (the grey strips on the aerial)
@@ -184,37 +202,34 @@ const annex: Spec = {
         k.plain.push([box(x0 - A[0], x1 - A[0], by + 0.18, by + 1.05, zz + d - 0.06, zz + d + 0.06), '#d9d8d3']);
       }
     }
-    // ----- the east front toward the road (the owner's PDF, pages 21-23): between the plain white ends of the two
-    // ranges, the east block's three upper floors behind a screen of white vertical louvre fins; open galleries with
-    // white parapets on the ranges' inner faces either side; a white wall before it with sloping wing walls back to
-    // the ranges' corners, a black gate in the middle, a red steel lattice water tower carrying a round tank over the
-    // gate; the drive in from Volta Hall Road with a row of short posts and the bins
-    const XE = -261.5, x0 = XE - A[0];
+    // ----- the back toward the Graduate School (the owner's PDF no. 1, pages 21-23, placed on the east by mistake; no. 2,
+    // page 1): between the plain white ends of the two ranges, the west cross block's three upper floors behind a
+    // screen of white vertical louvre fins (the ranges' inner faces have the galleries above); a white wall before it
+    // with sloping wing walls back to the ranges' corners, a black gate in the middle where the drive from J.K.M. Hodasi
+    // Road ends, a red steel lattice water tower carrying a round tank over the gate; short posts and the bins
+    const x0 = -302.1 - A[0];
     for (let f = 1; f < 4; f++) {
       const fy = y + PL + f * 3.1;
-      k.plain.push([box(x0 - 0.05, x0, fy, fy + 2.9, -74.8 - A[1], -49 - A[1]), '#2f3438']);
-      k.plain.push([box(x0, x0 + 0.9, fy - 0.25, fy, -74.8 - A[1], -49 - A[1]), '#ecebe7']);
-      for (const z of [-74.8, -49]) {
-        const zz = z - A[1];
-        k.plain.push([box(x0, -255.7 - A[0], fy - 0.15, fy, Math.min(zz, zz + (z < -60 ? 1.6 : -1.6)), Math.max(zz, zz + (z < -60 ? 1.6 : -1.6))), '#e4e3df']);
-        k.plain.push([box(x0, -255.7 - A[0], fy, fy + 1.05, (z < -60 ? zz + 1.55 : zz - 1.6), (z < -60 ? zz + 1.6 : zz - 1.55)), '#f2f1ed']);
-      }
+      k.plain.push([box(x0, x0 + 0.05, fy, fy + 2.9, -74.8 - A[1], -49 - A[1]), '#2f3438']);
+      k.plain.push([box(x0 - 0.9, x0, fy - 0.25, fy, -74.8 - A[1], -49 - A[1]), '#ecebe7']);
     }
-    for (let z = -74.6; z < -49.1; z += 0.42) k.plain.push([box(x0 + 0.1, x0 + 0.65, y + PL + 3.1, y + PL + 4 * 3.1 - 0.2, z - A[1], z + 0.07 - A[1]), '#f4f4f1']);
-    k.plain.push([box(x0 + 0.05, x0 + 0.7, y + PL + 4 * 3.1 - 0.25, y + PL + 4 * 3.1 + 0.35, -74.8 - A[1], -49 - A[1]), '#f4f4f1']);
-    k.plain.push([box(x0 - 0.04, x0, y + 0.4, y + 2.8, -70 - A[1], -54 - A[1]), '#2a2e31']);
-    const XW = -249.5, xw = XW - A[0], gz0 = -64.5, gz1 = -60.5;
-    for (const [z0, z1] of [[-86, gz0], [gz1, -38.9]]) k.plain.push([box(xw - 0.3, xw, y, y + 2.4, z0 - A[1], z1 - A[1]), '#f4f4f1']);
+    for (let z = -74.6; z < -49.1; z += 0.42) k.plain.push([box(x0 - 0.65, x0 - 0.1, y + PL + 3.1, y + PL + 4 * 3.1 - 0.2, z - A[1], z + 0.07 - A[1]), '#f4f4f1']);
+    k.plain.push([box(x0 - 0.7, x0 - 0.05, y + PL + 4 * 3.1 - 0.25, y + PL + 4 * 3.1 + 0.35, -74.8 - A[1], -49 - A[1]), '#f4f4f1']);
+    k.plain.push([box(x0, x0 + 0.04, y + 0.4, y + 2.8, -70 - A[1], -54 - A[1]), '#2a2e31']);
+    const XW = -321, xw = XW - A[0], gz0 = -72, gz1 = -68;
+    for (const [z0, z1] of [[-86, gz0], [gz1, -38.9]]) k.plain.push([box(xw, xw + 0.3, y, y + 2.4, z0 - A[1], z1 - A[1]), '#f4f4f1']);
     for (const z of [-86, -38.9]) {
       const wing = new THREE.BufferGeometry();
-      const zz = z - A[1], ax = -255.7 - A[0];
+      const zz = z - A[1], ax = -317.3 - A[0];
       wing.setAttribute('position', new THREE.Float32BufferAttribute([xw, y, zz, ax, y, zz, ax, y + 5.5, zz, xw, y + 2.4, zz], 3));
-      wing.setIndex([0, 1, 2, 0, 2, 3, 0, 2, 1, 0, 3, 2]); wing.computeVertexNormals();
-      k.plain.push([wing, '#f4f4f1']);
+      const back = wing.clone();
+      wing.setIndex([0, 1, 2, 0, 2, 3]); wing.computeVertexNormals();
+      back.setIndex([0, 2, 1, 0, 3, 2]); back.computeVertexNormals();
+      k.plain.push([wing, '#f4f4f1'], [back, '#f4f4f1']);
     }
-    for (const z of [gz0 + 0.05, (gz0 + gz1) / 2 + 0.03]) k.plain.push([box(xw - 0.2, xw - 0.1, y, y + 2.3, z - A[1], z + 1.92 - A[1]), '#151617']);
+    for (const z of [gz0 + 0.05, (gz0 + gz1) / 2 + 0.03]) k.plain.push([box(xw + 0.1, xw + 0.2, y, y + 2.3, z - A[1], z + 1.92 - A[1]), '#151617']);
     // the water tower: four steel legs braced in a lattice, a platform, the round tank
-    const tx = XW - 1.6 - A[0], tz = (gz0 + gz1) / 2 - A[1], th = 13.5;
+    const tx = XW + 1.6 - A[0], tz = (gz0 + gz1) / 2 - A[1], th = 13.5;
     for (const [dx, dz] of [[-1.1, -1.1], [1.1, -1.1], [-1.1, 1.1], [1.1, 1.1]]) k.plain.push([box(tx + dx - 0.09, tx + dx + 0.09, y, y + th, tz + dz - 0.09, tz + dz + 0.09), '#8a3a2a']);
     for (let h = 1.2; h < th; h += 1.5) for (const [ax, az, bx, bz] of [[-1.1, -1.1, 1.1, -1.1], [-1.1, 1.1, 1.1, 1.1], [-1.1, -1.1, -1.1, 1.1], [1.1, -1.1, 1.1, 1.1]]) {
       k.plain.push([box(tx + Math.min(ax, bx) - 0.04, tx + Math.max(ax, bx) + 0.04, y + h - 0.04, y + h + 0.04, tz + Math.min(az, bz) - 0.04, tz + Math.max(az, bz) + 0.04), '#8a3a2a']);
@@ -223,12 +238,24 @@ const annex: Spec = {
     }
     k.plain.push([box(tx - 1.5, tx + 1.5, y + th, y + th + 0.15, tz - 1.5, tz + 1.5), '#7a3324']);
     k.plain.push([new THREE.SphereGeometry(1.45, 16, 12).translate(tx, y + th + 1.6, tz), '#8f3f2c']);
-    for (let z = -86; z <= -38.9; z += 0.4) if (z < gz0 || z > gz1) SOLIDS.add(XW - 0.15, z, 0.25);
+    for (let z = -86; z <= -38.9; z += 0.4) if (z < gz0 || z > gz1) SOLIDS.add(XW + 0.15, z, 0.25);
     for (const [dx, dz] of [[-1.1, -1.1], [1.1, -1.1], [-1.1, 1.1], [1.1, 1.1]]) SOLIDS.add(tx + A[0] + dx, tz + A[1] + dz, 0.2);
-    // the drive in from the road, short posts along it, the bins
-    k.plain.push([box(xw, -224 - A[0], y + 0.015, y + 0.045, gz0 - A[1], gz1 - A[1]), '#45484b']);
-    for (let x = XW + 2; x < -230; x += 1.6) k.plain.push([box(x - A[0] - 0.07, x - A[0] + 0.07, y, y + 0.8, gz1 + 0.8 - A[1], gz1 + 0.94 - A[1]), '#d6d8da']);
-    for (const [x, col] of [[-246.5, '#2f5fa8'], [-245.6, '#2f6a3a'], [-244.7, '#2f6a3a']] as [number, string][]) k.plain.push([box(x - A[0] - 0.35, x - A[0] + 0.35, y, y + 1.05, gz1 + 1.3 - A[1], gz1 + 2.0 - A[1]), col]);
+    for (let z = gz1 + 1; z < gz1 + 8; z += 1.6) k.plain.push([box(xw - 2.0, xw - 1.86, y, y + 0.8, z - A[1], z + 0.14 - A[1]), '#d6d8da']);
+    for (const [z, col] of [[gz0 - 1.4, '#2f5fa8'], [gz0 - 2.3, '#2f6a3a'], [gz0 - 3.2, '#2f6a3a']] as [number, string][]) k.plain.push([box(xw - 1.2, xw - 0.5, y, y + 1.05, z - 0.35 - A[1], z + 0.35 - A[1]), col]);
+    // ----- the front toward the Business School (the owner's PDF no. 2, page 4): the slab edges standing out a little at
+    // each floor along the balconies; before it a white wall topped by coils of razor wire, a black gate where the drive
+    // comes in from Volta Hall Road; cars parked along the road, the big mango tree
+    const xe = -255.7 - A[0];
+    for (let f = 1; f < 4; f++) { const fy = y + PL + f * 3.1; k.plain.push([box(xe, xe + 0.25, fy - 0.2, fy, -86 - A[1], -38.9 - A[1]), '#f6f6f3']); }
+    const XB = -249.5, xb = XB - A[0], dz0 = -64.5, dz1 = -60.5;
+    for (const [z0, z1] of [[-90, dz0], [dz1, -35]]) {
+      k.plain.push([box(xb - 0.3, xb, y, y + 2.2, z0 - A[1], z1 - A[1]), '#f2f1ec']);
+      for (let z = z0; z < z1; z += 3) k.plain.push([box(xb - 0.35, xb + 0.05, y, y + 2.35, z - A[1], z + 0.3 - A[1]), '#e6e5df']);
+      for (let z = z0 + 0.3; z < z1; z += 0.6) k.plain.push([new THREE.TorusGeometry(0.28, 0.025, 4, 10).rotateY(Math.PI / 2).translate(xb - 0.15, y + 2.55, z - A[1]), '#9a9ea2']);
+      for (let z = z0; z <= z1; z += 0.4) SOLIDS.add(XB - 0.15, z, 0.25);
+    }
+    for (const z of [dz0 + 0.05, (dz0 + dz1) / 2 + 0.03]) k.plain.push([box(xb - 0.2, xb - 0.1, y, y + 2.2, z - A[1], z + 1.92 - A[1]), '#151617']);
+    k.plain.push([box(xb, -224 - A[0], y + 0.015, y + 0.045, dz0 - A[1], dz1 - A[1]), '#45484b']);
     // the hall's walk arrives at the Annex's south face: an entrance there
     k.plain.push([box(-291 - A[0], -287 - A[0], y + 0.1, y + 2.8, -38.9 - A[1], -38.85 - A[1]), '#2d3540']);
     k.plain.push([box(-292 - A[0], -286 - A[0], y + 2.8, y + 3.0, -38.9 - A[1], -36.9 - A[1]), WHITE]);

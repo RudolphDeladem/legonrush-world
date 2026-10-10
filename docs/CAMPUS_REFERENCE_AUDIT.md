@@ -496,3 +496,101 @@ eye; the renders are in the conversation. All the project's checks pass:
 **Not verified**
 - How the screens look on a phone GPU.
 - Lighting at night.
+
+---
+
+# Part 2: the second reference PDF ("number 2", 54 pages)
+
+**Images.** Saved as `docs/handover/images/363–424.jpg`, in the PDF's order: image *i* is `363 + i`.
+
+**Telling game from photo**, as in part 1:
+- Game screenshots have the bike, the speed dial and the route bar.
+- Photographs are the 960×1280 portrait and 1280×720 landscape phone pictures.
+
+**Page order.** Usually a page has the game view and the next page the photo; the owner's descriptions sit under them.
+
+## Part A: mistakes in the previous edit (pages 1–7)
+
+**Pages 1–4: Volta Hall Annex front and back**
+
+Images:
+- p1 game img 0: the louvred side with the water tower, placed on the east.
+- p2 game img 1 and p3 photo img 2: its end over the road, a column of curved gallery slabs, a white palisade, the
+  paved kerb.
+- p4 game img 3 and photo img 4: the real front toward the Business School.
+
+The owner says the louvred side is the **back**, facing the Graduate School (west).
+
+The front (east, toward the Business School), from img 4:
+- four floors;
+- on the three upper floors a recessed balcony to each bay, with dark-framed window and door behind a black railing,
+  white piers between;
+- a plain ground floor;
+- a white boundary wall topped with razor wire;
+- a big mango tree;
+- cars along the road.
+
+**Correction (done)**
+- The louvred screen, the galleries, the plain range ends, the sloping wing walls, the black gate and the red lattice
+  water tower are moved to the **west** side. The west court already lay between the ranges, and the drive from
+  J.K.M. Hodasi Road (road 961) ends at the gate there.
+- The east cross block is put back flush, so the **east front** is one continuous four-floor face of recessed
+  balconies. Slab edges stand out at each floor.
+- The white wall with razor-wire coils and a black gate on the drive stands before it.
+
+**Page 5: the red-circled two-storey building by the Graduate School**
+
+Images:
+- game img 5.
+
+Confirmed from the same viewpoint as the cream two-storey footprint `ml:dcb8a721…` between the Graduate School and the
+Nursing School.
+
+**Correction (done)**
+- Excluded, with a route test.
+- Nothing else removed.
+
+**Pages 6–7: the Nursing School back, connected; the aluminium-sheet fence**
+
+Images:
+- p6 game img 6, photo img 7 (purple outline).
+- p7 game img 8, photo img 9 (orange arrow).
+
+Read together:
+- The car-park side (north) is the school's back.
+- The name board is on the **east end**, facing the drive between the school and the School of Pharmacy's three-floor
+  block.
+- The drive runs north from the road past that end to a fence of **silver aluminium sheet**. The fence runs across
+  the back to the Pharmacy block's back, closing the way north to St. Thomas Aquinas.
+
+**Correction (done)**
+- **Ground floor.** On the north, only the east (name) block stands on columns over a recessed ground floor. The
+  gallery bay and the entrance core come down to the ground in a solid wall with windows and the door, joined to the
+  stair tower and the west block: one connected building.
+- **Upper floors.** The east and west faces are plain white with few windows, like the north.
+- **Name board.** Moved to the east end.
+- **The silver aluminium-sheet fence.** It runs along the back of the car park from the west end to the Pharmacy
+  block's west face (where it touches it), and down the west end to the school. It has a gate of the same sheet with
+  the firm's boards by it.
+- **The drive.** Asphalted along the east end.
+
+**Uncertain**
+- Where the fence crosses: its line is put along z ≈ −228, just north of the three-floor block across the car park,
+  so it meets the Pharmacy block's back as the photo shows.
+
+## Part B: further locations (pages 8–54)
+
+| Pages | Location (game / photo images) | What the photos show | Plan |
+|---|---|---|---|
+| 8–11 | ABSA bank: east view, the road to Legon Hall, the front (game 10, 12, 14, 16; photos 11, 13, 15) | An old one-floor building, beige walls, a dark old tile roof. A gabled porch over red ATM doors with the purple absa disc on its gable, steps and a ramp with a steel rail. A red absa pylon by Cruise O'Brien Road, its street sign, a utility box, pavers, palms across the road. In front, a black steel fence round a yard with a big satellite dish, a guard booth, a big tree. | Rebuild the ABSA end of the bank building (`balme.ts`) with the porch, ATMs, steps, ramp and pylon; the fence, booth and dish in front. |
+| 12–15 | The building opposite ABSA (back to the Balme Library, front to ABSA; game 18, 20; photos 17, 21) and the back of the Bookshop (photo 19) | Opposite ABSA: a one-floor building, a dark tile roof, a timbered gable, a lean-to over a fenced generator yard, a mast, big satellite dishes, a black fence. The Bookshop's back: two floors, a dark tile hipped roof, a recessed middle on columns, round porthole windows, air-conditioners, cars. | Model the building opposite ABSA (footprint x 67…85, z 46…58) and the Bookshop's east side. |
+| 16–20 | Physics Department and its car park facing Earth Science (game 22, 24, 26; photos 23, 25) | The long one-floor ranges, white over a dark red base. A car park under a long flat shade roof on steel posts, on bare red earth. | A car-park canopy on posts over red earth between Physics and Earth Science. |
+| 21–30 | The lane from Physics to Frank Torto (road 187), LECIAD (game 28, 30, 32, 34, 36; photos 27, 29, 31, 33, 35, 37) | The lane climbs from Physics, then descends toward Chemistry. LECIAD and its surroundings stand up the hill; the Chemistry Extension and Frank Torto are down it. Red earth banks, a kerb, a drain beside the road. | A hill in `relief.ts` with its crest by the junction to LECIAD. The road, kerbs and ground follow it; the buildings sit on their levels. |
+| 31 | Volta Hall, the side toward History (photo 37) | Two to three floors of whitewash over a rubble-stone retaining wall, verandahs with grilles, dark roofs, the Volta Road sign. | Adjust the hall's west side in `volta.ts`. |
+| 32 | Volta Hall's front entrance (game 38, photo 39) | The arched door and round windows above, the steps between stone-faced planters and walls, pavers, signs. | Correct the entrance. |
+| 33–40 | The small buildings in front of Volta Hall (game 40, 42, 44, 46, 48; photos 41, 43, 45, 47) | A small pavilion on posts under a red tile pyramid roof with a cabinet. One-floor cottages, white weathered orange at the foot, red tile hipped roofs, doors in timber frames. A paver walk, a big tree. | Model them distinctly. |
+| 41–43 | The Fidelity Bank ATM in front of Volta Hall (game 48, photo 49; photo 51) | An orange ATM enclosure with a canopy and sign on a raised plinth over pavers. A paved walk with a ramp and kerbs. | Model the ATM booth and the paving. |
+| 44–45 | Near the French Department (game 52, photo 53) | The BESTIES restaurant's front, a lift barrier with a STOP sign, pavers. | Model the restaurant front and the barrier. |
+| 46–47 | Legon Hall north-west, the small restaurant (game 54, photo 55) | A small restaurant before the hall's north-west side. | Model it in its place. |
+| 48–49 | Athletic Oval basketball court seating (game 56, photo 57) | Tiers of red seats on a stepped stand beside the court, a mesh fence on posts. | Replace the red blocks with a stepped stand of red seats behind the fence. |
+| 50–54 | The back of Akuafo Hall Main (game 58, 60; photos 59, 61) | Two to three floors, white, dark tile roofs, verandahs. A courtyard of hexagonal pavers with drain grates, low raised beds edged in concrete, steps, hedges. | Hexagonal pavers, drains, raised beds, steps and hedges in the back court. Check the wings and roofs. |

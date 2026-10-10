@@ -304,6 +304,10 @@
     {
       "id": "osm:way/773875247",
       "reason": "Owner's reference PDF of game views beside street photos (docs/CAMPUS_REFERENCE_AUDIT.md), pages 24-25: the structure across Volta Hall Road from WACCBIP and the School of Pharmacy is a telecommunication mast in a palisade compound, not a building (modelled in src/game/westgrad.ts)."
+    },
+    {
+      "id": "ml:dcb8a721-9dcc-471b-95f5-8d82f88ecccf",
+      "reason": "Owner's second reference PDF (docs/CAMPUS_REFERENCE_AUDIT.md, part 2), page 5: the two-storey block circled red between the Graduate School and the Nursing School 'is supposed to be off (deleted)'."
     }
   ],
   "heights": [

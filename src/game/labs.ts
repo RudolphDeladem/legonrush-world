@@ -20,7 +20,7 @@
 import * as THREE from 'three';
 import { box, canvas, merge, speckle, tri2, type Part } from './modelkit';
 import { BAND, PL, createSite, render, type Block, type Kit, type Spec, type Style } from './blocks';
-import { concrete, panel, rails } from './concrete';
+import { concrete } from './concrete';
 import { SOLIDS } from './solids';
 import { garden } from './gardens';
 import { BIO_WALL, bioBlocks, bioParts, type BioRange } from './biology';
@@ -190,7 +190,7 @@ const nursing: Spec = (() => {
     axis: [1, 0], origin: NO, storey: NST, style: N_TOP, roofColor: '#cfcdc6', fascia: '#f5f5f2', pitch: 0.2, plinth: '#f2f2ef',
     blocks: [
       { x0: X(XS[0] + 1.2), x1: X(XS[1] - 1.2), z0: Z(ZN + 1.6), z1: Z(ZS - 3.6), floors: 1, roof: 'none', faces: { x0: N_GROUND, x1: N_GROUND, z0: N_GROUND, z1: N_GROUND }, floorStyle: { 0: N_GROUND } },
-      { x0: X(XS[0]), x1: X(XS[1]), z0: Z(upZ[0]), z1: Z(upZ[1]), floors: 2, roof: 'none', y: U - PL + 0.0, faces: { z0: N_NORTH } },
+      { x0: X(XS[0]), x1: X(XS[1]), z0: Z(upZ[0]), z1: Z(upZ[1]), floors: 2, roof: 'none', y: U - PL + 0.0, faces: { z0: N_NORTH, x0: N_NORTH, x1: N_NORTH } },
     ],
     keep: [[X(XS[0]) - 1, X(XS[1]) + 1, Z(ZS) - 0.5, Z(ZS) + 3], [X(-363), X(-299), Z(-228), Z(ZN)]],
     extras: (k: Kit) => {
@@ -199,7 +199,9 @@ const nursing: Spec = (() => {
       c.push([B(XS[0], XS[1], U - 0.35, U + 0.05, ZN, ZS), '#f2f2ef']);
       for (let x = XS[0] + 2.5; x < XS[1] - 1; x += 4.5) for (const z of [ZS - 1.5, ZN + 0.9]) k.plain.push([B(x - 0.35, x + 0.35, U - 0.38, U - 0.35, z - 0.15, z + 0.15), '#fff3d0']);
       // square columns along the open ground floor
-      for (let x = XS[0] + 0.5; x <= XS[1] - 0.4; x += 4.5) for (const z of [ZS - 0.6, ZN + 0.5]) c.push([B(x - 0.28, x + 0.28, 0, U - 0.35, z - 0.28, z + 0.28), '#f4f4f1']);
+      // (on the north only under the east block: the gallery bay, the entrance core, the stair tower and the west block
+      // come down to the ground there, one building with it - the owner's PDF no. 2, page 6)
+      for (let x = XS[0] + 0.5; x <= XS[1] - 0.4; x += 4.5) for (const z of [ZS - 0.6, ZN + 0.5]) if (z === ZS - 0.6 || x > -326) c.push([B(x - 0.28, x + 0.28, 0, U - 0.35, z - 0.28, z + 0.28), '#f4f4f1']);
       // the balconies on both upper floors: the slab, a solid parapet pierced by a row of slots; round the middle of
       // the south front they step out a further metre
       const mid = [-339.0, -324.0];
@@ -235,8 +237,14 @@ const nursing: Spec = (() => {
       c.push([B(-327, -306.8, U + NST - 0.3, U + NST, ZN - 1.2, ZN), '#e6e5e0']);
       win(-321.5, -319.3, U + 1.0, U + 2.2, ZN); win(-313.0, -311.4, U + 1.1, U + 2.0, ZN);
       win(-323.0, -320.0, U + NST + 1.0, U + NST + 2.3, ZN - 1.2); win(-314.5, -312.5, U + NST + 1.1, U + NST + 2.1, ZN - 1.2);
-      k.plain.push([B(-322, -312, TOP - 1.0, TOP - 0.2, ZN - 1.26, ZN - 1.21), '#f6f6f3']);
-      k.signs.push({ text: 'SCHOOL OF NURSING AND MIDWIFERY - COLLEGE OF HEALTH SCIENCES', x: X(-317), y: TOP - 0.6, z: Z(ZN - 1.27), ry: Math.PI, w: 9.6, colors: ['#f6f6f3', '#1d2a5a'] });
+      // the name board high on the east end, toward the drive (the owner's PDF no. 2, pages 6-7)
+      c.push([B(-306.8, -306.3, U, TOP, ZN - 1.2, -186), WH]);
+      k.plain.push([B(-306.28, -306.22, TOP - 1.3, TOP - 0.2, -197.5, -190.5), '#f6f6f3']);
+      k.signs.push({ text: 'SCHOOL OF NURSING AND MIDWIFERY', x: X(-306.2), y: TOP - 0.55, z: Z(-194), ry: Math.PI / 2, w: 6.4, colors: ['#f6f6f3', '#1d2a5a'] });
+      k.signs.push({ text: 'COLLEGE OF HEALTH SCIENCES - UNIVERSITY OF GHANA, LEGON', x: X(-306.2), y: TOP - 1.0, z: Z(-194), ry: Math.PI / 2, w: 6.4, colors: ['#f6f6f3', '#1d2a5a'] });
+      // the ground floor under the gallery bay and the core: a solid wall out to the face, windows, the door in the core
+      c.push([B(-342, -326, 0, U, ZN, ZN + 1.6), WH]);
+      win(-331.0, -328.0, 1.1, 2.3, ZN); win(-341.2, -338.6, 1.1, 2.3, ZN);
       // the entrance core: small balconies with rails on both upper floors, the board over the lit door
       for (let f = 0; f < 2; f++) {
         const y = U + f * NST;
@@ -279,14 +287,26 @@ const nursing: Spec = (() => {
       // the curved paved walk to the east block's corner, the flower beds by it
       for (let i = 0; i < 10; i++) { const a = (i / 10) * 1.4; k.plain.push([B(-306.5 + Math.cos(a) * 4 - 0.6, -306.5 + Math.cos(a) * 4 + 0.6, 0.04, 0.07, -205 + Math.sin(a) * 4 - 0.6, -205 + Math.sin(a) * 4 + 0.6), '#a9a39a']); }
       for (const [x, z] of [[-302.5, -201.5], [-304, -199.8]]) k.plain.push([new THREE.IcosahedronGeometry(0.55, 1).scale(1.2, 0.7, 1).translate(X(x), 0.35, Z(z)), '#c23a2e']);
-      // the fence and the gate at the west end, the board of the firm building behind it
-      for (const [x0, x1, z0, z1, col] of [[-362.6, -362.3, -227, -214, '#9ba0a3'], [-362.6, -362.3, -209, -199, '#9ba0a3']] as [number, number, number, number, string][]) {
-        c.push([B(x0, x1, 0, 2.4, z0, z1), col]);
-        for (let z = z0 + 0.3; z < z1; z += 0.3) c.push([B(x0 - 0.04, x0, 0, 2.4, z, z + 0.08), '#868b8e']);
-      }
-      panel(NO, k, rails(), -362.45, -214, -362.45, -209, 0.1, 2.0, 0.14, 1.9);
-      c.push([B(-362.9, -362.5, 0.6, 2.4, -208.8, -207.0), '#f2f2ee'], [B(-362.9, -362.5, 0.6, 2.4, -206.8, -205.0), '#1d1d1f']);
-      for (let z = -227; z <= -199; z += 0.4) SOLIDS.add(-362.45, z, 0.25);
+      // ----- the fence of silver aluminium sheet (the owner's PDF no. 2, page 7): across the back of the car park from
+      // the west end to the back of the School of Pharmacy's three-floor block, closing the way from behind the Nursing
+      // School to St. Thomas Aquinas; down the west end to the school; a gate of the same sheet in it with the board of
+      // the firm building beyond; and the drive along the school's east end, between it and the Pharmacy block
+      const FN = -228, FW = -362.5, FE = -302.8;
+      const sheet = (ax: number, az: number, bx: number, bz: number) => {
+        const len = Math.hypot(bx - ax, bz - az), ux = (bx - ax) / len, uz = (bz - az) / len;
+        c.push([new THREE.BoxGeometry(len, 2.4, 0.05).rotateY(-Math.atan2(bz - az, bx - ax)).translate(X((ax + bx) / 2), 1.2, Z((az + bz) / 2)), '#c9ced2']);
+        for (let t = 0.25; t < len; t += 0.25) c.push([new THREE.BoxGeometry(0.04, 2.4, 0.04).translate(X(ax + ux * t + uz * 0.03), 1.2, Z(az + uz * t - ux * 0.03)), (Math.round(t * 4) % 2) ? '#b3b9be' : '#dde1e4']);
+        for (let t = 0; t <= len; t += 2.5) c.push([B(ax + ux * t - 0.05, ax + ux * t + 0.05, 0, 2.5, az + uz * t - 0.05, az + uz * t + 0.05), '#8e9498']);
+        const n = Math.ceil(len / 0.4);
+        for (let j = 0; j <= n; j++) SOLIDS.add(ax + ((bx - ax) * j) / n, az + ((bz - az) * j) / n, 0.25);
+      };
+      sheet(FW, FN, -320, FN); sheet(-313, FN, FE, FN); sheet(FW, FN, FW, ZN);
+      c.push([B(-320, -313, 0, 2.2, FN - 0.08, FN - 0.02), '#d2d6d9']);
+      for (let x = -319.6; x < -313.2; x += 0.3) c.push([B(x, x + 0.06, 0, 2.2, FN - 0.12, FN - 0.08), '#aeb4b8']);
+      for (let x = -320; x <= -313; x += 0.4) SOLIDS.add(x, FN, 0.25);
+      c.push([B(-311.6, -311.5, 0, 2.6, FN + 0.2, FN + 0.3), '#3a3a3a']);
+      k.plain.push([B(-312.8, -310.4, 1.0, 2.5, FN + 0.3, FN + 0.34), '#f2f2ee'], [B(-309.8, -307.8, 1.0, 2.5, FN + 0.3, FN + 0.34), '#1d1d1f']);
+      k.plain.push([B(-307.5, -302.9, 0.015, 0.04, FN, ZS), '#4f5154']);
       gn.tree(k, X(-372), Z(-214), 2.6);
       // the flat roof: a deep white fascia standing out all round, lamps on it
       c.push([B(XS[0] - 1.0, XS[1] + 1.0, TOP - 0.1, TOP + 0.9, ZN - 1.0, ZS + 1.0), '#f6f6f3']);

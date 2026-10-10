@@ -492,6 +492,8 @@ try {
     { const b = buildingAt(-402, -165); if (!b || b.height > 6.5) fail('the Graduate School is not one floor (owner PDF pp. 5-6)'); }
     { const b = buildingAt(-452.8, -166.3); if (!b || b.height < 6) fail('the Doctorate building is not two floors (owner PDF pp. 7-11)'); }
     if (!buildingAt(-298, -62) || !buildingAt(-635, -241)) fail('the Volta Hall Annex or the Research and Innovation Complex is missing');
+    // second PDF, page 5: the two-storey block circled red between the Graduate School and the Nursing School deleted
+    if (buildingAt(-361.3, -151.8)) fail('the two-storey block circled red near the Graduate School is still there (owner PDF 2 p. 5)');
   }
   // owner's reference PDF, behind the Balme Library: the Chemistry Extension up on its walled terrace, the uncompleted
   // building where the car park was, the Chemistry Department's two floors
