@@ -45,7 +45,7 @@ const canvasTex = (w: number, h: number, draw: (g: CanvasRenderingContext2D) => 
 let stoneMat: THREE.MeshStandardMaterial | null = null;
 /** the wall's face: irregular stones of several sizes, warm tan, rust, brown and pale, in dark mortar, laid in world
  *  space over 2.6 m so the pattern does not repeat at an obvious scale */
-function wallStone() {
+export function wallStone() {
   if (stoneMat) return stoneMat;
   let s = 29;
   const r = () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
@@ -144,9 +144,10 @@ function sheet(a: [number, number, number][], b: [number, number, number][]) {
 }
 
 // ---------- the trees ----------
-/** a mature broadleaf tree: a heavy rough trunk forking high into two or three limbs, a broad crown of overlapping masses
+/** a mature broadleaf tree (in the frame of a model whose origin is `origin`, NSIA Road's by default): a heavy rough trunk forking high into two or three limbs, a broad crown of overlapping masses
  *  (sparse: a pruned trunk with thin, broken foliage). Its trunk is solid to the bike; roots and litter are not. */
-function broadleaf(k: Kit, parts: Part[], x: number, z: number, o: { h?: number; spread?: number; sparse?: boolean; lean?: number; seed?: number } = {}) {
+export function broadleaf(_k: Kit | null, parts: Part[], x: number, z: number, o: { h?: number; spread?: number; sparse?: boolean; lean?: number; seed?: number; origin?: [number, number] } = {}) {
+  const org = o.origin ?? O, X = (v: number) => v - org[0], Z = (v: number) => v - org[1];
   const h = o.h ?? 7.5, spread = o.spread ?? 7, seed = o.seed ?? x * 3 + z, y = gh(x, z);
   const rr = (i: number) => hash(seed + i * 1.7, seed * 0.3 - i);
   const bark = ['#4f4236', '#5a4a3b', '#463a2f'];
@@ -402,7 +403,8 @@ const nsiaSpec: Spec = {
   },
 };
 
-function stoneMeshOf(k: Kit, parts: Part[]) {
+/** stone-faced parts as one mesh in the kit, in the irregular warm stone of the retaining walls */
+export function stoneMeshOf(k: Kit, parts: Part[]) {
   if (!parts.length) return;
   const geos = parts.map(([g]) => {
     const n = g.index ? g.toNonIndexed() : g;

@@ -310,10 +310,6 @@
       "reason": "Owner's second reference PDF (docs/CAMPUS_REFERENCE_AUDIT.md, part 2), page 5: the two-storey block circled red between the Graduate School and the Nursing School 'is supposed to be off (deleted)'."
     },
     {
-      "id": "osm:way/773887685",
-      "reason": "Owner's corrections PDF (page 4): the cottage on Volta Hall Road north of the substation is to be removed; the substation and its generator stand in its place."
-    },
-    {
       "id": "osm:way/715027977",
       "reason": "Owner's corrections PDF (page 3): the footprint mapped as 'Rest station' before Volta Hall is not a building but a small open bus stop (modelled in src/game/voltafront.ts)."
     },
@@ -3123,6 +3119,13 @@
       "levels": 4,
       "height": 14,
       "reason": "Owner's third reference PDF (pages 57-60): the yellow building behind Pent stands four storeys under red roofs."
+    },
+    {
+      "id": "osm:way/773887685",
+      "place": "one-floor building",
+      "levels": 1,
+      "height": 4.5,
+      "reason": "Owner's aerial (circled blue): the small buildings along the Volta Hall Road stretch north-west of CEDI are one floor. (Restored: the owner withdrew its removal.)"
     }
   ],
   "reclass": [
@@ -4559,30 +4562,6 @@
         ]
       ],
       "reason": "Owner's marked aerial of the ground round the front of the N Block (eleven numbered views, registered to the N Block and the GCB Lecture Building at 0.297 m/px) and street photos of each view: the white flat-roofed building of the Ocean Margins Initiative (view 6), its roof as the aerial shows it."
-    },
-    {
-      "id": "osm:way/665124067",
-      "place": "substation on Volta Hall Road",
-      "source": "owner's corrections PDF, page 4",
-      "ring": [
-        [
-          -213.3,
-          -39.8
-        ],
-        [
-          -205.8,
-          -39.8
-        ],
-        [
-          -205.8,
-          -29.0
-        ],
-        [
-          -213.3,
-          -29.0
-        ]
-      ],
-      "reason": "The owner moved the substation (with its generator pavilion) north to the place of the cottage that is removed."
     }
   ],
   "addAreas": [

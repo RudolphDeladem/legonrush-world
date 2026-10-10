@@ -166,11 +166,11 @@ try {
     if (!(Math.abs(gh(146, 374) - 0.45) < 0.01 && gh(146, 390) === 0 && gh(155, 382.4) > 0.1 && gh(155, 382.4) < 0.4)) fail('Akuafo Hall Main: the raised lawn behind the hall, its pavers or its steps are not as the owner shows'); }
   // owner PDF 2 pp. 33-45: the small buildings along Volta Hall Road each their own model (not one generic cottage)
   { const vf = (await server.ssrLoadModule('/src/game/voltafront.ts')).voltaFrontSite;
-    for (const [x, z] of [[-209.6, -34.4], [-192.4, -38.5]]) { const b = buildingAt(x, z); if (!b || !vf.replaces(b)) fail(`the building on Volta Hall Road at ${x},${z} is not its own model (owner)`); }
-    // owner's corrections PDF: the cottage north of the substation removed (the substation in its place), the "Rest
-    // station" a bus stop, not a building
-    if (buildingAt(-214.4, 5.6)) fail('the bus stop before Volta Hall is still a building (owner)');
-    if (buildingAt(-209.6, -23)) fail('the substation has not moved to the place of the removed cottage (owner)'); }
+    // (the substation by the road, the cottage north of it, the wider cottage behind: the owner withdrew the removal of
+    // the cottage, so all three stand where they were)
+    for (const [x, z] of [[-209.6, -23], [-208.2, -36.6], [-192.4, -38.5]]) { const b = buildingAt(x, z); if (!b || !vf.replaces(b)) fail(`the building on Volta Hall Road at ${x},${z} is not its own model (owner)`); }
+    // owner's corrections PDF: the "Rest station" a bus stop, not a building
+    if (buildingAt(-214.4, 5.6)) fail('the bus stop before Volta Hall is still a building (owner)'); }
   // Explore: every destination ends the guided ride with its own stop (the arrived card: drone view, riding it yourself)
   const { guideFor } = await server.ssrLoadModule('/src/data/guide.ts');
   const balme = placeByName('The Balme Library');

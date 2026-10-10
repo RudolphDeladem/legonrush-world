@@ -1,12 +1,14 @@
 // The small one-floor buildings along Volta Hall Road before Volta Hall, toward the CEDI Conference Centre (owner's
 // second reference PDF, pages 33-40), each modelled as the photos show it rather than as the generic cottage:
 //
-// - the substation: weathered whitewash stained orange at its foot by the red earth, an old red clay tile hipped roof,
-//   wide double doors of dark timber with louvred panels and a yellow danger sign, a small timber window, a slatted
-//   vent, a meter box and a switch box on the wall; south of it a pavilion of four steel posts under a red sheet
-//   pyramid roof sheltering the standby generator in its cream box (owner's photos 404 and 406). The owner's
-//   corrections PDF (page 4) moved it, with its generator, to where a cottage stood, and removed the cottage and the
-//   cage under the big tree;
+// - the substation by the road: weathered whitewash stained orange at its foot by the red earth, an old red clay tile
+//   hipped roof, wide double doors of dark timber with louvred panels and a yellow danger sign, a small timber window,
+//   a slatted vent, a meter box and a switch box on the wall; south of it a pavilion of four steel posts under a red
+//   sheet pyramid roof sheltering the standby generator in its cream box (owner's photos 404 and 406);
+// - the cottage north of it, the same weathered white under red tiles, its door in a timber frame and small windows,
+//   and beside it under a big tree the small enclosure caged in red iron bars (photo 408, position approximate). (The
+//   owner's corrections PDF had them removed and the substation moved into the cottage's place; the owner then said
+//   that was a mistake, and they stand as they were);
 // - the wider cottage behind, weathered white under red tiles;
 // - the bus stop (the owner's corrections PDF, page 3: the footprint mapped as "Rest station" is not a building).
 import * as THREE from 'three';
@@ -74,8 +76,7 @@ function win(k: Kit, f: Frame, onX: boolean, at: number, s: number, a: number, b
 }
 
 // ---------- the substation and its generator pavilion ----------
-// (moved by the owner's corrections PDF, page 4, to where the cottage stood, which is gone: corrections.json)
-const SUB: [number, number, number, number] = [-213.3, -205.8, -39.8, -29.0];
+const SUB: [number, number, number, number] = [-213.3, -205.8, -28.4, -17.6];
 const substation = small('substation on Volta Hall Road', SUB, WEATHERED, (k, f) => {
   const x = SUB[0], zm = (SUB[2] + SUB[3]) / 2;
   // the double doors of dark timber, louvred panels top and foot, the danger sign
@@ -88,19 +89,42 @@ const substation = small('substation on Volta Hall Road', SUB, WEATHERED, (k, f)
   for (let y = PL + 1.4; y < PL + 2.1; y += 0.16) k.plain.push([f.B(x - 0.12, x - 0.08, y, y + 0.06, SUB[3] - 1.55, SUB[3] - 0.95), '#3a2a20']);
   k.plain.push([f.B(x - 0.2, x, PL + 1.6, PL + 1.95, SUB[3] - 0.7, SUB[3] - 0.45), '#e9e9e6'], [f.B(x - 0.25, x, PL + 0.5, PL + 1.0, SUB[3] - 0.35, SUB[3] + 0.25), '#e4e5e2']);
   // the pavilion to the south: four steel posts, the red sheet pyramid roof, the generator in its cream box
-  const P = [-212.4, -207.0, -27.2, -22.0], gz = (P[2] + P[3]) / 2, py = k.ground(f.X(-209.7), f.Z(gz));
+  const P = [-212.4, -207.0, -15.8, -10.6], py = k.ground(f.X(-209.7), f.Z(-13.2));
   for (const px of [P[0], P[1]]) for (const pz of [P[2], P[3]]) { k.plain.push([f.B(px - 0.05, px + 0.05, py, py + 2.7, pz - 0.05, pz + 0.05), '#4a4f53']); SOLIDS.add(px, pz, 0.12); }
-  k.plain.push([new THREE.ConeGeometry(Math.hypot(P[1] - P[0], P[3] - P[2]) / 2 + 0.9, 1.3, 4, 1, true).rotateY(Math.PI / 4).scale((P[1] - P[0]) / (P[3] - P[2]), 1, 1).translate(f.X((P[0] + P[1]) / 2), py + 3.3, f.Z(gz)), '#b23a32']);
+  k.plain.push([new THREE.ConeGeometry(Math.hypot(P[1] - P[0], P[3] - P[2]) / 2 + 0.9, 1.3, 4, 1, true).rotateY(Math.PI / 4).scale((P[1] - P[0]) / (P[3] - P[2]), 1, 1).translate(f.X((P[0] + P[1]) / 2), py + 3.3, f.Z((P[2] + P[3]) / 2)), '#b23a32']);
   k.plain.push([f.B(P[0] - 0.6, P[1] + 0.6, py + 2.6, py + 2.68, P[2] - 0.6, P[2] - 0.5), '#2e2f31'], [f.B(P[0] - 0.6, P[1] + 0.6, py + 2.6, py + 2.68, P[3] + 0.5, P[3] + 0.6), '#2e2f31']);
-  k.plain.push([f.B(-211.4, -208.0, py, py + 0.2, gz - 0.8, gz + 0.8), '#2b2c2e'], [f.B(-211.3, -208.1, py + 0.2, py + 1.75, gz - 0.75, gz + 0.75), '#e8e3d2']);
-  for (let xx = -211.1; xx < -210.2; xx += 0.1) k.plain.push([f.B(xx, xx + 0.05, py + 0.4, py + 1.5, gz - 0.8, gz - 0.75), '#9b9789']);
-  SOLIDS.add(-209.7, gz, 1.6);
-  // the big tree behind it
+  k.plain.push([f.B(-211.4, -208.0, py, py + 0.2, -14.0, -12.4), '#2b2c2e'], [f.B(-211.3, -208.1, py + 0.2, py + 1.75, -13.95, -12.45), '#e8e3d2']);
+  for (let xx = -211.1; xx < -210.2; xx += 0.1) k.plain.push([f.B(xx, xx + 0.05, py + 0.4, py + 1.5, -14.0, -13.95), '#9b9789']);
+  SOLIDS.add(-209.7, -13.2, 1.6);
+});
+
+// ---------- the cottage north of it and the caged enclosure under the big tree ----------
+const COT: [number, number, number, number] = [-213.7, -202.6, -39.8, -33.4];
+const cottage = small('cottage on Volta Hall Road', COT, WEATHERED, (k, f) => {
+  const x = COT[0], zm = (COT[2] + COT[3]) / 2;
+  k.plain.push([f.B(x - 0.1, x, PL, PL + 2.3, zm - 0.6, zm + 0.6), '#5a3d28'], [f.B(x - 0.12, x - 0.1, PL + 0.1, PL + 2.2, zm - 0.48, zm + 0.48), '#4a2f1e']);
+  for (const z of [COT[2] + 1.2, COT[3] - 1.9]) win(k, f, true, x, -1, z, z + 0.8, PL + 1.0, PL + 2.0);
+  for (const xx of [-210.5, -206.0]) win(k, f, false, COT[2], -1, xx, xx + 0.8, PL + 1.0, PL + 2.0);
+  k.plain.push([f.B(x - 1.0, x, 0, PL, zm - 0.9, zm + 0.9), '#c2bcb0']);
+  // the enclosure caged in red iron bars, a little tiled roof over it, under the big tree
+  const C = [-212.6, -207.4, -45.6, -41.6], cy = k.ground(f.X(-210), f.Z(-43.6));
+  k.plain.push([f.B(C[0] + 0.6, C[1] - 0.6, cy, cy + 2.2, C[2] + 0.6, C[3] - 0.6), '#e9e6de'], [f.B(C[0], C[1], cy, cy + 0.2, C[2], C[3]), '#a8a196']);
+  for (const [ax, az, bx, bz] of [[C[0], C[2], C[1], C[2]], [C[0], C[3], C[1], C[3]], [C[0], C[2], C[0], C[3]], [C[1], C[2], C[1], C[3]]]) {
+    const n = Math.round(Math.hypot(bx - ax, bz - az) / 0.16);
+    for (let i = 0; i <= n; i++) { const px = ax + ((bx - ax) * i) / n, pz = az + ((bz - az) * i) / n; k.plain.push([f.B(px - 0.02, px + 0.02, cy + 0.2, cy + 2.5, pz - 0.02, pz + 0.02), '#8f2f24']); }
+    for (const h of [0.25, 1.35, 2.45]) k.plain.push([f.B(Math.min(ax, bx) - 0.03, Math.max(ax, bx) + 0.03, cy + h, cy + h + 0.05, Math.min(az, bz) - 0.03, Math.max(az, bz) + 0.03), '#8f2f24']);
+  }
+  k.roof.c = new THREE.Color(TILE);
+  k.roof.quad([f.X(C[0] - 0.4), cy + 2.6, f.Z(C[3] + 0.4)], [f.X(C[1] + 0.4), cy + 2.6, f.Z(C[3] + 0.4)], [f.X(C[1] + 0.4), cy + 3.1, f.Z(C[2] - 0.4)], [f.X(C[0] - 0.4), cy + 3.1, f.Z(C[2] - 0.4)]);
+  for (let px = C[0]; px <= C[1]; px += 1.3) { SOLIDS.add(px, C[2], 0.15); SOLIDS.add(px, C[3], 0.15); }
+  for (let pz = C[2]; pz <= C[3]; pz += 1.3) { SOLIDS.add(C[0], pz, 0.15); SOLIDS.add(C[1], pz, 0.15); }
+  const g = garden([-220, -200, -52, -38]);
+  g.reseed(33);
   { const tx = f.X(-205.4), tz = f.Z(-44.2), ty = k.ground(tx, tz);
     k.plain.push([new THREE.CylinderGeometry(0.35, 0.6, 6, 7).translate(tx, ty + 3, tz), '#4c3d30']);
     for (const [dx, dy, dz, r] of [[0, 8, 0, 4.4], [2.6, 7.2, -1.8, 3.0], [-2.4, 7.0, 2.0, 3.2], [1.0, 9.6, 1.4, 2.6]]) k.plain.push([new THREE.IcosahedronGeometry(r, 1).scale(1, 0.72, 1).translate(tx + dx, ty + dy, tz + dz), '#2f5a24']);
     SOLIDS.add(-205.4, -44.2, 0.7); }
-}, [[-213, -206, -28.5, -21]]);
+}, [[-213, -200, -47, -40.5]]);
 
 // ---------- the wider cottage behind ----------
 const WIDE: [number, number, number, number] = [-200.7, -184.1, -46.4, -30.6];
@@ -253,4 +277,4 @@ const besties: Spec = {
 };
 
 /** the small buildings along Volta Hall Road before Volta Hall */
-export const voltaFrontSite = createSite('volta-front', [substation, wide, busStop, fidelity, besties]);
+export const voltaFrontSite = createSite('volta-front', [substation, cottage, wide, busStop, fidelity, besties]);

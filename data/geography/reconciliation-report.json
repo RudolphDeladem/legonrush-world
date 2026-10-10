@@ -102,7 +102,7 @@
   "medianCentroidOffsetToGoogleM": {
    "x": 0.6,
    "z": 0.4,
-   "n": 1205
+   "n": 1206
   },
   "mlAdded": 291,
   "mlRejected": {
@@ -330,7 +330,6 @@
    "osm:way/1284163252",
    "osm:way/773875247",
    "ml:dcb8a721-9dcc-471b-95f5-8d82f88ecccf",
-   "osm:way/773887685",
    "osm:way/715027977",
    "osm:way/1189695661",
    "osm:way/1189695663",

@@ -21,6 +21,10 @@ import { garden } from './gardens';
 import { groundHeight, stairsOf } from './relief';
 import { SOLIDS } from './solids';
 import { stoneMesh } from './concrete';
+import { BAND, gableZ } from './blocks';
+import { hipRoof } from './waccbip';
+import { broadleaf, stoneMeshOf } from './nsiaroad';
+import { merge, type Part } from './modelkit';
 
 const ROOF = '#b9593a', FASCIA = '#4a3428', STONE = '#9a7d62', STONE_DARK = '#7f6650';
 const ST = 3.2;
@@ -56,6 +60,40 @@ const ANNEX_WIN: Style = {
   },
 };
 
+/** the south-east section along Volta Road (the owner's photo from the road): cream render a little weathered, dark
+ *  windows behind vertical grilles above, large black grille windows below */
+const SE_ROOF = '#7d4a38', SEB_ROOF = '#57423a';
+const hip = { gw: 0, tri: false };
+const SE_WIN: Style = {
+  bay: 3.3,
+  up: [[96, 64, 64, 118]],
+  ground: [[72, 256 + 52, 112, 150]],
+  draw: (g) => {
+    render(g, '#ede7d7');
+    for (let i = 0; i < 60; i++) { g.fillStyle = `rgba(110,104,90,${0.03 + (i % 4) * 0.012})`; g.fillRect((i * 41) % 250, (i * 89) % 500, 6 + (i % 3) * 5, 20 + (i % 4) * 15); }
+    // above: a deep dark opening, its grille of vertical bars
+    g.fillStyle = '#d6cfbf'; g.fillRect(90, 58, 76, 130); g.fillStyle = '#1c1b1a'; g.fillRect(96, 64, 64, 118);
+    g.fillStyle = '#3a3734'; for (let x = 100; x < 160; x += 9) g.fillRect(x, 64, 3, 118);
+    slab(g, 236, 20);
+    // below: the large grille window, a black frame and close vertical bars over the dark room
+    g.fillStyle = '#121212'; g.fillRect(68, 256 + 48, 120, 158); g.fillStyle = '#26231f'; g.fillRect(72, 256 + 52, 112, 150);
+    g.fillStyle = '#0b0b0b'; for (let x = 76; x < 184; x += 10) g.fillRect(x, 256 + 52, 3, 150);
+    for (const y of [256 + 100, 256 + 150]) g.fillRect(72, y, 112, 3);
+    g.fillStyle = '#d4cab6'; g.fillRect(0, 488, 256, 24);
+  },
+};
+/** the gable wing's south end: narrow tall openings with grilles, one over another */
+const SE_END: Style = {
+  bay: 2.6,
+  up: [[108, 50, 40, 140]],
+  ground: [[108, 256 + 50, 40, 140]],
+  draw: (g) => {
+    render(g, '#ede7d7');
+    for (const y0 of [0, 256]) { g.fillStyle = '#1c1b1a'; g.fillRect(108, y0 + 50, 40, 140); g.fillStyle = '#3a3734'; for (let x = 112; x < 148; x += 8) g.fillRect(x, y0 + 50, 2, 140); }
+    g.fillStyle = '#d4cab6'; g.fillRect(0, 488, 256, 24);
+  },
+};
+
 // ---------- the hall (frame: map axes; local = world - origin) ----------
 const O: [number, number] = [-290, 40];
 const W = (x0: number, x1: number, z0: number, z1: number, extra: Partial<Block> = {}): Block =>
@@ -72,13 +110,17 @@ const HALL: Block[] = [
   W(-316.5, -292, 35.3, 45.7), W(-316.5, -307.7, 45.7, 55), W(-327.5, -316.5, 50.6, 55.3),
   W(-285.4, -259.7, 35, 44.8), W(-268.2, -259.7, 44.8, 51.5),
   // the front block with the entrance (east face), and the blocks closing the south court
-  W(-269.6, -258.9, 55.3, 76.8), W(-268.4, -260.3, 79.5, 98),
-  W(-303, -270.7, 88.3, 99.2), W(-317.2, -307, 76.4, 98.6),
+  // (the gable wing at the south-east corner and the long block along Volta Road: the owner's photo from the road)
+  W(-269.6, -258.9, 55.3, 76.8), W(-268.4, -260.3, 79.5, 98, { roof: 'none', faces: { z1: SE_END } }),
+  W(-303, -270.7, 88.3, 99.2, { roofColor: SE_ROOF, pitch: 0.42, faces: { z1: SE_WIN } }), W(-317.2, -307, 76.4, 98.6),
   // the west block and its wings
   W(-348.3, -336.3, 45.9, 84.7), W(-364.5, -348.3, 60.7, 72.6), W(-364, -355, 48.5, 60.7),
 ];
 /** the two buildings either side of the climb to the entrance (owner's purple mark), on the forecourt */
-const FLANKS: Block[] = [W(-255.8, -243.3, 32.3, 44.4), W(-256.4, -241.7, 88.2, 98.1)];
+// (the south one, with its porch and balcony up on the terrace, is modelled in the hall's extras)
+const FLANKS: Block[] = [W(-255.8, -243.3, 32.3, 44.4)];
+/** the building with the porch and balcony at the south-east corner */
+const SEB: [number, number, number, number] = [-256.4, -241.7, 88.2, 98.1];
 
 const g = garden([-380, -200, -110, 125]);
 const stair = stairsOf()[1];
@@ -94,6 +136,7 @@ const hall: Spec = {
     g.reseed(5);
     const X = (x: number) => x - O[0], Z = (z: number) => z - O[1];
     for (const b of [...HALL, ...FLANKS]) g.clear.push([b.x0 + O[0] - 2, b.x1 + O[0] + 2, b.z0 + O[1] - 2, b.z1 + O[1] + 2]);
+    g.clear.push([SEB[0] - 2, SEB[1] + 2, SEB[2] - 2, SEB[3] + 2]);
     g.clear.push([-292, -286, -40, 88], [-260, -219, 52, 80]);
 
     // the entrance (east face of the front block, x -258.9): an arched doorway with its gate, a small
@@ -152,24 +195,39 @@ const hall: Spec = {
     }
     // the stone retaining wall along the terrace's east edge, open at the steps
     const wx = -258.4;
-    for (let z = -27; z < 99.5; z += 2) {
+    for (let z = -27; z < 86.6; z += 2) {
       if (z + 2 > stair.z0 && z < stair.z1) continue;
       const top = groundHeight(wx - 1, z + 1);
       st.push([box(X(wx), X(wx + 0.8), -0.3, top + 0.5, Z(z), Z(z + 2.02)), '#ffffff']);
     }
-    // the south side toward the Department of History (owner's second reference PDF, page 30): the terrace held up by
-    // a rubble-stone wall in two tiers along Volta Road, shrubs at its foot, the street's green name board
-    for (let x = -336; x < -258.6; x += 2) {
-      const x1 = Math.min(-258.6, x + 2.02);
-      st.push([box(X(x), X(x1), -0.3, 2.4 + 0.45, Z(99.6), Z(100.4)), '#ffffff'], [box(X(x), X(x1), -0.3, 1.25, Z(100.4), Z(101.3)), '#ffffff']);
-      k.plain.push([box(X(x), X(x1), 1.25, 1.3, Z(100.4), Z(101.3)), '#b3a48f']);
+    // the south side toward the Department of History (owner's second reference PDF, page 30; the owner's photo from
+    // Volta Road): the terrace held up by a wall of irregular brown, tan and reddish-grey stones in two tiers along Volta
+    // Road, the lower tier stepping out as a ledge, carried on east under the corner building and returned up its east
+    // side and along the forecourt; dense shrubs with red flowers at its foot, the street's green name board
+    const sw: Part[] = [];
+    for (let x = -336; x < -241; x += 2) {
+      const x1 = Math.min(-241, x + 2.02);
+      sw.push([box(X(x), X(x1), -0.3, 2.4 + 0.5, Z(99.6), Z(100.45)), '#ffffff'], [box(X(x), X(x1), -0.3, 1.25, Z(100.45), Z(101.35)), '#ffffff']);
+      k.plain.push([box(X(x), X(x1), 1.25, 1.32, Z(100.4), Z(101.4)), '#b9ab95'], [box(X(x), X(x1), 2.9, 2.97, Z(99.55), Z(100.5)), '#b9ab95']);
     }
-    for (let x = -332; x < -262; x += 3.3) g.bush(k, X(x + g.rand()), Z(102.2 + g.rand() * 0.8), 0.7 + g.rand() * 0.3);
-    { const sx = X(-300), sz = Z(104.2), sy = groundHeight(-300, 104.2);
+    for (let z = 86.6; z < 101.35; z += 2) { const z1 = Math.min(101.35, z + 2.02), h = z1 > 100.45 ? 1.25 : 2.9; sw.push([box(X(-241.0), X(-240.15), -0.3, h, Z(z), Z(z1)), '#ffffff']); }
+    for (let x = -258.4; x < -241; x += 2) sw.push([box(X(x), X(Math.min(-240.15, x + 2.02)), -0.3, 2.9, Z(85.75), Z(86.6)), '#ffffff']);
+    k.plain.push([box(X(-241.05), X(-240.1), 2.9, 2.97, Z(85.7), Z(100.5)), '#b9ab95'], [box(X(-258.4), X(-240.1), 2.9, 2.97, Z(85.7), Z(86.65)), '#b9ab95']);
+    for (let x = -258.4; x < -241; x += 0.8) SOLIDS.add(x, 86.2, 0.4);
+    for (let z = 86.6; z < 101.3; z += 0.8) SOLIDS.add(-240.6, z, 0.4);
+    stoneMeshOf(k, sw);
+    { const greens = ['#2c4a24', '#335426', '#3b5d2b', '#28431f', '#41622e'];
+      for (let x = -334; x < -241; x += 0.9) for (let j = 0; j < 2; j++) {
+        const px = x + g.rand() * 0.9, pz = 101.8 + g.rand() * 2.2, r = 0.55 + g.rand() * 0.5, y = groundHeight(px, pz);
+        k.plain.push([new THREE.IcosahedronGeometry(r, 1).scale(1.2, 0.9 + g.rand() * 0.4, 1).translate(X(px), y + r * 0.7, Z(pz)), greens[(x * 7 + j) & 3 ? ((x * 3) | 0) & 3 : 4]]);
+      } }
+    for (let i = 0; i < 90; i++) { const x = -330 + g.rand() * 88, z = 101.9 + g.rand() * 2.0, y = groundHeight(x, z) + 0.9 + g.rand() * 0.6; k.plain.push([new THREE.IcosahedronGeometry(0.09, 0).translate(X(x), y, Z(z)), i % 3 ? '#d6342a' : '#e8552c']); }
+    // (the board stands at the wall's foot just west of the corner building: the owner's photo from Volta Road)
+    { const sx = X(-259.5), sz = Z(104.6), sy = groundHeight(-259.5, 104.6);
       for (const dx of [-0.85, 0.85]) k.plain.push([box(sx + dx - 0.04, sx + dx + 0.04, sy, sy + 1.9, sz - 0.04, sz + 0.04), '#8b9094']);
       k.plain.push([box(sx - 1.0, sx + 1.0, sy + 1.3, sy + 1.85, sz - 0.03, sz + 0.03), '#2f5f47']);
       k.signs.push({ text: 'Volta Road', x: sx, y: sy + 1.57, z: sz + 0.04, ry: 0, w: 1.8, colors: ['#2f5f47', '#ffffff'] });
-      SOLIDS.add(-300.85, 104.2, 0.1); SOLIDS.add(-299.15, 104.2, 0.1); }
+      SOLIDS.add(-260.35, 104.6, 0.1); SOLIDS.add(-258.65, 104.6, 0.1); }
     stoneMesh(k, st);
     // a hedge and bushes along the top of the wall (owner photos)
     g.hedge(k, X(-259.2), Z(-20), X(-259.2), Z(30));
@@ -192,7 +250,50 @@ const hall: Spec = {
     }
     // trees round the hall
     g.scatter(-380, -322, -30, 110, 50, (x, z) => g.tree(k, X(x), Z(z), 0.9 + g.rand() * 0.5));
-    g.scatter(-340, -230, 102.5, 112, 25, (x, z) => g.tree(k, X(x), Z(z), 0.8 + g.rand() * 0.4));
+    // along Volta Road: mature broadleaf trees spaced as the photo shows them, broad canopies leaving the corner building
+    // and the gable wing in view, the palm before the wing at the wall's foot
+    { const tr: Part[] = [];
+      for (const [x, z, h, sp, seed] of [[-243.5, 107.5, 7.5, 11, 3], [-284, 106.2, 7, 10, 5], [-310, 106.2, 7.5, 11, 7], [-331, 105.5, 6.5, 9, 9], [-236.5, 104.5, 6.5, 9, 13]]) broadleaf(null, tr, x, z, { h, spread: sp, seed, origin: O });
+      const tm = new THREE.Mesh(merge(tr), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.92 })); tm.castShadow = true; tm.receiveShadow = true; k.meshes.push(tm);
+      g.palm(k, X(-262.6), Z(102.4), 11); SOLIDS.add(-262.6, 102.4, 0.3); }
+
+    // ----- the building with the porch and balcony at the south-east corner (the owner's photo from Volta Road): on the
+    // terrace; on the ground floor an open porch on square white columns in its west half, large black grille windows on
+    // its back wall and along the rest of the front; above, a balcony the width of the front behind a solid parapet, the
+    // upper rooms set back behind it with grilled openings; a low dark hipped roof standing well out past the walls
+    { const [x0, x1, z0, z1] = SEB, y0 = k.ground(X(-249), Z(93)), H1 = 3.2, H2 = 3.0, CR = '#e0d9c7', c: Part[] = [];
+      const B = (a: number, b: number, ya: number, yb: number, za: number, zb: number) => box(X(a), X(b), ya, yb, Z(za), Z(zb));
+      const pm = -249.2, back = 95.4, up = 96.6, yU = y0 + H1, yR = yU + H2;
+      // ground floor: the porch's back wall, the flush part of the front, the sides and the north wall
+      c.push([B(x0, pm, y0, yU, z0, back), CR], [B(pm, x1, y0, yU, z0, z1), CR]);
+      c.push([B(x0, x0 + 0.3, y0, yU, back, z1), CR]);
+      for (const x of [x0 + 0.15, -252.8, pm + 0.1]) { c.push([B(x - 0.24, x + 0.24, y0, yU, z1 - 0.48, z1), '#f4f0e6']); SOLIDS.add(x, z1 - 0.24, 0.3); }
+      c.push([B(x0, x1, yU - 0.35, yU, z0, z1 + 0.2), '#f1ece0'], [B(x0, pm, y0 - 0.02, y0 + 0.06, back, z1), '#b8b1a3']);
+      const grille = (a: number, b: number, ya: number, yb: number, z: number, dir: number) => {
+        c.push([B(a - 0.08, b + 0.08, ya - 0.08, yb + 0.08, z, z + dir * 0.03), '#141414'], [B(a, b, ya, yb, z + dir * 0.02, z + dir * 0.03), '#26231f']);
+        for (let x = a + 0.06; x < b; x += 0.12) c.push([B(x - 0.015, x + 0.015, ya, yb, z + dir * 0.03, z + dir * 0.06), '#0d0d0d']);
+        for (const y of [ya + (yb - ya) * 0.33, ya + (yb - ya) * 0.66]) c.push([B(a, b, y - 0.02, y + 0.02, z + dir * 0.03, z + dir * 0.06), '#0d0d0d']);
+      };
+      grille(-255.4, -253.6, y0 + 0.7, y0 + 2.7, back, 1); grille(-252.0, -250.2, y0 + 0.7, y0 + 2.7, back, 1);
+      grille(-247.6, -245.4, y0 + 0.7, y0 + 2.7, z1, 1); grille(-244.4, -242.4, y0 + 0.7, y0 + 2.7, z1, 1);
+      { const zz0 = 90.2, zz1 = 92.4; c.push([box(X(x1), X(x1) + 0.03, y0 + 0.7, y0 + 2.7, Z(zz0), Z(zz1)), '#26231f']); for (let z = zz0 + 0.06; z < zz1; z += 0.12) c.push([box(X(x1) + 0.03, X(x1) + 0.06, y0 + 0.7, y0 + 2.7, Z(z) - 0.015, Z(z) + 0.015), '#0d0d0d']); }
+      // the balcony across the front and round the east end, behind a solid parapet with a dark capping line
+      c.push([B(x0, x1, yU - 0.05, yU + 0.15, up, z1 + 0.25), '#e9e4d8']);
+      c.push([B(x0, x1, yU + 0.15, yU + 1.15, z1 + 0.05, z1 + 0.25), '#f1ece0'], [B(x0, x1, yU + 1.15, yU + 1.22, z1 + 0.02, z1 + 0.28), '#3a332d']);
+      // the upper rooms, set back behind it, and their grilled openings and doors
+      c.push([B(x0, x1, yU, yR, z0, up), CR]);
+      for (const xa of [-255.0, -251.0, -247.0, -243.4]) grille(xa, xa + 1.2, yU + 0.4, yU + 2.4, up, 1);
+      // the low dark hipped roof standing well out past the walls, its dark fascia
+      k.roof.c = new THREE.Color(SEB_ROOF);
+      hipRoof(k, (x, z) => [X(x), Z(z)], x0 - 0.9, x1 + 0.9, z0 - 0.9, z1 + 1.1, yR + BAND, 0.3, 'x', [hip, hip], c, '#2e2622');
+      k.roof.c = new THREE.Color(ROOF);
+      c.push([B(x0, x1, yR, yR + BAND, z0, up), '#e4ded0']);
+      const m = new THREE.Mesh(merge(c), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.88 })); m.castShadow = true; m.receiveShadow = true; k.meshes.push(m); }
+    // the gable wing's roof: its gable to the road, in the section's darker weathered tiles
+    { const yb = k.ground(X(-264.3), Z(80)), e = yb + k.wallTop(2);
+      k.roof.c = new THREE.Color(SE_ROOF);
+      gableZ(k, X(-268.4) - 0.6, X(-260.3) + 0.6, Z(79.5), Z(98) + 0.6, e, 0.62, [false, true]);
+      k.roof.c = new THREE.Color(ROOF); }
   },
 };
 

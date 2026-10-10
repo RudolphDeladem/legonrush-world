@@ -89,6 +89,10 @@ const ZONES: Zone[] = [
   // terrace up over Volta Road (owner's second reference PDF, page 30)
   { kind: 'terrace', x0: -336, x1: -258.6, z0: -27, z1: 99.6, depth: 2.4, w: 6, e: 2, n: 10, s: 1.5 },
   { kind: 'terrace', x0: -365, x1: -336, z0: 44, z1: 86, depth: 2.4, w: 5, e: 0.1, n: 5, s: 4 },
+  // the building with the porch and balcony at the hall's south-east corner stands up on the same terrace, the stone wall
+  // in its two tiers carried on under it along Volta Road and returned up its east side and along the forecourt (the
+  // owner's photo from Volta Road and marked satellite view)
+  { kind: 'terrace', x0: -258.8, x1: -241.0, z0: 86.6, z1: 99.6, depth: 2.4, w: 0.3, e: 0.3, n: 0.3, s: 1.5 },
   // The Balme Library stands above University Square and the long pool before it (owner's photo from the pool):
   // the pool deck 2.4 m below the road in front of the library, a middle terrace 1.2 m below it, each behind a
   // stone retaining wall, the central stairs climbing from the pool to the road; the side lanes stay up
