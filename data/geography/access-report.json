@@ -988,8 +988,8 @@
    "place": "New Pent Block A",
    "type": "hall entrance",
    "arrivalOn": "residential",
-   "arrivalDistance": 45.7,
-   "facing": 319
+   "arrivalDistance": 45,
+   "facing": 335
   },
   {
    "place": "Night Market",

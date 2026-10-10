@@ -1,22 +1,18 @@
 // Pentagon (Pent), modelled from the owner's labelled aerial and photos (block engine: blocks.ts).
 //
 // Old Pent: four courts in a row, west to east from the entrance on Annie Jiagge Road (owner's third reference PDF)
-// Addis Ababa, Dar es Salaam, (the admin block), Kampala and Nairobi, all one design: four three-storey white blocks round a cross of open gaps, joined
-// by a central stair core that rises into a tower with a front gable and an arched window; terracotta
-// hipped roofs with dark fascias, a red base, and a small tiled porch at the foot of the core on the
-// north face (the entrance, toward the road). The admin block (Ghana Hostels) sits in the middle: two
-// four-storey towers with front gables and brick-red corner panels either side of a recessed centre
-// with a balcony, a tiled veranda along the ground floor and a gabled porch with a sunburst gable and
-// the GHANA HOSTELS LTD sign.
+// Addis Ababa, Dar es Salaam, (the admin block), Kampala and Nairobi, all one design (court() below): four
+// three-storey cream wings round a cross of open gaps, each wing's outer end a gabled pavilion with an arched recess,
+// the stair core set back between them with breeze-block screens, a gabled porch at its foot on the road. The admin
+// block (Ghana Hostels) sits in the middle (admin below). The entrance with its security post, the kiosk before Addis
+// Ababa and the food building behind Nairobi are modelled here too.
 //
-// New Pent blocks A, B and C (one design): their wings are the mapped footprints, built by the
-// generic builder at four storeys in cream with terracotta roofs (newPentStyle); this module adds each
-// block's entrance pavilion (a projecting tower with an arched window under a front gable, over a
-// columned porch with an arched opening and a small tile gable), facing the car park on the south.
+// New Pent Blocks A, B and C are modelled in newpent.ts; leftover small footprints in their zone keep the generic
+// builder in cream under terracotta (newPentStyle).
 import * as THREE from 'three';
 import type { Building } from './campusmap';
 import { PAVE, TRIM, WHITE, box, merge, tri2, type Part } from './modelkit';
-import { breeze, concrete, panel } from './concrete';
+import { breeze, brickFace, concrete, panel } from './concrete';
 import { hipRoof } from './waccbip';
 import { SOLIDS } from './solids';
 import { PL, createSite, gableZ, render, slab, window_, type Kit, type Spec, type Style } from './blocks';
@@ -375,7 +371,16 @@ const food: Spec = {
   },
 };
 
-// ---------- the admin block (frame: the courts' axis, origin at the footprint's middle) ----------
+// ---------- the admin block, Ghana Hostels (frame: the courts' axis, origin at the footprint's middle) ----------
+// From the owner's third reference PDF (pages 8-12, 29; the photos face south, so west is on their right): white render
+// with white-framed sliding windows; on the east a wing of three storeys under a front gable; the middle four storeys,
+// set back, a balcony railing along its top floor; on the west a tower of four storeys under a front gable, a vertical
+// strip of facing brick up its front (a second strip up the east wing's inner corner), an arched loggia at its top on
+// its west side. Along the ground floor the shops and offices behind deep red pillars and low red walls with steel
+// railings, under a red tiled veranda; in it, west of the palms, the blue Ecobank ATM. The entrance: a gabled porch, the gable open timber work radiating like a
+// sunburst over the GHL mark and GHANA HOSTELS LTD, on red columns, red brick steps up to it. Before it two royal
+// palms with whitewashed feet in a bed of white gravel; the forecourt laterite and brick pavers, the cars parked under
+// blue tensile shades either side.
 const ADMIN_F = 4;
 const admin: Spec = {
   name: 'Pent Admin Block',
@@ -383,77 +388,89 @@ const admin: Spec = {
   replaces: [[622, -515]],
   blocks: [
     { x0: -14.1, x1: -1.5, z0: -13, z1: 12.5, floors: ADMIN_F, roof: 'none' },
-    { x0: 5.4, x1: 14.1, z0: -13.3, z1: 12.3, floors: ADMIN_F, roof: 'none' },
-    { x0: -1.5, x1: 5.4, z0: 3.4, z1: 12.3, floors: ADMIN_F - 1, pitch: 0.35 },
+    { x0: 5.4, x1: 14.1, z0: -13.3, z1: 12.3, floors: ADMIN_F - 1, roof: 'none' },
+    { x0: -1.5, x1: 5.4, z0: -11.2, z1: 12.3, floors: ADMIN_F, pitch: 0.35 },
   ],
-  keep: [[-16, 16, -19, -13]],
+  keep: [[-24, 24, -32, -13]],
   extras: (k) => {
-    const e = k.wallTop(ADMIN_F);
-    // the two towers: front-facing gables (owner photo), roofs running back
-    gableZ(k, -14.8, -0.8, -13.8, 13.2, e, 0.55, [true, true]);
-    gableZ(k, 4.7, 14.8, -14.1, 13, e, 0.7, [true, true]);
-    // brick-red panels up the towers' outer corners
-    for (const [x0, x1] of [[-14.1, -12.1], [12.1, 14.1]] as [number, number][]) k.plain.push([box(x0, x1, PL, e - 0.3, -13.4, -13.25), BRICK]);
-    // the recessed centre: a balcony with a railing on the second and third floors
-    for (const f of [2, 3]) {
-      const y = PL + f * 3.4;
-      k.plain.push([box(-1.5, 5.4, y - 0.1, y + 0.05, -1, 3.4), '#e9e7e1']);
-      k.plain.push([box(-1.5, 5.4, y + 1.0, y + 1.08, -1, -0.9), '#4a4d52']);
-      for (let x = -1.3; x < 5.3; x += 0.25) k.plain.push([box(x - 0.02, x + 0.02, y, y + 1.0, -1, -0.95), '#4a4d52']);
-    }
-    // the tiled veranda along the ground floor
-    const vy = 3.6;
+    const eW = k.wallTop(ADMIN_F), eE = k.wallTop(ADMIN_F - 1), c: Part[] = [];
+    // the front gables of the west wing and the east tower, roofs running back
+    gableZ(k, -14.8, -0.8, -13.8, 13.2, eW, 0.55, [true, true]);
+    gableZ(k, 4.7, 14.8, -14.1, 13, eE, 0.7, [true, true]);
+    // the strips of facing brick
+    // (drawn east to west so they face the front)
+    panel([0, 0], k, brickFace(), -9.3, -13.03, -11.6, -13.03, 4.0, eW - 0.4, 1);
+    panel([0, 0], k, brickFace(), 7.6, -13.33, 5.6, -13.33, 4.0, eE - 0.4, 1);
+    // the arched loggia at the top of the west tower's side
+    k.plain.push([box(-14.14, -14.1, eW - 3.3, eW - 0.5, -9.5, -6.5), '#3a3a38'], [new THREE.CircleGeometry(1.5, 14, 0, Math.PI).rotateY(-Math.PI / 2).translate(-14.15, eW - 1.4, -8), '#f4f3ef']);
+    k.plain.push([box(-14.2, -14.1, eW - 3.3, eW - 2.3, -9.5, -6.5), '#c9cccf']);
+    // the middle's balcony railing on the top floor
+    { const y = PL + 3 * 3.4;
+      k.plain.push([box(-1.5, 5.4, y - 0.1, y + 0.05, -12.3, -11.2), '#e9e7e1'], [box(-1.5, 5.4, y + 1.0, y + 1.06, -12.3, -12.24), '#8d9094']);
+      for (let x = -1.3; x < 5.3; x += 0.2) k.plain.push([box(x - 0.015, x + 0.015, y, y + 1.0, -12.3, -12.26), '#8d9094']); }
+    // ----- the ground floor: red pillars, low red walls with steel railings, the red tiled veranda
+    const vy = 3.6, VZ = -16.2;
     k.roof.c = new THREE.Color('#b8603a');
-    k.roof.quad([-15, vy - 0.6, -16.2], [15, vy - 0.6, -16.2], [15, vy + 0.4, -13.3], [-15, vy + 0.4, -13.3]);
-    for (const x of [-14.6, -9, -4.5, 9.5, 14.6]) k.plain.push([box(x - 0.15, x + 0.15, 0, vy - 0.6, -16.1, -15.8), WHITE]);
-    // the gabled porch between the towers, with the sunburst gable and the sign
-    const px0 = -2.2, px1 = 6.1, pz0 = -18.2, pz1 = -13, ph = 4.0;
-    for (const x of [px0 + 0.3, px1 - 0.3]) k.plain.push([box(x - 0.25, x + 0.25, 0.3, ph, pz0 + 0.2, pz0 + 0.7), WHITE]);
-    k.plain.push([box(px0, px1, ph, ph + 0.8, pz0, pz1), '#f1e7d2']);
+    k.roof.quad([-15, vy - 0.6, VZ], [15, vy - 0.6, VZ], [15, vy + 0.4, -13.3], [-15, vy + 0.4, -13.3]);
+    k.plain.push([box(-15, 15, vy - 0.82, vy - 0.6, VZ - 0.05, VZ + 0.05), '#f2efe6']);
+    const posts = [-14.6, -10.2, -6.6, 6.8, 10.4, 14.6];
+    for (const x of posts) c.push([box(x - 0.22, x + 0.22, 0, vy - 0.6, VZ + 0.1, VZ + 0.54), DEEP_RED]);
+    for (let i = 0; i < posts.length - 1; i++) {
+      const a = posts[i] + 0.22, b = posts[i + 1] - 0.22;
+      if (a > -6.5 && b < 6.9) continue;
+      c.push([box(a, b, 0, 1.0, VZ + 0.2, VZ + 0.44), DEEP_RED]);
+      k.plain.push([box(a, b, 1.75, 1.8, VZ + 0.3, VZ + 0.34), '#c4c8cc']);
+      for (let x = a + 0.4; x < b; x += 1.2) k.plain.push([box(x - 0.02, x + 0.02, 1.0, 1.78, VZ + 0.3, VZ + 0.34), '#c4c8cc']);
+      for (const h of [1.25, 1.5]) k.plain.push([box(a, b, h, h + 0.025, VZ + 0.3, VZ + 0.34), '#c4c8cc']);
+    }
+    k.plain.push([box(-14.1, 14.1, 0, 0.18, VZ, -13), '#b3654c']);
+    // the Ecobank ATM in its blue panel west of the palms, notice boards either side
+    k.plain.push([box(-8.9, -7.1, 0.18, 2.7, -13.06, -13.0), '#1d5fa6'], [box(-8.4, -7.6, 0.9, 1.9, -13.12, -13.06), '#4a5056'], [box(-8.25, -7.75, 1.35, 1.75, -13.14, -13.12), '#7fb7d6']);
+    k.signs.push({ text: 'Ecobank', x: -8.0, y: 2.35, z: -13.07, ry: Math.PI, w: 1.4, colors: ['#1d5fa6', '#ffffff'] });
+    k.signs.push({ text: 'ATM', x: -8.0, y: 0.55, z: -13.07, ry: Math.PI, w: 0.6, colors: ['#1d5fa6', '#ffffff'] });
+    for (const [x0, x1, col] of [[-10.6, -9.4, '#e7d9b0'], [-12.2, -11.0, '#d9534f'], [8.0, 9.4, '#f1e3c2']] as [number, number, string][]) k.plain.push([box(x0, x1, 1.0, 2.2, -13.34, -13.3), col]);
+    // ----- the entrance porch: the sunburst gable over the sign, red columns, red brick steps
+    const px0 = -2.2, px1 = 6.1, pz0 = -18.2, pz1 = -13, ph = 4.0, gx = (px0 + px1) / 2;
+    for (const x of [px0 + 0.3, px1 - 0.3]) c.push([box(x - 0.25, x + 0.25, 0.3, ph, pz0 + 0.2, pz0 + 0.7), DEEP_RED]);
+    k.plain.push([box(px0, px1, ph, ph + 0.8, pz0, pz1), '#f4f2ec']);
     gableZ(k, px0 - 0.4, px1 + 0.4, pz0 - 0.4, pz1, ph + 0.8, 0.6, [true, false]);
-    const gx = (px0 + px1) / 2;
-    for (let i = 0; i < 7; i++) {
-      const a = (i / 6) * Math.PI;
+    for (let i = 0; i < 9; i++) {
+      const a = (i / 8) * Math.PI;
       k.plain.push([new THREE.BoxGeometry(0.06, 1.9, 0.04).translate(0, 0.95, 0).rotateZ(Math.PI / 2 - a).translate(gx, ph + 0.85, pz0 + 0.18), '#8b6a4a']);
     }
-    k.signs.push({ text: 'GHANA HOSTELS LTD', x: gx, y: ph + 0.4, z: pz0 - 0.01, ry: Math.PI, w: 4.2, colors: ['#3b3a36', '#f4ead2'] });
-    for (let i = 0; i < 3; i++) k.plain.push([box(px0 + 0.3 - i * 0.2, px1 - 0.3 + i * 0.2, 0, 0.3 - i * 0.1, pz0 - i * 0.4, pz1), PAVE]);
-    k.glass.push(box(gx - 2.2, gx + 2.2, 0.3, 3.0, -13.04, -13));
+    k.plain.push([box(gx - 0.35, gx + 0.35, ph + 0.95, ph + 1.45, pz0 + 0.12, pz0 + 0.16), '#3b3a36']);
+    k.signs.push({ text: 'GHANA HOSTELS LTD', x: gx, y: ph + 0.4, z: pz0 - 0.01, ry: Math.PI, w: 4.2, colors: ['#f4f2ec', '#8a2a22'] });
+    for (let i = 0; i < 4; i++) k.plain.push([box(px0 + 0.3 - i * 0.2, px1 - 0.3 + i * 0.2, 0, 0.32 - i * 0.08, pz0 - i * 0.4, pz1), '#a0553e']);
+    k.glass.push(box(gx - 2.2, gx + 2.2, 0.3, 3.0, -11.24, -11.2));
+    for (const x of [px0 - 0.6, px1 + 0.6]) k.plain.push([new THREE.CylinderGeometry(0.35, 0.25, 0.7, 10).translate(x, 0.35, pz1 - 0.5), '#f2f0ea'], [new THREE.IcosahedronGeometry(0.45, 0).translate(x, 0.95, pz1 - 0.5), '#4f8a35']);
+    // ----- before it: brick pavers along the front, laterite beyond, the palms in white gravel, the blue shades
+    const gy = (x: number, z: number) => k.ground(x, z);
+    k.plain.push([box(-24, 24, gy(0, -17) - 0.02, gy(0, -17) + 0.02, -19.5, VZ), '#9a5644']);
+    for (let x = -24; x < 24; x += 8) k.plain.push([box(x, x + 8, gy(x + 4, -25) - 0.02, gy(x + 4, -25) + 0.01, -31, -19.5), '#a06f52']);
+    for (const [xa, xb] of [[-6.6, -2.4], [9.6, 13.6]]) {
+      const y = gy((xa + xb) / 2, -21);
+      k.plain.push([box(xa, xb, y, y + 0.22, -22.6, -19.8), '#d8d4ca'], [box(xa + 0.15, xb - 0.15, y + 0.22, y + 0.25, -22.45, -19.95), '#eeeeea']);
+      for (const x of [xa + 1.2, xb - 1.2]) {
+        k.plain.push([new THREE.CylinderGeometry(0.22, 0.3, 11, 9).translate(x, y + 5.5, -21.2), '#9d9a92'], [new THREE.CylinderGeometry(0.31, 0.32, 1.4, 9).translate(x, y + 0.7, -21.2), '#f4f4f1'], [new THREE.CylinderGeometry(0.24, 0.24, 1.2, 8).translate(x, y + 11.5, -21.2), '#6e8f3c']);
+        for (let i = 0; i < 10; i++) k.plain.push([new THREE.ConeGeometry(0.5, 3.6, 3).rotateX(Math.PI / 2).translate(0, 0, 1.8).scale(1, 0.25, 1).rotateX(0.35 + (i % 3) * 0.25).rotateY((i / 10) * Math.PI * 2).translate(x, y + 12, -21.2), '#4f8a2f']);
+        SOLIDS.add(...k.world(x, -21.2), 0.35);
+      }
+    }
+    for (const [xa, xb] of [[-23.5, -17.5], [-17.2, -11.2], [8.6, 14.6], [14.9, 20.9]]) {
+      const zb = -20.2, za = -26.2, y = gy((xa + xb) / 2, -23), xm = (xa + xb) / 2;
+      // a curved post at the road side, its arm reaching over, the fabric dipping between the hems
+      c.push([box(xm - 0.08, xm + 0.08, y, y + 2.9, za - 0.08, za + 0.08), '#e7e5df']);
+      c.push([box(xm - 0.06, xm + 0.06, y + 2.8, y + 2.95, za, zb), '#e7e5df']);
+      const P = (x: number, h: number, z: number): [number, number, number] => [x, y + h, z];
+      const A = P(xa, 3.2, za), Bq = P(xb, 3.2, za), C = P(xb, 2.6, zb), D = P(xa, 2.6, zb), Mq = P(xm, 2.7, (za + zb) / 2);
+      for (const [p, q] of [[A, Bq], [Bq, C], [C, D], [D, A]]) k.plain.push([tri2(p, q, Mq), '#1f62b8']);
+      SOLIDS.add(...k.world(xm, za), 0.15);
+    }
+    const m = new THREE.Mesh(merge(c), concrete(0.3)); m.castShadow = true; m.receiveShadow = true; k.meshes.push(m);
   },
 };
 
-// ---------- New Pent entrance pavilions (frame: map axes, origin at the owner's mark, front to +z) ----------
-const NEW_F = 4, NEW_STOREY = 3.4;
-function pavilion(name: string, at: [number, number]): Spec {
-  return {
-    name,
-    axis: [1, 0], origin: at, storey: NEW_STOREY, style: OLD_WIN, roofColor: '#b5532f', fascia: FASCIA, pitch: 0.5,
-    blocks: [],
-    keep: [[-5, 5, -1.5, 6]],
-    extras: (k) => {
-      const CREAM = '#efe4cc', e = PL + NEW_F * NEW_STOREY + 0.4;
-      // the projecting tower, the height of the block, with an arched window high up and a front gable
-      k.plain.push([box(-4.2, 4.2, 0, e, -1.5, 2.5), CREAM]);
-      gableZ(k, -4.8, 4.8, -2, 3.1, e, 0.6, [false, true]);
-      k.glass.push(box(-0.8, 0.8, e - 3.4, e - 1.2, 2.5, 2.54));
-      k.plain.push([new THREE.CircleGeometry(0.8, 14, 0, Math.PI).translate(0, e - 1.2, 2.55), '#2b3a48']);
-      k.plain.push([box(-1.1, 1.1, e - 3.6, e - 3.4, 2.5, 2.7), TRIM]);
-      // a balcony row above the porch
-      k.glass.push(box(-3, 3, PL + 2 * NEW_STOREY + 0.6, PL + 2 * NEW_STOREY + 2.4, 2.5, 2.54));
-      k.plain.push([box(-3.2, 3.2, PL + 2 * NEW_STOREY + 0.5, PL + 2 * NEW_STOREY + 1.4, 2.5, 2.75), CREAM]);
-      // the porch: columns, an arched opening, a small tile gable over it (owner photo)
-      for (const x of [-3.6, -1.4, 1.4, 3.6]) k.plain.push([box(x - 0.25, x + 0.25, 0, 3.6, 4.9, 5.4), CREAM]);
-      k.plain.push([box(-4, 4, 3.6, 4.4, 2.5, 5.5), CREAM]);
-      k.plain.push([new THREE.CircleGeometry(1.15, 16, 0, Math.PI).translate(0, 2.45, 5.42), '#3b2e26']);
-      gableZ(k, -4.4, 4.4, 2.5, 5.9, 4.4, 0.55, [false, true]);
-      k.plain.push([box(-4, 4, 0, 0.2, 2.5, 6), '#b9805a']);
-      k.glass.push(box(-1.6, 1.6, 0.2, 3.0, 2.5, 2.54));
-      k.plain.push([box(-4.25, 4.25, 0, 1.0, 2.5, 2.56), RED_BASE]);
-    },
-  };
-}
-
-/** Old Pent courts, the admin block and the New Pent entrance pavilions */
+/** Old Pent courts, the admin block, the entrance and the food building behind Nairobi (New Pent: newpent.ts) */
 export const pentagon = createSite('pentagon', [
   court('Addis Ababa Court', [540.5, -510], [[530, -501], [552, -502], [551, -520], [529, -517], [541, -509]], { sign: 'ADDIS ABABA COURT', initials: 'AC', extras: addisKiosk }),
   court('Dar es Salaam Court', [589.75, -514], [[579, -522], [579, -505], [600, -523], [601, -506], [591, -515]], { sign: 'DAR ES SALAAM COURT', initials: 'DC' }),
@@ -462,9 +479,6 @@ export const pentagon = createSite('pentagon', [
   admin,
   entrance,
   food,
-  pavilion('New Pent Block A', [575.6, -628]),
-  pavilion('New Pent Block B', [568.4, -766]),
-  pavilion('New Pent Block C', [686.8, -698]),
 ]);
 
 /** where the New Pent blocks stand (the yellow zone on the owner's aerial) */

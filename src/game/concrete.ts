@@ -215,3 +215,21 @@ export function stoneMesh(k: Kit, parts: [THREE.BufferGeometry, string][]) {
   m.castShadow = true; m.receiveShadow = true;
   k.meshes.push(m);
 }
+
+let brickFaceMat: THREE.MeshStandardMaterial | null = null;
+/** a wall of red-brown facing brick in stretcher bond, one tile a metre square (Ghana Hostels, the New Pent blocks) */
+export const brickFace = () => (brickFaceMat ??= (() => {
+  const t = canvas(128, 128, (g) => {
+    g.fillStyle = '#c9b8a6'; g.fillRect(0, 0, 128, 128);
+    const cols = ['#a4482f', '#9c4129', '#ad5236', '#93412c', '#a9503a', '#8f3b26'];
+    // 13 courses of 7.5 cm to the metre, bricks 21.5 cm long
+    for (let r = 0; r < 13; r++) for (let i = -1; i < 6; i++) {
+      const x = i * 27.5 + (r % 2) * 13.75, y = r * 9.85;
+      g.fillStyle = cols[(r * 5 + i * 3 + 20) % cols.length];
+      g.fillRect(x + 1, y + 1, 25.5, 7.9);
+    }
+    speckle(g, 0, 0, 128, 128, 500, ['rgba(60,30,20,0.25)', 'rgba(220,180,150,0.15)']);
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return new THREE.MeshStandardMaterial({ map: t, roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 });
+})());
