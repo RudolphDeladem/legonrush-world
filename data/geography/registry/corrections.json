@@ -288,6 +288,22 @@
     {
       "id": "osm:way/1186045144",
       "reason": "Owner's marked aerial round the New N Block (registered to the K. Folson Building at 0.25 m/px): no building there; the whole place is woodland, trees as the aerial shows (red box)."
+    },
+    {
+      "id": "ml:7ebbe167-a040-4492-b50e-3ff8da5176ae",
+      "reason": "Owner's reference PDF of game views beside street photos (docs/CAMPUS_REFERENCE_AUDIT.md): page 23, the two-storey structure circled green before the Volta Hall Annex's north face: 'should be deleted' (owner)."
+    },
+    {
+      "id": "osm:way/1189700015",
+      "reason": "Owner's reference PDF of game views beside street photos (docs/CAMPUS_REFERENCE_AUDIT.md): pages 12-14: no finished building beside the Doctorate building, a construction site behind a maroon hoarding (modelled in src/game/westgrad.ts)."
+    },
+    {
+      "id": "osm:way/1284163252",
+      "reason": "Owner's reference PDF of game views beside street photos (docs/CAMPUS_REFERENCE_AUDIT.md): pages 12-14: no finished building beside the Doctorate building, a construction site behind a maroon hoarding (modelled in src/game/westgrad.ts)."
+    },
+    {
+      "id": "osm:way/773875247",
+      "reason": "Owner's reference PDF of game views beside street photos (docs/CAMPUS_REFERENCE_AUDIT.md), pages 24-25: the structure across Volta Hall Road from WACCBIP and the School of Pharmacy is a telecommunication mast in a palisade compound, not a building (modelled in src/game/westgrad.ts)."
     }
   ],
   "heights": [
@@ -3062,6 +3078,48 @@
       "levels": 1,
       "height": 5.5,
       "reason": "Owner's marked aerial of the ground round the front of the N Block (eleven numbered views, registered to the N Block and the GCB Lecture Building at 0.297 m/px) and street photos of each view: one floor on a raised stone base (view 2). Modelled in src/game/biology.ts."
+    },
+    {
+      "id": "osm:way/427646284",
+      "place": "Graduate School, Legon",
+      "levels": 1,
+      "height": 5.5,
+      "reason": "Owner's reference PDF of game views beside street photos (docs/CAMPUS_REFERENCE_AUDIT.md), pages 5-6: one floor under hipped tile roofs. Modelled in src/game/westgrad.ts."
+    },
+    {
+      "id": "osm:way/1055216922",
+      "place": "Doctorate building",
+      "levels": 2,
+      "height": 8.5,
+      "reason": "Owner's reference PDF of game views beside street photos (docs/CAMPUS_REFERENCE_AUDIT.md), pages 7-11: two floors. Modelled in src/game/westgrad.ts."
+    },
+    {
+      "id": "osm:way/1189700013",
+      "place": "Research and Innovation Office Complex",
+      "levels": 2,
+      "height": 9.5,
+      "reason": "Owner's reference PDF of game views beside street photos (docs/CAMPUS_REFERENCE_AUDIT.md), pages 14-20: two floors under maroon hipped roofs. Modelled in src/game/westgrad.ts."
+    },
+    {
+      "id": "osm:way/1353981682",
+      "place": "Research and Innovation Complex",
+      "levels": 2,
+      "height": 9.5,
+      "reason": "Owner's reference PDF of game views beside street photos (docs/CAMPUS_REFERENCE_AUDIT.md), pages 14-20: two floors under maroon hipped roofs. Modelled in src/game/westgrad.ts."
+    },
+    {
+      "id": "osm:way/1353981683",
+      "place": "Research and Innovation Complex",
+      "levels": 2,
+      "height": 9.5,
+      "reason": "Owner's reference PDF of game views beside street photos (docs/CAMPUS_REFERENCE_AUDIT.md), pages 14-20: two floors under maroon hipped roofs. Modelled in src/game/westgrad.ts."
+    },
+    {
+      "id": "osm:way/715023114",
+      "place": "three-floor block north of the Nursing School",
+      "levels": 3,
+      "height": 11.5,
+      "reason": "Owner's reference PDF of game views beside street photos (docs/CAMPUS_REFERENCE_AUDIT.md), pages 1-4: three floors, white, green-tinted windows, a maroon roof, across the Nursing School's car park. Modelled in src/game/labs.ts."
     }
   ],
   "reclass": [

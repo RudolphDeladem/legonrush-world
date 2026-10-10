@@ -19,6 +19,7 @@ import { WHITE, box } from './modelkit';
 import { PL, createSite, louvre, render, slab, type Block, type Kit, type Spec, type Style } from './blocks';
 import { garden } from './gardens';
 import { groundHeight, stairsOf } from './relief';
+import { SOLIDS } from './solids';
 
 const ROOF = '#b9593a', FASCIA = '#4a3428', STONE = '#9a7d62', STONE_DARK = '#7f6650';
 const ST = 3.2;
@@ -160,15 +161,18 @@ const hall: Spec = {
 
 // ---------- the Annex (moved onto its roof in the owner's aerial: corrections.json reshape) ----------
 const A: [number, number] = [-286, -62];
-const WA = (x0: number, x1: number, z0: number, z1: number): Block => ({ x0: x0 - A[0], x1: x1 - A[0], z0: z0 - A[1], z1: z1 - A[1], floors: 4 });
-const ANNEX: Block[] = [WA(-317.3, -255.7, -86, -74.8), WA(-317.4, -255.7, -49, -38.9), WA(-302.1, -288.7, -74.8, -49), WA(-267.3, -255.7, -74.8, -49)];
+/** the ranges' plain white ends toward the road (the owner's PDF, page 21) */
+const ANNEX_END: Style = { bay: 4, up: [], ground: [], draw: (g) => { render(g, '#f3f3f1'); g.fillStyle = 'rgba(120,118,110,0.08)'; for (let i = 0; i < 40; i++) g.fillRect((i * 37) % 250, (i * 53) % 500, 3, 40); } };
+const WA = (x0: number, x1: number, z0: number, z1: number, end = false): Block => ({ x0: x0 - A[0], x1: x1 - A[0], z0: z0 - A[1], z1: z1 - A[1], floors: 4, faces: end ? { x1: ANNEX_END } : undefined });
+// (the east cross block stands back from the ends of the two ranges: its louvred front between them, the owner's PDF p. 21)
+const ANNEX: Block[] = [WA(-317.3, -255.7, -86, -74.8, true), WA(-317.4, -255.7, -49, -38.9, true), WA(-302.1, -288.7, -74.8, -49), WA(-267.3, -261.5, -74.8, -49)];
 const annex: Spec = {
   name: 'Volta Hall Annex',
   axis: [1, 0], origin: A, storey: 3.1, style: ANNEX_WIN, roofColor: '#c46d4c', fascia: '#e9e7e2', pitch: 0.22,
   onGround: true,
   replaces: [[-310, -80]],
   blocks: ANNEX,
-  keep: [],
+  keep: [[-256 - A[0], -222 - A[0], -88 - A[1], -37 - A[1]]],
   extras: (k: Kit) => {
     const y = k.ground(0, 0);
     // balconies along the court sides, on every upper floor (the grey strips on the aerial)
@@ -180,6 +184,51 @@ const annex: Spec = {
         k.plain.push([box(x0 - A[0], x1 - A[0], by + 0.18, by + 1.05, zz + d - 0.06, zz + d + 0.06), '#d9d8d3']);
       }
     }
+    // ----- the east front toward the road (the owner's PDF, pages 21-23): between the plain white ends of the two
+    // ranges, the east block's three upper floors behind a screen of white vertical louvre fins; open galleries with
+    // white parapets on the ranges' inner faces either side; a white wall before it with sloping wing walls back to
+    // the ranges' corners, a black gate in the middle, a red steel lattice water tower carrying a round tank over the
+    // gate; the drive in from Volta Hall Road with a row of short posts and the bins
+    const XE = -261.5, x0 = XE - A[0];
+    for (let f = 1; f < 4; f++) {
+      const fy = y + PL + f * 3.1;
+      k.plain.push([box(x0 - 0.05, x0, fy, fy + 2.9, -74.8 - A[1], -49 - A[1]), '#2f3438']);
+      k.plain.push([box(x0, x0 + 0.9, fy - 0.25, fy, -74.8 - A[1], -49 - A[1]), '#ecebe7']);
+      for (const z of [-74.8, -49]) {
+        const zz = z - A[1];
+        k.plain.push([box(x0, -255.7 - A[0], fy - 0.15, fy, Math.min(zz, zz + (z < -60 ? 1.6 : -1.6)), Math.max(zz, zz + (z < -60 ? 1.6 : -1.6))), '#e4e3df']);
+        k.plain.push([box(x0, -255.7 - A[0], fy, fy + 1.05, (z < -60 ? zz + 1.55 : zz - 1.6), (z < -60 ? zz + 1.6 : zz - 1.55)), '#f2f1ed']);
+      }
+    }
+    for (let z = -74.6; z < -49.1; z += 0.42) k.plain.push([box(x0 + 0.1, x0 + 0.65, y + PL + 3.1, y + PL + 4 * 3.1 - 0.2, z - A[1], z + 0.07 - A[1]), '#f4f4f1']);
+    k.plain.push([box(x0 + 0.05, x0 + 0.7, y + PL + 4 * 3.1 - 0.25, y + PL + 4 * 3.1 + 0.35, -74.8 - A[1], -49 - A[1]), '#f4f4f1']);
+    k.plain.push([box(x0 - 0.04, x0, y + 0.4, y + 2.8, -70 - A[1], -54 - A[1]), '#2a2e31']);
+    const XW = -249.5, xw = XW - A[0], gz0 = -64.5, gz1 = -60.5;
+    for (const [z0, z1] of [[-86, gz0], [gz1, -38.9]]) k.plain.push([box(xw - 0.3, xw, y, y + 2.4, z0 - A[1], z1 - A[1]), '#f4f4f1']);
+    for (const z of [-86, -38.9]) {
+      const wing = new THREE.BufferGeometry();
+      const zz = z - A[1], ax = -255.7 - A[0];
+      wing.setAttribute('position', new THREE.Float32BufferAttribute([xw, y, zz, ax, y, zz, ax, y + 5.5, zz, xw, y + 2.4, zz], 3));
+      wing.setIndex([0, 1, 2, 0, 2, 3, 0, 2, 1, 0, 3, 2]); wing.computeVertexNormals();
+      k.plain.push([wing, '#f4f4f1']);
+    }
+    for (const z of [gz0 + 0.05, (gz0 + gz1) / 2 + 0.03]) k.plain.push([box(xw - 0.2, xw - 0.1, y, y + 2.3, z - A[1], z + 1.92 - A[1]), '#151617']);
+    // the water tower: four steel legs braced in a lattice, a platform, the round tank
+    const tx = XW - 1.6 - A[0], tz = (gz0 + gz1) / 2 - A[1], th = 13.5;
+    for (const [dx, dz] of [[-1.1, -1.1], [1.1, -1.1], [-1.1, 1.1], [1.1, 1.1]]) k.plain.push([box(tx + dx - 0.09, tx + dx + 0.09, y, y + th, tz + dz - 0.09, tz + dz + 0.09), '#8a3a2a']);
+    for (let h = 1.2; h < th; h += 1.5) for (const [ax, az, bx, bz] of [[-1.1, -1.1, 1.1, -1.1], [-1.1, 1.1, 1.1, 1.1], [-1.1, -1.1, -1.1, 1.1], [1.1, -1.1, 1.1, 1.1]]) {
+      k.plain.push([box(tx + Math.min(ax, bx) - 0.04, tx + Math.max(ax, bx) + 0.04, y + h - 0.04, y + h + 0.04, tz + Math.min(az, bz) - 0.04, tz + Math.max(az, bz) + 0.04), '#8a3a2a']);
+      const l = Math.hypot(bx - ax, bz - az, 1.5), mx = tx + (ax + bx) / 2, mz = tz + (az + bz) / 2;
+      k.plain.push([new THREE.BoxGeometry(0.06, 0.06, l).lookAt(new THREE.Vector3(bx - ax, 1.5, bz - az)).translate(mx, y + h + 0.75, mz), '#8a3a2a']);
+    }
+    k.plain.push([box(tx - 1.5, tx + 1.5, y + th, y + th + 0.15, tz - 1.5, tz + 1.5), '#7a3324']);
+    k.plain.push([new THREE.SphereGeometry(1.45, 16, 12).translate(tx, y + th + 1.6, tz), '#8f3f2c']);
+    for (let z = -86; z <= -38.9; z += 0.4) if (z < gz0 || z > gz1) SOLIDS.add(XW - 0.15, z, 0.25);
+    for (const [dx, dz] of [[-1.1, -1.1], [1.1, -1.1], [-1.1, 1.1], [1.1, 1.1]]) SOLIDS.add(tx + A[0] + dx, tz + A[1] + dz, 0.2);
+    // the drive in from the road, short posts along it, the bins
+    k.plain.push([box(xw, -224 - A[0], y + 0.015, y + 0.045, gz0 - A[1], gz1 - A[1]), '#45484b']);
+    for (let x = XW + 2; x < -230; x += 1.6) k.plain.push([box(x - A[0] - 0.07, x - A[0] + 0.07, y, y + 0.8, gz1 + 0.8 - A[1], gz1 + 0.94 - A[1]), '#d6d8da']);
+    for (const [x, col] of [[-246.5, '#2f5fa8'], [-245.6, '#2f6a3a'], [-244.7, '#2f6a3a']] as [number, string][]) k.plain.push([box(x - A[0] - 0.35, x - A[0] + 0.35, y, y + 1.05, gz1 + 1.3 - A[1], gz1 + 2.0 - A[1]), col]);
     // the hall's walk arrives at the Annex's south face: an entrance there
     k.plain.push([box(-291 - A[0], -287 - A[0], y + 0.1, y + 2.8, -38.9 - A[1], -38.85 - A[1]), '#2d3540']);
     k.plain.push([box(-292 - A[0], -286 - A[0], y + 2.8, y + 3.0, -38.9 - A[1], -36.9 - A[1]), WHITE]);

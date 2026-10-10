@@ -35,10 +35,11 @@ import { socSciSite } from './socsci';
 import { biologySite } from './biology';
 import { marketSite } from './market';
 import { greenhouseSite } from './greenhouse';
+import { gradSite, mastSite } from './westgrad';
 import { stadiumSite } from './stadium';
 import { ugbs } from './ugbs';
 import { valco } from './valco';
 import { volta } from './volta';
 import { westLegon } from './westlegon';
 
-export const BLOCK_SITES = [hostels, banking, vikingsLaw, engineeringSite, domeHouse, pentagon, commonwealth, volta, greatHalls, athletics, annexes, ccSite, balmeSite, parks, nightMarket, valco, westLegon, publicHealth, ugbs, stadiumSite, residences, mathStat, isserCs, enclave, basicSchool, nBlockGcb, chaletSite, waccbipSite, balmeWest, pharmacySite, labsSite, isserAnnexSite, earthScienceSite, physicsSite, liciadSite, hotspotSite, churchSite, socSciSite, biologySite, marketSite, greenhouseSite];
+export const BLOCK_SITES = [hostels, banking, vikingsLaw, engineeringSite, domeHouse, pentagon, commonwealth, volta, greatHalls, athletics, annexes, ccSite, balmeSite, parks, nightMarket, valco, westLegon, publicHealth, ugbs, stadiumSite, residences, mathStat, isserCs, enclave, basicSchool, nBlockGcb, chaletSite, waccbipSite, balmeWest, pharmacySite, labsSite, isserAnnexSite, earthScienceSite, physicsSite, liciadSite, hotspotSite, churchSite, socSciSite, biologySite, marketSite, greenhouseSite, gradSite, mastSite];

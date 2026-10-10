@@ -350,7 +350,7 @@ try {
     const e = ann('Department of Nutrition and Food Sciences'); if (!e || Math.hypot(e[0] - -198.4, e[1] - -206) > 3) fail('Food Science: the entrance is not at the foot of the stair core on its front (owner)');
     for (const [x, z, lo, hi] of [[-185, -204, 12, 16], [-331, -190, 10, 13], [-90, -196, 0, 5.5], [-70, -270, 0, 5.5], [-148, -235, 0, 5.5]]) { const b = buildingAt(x, z); if (!b || b.height < lo || b.height > hi) fail(`the building at ${x},${z} is not the height the owner shows`); }
     for (const [x, z] of [[-80, -255], [-120, -220], [-28, -215], [-100, -180]]) if (!cm.AREAS.some((a) => a.kind === 'wood' && inA(a, x, z))) fail(`no trees at ${x},${z} round the Animal Biology ranges (owner)`);
-    if ((await server.ssrLoadModule('/src/game/labs.ts')).labsSite.frames().length !== 4) fail('expected Food Science, Nursing, Animal Biology and the unfinished block building');
+    if ((await server.ssrLoadModule('/src/game/labs.ts')).labsSite.frames().length !== 5) fail('expected Food Science, Nursing, Animal Biology, the unfinished block building and the three-floor block north of Nursing');
     { const u = buildingAt(-189.6, -224.2); if (!u || u.height > 4) fail('the unfinished building north of Food Science is not one floor (owner)'); } }
   // owner: the ISSER Annex below the road toward the engineering school, entered at the porch the walk from there
   // reaches; three floors in its west wing, the huts and the east wing one floor; trees where the owner circled them
@@ -480,6 +480,18 @@ try {
     if (!cm.AREAS.some((a) => a.kind === 'wood' && inA3(a, 21, -452))) fail('the ground east of the New N Block is not woodland (owner)');
     const lane = [-167, -200, -230, -262].map((z) => rl.groundHeight(-160.3 - (z < -202.5 ? (z + 202.5) * 0.0406 : 0), z));
     if (!(lane[0] > -0.05 && lane[1] < lane[0] && lane[2] < lane[1] && lane[3] < -0.9)) fail(`the lane past Food and Nutrition does not run down to its north end (owner): ${lane.map((h) => h.toFixed(2))}`);
+  }
+  // owner's reference PDF (docs/CAMPUS_REFERENCE_AUDIT.md), the graduate cluster: the two-storey block circled green before
+  // the Volta Hall Annex deleted; the Graduate School one floor; the Doctorate building two; a construction site, not a
+  // building, beside it; the Research and Innovation Complex's blocks
+  {
+    const gs = (await server.ssrLoadModule('/src/game/westgrad.ts')).gradSite;
+    if (gs.frames().length !== 7) fail('expected the Graduate School, the Doctorate building, the construction site and the Research and Innovation Complex (owner PDF)');
+    if (buildingAt(-261.8, -96.7)) fail('the two-storey block circled green before the Volta Hall Annex is still there (owner PDF p. 23)');
+    for (const [x, z] of [[-541.3, -201.7], [-550.2, -201.7]]) if (buildingAt(x, z)) fail(`a finished building stands on the construction site at ${x},${z} (owner PDF pp. 12-14)`);
+    { const b = buildingAt(-402, -165); if (!b || b.height > 6.5) fail('the Graduate School is not one floor (owner PDF pp. 5-6)'); }
+    { const b = buildingAt(-452.8, -166.3); if (!b || b.height < 6) fail('the Doctorate building is not two floors (owner PDF pp. 7-11)'); }
+    if (!buildingAt(-298, -62) || !buildingAt(-635, -241)) fail('the Volta Hall Annex or the Research and Innovation Complex is missing');
   }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
