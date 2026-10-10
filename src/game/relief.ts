@@ -54,8 +54,9 @@ const ZONES: Zone[] = [
   // Volta Hall: the hall stands 2.4 m above Volta Hall Road, its east front over a stone retaining
   // wall; the Annex to the north is at road level. Two rectangles over the hall's blocks only (the courts
   // and the east front; the west block), so the lawn corner south-west of the hall and the road round it
-  // stay at road level
-  { kind: 'terrace', x0: -336, x1: -258.6, z0: -27, z1: 99.6, depth: 2.4, w: 6, e: 2, n: 10, s: 4 },
+  // stay at road level; on the south, toward the Department of History, a rubble-stone wall in two tiers holds the
+  // terrace up over Volta Road (owner's second reference PDF, page 30)
+  { kind: 'terrace', x0: -336, x1: -258.6, z0: -27, z1: 99.6, depth: 2.4, w: 6, e: 2, n: 10, s: 1.5 },
   { kind: 'terrace', x0: -365, x1: -336, z0: 44, z1: 86, depth: 2.4, w: 5, e: 0.1, n: 5, s: 4 },
   // The Balme Library stands above University Square and the long pool before it (owner's photo from the pool):
   // the pool deck 2.4 m below the road in front of the library, a middle terrace 1.2 m below it, each behind a
@@ -103,6 +104,11 @@ const ZONES: Zone[] = [
   // 1 m up behind a rubble-stone retaining wall topped by a clipped hedge, along Cruise O'Brien Road on the west and
   // J.K.M. Hodasi Road on the north; the ground falls gently on the east and to the lane on the south
   { kind: 'terrace', x0: 104.4, x1: 207.5, z0: -153.0, z1: -97.0, depth: 1.0, w: 0.3, e: 4, n: 0.3, s: 3.5 },
+  // the lane from Physics north to Frank Torto (owner's second reference PDF, pages 21-30): it climbs from Physics to a
+  // crest by the turning east to LECIAD, then runs down again to the Chemistry Extension and Frank Torto, which stand
+  // low; east of it the ground of LECIAD and its neighbours stands higher still behind a bank of grass and red earth
+  { kind: 'terrace', x0: 206, x1: 214, z0: -40, z1: -5, depth: 2.0, w: 2, e: 2, n: 45, s: 75 },
+  { kind: 'terrace', x0: 219, x1: 345, z0: -72, z1: 2, depth: 2.8, w: 5, e: 10, n: 20, s: 22 },
   // the lane past the Department of Nutrition and Food Sciences (owner's photo up the lane from J.K.M. Hodasi Road):
   // it runs down a little toward its north end, below the lawn held up behind its rubble-stone wall on the west, and
   // climbs gently back along its leg east to Animal Biology

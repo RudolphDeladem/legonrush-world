@@ -383,7 +383,16 @@ try {
     { const b = buildingAt(117, -85.5); if (!b || b.height < 4.5 || b.height > 5.5) fail('the chemistry west entrance is not the one floor on its raised base the owner shows'); }
     { const b = buildingAt(219.3, -89.4); if (!b || b.height > 4.6) fail('the building behind the Frank Torto Building is not one floor (owner)'); }
     // Nsia Road runs flat past Earth Science's west wall, its kerb and pavement too (owner)
-    { const { groundHeight } = await server.ssrLoadModule('/src/game/relief.ts'); for (const z of [30, 60, 98, 104]) for (const x of [235, 238.5, 240.2]) if (Math.abs(groundHeight(x, z)) > 0.02) fail(`Nsia Road by Earth Science is not flat at ${x},${z} (owner)`); } }
+    { const { groundHeight } = await server.ssrLoadModule('/src/game/relief.ts'); for (const z of [30, 60, 98, 104]) for (const x of [235, 238.5, 240.2]) if (Math.abs(groundHeight(x, z)) > 0.02) fail(`Nsia Road by Earth Science is not flat at ${x},${z} (owner)`); }
+    // owner PDF 2 pp. 21-30: the lane from Physics climbs to a crest by LECIAD, then descends to Chemistry and Frank Torto
+    { const { groundHeight: gh } = await server.ssrLoadModule('/src/game/relief.ts'); const crest = gh(210, -30), lec = gh(311, -40);
+      if (!(crest > 1.5 && gh(210, 80) < 0.3 && gh(210, -90) < 0.3)) fail(`the Physics - Frank Torto lane does not climb to a crest and descend (${gh(210, 80).toFixed(2)} / ${crest.toFixed(2)} / ${gh(210, -90).toFixed(2)})`);
+      if (!(lec > crest && lec > gh(120, -125) + 1 && lec > gh(160, -92) + 1)) fail('LECIAD does not stand uphill of the Chemistry Extension and the Frank Torto Building'); }
+    // owner PDF 2 p. 30: Volta Hall's south side stands on a stone wall over Volta Road, not on a grass bank
+    { const { groundHeight: gh } = await server.ssrLoadModule('/src/game/relief.ts');
+      if (!(Math.abs(gh(-300, 99.5) - 2.4) < 0.01 && gh(-300, 101.2) < 0.01)) fail(`Volta Hall: the south side does not drop at its retaining wall (${gh(-300, 99.5).toFixed(2)} / ${gh(-300, 101.2).toFixed(2)})`); }
+    // owner PDF 2 pp. 12-13: the building opposite Absa is one floor
+    { const b = buildingAt(75.8, 52.1); if (!b || b.height > 5.5) fail('the building opposite Absa is not the one-floor building the owner shows'); } }
   // owner: the free-ridden bike rides through the open passages (Frank Torto Building, French Department); the lane
   // round the Frank Torto Building runs clear of the building behind it and the chemistry range east, pavements too;
   // LECIAD four storeys at its south block; the small square buildings west of it one floor

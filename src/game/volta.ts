@@ -20,6 +20,7 @@ import { PL, createSite, louvre, render, slab, type Block, type Kit, type Spec, 
 import { garden } from './gardens';
 import { groundHeight, stairsOf } from './relief';
 import { SOLIDS } from './solids';
+import { stoneMesh } from './concrete';
 
 const ROOF = '#b9593a', FASCIA = '#4a3428', STONE = '#9a7d62', STONE_DARK = '#7f6650';
 const ST = 3.2;
@@ -117,31 +118,67 @@ const hall: Spec = {
     for (let f = 0; f < stair.flights; f++) for (let s = 0; s <= stair.steps; s++) {
       const u0 = f * seg + s * stair.tread, u1 = s < stair.steps ? u0 + stair.tread : (f + 1) * seg;
       const xa = X(stair.x0 + dir * u0), xb = X(stair.x0 + dir * Math.min(len, u1)), h = stair.at(stair.x0 + dir * (u0 + 0.01));
-      k.plain.push([box(Math.min(xa, xb), Math.max(xa, xb), h - 1.2, h + 0.02, Z(stair.z0), Z(stair.z1)), s === stair.steps ? '#b98a6a' : s % 2 ? '#c49474' : '#b8866a']);
+      k.plain.push([box(Math.min(xa, xb), Math.max(xa, xb), h - 1.2, h + 0.02, Z(stair.z0), Z(stair.z1)), s === stair.steps ? '#8a8781' : s % 2 ? '#7d7a75' : '#86837d']);
     }
+    // its side walls and planters faced in rubble stone (owner's second reference PDF, page 31); a stone-faced
+    // planter with a clipped bush splits the upper flights; shrubs and a tall clipped conifer in the beds at the foot
+    const st: [THREE.BufferGeometry, string][] = [];
     for (const zw of [stair.z0, stair.z1]) for (let x = stair.x0; dir * (stair.x1 - x) > 0; x += dir) {
       const hs = Math.max(stair.at(x), stair.at(x + dir * 0.99), 0.6);
-      k.plain.push([box(X(x), X(x + dir * 1.01), -0.2, hs + 0.6, Z(zw) - 0.45, Z(zw) + 0.45), (Math.floor(x) & 1) ? STONE : STONE_DARK]);
+      st.push([box(X(x), X(x + dir * 1.01), -0.2, hs + 0.6, Z(zw) - 0.45, Z(zw) + 0.45), '#ffffff']);
     }
-    // planters with palms on the walls at the foot (owner photos)
+    { const seg2 = stair.x0 + dir * seg * 1.05, zm = (stair.z0 + stair.z1) / 2, top = stair.at(stair.x1) + 0.8;
+      st.push([box(X(seg2), X(stair.x1) + 0.4, -0.2, top, Z(zm - 1.3), Z(zm + 1.3)), '#ffffff']);
+      k.plain.push([new THREE.IcosahedronGeometry(1.0, 1).scale(1.1, 0.75, 1).translate((X(seg2) + X(stair.x1)) / 2, top + 0.55, Z(zm)), '#3b6a2a']);
+      for (let x = Math.min(seg2, stair.x1); x <= Math.max(seg2, stair.x1); x += 0.8) SOLIDS.add(x, zm, 1.3); }
     for (const zw of [stair.z0 - 1.2, stair.z1 + 1.2]) {
-      k.plain.push([box(X(stair.x0) - 2.4, X(stair.x0), -0.2, 1.1, Z(zw) - 1.2, Z(zw) + 1.2), STONE]);
-      g.palm(k, X(stair.x0) - 1.2, Z(zw), 2.4);
-      g.bush(k, X(stair.x0) - 1.2, Z(zw) + (zw < stair.z0 ? -0.5 : 0.5), 0.7);
+      st.push([box(X(stair.x0) - 2.4, X(stair.x0), -0.2, 1.1, Z(zw) - 1.2, Z(zw) + 1.2), '#ffffff']);
+      k.plain.push([new THREE.IcosahedronGeometry(0.75, 1).scale(1, 0.8, 1).translate(X(stair.x0) - 1.2, 1.6, Z(zw)), '#45742f']);
+      g.bush(k, X(stair.x0) - 1.2, Z(zw) + (zw < stair.z0 ? -0.6 : 0.6), 0.6);
+    }
+    { const cx = X(-247.4), cz = Z(55.6);
+      k.plain.push([new THREE.CylinderGeometry(0.2, 0.28, 2, 6).translate(cx, 1, cz), '#4a3a2c']);
+      for (let i = 0; i < 6; i++) k.plain.push([new THREE.ConeGeometry(2.3 - i * 0.33, 2.0, 9).translate(cx, 1.8 + i * 1.25, cz), i & 1 ? '#22401f' : '#264823']);
+      SOLIDS.add(-247.4, 55.6, 0.6); }
+    // a red post box on the wall, the reserved bays at the foot of the steps: posts banded red and white with boards
+    k.plain.push([box(X(-246.6), X(-246.1), 1.1, 1.75, Z(57.8), Z(58.3)), '#c8261e']);
+    for (const [z, text] of [[58.6, 'TUTOR'], [70.8, 'DEPUTY SENIOR TUTOR']] as [number, string][]) {
+      const x = X(-242.6);
+      k.plain.push([box(x - 0.06, x + 0.06, 0, 1.3, Z(z) - 0.06, Z(z) + 0.06), '#f2f2ef']);
+      for (const y of [0.3, 0.75]) k.plain.push([box(x - 0.065, x + 0.065, y, y + 0.12, Z(z) - 0.065, Z(z) + 0.065), '#c8261e']);
+      k.plain.push([box(x + 0.07, x + 0.1, 1.05, 1.45, Z(z) - 0.55, Z(z) + 0.55), '#f6f6f3']);
+      k.signs.push({ text, x: x + 0.11, y: 1.25, z: Z(z), ry: Math.PI / 2, w: 1.0, colors: ['#f6f6f3', '#1b1b1b'] });
+      SOLIDS.add(-242.6, z, 0.15);
     }
     // the stone retaining wall along the terrace's east edge, open at the steps
     const wx = -258.4;
     for (let z = -27; z < 99.5; z += 2) {
       if (z + 2 > stair.z0 && z < stair.z1) continue;
       const top = groundHeight(wx - 1, z + 1);
-      k.plain.push([box(X(wx), X(wx + 0.8), -0.3, top + 0.5, Z(z), Z(z + 2.02)), (z / 2) & 1 ? STONE : STONE_DARK]);
+      st.push([box(X(wx), X(wx + 0.8), -0.3, top + 0.5, Z(z), Z(z + 2.02)), '#ffffff']);
     }
+    // the south side toward the Department of History (owner's second reference PDF, page 30): the terrace held up by
+    // a rubble-stone wall in two tiers along Volta Road, shrubs at its foot, the street's green name board
+    for (let x = -336; x < -258.6; x += 2) {
+      const x1 = Math.min(-258.6, x + 2.02);
+      st.push([box(X(x), X(x1), -0.3, 2.4 + 0.45, Z(99.6), Z(100.4)), '#ffffff'], [box(X(x), X(x1), -0.3, 1.25, Z(100.4), Z(101.3)), '#ffffff']);
+      k.plain.push([box(X(x), X(x1), 1.25, 1.3, Z(100.4), Z(101.3)), '#b3a48f']);
+    }
+    for (let x = -332; x < -262; x += 3.3) g.bush(k, X(x + g.rand()), Z(102.2 + g.rand() * 0.8), 0.7 + g.rand() * 0.3);
+    { const sx = X(-300), sz = Z(104.2), sy = groundHeight(-300, 104.2);
+      for (const dx of [-0.85, 0.85]) k.plain.push([box(sx + dx - 0.04, sx + dx + 0.04, sy, sy + 1.9, sz - 0.04, sz + 0.04), '#8b9094']);
+      k.plain.push([box(sx - 1.0, sx + 1.0, sy + 1.3, sy + 1.85, sz - 0.03, sz + 0.03), '#2f5f47']);
+      k.signs.push({ text: 'Volta Road', x: sx, y: sy + 1.57, z: sz + 0.04, ry: 0, w: 1.8, colors: ['#2f5f47', '#ffffff'] });
+      SOLIDS.add(-300.85, 104.2, 0.1); SOLIDS.add(-299.15, 104.2, 0.1); }
+    stoneMesh(k, st);
     // a hedge and bushes along the top of the wall (owner photos)
     g.hedge(k, X(-259.2), Z(-20), X(-259.2), Z(30));
     for (let z = 78; z < 98; z += 3) g.bush(k, X(-259.6), Z(z), 0.6);
     // the forecourt: pavers from Volta Hall Road to the foot of the steps, between the two front buildings
-    k.plain.push([box(X(-256), X(-221), -0.3, 0.08, Z(48), Z(84)), '#a99d8f']);
-    for (let x = -255; x < -222; x += 3) k.plain.push([box(X(x), X(x + 0.08), 0.08, 0.1, Z(48), Z(84)), '#8e8376']);
+    k.plain.push([box(X(-256), X(-221), -0.3, 0.08, Z(48), Z(84)), '#8a8680']);
+    for (let x = -255; x < -222; x += 3) k.plain.push([box(X(x), X(x + 0.08), 0.08, 0.1, Z(48), Z(84)), '#75716b']);
+    // the bays painted on the pavers before the steps
+    for (let z = 52; z <= 80; z += 2.6) if (z < stair.z0 - 1 || z > stair.z1 + 1) k.plain.push([box(X(-243.5), X(-238.5), 0.08, 0.11, Z(z), Z(z + 0.1)), '#e8e6e0']);
 
     // the walk through the courts toward the Annex, lined with white pots; lawns, palms and bushes
     for (let z = -30; z < 88; z += 2) {
@@ -155,7 +192,7 @@ const hall: Spec = {
     }
     // trees round the hall
     g.scatter(-380, -322, -30, 110, 50, (x, z) => g.tree(k, X(x), Z(z), 0.9 + g.rand() * 0.5));
-    g.scatter(-340, -230, 100, 112, 25, (x, z) => g.tree(k, X(x), Z(z), 0.8 + g.rand() * 0.4));
+    g.scatter(-340, -230, 102.5, 112, 25, (x, z) => g.tree(k, X(x), Z(z), 0.8 + g.rand() * 0.4));
   },
 };
 

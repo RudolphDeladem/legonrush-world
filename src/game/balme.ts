@@ -20,10 +20,13 @@
 // across the middle and along the north, and four-floor outer wings with arms reaching east and west. Behind the
 // library, the round fountain with its blue sculpture in the Kuffour Quadrangle.
 import * as THREE from 'three';
-import { WHITE, box, canvas } from './modelkit';
-import { PL, createSite, gableZ, render, window_, type Block, type Kit, type Spec, type Style } from './blocks';
+import { WHITE, box, canvas, merge, tri2, type Part } from './modelkit';
+import { BAND, PL, createSite, gableZ, render, window_, type Block, type Kit, type Spec, type Style } from './blocks';
 import { stairsOf } from './relief';
 import { garden } from './gardens';
+import { hipRoof } from './waccbip';
+import { concrete, stoneMesh } from './concrete';
+import { SOLIDS } from './solids';
 
 // ---------- CEDI Conference Centre ----------
 const C: [number, number, number, number] = [-153.4, -106.4, 1.7, 49.7];
@@ -247,14 +250,106 @@ const BANK_WALL: Style = {
   ground: [[60, 256 + 70, 136, 120]],
   draw: (g) => { render(g, '#f4f3ef'); window_(g, [60, 256 + 70, 136, 120], '#e9e9e5', 2, 0.3); },
 };
+/** Absa's front on the east, toward Cruise O'Brien Road (owner's second reference PDF, pages 8-11): the gable end of the
+ *  roof with the lit absa disc on a maroon board, the ATM porch under its own small roof of dark clay tiles with two
+ *  red ATMs, three steps up to it and a ramp with a steel rail down to the north, the white guard booth, the yard
+ *  behind a railing of dark iron bars round its tree and the covered dish, the stone-faced bed under the louvred
+ *  windows on the south, the red absa board on the corner lawn toward the road to Legon Hall, paving of grey blocks */
+function absaFront(k: Kit) {
+  const X = (x: number) => x - BO[0], Z = (z: number) => z - BO[1];
+  const b = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
+  const e = PL + 3.4 + BAND, c: Part[] = [], st: Part[] = [];
+  // the roof: a hip on the west, the gable over the front, dark tiles, grey-slatted soffits under the eaves
+  hipRoof(k, (x, z) => [X(x), Z(z)], B[0] - 0.8, B[1] + 0.8, B[2] - 0.8, B[3] + 0.8, e, 0.4, 'x', [{ gw: 0, tri: false }, { gw: 99, tri: false }], c, '#3b2c25');
+  const top = e + ((B[3] - B[2]) / 2 + 0.8) * 0.4, zm = (B[2] + B[3]) / 2;
+  k.plain.push([tri2([X(B[1]), e - 0.02, Z(B[2] - 0.6)], [X(B[1]), e - 0.02, Z(B[3] + 0.6)], [X(B[1]), top - 0.08, Z(zm)]), '#f1efe9']);
+  for (const z of [B[2] - 0.8, B[3] + 0.8]) k.plain.push([b(B[0] - 0.8, B[1] + 0.8, e - 0.06, e, Math.min(z, z + (z < zm ? 0.8 : -0.8)), Math.max(z, z + (z < zm ? 0.8 : -0.8))), '#a8aaa8']);
+  // the absa disc on its maroon board in the gable
+  k.plain.push([b(B[1], B[1] + 0.08, e + 0.35, e + 1.45, zm - 2.2, zm + 2.2), '#7d1d3f']);
+  k.plain.push([new THREE.TorusGeometry(0.46, 0.06, 6, 28).rotateY(Math.PI / 2).translate(X(B[1] + 0.1), e + 0.9, Z(zm)), '#ffffff']);
+  k.signs.push({ text: 'absa', x: X(B[1] + 0.11), y: e + 0.9, z: Z(zm), ry: Math.PI / 2, w: 0.8, colors: ['#7d1d3f', '#ffffff'] });
+  // the ATM porch: its platform, the steps, the cheek wall on the south, a pier on the north, the tiled lean-to
+  const P0 = 98.0, P1 = 103.6, PX = 85.6;
+  c.push([b(B[1], PX, 0, PL, P0, P1), '#cfc8ba']);
+  for (let i = 0; i < 3; i++) c.push([b(PX, PX + 0.35 * (3 - i), 0, (PL * (i + 1)) / 3 - 0.01, P0 + 0.6, P1), '#c7c0b1']);
+  c.push([b(B[1], PX - 0.1, PL, 3.3, P1 - 0.35, P1), '#f1efe9'], [b(PX - 0.45, PX - 0.1, PL, 3.0, P0, P0 + 0.35), '#f1efe9']);
+  k.plain.push([b(B[1] + 0.02, B[1] + 0.06, PL + 0.2, 3.2, P1 - 1.6, P1 - 0.36), '#3b2a24']);
+  const tile = new THREE.BufferGeometry(), y0 = 3.55, y1 = 2.95, xa = X(B[1] - 0.05), xb = X(PX + 0.35), za = Z(P0 - 0.35), zb = Z(P1 + 0.35);
+  tile.setAttribute('position', new THREE.Float32BufferAttribute([xa, y0, za, xb, y1, za, xb, y1, zb, xa, y0, zb], 3));
+  tile.setIndex([0, 2, 1, 0, 3, 2, 0, 1, 2, 0, 2, 3]); tile.computeVertexNormals();
+  k.plain.push([tile, '#5a3a2c'], [b(PX + 0.2, PX + 0.38, y1 - 0.2, y1, P0 - 0.35, P1 + 0.35), '#4a2f25']);
+  // the two red ATMs, lit, their screens and the white light over them
+  for (const [za, zb] of [[99.3, 100.75], [100.85, 102.3]]) {
+    k.plain.push([b(B[1], B[1] + 0.12, PL, 2.9, za, zb), '#d81e2a']);
+    k.plain.push([b(B[1] + 0.12, B[1] + 0.2, 1.4, 2.0, za + 0.35, zb - 0.35), '#d9dde0'], [b(B[1] + 0.2, B[1] + 0.22, 1.5, 1.85, za + 0.45, zb - 0.45), '#2f6f8f']);
+    k.signs.push({ text: 'ATM', x: X(B[1] + 0.13), y: 2.6, z: Z((za + zb) / 2), ry: Math.PI / 2, w: 0.9, colors: ['#d81e2a', '#ffffff'] });
+  }
+  // the ramp down to the north from the platform, a steel rail along its outer side
+  const R0 = 92.6;
+  { const g = new THREE.BufferGeometry(), xa2 = X(84.6), xb2 = X(86.3), za2 = Z(R0), zb2 = Z(P0);
+    g.setAttribute('position', new THREE.Float32BufferAttribute([xa2, 0.02, za2, xb2, 0.02, za2, xb2, PL, zb2, xa2, PL, zb2], 3));
+    g.setIndex([0, 2, 1, 0, 3, 2]); g.computeVertexNormals(); c.push([g, '#cfc8ba']); }
+  for (let z = R0 + 0.3; z <= P0 + 0.6; z += 1.4) {
+    const y = PL * Math.min(1, Math.max(0, (z - R0) / (P0 - R0)));
+    k.plain.push([b(86.2, 86.26, y, y + 1.0, z - 0.03, z + 0.03), '#c8cdd2']);
+  }
+  { const dz = P0 + 0.3 - R0, L = Math.hypot(dz, PL), a = Math.atan2(PL, dz);
+    for (const h of [0.5, 1.0]) k.plain.push([new THREE.CylinderGeometry(0.03, 0.03, L, 6).rotateX(Math.PI / 2).rotateX(-a).translate(X(86.23), h + PL / 2, Z(R0 + 0.3 + dz / 2)), '#c8cdd2']); }
+  // the white guard booth north of the ramp, windows all round
+  c.push([b(86.7, 88.6, 0, 2.5, 92.4, 94.6), '#eef0ee'], [b(86.6, 88.7, 2.5, 2.62, 92.3, 94.7), '#d8dad6']);
+  k.plain.push([b(86.68, 88.62, 1.1, 2.1, 94.6, 94.64), '#36404a'], [b(88.6, 88.64, 1.1, 2.1, 92.6, 94.4), '#36404a'], [b(86.66, 86.7, 0.1, 2.2, 93.2, 94.0), '#9aa2a8']);
+  SOLIDS.add(87.65, 93.5, 1.3);
+  // the yard behind its railing of dark iron bars, curved round the corner by the kerb; its tree and the covered dish
+  const fence: [number, number][] = [];
+  for (let z = 94.4; z > 88.6; z -= 0.14) fence.push([89.6, z]);
+  for (let a = 0; a <= Math.PI / 2; a += 0.06) fence.push([88.4 + 1.2 * Math.cos(a), 88.6 - 1.2 * Math.sin(a)]);
+  for (let x = 88.4; x > 83.6; x -= 0.14) fence.push([x, 87.4]);
+  for (const [x, z] of fence) k.plain.push([b(x - 0.012, x + 0.012, 0.2, 1.75, z - 0.012, z + 0.012), '#3a2e28']);
+  for (const h of [0.35, 1.7]) for (let i = 0; i < fence.length - 1; i++) {
+    const [ax, az] = fence[i], [bx, bz] = fence[i + 1];
+    k.plain.push([b(Math.min(ax, bx) - 0.02, Math.max(ax, bx) + 0.02, h, h + 0.04, Math.min(az, bz) - 0.02, Math.max(az, bz) + 0.02), '#3a2e28']);
+  }
+  for (let z = 94.4; z > 88.6; z -= 0.8) SOLIDS.add(89.6, z, 0.2);
+  for (let x = 88.4; x > 83.6; x -= 0.8) SOLIDS.add(x, 87.4, 0.2);
+  st.push([b(83.6, 89.9, -0.1, 0.22, 87.2, 87.5), '#ffffff'], [b(89.5, 89.85, -0.1, 0.22, 87.3, 94.6), '#ffffff']);
+  k.plain.push([b(83.6, 89.5, 0.01, 0.05, 87.5, 94.6), '#5d6b3a']);
+  { const tx = X(87.6), tz = Z(90.0);
+    k.plain.push([new THREE.CylinderGeometry(0.22, 0.36, 5.2, 6).translate(tx, 2.4, tz), '#5b4636']);
+    for (const [dx, dy, dz, r] of [[0, 6.2, 0, 3.0], [1.6, 5.6, -1.0, 2.0], [-1.5, 5.4, 1.2, 2.2]]) k.plain.push([new THREE.IcosahedronGeometry(r, 1).scale(1, 0.7, 1).translate(tx + dx, dy, tz + dz), '#3d6b2a']);
+    SOLIDS.add(87.6, 90.0, 0.5); }
+  // the big dish under its white cover, on a short post
+  k.plain.push([new THREE.SphereGeometry(1.5, 18, 6, 0, Math.PI * 2, 0, 0.75).rotateX(-0.9).translate(X(85.4), 1.6, Z(91.2)), '#e6e1d6'], [b(85.3, 85.5, 0, 1.1, 91.0, 91.2), '#7c7f82']);
+  for (const x of [84.3, 85.9]) k.plain.push([b(x - 0.04, x + 0.04, 0, 6.5, 93.9, 93.98), '#c9ced2']);
+  // the stone-faced bed along the south wall under the louvred windows, a few shrubs in it
+  st.push([b(B[0] + 4, B[1] - 0.3, -0.05, 0.55, B[3], B[3] + 1.1), '#ffffff']);
+  for (let x = B[0] + 5; x < B[1] - 1; x += 2.3) k.plain.push([new THREE.IcosahedronGeometry(0.45, 0).scale(1, 1.3, 1).translate(X(x), 1.0, Z(B[3] + 0.55)), '#3f6a2c']);
+  k.signs.push({ text: '26 60', x: X(B[1] - 1.2), y: 2.3, z: Z(B[3]) + 0.03, ry: 0, w: 0.5, colors: ['#e9e4d8', '#3a3a3a'] });
+  // the red absa board on its stone base on the corner lawn, the small disc sign at the corner of the roof
+  st.push([b(82.6, 84.6, 0, 0.55, 108.4, 109.2), '#ffffff']);
+  c.push([b(83.0, 84.2, 0.55, 3.6, 108.6, 109.0), '#b5172b']);
+  k.signs.push({ text: 'absa', x: X(83.6), y: 3.05, z: Z(109.0) + 0.02, ry: 0, w: 0.9, colors: ['#b5172b', '#ffffff'] });
+  k.signs.push({ text: 'Legon Campus Branch', x: X(83.6), y: 2.3, z: Z(109.0) + 0.02, ry: 0, w: 1.1, colors: ['#b5172b', '#ffffff'] });
+  SOLIDS.add(83.6, 108.8, 0.8);
+  k.plain.push([b(B[1] - 0.4, B[1] + 0.4, e - 1.0, e - 0.1, B[3] + 0.1, B[3] + 0.18), '#7d1d3f']);
+  k.signs.push({ text: 'absa', x: X(B[1]), y: e - 0.55, z: Z(B[3] + 0.19), ry: 0, w: 0.6, colors: ['#7d1d3f', '#ffffff'] });
+  // grey paving blocks before the front, from the road to the yard
+  k.plain.push([b(B[1], 90.6, 0.005, 0.03, 94.6, 111.2), '#a9a49a']);
+  stoneMesh(k, st);
+  const m = new THREE.Mesh(merge(c), concrete(0.5));
+  m.castShadow = true; m.receiveShadow = true;
+  k.meshes.push(m);
+}
+
 const banks: Spec = {
   name: 'Standard Chartered and Absa',
-  axis: [1, 0], origin: BO, storey: 3.4, style: BANK_WALL, roofColor: '#bf6a3e', fascia: '#f4f3ef', pitch: 0.4,
+  axis: [1, 0], origin: BO, storey: 3.4, style: BANK_WALL, roofColor: '#5b4438', fascia: '#f4f3ef', pitch: 0.4,
   replaces: [BO],
-  blocks: [{ x0: B[0] - BO[0], x1: B[1] - BO[0], z0: B[2] - BO[1], z1: B[3] - BO[1], floors: 1 }],
-  keep: [],
+  blocks: [{ x0: B[0] - BO[0], x1: B[1] - BO[0], z0: B[2] - BO[1], z1: B[3] - BO[1], floors: 1, roof: 'none' }],
+  // the fenced yard at the front keeps the car park's cars out
+  keep: [[83.4 - BO[0], 92.4 - BO[0], 85.0 - BO[1], 94.6 - BO[1]]],
   extras: (k) => {
     const z0 = B[2] - BO[1], z1 = B[3] - BO[1];
+    absaFront(k);
     // the doors on the north face: Standard Chartered on the west, Absa on the east by the road (owner's marks)
     for (const [x, band, accent, text] of [[70.2, '#0d6ab0', '#38a046', 'Standard Chartered'], [78, '#a50034', '#e31c3d', 'Absa']] as [number, string, string, string][]) {
       const lx = x - BO[0];
@@ -274,6 +369,71 @@ const banks: Spec = {
       k.plain.push([box(ax + dx - 0.3, ax + dx + 0.3, 1.0, 1.45, z1 + 0.35, z1 + 0.38), '#7fb2d9']);
     }
     k.signs.push({ text: 'Standard Chartered ATM', x: ax, y: PL + 2.55, z: z1 + 0.08, ry: 0, w: 3.6, colors: ['#0d6ab0', '#ffffff'] });
+  },
+};
+
+// ---------- the building opposite Absa, across the car park ----------
+// (owner's second reference PDF, pages 12-13: its back to the Balme Library, its front to Absa and Standard Chartered)
+// One floor of white render with small square windows high in the wall, an old dark tile roof with a deep gable of
+// dark timber boards on the west; along the front a lean-to of grey sheet on steel posts over the generators, an
+// air-conditioner, a railing of black iron bars along the kerb; a big dish at the west end, a blue water tank at the
+// east, a lattice mast behind the east end.
+const OPP: [number, number, number, number] = [66.8, 84.8, 46.3, 57.9];
+const OO: [number, number] = [(OPP[0] + OPP[1]) / 2, (OPP[2] + OPP[3]) / 2];
+const OPP_WALL: Style = {
+  bay: 3.0, up: [], ground: [[100, 256 + 40, 56, 56]],
+  draw: (g) => { render(g, '#f2f0ea'); g.fillStyle = '#26282b'; g.fillRect(100, 256 + 40, 56, 56); g.fillStyle = '#ddd9d0'; g.fillRect(96, 256 + 96, 64, 5); },
+};
+const opposite: Spec = {
+  name: 'building opposite Absa',
+  axis: [1, 0], origin: OO, storey: 3.2, style: OPP_WALL, roofColor: '#4e3a30', fascia: '#3a2a22', pitch: 0.42,
+  replaces: [OO],
+  blocks: [{ x0: OPP[0] - OO[0], x1: OPP[1] - OO[0], z0: OPP[2] - OO[1], z1: OPP[3] - OO[1], floors: 1, roof: 'none' }],
+  keep: [[64 - OO[0], 87 - OO[0], 57.9 - OO[1], 63.4 - OO[1]]],
+  extras: (k) => {
+    const X = (x: number) => x - OO[0], Z = (z: number) => z - OO[1];
+    const b = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
+    const e = PL + 3.2 + BAND, c: Part[] = [], zm = (OPP[2] + OPP[3]) / 2;
+    hipRoof(k, (x, z) => [X(x), Z(z)], OPP[0] - 1.6, OPP[1] + 0.8, OPP[2] - 0.8, OPP[3] + 0.8, e, 0.42, 'x', [{ gw: 99, tri: false }, { gw: 0, tri: false }], c, '#3a2a22');
+    // the west gable boarded in dark timber, its deep soffit
+    const top = e + ((OPP[3] - OPP[2]) / 2 + 0.8) * 0.42;
+    k.plain.push([tri2([X(OPP[0]), e - 0.02, Z(OPP[3] + 0.6)], [X(OPP[0]), e - 0.02, Z(OPP[2] - 0.6)], [X(OPP[0]), top - 0.08, Z(zm)]), '#5a3b26']);
+    for (let y = e + 0.2; y < top - 0.2; y += 0.3) { const w = ((top - y) / (top - e)) * ((OPP[3] - OPP[2]) / 2 + 0.6) - 0.1; k.plain.push([b(OPP[0] - 0.04, OPP[0], y, y + 0.04, zm - w, zm + w), '#3a2618']); }
+    k.plain.push([b(OPP[0] - 1.6, OPP[0], e - 0.08, e - 0.02, OPP[2] - 0.8, OPP[3] + 0.8), '#8a6440']);
+    // the lean-to of grey sheet on steel posts along the front, the generators under it
+    const L0 = 68.4, L1 = 83.4, LZ = 62.2;
+    { const g = new THREE.BufferGeometry(), y0 = 3.3, y1 = 2.75;
+      g.setAttribute('position', new THREE.Float32BufferAttribute([X(L0), y0, Z(OPP[3]), X(L1), y0, Z(OPP[3]), X(L1), y1, Z(LZ), X(L0), y1, Z(LZ)], 3));
+      g.setIndex([0, 2, 1, 0, 3, 2, 0, 1, 2, 0, 2, 3]); g.computeVertexNormals(); k.plain.push([g, '#6c7276']); }
+    k.plain.push([b(L0, L1, 2.6, 2.78, LZ - 0.08, LZ), '#3c4144']);
+    for (let x = L0 + 0.1; x <= L1; x += 3.7) { k.plain.push([b(x - 0.05, x + 0.05, 0, 2.75, LZ - 0.1, LZ), '#3c4144']); SOLIDS.add(x, LZ - 0.05, 0.15); }
+    for (const [x0, x1] of [[69.2, 73.4], [77.0, 80.4]]) {
+      k.plain.push([b(x0, x1, 0, 1.75, 58.6, 60.4), '#e6e9e4'], [b(x0 - 0.05, x1 + 0.05, 0, 0.18, 58.55, 60.45), '#5b5f60']);
+      for (let x = x0 + 0.2; x < x0 + 1.1; x += 0.12) k.plain.push([b(x, x + 0.05, 0.3, 1.5, 60.4, 60.43), '#9aa09c']);
+      SOLIDS.add((x0 + x1) / 2, 59.5, (x1 - x0) / 2);
+    }
+    k.plain.push([b(74.8, 75.6, 0.1, 1.0, 58.2, 59.0), '#d8dadb'], [b(81.6, 82.4, 2.2, 2.8, OPP[3], OPP[3] + 0.3), '#e9ebeb']);
+    // the black railing along the kerb, a gate before the lean-to
+    for (let x = 64.6; x <= 86.4; x += 0.14) { if (x > 74.2 && x < 76.4) continue; k.plain.push([b(x - 0.012, x + 0.012, 0, 1.6, 62.9, 62.92), '#1e1e1e']); }
+    for (const h of [0.15, 1.45]) for (const [x0, x1] of [[64.6, 74.2], [76.4, 86.4]]) k.plain.push([b(x0, x1, h, h + 0.04, 62.88, 62.94), '#1e1e1e']);
+    for (let x = 64.6; x <= 86.4; x += 1.2) if (x < 74.2 || x > 76.4) SOLIDS.add(x, 62.9, 0.15);
+    // the big dish at the west end, the blue water tank at the east
+    k.plain.push([new THREE.SphereGeometry(1.6, 18, 6, 0, Math.PI * 2, 0, 0.8).rotateX(Math.PI).rotateZ(-1.0).translate(X(65.3), 1.9, Z(55.5)), '#d9d9d6'], [b(65.6, 65.8, 0, 1.4, 55.4, 55.6), '#6d6f70']);
+    SOLIDS.add(65.5, 55.5, 0.9);
+    k.plain.push([new THREE.CylinderGeometry(0.85, 0.85, 2.0, 14).translate(X(86.0), 1.0, Z(56.4)), '#2f6fb0']);
+    SOLIDS.add(86.0, 56.4, 0.9);
+    // the lattice mast behind the east end
+    const mx = X(86.6), mz = Z(47.6), mh = 30;
+    for (let y = 0; y < mh; y += 1.5) {
+      const w = 0.9 - (y / mh) * 0.5;
+      for (const [sx, sz] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) k.plain.push([box(mx + sx * w - 0.03, mx + sx * w + 0.03, y, y + 1.5, mz + sz * w - 0.03, mz + sz * w + 0.03), '#b9bcbe']);
+      k.plain.push([box(mx - w, mx + w, y + 1.45, y + 1.5, mz - w, mz - w + 0.04), '#b9bcbe'], [box(mx - w, mx + w, y + 1.45, y + 1.5, mz + w - 0.04, mz + w), '#b9bcbe']);
+      k.plain.push([box(mx - w, mx - w + 0.04, y + 1.45, y + 1.5, mz - w, mz + w), '#b9bcbe'], [box(mx + w - 0.04, mx + w, y + 1.45, y + 1.5, mz - w, mz + w), '#b9bcbe']);
+    }
+    SOLIDS.add(86.6, 47.6, 1.0);
+    const m = new THREE.Mesh(merge(c), concrete(0.4));
+    m.castShadow = true; m.receiveShadow = true;
+    k.meshes.push(m);
   },
 };
 
@@ -654,4 +814,4 @@ const steps: Spec = {
 };
 
 /** the CEDI Conference Centre, the Standard Chartered and Absa building, the Balme Library, the pool in front of it and the Kuffour Quadrangle fountain */
-export const balmeSite = createSite('balme', [cedi, ugcs, banks, library, libraryWings, pool, steps, fountain]);
+export const balmeSite = createSite('balme', [cedi, ugcs, banks, opposite, library, libraryWings, pool, steps, fountain]);

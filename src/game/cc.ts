@@ -183,11 +183,12 @@ const atm: Spec = {
 };
 
 /** a parked car: body, cabin with dark glass, wheels (model frame, facing along z) */
-function car(k: Kit, x: number, z: number, color: string) {
-  k.plain.push([box(x - 0.9, x + 0.9, 0.3, 1.0, z - 2.15, z + 2.15), color]);
-  k.plain.push([box(x - 0.8, x + 0.8, 1.0, 1.5, z - 1.1, z + 1.0), color]);
-  k.plain.push([box(x - 0.82, x + 0.82, 1.05, 1.42, z - 1.0, z + 0.9), '#2a3038']);
-  for (const [dx, dz] of [[-0.9, -1.4], [0.9, -1.4], [-0.9, 1.4], [0.9, 1.4]]) k.plain.push([new THREE.CylinderGeometry(0.34, 0.34, 0.24, 12).rotateZ(Math.PI / 2).translate(x + dx, 0.34, z + dz), '#1b1c1f']);
+export function car(k: Kit, x: number, z: number, color: string, y = 0, ry = 0) {
+  const parts: [THREE.BufferGeometry, string][] = [
+    [box(-0.9, 0.9, 0.3, 1.0, -2.15, 2.15), color], [box(-0.8, 0.8, 1.0, 1.5, -1.1, 1.0), color], [box(-0.82, 0.82, 1.05, 1.42, -1.0, 0.9), '#2a3038'],
+    ...[[-0.9, -1.4], [0.9, -1.4], [-0.9, 1.4], [0.9, 1.4]].map(([dx, dz]): [THREE.BufferGeometry, string] => [new THREE.CylinderGeometry(0.34, 0.34, 0.24, 12).rotateZ(Math.PI / 2).translate(dx, 0.34, dz), '#1b1c1f']),
+  ];
+  for (const [g, c] of parts) k.plain.push([g.rotateY(ry).translate(x, y, z), c]);
 }
 /** a few cars parked between the CC and the Union Building (owner: "not so many") */
 const parking: Spec = {

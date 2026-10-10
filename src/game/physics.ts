@@ -23,6 +23,7 @@ import { PASSAGES, SOLIDS } from './solids';
 import { hipRoof } from './waccbip';
 import { stairsOf } from './relief';
 import { garden } from './gardens';
+import { car } from './cc';
 
 const TILE = '#b8583a', BARGE = '#3a2a22', WHITE_OLD = '#f0eee8', DADO = '#8a3a25';
 const RISE = 1.5;
@@ -159,6 +160,32 @@ const physics: Spec = (() => {
       k.signs.push({ text: 'SCHOOL OF PHYSICAL AND MATHEMATICAL SCIENCES', x: X(bx), y: by + 2.35, z: Z(bz) + 0.13, ry: 0, w: 2.2, colors: ['#f6f6f3', '#2a2a2a'] });
       k.signs.push({ text: 'DEPT. OF PHYSICS', x: X(bx), y: by + 1.9, z: Z(bz) + 0.13, ry: 0, w: 2.0, colors: ['#f6f6f3', '#1d3f7a'] });
       k.plain.push([new THREE.CylinderGeometry(0.12, 0.15, 9, 8).translate(X(104), gy(104, 110) + 4.5, Z(110)), '#8e8e78']);
+      // the car park at the open east end of the court, facing Earth Science across the lane (owner's second reference
+      // PDF, pages 16-20): a long flat roof of grey sheet on thin steel posts over bare red earth, a strip light under it,
+      // the cars parked beneath; the court's lawn and the verandahs show through it
+      const CP = [199.6, 205.4, 67.0, 85.6], cpH = 2.7;
+      for (let x = 197.5; x < 207.5; x += 2) for (let z = 65.5; z < 88; z += 2) {
+        const y = gy(x + 1, z + 1);
+        k.plain.push([B(x, x + 2, y + 0.01, y + 0.04, z, Math.min(88, z + 2)), (((x + z) * 7) % 3) < 1 ? '#9a4a2c' : '#a5543a']);
+      }
+      const n = 4;
+      for (let i = 0; i <= n; i++) for (const x of [CP[0] + 0.3, CP[1] - 0.3]) {
+        const z = CP[2] + 0.3 + ((CP[3] - CP[2] - 0.6) * i) / n, y = gy(x, z);
+        k.plain.push([B(x - 0.05, x + 0.05, y - 0.1, gy(205, 76) + cpH + (x < 202 ? 0.15 : 0), z - 0.05, z + 0.05), '#5c6266']);
+      }
+      { const y = gy(205, 76) + cpH, sheet = new THREE.BufferGeometry();
+        // the sheet falls a little toward the lane; a channel along each edge
+        sheet.setAttribute('position', new THREE.Float32BufferAttribute([X(CP[0] - 0.4), y + 0.25, Z(CP[2] - 0.3), X(CP[1] + 0.4), y - 0.02, Z(CP[2] - 0.3), X(CP[1] + 0.4), y - 0.02, Z(CP[3] + 0.3), X(CP[0] - 0.4), y + 0.25, Z(CP[3] + 0.3)], 3));
+        sheet.setIndex([0, 2, 1, 0, 3, 2, 0, 1, 2, 0, 2, 3]); sheet.computeVertexNormals();
+        k.plain.push([sheet, '#6f777b']);
+        for (const [x, yy] of [[CP[0] - 0.4, y + 0.25], [CP[1] + 0.4, y - 0.02]]) k.plain.push([B(x - 0.06, x + 0.06, yy - 0.2, yy, CP[2] - 0.3, CP[3] + 0.3), '#4c5256']);
+        k.plain.push([B(202.4, 202.6, y - 0.12, y + 0.05, 74, 76.4), '#f4f8ff']);
+        // nose in under the roof, as the photos show (a silver one, a red one at the end)
+        for (const [z, col, r] of [[71.6, '#c9ccd0', 0.04], [81.0, '#a11d1d', -0.05]] as const) {
+          car(k, X(202.3), Z(z), col, gy(202.3, z) + 0.03, Math.PI / 2 + r);
+          for (const x of [201.2, 203.4]) SOLIDS.add(x, z, 1.0);
+        }
+      }
       // air-conditioners in a few of the shutters along the road
       for (const x of [150, 162, 172, 182]) k.plain.push([B(x - 0.4, x + 0.4, 1.4, 1.95, PS[3], PS[3] + 0.3), '#e9ebeb']);
       stoneMesh(k, st);

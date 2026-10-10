@@ -49,6 +49,8 @@ const winStyle = (withDado: boolean, bay: number, w: number, base = WALL): Style
   },
 });
 const W_DADO = winStyle(true, 3.0, 76), W_PLAIN = winStyle(false, 3.4, 92), W_DEAN = winStyle(true, 3.3, 96);
+/** a plain whitewashed pier, no windows (the Bookshop's back) */
+const W_SOLID: Style = { bay: 3.4, up: [], ground: [], draw: (g) => paint(g) };
 /** the long block's upper verandahs on the car park side: deep shade behind the columns, doors and louvres in it */
 const W_VERANDAH: Style = {
   bay: 3.2, up: [[60, 40, 60, 200], [150, 70, 70, 110]], ground: [[38, 256 + 64, 70, 124], [148, 256 + 64, 70, 124]],
@@ -600,13 +602,17 @@ const W_SHOP: Style = {
 };
 const bookshop: Spec = (() => {
   const { X, Z, B, M } = frame(KO);
-  const BN = [42.7, 55.7, 44.4, 63.8], BM = [39.8, 58.9, 63.8, 87.6], BS = [42.7, 56.0, 87.6, 106.2];
+  const BN = [42.7, 55.7, 44.4, 63.8], BM = [39.8, 58.9, 63.8, 87.6], BS = [42.7, 56.0, 87.6, 106.2], RC = [70.5, 81.0, 56.6];
   const blk = (r: number[], more: Partial<Block> = {}): Block => ({ x0: X(r[0]), x1: X(r[1]), z0: Z(r[2]), z1: Z(r[3]), floors: 2, roof: 'none', ...more });
   return {
     name: 'University of Ghana Bookshop',
     axis: [1, 0], origin: KO, storey: LST, style: W_PLAIN, roofColor: TILE, fascia: BARGE, pitch: 0.5, plinth: '#cfcac0',
-    blocks: [blk(BN, { faces: { x0: W_SHOP } }), blk(BM, { faces: { x0: W_SHOP } }), blk(BS, { faces: { x0: W_SHOP } })],
-    keep: [[X(37), X(60), Z(106), Z(111)]],
+    // the back toward the car park (owner's second reference PDF, page 14): the middle stands forward, its centre set
+    // back between two plain piers with a round window high in each, the roof carried over it on two columns; the
+    // north range's upper floor a verandah in shade
+    blocks: [blk(BN, { faces: { x0: W_SHOP, x1: W_VERANDAH } }), blk([BM[0], BM[1], BM[2], RC[0]], { faces: { x0: W_SHOP, x1: W_SOLID } }),
+      blk([BM[0], RC[2], RC[0], RC[1]], { faces: { x0: W_SHOP } }), blk([BM[0], BM[1], RC[1], BM[3]], { faces: { x0: W_SHOP, x1: W_SOLID } }), blk(BS, { faces: { x0: W_SHOP } })],
+    keep: [[X(37), X(60), Z(106), Z(111)], [X(55.7), X(60), Z(56.4), Z(63.8)]],
     extras: (k: Kit) => {
       const c: Part[] = [], st: Part[] = [];
       // the roofs: gables north and south, the hip over the middle with its lantern
@@ -644,6 +650,21 @@ const bookshop: Spec = (() => {
       // a stone-faced bed along the west front, shrubs in it
       stoneWall(k, KO, st, 37.8, 39.6, 64.5, 87.0, 0.45);
       for (let z = 66; z < 86; z += 4) k.plain.push([new THREE.IcosahedronGeometry(0.55, 0).scale(1.2, 0.8, 1).translate(X(38.7), 0.85, Z(z)), '#3f6f2c']);
+      // the back: the two columns in the recess, the round windows in the piers, air-conditioners, the water tanks in
+      // their railed pen before the north range
+      for (const z of [RC[0] + 3.5, RC[1] - 3.5]) c.push([B(BM[1] - 0.75, BM[1] - 0.3, 0, LE - 0.1, z - 0.22, z + 0.22), WALL]);
+      c.push([B(RC[2], BM[1], LE - 0.6, LE - 0.1, RC[0], RC[1]), WALL]);
+      for (const z of [(BM[2] + RC[0]) / 2, (RC[1] + BM[3]) / 2]) {
+        k.plain.push([new THREE.CylinderGeometry(0.62, 0.62, 0.06, 20).rotateZ(Math.PI / 2).translate(X(BM[1] + 0.02), PL + LST + 2.1, Z(z)), '#1b1c1e']);
+        k.plain.push([new THREE.TorusGeometry(0.64, 0.05, 6, 20).rotateY(Math.PI / 2).translate(X(BM[1] + 0.04), PL + LST + 2.1, Z(z)), '#e9e7e1']);
+      }
+      for (const [x, y, z] of [[RC[2], 2.7, 73.2], [RC[2], 2.7, 76.8], [RC[2], 2.7, 79.0], [BN[1], 2.6, 50], [BN[1], 2.6, 56], [BN[1], 2.6, 60]]) {
+        k.plain.push([B(x, x + 0.32, y, y + 0.55, z - 0.4, z + 0.4), '#e9ebeb'], [new THREE.CylinderGeometry(0.2, 0.2, 0.02, 12).rotateZ(Math.PI / 2).translate(X(x + 0.33), y + 0.28, Z(z)), '#9da2a5']);
+      }
+      for (const z of [59.0, 61.0]) k.plain.push([new THREE.CylinderGeometry(0.75, 0.75, 1.9, 14).translate(X(57.3), 0.95, Z(z)), '#1d1e20']);
+      for (let z = 56.6; z <= 63.7; z += 0.13) k.plain.push([B(59.2, 59.23, 0, 1.6, z, z + 0.03), '#202020']);
+      for (const h of [0.2, 1.55]) k.plain.push([B(59.18, 59.26, h, h + 0.05, 56.6, 63.7), '#202020']);
+      SOLIDS.add(57.3, 60.0, 1.6);
       stoneMesh(k, st);
       const m = new THREE.Mesh(merge(c), concrete(0.15));
       m.castShadow = true; m.receiveShadow = true;
