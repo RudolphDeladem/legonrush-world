@@ -3124,6 +3124,13 @@
       "levels": 3,
       "height": 11.5,
       "reason": "Owner's reference PDF of game views beside street photos (docs/CAMPUS_REFERENCE_AUDIT.md), pages 1-4: three floors, white, green-tinted windows, a maroon roof, across the Nursing School's car park. Modelled in src/game/labs.ts."
+    },
+    {
+      "id": "osm:way/492729609",
+      "place": "the building behind Old Pent (north of Addis Ababa and Dar es Salaam)",
+      "levels": 4,
+      "height": 14,
+      "reason": "Owner's third reference PDF (pages 57-60): the yellow building behind Pent stands four storeys under red roofs."
     }
   ],
   "reclass": [

@@ -1557,6 +1557,78 @@ The owner's second PDF pairs more game screenshots with street photos. The audit
 - **Roofs.** The photos show darker, older tiles on several of these buildings than the game's orange; the hall
   roofs keep the colours set earlier.
 
+## 63. The third reference PDF (67 pages): the Pentagon, New Pent, the Kufuor Centre, Engineering
+
+The owner's third PDF pairs game views with street photos of the Pentagon and its surroundings. The audit is Part 3 of
+`docs/CAMPUS_REFERENCE_AUDIT.md`; the images are `images/425-514.jpg`.
+
+**The order of the Old Pent courts (the owner, first).** From the entrance on Annie Jiagge Road, west to east:
+**Addis Ababa, Dar es Salaam, the admin block, Kampala, Nairobi.** These are OSM's own labels; the earlier rename
+that swapped them is gone (`naming.json`), and the entrances, route checks and tests follow.
+
+**Old Pent** (`pentagon.ts`)
+- **The courts**:
+  - three storeys of cream render with pilasters and dark louvred windows over a deep red base;
+  - each wing's end, front and back, is a gabled pavilion with a tall arched recess;
+  - the stair core is set back between the wings, with breeze-block screens, and has no tower;
+  - the porch has a rendered gable with the court's plate (KAMPALA COURT, KC, and so on), an arch, steps between
+    red kerbs, a brick walk, kerbed lawns, fan palms with whitewashed trunks, a solar lamp and marked parking;
+  - at the back: storerooms behind red doors, a slab walk, bare earth, a black water tank.
+- **The entrance**:
+  - the security post in front of Addis Ababa: cream walls, a red tiled roof, a door and louvred window toward the
+    court;
+  - the white palisade on red posts along Annie Jiagge Road, and the red and white trellis gates swung back;
+  - poster-wrapped bollards, the poster kiosk on the north side, pavers, shade trees, feather flags and the zebra
+    crossing.
+- **The kiosk between Addis Ababa and Dar es Salaam**: white boards over a dark red base, a rusty lean-to over the
+  counter, the MoMo / Telecel Cash / AT Money boards, and beds of shrubs.
+- **Behind Nairobi**: the blue generator under its lean-to on gravel, and the low food building with its red base,
+  red steps, grille doors, red sheet gable and timber clerestory.
+- **The Ghana Hostels admin block**:
+  - the four-storey west tower and the three-storey east wing under front gables, with strips of facing brick;
+  - the arched loggia and the top-floor balcony;
+  - red pillars and railings along the shops under the red tiled veranda;
+  - the blue **Ecobank ATM**;
+  - the sunburst porch on red columns, the royal palms in white gravel, and the blue tensile shades over the parking.
+
+**New Pent Blocks A, B and C** (`newpent.ts`). The owner says B is behind A, in the same orientation and of the same
+design, and C is the same design too, so every four-storey wing in the zone is built to one design:
+- white walls over a dark grey base, with balconies carrying brick panels on the long sides;
+- end walls faced in brick, with the white stair strip and its arched head;
+- red-brown hipped roofs.
+
+Round the blocks:
+- each block's entrance: a white tower with an open arched loggia over a gabled porch reading BLOCK A, B or C
+  (Block A's moved west of the mark, clear of the wing beside it);
+- brick walls with grey piers and steel gates along Pent Road, and the transformer;
+- the generators under sheet roofs (Block C's on cream columns on a raised platform);
+- the red and white lattice mast;
+- the yellow **Boba** kiosk with its seats, by Block C only.
+
+**Behind Old Pent** (`kufuor.ts`)
+- **The Kufuor Centre for Leadership and Governance**, unfinished:
+  - a bare concrete frame of three floors on round columns, the curved tiers of its front, a dark roof edge, and
+    blockwork at the back;
+  - the round gate house under a conical tiled roof;
+  - corrugated sheets round the site, the timber-slat gate, red earth and heaps of paving blocks.
+- **The hoarding** of poster-covered corrugated sheets along Annie Jiagge Road from the Kufuor Centre to the Pent
+  entrance.
+- **The building behind Old Pent** (the Y north of Addis Ababa and Dar es Salaam): four storeys, yellow, red roofs,
+  with round balconies and a black spiral stair on its east end behind a palisade on white concrete posts.
+
+**Engineering** (`engineering.ts`, `enclave.ts`)
+- **The jet trainer** now faces east, the right way round: sand, brown and green camouflage, a pale belly, the Ghana
+  roundel and tail flash, tip tanks, on its pad behind a mesh fence on a low white wall.
+- **The bank below the main road** is faced in pitched rubble stone, with brick paving along its foot.
+- **The Innovation Enclave's buildings** (the small buildings in front of Engineering) have broken roofs: the gable
+  over the enclosed part, and the verandah's roof running on at a shallower pitch.
+
+**Uncertain**
+- Which building the spiral stair belongs to (pages 57-58 are captioned "west side of Block C"; the photo shows a
+  yellow building that matches the one behind Old Pent).
+- The positions of the generators, the transformer and the mast are from the photos, not measured.
+- The page 67 caption speaks of four small buildings; the game has six there, and all six now have the broken roof.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

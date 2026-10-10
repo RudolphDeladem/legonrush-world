@@ -84,30 +84,40 @@ const core = (h: House): Block => {
 };
 
 function house(k: Kit, h: House) {
-  const eave = T + PL + ST + 0.4, mid = (h.x0 + h.x1) / 2, half = (h.x1 - h.x0) / 2, ridge = eave + half * PITCH;
-  const zn = h.z0, zs = h.z1;
-  // the roof: two slopes of sheeting, a ridge cap, dark fascias along the eaves
-  const slope = Math.hypot(half, half * PITCH), a = Math.atan(PITCH);
-  for (const s of [-1, 1]) {
-    k.plain.push([new THREE.BoxGeometry(slope, 0.08, zs - zn).rotateZ(-s * a).translate(X(mid + (s * half) / 2), (eave + ridge) / 2 + 0.04, Z((zn + zs) / 2)), h.roof]);
-    k.plain.push([B(s < 0 ? h.x0 - 0.04 : h.x1, s < 0 ? h.x0 : h.x1 + 0.04, eave - 0.22, eave + 0.04, zn, zs), '#4a1620']);
-  }
+  // the roof breaks (owner's third reference PDF, page 67, seen from the School of Engineering): a steeper gable over
+  // the enclosed part, and from its eave on the door side the verandah's roof running on at a shallower pitch, so
+  // each gable end shows the kink
+  const eave = T + PL + ST + 0.4, west = h.door === 'w';
+  const cA = h.x0 + OVH + (west ? VER : 0), cB = h.x1 - OVH - (west ? 0 : VER), mid = (cA + cB) / 2, half = (cB - cA) / 2;
+  const P2 = 0.5, ridge = eave + half * P2, zn = h.z0, zs = h.z1;
+  const slope = (x0: number, y0: number, x1: number, y1: number) => {
+    const len = Math.hypot(x1 - x0, y1 - y0), ang = Math.atan2(y1 - y0, x1 - x0);
+    k.plain.push([new THREE.BoxGeometry(len, 0.08, zs - zn).rotateZ(ang).translate(X((x0 + x1) / 2), (y0 + y1) / 2 + 0.04, Z((zn + zs) / 2)), h.roof]);
+  };
+  const vOut = west ? h.x0 : h.x1, vy = eave - VER * 0.26 - OVH * 0.26;
+  // the main gable, overhanging on the side away from the verandah
+  if (west) { slope(cA, eave, mid, ridge); slope(mid, ridge, cB + OVH, eave - OVH * P2); slope(vOut, vy, cA, eave); }
+  else { slope(cA - OVH, eave - OVH * P2, mid, ridge); slope(mid, ridge, cB, eave); slope(cB, eave, vOut, vy); }
   k.plain.push([B(mid - 0.18, mid + 0.18, ridge + 0.02, ridge + 0.14, zn, zs), '#5a1a26']);
-  // the gable triangles (white), and their barge boards
-  const cx0 = h.x0 + OVH, cx1 = h.x1 - OVH, top = T + PL + ST + 0.4;
+  for (const [x, y] of [[west ? cB + OVH : cA - OVH, eave - OVH * P2], [vOut, vy]] as [number, number][]) k.plain.push([B(x - 0.04, x + 0.04, y - 0.22, y + 0.04, zn, zs), '#4a1620']);
+  // the gable triangles over the enclosed part (white), their barge boards, the verandah roof's edge board
   for (const [zz, dir] of [[zn + OVH, -1], [zs - OVH, 1]] as [number, number][]) {
-    const tri = new THREE.Shape([new THREE.Vector2(X(cx0), top), new THREE.Vector2(X(cx1), top), new THREE.Vector2(X(mid), top + (half - OVH) * PITCH)]);
+    const tri = new THREE.Shape([new THREE.Vector2(X(cA), eave), new THREE.Vector2(X(cB), eave), new THREE.Vector2(X(mid), ridge - 0.05)]);
     k.plain.push([new THREE.ShapeGeometry(tri).translate(0, 0, Z(zz) + dir * 0.01), WHITE_E]);
     k.plain.push([new THREE.ShapeGeometry(tri).rotateY(Math.PI).translate(2 * X(mid), 0, Z(zz) - dir * 0.01), WHITE_E]);
-    for (const s of [-1, 1]) k.plain.push([new THREE.BoxGeometry(slope, 0.25, 0.06).rotateZ(-s * a).translate(X(mid + (s * half) / 2), (eave + ridge) / 2 - 0.08, Z(dir < 0 ? zn : zs)), '#4a1620']);
+    const ze = dir < 0 ? zn : zs;
+    for (const [x0, y0, x1, y1] of [[cA - (west ? 0 : OVH), west ? eave : eave - OVH * P2, mid, ridge], [mid, ridge, cB + (west ? OVH : 0), west ? eave - OVH * P2 : eave], [west ? vOut : cB, west ? vy : eave, west ? cA : vOut, west ? eave : vy]]) {
+      const len = Math.hypot(x1 - x0, y1 - y0);
+      k.plain.push([new THREE.BoxGeometry(len, 0.25, 0.06).rotateZ(Math.atan2(y1 - y0, x1 - x0)).translate(X((x0 + x1) / 2), (y0 + y1) / 2 - 0.08, Z(ze)), '#4a1620']);
+    }
     // a lamp high on the gable end
-    k.plain.push([B(mid - 0.15, mid + 0.15, top - 0.5, top - 0.2, zz + dir * 0.02, zz + dir * 0.25), '#2c2c2c']);
+    k.plain.push([B(mid - 0.15, mid + 0.15, eave + 0.2, eave + 0.5, zz + dir * 0.02, zz + dir * 0.25), '#2c2c2c']);
   }
   // the verandah: a raised floor with a wine-red edge, square white columns to the eave, wine-red feet
   const v0 = h.door === 'w' ? h.x0 + OVH : h.x1 - OVH - VER, v1 = v0 + VER, edge = h.door === 'w' ? v0 + 0.15 : v1 - 0.15;
   k.plain.push([B(v0, v1, T - 0.1, T + PL - 0.05, zn + OVH, zs - OVH), WINE], [B(v0 + 0.03, v1 - 0.03, T + PL - 0.05, T + PL, zn + OVH + 0.03, zs - OVH - 0.03), '#d8d2c6']);
   for (let z = zn + OVH + 0.2; z <= zs - OVH - 0.1; z += 3.2) {
-    k.plain.push([B(edge - 0.15, edge + 0.15, T + PL, eave - 0.05, z - 0.15, z + 0.15), WHITE_E]);
+    k.plain.push([B(edge - 0.15, edge + 0.15, T + PL, vy + 0.1, z - 0.15, z + 0.15), WHITE_E]);
     k.plain.push([B(edge - 0.17, edge + 0.17, T + PL, T + PL + 0.35, z - 0.17, z + 0.17), WINE]);
   }
   // a brick-paved walk along the verandah, a step down to it

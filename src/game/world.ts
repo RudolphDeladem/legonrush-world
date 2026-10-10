@@ -10,6 +10,7 @@ import { BLOCK_SITES } from './sites';
 import { ROUTE_SOLIDS } from './solids';
 import { walkGaps } from './junctions';
 import { newPentStyle } from './pentagon';
+import { behindPentStyle } from './kufuor';
 import { RELIEF_BOXES, applyRelief, densify, inStairs, reliefGround } from './relief';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, roadClearance, ROAD_WIDTH } from './life';
 
@@ -400,7 +401,7 @@ export function buildCampus() {
 
   // every building: cream walls with window bays, a plinth, and terracotta tile roofs
   // (buildings modelled from photos are built by halls.ts and the block-model sites instead)
-  const buildings = buildBuildings(BUILDINGS.filter((b) => !isDiasporaHall(b) && !BLOCK_SITES.some((s) => s.replaces(b))), (b) => newPentStyle(b) ?? whitePaint(b));
+  const buildings = buildBuildings(BUILDINGS.filter((b) => !isDiasporaHall(b) && !BLOCK_SITES.some((s) => s.replaces(b))), (b) => newPentStyle(b) ?? behindPentStyle(b) ?? whitePaint(b));
   group.add(buildings);
   const halls = buildDiasporaHalls();
   const sites = BLOCK_SITES.map((s) => s.build());

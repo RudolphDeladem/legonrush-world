@@ -132,6 +132,12 @@ try {
   else for (let i = 1; i < order.length; i++) if (order[i].x <= order[i - 1].x) fail(`Pentagon: ${order[i].name} is not east of ${order[i - 1].name}`);
   const pentMarks = { 'New Pent Block A': [569.5, -623.2], 'New Pent Block B': [568.4, -766], 'New Pent Block C': [686.8, -698], 'Kampala Court': [671.6, -538.8], 'Addis Ababa Court': [542.4, -529.5], 'Nairobi Court': [720.4, -544.4] };
   for (const [n, [mx, mz]] of Object.entries(pentMarks)) { const a = ACCESS.get(n); if (!a || Math.hypot(a.entrance[0] - mx, a.entrance[1] - mz) > 5) fail(`${n}: the entrance is not where the owner marks it`); }
+  // owner's third reference PDF: every New Pent wing one model of the shared design, the three entrances, the walls
+  // and the Boba kiosk; the Kufuor Centre as its unfinished frame (not the generic building), the hoarding, the
+  // building behind Old Pent
+  { const np = (await server.ssrLoadModule('/src/game/newpent.ts')).newPentSite, kf = (await server.ssrLoadModule('/src/game/kufuor.ts')).kufuorSite;
+    for (const [x, z] of [[582, -636], [535, -622], [580, -775], [665, -700], [700, -760]]) { const b = buildingAt(x, z); if (!b || !np.replaces(b)) fail(`New Pent: the wing at ${x},${z} is not built to the blocks' shared design`); }
+    { const b = buildingAt(549, -384); if (!b || !kf.replaces(b)) fail('the Kufuor Centre is not modelled as the unfinished frame the owner shows'); } }
   for (const n of ['Pent Admin Block', 'Dar es Salaam Court', 'Kampala Court', 'Addis Ababa Court', 'Nairobi Court']) { const a = ACCESS.get(n), p = placeByName(n); if (a && p && a.entrance[1] > p.z) fail(`${n}: the entrance is not on the north face`); }
   // Commonwealth Hall on Legon Hill (owner): the gate in the front block at the top of the stairway,
   // the gate houses at its foot; the hill rises from the avenue's end through the hall to the Great Hall

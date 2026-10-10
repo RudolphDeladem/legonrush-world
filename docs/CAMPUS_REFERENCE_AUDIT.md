@@ -615,3 +615,35 @@ named here, in `tools/preview/halls.html`).
 | 48–54 | Behind Akuafo Hall Main: hexagonal pavers and drain grates, the raised lawn behind its white edge with three steps and a slab walk, bushes and hedges | `ak2`, `ak3` | The roofs' darker tiles are not changed. |
 | 46 | The Legon Hall restaurant | — | Not modelled: no photo of it. |
 
+# Part 3: the third reference PDF ("number 3", 67 pages): the Pentagon
+
+The owner first corrected the order of the Old Pent courts. From the entrance on Annie Jiagge Road, west to east,
+they are **Addis Ababa, Dar es Salaam, the admin block, Kampala, Nairobi**, and the PDF's captions use that order.
+
+| Pages | Location | What the photos show | Done | Render |
+|---|---|---|---|---|
+| 1–2, 7, 19–20 | The Pent entrance | A cream security post with a red tiled roof before Addis Ababa; white palisade on red posts; trellis gates; bollards; trees | The post, the palisade along Annie Jiagge Road, the gates swung back, bollards, pavers, trees, flags, the zebra crossing | `pe1`, `pe2` |
+| 3 | The road toward Engineering's back | Annie Jiagge Road north, shrubs, the engineering buildings | The road kept; the hoarding along it (pages 65–66) | `kf2` |
+| 4 | The left side of the entrance | A poster-covered kiosk with a rusty roof, a fence, trees, bollards | The kiosk north of the mouth, the bollards | `pe3` |
+| 5–6, 15 | Addis Ababa and Dar es Salaam, the kiosk between them | Three-storey cream courts, red base, gabled porch; a white kiosk with a red base and mobile-money boards | The courts rebuilt; the kiosk before Addis toward Dar es Salaam | `pk` |
+| 8–14, 31–32 | The Ghana Hostels admin block | A four-storey tower and a three-storey wing under front gables, brick strips, a sunburst porch, red pillars and railings, the Ecobank ATM, palms, blue shades | All of these | `ad1`, `ad2`, `ad4` |
+| 16–18 | Behind Nairobi, the food building | Pilasters, arched recesses, a generator under a lean-to; a low building with a red base and red steps | The back of the courts; the generator; the food building | `nb`, `fd` |
+| 21–22 | The back of the courts | Slab walk, bare earth, a water tank | Done for every court | — |
+| 23–30 | Kampala Court | The porch with KAMPALA COURT and KC, the arch, steps, palms, a lamp, the gabled wing ends | Done (the shared court design) | `kc`, `kc3` |
+| 33–42 | Block A | Brick end walls, balconies with brick panels, a grey base, the BLOCK A entrance tower and porch | The shared New Pent design; the entrance | `na1`, `na3` |
+| 43–47 | Block A's east side, Block B behind | A brick wall with grey piers and a gate, generators under a sheet roof, the mast | Done | `na2` |
+| 48–50 | Block C | The same design; brick end walls with the arched stair window | Done | `nc1` |
+| 51 | The street along Block A to B | Pent Road, palisade, trees | The road kept; the wall along Block A | — |
+| 52 | The Boba shop | The yellow kiosk, seats and planters by Block C | Done, by Block C only | `nb2` |
+| 53–56 | Block C's west side | A brick wall with a steel gate on a brick drive, a transformer, a generator on a raised platform | Done | `nc2` |
+| 57–60 | The building behind Pent | A yellow four-storey building with round balconies and a spiral stair, a white-post palisade | The Y north of Addis and Dar: yellow, four storeys, its east end | `yb`, `yb2` |
+| 61–65 | The Kufuor Centre | An unfinished concrete frame with curved tiers, a round gate house, corrugated sheets, a timber gate, red earth, paving blocks | Done | `kf1` |
+| 66 | Hoarding; the jet | Corrugated sheets along the road; the jet faces the other way | The hoarding; the jet turned to face east and repainted | `kf2`, `jet` |
+| 67 | The Engineering hill | The rubble-stone bank; the small buildings' broken roofs | The bank faced in rubble; the enclave's roofs broken at the verandah | `eh`, `enc` |
+
+**Uncertain**
+- The spiral-stair building (pages 57–58, captioned "west side of Block C") is taken to be the yellow building
+  behind Old Pent.
+- The positions of the services (generators, transformer, mast) are from the photos.
+- Page 67 says four small buildings; the game has six there, and all have the broken roof.
+
