@@ -12,6 +12,7 @@ import { walkGaps } from './junctions';
 import { newPentStyle } from './pentagon';
 import { behindPentStyle } from './kufuor';
 import { RELIEF_BOXES, applyRelief, densify, inStairs, reliefGround } from './relief';
+import { NSIA } from './nsia';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, roadClearance, ROAD_WIDTH } from './life';
 
 export const LANES = [-2.4, 0, 2.4];
@@ -489,6 +490,21 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
     if (stairs.length && stairs[stairs.length - 1][1] > L - 25) stairs[stairs.length - 1][1] = L;
   }
   const paved = openRuns(stairs, L), onStairs = (d: number) => stairs.some(([a, b]) => d > a && d < b);
+  // stretches where the real roads carry no paint and no pavements (the owner's NSIA Road brief): the route's road
+  // stays, plain, with no edge lines, centre dashes, pavements or decorative trees
+  const plain: [number, number][] = [];
+  {
+    const [px0, px1, pz0, pz1] = NSIA.plain, inPlain = (d: number) => { const p = track.pose(d); return p.x > px0 && p.x < px1 && p.z > pz0 && p.z < pz1; };
+    let s0 = -1;
+    for (let d = 0; d <= L; d += 1) {
+      const on = inPlain(d);
+      if (on && s0 < 0) s0 = d;
+      if (!on && s0 >= 0) { plain.push([s0, d]); s0 = -1; }
+    }
+    if (s0 >= 0) plain.push([s0, L]);
+  }
+  const onPlain = (d: number) => plain.some(([a, b]) => d > a && d < b);
+  const lined = openRuns([...stairs, ...plain].sort((a, b) => a[0] - b[0]), L);
   const roadTex = asphaltTexture();
   roadTex.repeat.set(2, 1);
   const roadMat = weathering(wettable(groundMat('#ffffff', 5, roadTex)), 'ground', 34, 0.35);
@@ -500,13 +516,13 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
   const white = groundMat('#e9e6dc', 6);
   for (const s of [-1, 1]) {
     const [a, c] = [s * (ROAD_HALF - 0.27), s * (ROAD_HALF - 0.13)].sort((u, v) => u - v);
-    for (const [d0, d1] of paved) group.add(new THREE.Mesh(ribbon(track, a, 0, c, 0, d0, d1, 8, 4), white));
+    for (const [d0, d1] of lined) group.add(new THREE.Mesh(ribbon(track, a, 0, c, 0, d0, d1, 8, 4), white));
   }
   const conc = concreteTexture();
   conc.repeat.set(1, 4);
   const walkMat = wettable(new THREE.MeshStandardMaterial({ map: conc, roughness: 0.95, side: THREE.DoubleSide }));
   // the pavements stop where another road joins or crosses the route: a kerb across its mouth would block it
-  const gaps = walkGaps(track, ROAD_HALF, ROAD_WIDTH).map((g) => [...g, ...stairs]);
+  const gaps = walkGaps(track, ROAD_HALF, ROAD_WIDTH).map((g) => [...g, ...stairs, ...plain]);
   for (const s of [-1, 1]) {
     const a = s * ROAD_HALF, c = s * (ROAD_HALF + 1.6);
     for (const [d0, d1] of openRuns(gaps[s > 0 ? 1 : 0], L)) {
@@ -537,7 +553,7 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
   for (const x of [-1.2, 1.2]) {
     for (let k = 0; k < dashCount; k++) {
       const d = k * 9 + 4;
-      m.compose(at(d, x, 0.01), q.setFromAxisAngle(up, yawAt(d)), onStairs(d) ? new THREE.Vector3(0, 0, 0) : one);
+      m.compose(at(d, x, 0.01), q.setFromAxisAngle(up, yawAt(d)), onStairs(d) || onPlain(d) ? new THREE.Vector3(0, 0, 0) : one);
       dashes.setMatrixAt(i++, m);
     }
   }
@@ -548,9 +564,9 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
   const spots: THREE.Matrix4[] = [];
   for (let d = 0; d < L; d += 13) {
     for (const s of [-1, 1]) {
-      const p = at(d + (rand() - 0.5) * 6, s * (ROAD_HALF + 4 + rand() * 5));
+      const dd = d + (rand() - 0.5) * 6, p = at(dd, s * (ROAD_HALF + 4 + rand() * 5));
       const sc = 0.8 + rand() * 0.6, spin = rand() * 6.28;
-      if (!clear(p, 1.2)) continue;
+      if (!clear(p, 1.2) || onPlain(dd)) continue;
       spots.push(new THREE.Matrix4().compose(p, new THREE.Quaternion().setFromAxisAngle(up, spin), new THREE.Vector3(sc, sc, sc)));
       ROUTE_SOLIDS.add(p.x, p.z, 0.35 * sc);
     }

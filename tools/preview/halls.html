@@ -19,6 +19,7 @@ import { exploreRoute } from '/src/game/routes.ts';
 import { buildRouteLayer } from '/src/game/world.ts';
 import { walkGaps } from '/src/game/junctions.ts';
 import { placeByName } from '/src/game/campusmap.ts';
+import { NSIA_VIEWS } from '/src/game/nsia.ts';
 const canvas = document.getElementById('c');
 const r = new THREE.WebGLRenderer({ canvas, antialias: true });
 r.setSize(innerWidth, innerHeight, false);
@@ -509,7 +510,13 @@ if (v === 'q5') { eye = V3(-304.5, 1.7, -176); look = V3(-312, 3, -228); }
 if (v === 'phAir') { eye = V3(180, 120, 60); look = V3(180, 0, 59); }
 if (v === 'h1') { eye = V3(209, 1.7, 95); look = V3(210, 3, 40); }
 if (v === 'h2') { eye = V3(210, 3.6, -30); look = V3(210, 2.5, -90); }
+if (v === 'nsJC') { eye = V3(237, 3, -6); look = V3(226, 2.2, -27); }
+if (v === 'nsJE') { eye = V3(236, 2.8, -100); look = V3(240, 1.5, -72); }
+if (v === 'nsAir') { eye = V3(225, 95, -10); look = V3(225, 0, -55); }
+if (v === 'wallc') { eye = V3(211.5, 2.6, -62); look = V3(215, 1.5, -57); }
 if (v === 'h3') { eye = V3(212, 3.2, -15); look = V3(260, 4, -30); }
+if (v === 'nAirS') { eye = V3(215, 170, 40); look = V3(215, 0, 39); }
+if (v === 'nAirN') { eye = V3(215, 170, -75); look = V3(215, 0, -76); }
 if (v === 'foodAir') { eye = V3(708, 45, -490); look = V3(708, 0, -491); }
 if (v === 'food2') { eye = V3(694, 1.7, -503); look = V3(706, 1.5, -488); }
 if (v === 'post') { eye = V3(521, 1.7, -540); look = V3(516, 1.6, -532); }
@@ -640,6 +647,15 @@ if (v === 'phAir2') { eye = V3(-262, 120, -246); look = V3(-262, 0, -247); }
 if (v === 'fsN') { eye = V3(-215, 3, -232); look = V3(-188, 3, -222); }
 if (v === 'csTop') { eye = V3(355, 90, -268); look = V3(355, 0, -269); }
 if (v === 'street') { eye = W(hall, -60, 1.7, hall.hz + 40); look = W(hall, 0, 6, hall.hz); }
+// the NSIA Road brief's six comparison cameras (src/game/nsia.ts): heights above the ground; ?route=1 lays the ridden
+// route from Physics to the Frank Torto Building as the game draws it
+{ const nv = NSIA_VIEWS.find((n) => n.name === v);
+  if (nv) {
+    eye = new THREE.Vector3(nv.eye[0], groundHeight(nv.eye[0], nv.eye[2]) + nv.eye[1], nv.eye[2]);
+    look = new THREE.Vector3(nv.look[0], groundHeight(nv.look[0], nv.look[2]) + nv.look[1], nv.look[2]);
+    cam.fov = nv.fov; cam.updateProjectionMatrix();
+    if (q.get('route')) { const rr = exploreRoute(placeByName(q.get('from') ?? 'Physics Department, University of Ghana'), placeByName(q.get('to') ?? 'Frank Torto Chemistry Building'), 'cycle'); scene.add(buildRouteLayer(rr.track, { start: rr.lead, finish: rr.lead + rr.length, startText: 'START', finishText: 'FINISH', labels: [] })); }
+  } }
 cam.position.copy(eye); cam.lookAt(look);
 sun.position.copy(look).add(new THREE.Vector3(-90, 160, 70)); sun.target.position.copy(look);
 if (q.get('night')) { setNightLights(true); scene.background = new THREE.Color('#0b1426'); scene.environmentIntensity = 0.05; sun.intensity = 0.05; }

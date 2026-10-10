@@ -215,6 +215,12 @@ interface Obstacle {
   fling?: THREE.Vector3;
 }
 
+/** the grade under a bike at x, z heading along yaw (its nose up the slope): the ground under its two wheels */
+function slopePitch(x: number, z: number, yaw: number) {
+  const hx = -Math.sin(yaw) * 0.55, hz = -Math.cos(yaw) * 0.55;
+  return Math.atan2(groundHeight(x + hx, z + hz) - groundHeight(x - hx, z - hz), 1.1);
+}
+
 /** A student walking along the pavement: scenery, not an obstacle. */
 interface Walker {
   mesh: THREE.Object3D;
@@ -332,6 +338,8 @@ export class Game {
   private bike: BikeSpec | null = null;
   private crank = 0;
   private lean = 0;
+  /** the bike's pitch with the grade under it (eased) */
+  private slope = 0;
   private shake = 0;
   /** gear from the shop: crash helmets left and brake level (0 none, 1 rim, 2 disc) */
   private helmets = 0;
@@ -1059,6 +1067,8 @@ export class Game {
     const r = this.rider;
     r.root.position.set(f.x, groundHeight(f.x, f.z), f.z);
     r.root.rotation.y = f.yaw;
+    this.slope += (slopePitch(f.x, f.z, f.yaw) - this.slope) * Math.min(1, dt * 8);
+    r.root.rotation.order = 'YXZ'; r.root.rotation.x = this.slope;
     this.lean += (-f.steer * Math.min(1, Math.max(0, f.v) / 6) * 0.4 - this.lean) * Math.min(1, dt * 6);
     this.crank += dt * Math.max(0, f.v) * 0.9 * (f.cruise ? 1 : 0.15);
     for (const w of r.wheels) w.rotation.x -= (f.v / 0.38) * dt;
@@ -1906,6 +1916,10 @@ export class Game {
   private animateRider(dt: number, speed: number) {
     const r = this.rider;
     this.place(r.root, this.d, this.x, this.y);
+    // the bike tips with the grade under its wheels (the ground at the front and back wheel), eased so a change of grade
+    // does not jerk it; in the air it keeps the last grade
+    if (this.y <= 0) this.slope += (slopePitch(r.root.position.x, r.root.position.z, r.root.rotation.y) - this.slope) * Math.min(1, dt * 8);
+    r.root.rotation.order = 'YXZ'; r.root.rotation.x = this.slope;
     const wheelSpin = (speed / 0.38) * dt;
     for (const w of r.wheels) w.rotation.x -= wheelSpin;
     r.crank.rotation.x = -this.crank;

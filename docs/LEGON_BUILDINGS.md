@@ -1759,6 +1759,95 @@ The owner's pictures are `images/563-581.jpg`.
     the kiosks.
   - The walk from the gap between Kampala and Nairobi, and along Kampala, is concrete.
 
+## 67. NSIA Road by the Frank Torto Building (the owner's reconstruction brief)
+
+The brief has six game/photo pairs and an overhead map; the pictures are `images/582-594.jpg`. Its priority is the
+topography: a lower paved corridor beside higher planted ground, with retaining walls, banks and shaded road edges,
+built as geometry with collision rather than painted on a flat plane. Nothing here is surveyed. The photos give
+relative levels and local edges only, so every number is a calibration value in `src/game/nsia.ts`, read by the
+terrain, the models, the route layer and the comparison cameras.
+
+**The layout from the map.** NSIA Road runs north–south at x 235, from J.K.M. Hodasi Road (z −162) to the Danquah
+Avenue roundabout. West of it lie the Chemistry complex and the narrow lane at x≈210, the "lower corridor". The tree
+belt lies between the lane and NSIA Road, with a short road joining them at z −26. The cross-shaped Home Science Annex
+is to the north-east, LECIAD to the south-east. No new roads were added.
+
+**Terrain** (`relief.ts`):
+- The lane keeps the owner's earlier profile: a crest of 2.0 m from z −40 to −5.
+- **The tree belt** stands a wall's height above the lane:
+  - its top is the lane's height plus the wall's exposed height (1.1 m);
+  - the wall falls to 0.12 m over its last 10 m into the corner by the connecting road;
+  - a bank closes its north end toward the low building by the car park.
+- **NSIA Road** runs in its own cut:
+  - flat 4.6 m either side of its centre, easing into the ground beside it over a 3.5 m bank;
+  - a gentle hump of 1.45 m at most along it, with no hill invented;
+  - flat past Earth Science, and level with J.K.M. Hodasi Road at its north end;
+  - so the belt on the west and LECIAD's ground on the east stand 1.0–1.8 m above it.
+- **On NSIA's east side** a short stretch (z −50 to −42) is held by a wall instead of the bank, its ends easing into
+  the bank.
+- **The connecting road** and **the road east to LECIAD** have their own gentle profiles (about 7 %) into NSIA's cut.
+  Where two cuts meet, the nearer road's line decides the ground, so the junctions have no step.
+- **The low flat-roofed building** by the car park sits on its own flat pad. A plain concrete retaining edge holds back
+  the higher ground on its south side.
+
+**Models** (`nsiaroad.ts`, `physics.ts`):
+- **Pair 1, the Frank Torto Building:**
+  - weathered cream-grey concrete instead of white;
+  - flat roofs behind parapets (the pale hipped roofs removed);
+  - on the tower, broad piers and a recessed strip of dark windows in each storey, with a smaller framed opening below;
+  - a column of perforated ventilation screens up the south end beside the department's sign.
+  - The low building has grille doors, a white roller shutter and a dark opening on its south front, and the car park
+    has two small planted islands in round kerbs.
+- **Pair 2, the lower corridor:**
+  - the stone-faced retaining wall along the lane's east side: irregular warm tan, rust, brown and pale stones in dark
+    mortar, laid in world space over 2.6 m with a drifting tint so the pattern does not repeat obviously; a dark coping;
+  - dark asphalt from the lane to the wall's foot;
+  - on the right, the porch on the chemistry range's end: a broad white pier either side, a shallow flat roof with a
+    reddish fascia, a black gate grid, the concrete apron and its narrow open drain along the road.
+- **Pair 3, the raised grove:**
+  - the dry belt behind the wall, its broadleaf trees rooted on the upper ground;
+  - the greenish telecommunications mast with its pale antenna panels and cable.
+- **Pair 4, the verge before the chemistry range,** looking west along the car-park road:
+  - reddish bare soil under the big tree, with leaf litter, roots and a few weeds;
+  - the long grated drain along the road's edge: concrete lips, a dark channel, transverse bars;
+  - the low dark planting strip across its west end;
+  - the range's cream wall and dark red foot on the left.
+- **Pair 5, the corner:**
+  - the wall losing its height into the bank;
+  - the kerb sweeping round from the lane into the connecting road;
+  - the reddish path worn down the bank to it;
+  - two slim lit poles and a small sign on the belt.
+- **Pair 6, NSIA Road's east bank:**
+  - the dry bank rising from the kerb to the big tree and LECIAD's service buildings;
+  - the short retained stretch at its north end.
+- **Ground cover:** straw-brown and olive grass with blotches of reddish earth on the belt and the banks.
+- **Trees:**
+  - broadleaf trees with high forks and overlapping crowns, one pruned and sparse;
+  - within the area, generic palms and flame trees become broadleaf trees.
+
+**The ride:**
+- **Plain stretch:** along the route the road has no edge lines, centre dashes, pavements or decorative trees
+  (`world.ts`).
+- **Wall placement:** the wall stands just outside the ridden route's road (lane centre + 4.0 m), so the road stays flat
+  across beside it.
+- **Blocking:** the wall blocks the free ride, by its collision line and by the bank-steepness rule. The drain does not
+  block it.
+- **Slope:** the bike now pitches with the grade under its wheels, eased, in both route and free rides (`Game.ts`).
+- **Tests:** the route tests check the wall's height and taper, NSIA's cut, the grade of every local road, flatness
+  across the ridden road beside the wall, and Explore rides both ways with no jolts.
+
+**Comparison cameras:** `?view=pair1` … `pair6` in `tools/preview/halls.html`, with `&route=1` to draw the ridden route.
+They read `NSIA_VIEWS` in `nsia.ts`. Their stations and headings are provisional, matched to landmarks.
+
+**Still unmeasured:**
+- the wall's real height and line;
+- NSIA Road's profile and its grade;
+- the belt's levels;
+- the real width of the lane.
+
+Two jolts on the Explore rides were there before this work: the climb to Frank Torto's door over the Chemistry
+Extension terrace's edge, and Physics' steps.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

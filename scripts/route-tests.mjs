@@ -555,6 +555,38 @@ try {
     const inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
     for (const [x, z] of [[490, -500], [470, -470]]) if (!cm.AREAS.some((a) => a.kind === 'wood' && inA(a, x, z))) fail(`no wood at ${x},${z} behind the School of Engineering Sciences (owner)`);
   }
+  // the owner's NSIA Road brief: the tree belt a wall's height above the lane behind its retaining wall, the wall losing
+  // its height into the corner by the connecting road; NSIA Road lower than the ground either side of it with a gentle
+  // hump only; every local road smooth to ride both ways, the ridden route's road flat across beside the wall
+  {
+    const rl = await server.ssrLoadModule('/src/game/relief.ts'), ns = await server.ssrLoadModule('/src/game/nsia.ts'), g = rl.groundHeight;
+    for (const z of [-75, -60, -45]) { const fx = rl.wallX(z), d = g(fx + 0.9, z) - g(fx - 0.4, z); if (d < 0.9) fail(`NSIA brief: the belt is not a wall's height over the lane at z ${z} (${d.toFixed(2)})`); }
+    { const fx = rl.wallX(-30), d = g(fx + 0.9, -30) - g(fx - 0.4, -30); if (d > 0.4) fail(`NSIA brief: the wall does not taper into the corner (${d.toFixed(2)})`); }
+    for (const z of [-60, -40, -10]) if (!(g(245, z) - g(235, z) > 1.0 && g(225, z) - g(235, z) > 0.8)) fail(`NSIA brief: NSIA Road does not lie below the ground either side at z ${z}`);
+    for (const z of [30, 60, 100]) if (Math.abs(g(235, z)) > 0.02) fail(`NSIA brief: NSIA Road is not at road level past Earth Science (z ${z})`);
+    const lines = {
+      lane: Array.from({ length: 345 }, (_, i) => { const z = -92 + i * 0.5; return [ns.laneX(z), z]; }),
+      'NSIA Road': Array.from({ length: 553 }, (_, i) => [235.5, -162 + i * 0.5]),
+      'the connecting road': Array.from({ length: 50 }, (_, i) => [210.5 + i * 0.5, -25.5 - i * 0.01]),
+      'the car-park road': Array.from({ length: 84 }, (_, i) => [162 + i * 0.5, -92]),
+    };
+    for (const [n, pts] of Object.entries(lines)) {
+      let step = 0, grade = 0;
+      for (let i = 1; i < pts.length; i++) { const d = Math.abs(g(...pts[i]) - g(...pts[i - 1])); step = Math.max(step, d); grade = Math.max(grade, d / 0.5); }
+      if (step > 0.06 || grade > 0.11) fail(`NSIA brief: ${n} is not smooth to ride (step ${step.toFixed(3)} m, grade ${(grade * 100).toFixed(1)} %)`);
+    }
+    for (let z = -79; z <= -33; z += 1) for (const o of [-3.8, -2.4, 2.4, 3.8]) if (Math.abs(g(ns.laneX(z) + o, z) - g(ns.laneX(z), z)) > 0.03) fail(`NSIA brief: the ridden road is not flat across beside the wall (z ${z}, ${o} m)`);
+    for (const [a, b] of [['Physics Department, University of Ghana', 'Frank Torto Chemistry Building'], ['Frank Torto Chemistry Building', 'Physics Department, University of Ghana'], ['LECIAD, Legon', 'Frank Torto Chemistry Building']]) {
+      const r = rt.exploreRoute(placeByName(a), placeByName(b), 'cycle');
+      if (!r) { fail(`NSIA brief: no Explore ride from ${a} to ${b}`); continue; }
+      let worst = 0;
+      // (over the reconstructed ground: the approach to the Frank Torto Building's door up the extension's terrace and
+      // Physics' steps lie outside it)
+      for (const lat of [-2.4, 0, 2.4]) { let prev = null; for (let d = 0; d < r.track.length; d += 0.5) { const p = r.track.pose(d, lat), h = g(p.x, p.z), inside = p.x > 205 && p.x < 275 && p.z > -90 && p.z < 30; if (prev !== null && inside) worst = Math.max(worst, Math.abs(h - prev)); prev = h; } }
+      if (worst > 0.12) fail(`NSIA brief: the ride from ${a} to ${b} jolts (${worst.toFixed(2)} m in half a metre)`);
+    }
+    if ((await server.ssrLoadModule('/src/game/nsiaroad.ts')).nsiaSite.frames().length !== 1) fail('expected the NSIA Road model');
+  }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

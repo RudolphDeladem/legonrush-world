@@ -585,3 +585,16 @@ Every photo, screenshot, aerial and marked-up map the owner uploaded, in upload 
 | 579.jpg | 72 | 660x778 | 84 | 2026-10-10 | (second Pent corrections PDF, 15 pages, page 13) the yellow building's west end with its spiral stair, the wall round its grounds, the Kufuor Centre's sheet fence and rusted gate, the generator behind Kampala, the brick-wall gate, the Shell restaurant row, the food joint, the fence past Blocks B and C |
 | 580.jpg | 337 | 1280x720 | 84 | 2026-10-10 | (second Pent corrections PDF, 15 pages, page 14) the yellow building's west end with its spiral stair, the wall round its grounds, the Kufuor Centre's sheet fence and rusted gate, the generator behind Kampala, the brick-wall gate, the Shell restaurant row, the food joint, the fence past Blocks B and C |
 | 581.jpg | 224 | 1553x875 | 84 | 2026-10-10 | (second Pent corrections PDF, 15 pages, page 14) the yellow building's west end with its spiral stair, the wall round its grounds, the Kufuor Centre's sheet fence and rusted gate, the generator behind Kampala, the brick-wall gate, the Shell restaurant row, the food joint, the fence past Blocks B and C |
+| 582.jpg | 124 | 816x793 | 85 | 2026-10-10 | (NSIA Road reconstruction brief, 16 pages) image 13, the overhead layout map: NSIA Road, J.K.M. Hodasi Road, the Chemistry complex, the cross-shaped Home Science Annex, LECIAD |
+| 583.jpg | 61 | 670x409 | 85 | 2026-10-10 | (NSIA Road reconstruction brief, 16 pages) image 1, pair 1 (current game) |
+| 584.jpg | 52 | 650x409 | 85 | 2026-10-10 | (NSIA Road reconstruction brief, 16 pages) image 2, pair 1 (real reference) |
+| 585.jpg | 38 | 459x409 | 85 | 2026-10-10 | (NSIA Road reconstruction brief, 16 pages) image 3, pair 2 (current game) |
+| 586.jpg | 31 | 307x409 | 85 | 2026-10-10 | (NSIA Road reconstruction brief, 16 pages) image 4, pair 2 (real reference) |
+| 587.jpg | 39 | 415x409 | 85 | 2026-10-10 | (NSIA Road reconstruction brief, 16 pages) image 5, pair 3 (current game) |
+| 588.jpg | 35 | 307x409 | 85 | 2026-10-10 | (NSIA Road reconstruction brief, 16 pages) image 6, pair 3 (real reference) |
+| 589.jpg | 28 | 307x409 | 85 | 2026-10-10 | (NSIA Road reconstruction brief, 16 pages) image 7, pair 4 (current game) |
+| 590.jpg | 42 | 307x409 | 85 | 2026-10-10 | (NSIA Road reconstruction brief, 16 pages) image 8, pair 4 (real reference) |
+| 591.jpg | 34 | 410x409 | 85 | 2026-10-10 | (NSIA Road reconstruction brief, 16 pages) image 9, pair 5 (current game) |
+| 592.jpg | 34 | 307x409 | 85 | 2026-10-10 | (NSIA Road reconstruction brief, 16 pages) image 10, pair 5 (real reference) |
+| 593.jpg | 38 | 533x409 | 85 | 2026-10-10 | (NSIA Road reconstruction brief, 16 pages) image 11, pair 6 (current game) |
+| 594.jpg | 37 | 307x409 | 85 | 2026-10-10 | (NSIA Road reconstruction brief, 16 pages) image 12, pair 6 (real reference) |

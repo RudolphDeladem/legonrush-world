@@ -17,6 +17,7 @@ import { inDiasporaHall, setHallLights } from './halls';
 import { setBlockLights } from './blocks';
 import { SOLIDS } from './solids';
 import { BLOCK_SITES } from './sites';
+import { NSIA } from './nsia';
 
 /** real road widths by class: main, through, residential, service lane, footpath */
 export const ROAD_WIDTH = [9, 7.4, 6.2, 4.6, 2.6];
@@ -677,7 +678,10 @@ export function buildCampusLife() {
   const M = Object.fromEntries(Object.entries(S).map(([k, f]) => [k, f()])) as Record<keyof typeof S, Model>;
   const T = Object.fromEntries((Object.keys(TREES) as Species[]).map((k) => [k, TREES[k]()])) as Record<Species, Model>;
 
+  const [bx0, bx1, bz0, bz1] = NSIA.broadleaf;
   const tree = (x: number, z: number, sp: Species, sc = 1) => {
+    // by NSIA Road the mature broadleaf trees of the owner's photos, not palms or flame trees (the NSIA Road brief)
+    if ((sp === 'palm' || sp === 'flame') && x > bx0 && x < bx1 && z > bz0 && z < bz1) sp = rand() < 0.6 ? 'mahogany' : 'neem';
     const leaf = pick(rand, LEAF[sp]).map(C);
     cells.p(x, z).add(T[sp], yawM(x, 0, z, rand() * 6.28, sc), leaf, 0.9 + rand() * 0.18);
     SOLIDS.add(x, z, 0.35 * sc);

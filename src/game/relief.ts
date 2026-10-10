@@ -13,8 +13,13 @@
 // Stairways climb from a foot to the ground at their top in flights with landings between; the
 // ground in a stairway is its stair surface (Commonwealth's from the gate houses to the drive,
 // Volta's from the forecourt to the entrance).
+// Over these, two overrides (the owner's NSIA Road brief): a road's own cut or fill (PATHS: its height along it, flat
+// across it, easing into the ground beside it over a bank, narrow where a wall holds it), and a flat pad for a building
+// standing lower than the ground round it (PADS). A terrace's floor may also follow a function (`top`) and its west edge
+// a line (`west`): the tree belt a wall's height above the lane along NSIA Road.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { NSIA, laneX } from './nsia';
 
 interface Hollow {
   /** hollow: sunk `depth` below the ground; terrace: raised `depth` above it */
@@ -23,6 +28,12 @@ interface Hollow {
   x0: number; x1: number; z0: number; z1: number; depth: number;
   /** length of the slope on each side: west, east, north (z0 side), south (z1 side) */
   w: number; e: number; n: number; s: number;
+  /** a floor whose height varies: its height at the nearest point of the floor (instead of `depth`) */
+  top?: (x: number, z: number) => number;
+  /** a west edge that follows a line (x at z) instead of x0; x0 is then its westmost */
+  west?: (z: number) => number;
+  /** the ground grid's cell over this zone (default 1 m, 2 m over the big ones): finer where a wall stands on its edge */
+  cell?: number;
 }
 interface Hill {
   kind: 'hill';
@@ -38,6 +49,26 @@ interface Hill {
  */
 interface Stairs { x0: number; x1: number; z0: number; z1: number; flights: number; steps: number; tread: number; alongZ?: boolean }
 type Zone = Hollow | Hill;
+/**
+ * a road's own cut or fill: along the polyline (x, z, height at each point, linear between) the ground is the road's
+ * height for `half` metres either side of it, then eases back to the ground the zones make over `bank` metres
+ */
+interface Path { pts: [number, number, number][]; half: number; bank: number; bankAt?: (x: number, z: number) => number }
+
+/** a smoothstep-eased terrace's height at x, z (the same shape as the terraces below) */
+const easedTop = (q: { x0: number; x1: number; z0: number; z1: number; w?: number; e?: number; n: number; s: number }, top: number, z: number) => {
+  const t = Math.min(1, z < q.z0 ? (q.z0 - z) / q.n : z > q.z1 ? (z - q.z1) / q.s : 0);
+  return top * (1 - t * t * (3 - 2 * t));
+};
+/** the lane's height along it (its own terrace, below) */
+export const laneHeight = (z: number) => easedTop(NSIA.lane, NSIA.lane.top, z);
+/** the retaining wall's exposed height at z along the lane: full over the run, falling into the corner at its south end */
+export const wallExposed = (z: number) => {
+  const W = NSIA.wall, a = W.z1 - W.taper;
+  return z <= a ? W.exposed : W.exposed + ((W.endHeight - W.exposed) * Math.min(1, (z - a) / W.taper));
+};
+/** the wall's face line along the lane (x at z) */
+export const wallX = (z: number) => laneX(z) + NSIA.wall.offset;
 
 const ZONES: Zone[] = [
   // School of Engineering Sciences: the building, its forecourt and the car park on the floor;
@@ -114,8 +145,17 @@ const ZONES: Zone[] = [
   // the lane from Physics north to Frank Torto (owner's second reference PDF, pages 21-30): it climbs from Physics to a
   // crest by the turning east to LECIAD, then runs down again to the Chemistry Extension and Frank Torto, which stand
   // low; east of it the ground of LECIAD and its neighbours stands higher still behind a bank of grass and red earth
-  { kind: 'terrace', x0: 206, x1: 214, z0: -40, z1: -5, depth: 2.0, w: 2, e: 2, n: 45, s: 75 },
+  { kind: 'terrace', x0: NSIA.lane.x0, x1: NSIA.lane.x1, z0: NSIA.lane.z0, z1: NSIA.lane.z1, depth: NSIA.lane.top, w: 2, e: 3, n: NSIA.lane.n, s: NSIA.lane.s },
   { kind: 'terrace', x0: 219, x1: 345, z0: -72, z1: 2, depth: 2.8, w: 5, e: 10, n: 20, s: 22 },
+  // the tree belt between the lane and NSIA Road (the owner's NSIA Road brief, pairs 2, 3 and 5): raised above the lane
+  // behind a stone-faced retaining wall along the lane's east side, its top a wall's height over the lane wherever the
+  // lane climbs or falls, the wall losing its height into the corner by the connecting road; a bank at its north end
+  // toward the low building by the car park (pair 1). Its east side and NSIA Road: the road's cut (PATHS) eases it down
+  {
+    // (its edge a little behind the wall's face, under the wall's body, so no slope of grass shows in front of the stones)
+    kind: 'terrace', x0: Math.min(...[-79, -60, -48, -40, -29.5].map(wallX)) + 0.3, west: (z) => wallX(z) + 0.3, x1: NSIA.belt.x1, z0: NSIA.belt.z0, z1: NSIA.belt.z1,
+    depth: 0, top: (_x, z) => laneHeight(z) + wallExposed(z), w: 0.25, e: 0.5, n: NSIA.belt.north, s: NSIA.belt.south, cell: 0.25,
+  },
   // the lane past the Department of Nutrition and Food Sciences (owner's photo up the lane from J.K.M. Hodasi Road):
   // it runs down a little toward its north end, below the lawn held up behind its rubble-stone wall on the west, and
   // climbs gently back along its leg east to Animal Biology
@@ -154,11 +194,40 @@ const STAIRS: Stairs[] = [
   { x0: 383.0, x1: 381.6, z0: 153.6, z1: 156.6, flights: 1, steps: 3, tread: 0.45, alongZ: true },
 ];
 
+// the roads' own cuts (the owner's NSIA Road brief): NSIA Road lies lower than the ground either side of it, the tree belt
+// on the west and LECIAD's ground on the east, with a gentle hump of its own along it; the connecting road runs down
+// from the lane's crest to it between banks; the road east to LECIAD climbs out of it gently
+const nsiaX = (z: number) => (z < -77 ? 236 - ((z + 162) / 85) * 1 : z > 20 ? 235 + ((z - 20) / 94) * 1 : 235);
+const PATHS: Path[] = [
+  // (on the east, a short stretch held by a retaining wall instead of the bank: pair 6, its ends easing into the bank)
+  {
+    pts: NSIA.nsiaProfile.map(([z, h]) => [nsiaX(z), z, h]), half: NSIA.nsiaHalf, bank: NSIA.nsiaBank,
+    bankAt: (x, z) => {
+      const R = NSIA.eastWall;
+      if (x < nsiaX(z) || z < R.z0 - R.ease || z > R.z1 + R.ease) return NSIA.nsiaBank;
+      const f = z < R.z0 ? (R.z0 - z) / R.ease : z > R.z1 ? (z - R.z1) / R.ease : 0;
+      return R.bank + (NSIA.nsiaBank - R.bank) * f;
+    },
+  },
+  { pts: NSIA.connector, half: NSIA.connectorHalf, bank: NSIA.connectorBank },
+  { pts: NSIA.eastRoad, half: NSIA.eastRoadHalf, bank: NSIA.eastRoadBank },
+];
+
 const boxOf = (q: Zone) => q.kind !== 'hill'
   ? { x0: q.x0 - q.w, x1: q.x1 + q.e, z0: q.z0 - q.n, z1: q.z1 + q.s }
   : { x0: Math.min(...q.profile.map((p) => p[0])), x1: Math.max(...q.profile.map((p) => p[0])), z0: q.zc - q.full - q.fall, z1: q.zc + q.full + q.fall };
-/** the area each zone touches */
-export const RELIEF_BOXES = ZONES.map(boxOf);
+const pathBox = (p: Path) => {
+  const r = p.half + p.bank;
+  return { x0: Math.min(...p.pts.map((q) => q[0])) - r, x1: Math.max(...p.pts.map((q) => q[0])) + r, z0: Math.min(...p.pts.map((q) => q[1])) - r, z1: Math.max(...p.pts.map((q) => q[1])) + r };
+};
+/** a box on the whole metres round it: a fine ground grid over a small zone then meets the coarser grids of the zones it
+ *  lies in cell for cell, with no gap between them */
+const snap = (b: { x0: number; x1: number; z0: number; z1: number }) => ({ x0: Math.floor(b.x0), x1: Math.ceil(b.x1), z0: Math.floor(b.z0), z1: Math.ceil(b.z1) });
+const ZONE_BOXES = ZONES.map((q) => (q.kind !== 'hill' && q.cell ? snap(boxOf(q)) : boxOf(q)));
+/** the area each zone touches (the zones, then the roads' cuts) */
+export const RELIEF_BOXES = [...ZONE_BOXES, ...PATHS.map((p) => snap(pathBox(p))), snap({ x0: NSIA.lowPad.x0 - NSIA.lowPad.bank, x1: NSIA.lowPad.x1 + NSIA.lowPad.bank, z0: NSIA.lowPad.z0 - NSIA.lowPad.bank, z1: NSIA.lowPad.z1 + NSIA.lowPad.bank })];
+/** the ground grid's cell over each box */
+const BOX_CELL = [...ZONES.map((q) => (q.kind !== 'hill' ? q.cell : undefined)), ...PATHS.map(() => 0.5), 0.25];
 
 /** a hill's height along its axis */
 function profileAt(p: [number, number][], x: number) {
@@ -195,17 +264,19 @@ export const inStairs = (x: number, z: number) => STAIRS.some((s) => inCorridor(
 function zoneHeight(x: number, z: number) {
   let hill = 0, low = 0, high = 0;
   for (let i = 0; i < ZONES.length; i++) {
-    const q = ZONES[i], bx = RELIEF_BOXES[i];
+    const q = ZONES[i], bx = ZONE_BOXES[i];
     if (x < bx.x0 || x > bx.x1 || z < bx.z0 || z > bx.z1) continue;
     if (q.kind !== 'hill') {
       // how far up (or down) the slope, 0 on the floor, 1 at its foot: the steeper of the two directions wins
-      const tx = x < q.x0 ? (q.x0 - x) / q.w : x > q.x1 ? (x - q.x1) / q.e : 0;
+      const x0 = q.west ? q.west(Math.min(q.z1, Math.max(q.z0, z))) : q.x0;
+      const tx = x < x0 ? (x0 - x) / q.w : x > q.x1 ? (x - q.x1) / q.e : 0;
       const tz = z < q.z0 ? (q.z0 - z) / q.n : z > q.z1 ? (z - q.z1) / q.s : 0;
       const t = Math.min(1, Math.max(tx, tz));
       // eased at the top and the foot of the slope: no sharp edge for a road or the ground mesh to cut across
       const e = 1 - t * t * (3 - 2 * t);
-      if (q.kind === 'hollow') low = Math.min(low, -q.depth * e);
-      else high = Math.max(high, q.depth * e);
+      const depth = q.top ? q.top(Math.min(q.x1, Math.max(x0, x)), Math.min(q.z1, Math.max(q.z0, z))) : q.depth;
+      if (q.kind === 'hollow') low = Math.min(low, -depth * e);
+      else high = Math.max(high, depth * e);
     } else {
       const d = Math.abs(z - q.zc), t = d <= q.full ? 1 : d >= q.full + q.fall ? 0 : 1 - (d - q.full) / q.fall;
       hill += profileAt(q.profile, x) * t * t * (3 - 2 * t);
@@ -214,10 +285,48 @@ function zoneHeight(x: number, z: number) {
   return hill + low + high;
 }
 
+/** a flat pad for a building standing lower than the ground round it (or higher): the ground is `h` over the rectangle
+ *  and eases back to the zones' ground over `bank` metres (a short bank is a retaining edge, modelled where it stands) */
+interface Pad { x0: number; x1: number; z0: number; z1: number; h: number; bank: number }
+const PADS: Pad[] = [NSIA.lowPad];
+const PAD_BOXES = PADS.map((p) => ({ x0: p.x0 - p.bank, x1: p.x1 + p.bank, z0: p.z0 - p.bank, z1: p.z1 + p.bank }));
+const PATH_BOXES = PATHS.map(pathBox);
+/** a road's cut at x, z: how much it decides the ground there (1 on the road, easing to 0 at the bank's foot) and its height */
+function pathAt(p: Path, x: number, z: number): [number, number, number] {
+  let best = Infinity, h = 0;
+  for (let i = 0; i < p.pts.length - 1; i++) {
+    const [ax, az, ah] = p.pts[i], [bx, bz, bh] = p.pts[i + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+    const t = Math.min(1, Math.max(0, ((x - ax) * dx + (z - az) * dz) / l2)), d = Math.hypot(ax + dx * t - x, az + dz * t - z);
+    if (d < best) { best = d; h = ah + (bh - ah) * t; }
+  }
+  const bank = p.bankAt ? p.bankAt(x, z) : p.bank;
+  if (best >= p.half + bank) return [0, 0, best];
+  if (best <= p.half) return [1, h, best];
+  const t = (best - p.half) / bank;
+  return [1 - t * t * (3 - 2 * t), h, best];
+}
+
 /** Height of the ground at a point (0 on the flat campus, negative in a hollow, positive on a hill or terrace). */
 export function groundHeight(x: number, z: number) {
   for (const s of STAIRS) if (inCorridor(s, x, z)) return stairAt(s, footOf(s), topOf(s), along(s, x, z)[0]);
-  return zoneHeight(x, z);
+  const base = zoneHeight(x, z);
+  // a road's cut decides the ground on it and eases into the ground beside it; where two meet the stronger wins, and on
+  // both roads at once (a junction) the one whose line is nearer
+  let W = 0, H = 0, D = Infinity;
+  for (let i = 0; i < PATHS.length; i++) {
+    const b = PATH_BOXES[i];
+    if (x < b.x0 || x > b.x1 || z < b.z0 || z > b.z1) continue;
+    const [w, h, d] = pathAt(PATHS[i], x, z);
+    if (w > W + 1e-9 || (w > 0 && Math.abs(w - W) <= 1e-9 && d < D)) { W = w; H = h; D = d; }
+  }
+  for (let i = 0; i < PADS.length; i++) {
+    const p = PADS[i], b = PAD_BOXES[i];
+    if (x < b.x0 || x > b.x1 || z < b.z0 || z > b.z1) continue;
+    const d = Math.hypot(Math.max(p.x0 - x, 0, x - p.x1), Math.max(p.z0 - z, 0, z - p.z1)), t = d / p.bank;
+    const w = d <= 0 ? 1 : t >= 1 ? 0 : 1 - t * t * (3 - 2 * t);
+    if (w > W + 1e-9) { W = w; H = p.h; }
+  }
+  return W > 0 ? base + (H - base) * W : base;
 }
 
 const inBox = (x: number, z: number, pad = 0) => RELIEF_BOXES.some((b) => x > b.x0 - pad && x < b.x1 + pad && z > b.z0 - pad && z < b.z1 + pad);
@@ -295,7 +404,7 @@ export function reliefGround(material: THREE.Material, tile: number, sink: (x: n
   const geos: THREE.BufferGeometry[] = [];
   const area = (b: (typeof RELIEF_BOXES)[number]) => (b.x1 - b.x0) * (b.z1 - b.z0);
   RELIEF_BOXES.forEach((b, bi) => {
-    const big = area(b) > 200000, cell = big ? 2 : 1;
+    const big = area(b) > 200000, cell = BOX_CELL[bi] ?? (big ? 2 : 1);
     // the smaller zones overlapping this one draw their own ground
     const others = RELIEF_BOXES.filter((o, oi) => oi !== bi && area(o) < area(b) && o.x1 > b.x0 && o.x0 < b.x1 && o.z1 > b.z0 && o.z0 < b.z1);
     const nx = Math.ceil((b.x1 - b.x0) / cell), nz = Math.ceil((b.z1 - b.z0) / cell);
