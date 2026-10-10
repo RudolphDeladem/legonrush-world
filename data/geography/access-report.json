@@ -460,7 +460,7 @@
    "facing": 182
   },
   {
-   "place": "Kampala Court",
+   "place": "Dar es Salaam Court",
    "type": "hall entrance",
    "arrivalOn": "residential",
    "arrivalDistance": 12.8,
@@ -572,14 +572,14 @@
    "facing": 174
   },
   {
-   "place": "Addis Ababa Court",
+   "place": "Kampala Court",
    "type": "hall entrance",
    "arrivalOn": "residential",
    "arrivalDistance": 11.8,
    "facing": 174
   },
   {
-   "place": "Dar es Salaam Court",
+   "place": "Addis Ababa Court",
    "type": "hall entrance",
    "arrivalOn": "residential",
    "arrivalDistance": 13.2,

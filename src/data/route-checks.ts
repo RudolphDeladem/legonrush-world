@@ -39,7 +39,7 @@ export const ROUTE_CHECKS: RouteCheck[] = [
   { from: 'The Balme Library', to: 'School of Law', maxLength: 1200, expect: 'Into the law courtyard from the road on the east, ending at the steps up to the round entrance building.' },
   { from: 'School of Law', to: 'School of Engineering Sciences', maxLength: 600, expect: 'Along the road south of the engineering school, then down the hill on the access road to the porch.' },
   { from: 'School of Law', to: 'International House', maxLength: 400, expect: 'Across the law-school road to the car park west of International House and its entrance porch.' },
-  { from: 'School of Engineering Sciences', to: 'Pent Admin Block', maxLength: 700, expect: 'East to Old Pent, ending at the admin block\'s gabled porch on its north face, between Kampala and Addis Ababa courts.' },
+  { from: 'School of Engineering Sciences', to: 'Pent Admin Block', maxLength: 700, expect: 'East to Old Pent, ending at the admin block\'s gabled porch on its north face, between Dar es Salaam and Kampala courts.' },
   { from: 'New Pent Block A', to: 'Nairobi Court', maxLength: 600, expect: 'From Block A\'s pavilion south to the road along Old Pent, east to the porch on Nairobi Court\'s north face.' },
   { from: 'Elizabeth Frances Sey Hall', to: 'Jones Quartey Building, JQB', maxLength: 3200, expect: 'From the southern halls (leaving by the Sey frontage) north to JQB by the Main Gate.' },
 ];

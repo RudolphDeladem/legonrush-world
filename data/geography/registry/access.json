@@ -1051,7 +1051,7 @@
    "footprint": "osm:way/394252477"
   },
   {
-   "place": "Dar es Salaam Court",
+   "place": "Addis Ababa Court",
    "entrance": {
     "at": [
      542.4,
@@ -1063,7 +1063,7 @@
    "confidence": "high",
    "cite": "owner-pentagon",
    "approach": "From the road along the north of Old Pent to the porch in the middle of the court's north face.",
-   "evidence": "Owner: Dar es Salaam is the westernmost Old Pent court (D); entrance marked on its north face. Owner's photo of a court: a small tiled porch at the foot of the central stair core.",
+   "evidence": "Owner: Addis Ababa is the westernmost Old Pent court, the first from the Pent entrance on Annie Jiagge Road (owner's third reference PDF; it corrected the earlier D-K-AD-AA-N order, which matches OSM's own labels); entrance on its north face. Owner's photo of a court: a small tiled porch at the foot of the central stair core.",
    "refs": [
     "pentagon_layout (owner, entrances marked)",
     "old_pent_court (owner photo)"
@@ -1071,7 +1071,7 @@
    "footprint": "osm:way/618251967"
   },
   {
-   "place": "Kampala Court",
+   "place": "Dar es Salaam Court",
    "entrance": {
     "at": [
      590.8,
@@ -1083,7 +1083,7 @@
    "confidence": "high",
    "cite": "owner-pentagon",
    "approach": "From the road along the north of Old Pent to the porch in the middle of the court's north face.",
-   "evidence": "Owner: Kampala is the second court from the west (K), entrance marked on its north face.",
+   "evidence": "Owner: Dar es Salaam is the second court from the Pent entrance, west of the admin block (owner's third reference PDF); entrance on its north face.",
    "refs": [
     "pentagon_layout (owner, entrances marked)",
     "old_pent_court (owner photo)"
@@ -1091,7 +1091,7 @@
    "footprint": "osm:way/1189695656"
   },
   {
-   "place": "Addis Ababa Court",
+   "place": "Kampala Court",
    "entrance": {
     "at": [
      671.6,
@@ -1103,7 +1103,7 @@
    "confidence": "high",
    "cite": "owner-pentagon",
    "approach": "From the road along the north of Old Pent to the porch in the middle of the court's north face.",
-   "evidence": "Owner: Addis Ababa is the court east of the admin block (AA), entrance marked on its north face.",
+   "evidence": "Owner: Kampala is the court east of the admin block (owner's third reference PDF, its photos of KAMPALA COURT's porch); entrance on its north face.",
    "refs": [
     "pentagon_layout (owner, entrances marked)",
     "old_pent_court (owner photo)"
