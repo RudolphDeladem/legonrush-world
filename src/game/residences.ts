@@ -1,6 +1,7 @@
 // Ground-floor buildings the owner has marked, and the wood round the lecturers' houses (block engine: blocks.ts).
 //
-// - Along the Volta Hall Road stretch north-west of CEDI (owner's aerial, circled blue): small one-floor buildings.
+// - Along the Volta Hall Road stretch north-west of CEDI (owner's aerial, circled blue): small one-floor buildings,
+//   now modelled from the owner's photos in voltafront.ts.
 // - Opposite the Business School's front, across the road: the Larway Oraca Building (circled yellow), four one-floor
 //   wings in a cross round a small court under hipped red tiles, white walls with a white parapet gable on each wing's
 //   end (owner's photo); its door on the south. South of it, the cross-shaped building circled purple: one floor,
@@ -101,13 +102,8 @@ function house(h: House, opts: { style?: Style; gate?: boolean; porch?: 'canopy'
   };
 }
 
-// ---------- along the Volta Hall Road stretch north-west of CEDI: one floor ----------
-const VOLTA_STRETCH: House[] = [
-  { id: 'ml:27f1c560-6cd5-4ecc-a647-8c13912b2ae2', ring: [[-200.7, -46.1],[-184.4, -46.4],[-184.1, -30.9],[-194.3, -30.6],[-194.3, -31.6],[-200.4, -31.5]], door: [-200.6, -38.8], out: [-1.0, 0.021], walk: 15.2 },
-  { id: 'osm:way/665124067', ring: [[-213.3, -17.7],[-213.1, -28.4],[-205.8, -28.2],[-206.1, -17.6]], door: [-213.2, -23.0], out: [-1.0, -0.019], walk: 2.5 },
-  { id: 'osm:way/715027977', ring: [[-216.1, -0.4],[-212.7, -0.5],[-212.6, 11.6],[-215.9, 11.6]], door: [-216.0, 5.6], out: [-1.0, 0.017], walk: 0 }, // Rest station
-  { id: 'osm:way/773887685', ring: [[-213.6, -39.8],[-213.7, -33.7],[-202.7, -33.4],[-202.6, -39.5]], door: [-213.6, -36.8], out: [-1.0, -0.016], walk: 2.2 },
-];
+// (the small one-floor buildings along the Volta Hall Road stretch north-west of CEDI are modelled one by one from the
+// owner's photos in voltafront.ts)
 
 // ---------- opposite the Business School ----------
 /** the Larway Oraca Building: four wings in a cross round a small court, linked round it */
@@ -199,7 +195,6 @@ const wood: Spec = {
 
 /** the ground-floor buildings by Volta Hall Road and opposite the Business School, and the lecturers' houses in their wood */
 export const residences = createSite('residences', [
-  ...VOLTA_STRETCH.map((h) => house(h, { gate: false })),
   larway,
   house(PURPLE, { style: WIDE, porch: 'gable', name: 'Business School road cross building' }),
   ...LECTURERS.map((h) => house(h)),

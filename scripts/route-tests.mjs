@@ -152,7 +152,14 @@ try {
   // Mensah Sarbah (owner): the gate in the middle of the lodge's front on the drive, the court-side doors either end
   const ms = ACCESS.get('Mensah Sarbah Hall');
   if (!ms || Math.hypot(ms.entrance[0] - 4.9, ms.entrance[1] - 609.1) > 2) fail('Mensah Sarbah Hall: the entrance is not the gate in the middle of the lodge');
-  if ((await server.ssrLoadModule('/src/game/greathalls.ts')).greatHalls.frames().length !== 3) fail('expected the Mensah Sarbah, Akuafo and Legon models');
+  if ((await server.ssrLoadModule('/src/game/greathalls.ts')).greatHalls.frames().length !== 4) fail('expected the Mensah Sarbah, Akuafo and Legon models and the court behind Akuafo');
+  // owner PDF 2 pp. 48-54: behind Akuafo Hall Main the lawn between the south wings stands up behind its edge, the
+  // hexagonal pavers before it at road level, three steps between them
+  { const { groundHeight: gh } = await server.ssrLoadModule('/src/game/relief.ts');
+    if (!(Math.abs(gh(146, 374) - 0.45) < 0.01 && gh(146, 390) === 0 && gh(155, 382.4) > 0.1 && gh(155, 382.4) < 0.4)) fail('Akuafo Hall Main: the raised lawn behind the hall, its pavers or its steps are not as the owner shows'); }
+  // owner PDF 2 pp. 33-45: the small buildings along Volta Hall Road each their own model (not one generic cottage)
+  { const vf = (await server.ssrLoadModule('/src/game/voltafront.ts')).voltaFrontSite;
+    for (const [x, z] of [[-209.6, -23], [-208.2, -36.6], [-192.4, -38.5], [-214.4, 5.6]]) { const b = buildingAt(x, z); if (!b || !vf.replaces(b)) fail(`the building on Volta Hall Road at ${x},${z} is not its own model (owner)`); } }
   // Explore: every destination ends the guided ride with its own stop (the arrived card: drone view, riding it yourself)
   const { guideFor } = await server.ssrLoadModule('/src/data/guide.ts');
   const balme = placeByName('The Balme Library');

@@ -591,6 +591,27 @@ Read together:
 | 33–40 | The small buildings in front of Volta Hall (game 40, 42, 44, 46, 48; photos 41, 43, 45, 47) | A small pavilion on posts under a red tile pyramid roof with a cabinet. One-floor cottages, white weathered orange at the foot, red tile hipped roofs, doors in timber frames. A paver walk, a big tree. | Model them distinctly. |
 | 41–43 | The Fidelity Bank ATM in front of Volta Hall (game 48, photo 49; photo 51) | An orange ATM enclosure with a canopy and sign on a raised plinth over pavers. A paved walk with a ramp and kerbs. | Model the ATM booth and the paving. |
 | 44–45 | Near the French Department (game 52, photo 53) | The BESTIES restaurant's front, a lift barrier with a STOP sign, pavers. | Model the restaurant front and the barrier. |
-| 46–47 | Legon Hall north-west, the small restaurant (game 54, photo 55) | A small restaurant before the hall's north-west side. | Model it in its place. |
-| 48–49 | Athletic Oval basketball court seating (game 56, photo 57) | Tiers of red seats on a stepped stand beside the court, a mesh fence on posts. | Replace the red blocks with a stepped stand of red seats behind the fence. |
+| 46–47 | Captioned "Legon Hall north-west, the small restaurant"; the screenshot shows the courts east of the oval and the photo (page 47) the basketball seating | The captions of pages 46–50 sit one picture off. No photo of the Legon Hall restaurant is in the PDF. | Model the seating (below); leave the restaurant until the owner sends a photo. |
+| 48–49 | Captioned "the seats at the basketball court"; the screenshot and the photo (page 49) show the back of Akuafo Hall Main | Tiers of red seats on a stepped stand beside the court, welded mesh panels on posts (page 47). | A stepped stand of red seats behind the fence. |
 | 50–54 | The back of Akuafo Hall Main (game 58, 60; photos 59, 61) | Two to three floors, white, dark tile roofs, verandahs. A courtyard of hexagonal pavers with drain grates, low raised beds edged in concrete, steps, hedges. | Hexagonal pavers, drains, raised beds, steps and hedges in the back court. Check the wings and roofs. |
+
+## Part B: results
+
+Each place was modelled, rendered from the photo's viewpoint and compared with it (the renders are the preview views
+named here, in `tools/preview/halls.html`).
+
+| Pages | Done | Render | Uncertain |
+|---|---|---|---|
+| 8–11 | Absa's front on the east: the gable with the absa disc, the ATM porch, the steps, the ramp and rail, the booth, the railed yard with its tree and dish, the corner board, the stone bed, a darker roof | `ab1`, `ab2`, `ab3` | The yard's extent toward the car park. |
+| 12–13 | The building opposite Absa: one floor, dark tiles, the timber west gable, the lean-to over the generators, the railing, the dish, the tank, the mast | `op2` | The mast's position (it shows above the roof behind the east end). |
+| 14–15 | The Bookshop's back: the recessed middle on two columns between piers with round windows; the north range's upper verandah; air-conditioners; the water tanks | `bk2` | — |
+| 16–20 | The Physics car park: a sheet roof on posts over red earth at the court's open east end, cars | `cp1`, `cp2` | — |
+| 21–30 | The lane climbs from Physics to a crest by the LECIAD turning (+2 m), then falls to the Chemistry Extension and Frank Torto; LECIAD stands on ground 2.8 m up | `h1`, `h2`, `h3` | The exact crest height. |
+| 30–32 | Volta Hall: the south side on a two-tier stone wall over Volta Road, its name board; the front steps grey between rubble walls, a planter splitting the upper flights, the beds, conifer, post box and reserved bays | `vs2`, `ve1` | — |
+| 33–40 | Volta Hall Road: the substation and generator pavilion, the cottage and red iron cage under the big tree, the wider cottage, the washroom with its lantern, each its own model | `fv1`, `fv2`, `fv3` | Which footprint is which photo; the cage's place. The washroom's mapped outline overlaps the road's paved edge. |
+| 40–43 | The Fidelity ATM on the Danquah Avenue footway below the French Department's west wing; the footway paved to the kerb, the platform, steps and ramp, the grates, the barrier | `fd1`, `fd2` | — |
+| 44–45 | BESTIES on the front of Volta Hall's south flank toward Volta Hall Road, its forecourt and the STOP barrier | `be1` | The flank it is on: the screenshot shows the flank, the photo only the front. |
+| 46–47 | The basketball seating: six rows of red seats on a steel frame along the north court's west side, welded mesh fence, scoreboard, bench | `oc1` | Which of the two courts (the north one chosen). |
+| 48–54 | Behind Akuafo Hall Main: hexagonal pavers and drain grates, the raised lawn behind its white edge with three steps and a slab walk, bushes and hedges | `ak2`, `ak3` | The roofs' darker tiles are not changed. |
+| 46 | The Legon Hall restaurant | — | Not modelled: no photo of it. |
+

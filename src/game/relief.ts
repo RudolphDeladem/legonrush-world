@@ -104,6 +104,9 @@ const ZONES: Zone[] = [
   // 1 m up behind a rubble-stone retaining wall topped by a clipped hedge, along Cruise O'Brien Road on the west and
   // J.K.M. Hodasi Road on the north; the ground falls gently on the east and to the lane on the south
   { kind: 'terrace', x0: 104.4, x1: 207.5, z0: -153.0, z1: -97.0, depth: 1.0, w: 0.3, e: 4, n: 0.3, s: 3.5 },
+  // the back of Akuafo Hall Main: the lawn between the south wings stands 0.45 m up behind a low white concrete edge,
+  // above the hexagonal pavers before it (owner's second reference PDF, pages 48-54)
+  { kind: 'terrace', x0: 138.6, x1: 174.8, z0: 366.4, z1: 381.6, depth: 0.45, w: 0.15, e: 0.15, n: 0.15, s: 0.15 },
   // the lane from Physics north to Frank Torto (owner's second reference PDF, pages 21-30): it climbs from Physics to a
   // crest by the turning east to LECIAD, then runs down again to the Chemistry Extension and Frank Torto, which stand
   // low; east of it the ground of LECIAD and its neighbours stands higher still behind a bank of grass and red earth
@@ -140,6 +143,9 @@ const STAIRS: Stairs[] = [
   // the K. Folson Building, one into the lane between the range behind the court and the long range, one before the range
   { x0: -377.1, x1: -374.3, z0: 68.6, z1: 71.0, flights: 1, steps: 8, tread: 0.34, alongZ: true },
   { x0: -377.1, x1: -374.3, z0: 58.8, z1: 61.2, flights: 1, steps: 8, tread: 0.34, alongZ: true },
+  // the back of Akuafo Hall Main (owner's second reference PDF, pages 48-54): three steps up from the hexagonal pavers
+  // through the white edge of the raised lawn between the south wings
+  { x0: 383.0, x1: 381.6, z0: 153.6, z1: 156.6, flights: 1, steps: 3, tread: 0.45, alongZ: true },
 ];
 
 const boxOf = (q: Zone) => q.kind !== 'hill'

@@ -27,7 +27,7 @@
 // a slab-paved forecourt with a flag pole, the raised planter with a fan palm and a big tree to the east.
 import * as THREE from 'three';
 import { BUILDINGS, NODE_XZ, ROADS, type Building } from './campusmap';
-import { PAVE, WHITE, box } from './modelkit';
+import { PAVE, WHITE, box, canvas } from './modelkit';
 import { PL, createSite, louvre, render, slab, type Block, type Kit, type Spec, type Style } from './blocks';
 import { garden } from './gardens';
 import { rectsOf, type Rect } from './rectilinear';
@@ -504,6 +504,77 @@ export const legon = twin('Legon Hall', LO, [-215, -50, 150, 390], [-165, -129, 
   { at: [-160, 355], side: 'z1', range: [-166.8, -152.2] }, { at: [-130, 356], side: 'z1', range: [-141.9, -126.6] },
 ], LEGON_GALLERY);
 
+// ---------- the back of Akuafo Hall Main: the court between the south wings ----------
+// (owner's second reference PDF, pages 48-54) Before the cross range and between the wings' gabled ends the ground is
+// paved in grey hexagonal blocks out to the road, crossed by strips of concrete with steel drain grates in them; the
+// lawn between the wings stands 0.45 m up behind a low whitewashed concrete edge (relief.ts), three steps up through it
+// in the middle to a walk of grey slabs to the cross range; clipped round bushes on the lawn, hedges along the walls.
+let hexMat: THREE.MeshStandardMaterial | null = null;
+const hexPavers = () => (hexMat ??= (() => {
+  const t = canvas(128, 110, (g) => {
+    g.fillStyle = '#5d5b57'; g.fillRect(0, 0, 128, 110);
+    const r = 16, w = Math.sqrt(3) * r;
+    for (let row = -1; row < 5; row++) for (let col = -1; col < 6; col++) {
+      const cx = col * w + (row & 1 ? w / 2 : 0), cy = row * r * 1.5;
+      g.beginPath();
+      for (let i = 0; i < 6; i++) { const a = Math.PI / 6 + (i * Math.PI) / 3; g.lineTo(cx + (r - 1.6) * Math.cos(a), cy + (r - 1.6) * Math.sin(a)); }
+      g.closePath(); g.fillStyle = ['#7d7a74', '#77746e', '#827f78', '#726f69'][(row * 7 + col * 3 + 16) % 4]; g.fill();
+    }
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return new THREE.MeshStandardMaterial({ map: t, roughness: 0.95 });
+})());
+const AB: [number, number] = [156, 382];
+const akuafoBack: Spec = {
+  name: 'Akuafo Hall Main back court',
+  axis: [1, 0], origin: AB, storey: 3, style: AKUAFO_WALL, roofColor: AK_ROOF, fascia: FASCIA, pitch: 0.5,
+  onGround: true,
+  blocks: [],
+  keep: [[118 - AB[0], 195 - AB[0], 364.5 - AB[1], 399 - AB[1]]],
+  extras: (k) => {
+    const X = (x: number) => x - AB[0], Z = (z: number) => z - AB[1];
+    const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
+    const L = [138.6, 174.8, 366.4, 381.6], H = 0.45, S = [153.6, 156.6];
+    // the hexagonal pavers from the wings' ends to the road, and in the side passages along the wings
+    for (const [x0, x1, z0, z1] of [[118, 195, 383.4, 398.6], [136.8, 138.5, 364.4, 383.4], [174.9, 176.6, 364.4, 383.4], [138.5, 174.9, 381.7, 383.4]]) {
+      const g = new THREE.PlaneGeometry(x1 - x0, z1 - z0).rotateX(-Math.PI / 2);
+      const uv = g.attributes.uv as THREE.BufferAttribute;
+      for (let i = 0; i < uv.count; i++) uv.setXY(i, (uv.getX(i) * (x1 - x0)) / 1.1, (uv.getY(i) * (z1 - z0)) / 0.95);
+      const m = new THREE.Mesh(g, hexPavers());
+      m.position.set((X(x0) + X(x1)) / 2, 0.03, (Z(z0) + Z(z1)) / 2); m.receiveShadow = true;
+      k.meshes.push(m);
+    }
+    // the concrete strips with their drain grates, from the steps out toward the road
+    for (const [x0, x1] of [[150.4, 151.6], [158.6, 159.8]]) {
+      k.plain.push([B(x0, x1, 0.03, 0.05, 383.0, 398.6), '#a9a69f']);
+      for (const z of [384.6, 389.4, 394.2]) {
+        k.plain.push([B(x0 + 0.08, x1 - 0.08, 0.05, 0.06, z, z + 0.8), '#2f2a26']);
+        for (let x = x0 + 0.14; x < x1 - 0.12; x += 0.12) k.plain.push([B(x, x + 0.05, 0.06, 0.065, z + 0.05, z + 0.75), '#4a423b']);
+      }
+    }
+    // the low white concrete edge of the raised lawn, open at the steps; the lawn's top
+    const edge = '#e3e0d7';
+    for (const [x0, x1] of [[L[0], S[0]], [S[1], L[1]]]) k.plain.push([B(x0, x1, 0, H + 0.12, L[3] - 0.25, L[3]), edge]);
+    k.plain.push([B(L[0], L[0] + 0.25, 0, H + 0.12, L[2], L[3]), edge], [B(L[1] - 0.25, L[1], 0, H + 0.12, L[2], L[3]), edge], [B(L[0], L[1], 0, H + 0.12, L[2], L[2] + 0.25), edge]);
+    // the steps up through it and the walk of grey slabs on to the cross range
+    for (let i = 0; i < 3; i++) k.plain.push([B(S[0], S[1], 0, (H * (i + 1)) / 3, L[3] + 1.4 - 0.45 * (i + 1), L[3] + 1.4 - 0.45 * i), '#b3afa6']);
+    k.plain.push([B(S[0], S[1], H, H + 0.04, 362.0, L[3]), '#a7a39b']);
+    for (let z = 362.6; z < L[3]; z += 1.2) k.plain.push([B(S[0], S[1], H + 0.04, H + 0.045, z, z + 0.04), '#8f8b84']);
+    // clipped round bushes on the lawn, hedges along the wings and the cross range
+    gs.reseed(48);
+    for (const [x, z] of [[146, 375], [163, 374.5], [168.5, 369], [143, 369.5]]) {
+      k.plain.push([new THREE.CylinderGeometry(0.09, 0.12, 0.6, 6).translate(X(x), H + 0.3, Z(z)), '#4a3a2c'], [new THREE.IcosahedronGeometry(0.85, 1).scale(1, 0.85, 1).translate(X(x), H + 1.2, Z(z)), '#3f6b2c']);
+    }
+    for (const [x0, z0, x1, z1] of [[139.4, 367.4, 139.4, 380.6], [174.0, 367.4, 174.0, 380.6], [139.6, 367.2, 153.0, 367.2], [157.2, 367.2, 173.8, 367.2]]) {
+      const len = Math.hypot(x1 - x0, z1 - z0), n = Math.max(1, Math.round(len / 2.5));
+      for (let i = 0; i < n; i++) {
+        const ax = x0 + ((x1 - x0) * i) / n, az = z0 + ((z1 - z0) * i) / n, bx = x0 + ((x1 - x0) * (i + 1)) / n, bz = z0 + ((z1 - z0) * (i + 1)) / n;
+        k.plain.push([box(Math.min(X(ax), X(bx)) - 0.5, Math.max(X(ax), X(bx)) + 0.5, H, H + 1.25, Math.min(Z(az), Z(bz)) - 0.5, Math.max(Z(az), Z(bz)) + 0.5), i & 1 ? '#3b6629' : '#3f6c2c']);
+      }
+    }
+  },
+};
+
 /** the long courts between the lanes: a walk down the middle, lawns, palms and bushes */
 function greenCourts(k: Kit, o: [number, number], courts: [number, number, number, number][]) {
   gs.reseed(Math.round(o[0]));
@@ -516,4 +587,4 @@ function greenCourts(k: Kit, o: [number, number], courts: [number, number, numbe
 }
 
 /** Mensah Sarbah Hall, Akuafo Hall and Legon Hall */
-export const greatHalls = createSite('great-halls', [sarbah, akuafo, legon]);
+export const greatHalls = createSite('great-halls', [sarbah, akuafo, legon, akuafoBack]);

@@ -1497,6 +1497,66 @@ page shows, the corrections and what stays uncertain, is `docs/CAMPUS_REFERENCE_
 - **Building west of Physics**: a hipped roof, the five tall windows and the link (`behindbalme.ts`, `physics.ts`,
   `balme.ts`, `relief.ts`).
 
+## 62. The second reference PDF (54 pages): corrections, then further places
+
+The owner's second PDF pairs more game screenshots with street photos. The audit, page by page, is Part 2 of
+`docs/CAMPUS_REFERENCE_AUDIT.md`; the images are `images/363-424.jpg`.
+
+**Corrections first (pages 1-7)**
+- **Volta Hall Annex**: the louvred side is its back, toward the Graduate School (west), behind a wall with a gate and
+  the red lattice water tower. The front, with balconies, faces the Business School across a white wall with its gate.
+- **The two-storey block circled red near the Graduate School is deleted** (`corrections.json`).
+- **Nursing School**: its back reads as one connected building. The name board is on the east end.
+- **The silver aluminium-sheet fence** runs from the west end along the back of the car park to the Pharmacy block's
+  back, closing the passage north toward St. Thomas Aquinas (`volta.ts`, `labs.ts`).
+
+**Further places (pages 8-54)**
+- **The lane from Physics to Frank Torto**: climbs to a crest by the turning to LECIAD, then falls to the Chemistry
+  Extension and Frank Torto. LECIAD's ground stands higher behind a bank (`relief.ts`).
+- **Physics car park**: at the court's open east end, toward Earth Science. A flat sheet roof on steel posts over
+  red earth, a strip light, cars under it (`physics.ts`).
+- **Absa**: the front on the east under the gable with the absa disc. The ATM porch with two red ATMs under its tiled
+  lean-to, three steps, a ramp with a steel rail, the guard booth, and the yard behind black iron bars with its tree
+  and covered dish. A stone bed under the south windows, the red board on the corner lawn (`balme.ts`).
+- **The building opposite Absa**: one floor, dark tiles, a timber gable on the west. A sheet lean-to over the
+  generators, the railing along the kerb, the dish, the blue tank and the lattice mast (`balme.ts`).
+- **The Bookshop's back**: the middle's centre set back between two piers with round windows, two columns under the
+  roof. The north range's upper floor is a verandah. Air-conditioners and the water tanks in their pen
+  (`balmewest.ts`).
+- **Volta Hall**:
+  - The front steps are grey, between rubble-stone walls, with a stone planter splitting the upper flights.
+  - Beds, a tall clipped conifer, a red post box, and the reserved bays (TUTOR, DEPUTY SENIOR TUTOR) on darker pavers.
+  - The south side toward History stands on a two-tier rubble-stone wall over Volta Road, with its green name board.
+    The terrace now drops there instead of sloping as a grass bank (`volta.ts`, `relief.ts`).
+- **The small buildings on Volta Hall Road** (`voltafront.ts`), each modelled from its photo instead of the one
+  generic cottage (`residences.ts` no longer builds them):
+  - the substation with its timber double doors and danger sign, and the generator under a red pyramid pavilion;
+  - the cottage and the red iron cage under the big tree;
+  - the wider cottage;
+  - the washroom ("Rest station") with its lantern roof.
+- **Fidelity Bank ATM**: on the Danquah Avenue footway below the French Department's west wing. Orange pillars, a
+  white panel, the canopy with ATM | FIDELITY BANK, a tiled plinth. The footway is paved to the kerb; a platform with
+  steps and a ramp runs down along the wall, with grates along the kerb and a yellow and black barrier
+  (`voltafront.ts`).
+- **BESTIES**: a one-floor front on Volta Hall's south flank toward Volta Hall Road. A dark fascia with red letters, a
+  glazed door, a red foot, a red-earth forecourt with its menu board and stump, and a black lift barrier with a
+  yellow-banded pole and a STOP sign (`voltafront.ts`).
+- **Athletic Oval basketball seating**, on the north of the two courts east of the oval:
+  - six rows of red bucket seats on a grey steel frame along the side toward the track;
+  - welded mesh panels on square posts;
+  - the scoreboard and an orange bench (`athletics.ts`).
+- **Back of Akuafo Hall Main**, the court between the south wings:
+  - hexagonal pavers out to the road, with concrete strips holding steel drain grates;
+  - the lawn 0.45 m up behind a low white concrete edge, with three steps up and a slab walk to the cross range;
+  - clipped bushes and hedges (`greathalls.ts`, `relief.ts`).
+
+**Not modelled**
+- **The Legon Hall restaurant (page 46).** The caption names a small restaurant before Legon Hall's north-west side,
+  but no photo of it is in the PDF. The captions of pages 46-50 sit one picture off: page 46's screenshot and page
+  47's photo are the oval seating; pages 48-49 show the back of Akuafo.
+- **Roofs.** The photos show darker, older tiles on several of these buildings than the game's orange; the hall
+  roofs keep the colours set earlier.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

@@ -84,7 +84,7 @@ const oval: Spec = {
   blocks: [],
   // the mapped track, the pitches round it and the sand court are drawn here
   covers: [[6.5, 402.5], [-64, 377], [-78, 376], [-71, 424], [86, 430], [86, 378], [70, 275]],
-  keep: [[-60, 60, -95, 95], [X(-90), X(-50), Z(300), Z(452)], [X(74), X(97), Z(360), Z(448)], [X(45), X(93), Z(254), Z(296)]],
+  keep: [[-60, 60, -95, 95], [X(-90), X(-50), Z(300), Z(452)], [X(69), X(97), Z(360), Z(448)], [X(45), X(93), Z(254), Z(296)]],
   extras: (k) => {
     g.reseed(3);
     // ---------- the oval: earth track round the dry grass infield (track lanes 7 m) ----------
@@ -165,8 +165,35 @@ const oval: Spec = {
       arc(k, cx, cz, 1.8, 0, Math.PI * 2, 0.08, 0.08);
       hoop(k, cx, Z(z0) + 0.8, 1);
       hoop(k, cx, Z(z1) - 0.8, -1);
-      // the wire fence round each court (owner)
-      fence(k, X(77), X(94), Z(z0), Z(z1), 3.5);
+      // the wire fence round each court (owner); the north court's fence takes in its stand on the west
+      if (z0 === 415) {
+        // owner's second reference PDF (pages 46-47): along the side toward the oval track, a stand of six rows of red
+        // bucket seats on a grey steel frame, each row a step up; welded mesh panels on galvanised posts round it all,
+        // the scoreboard on two blue posts at the north end, an orange bench by the court
+        court(k, [X(70.5), X(77), Z(z0), Z(z1)], [X(70.5), X(77), Z(z0), Z(z1)], '#c0563f', '#c0563f');
+        const s0 = Z(z0) + 3.5, s1 = Z(z1) - 4.0, rows = 6, tread = 0.9, rise = 0.42;
+        for (let r = 0; r < rows; r++) {
+          const xa = X(77) - (r + 1) * tread, xb = xa + tread, y = 0.07 + r * rise;
+          k.plain.push([box(xa, xb, y + rise - 0.06, y + rise, s0, s1), '#c9ccd0']);
+          k.plain.push([box(xb - 0.05, xb, 0.07, y + rise, s0, s1), '#8a9096']);
+          for (let z = s0 + 0.3; z < s1 - 0.3; z += 0.55) {
+            k.plain.push([box(xa + 0.2, xa + 0.62, y + rise, y + rise + 0.08, z - 0.2, z + 0.2), '#e0403a']);
+            k.plain.push([box(xa + 0.12, xa + 0.2, y + rise + 0.05, y + rise + 0.48, z - 0.2, z + 0.2), '#e94a42']);
+          }
+        }
+        for (let z = s0; z <= s1; z += 2.2) for (let r = 0; r < rows; r++) k.plain.push([box(X(77) - (r + 1) * tread - 0.04, X(77) - (r + 1) * tread + 0.04, 0.07, 0.07 + (r + 1) * rise, z - 0.04, z + 0.04), '#6c7378']);
+        k.plain.push([box(X(77) - rows * tread - 0.05, X(77) - rows * tread, 0.07, 0.07 + rows * rise + 0.9, s0, s1), '#7c8388']);
+        for (const z of [s0, s1]) k.plain.push([box(X(77) - rows * tread, X(77), 0.07 + rows * rise + 0.5, 0.07 + rows * rise + 0.55, z - 0.03, z + 0.03), '#7c8388']);
+        const sx = X(73.5), sz = Z(z1) - 2.4;
+        for (const dx of [-1.0, 1.0]) k.plain.push([box(sx + dx - 0.05, sx + dx + 0.05, 0, 2.8, sz - 0.05, sz + 0.05), '#2a56a8']);
+        k.plain.push([box(sx - 1.15, sx + 1.15, 1.5, 2.8, sz - 0.04, sz + 0.04), '#f3f4f6'], [box(sx - 1.15, sx + 1.15, 2.45, 2.8, sz + 0.04, sz + 0.06), '#2a56a8']);
+        k.signs.push({ text: 'SCORE BOARD', x: sx, y: 2.62, z: sz + 0.07, ry: 0, w: 2.0, colors: ['#2a56a8', '#ffffff'] });
+        k.signs.push({ text: '48  18 19', x: sx, y: 1.95, z: sz + 0.05, ry: 0, w: 1.9, colors: ['#f3f4f6', '#1b1b1b'] });
+        const bx = X(93.2);
+        k.plain.push([box(bx - 0.18, bx + 0.18, 0.45, 0.5, Z(z0) + 6, Z(z0) + 10), '#d9761e']);
+        for (const z of [Z(z0) + 6.3, Z(z0) + 9.7]) k.plain.push([box(bx - 0.16, bx + 0.16, 0.07, 0.45, z - 0.04, z + 0.04), '#d9761e']);
+        panelFence(k, X(70.5), X(94), Z(z0), Z(z1), 2.6);
+      } else fence(k, X(77), X(94), Z(z0), Z(z1), 3.5);
     }
     // ---------- north-east, by Akuafo: the fenced basketball court ----------
     court(k, [X(47.5), X(91.5), Z(256.5), Z(293.5)], [X(55.5), X(83.5), Z(267.5), Z(282.5)], GREEN, '#5d9ccc');
@@ -177,7 +204,7 @@ const oval: Spec = {
     hoop(k, X(84.4), Z(275), -1, true);
     fence(k, X(47.5), X(91.5), Z(256.5), Z(293.5), 3.5);
     // ---------- trees along the north and west edges of the oval, and between the courts ----------
-    const clear: [number, number, number, number][] = [[-38, 51, 312, 493], [-86, -55, 300, 452], [76, 95, 362, 447], [46, 93, 255, 295]];
+    const clear: [number, number, number, number][] = [[-38, 51, 312, 493], [-86, -55, 300, 452], [76, 95, 362, 447], [70, 95, 414, 446], [46, 93, 255, 295]];
     g.clear.push(...clear.map(([x0, x1, z0, z1]) => [x0 - 1, x1 + 1, z0 - 1, z1 + 1] as [number, number, number, number]));
     for (let x = -36; x < 52; x += 6.5) g.tree(k, X(x + g.rand() * 2), Z(306 + g.rand() * 3), 1.1 + g.rand() * 0.4);
     for (let z = 330; z < 470; z += 8) g.tree(k, X(-50 + g.rand() * 2), Z(z + g.rand() * 3), 1 + g.rand() * 0.4);
@@ -207,6 +234,32 @@ function fence(k: Kit, x0: number, x1: number, z0: number, z1: number, h: number
     for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * len / 0.12, uv.getY(i) * (h - 0.05) / 0.12);
     const mesh = new THREE.Mesh(geo, wire());
     mesh.position.set((ax + bx) / 2, (h - 0.05) / 2, (az + bz) / 2);
+    mesh.rotation.y = -Math.atan2(bz - az, bx - ax);
+    k.meshes.push(mesh);
+  };
+  side(x0, z0, x1, z0); side(x0, z1, x1, z1); side(x0, z0, x0, z1); side(x1, z0, x1, z1);
+}
+
+/** welded mesh: a rectangular grid of wires, the cells taller than wide */
+let meshMat: THREE.MeshStandardMaterial | null = null;
+const weld = () => (meshMat ??= (() => {
+  const t = canvas(64, 64, (g) => {
+    g.clearRect(0, 0, 64, 64);
+    g.strokeStyle = 'rgba(190,196,198,0.95)'; g.lineWidth = 3;
+    g.strokeRect(1.5, 1.5, 61, 61);
+  });
+  return new THREE.MeshStandardMaterial({ map: t, transparent: true, alphaTest: 0.25, side: THREE.DoubleSide, roughness: 0.6, metalness: 0.4 });
+})());
+/** welded mesh panels on square galvanised posts every 2.5 m round a rectangle, a fold along the top */
+function panelFence(k: Kit, x0: number, x1: number, z0: number, z1: number, h: number) {
+  const side = (ax: number, az: number, bx: number, bz: number) => {
+    const len = Math.hypot(bx - ax, bz - az), n = Math.max(1, Math.round(len / 2.5));
+    for (let i = 0; i <= n; i++) { const x = ax + ((bx - ax) * i) / n, z = az + ((bz - az) * i) / n; k.plain.push([box(x - 0.04, x + 0.04, 0, h + 0.1, z - 0.04, z + 0.04), '#b9bdbf']); }
+    const geo = new THREE.PlaneGeometry(len, h);
+    const uv = geo.attributes.uv as THREE.BufferAttribute;
+    for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * len / 0.1, uv.getY(i) * h / 0.2);
+    const mesh = new THREE.Mesh(geo, weld());
+    mesh.position.set((ax + bx) / 2, h / 2 + 0.05, (az + bz) / 2);
     mesh.rotation.y = -Math.atan2(bz - az, bx - ax);
     k.meshes.push(mesh);
   };
