@@ -391,7 +391,13 @@ const OUTER_WALL: Style = {
   up: [[40, 70, 176, 100]],
   ground: [[40, 256 + 74, 176, 100]],
   draw: (g) => {
-    render(g, '#f8f7f3');
+    render(g, '#f1efe9');
+    // whitewash gone grey in long dark streaks under the sills and the eaves (the east side, reference PDF pp. 34-37)
+    for (let i = 0; i < 26; i++) {
+      const x = (i * 59 + (i % 5) * 13) % 250, y = [0, 170, 256, 426][i % 4], len = 40 + ((i * 37) % 120);
+      const gr = g.createLinearGradient(0, y, 0, y + len); gr.addColorStop(0, 'rgba(70,68,62,0.32)'); gr.addColorStop(1, 'rgba(70,68,62,0)');
+      g.fillStyle = gr; g.fillRect(x, y, 3 + (i % 4) * 3, len);
+    }
     for (const y0 of [0, 256]) { g.fillStyle = '#1c2026'; g.fillRect(40, y0 + 70, 176, 100); g.fillStyle = '#3a3f46'; g.fillRect(126, y0 + 70, 4, 100); }
     g.fillStyle = '#8e2f2a'; g.fillRect(0, 512 - 24, 256, 24);
   },
@@ -437,7 +443,7 @@ const libraryWings: Spec = {
     L(-59.1, -45, -58.3, 7.1, 4, { roof: 'none' }), // the outer west wing
     L(-74.3, -59.1, -32.7, -18.1, 1, { roof: 'none' }), // its gatehouse to the west, one floor
     L(57.1, 71.1, -58.3, 7.1, 4, { roof: 'none' }), // the outer east wing
-    L(71.1, 85.9, -32.7, -18.1, 1, { roof: 'none' }), // its gatehouse to the east
+    L(71.1, 85.9, -32.7, -18.1, 4, { roof: 'none' }), // its arm to the east, four floors to the road (owner's reference PDF, pages 34-37)
     L(71.1, 76.9, -52.7, -44, 1), // the small annex on the east
   ],
   keep: [[lx(-80), lx(-59), lz(-50), lz(5)], [lx(71), lx(92), lz(-50), lz(5)]],
@@ -463,7 +469,27 @@ const libraryWings: Spec = {
       for (const [a, b, c, d] of [[lx(wx0) - 0.06, lx(wx0), lz(-58.3), lz(7.1)], [lx(wx1), lx(wx1) + 0.06, lz(-58.3), lz(7.1)]]) k.plain.push([box(a, b, 0, 0.8, c, d), '#8e2f2a']);
     }
     // the one-floor gatehouses on the arms, under steep pyramid roofs; on the west a dark doorway
-    for (const [gx0, gx1] of [[-74.3, -59.1], [71.1, 85.9]]) pyramid(k, lx(gx0), lx(gx1), lz(-32.7), lz(-18.1), e1, 4.2);
+    pyramid(k, lx(-74.3), lx(-59.1), lz(-32.7), lz(-18.1), e1, 4.2);
+    // ----- the east side on Cruise O'Brien Road (owner's reference PDF, pages 34-37): the arm to the east rises the
+    // four floors of the wing under a hipped roof of dark weathered tiles, the entrance at the foot of its end behind
+    // the screen wall, a lit blue board over the door; in the court north of it the tower with the stair, a full-height
+    // glazed slot up its east face, its roof stepping up in two hipped tiers to a small lantern; the 24-hour study room
+    // in the kiosk at the north corner, an octagonal dark window in its east wall
+    pyramid(k, lx(71.1), lx(85.9), lz(-32.7), lz(-18.1), e4, 3.6);
+    const ex = lx(85.9);
+    k.plain.push([box(ex, ex + 0.05, 0.2, 2.6, lz(-26.4), lz(-24.4)), '#2a2a28'], [box(ex + 0.05, ex + 0.08, 2.8, 3.4, lz(-27.2), lz(-23.6)), '#1f4f9a']);
+    k.plain.push([box(ex + 0.05, ex + 0.3, 3.5, 3.65, lz(-25.6), lz(-25.2)), '#fff3c4']);
+    k.signs.push({ text: 'BALME LIBRARY', x: ex + 0.09, y: 3.1, z: lz(-25.4), ry: Math.PI / 2, w: 3.4, colors: ['#1f4f9a', '#ffffff'] });
+    const [tx0, tx1, tz0, tz1] = [lx(66.5), lx(73.5), lz(-48.5), lz(-41.5)], tt = e4 + 3.4;
+    k.plain.push([box(tx0, tx1, 0, tt, tz0, tz1), '#eceae4']);
+    k.plain.push([box(tx1, tx1 + 0.05, 1.0, tt - 0.6, lz(-46.0), lz(-44.0)), '#5f7f94']);
+    for (let y = 1.0; y < tt - 0.6; y += 1.2) k.plain.push([box(tx1 + 0.05, tx1 + 0.08, y, y + 0.08, lz(-46.0), lz(-44.0)), '#d9dcdf']);
+    for (const z of [lz(-47.2), lz(-42.8)]) for (let y = 4.5; y < tt - 1; y += 3.4) k.plain.push([box(tx1, tx1 + 0.04, y, y + 1.2, z - 0.35, z + 0.35), '#1c2026']);
+    pyramid(k, tx0, tx1, tz0, tz1, tt, 1.6, 0.9);
+    k.plain.push([box(tx0 + 2.2, tx1 - 2.2, tt + 1.0, tt + 2.1, tz0 + 2.2, tz1 - 2.2), '#eceae4']);
+    pyramid(k, tx0 + 2.2, tx1 - 2.2, tz0 + 2.2, tz1 - 2.2, tt + 2.1, 1.0, 0.5);
+    const ox = lx(89.3) + 0.05, oz = lz(-50.15), oct = new THREE.CircleGeometry(0.85, 8).rotateY(Math.PI / 2).rotateX(Math.PI / 8);
+    k.plain.push([oct.translate(ox, 1.7, oz), '#141518']);
     const gz = lz(-25.4), gx = lx(-74.3);
     k.plain.push([new THREE.CylinderGeometry(1.25, 1.25, 0.08, 8).rotateZ(Math.PI / 2).rotateX(Math.PI / 8).translate(gx - 0.04, 2.0, gz), '#1c1c1e']);
     for (const [a, b, c, d] of [[gx - 0.06, gx, lz(-32.7), lz(-18.1)], [lx(85.9), lx(85.9) + 0.06, lz(-32.7), lz(-18.1)]]) k.plain.push([box(a, b, 0, 0.8, c, d), '#8e2f2a']);

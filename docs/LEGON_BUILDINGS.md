@@ -1470,6 +1470,33 @@ From five marked pictures and a PDF of three photos (`images/286-293.jpg`; `mark
   end** (about 1 m), below the lawn held up behind its rubble-stone wall (the wall grows taller to the north), and
   climbs gently back along its leg east to Animal Biology.
 
+## 61. The 38-page reference PDF: game views beside street photos
+
+The owner's PDF pairs game screenshots with photographs of the same places. The page-by-page audit, with what each
+page shows, the corrections and what stays uncertain, is `docs/CAMPUS_REFERENCE_AUDIT.md`; the images are
+`images/294-362.jpg`.
+
+**West of the Volta Hall Annex**
+- The **two-storey block circled green before the Volta Hall Annex is deleted**.
+- **Graduate School**: one floor with its arched porch, its car park and its trees.
+- **Doctorate building**: two floors, with the portico and the paver car park.
+- **Construction site**: a hoarding with boards and striped posts, not two finished blocks.
+- **Research and Innovation Complex**: maroon hipped two-floor blocks, the stone feature wall, the palisade and the
+  security post.
+- **Nursing School**: its north front onto the car park, and the three-floor block across that car park.
+- **Volta Hall Annex**: the louvred east front between plain range ends, the wall, the gate and the red lattice water
+  tower.
+- **Mast compound** between WACCBIP and the School of Pharmacy (`westgrad.ts`, `labs.ts`, `volta.ts`).
+
+**Behind and east of the Balme Library**
+- **Chemistry Extension**: up on its walled, hedged terrace, with paired shutters, street lamps and pavement.
+- **Uncompleted building**: in its blue hoarding, where the car park was.
+- **Chemistry Department**: two floors, with its verandah and the three-column portico.
+- **Balme Library east side**: the four-floor arm with its entrance, the tower with the glazed stair, and the
+  octagonal window of the study room.
+- **Building west of Physics**: a hipped roof, the five tall windows and the link (`behindbalme.ts`, `physics.ts`,
+  `balme.ts`, `relief.ts`).
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

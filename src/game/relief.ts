@@ -99,6 +99,10 @@ const ZONES: Zone[] = [
   { kind: 'hollow', x0: 13, x1: 104, z0: -418, z1: -391, depth: 1.2, w: 4, e: 6, n: 6, s: 2.8 },
   { kind: 'hollow', x0: 31, x1: 104, z0: -391, z1: -376.8, depth: 1.2, w: 2, e: 6, n: 0.3, s: 2.3 },
   { kind: 'hollow', x0: 86.5, x1: 104, z0: -418, z1: -368, depth: 1.2, w: 2.8, e: 6, n: 6, s: 23 },
+  // the Chemistry Department Extension behind the Balme Library (owner's reference PDF, pages 25-29): it stands about
+  // 1 m up behind a rubble-stone retaining wall topped by a clipped hedge, along Cruise O'Brien Road on the west and
+  // J.K.M. Hodasi Road on the north; the ground falls gently on the east and to the lane on the south
+  { kind: 'terrace', x0: 104.4, x1: 207.5, z0: -153.0, z1: -97.0, depth: 1.0, w: 0.3, e: 4, n: 0.3, s: 3.5 },
   // the lane past the Department of Nutrition and Food Sciences (owner's photo up the lane from J.K.M. Hodasi Road):
   // it runs down a little toward its north end, below the lawn held up behind its rubble-stone wall on the west, and
   // climbs gently back along its leg east to Animal Biology

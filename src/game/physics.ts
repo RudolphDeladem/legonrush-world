@@ -67,6 +67,21 @@ const P_DOOR: Style = {
     g.fillStyle = '#2a211b'; g.fillRect(60, 256 + 22, 20, 14);
   },
 };
+/** the Chemistry Department Extension (owner's reference PDF, pages 25-29): cream walls gone grey, a tall window of two
+ *  dark-brown louvred shutter leaves to a bay, some standing open on a dark room, the red-brown band at the foot */
+const CX_WALL: Style = {
+  bay: 3.6, up: [], ground: [[88, 256 + 46, 80, 150]],
+  draw: (g) => {
+    oldWall(g, 512 - 46);
+    g.fillStyle = 'rgba(214,204,178,0.35)'; g.fillRect(0, 256, 256, 210);
+    g.fillStyle = '#1d1712'; g.fillRect(84, 256 + 42, 88, 158);
+    for (const [x, open] of [[88, false], [128, true]] as [number, boolean][]) {
+      if (open) { g.fillStyle = '#2a2420'; g.fillRect(x, 256 + 46, 40, 150); continue; }
+      for (let t = 256 + 46; t < 256 + 196; t += 8) { g.fillStyle = '#4e3020'; g.fillRect(x, t, 40, 5); g.fillStyle = '#2b1a10'; g.fillRect(x, t + 5, 40, 3); }
+    }
+    g.fillStyle = '#4e3020'; g.fillRect(170, 256 + 46, 14, 150);
+  },
+};
 /** the tall one-floor building: a row of small oblong windows high up, shutters and doors below */
 const P_TALL: Style = {
   bay: 3.4, up: [], ground: [[60, 256 + 24, 136, 26], [96, 256 + 120, 64, 84]],
@@ -155,13 +170,16 @@ const physics: Spec = (() => {
 })();
 
 // ---------- the one-floor buildings north of physics and round the chemistry buildings ----------
-interface Range { name: string; rects: number[][]; tall?: boolean; ridge: ('x' | 'z')[]; replaces: [number, number][] }
+interface Range { name: string; rects: number[][]; tall?: boolean; ridge: ('x' | 'z')[]; replaces: [number, number][]; style?: Style; roof?: string; hipped?: boolean }
 const RANGES: Range[] = [
   // north of physics: the tall one-floor building (red line) and the range beside it
-  { name: 'tall one-floor building north of physics', rects: [[112.5, 156.2, 6.4, 27.8]], tall: true, ridge: ['x'], replaces: [[134.3, 17.1]] },
+  // (its west end toward the Balme Library, owner's reference PDF pages 37-38: a hipped roof of dark tiles, a group of
+  // five tall narrow windows, a low flat-roofed link south to the next building, also hipped)
+  { name: 'tall one-floor building north of physics', rects: [[112.5, 156.2, 6.4, 27.8]], tall: true, ridge: ['x'], replaces: [[134.3, 17.1]], roof: '#4f3428', hipped: true },
+  { name: 'building between the tall building and physics', rects: [[113.5, 123.3, 32.2, 46.3]], ridge: ['z'], replaces: [[118.4, 39.2]], roof: '#4f3428', hipped: true },
   { name: 'range north of physics', rects: [[161.0, 196.4, 18.0, 25.5]], ridge: ['x'], replaces: [[178.7, 21.7]] },
   // the chemistry extension's U round the Frank Torto Building
-  { name: 'Chemistry Department Extension', rects: [[108.2, 207.0, -149.7, -137.4], [108.0, 116.7, -137.4, -98.2], [116.7, 156.8, -109.4, -100.0]], ridge: ['x', 'z', 'x'], replaces: [[141.1, -118.9], [112, -120]] },
+  { name: 'Chemistry Department Extension', rects: [[108.2, 207.0, -149.7, -137.4], [108.0, 116.7, -137.4, -98.2], [116.7, 156.8, -109.4, -100.0]], ridge: ['x', 'z', 'x'], replaces: [[141.1, -118.9], [112, -120]], style: CX_WALL, roof: '#7a3a28' },
   // the ranges across the middle
   { name: 'chemistry range west', rects: [[106.0, 151.1, -74.6, -57.4]], ridge: ['x'], replaces: [[128.5, -66.0]] },
   // (moved 2 m west and its east end 3 m shorter, clear of the lane round the Frank Torto Building: owner)
@@ -175,21 +193,36 @@ function range(r: Range): Spec {
   const st = r.tall ? 6.4 : 3.4, E = PL + st + BAND;
   return {
     name: r.name,
-    axis: [1, 0], origin: O, storey: st, style: r.tall ? P_TALL : P_WALL, roofColor: TILE, fascia: BARGE, pitch: 0.42, plinth: DADO,
+    axis: [1, 0], origin: O, storey: st, style: r.style ?? (r.tall ? P_TALL : P_WALL), roofColor: r.roof ?? TILE, fascia: BARGE, pitch: 0.42, plinth: DADO,
     replaces: r.replaces,
-    blocks: r.rects.map((q, i) => ({ x0: X(q[0]), x1: X(q[1]), z0: Z(q[2]), z1: Z(q[3]), floors: 1, roof: 'none', faces: i === 0 && !r.tall ? { z1: P_DOOR } : {} })),
+    blocks: r.rects.map((q, i) => ({ x0: X(q[0]), x1: X(q[1]), z0: Z(q[2]), z1: Z(q[3]), floors: 1, roof: 'none', faces: i === 0 && !r.tall && !r.style && !r.hipped ? { z1: P_DOOR } : r.tall && r.hipped ? { x0: C_BLANK } : {} })),
     keep: [],
     extras: (k: Kit) => {
       const c: Part[] = [];
       r.rects.forEach((q, i) => {
         const along = r.ridge[i];
-        const top = hipRoof(k, M, q[0] - 0.7, q[1] + 0.7, q[2] - 0.7, q[3] + 0.7, E, 0.42, along, i ? [hip, hip] : [open, open], c, BARGE);
-        if (i === 0) for (const s of [-1, 1]) {
+        if (r.roof) k.roof.c = new THREE.Color(r.roof);
+        const top = hipRoof(k, M, q[0] - 0.7, q[1] + 0.7, q[2] - 0.7, q[3] + 0.7, E, 0.42, along, i || r.hipped ? [hip, hip] : [open, open], c, BARGE);
+        if (i === 0 && !r.hipped) for (const s of [-1, 1]) {
           if (along === 'x') { const x = s < 0 ? q[0] - 0.6 : q[1] + 0.6; c.push([tri2([X(x), E - 0.05, Z(q[2] - 0.7)], [X(x), E - 0.05, Z(q[3] + 0.7)], [X(x), top - 0.1, Z((q[2] + q[3]) / 2)]), WHITE_OLD]); }
           else { const z = s < 0 ? q[2] - 0.6 : q[3] + 0.6; c.push([tri2([X(q[0] - 0.7), E - 0.05, Z(z)], [X(q[1] + 0.7), E - 0.05, Z(z)], [X((q[0] + q[1]) / 2), top - 0.1, Z(z)]), WHITE_OLD]); }
         }
       });
       if (r.tall) for (const z of [6.4, 27.8]) for (let x = 117; x < 154; x += 9.3) k.plain.push([box(X(x) - 0.75, X(x) + 0.75, PL, PL + 2.5, Z(z) - 0.03, Z(z) + 0.03), '#5a3a26']);
+      if (r.tall) {
+        // the west end: five tall narrow windows in dark-green frames with glass louvres, side by side
+        const wx = X(112.5);
+        for (let i = 0; i < 5; i++) {
+          const z = Z(13.2 + i * 1.15);
+          k.plain.push([box(wx - 0.05, wx, PL + 0.6, PL + 4.6, z - 0.5, z + 0.5), '#24382c']);
+          for (let y = PL + 0.75; y < PL + 4.5; y += 0.16) k.plain.push([box(wx - 0.08, wx - 0.05, y, y + 0.08, z - 0.42, z + 0.42), '#5d7a6a']);
+        }
+        k.plain.push([box(wx - 0.12, wx, PL + 0.45, PL + 0.6, Z(12.4), Z(18.6 + 0.4)), '#e9e6dd']);
+        // the low flat-roofed link south to the next building
+        k.plain.push([box(X(114.5), X(119), 0, 3.0, Z(27.8), Z(32.2)), WHITE_OLD], [box(X(114.4), X(119.1), 0, 0.6, Z(27.8), Z(32.2)), DADO], [box(X(114.2), X(119.3), 3.0, 3.25, Z(27.6), Z(32.4)), '#e4e0d6']);
+        k.plain.push([box(X(114.45), X(114.5), 0.4, 2.4, Z(28.6), Z(31.4)), '#2b2622']);
+        SOLIDS.add(116.7, 30, 2.2);
+      }
       const m = new THREE.Mesh(merge(c), concrete(0.5));
       m.castShadow = true; m.receiveShadow = true;
       k.meshes.push(m);

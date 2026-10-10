@@ -3143,6 +3143,13 @@
       "class": "grass",
       "subclass": "grass",
       "reason": "Owner: the Night Market moved (it stood here only while the market was relocated for construction); the owner's aerial of the current market shows this ground as grass, trees and bare soil with no buildings."
+    },
+    {
+      "id": "osm:way/448104173",
+      "place": "uncompleted building behind the Balme Library",
+      "class": "grass",
+      "subclass": "grass",
+      "reason": "Owner's reference PDF of game views beside street photos (docs/CAMPUS_REFERENCE_AUDIT.md), page 30: no car park here now but a building under construction inside a blue hoarding with a small paved forecourt (modelled in src/game/behindbalme.ts)."
     }
   ],
   "reshape": [

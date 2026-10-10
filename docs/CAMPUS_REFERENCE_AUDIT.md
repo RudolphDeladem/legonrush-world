@@ -471,3 +471,28 @@ Every structure in this PDF is one of three kinds:
 | Research and Innovation Complex, pp. 14–20 | Three two-floor white blocks under maroon hipped roofs on the mapped outlines; the stone-clad feature wall framed in white; the entrance canopy; the black palisade on a low white wall round the site; the gate piers; the flat-roofed security post with dark glazing, planters and palms; the paved approach; shrubs and lamps. | The plan follows the mapped outlines. The photos suggest more, smaller connected sections than three. |
 | Volta Hall Annex, pp. 21–23 | **The two-storey block circled green is deleted** (`ml:7ebbe167…` excluded; route test). The east block set back between the ranges, its upper floors behind white louvre fins; galleries on the ranges' inner faces; the ranges' ends plain white; the white wall with sloping wing walls; the black gate; the red lattice water tower with its round tank; the drive, posts and bins. | The depth of the set-back is estimated. |
 | Mast compound, pp. 24–25 | The thin generic block removed. The white palisade, the cabinets, the slim mast with antennas, the purple board, the street lamp, trees. | The compound's exact size. |
+
+### Phases 3–4: behind the Balme Library, its east side, and west of Physics (`behindbalme.ts`, `physics.ts`, `balme.ts`, `relief.ts`)
+
+| Location | Corrected | Still inaccurate or unverified |
+|---|---|---|
+| Chemistry Extension, pp. 25–29 | Up on a 1 m terrace (relief) behind a rubble-stone retaining wall with a concrete cap and a thick clipped hedge, along Cruise O'Brien Road (west) and J.K.M. Hodasi Road (north); the lawn strip, kerbed paver pavement and grey single-arm street lamps; palms, young trees and lamps on the Plant Biology side. Walls cream gone grey, a tall two-leaf brown shutter window to a bay (some open), the red-brown foot, a darker tile roof. | The terrace's height (1 m) and its fall on the east and south are estimated. |
+| Uncompleted building, p. 30 | The car park removed (reclassed). A two-floor bare concrete frame with empty openings under a dark hipped roof, inside a blue corrugated hoarding with posters along the road; the brick-paved forecourt with kerbs; the row of ashoka trees on the west. | The frame's size and place inside the hoarding are estimated from one photo. |
+| Chemistry Department (two floors, the covered walk), pp. 31–34 | Two floors, white over a red-brown dado; the verandah along the west front on slender white posts with its louvre band and tiled lean-to; the row of upper windows; the hipped tile roof; the portico of three tall square columns with louvre panels at the north end, by the covered walk; agaves, shrubs, a palm by the drive. | Which end the portico is at is read from one photo. The east (back) face is not seen. |
+| Balme Library east side, 24-hour study room, pp. 34–37 | The east arm made four floors to the road under a hipped roof (it was a one-floor gatehouse), with the entrance at its foot and a lit blue board; the tower in the court with a full-height glazed stair slot and a roof stepping up in two tiers to a lantern; the outer wings' whitewash streaked dark; an octagonal dark window in the north kiosk (the study room). The screen wall of perforated blocks on its maroon base stays as it was. | The tower's exact place in the court. The lettering on the blue board is unreadable in the photos, so it reads BALME LIBRARY. Lit windows at night are not modelled. |
+| West of Physics, pp. 37–38 | The tall one-floor building's roof hipped in dark tiles (it had open gables); its west end plain with the group of five tall narrow windows in dark-green frames with louvres; the low flat-roofed link south to the next building, which is now modelled one floor under a dark hipped roof. | Only the west end is seen. |
+
+### Validation
+
+Each corrected location was rendered from a game viewpoint matching the owner's screenshot or photo and compared by
+eye; the renders are in the conversation. All the project's checks pass:
+- `tsc`, `npm run geo` and `npm run test:routes`. New owner checks were added: the green-circled block gone; the
+  Graduate School one floor; the Doctorate building two; no building on the construction site; the Chemistry
+  Extension's terrace with the roads level; the car park gone.
+- `npm run build` and `npm run smoke`.
+- Race and route lengths unchanged (`.preview/lens.mjs`).
+- No camera inside a building (`.preview/camcheck.mjs`).
+
+**Not verified**
+- How the screens look on a phone GPU.
+- Lighting at night.

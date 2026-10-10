@@ -378,7 +378,7 @@ try {
     for (const [x, z, lo, hi] of [[150, 98, 0, 5], [134.3, 17.1, 6.5, 8.5], [112, -120, 0, 5], [128.5, -66, 0, 5], [184.3, -69, 0, 5], [168.8, -120.5, 17, 20]]) { const b = buildingAt(x, z); if (!b || b.height < lo || b.height > hi) fail(`the building at ${x},${z} is not the height the owner shows`); }
     const inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
     for (const z of [-360, -350, -340]) if (cm.AREAS.some((a) => a.kind === 'parking' && inA(a, 301.5, z))) fail(`cars park on the walk to the ISSER Annex at z ${z} (owner)`);
-    if ((await server.ssrLoadModule('/src/game/physics.ts')).physicsSite.frames().length !== 10) fail('expected physics, the chemistry ranges, the west entrance, the covered walk, the Frank Torto Building and the building behind it');
+    if ((await server.ssrLoadModule('/src/game/physics.ts')).physicsSite.frames().length !== 11) fail('expected physics, the chemistry ranges, the west entrance, the covered walk, the Frank Torto Building, the building behind it and the building between the tall building and physics');
     // the chemistry department's west entrance on its stone-faced base (owner's photo)
     { const b = buildingAt(117, -85.5); if (!b || b.height < 4.5 || b.height > 5.5) fail('the chemistry west entrance is not the one floor on its raised base the owner shows'); }
     { const b = buildingAt(219.3, -89.4); if (!b || b.height > 4.6) fail('the building behind the Frank Torto Building is not one floor (owner)'); }
@@ -492,6 +492,16 @@ try {
     { const b = buildingAt(-402, -165); if (!b || b.height > 6.5) fail('the Graduate School is not one floor (owner PDF pp. 5-6)'); }
     { const b = buildingAt(-452.8, -166.3); if (!b || b.height < 6) fail('the Doctorate building is not two floors (owner PDF pp. 7-11)'); }
     if (!buildingAt(-298, -62) || !buildingAt(-635, -241)) fail('the Volta Hall Annex or the Research and Innovation Complex is missing');
+  }
+  // owner's reference PDF, behind the Balme Library: the Chemistry Extension up on its walled terrace, the uncompleted
+  // building where the car park was, the Chemistry Department's two floors
+  {
+    const rl = await server.ssrLoadModule('/src/game/relief.ts');
+    if (Math.abs(rl.groundHeight(150, -125) - 1) > 0.01 || rl.groundHeight(97.5, -125) !== 0 || rl.groundHeight(150, -162.5) !== 0) fail('the Chemistry Extension is not up on its terrace above Cruise O\'Brien and J.K.M. Hodasi Roads (owner PDF pp. 25-29)');
+    if (rl.groundHeight(180, -92) !== 0) fail('the lane south of the Chemistry Extension is not at ground level');
+    const bb = (await server.ssrLoadModule('/src/game/behindbalme.ts')).behindBalmeSite;
+    if (bb.frames().length !== 3) fail('expected the Chemistry Extension terrace, the uncompleted building and the Chemistry Department (owner PDF)');
+    if (cm.AREAS.some((a) => a.kind === 'parking' && a.pts.length && (() => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > -130) !== (zj > -130) && 82 < ((a.pts[j] - a.pts[i]) * (-130 - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; })())) fail('the car park behind the Balme Library is still there (owner PDF p. 30)');
   }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
