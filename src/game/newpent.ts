@@ -8,15 +8,18 @@
 // the block's name, a tall arched opening between square columns on grey feet, the tower's open loggia at the top
 // under its own small tiled gable.
 //
-// Round them: Block A's east side along Pent Road walled in brick panels between grey piers with a grey steel gate and
-// the generators under a grey sheet roof behind it; the red and white lattice mast by Pent Road between Blocks A and B;
-// Block C's west side walled the same, its steel gate on a brick-paved drive, the transformer in its cage beside it,
-// and the generator under a sheet roof on cream round columns on a raised platform against a brick end wall; the
-// yellow Boba tea kiosk with its seats on the corner by Block C only (the owner: none by Blocks A and B).
+// Each block's front structure, before its entrance toward the car park, is lower, its whole front faced in brick with
+// the white stair strip up the middle, its sides white with balconies (the owner's photo of Block A's front).
+//
+// Round them: the generators under a grey sheet roof by Block A's east side; the red and white lattice mast by Pent
+// Road between Blocks A and B; on Block C's west side a brick-paved drive, the transformer in its cage beside it, and
+// the generator under a sheet roof on cream round columns on a raised platform against a brick end wall; the yellow
+// Boba tea kiosk with its seats on the corner by Block C only (the owner: none by Blocks A and B). The walls along Pent
+// Road are left out until the owner shows how the blocks are fenced.
 import * as THREE from 'three';
 import { BUILDINGS } from './campusmap';
 import { box, merge, speckle, tri2, type Part } from './modelkit';
-import { PL, createSite, render, type Block, type Kit, type Spec, type Style } from './blocks';
+import { PL, createSite, render, type Block, type Spec, type Style } from './blocks';
 import { concrete } from './concrete';
 import { rectsOf, type Rect } from './rectilinear';
 import { SOLIDS } from './solids';
@@ -73,14 +76,21 @@ const touches = (a: Rect, b: Rect, side: 'x0' | 'x1' | 'z0' | 'z1') => {
   if (side === 'z0') return overX && Math.abs(b[3] - a[2]) < e;
   return overX && Math.abs(b[2] - a[3]) < e;
 };
+/** the front structures of the blocks, before each entrance toward its car park (inside each footprint): the owner's
+ *  photo of Block A's front - its whole front face is brick, a white strip with the arched stair window up the middle,
+ *  its sides white with balconies; lower than the wings behind it. The same on every block (the owner) */
+const FRONTS: [number, number][] = [[582, -612], [543.2, -601.5], [576.4, -751.8], [539.9, -740.9], [704.7, -676.5]];
 function wing(i: number): Spec {
   const { b, rects } = WINGS[i];
+  const front = FRONTS.some(([x, z]) => x > b.minX && x < b.maxX && z > b.minZ && z < b.maxZ), FL = front ? NF - 1 : NF;
+  /** the faces of a rectangle faced in brick: its two ends, or a front structure's front (+z) */
+  const ends = (r: Rect): ('x0' | 'x1' | 'z0' | 'z1')[] => (front ? ['z1'] : r[1] - r[0] >= r[3] - r[2] ? ['x0', 'x1'] : ['z0', 'z1']);
   const O: [number, number] = [(b.minX + b.maxX) / 2, (b.minZ + b.maxZ) / 2];
   const all = WINGS.flatMap((w) => w.rects);
   const blocks: Block[] = rects.map((r) => {
-    const alongX = r[1] - r[0] >= r[3] - r[2];
-    const faces: Block['faces'] = alongX ? { x0: NP_END, x1: NP_END } : { z0: NP_END, z1: NP_END };
-    return { x0: r[0] - O[0], x1: r[1] - O[0], z0: r[2] - O[1], z1: r[3] - O[1], floors: NF, faces };
+    const faces: Block['faces'] = {};
+    for (const f of ends(r)) faces[f] = NP_END;
+    return { x0: r[0] - O[0], x1: r[1] - O[0], z0: r[2] - O[1], z1: r[3] - O[1], floors: FL, faces };
   });
   const biggest = rects.reduce((m, r) => ((r[1] - r[0]) * (r[3] - r[2]) > (m[1] - m[0]) * (m[3] - m[2]) ? r : m), rects[0]);
   return {
@@ -90,13 +100,12 @@ function wing(i: number): Spec {
     blocks,
     keep: [],
     extras: (k) => {
-      const e = k.wallTop(NF);
-      // the white strip up the middle of each open end wall, the stair's tall barred windows in it under an arched head
+      const e = k.wallTop(FL);
+      // the white strip up the middle of each open brick wall, the stair's tall barred windows in it under an arched head
       for (const r of rects) {
-        const alongX = r[1] - r[0] >= r[3] - r[2];
-        for (const side of (alongX ? ['x0', 'x1'] : ['z0', 'z1']) as ('x0' | 'x1' | 'z0' | 'z1')[]) {
+        for (const side of ends(r)) {
           if (all.some((o) => o !== r && touches(r, o, side))) continue;
-          const w = alongX ? r[3] - r[2] : r[1] - r[0];
+          const w = side[0] === 'x' ? r[3] - r[2] : r[1] - r[0];
           if (w < 6) continue;
           const s = side.endsWith('0') ? -1 : 1, at = (side[0] === 'x' ? (s < 0 ? r[0] : r[1]) - O[0] : (s < 0 ? r[2] : r[3]) - O[1]) + s * 0.03;
           const m = side[0] === 'x' ? (r[2] + r[3]) / 2 - O[1] : (r[0] + r[1]) / 2 - O[0];
@@ -107,9 +116,9 @@ function wing(i: number): Spec {
           if (side[0] === 'x') arch.rotateY(s > 0 ? Math.PI / 2 : -Math.PI / 2).translate(at + s * 0.04, e - 1.2, m);
           else arch.rotateY(s > 0 ? 0 : Math.PI).translate(m, e - 1.2, at + s * 0.04);
           k.plain.push([arch, WHITE_NP]);
-          for (let f = 0; f < NF; f++) {
+          for (let f = 0; f < FL; f++) {
             const y = PL + f * NST + 0.6;
-            k.plain.push([s > 0 ? B(-0.55, 0.55, y, y + (f === NF - 1 ? 2.2 : 1.9), 0.04, 0.06) : B(-0.55, 0.55, y, y + (f === NF - 1 ? 2.2 : 1.9), -0.06, -0.04), '#26282a']);
+            k.plain.push([s > 0 ? B(-0.55, 0.55, y, y + (f === FL - 1 ? 2.2 : 1.9), 0.04, 0.06) : B(-0.55, 0.55, y, y + (f === FL - 1 ? 2.2 : 1.9), -0.06, -0.04), '#26282a']);
             for (let a = -0.45; a <= 0.46; a += 0.15) k.plain.push([s > 0 ? B(a - 0.015, a + 0.015, y, y + 1.9, 0.06, 0.08) : B(a - 0.015, a + 0.015, y, y + 1.9, -0.08, -0.06), '#d9d9d4']);
           }
         }
@@ -175,29 +184,30 @@ const grounds: Spec = {
     const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
     const gy = (x: number, z: number) => k.ground(X(x), Z(z));
     const c: Part[] = [];
-    // a wall of brick panels between grey piers along x, from za to zb (north), a steel gate across [g0, g1]
-    const wall = (x: number, za: number, zb: number, gate: [number, number] | null, h = 2.3) => {
+    // the brick walls (the owner's photos after the third PDF): along Pent Road a wall of brick panels between square
+    // cream-white pillars only from one wing's end to the next, a grey steel gate in it - on Blocks A and B between the
+    // wing on the road and the wing north of it, the gate near the north wing; on Block C's west side from the
+    // generator's platform to the transformer, the gate on the brick-paved drive
+    const wall = (x: number, za: number, zb: number, gate: [number, number], h = 2.3) => {
       for (let z = za; z > zb + 0.01; z -= 3) {
         const z1 = Math.max(zb, z - 3), y = gy(x, z);
-        c.push([B(x - 0.25, x + 0.25, y - 0.1, y + h + 0.2, z - 0.25, z + 0.25), '#8d9094']);
-        if (gate && z1 < gate[1] && z > gate[0]) continue;
+        c.push([B(x - 0.25, x + 0.25, y - 0.1, y + h + 0.2, z - 0.25, z + 0.25), '#ece6d2']);
+        if (z1 < gate[0] && z > gate[1]) continue;
         k.plain.push([B(x - 0.11, x + 0.11, y - 0.1, y + h, z1, z), '#a4482f']);
         for (let yy = y + 0.25; yy < y + h; yy += 0.3) k.plain.push([B(x - 0.115, x + 0.115, yy, yy + 0.02, z1, z), '#c7b6a3']);
-        k.plain.push([B(x - 0.15, x + 0.15, y + h, y + h + 0.08, z1, z), '#8d9094']);
+        k.plain.push([B(x - 0.15, x + 0.15, y + h, y + h + 0.08, z1, z), '#ece6d2']);
         for (let zz = z; zz > z1; zz -= 0.9) SOLIDS.add(x, zz, 0.2);
       }
-      if (gate) {
-        const y = gy(x, (gate[0] + gate[1]) / 2);
-        c.push([B(x - 0.3, x + 0.3, y, y + h + 0.4, gate[0] - 0.3, gate[0] + 0.3), '#8d9094'], [B(x - 0.3, x + 0.3, y, y + h + 0.4, gate[1] - 0.3, gate[1] + 0.3), '#8d9094']);
-        k.plain.push([B(x - 0.05, x + 0.05, y + 0.05, y + h + 0.1, gate[1] + 0.3, gate[0] - 0.3), '#a9adb1']);
-        for (let zz = gate[1] + 0.5; zz < gate[0] - 0.3; zz += 0.5) k.plain.push([B(x - 0.07, x + 0.07, y + 0.05, y + h + 0.1, zz, zz + 0.04), '#8a8e92']);
-        for (let zz = gate[1]; zz < gate[0]; zz += 0.9) SOLIDS.add(x, zz, 0.2);
-      }
+      c.push([B(x - 0.25, x + 0.25, gy(x, zb) - 0.1, gy(x, zb) + h + 0.2, zb - 0.25, zb + 0.25), '#ece6d2']);
+      const y = gy(x, (gate[0] + gate[1]) / 2);
+      c.push([B(x - 0.3, x + 0.3, y, y + h + 0.4, gate[0] - 0.3, gate[0] + 0.3), '#ece6d2'], [B(x - 0.3, x + 0.3, y, y + h + 0.4, gate[1] - 0.3, gate[1] + 0.3), '#ece6d2']);
+      k.plain.push([B(x - 0.05, x + 0.05, y + 0.05, y + h + 0.1, gate[1] + 0.3, gate[0] - 0.3), '#a9adb1']);
+      for (let zz = gate[1] + 0.5; zz < gate[0] - 0.3; zz += 0.5) k.plain.push([B(x - 0.07, x + 0.07, y + 0.05, y + h + 0.1, zz, zz + 0.04), '#8a8e92']);
+      for (let zz = gate[1]; zz < gate[0]; zz += 0.9) SOLIDS.add(x, zz, 0.2);
     };
-    // Block A's east side along Pent Road, the gate opposite the road to Block C
-    wall(618.5, -598, -712, [-646, -652]);
-    // Block C's west side, its gate on the brick drive opposite the road between Blocks A and B
-    wall(634.5, -664, -738, [-714, -720]);
+    wall(611.6, -649.4, -672.2, [-664.6, -668.8]);
+    wall(605.6, -789.3, -810.4, [-802.4, -806.6]);
+    wall(634.5, -709.4, -745.8, [-714, -720]);
     k.plain.push([B(625.5, 634.2, gy(630, -717), gy(630, -717) + 0.04, -720.2, -713.8), '#9a5644']);
     // the transformer in its caged pen beside the gate
     { const x = 636.5, z = -710.5, y = gy(x, z);
@@ -217,7 +227,7 @@ const grounds: Spec = {
       for (let x = x0 + 0.5; x < x1 - 0.4; x += 0.25) k.plain.push([B(x, x + 0.06, y + 0.4, y + 1.6, z1 - 0.42, z1 - 0.4), '#b9bab5']);
       SOLIDS.add((x0 + x1) / 2, (z0 + z1) / 2, Math.max(x1 - x0, z1 - z0) / 2);
     };
-    genShed(612.0, 616.6, -612, -604, gy(614, -608), false);
+    genShed(606.0, 610.8, -679.5, -673.2, gy(608, -676), false);
     { const y = gy(640.5, -752) + 0.9;
       k.plain.push([B(636.2, 643.0, y - 1.2, y, -757.5, -746.5), '#b9b3a6']);
       genShed(637.0, 642.2, -756.5, -747.5, y, true); }

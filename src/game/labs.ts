@@ -23,7 +23,7 @@ import { BAND, PL, createSite, render, type Block, type Kit, type Spec, type Sty
 import { concrete } from './concrete';
 import { SOLIDS } from './solids';
 import { garden } from './gardens';
-import { BIO_WALL, bioBlocks, bioParts, type BioRange } from './biology';
+import { BIO_WALL, bioBlocks, bioParts, frontVerandah, type BioRange } from './biology';
 
 /** rain streaks hanging down a facade canvas from the top of each storey */
 const streaks = (g: CanvasRenderingContext2D, n: number, a: number, tops: number[]) => {
@@ -183,25 +183,31 @@ const nursing: Spec = (() => {
   const X = (x: number) => x - NO[0], Z = (z: number) => z - NO[1];
   const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
   const XS = [-355.0, -308.0], ZN = -198.9, ZS = -180.9;
+  /** the north block and the link between it and the main block (the owner's top view: violet and yellow) */
+  const VB = [-337.7, -326.3, -221.5, -207.3], LK = [-331.0, -326.0, -207.3, ZN + 1.4];
   const upZ = [ZN + 1.4, ZS - 2.1];
   const U = PL + NG, TOP = U + 2 * NST + BAND;
   return {
     name: 'School Of Nursing and Midwifery',
     axis: [1, 0], origin: NO, storey: NST, style: N_TOP, roofColor: '#cfcdc6', fascia: '#f5f5f2', pitch: 0.2, plinth: '#f2f2ef',
+    // the north block (the owner's violet mark) is part of the school, joined to the main block by the entrance core
+    replaces: [[-332, -214.4]],
     blocks: [
+      // the north block: three floors of white wall with small windows, on the ground
+      { x0: X(VB[0]), x1: X(VB[1]), z0: Z(VB[2]), z1: Z(VB[3]), floors: 3, roof: 'none', faces: { x0: N_NORTH, x1: N_NORTH, z0: N_NORTH, z1: N_NORTH }, floorStyle: { 0: N_NORTH } },
+      // the link (the owner's yellow mark): the entrance core from the main block's north face to the north block
+      { x0: X(LK[0]), x1: X(LK[1]), z0: Z(LK[2]), z1: Z(LK[3]), floors: 3, roof: 'none', faces: { x0: N_NORTH, x1: N_NORTH, z0: N_NORTH, z1: N_NORTH }, floorStyle: { 0: N_NORTH } },
       { x0: X(XS[0] + 1.2), x1: X(XS[1] - 1.2), z0: Z(ZN + 1.6), z1: Z(ZS - 3.6), floors: 1, roof: 'none', faces: { x0: N_GROUND, x1: N_GROUND, z0: N_GROUND, z1: N_GROUND }, floorStyle: { 0: N_GROUND } },
       { x0: X(XS[0]), x1: X(XS[1]), z0: Z(upZ[0]), z1: Z(upZ[1]), floors: 2, roof: 'none', y: U - PL + 0.0, faces: { z0: N_NORTH, x0: N_NORTH, x1: N_NORTH } },
     ],
-    keep: [[X(XS[0]) - 1, X(XS[1]) + 1, Z(ZS) - 0.5, Z(ZS) + 3], [X(-363), X(-299), Z(-228), Z(ZN)]],
+    keep: [[X(XS[0]) - 1, X(XS[1]) + 1, Z(ZS) - 0.5, Z(ZS) + 3], [X(-321), X(-299), Z(-228), Z(ZN)], [X(-340), X(-321), Z(-223), Z(ZN)]],
     extras: (k: Kit) => {
       const c: Part[] = [];
       // the floors over the set-back ground floor, the soffit lit
       c.push([B(XS[0], XS[1], U - 0.35, U + 0.05, ZN, ZS), '#f2f2ef']);
       for (let x = XS[0] + 2.5; x < XS[1] - 1; x += 4.5) for (const z of [ZS - 1.5, ZN + 0.9]) k.plain.push([B(x - 0.35, x + 0.35, U - 0.38, U - 0.35, z - 0.15, z + 0.15), '#fff3d0']);
       // square columns along the open ground floor
-      // (on the north only under the east block: the gallery bay, the entrance core, the stair tower and the west block
-      // come down to the ground there, one building with it - the owner's PDF no. 2, page 6)
-      for (let x = XS[0] + 0.5; x <= XS[1] - 0.4; x += 4.5) for (const z of [ZS - 0.6, ZN + 0.5]) if (z === ZS - 0.6 || x > -326) c.push([B(x - 0.28, x + 0.28, 0, U - 0.35, z - 0.28, z + 0.28), '#f4f4f1']);
+      for (let x = XS[0] + 0.5; x <= XS[1] - 0.4; x += 4.5) for (const z of [ZS - 0.6, ZN + 0.5]) if (x < LK[0] - 0.3 || x > LK[1] + 0.3) c.push([B(x - 0.28, x + 0.28, 0, U - 0.35, z - 0.28, z + 0.28), '#f4f4f1']);
       // the balconies on both upper floors: the slab, a solid parapet pierced by a row of slots; round the middle of
       // the south front they step out a further metre
       const mid = [-339.0, -324.0];
@@ -209,7 +215,7 @@ const nursing: Spec = (() => {
         const y = U + f * NST;
         for (const [side, zw, ze] of [[1, upZ[1], ZS], [-1, upZ[0], ZN]] as [number, number, number][]) {
           // (on the north front only the open gallery bay between the entrance core and the east block: pages 1-4)
-          const segs: [number, number, number][] = side > 0 ? [[XS[0], mid[0], ze], [mid[0], mid[1], ze + 1.0], [mid[1], XS[1], ze]] : [[-332, -326, ze]];
+          const segs: [number, number, number][] = side > 0 ? [[XS[0], mid[0], ze], [mid[0], mid[1], ze + 1.0], [mid[1], XS[1], ze]] : [[-326, -321, ze]];
           for (const [a, b, zo] of segs) {
             const [lo, hi] = [Math.min(zw, zo), Math.max(zw, zo)];
             c.push([B(a, b, y - 0.3, y, lo, hi), '#f4f4f1']);
@@ -219,69 +225,75 @@ const nursing: Spec = (() => {
             k.plain.push([B(a, b, y + 0.35, y + 0.6, (zp0 + zp1) / 2 - 0.02, (zp0 + zp1) / 2 + 0.02), '#2a2c2e']);
           }
           if (side > 0) for (const x of mid) c.push([B(x - 0.09, x + 0.09, y, y + 1.0, ze, ze + 1.0), '#f4f4f1']);
-          for (const x of side > 0 ? XS : [-332, -326]) c.push([B(x - 0.09, x + 0.09, y, y + 1.0, Math.min(zw, ze), Math.max(zw, ze)), '#f4f4f1']);
+          for (const x of side > 0 ? XS : [-326, -321]) c.push([B(x - 0.09, x + 0.09, y, y + 1.0, Math.min(zw, ze), Math.max(zw, ze)), '#f4f4f1']);
         }
       }
-      // ----- the north front onto the car park (the owner's PDF, pages 1-4), east to west: the block with the school's
-      // name, its two upper floors solid white with few windows, the top one standing out further over the one below;
-      // the open gallery bay; the entrance core with small balconies stacked over the lit door and a second name board;
-      // the tall blank stair tower; the three-floor block at the west end, small windows and air-conditioners; a shed
-      // with blue doors at its foot
-      const WH = '#f2f2ef', win = (x0: number, x1: number, y0: number, y1: number, z: number) => {
-        k.plain.push([B(x0 - 0.08, x1 + 0.08, y0 - 0.08, y1 + 0.08, z - 0.03, z), '#2c2e30']);
-        for (let y = y0 + 0.08; y < y1 - 0.05; y += 0.14) k.plain.push([B(x0, x1, y, y + 0.07, z - 0.05, z - 0.03), '#7d8a92']);
+      // ----- the north side (the owner's top view and street photo, after the PDF no. 2): the main block on its columns,
+      // the block with the school's name at its east end, its upper floors solid white with few windows, the top one
+      // standing out further; west of it the open gallery bay; then the entrance core (the owner's yellow mark) running
+      // north to the north block (violet), small balconies stacked over its lit door and a second name board, the tall
+      // blank stair tower at the north block's corner; the north block three floors, small windows and
+      // air-conditioners, a shed with blue doors at its foot; the car park east of them
+      const WH = '#f2f2ef', win = (x0: number, x1: number, y0: number, y1: number, z: number, s = -1) => {
+        if (s < 0) {
+          k.plain.push([B(x0 - 0.08, x1 + 0.08, y0 - 0.08, y1 + 0.08, z - 0.03, z), '#2c2e30']);
+          for (let y = y0 + 0.08; y < y1 - 0.05; y += 0.14) k.plain.push([B(x0, x1, y, y + 0.07, z - 0.05, z - 0.03), '#7d8a92']);
+        } else {
+          // (x0, x1 are z positions on an east face at x = z)
+          k.plain.push([B(z, z + 0.03, y0 - 0.08, y1 + 0.08, x0 - 0.08, x1 + 0.08), '#2c2e30']);
+          for (let y = y0 + 0.08; y < y1 - 0.05; y += 0.14) k.plain.push([B(z + 0.03, z + 0.05, y, y + 0.07, x0, x1), '#7d8a92']);
+        }
       };
       // the east block: floor 1 out to the line of the footprint, floor 2 another 1.2 m beyond it and past the east end
-      c.push([B(-326, -308, U - 0.35, U + NST, ZN, upZ[0]), WH]);
-      c.push([B(-327, -306.8, U + NST, TOP, ZN - 1.2, upZ[0]), WH]);
-      c.push([B(-327, -306.8, U + NST - 0.3, U + NST, ZN - 1.2, ZN), '#e6e5e0']);
-      win(-321.5, -319.3, U + 1.0, U + 2.2, ZN); win(-313.0, -311.4, U + 1.1, U + 2.0, ZN);
-      win(-323.0, -320.0, U + NST + 1.0, U + NST + 2.3, ZN - 1.2); win(-314.5, -312.5, U + NST + 1.1, U + NST + 2.1, ZN - 1.2);
+      c.push([B(-321, -308, U - 0.35, U + NST, ZN, upZ[0]), WH]);
+      c.push([B(-321.5, -306.8, U + NST, TOP, ZN - 1.2, upZ[0]), WH]);
+      c.push([B(-321.5, -306.8, U + NST - 0.3, U + NST, ZN - 1.2, ZN), '#e6e5e0']);
+      win(-318.5, -316.3, U + 1.0, U + 2.2, ZN); win(-313.0, -311.4, U + 1.1, U + 2.0, ZN);
+      win(-319.0, -316.5, U + NST + 1.0, U + NST + 2.3, ZN - 1.2); win(-314.5, -312.5, U + NST + 1.1, U + NST + 2.1, ZN - 1.2);
       // the name board high on the east end, toward the drive (the owner's PDF no. 2, pages 6-7)
       c.push([B(-306.8, -306.3, U, TOP, ZN - 1.2, -186), WH]);
       k.plain.push([B(-306.28, -306.22, TOP - 1.3, TOP - 0.2, -197.5, -190.5), '#f6f6f3']);
       k.signs.push({ text: 'SCHOOL OF NURSING AND MIDWIFERY', x: X(-306.2), y: TOP - 0.55, z: Z(-194), ry: Math.PI / 2, w: 6.4, colors: ['#f6f6f3', '#1d2a5a'] });
       k.signs.push({ text: 'COLLEGE OF HEALTH SCIENCES - UNIVERSITY OF GHANA, LEGON', x: X(-306.2), y: TOP - 1.0, z: Z(-194), ry: Math.PI / 2, w: 6.4, colors: ['#f6f6f3', '#1d2a5a'] });
-      // the ground floor under the gallery bay and the core: a solid wall out to the face, windows, the door in the core
-      c.push([B(-342, -326, 0, U, ZN, ZN + 1.6), WH]);
-      win(-331.0, -328.0, 1.1, 2.3, ZN); win(-341.2, -338.6, 1.1, 2.3, ZN);
-      // the entrance core: small balconies with rails on both upper floors, the board over the lit door
+      // the entrance core: small balconies with rails stacked on its east face over the lit door, the board over it
       for (let f = 0; f < 2; f++) {
-        const y = U + f * NST;
-        c.push([B(-337, -332, y - 0.25, y, ZN - 1.4, upZ[0]), WH], [B(-337, -332, y, y + 0.35, ZN - 1.45, ZN - 1.3), WH]);
-        for (let x = -336.8; x < -332; x += 0.18) c.push([B(x, x + 0.04, y + 0.35, y + 1.0, ZN - 1.4, ZN - 1.36), '#d9d9d6']);
-        c.push([B(-337, -332, y + 0.98, y + 1.04, ZN - 1.42, ZN - 1.34), '#d9d9d6']);
-        k.plain.push([B(-336.6, -332.4, y + 0.1, y + 2.6, upZ[0] - 0.04, upZ[0]), '#33373a']);
+        const y = U + f * NST, zb0 = -205.0, zb1 = -200.6;
+        c.push([B(LK[1], LK[1] + 1.4, y - 0.25, y, zb0, zb1), WH], [B(LK[1] + 1.3, LK[1] + 1.45, y, y + 0.35, zb0, zb1), WH]);
+        for (let z = zb0 + 0.1; z < zb1; z += 0.18) c.push([B(LK[1] + 1.36, LK[1] + 1.4, y + 0.35, y + 1.0, z, z + 0.04), '#d9d9d6']);
+        c.push([B(LK[1] + 1.34, LK[1] + 1.42, y + 0.98, y + 1.04, zb0, zb1), '#d9d9d6']);
+        k.plain.push([B(LK[1], LK[1] + 0.04, y + 0.1, y + 2.6, zb0 + 0.4, zb1 - 0.4), '#33373a']);
       }
-      k.plain.push([B(-336, -333, 2.3, 2.9, ZN + 1.55, ZN + 1.6), '#f6f6f3']);
-      k.signs.push({ text: 'SCHOOL OF NURSING AND MIDWIFERY', x: X(-334.5), y: 2.6, z: Z(ZN + 1.54), ry: Math.PI, w: 2.8, colors: ['#f6f6f3', '#1d2a5a'] });
-      k.plain.push([B(-335.4, -333.6, 0.1, 2.3, ZN + 1.58, ZN + 1.62), '#1f2326']);
-      k.plain.push([B(-335, -334, 2.95, 3.05, ZN + 1.0, ZN + 1.5), '#fff3d0']);
-      // the stair tower, blank and taller than the rest
-      c.push([B(-342, -337, 0, TOP + 1.8, ZN - 0.3, upZ[0] + 2.0), WH]);
-      // the west block: flush to the footprint on all three floors, small windows, air-conditioners
-      c.push([B(-355, -342, 0, TOP, ZN, upZ[0] + 1.5), WH]);
-      for (let f = 0; f < 3; f++) for (const x of [-352.5, -349.5, -346.5, -343.8]) {
-        const y = f === 0 ? 1.2 : U + (f - 1) * NST + 1.0;
-        win(x - 0.4, x + 0.4, y, y + 0.9, ZN);
-        if (f && x !== -343.8) c.push([B(x + 0.6, x + 1.3, y - 0.3, y + 0.2, ZN - 0.35, ZN), '#e6e7e5']);
+      k.plain.push([B(LK[1] + 0.02, LK[1] + 0.06, 2.4, 3.0, -204.4, -201.2), '#f6f6f3']);
+      k.signs.push({ text: 'SCHOOL OF NURSING AND MIDWIFERY', x: X(LK[1] + 0.07), y: 2.7, z: Z(-202.8), ry: Math.PI / 2, w: 2.8, colors: ['#f6f6f3', '#1d2a5a'] });
+      k.plain.push([B(LK[1], LK[1] + 0.05, 0.1, 2.3, -203.7, -201.9), '#1f2326']);
+      k.plain.push([B(LK[1], LK[1] + 0.5, 2.95, 3.05, -203.3, -202.3), '#fff3d0']);
+      k.plain.push([B(LK[1], LK[1] + 1.6, 0, 0.15, -204.6, -201.0), '#cfcac0']);
+      // the stair tower, blank and taller than the rest, at the north block's south-east corner
+      c.push([B(-327.6, -323.6, 0, TOP + 1.8, -211.5, -206.4), WH]);
+      // the north block: small windows on its east face, air-conditioners; the flat roof's deep fascia
+      for (let f = 0; f < 3; f++) for (const z of [-219.5, -216.5, -213.5]) {
+        const y = 1.2 + f * NST;
+        win(z - 0.4, z + 0.4, y, y + 0.9, VB[1], 1);
+        if (f) c.push([B(VB[1], VB[1] + 0.35, y - 0.3, y + 0.2, z + 0.6, z + 1.3), '#e6e7e5']);
       }
-      // the lean-to shed with blue doors at its foot, its roof of rusty sheet
-      c.push([B(-353.5, -345.5, 0, 2.6, ZN - 3.2, ZN), '#e9e8e3']);
-      for (const x of [-352.6, -349.8, -347.0]) k.plain.push([B(x, x + 1.8, 0.1, 2.2, ZN - 3.24, ZN - 3.2), '#2f73b8']);
+      for (let f = 0; f < 3; f++) for (const x of [-336, -333, -330]) win(x - 0.4, x + 0.4, 1.2 + f * NST, 2.1 + f * NST, VB[2]);
+      c.push([B(VB[0] - 0.8, VB[1] + 0.8, k.wallTop(3) - 0.1, k.wallTop(3) + 0.7, VB[2] - 0.8, VB[3] + 0.8), '#f6f6f3']);
+      // the lean-to shed with blue doors at its foot on the east, its roof of rusty sheet
+      c.push([B(VB[1], VB[1] + 3.0, 0, 2.6, -221.2, -214.5), '#e9e8e3']);
+      for (const z of [-220.4, -218.0]) k.plain.push([B(VB[1] + 3.0, VB[1] + 3.04, 0.1, 2.2, z, z + 1.8), '#2f73b8']);
       k.roof.c = new THREE.Color('#7d5a46');
-      k.roof.quad([X(-354), 2.75, Z(ZN - 3.6)], [X(-345), 2.75, Z(ZN - 3.6)], [X(-345), 3.3, Z(ZN)], [X(-354), 3.3, Z(ZN)]);
+      k.roof.quad([X(VB[1]), 3.3, Z(-221.6)], [X(VB[1] + 3.4), 2.75, Z(-221.6)], [X(VB[1] + 3.4), 2.75, Z(-214.1)], [X(VB[1]), 3.3, Z(-214.1)]);
+      SOLIDS.add(VB[1] + 1.5, -217.8, 2.2);
       // ----- the car park along the north front: asphalt, white bays, kerbs, a strip of hedge and flowers along the
       // building; the coconut palm and the fan palm, the paved walk; at its west end a gate in a fence of grey
       // corrugated sheet and white palisade, the big spreading tree beyond it
-      const CP: [number, number, number, number][] = [[-362, -300, -205, -200.2], [-362, -339.5, -227, -205], [-324.5, -300, -227, -205]];
+      const CP: [number, number, number, number][] = [[-321, -300, -205, -200.2], [-320, -300, -227, -205]];
       for (const [x0, x1, z0, z1] of CP) k.plain.push([B(x0, x1, 0.015, 0.04, z0, z1), '#4f5154']);
-      for (let x = -359; x <= -341; x += 2.6) k.plain.push([B(x - 0.05, x + 0.05, 0.04, 0.045, -226.5, -221.5), '#ececE7']);
-      for (let x = -322; x <= -302; x += 2.6) k.plain.push([B(x - 0.05, x + 0.05, 0.04, 0.045, -226.5, -221.5), '#ececE7']);
-      for (let x = -356; x <= -304; x += 2.6) k.plain.push([B(x - 0.05, x + 0.05, 0.04, 0.045, -205, -201.8), '#ececE7']);
-      c.push([B(-362, -300, 0, 0.18, -200.4, -200.1), '#d6d3cb']);
+            for (let x = -322; x <= -302; x += 2.6) k.plain.push([B(x - 0.05, x + 0.05, 0.04, 0.045, -226.5, -221.5), '#ececE7']);
+      for (let x = -319; x <= -304; x += 2.6) k.plain.push([B(x - 0.05, x + 0.05, 0.04, 0.045, -205, -201.8), '#ececE7']);
+      c.push([B(-321, -300, 0, 0.18, -200.4, -200.1), '#d6d3cb']);
       k.plain.push([B(-355, -309, 0.02, 0.06, -200.1, ZN), '#6a8a3a']);
-      for (let x = -354; x < -310; x += 1.6) k.plain.push([new THREE.IcosahedronGeometry(0.35, 0).scale(1.2, 0.8, 1).translate(X(x), 0.3, Z(-199.6)), (x | 0) % 3 ? '#3f6a2c' : '#c23a2e']);
+      for (let x = -354; x < -310; x += 1.6) if (x < LK[0] - 0.5 || x > LK[1] + 1.8) k.plain.push([new THREE.IcosahedronGeometry(0.35, 0).scale(1.2, 0.8, 1).translate(X(x), 0.3, Z(-199.6)), (x | 0) % 3 ? '#3f6a2c' : '#c23a2e']);
       const gn = garden([-375, -295, -240, -195]); gn.reseed(77);
       gn.palm(k, X(-306), Z(-202.5), 7.5); gn.palm(k, X(-357.5), Z(-201.2), 4.0);
       // the curved paved walk to the east block's corner, the flower beds by it
@@ -356,6 +368,9 @@ const animal: Spec = (() => {
     extras: (k: Kit) => {
       const st: Part[] = [], st2: Part[] = [];
       bioParts(k, AO, RANGES_A, st2);
+      // the west front toward the Department of Nutrition and Food Sciences, behind its row of pillars like Plant Biology's
+      // front (the owner's corrections PDF, page 2)
+      frontVerandah(k, AO, st2, -266.5, -202.7, -154.7, -1, false);
       // the walk along J.K.M. Hodasi Road (photo 4): brick paving between two low walls faced in rubble stone, young
       // palms in the verge
       const tex = canvas(128, 128, (g) => {
@@ -529,29 +544,4 @@ const unfinishedBlocks: Spec = (() => {
 })();
 
 /** Food Science, Nursing, and Animal Biology with the Centre for Biodiversity */
-// ---------- the three-floor block across the Nursing School's car park (the owner's PDF, pages 1-4) ----------
-/** white, windows of green-tinted glass in white frames, a wide one and a narrow one per bay, air-conditioners */
-const GREEN_WIN: Style = {
-  bay: 3.4, up: [[40, 60, 120, 96], [176, 50, 44, 150]], ground: [[40, 256 + 60, 120, 96], [176, 256 + 50, 44, 150]],
-  draw: (g) => {
-    render(g, '#f4f4f1');
-    for (const y0 of [0, 256]) {
-      for (const [x, y, w, h] of [[40, y0 + 60, 120, 96], [176, y0 + 50, 44, 150]]) {
-        g.fillStyle = '#f9f9f7'; g.fillRect(x - 6, y - 6, w + 12, h + 12);
-        g.fillStyle = '#5f8a7a'; g.fillRect(x, y, w, h);
-        g.fillStyle = 'rgba(210,235,225,0.3)'; g.fillRect(x + 3, y + 3, w * 0.4, h - 6);
-        g.fillStyle = '#f9f9f7'; g.fillRect(x, y + h * 0.3, w, 4); if (w > 60) g.fillRect(x + w / 2 - 2, y, 4, h);
-      }
-    }
-    g.fillStyle = '#c9c5bb'; g.fillRect(0, 512 - 18, 256, 18);
-  },
-};
-const northOfNursing: Spec = {
-  name: 'three-floor block north of the Nursing School', axis: [1, 0], origin: [-332, -214.4], storey: 3.3, style: GREEN_WIN, roofColor: '#6b2328', fascia: '#f4f4f1', pitch: 0.4, plinth: '#c9c5bb',
-  replaces: [[-332, -214.4]],
-  blocks: [{ x0: -5.7, x1: 5.7, z0: -7.1, z1: 7.1, floors: 3 }],
-  keep: [],
-  extras: () => undefined,
-};
-
-export const labsSite = createSite('labs', [foodScience, nursing, animal, unfinishedBlocks, northOfNursing]);
+export const labsSite = createSite('labs', [foodScience, nursing, animal, unfinishedBlocks]);

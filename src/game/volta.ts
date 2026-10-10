@@ -209,8 +209,15 @@ const ANNEX_BAL: Style = {
   draw: (g) => {
     render(g, '#f3f3f1');
     g.fillStyle = '#d9d7d0'; g.fillRect(26, 20, 204, 210);
-    g.fillStyle = '#24282b'; g.fillRect(40, 40, 76, 120); g.fillRect(132, 40, 84, 176);
-    g.fillStyle = '#5d6a73'; g.fillRect(46, 46, 30, 108); g.fillRect(82, 46, 30, 108); g.fillRect(138, 46, 34, 164); g.fillRect(178, 46, 34, 164);
+    // a window and a glazed door, glass divided by bars of black-painted wood (owner: glass, the divisions black wood)
+    for (const [x, y, w, h, cols, rows] of [[40, 40, 76, 120, 2, 3], [132, 40, 84, 176, 2, 4]]) {
+      const gl = g.createLinearGradient(0, y, 0, y + h); gl.addColorStop(0, '#8fa6b4'); gl.addColorStop(1, '#3d4c57');
+      g.fillStyle = gl; g.fillRect(x, y, w, h);
+      g.fillStyle = 'rgba(255,255,255,0.18)'; g.fillRect(x + 4, y + 4, w * 0.3, h - 8);
+      g.fillStyle = '#141414'; g.fillRect(x - 4, y - 4, w + 8, 6); g.fillRect(x - 4, y + h - 2, w + 8, 6); g.fillRect(x - 4, y, 6, h); g.fillRect(x + w - 2, y, 6, h);
+      for (let i = 1; i < cols; i++) g.fillRect(x + (w * i) / cols - 2, y, 5, h);
+      for (let j = 1; j < rows; j++) g.fillRect(x, y + (h * j) / rows - 2, w, 4);
+    }
     g.fillStyle = '#d7cdb2'; g.fillRect(0, 196, 26, 34); g.fillRect(230, 196, 26, 34);
     g.fillStyle = '#1b1c1d'; g.fillRect(26, 160, 204, 6); for (let x = 30; x < 230; x += 12) g.fillRect(x, 160, 3, 70);
     g.fillStyle = '#f6f6f3'; g.fillRect(0, 230, 256, 26);
@@ -218,7 +225,8 @@ const ANNEX_BAL: Style = {
     g.fillStyle = '#2a2e31'; g.fillRect(150, 256 + 120, 40, 40);
   },
 };
-const WA = (x0: number, x1: number, z0: number, z1: number, end = false): Block => ({ x0: x0 - A[0], x1: x1 - A[0], z0: z0 - A[1], z1: z1 - A[1], floors: 4, faces: end ? { x0: ANNEX_END, x1: ANNEX_BAL } : { x1: ANNEX_BAL } });
+// (the long sides of the ranges too: the owner's picture of the Annex, recessed balconies all along them)
+const WA = (x0: number, x1: number, z0: number, z1: number, end = false): Block => ({ x0: x0 - A[0], x1: x1 - A[0], z0: z0 - A[1], z1: z1 - A[1], floors: 4, faces: end ? { x0: ANNEX_END, x1: ANNEX_BAL, z0: ANNEX_BAL, z1: ANNEX_BAL } : { x1: ANNEX_BAL } });
 // the east front toward the Business School is continuous: the two ranges and the east cross block flush along it
 const ANNEX: Block[] = [WA(-317.3, -255.7, -86, -74.8, true), WA(-317.4, -255.7, -49, -38.9, true), WA(-302.1, -288.7, -74.8, -49), WA(-267.3, -255.7, -74.8, -49)];
 const annex: Spec = {
@@ -238,6 +246,18 @@ const annex: Spec = {
         k.plain.push([box(x0 - A[0], x1 - A[0], by, by + 0.18, Math.min(zz, zz + d), Math.max(zz, zz + d)), '#e4e3df']);
         k.plain.push([box(x0 - A[0], x1 - A[0], by + 0.18, by + 1.05, zz + d - 0.06, zz + d + 0.06), '#d9d8d3']);
       }
+    }
+    // the outer long sides (the owner's picture: recessed balconies, black railings): a white slab edge standing out at
+    // each upper floor, a black rail on it, white piers between the bays
+    for (const [z, d] of [[-86, -1], [-38.9, 1]] as [number, number][]) {
+      const zz = z - A[1], x0 = -317.3 - A[0], x1 = -255.7 - A[0];
+      for (let f = 1; f < 4; f++) {
+        const by = y + PL + f * 3.1;
+        k.plain.push([box(x0, x1, by - 0.25, by + 0.05, Math.min(zz, zz + d * 0.35), Math.max(zz, zz + d * 0.35)), '#f4f4f1']);
+        k.plain.push([box(x0, x1, by + 0.95, by + 1.0, zz + d * 0.3 - 0.02, zz + d * 0.3 + 0.02), '#1b1c1d']);
+        for (let x = x0 + 0.2; x < x1; x += 0.24) k.plain.push([box(x, x + 0.025, by + 0.05, by + 0.95, zz + d * 0.3 - 0.012, zz + d * 0.3 + 0.012), '#1b1c1d']);
+      }
+      for (let x = x0; x <= x1 + 0.01; x += 3.5) k.plain.push([box(x - 0.18, x + 0.18, y + PL + 3.1, y + PL + 4 * 3.1, Math.min(zz, zz + d * 0.35), Math.max(zz, zz + d * 0.35)), '#f4f4f1']);
     }
     // ----- the back toward the Graduate School (the owner's PDF no. 1, pages 21-23, placed on the east by mistake; no. 2,
     // page 1): between the plain white ends of the two ranges, the west cross block's three upper floors behind a

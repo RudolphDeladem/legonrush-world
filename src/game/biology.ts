@@ -103,6 +103,34 @@ export function bioParts(k: Kit, O: [number, number], ranges: BioRange[], c: Par
   }
 }
 
+/** a verandah along an outer face (the owner's corrections PDF, page 2: the range's front toward the road stands
+ *  behind a row of square white pillars with red-brown feet under the roof carried out over them): from a0 to a1 along
+ *  the face at `wall` (x, or z when alongX), reaching out on side s (+1 or -1) */
+export function frontVerandah(k: Kit, O: [number, number], c: Part[], a0: number, a1: number, wall: number, s: number, alongX: boolean, roof = TILE) {
+  const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(x0 - O[0], x1 - O[0], y0, y1, z0 - O[1], z1 - O[1]);
+  const P = (a: number, d: number, y: number): [number, number, number] => (alongX ? [a - O[0], y, wall + s * d - O[1]] : [wall + s * d - O[0], y, a - O[1]]);
+  const R = (a0_: number, a1_: number, d0: number, d1: number, y0: number, y1: number) => {
+    const [lo, hi] = [Math.min(wall + s * d0, wall + s * d1), Math.max(wall + s * d0, wall + s * d1)];
+    return alongX ? B(a0_, a1_, y0, y1, lo, hi) : B(lo, hi, y0, y1, a0_, a1_);
+  };
+  const e = k.wallTop(1), D = 2.2, edge = D - 0.25;
+  // the floor a step up, its red-brown edge; the beam over the pillars; the roof carried out over them
+  c.push([R(a0, a1, 0, D, 0, 0.22), '#cfc9bc'], [R(a0, a1, edge - 0.06, edge + 0.06, 0, 0.22), BASE]);
+  c.push([R(a0, a1, edge - 0.18, edge + 0.18, e - 0.55, e - 0.2), WHITE]);
+  // the boarded ceiling under the roof, shading the wall behind the pillars
+  c.push([R(a0, a1, 0, D, e - 0.3, e - 0.2), '#6a5a4c']);
+  k.roof.c = new THREE.Color(roof);
+  const q = (a: number, b: number) => (s > 0) === alongX ? [P(b, 0, e + 0.15), P(a, 0, e + 0.15), P(a, D + 0.4, e - 0.45), P(b, D + 0.4, e - 0.45)] : [P(a, 0, e + 0.15), P(b, 0, e + 0.15), P(b, D + 0.4, e - 0.45), P(a, D + 0.4, e - 0.45)];
+  k.roof.quad(...(q(a0 - 0.3, a1 + 0.3) as [[number, number, number], [number, number, number], [number, number, number], [number, number, number]]));
+  const n = Math.max(1, Math.round((a1 - a0) / 3.4));
+  for (let i = 0; i <= n; i++) {
+    const t = a0 + 0.3 + ((a1 - a0 - 0.6) * i) / n;
+    c.push([R(t - 0.17, t + 0.17, edge - 0.17, edge + 0.17, 0.22, e - 0.55), WHITE], [R(t - 0.19, t + 0.19, edge - 0.19, edge + 0.19, 0.22, 0.75), BASE]);
+    const [wx, wz] = alongX ? [t, wall + s * edge] : [wall + s * edge, t];
+    SOLIDS.add(wx, wz, 0.25);
+  }
+}
+
 /** a weeping ashoka tree (Polyalthia longifolia, owner's views 3 and 6): a tall narrow column of drooping foliage */
 export function ashoka(k: Kit, x: number, z: number, h: number, seed: number) {
   const y = k.ground(x, z), r0 = 1.05 + (seed % 3) * 0.12;
@@ -143,6 +171,9 @@ const plant: Spec = (() => {
     extras: (k: Kit) => {
       const c: Part[] = [], st: Part[] = [];
       bioParts(k, PO, PLANT, c);
+      // the front toward J.K.M. Hodasi Road and the Chemistry Extension (the owner's corrections PDF, page 2): the long
+      // range's south face behind its row of pillars, between the wings standing out south
+      for (const [a0, a1] of [[38.9, 51.7], [65.6, 108.5], [122.2, 190.2]]) frontVerandah(k, PO, c, a0, a1, -191.4, 1, true);
       // ----- the entrance (views 9 to 11) in the open court on the west: the terrace, its rubble-stone walls, the steps
       const tx0 = 45.0, tx1 = 51.7, tz0 = -228.8, tz1 = -205.8, th = 0.75, sz0 = -219.2, sz1 = -214.8;
       c.push([B(tx0, tx1, 0, th, tz0, tz1), '#cfc9bc']);

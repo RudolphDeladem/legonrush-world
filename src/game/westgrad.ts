@@ -340,22 +340,23 @@ const ricGrounds: Spec = (() => {
         const n = Math.ceil(len / 0.4);
         for (let j = 0; j <= n; j++) SOLIDS.add(ax + ((bx - ax) * j) / n, az + ((bz - az) * j) / n, 0.25);
       }
-      // the gate: white piers either side of the road, the security post on the east of it - flat roof with a deep white
-      // fascia over dark glazing, a white planter wall with palms and shrubs before it
+      // the gate: white piers either side of the road, the security post on the west of it, on the left as you come in
+      // (the owner's corrections PDF, page 1) - flat roof with a deep white fascia over dark glazing, a white planter
+      // wall with palms and shrubs before it
       for (const x of [-638.4, -628.6]) { c.push([B(x - 0.45, x + 0.45, 0, 2.6, -190.45, -189.55), '#f4f4f1']); SOLIDS.add(x, -190, 0.5); }
-      const [s0, s1, t0, t1] = [-624, -615, -199, -192.5];
+      const [s0, s1, t0, t1] = [-652, -643, -199, -192.5];
       c.push([B(s0, s1, 0, 0.3, t0, t1), '#d9d6cf'], [B(s0 + 0.2, s1 - 0.2, 0.3, 3.0, t0 + 0.2, t1 - 0.2), '#2a3036']);
-      k.glass.push(B(s0 + 0.15, s1 - 0.15, 0.6, 2.8, t1 - 0.2, t1 - 0.15), B(s0 + 0.15, s0 + 0.2, 0.6, 2.8, t0 + 0.2, t1 - 0.2));
+      k.glass.push(B(s0 + 0.15, s1 - 0.15, 0.6, 2.8, t1 - 0.2, t1 - 0.15), B(s1 - 0.2, s1 - 0.15, 0.6, 2.8, t0 + 0.2, t1 - 0.2));
       c.push([B(s0 - 0.8, s1 + 0.8, 3.0, 3.7, t0 - 0.8, t1 + 0.8), '#f6f6f3'], [B(s0 - 0.3, s1 + 0.3, 3.7, 4.4, t0 + 0.5, t1 - 1.0), '#f6f6f3']);
-      c.push([B(s0 - 0.6, s1, 0, 0.9, t1 + 0.9, t1 + 1.3), '#f6f6f3'], [B(s0 - 0.6, s0 - 0.2, 0, 0.9, t1 - 2, t1 + 1.3), '#f6f6f3'], [B(s0 - 0.6, s1, 0, 0.12, t1 + 0.9, t1 + 1.32), '#1c1d1f']);
+      c.push([B(s0, s1 + 0.6, 0, 0.9, t1 + 0.9, t1 + 1.3), '#f6f6f3'], [B(s1 + 0.2, s1 + 0.6, 0, 0.9, t1 - 2, t1 + 1.3), '#f6f6f3'], [B(s0, s1 + 0.6, 0, 0.12, t1 + 0.9, t1 + 1.32), '#1c1d1f']);
       for (let j = 0; j < 4; j++) SOLIDS.add(s0 + 1 + j * 2.4, (t0 + t1) / 2, 1.6);
       const g = garden([-700, -590, -275, -180]); g.reseed(233);
-      for (const [x, z] of [[-623, -189.5], [-619.5, -189.6], [-616, -189.5]]) g.palm(k, X(x), Z(z), 2.2);
-      for (const [x, z] of [[-621.3, -189.8], [-617.8, -189.8]]) k.plain.push([new THREE.ConeGeometry(0.45, 1.5, 8).translate(X(x), 0.75, Z(z)), '#2f5428']);
+      for (const [x, z] of [[-651, -189.5], [-647.5, -189.6], [-644, -189.5]]) g.palm(k, X(x), Z(z), 2.2);
+      for (const [x, z] of [[-649.3, -189.8], [-645.8, -189.8]]) k.plain.push([new THREE.ConeGeometry(0.45, 1.5, 8).translate(X(x), 0.75, Z(z)), '#2f5428']);
       // the brick-paved approach in from the gate to the court
       k.plain.push([new THREE.ShapeGeometry(new THREE.Shape([[-639, -190], [-628, -190], [-641, -228], [-650, -226]].map(([x, z]) => new THREE.Vector2(X(x), -Z(z))))).rotateX(-Math.PI / 2).translate(0, 0.04, 0), '#9a8c7c']);
       // lawns, orange-flowering shrubs along the fence, slender lamp posts, trees outside
-      for (let x = -682; x < -600; x += 9) for (const z of [-262, -194.5]) if (z === -262 || x < -642 || x > -612) k.plain.push([new THREE.IcosahedronGeometry(0.8, 1).scale(1.2, 0.8, 1).translate(X(x), 0.6, Z(z)), (x / 9) % 2 ? '#3f6a2c' : '#4b7a32']);
+      for (let x = -682; x < -600; x += 9) for (const z of [-262, -194.5]) if (z === -262 || x < -654 || x > -628) k.plain.push([new THREE.IcosahedronGeometry(0.8, 1).scale(1.2, 0.8, 1).translate(X(x), 0.6, Z(z)), (x / 9) % 2 ? '#3f6a2c' : '#4b7a32']);
       for (let x = -679; x < -602; x += 13) k.plain.push([new THREE.IcosahedronGeometry(0.22, 0).translate(X(x + 1), 1.1, Z(-261.6)), '#e8833a']);
       for (const [x, z] of [[-645, -212], [-630, -214], [-660, -205], [-612, -205]]) { c.push([new THREE.CylinderGeometry(0.05, 0.07, 4.2, 6).translate(X(x), 2.1, Z(z)), '#d9dcdf'], [B(x - 0.5, x + 0.5, 4.1, 4.2, z - 0.06, z + 0.06), '#d9dcdf']); SOLIDS.add(x, z, 0.12); }
       for (const [x, z, s] of [[-690, -180, 2.6], [-600, -178, 2.4], [-700, -235, 2.2], [-592, -250, 2.0]] as [number, number, number][]) g.tree(k, X(x), Z(z), s);

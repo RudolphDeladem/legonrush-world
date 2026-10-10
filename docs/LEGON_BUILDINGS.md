@@ -1629,6 +1629,47 @@ Round the blocks:
 - The positions of the generators, the transformer and the mast are from the photos, not measured.
 - The page 67 caption speaks of four small buildings; the game has six there, and all six now have the broken roof.
 
+## 64. Corrections after the third PDF (the owner's message and corrections PDF)
+
+The owner's pictures are `images/515-530.jpg`.
+
+- **Volta Hall Annex**:
+  - every long side now has recessed balconies with black railings, as in the owner's street photo;
+  - the windows are glass, divided by bars of black-painted wood;
+  - white slab edges stand out at each upper floor, with white piers between the bays (`volta.ts`).
+- **Nursing School**: the block north of it (violet on the owner's top view) is part of the school, not a separate
+  green-windowed building. It is joined to the main block by the entrance core (yellow):
+  - the core has small balconies stacked over the lit door, with the second name board;
+  - the tall blank stair tower stands at the north block's corner;
+  - the north block has three floors of white wall with small windows and air-conditioners, and the shed with blue
+    doors at its foot;
+  - the main block stands on columns all along its north side, and the car park lies east of the north block
+    (`labs.ts`).
+- **Research and Innovation Complex**: the security post moved to the west of the gate, on the left as you come in
+  (`westgrad.ts`).
+- **Plant Biology and Animal Biology**: the fronts now have their rows of square white pillars with red-brown feet
+  under the roof carried out over them:
+  - Plant Biology on its south front toward J.K.M. Hodasi Road and the Chemistry Extension;
+  - Animal Biology on its west front toward the Department of Nutrition and Food Sciences (`biology.ts`, `labs.ts`).
+- **The building before Volta Hall mapped as "Rest station"** is an open bus stop: a tiled roof on four timber posts,
+  a bench, a notice board and the sign.
+- **The small buildings before Volta Hall**:
+  - the cottage north of the substation is removed, along with the iron cage under the big tree;
+  - the substation and its generator pavilion moved into its place (`corrections.json`, `voltafront.ts`).
+- **BESTIES** is not at Volta Hall. It now stands before Legon Hall's west block, across Dr. J.B. Danquah Avenue from
+  the Fidelity ATM, with its forecourt and STOP barrier.
+- **The building opposite Absa**: the generators under their lean-to moved to the back; the front has two big
+  satellite dishes behind the railing (`balme.ts`).
+- **Behind Old Pent**: the small buildings on the lane from Annie Jiagge Road are removed (the owner circled two; a
+  third footprint stood directly behind the first).
+- **New Pent**:
+  - each block's front structure is lower, its whole front faced in brick with the white stair strip and arched
+    window, its sides white with balconies; the same on Blocks A, B and C;
+  - the brick walls with cream-white pillars run only from one wing to the next along Pent Road, with a grey steel
+    gate: on Blocks A and B the gate is near the north wing, and Block A's generator stands beside it; on Block C's
+    west side the wall runs from the generator's platform to the transformer, its gate on the brick drive
+    (`newpent.ts`).
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

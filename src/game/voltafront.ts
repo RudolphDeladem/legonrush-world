@@ -1,16 +1,14 @@
 // The small one-floor buildings along Volta Hall Road before Volta Hall, toward the CEDI Conference Centre (owner's
 // second reference PDF, pages 33-40), each modelled as the photos show it rather than as the generic cottage:
 //
-// - the substation by the road: weathered whitewash stained orange at its foot by the red earth, an old red clay tile
-//   hipped roof, wide double doors of dark timber with louvred panels and a yellow danger sign, a small timber window,
-//   a slatted vent, a meter box and a switch box on the wall; south of it a pavilion of four steel posts under a red
-//   sheet pyramid roof sheltering the standby generator in its cream box (owner's photos 404 and 406);
-// - the cottage north of it, the same weathered white under red tiles, its door in a timber frame and small windows,
-//   and beside it under a big tree the small enclosure caged in red iron bars (photo 408, position approximate);
-// - the wider cottage behind them, weathered white under red tiles;
-// - the washroom ("Rest station", photo 410): white, a row of small dark windows high in the wall, a red tile hipped
-//   roof with a raised lantern under its own little hipped roof, louvred vents in the lantern, the entrance on its
-//   corner porch, its signs GENTS and WASH ROOM.
+// - the substation: weathered whitewash stained orange at its foot by the red earth, an old red clay tile hipped roof,
+//   wide double doors of dark timber with louvred panels and a yellow danger sign, a small timber window, a slatted
+//   vent, a meter box and a switch box on the wall; south of it a pavilion of four steel posts under a red sheet
+//   pyramid roof sheltering the standby generator in its cream box (owner's photos 404 and 406). The owner's
+//   corrections PDF (page 4) moved it, with its generator, to where a cottage stood, and removed the cottage and the
+//   cage under the big tree;
+// - the wider cottage behind, weathered white under red tiles;
+// - the bus stop (the owner's corrections PDF, page 3: the footprint mapped as "Rest station" is not a building).
 import * as THREE from 'three';
 import { box, merge, type Part } from './modelkit';
 import { BAND, PL, createSite, render, type Kit, type Spec, type Style } from './blocks';
@@ -76,7 +74,8 @@ function win(k: Kit, f: Frame, onX: boolean, at: number, s: number, a: number, b
 }
 
 // ---------- the substation and its generator pavilion ----------
-const SUB: [number, number, number, number] = [-213.3, -205.8, -28.4, -17.6];
+// (moved by the owner's corrections PDF, page 4, to where the cottage stood, which is gone: corrections.json)
+const SUB: [number, number, number, number] = [-213.3, -205.8, -39.8, -29.0];
 const substation = small('substation on Volta Hall Road', SUB, WEATHERED, (k, f) => {
   const x = SUB[0], zm = (SUB[2] + SUB[3]) / 2;
   // the double doors of dark timber, louvred panels top and foot, the danger sign
@@ -89,42 +88,19 @@ const substation = small('substation on Volta Hall Road', SUB, WEATHERED, (k, f)
   for (let y = PL + 1.4; y < PL + 2.1; y += 0.16) k.plain.push([f.B(x - 0.12, x - 0.08, y, y + 0.06, SUB[3] - 1.55, SUB[3] - 0.95), '#3a2a20']);
   k.plain.push([f.B(x - 0.2, x, PL + 1.6, PL + 1.95, SUB[3] - 0.7, SUB[3] - 0.45), '#e9e9e6'], [f.B(x - 0.25, x, PL + 0.5, PL + 1.0, SUB[3] - 0.35, SUB[3] + 0.25), '#e4e5e2']);
   // the pavilion to the south: four steel posts, the red sheet pyramid roof, the generator in its cream box
-  const P = [-212.4, -207.0, -15.8, -10.6], py = k.ground(f.X(-209.7), f.Z(-13.2));
+  const P = [-212.4, -207.0, -27.2, -22.0], gz = (P[2] + P[3]) / 2, py = k.ground(f.X(-209.7), f.Z(gz));
   for (const px of [P[0], P[1]]) for (const pz of [P[2], P[3]]) { k.plain.push([f.B(px - 0.05, px + 0.05, py, py + 2.7, pz - 0.05, pz + 0.05), '#4a4f53']); SOLIDS.add(px, pz, 0.12); }
-  k.plain.push([new THREE.ConeGeometry(Math.hypot(P[1] - P[0], P[3] - P[2]) / 2 + 0.9, 1.3, 4, 1, true).rotateY(Math.PI / 4).scale((P[1] - P[0]) / (P[3] - P[2]), 1, 1).translate(f.X((P[0] + P[1]) / 2), py + 3.3, f.Z((P[2] + P[3]) / 2)), '#b23a32']);
+  k.plain.push([new THREE.ConeGeometry(Math.hypot(P[1] - P[0], P[3] - P[2]) / 2 + 0.9, 1.3, 4, 1, true).rotateY(Math.PI / 4).scale((P[1] - P[0]) / (P[3] - P[2]), 1, 1).translate(f.X((P[0] + P[1]) / 2), py + 3.3, f.Z(gz)), '#b23a32']);
   k.plain.push([f.B(P[0] - 0.6, P[1] + 0.6, py + 2.6, py + 2.68, P[2] - 0.6, P[2] - 0.5), '#2e2f31'], [f.B(P[0] - 0.6, P[1] + 0.6, py + 2.6, py + 2.68, P[3] + 0.5, P[3] + 0.6), '#2e2f31']);
-  k.plain.push([f.B(-211.4, -208.0, py, py + 0.2, -14.0, -12.4), '#2b2c2e'], [f.B(-211.3, -208.1, py + 0.2, py + 1.75, -13.95, -12.45), '#e8e3d2']);
-  for (let xx = -211.1; xx < -210.2; xx += 0.1) k.plain.push([f.B(xx, xx + 0.05, py + 0.4, py + 1.5, -14.0, -13.95), '#9b9789']);
-  SOLIDS.add(-209.7, -13.2, 1.6);
-});
-
-// ---------- the cottage north of it and the caged enclosure under the big tree ----------
-const COT: [number, number, number, number] = [-213.7, -202.6, -39.8, -33.4];
-const cottage = small('cottage on Volta Hall Road', COT, WEATHERED, (k, f) => {
-  const x = COT[0], zm = (COT[2] + COT[3]) / 2;
-  k.plain.push([f.B(x - 0.1, x, PL, PL + 2.3, zm - 0.6, zm + 0.6), '#5a3d28'], [f.B(x - 0.12, x - 0.1, PL + 0.1, PL + 2.2, zm - 0.48, zm + 0.48), '#4a2f1e']);
-  for (const z of [COT[2] + 1.2, COT[3] - 1.9]) win(k, f, true, x, -1, z, z + 0.8, PL + 1.0, PL + 2.0);
-  for (const xx of [-210.5, -206.0]) win(k, f, false, COT[2], -1, xx, xx + 0.8, PL + 1.0, PL + 2.0);
-  k.plain.push([f.B(x - 1.0, x, 0, PL, zm - 0.9, zm + 0.9), '#c2bcb0']);
-  // the enclosure caged in red iron bars, a little tiled roof over it, under the big tree
-  const C = [-212.6, -207.4, -45.6, -41.6], cy = k.ground(f.X(-210), f.Z(-43.6));
-  k.plain.push([f.B(C[0] + 0.6, C[1] - 0.6, cy, cy + 2.2, C[2] + 0.6, C[3] - 0.6), '#e9e6de'], [f.B(C[0], C[1], cy, cy + 0.2, C[2], C[3]), '#a8a196']);
-  for (const [ax, az, bx, bz] of [[C[0], C[2], C[1], C[2]], [C[0], C[3], C[1], C[3]], [C[0], C[2], C[0], C[3]], [C[1], C[2], C[1], C[3]]]) {
-    const n = Math.round(Math.hypot(bx - ax, bz - az) / 0.16);
-    for (let i = 0; i <= n; i++) { const px = ax + ((bx - ax) * i) / n, pz = az + ((bz - az) * i) / n; k.plain.push([f.B(px - 0.02, px + 0.02, cy + 0.2, cy + 2.5, pz - 0.02, pz + 0.02), '#8f2f24']); }
-    for (const h of [0.25, 1.35, 2.45]) k.plain.push([f.B(Math.min(ax, bx) - 0.03, Math.max(ax, bx) + 0.03, cy + h, cy + h + 0.05, Math.min(az, bz) - 0.03, Math.max(az, bz) + 0.03), '#8f2f24']);
-  }
-  k.roof.c = new THREE.Color(TILE);
-  k.roof.quad([f.X(C[0] - 0.4), cy + 2.6, f.Z(C[3] + 0.4)], [f.X(C[1] + 0.4), cy + 2.6, f.Z(C[3] + 0.4)], [f.X(C[1] + 0.4), cy + 3.1, f.Z(C[2] - 0.4)], [f.X(C[0] - 0.4), cy + 3.1, f.Z(C[2] - 0.4)]);
-  for (let px = C[0]; px <= C[1]; px += 1.3) { SOLIDS.add(px, C[2], 0.15); SOLIDS.add(px, C[3], 0.15); }
-  for (let pz = C[2]; pz <= C[3]; pz += 1.3) { SOLIDS.add(C[0], pz, 0.15); SOLIDS.add(C[1], pz, 0.15); }
-  const g = garden([-220, -200, -52, -38]);
-  g.reseed(33);
+  k.plain.push([f.B(-211.4, -208.0, py, py + 0.2, gz - 0.8, gz + 0.8), '#2b2c2e'], [f.B(-211.3, -208.1, py + 0.2, py + 1.75, gz - 0.75, gz + 0.75), '#e8e3d2']);
+  for (let xx = -211.1; xx < -210.2; xx += 0.1) k.plain.push([f.B(xx, xx + 0.05, py + 0.4, py + 1.5, gz - 0.8, gz - 0.75), '#9b9789']);
+  SOLIDS.add(-209.7, gz, 1.6);
+  // the big tree behind it
   { const tx = f.X(-205.4), tz = f.Z(-44.2), ty = k.ground(tx, tz);
     k.plain.push([new THREE.CylinderGeometry(0.35, 0.6, 6, 7).translate(tx, ty + 3, tz), '#4c3d30']);
     for (const [dx, dy, dz, r] of [[0, 8, 0, 4.4], [2.6, 7.2, -1.8, 3.0], [-2.4, 7.0, 2.0, 3.2], [1.0, 9.6, 1.4, 2.6]]) k.plain.push([new THREE.IcosahedronGeometry(r, 1).scale(1, 0.72, 1).translate(tx + dx, ty + dy, tz + dz), '#2f5a24']);
     SOLIDS.add(-205.4, -44.2, 0.7); }
-}, [[-213, -200, -47, -40.5]]);
+}, [[-213, -206, -28.5, -21]]);
 
 // ---------- the wider cottage behind ----------
 const WIDE: [number, number, number, number] = [-200.7, -184.1, -46.4, -30.6];
@@ -135,25 +111,36 @@ const wide = small('cottage behind Volta Hall Road', WIDE, WEATHERED, (k, f) => 
   k.plain.push([f.B(WIDE[0] - 0.1, WIDE[0], PL, PL + 2.3, zm - 0.6, zm + 0.6), '#5a3d28']);
 });
 
-// ---------- the washroom with its lantern ("Rest station") ----------
-const WR: [number, number, number, number] = [-216.1, -212.6, -0.5, 11.6];
-const washroom: Spec = (() => {
-  const s = small('Rest station', WR, WASH, (k, f) => {
-    const zm = (WR[2] + WR[3]) / 2, e = PL + ST + BAND, c: Part[] = [];
-    // the lantern: a raised box with louvred vents, its own little hipped roof
-    const L = [WR[0] + 0.8, WR[1] - 0.8, zm - 1.8, zm + 1.8], ly = e + 0.55;
-    c.push([f.B(L[0], L[1], e, ly + 0.95, L[2], L[3]), '#f4f3ef']);
-    for (const z of [L[2] + 0.4, zm - 0.6, zm + 0.2, L[3] - 0.85]) for (const xx of [L[0] - 0.02, L[1] + 0.01]) k.plain.push([f.B(xx, xx + 0.02, ly + 0.2, ly + 0.75, z, z + 0.45), '#24282b']);
-    hipRoof(k, f.M, L[0] - 0.4, L[1] + 0.4, L[2] - 0.4, L[3] + 0.4, ly + 0.95, 0.5, 'z', [hip, hip], c, FASCIA);
-    // the entrance on its porch at the north corner, the ramp, the signs
-    k.plain.push([f.B(WR[0] - 0.05, WR[0], PL, PL + 2.2, WR[2] + 0.8, WR[2] + 2.0), '#1f2326'], [f.B(WR[0] - 1.6, WR[0], 0, PL, WR[2] - 0.5, WR[2] + 2.6), '#c9c5bc']);
-    k.plain.push([f.B(WR[0] - 1.5, WR[0] - 1.25, PL, PL + ST, WR[2] - 0.4, WR[2] - 0.15), '#f4f3ef']);
-    k.signs.push({ text: 'GENTS', x: f.X(WR[0]) - 0.03, y: PL + 1.9, z: f.Z(WR[2] + 2.5), ry: -Math.PI / 2, w: 0.6, colors: ['#1d3f7a', '#ffffff'] });
-    k.signs.push({ text: 'WASH ROOM', x: f.X(WR[0]) - 0.03, y: PL + 1.6, z: f.Z(zm + 2), ry: -Math.PI / 2, w: 0.9, colors: ['#f6f6f3', '#1b1b1b'] });
+// ---------- the bus stop before Volta Hall (owner's corrections PDF, page 3: not a building but a small bus station) ----------
+// An open shelter on the verge of Volta Hall Road: a hipped roof of red tiles on four timber posts, a bench under it,
+// boards with notices on its back, a sign on a post by the kerb.
+const BS: [number, number] = [-214.4, 5.6];
+const busStop: Spec = {
+  name: 'bus stop before Volta Hall',
+  axis: [1, 0], origin: BS, storey: 3, style: WASH, roofColor: '#b0503a', fascia: FASCIA, pitch: 0.45,
+  onGround: true,
+  blocks: [],
+  keep: [[-3, 3, -5, 5]],
+  extras: (k) => {
+    const y = k.ground(0, 0), c: Part[] = [];
+    const X0 = -1.4, X1 = 1.4, Z0 = -3.2, Z1 = 3.2, h = 2.5;
+    c.push([box(X0 - 0.3, X1 + 0.3, y - 0.1, y + 0.15, Z0 - 0.3, Z1 + 0.3), '#cfc9bc']);
+    for (const px of [X0, X1]) for (const pz of [Z0, Z1]) { c.push([box(px - 0.1, px + 0.1, y, y + h, pz - 0.1, pz + 0.1), '#6b4a30']); SOLIDS.add(...k.world(px, pz), 0.15); }
+    c.push([box(X0 - 0.15, X1 + 0.15, y + h - 0.2, y + h, Z0 - 0.15, Z1 + 0.15), '#5a3d28']);
+    hipRoof(k, (x, z) => [x, z], X0 - 0.7, X1 + 0.7, Z0 - 0.7, Z1 + 0.7, y + h, 0.5, 'z', [hip, hip], c, FASCIA);
+    // the back screen of boards with notices, the bench
+    // (its open side to the road on the west, the screen at its back)
+    k.plain.push([box(X1 - 0.05, X1 + 0.05, y + 0.6, y + 2.1, Z0 + 0.3, Z1 - 0.3), '#7a5a3e']);
+    const cols = ['#e9e4d8', '#1f4fa8', '#d8362c', '#f2c400', '#2f9e5a'];
+    for (let i = 0; i < 7; i++) k.plain.push([box(X1 - 0.07, X1 - 0.05, y + 1.0 + (i % 2) * 0.5, y + 1.4 + (i % 2) * 0.5, Z0 + 0.6 + i * 0.75, Z0 + 1.1 + i * 0.75), cols[i % cols.length]]);
+    k.plain.push([box(X1 - 0.65, X1 - 0.2, y + 0.45, y + 0.52, Z0 + 0.4, Z1 - 0.4), '#8a6a4a']);
+    for (const z of [Z0 + 0.6, 0, Z1 - 0.6]) k.plain.push([box(X1 - 0.46, X1 - 0.38, y, y + 0.45, z - 0.04, z + 0.04), '#3a3a3a']);
+    // the bus-stop sign on a post toward the road
+    k.plain.push([box(X0 - 1.28, X0 - 1.2, y, y + 2.8, Z1 + 0.6, Z1 + 0.68), '#9aa0a5'], [box(X0 - 1.5, X0 - 1.0, y + 2.2, y + 2.7, Z1 + 0.68, Z1 + 0.71), '#1f5fa8']);
+    k.signs.push({ text: 'BUS STOP', x: X0 - 1.25, y: y + 2.45, z: Z1 + 0.72, ry: 0, w: 0.45, colors: ['#1f5fa8', '#ffffff'] });
     const m = new THREE.Mesh(merge(c), concrete(0.3)); m.castShadow = true; k.meshes.push(m);
-  });
-  return { ...s, roofColor: '#b0503a' };
-})();
+  },
+};
 
 // ---------- the Fidelity Bank ATM below the French Department, on the footway of Danquah Avenue ----------
 // (owner's second reference PDF, pages 40-43) The enclosure stands on a tiled plinth before the west wing's south end:
@@ -210,13 +197,13 @@ const fidelity: Spec = {
   },
 };
 
-// ---------- BESTIES, the restaurant in front of Volta Hall's south flank on Volta Hall Road ----------
-// (owner's second reference PDF, pages 44-45) A one-floor front built onto the two-storey flank: white walls over a red
-// foot, a glazed door and windows with the menus in them, a deep dark grey fascia with BESTIES in red bulb letters; a
-// forecourt of bare red earth with a menu board and an old tree stump, and at the footway a black lift barrier with a
-// yellow-banded pole and a red STOP sign.
-const BE = [-241.4, -237.6, 89.2, 97.2];
-const BO: [number, number] = [-238, 93];
+// ---------- BESTIES, the restaurant before Legon Hall, across Dr. J.B. Danquah Avenue from the Fidelity ATM ----------
+// (owner's second reference PDF, pages 44-45, placed by the owner's corrections PDF, page 7: not at Volta Hall) One
+// floor: white walls over a red foot, a glazed door and windows with the menus in them toward the avenue, a deep dark
+// grey fascia with BESTIES in red bulb letters; a forecourt of bare red earth with a menu board and an old tree stump,
+// and at its drive a black lift barrier with a yellow-banded pole and a red STOP sign.
+const BE = [-196.0, -186.0, 141.5, 148.0];
+const BO: [number, number] = [-191, 144.75];
 const W_BESTIES: Style = {
   bay: 2.6, up: [], ground: [[60, 256 + 50, 136, 150]],
   draw: (g) => {
@@ -228,42 +215,42 @@ const W_BESTIES: Style = {
     g.fillStyle = '#a3302a'; g.fillRect(0, 512 - 40, 256, 40);
   },
 };
+const W_BESTIES_SIDE: Style = { bay: 3, up: [], ground: [], draw: (g) => { render(g, '#f5f4f0'); g.fillStyle = '#a3302a'; g.fillRect(0, 512 - 40, 256, 40); } };
 const besties: Spec = {
   name: 'BESTIES restaurant',
-  axis: [1, 0], origin: BO, storey: 3.0, style: W_BESTIES, roofColor: '#5a5d60', fascia: '#3b3e42', pitch: 0.1,
-  blocks: [{ x0: BE[0] - BO[0], x1: BE[1] - BO[0], z0: BE[2] - BO[1], z1: BE[3] - BO[1], floors: 1, roof: 'flat' }],
-  keep: [[-237.6 - BO[0], -222 - BO[0], 88 - BO[1], 99 - BO[1]]],
+  axis: [1, 0], origin: BO, storey: 3.0, style: W_BESTIES_SIDE, roofColor: '#5a5d60', fascia: '#3b3e42', pitch: 0.1,
+  blocks: [{ x0: BE[0] - BO[0], x1: BE[1] - BO[0], z0: BE[2] - BO[1], z1: BE[3] - BO[1], floors: 1, roof: 'flat', faces: { z0: W_BESTIES } }],
+  keep: [[-199 - BO[0], -183 - BO[0], 139.5 - BO[1], 150.5 - BO[1]]],
   extras: (k) => {
     const X = (x: number) => x - BO[0], Z = (z: number) => z - BO[1];
     const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
-    const e = PL + 3.0 + BAND;
-    // the dark fascia round the front, its name in red bulb letters
-    k.plain.push([B(BE[1], BE[1] + 0.25, e - 0.6, e + 0.9, BE[2] - 0.2, BE[3] + 0.2), '#3b3e42'], [B(BE[0], BE[1] + 0.25, e - 0.6, e + 0.9, BE[2] - 0.2, BE[2]), '#3b3e42'], [B(BE[0], BE[1] + 0.25, e - 0.6, e + 0.9, BE[3], BE[3] + 0.2), '#3b3e42']);
-    k.signs.push({ text: 'BESTIES', x: X(BE[1] + 0.26), y: e + 0.15, z: Z((BE[2] + BE[3]) / 2 - 0.6), ry: Math.PI / 2, w: 3.4, colors: ['#3b3e42', '#e0262c'] });
-    // the glazed door with its menus
-    const dz = 93.6;
-    k.plain.push([B(BE[1], BE[1] + 0.05, PL, PL + 2.3, dz - 0.9, dz + 0.9), '#24272a'], [B(BE[1] + 0.05, BE[1] + 0.06, PL + 0.1, PL + 2.2, dz - 0.8, dz + 0.8), '#6e8090'], [B(BE[1] + 0.06, BE[1] + 0.07, PL + 0.8, PL + 1.5, dz + 0.1, dz + 0.6), '#f2e2c0']);
-    k.plain.push([B(BE[1], BE[1] + 1.2, 0, PL, dz - 1.2, dz + 1.2), '#c4beb2']);
-    // the forecourt of red earth, the menu board and the stump
-    k.plain.push([B(BE[1] + 1.2, -222.5, 0.005, 0.03, 88.4, 98.6), '#b4683f']);
-    { const mx = X(-234.5), mz = Z(90.6);
-      for (const s of [-1, 1]) k.plain.push([new THREE.BoxGeometry(0.9, 1.3, 0.04).rotateX(s * 0.18).translate(mx, 0.62, mz + s * 0.12), s < 0 ? '#e8e6e0' : '#d7d3cb']);
-      k.plain.push([B(-234.85, -234.15, 0.6, 1.1, 90.43, 90.45), '#9a3b22']);
-      k.signs.push({ text: 'BURGER', x: mx, y: 0.95, z: mz + 0.26, ry: 0, w: 0.6, colors: ['#ffffff', '#1b1b1b'] });
-      SOLIDS.add(-234.5, 90.6, 0.5); }
-    k.plain.push([new THREE.CylinderGeometry(0.55, 0.7, 0.55, 9).translate(X(-231), 0.27, Z(89.6)), '#d8d2c4']);
-    SOLIDS.add(-231, 89.6, 0.7);
-    // the lift barrier at the footway: a black post, the pole banded yellow and black, the STOP sign on it
-    const px = -222.4, pz = 88.8, len = 6.0;
+    const e = PL + 3.0 + BAND, zf = BE[2];
+    // the dark fascia round the top, its name in red bulb letters toward the avenue
+    k.plain.push([B(BE[0] - 0.2, BE[1] + 0.2, e - 0.6, e + 0.9, zf - 0.25, BE[3] + 0.2), '#3b3e42']);
+    k.signs.push({ text: 'BESTIES', x: X(-191), y: e + 0.15, z: Z(zf - 0.26), ry: Math.PI, w: 3.4, colors: ['#3b3e42', '#e0262c'] });
+    // the glazed door with its menus, the step
+    k.plain.push([B(-191.9, -190.1, PL, PL + 2.3, zf - 0.05, zf), '#24272a'], [B(-191.8, -190.2, PL + 0.1, PL + 2.2, zf - 0.06, zf - 0.05), '#6e8090'], [B(-191.6, -191.1, PL + 0.8, PL + 1.5, zf - 0.07, zf - 0.06), '#f2e2c0']);
+    k.plain.push([B(-192.2, -189.8, 0, PL, zf - 1.2, zf), '#c4beb2']);
+    // the forecourt of red earth to the avenue's footway, the menu board and the stump
+    k.plain.push([B(-198, -184, 0.005, 0.03, 139.6, zf - 1.2), '#b4683f']);
+    { const mx = X(-194.5), mz = Z(140.6);
+      for (const sgn of [-1, 1]) k.plain.push([new THREE.BoxGeometry(0.9, 1.3, 0.04).rotateX(sgn * 0.18).translate(mx, 0.62, mz + sgn * 0.12), sgn < 0 ? '#e8e6e0' : '#d7d3cb']);
+      k.plain.push([B(-194.85, -194.15, 0.6, 1.1, 140.43, 140.45), '#9a3b22']);
+      k.signs.push({ text: 'BURGER', x: mx, y: 0.95, z: mz - 0.26, ry: Math.PI, w: 0.6, colors: ['#ffffff', '#1b1b1b'] });
+      SOLIDS.add(-194.5, 140.6, 0.5); }
+    k.plain.push([new THREE.CylinderGeometry(0.55, 0.7, 0.55, 9).translate(X(-198.5), 0.27, Z(146)), '#d8d2c4']);
+    SOLIDS.add(-198.5, 146, 0.7);
+    // the lift barrier across the drive by its east side: a black post, the pole banded yellow and black, the STOP sign
+    const px = -184.2, pz = 140.3, len = 5.0;
     k.plain.push([B(px - 0.12, px + 0.12, 0, 1.15, pz - 0.12, pz + 0.12), '#1b1b1b'], [B(px - 0.35, px + 0.35, 0, 0.3, pz - 0.3, pz + 0.3), '#cfcac0']);
     for (let i = 0; i < 8; i++) k.plain.push([B(px - 0.05, px + 0.05, 0.95, 1.05, pz + 0.2 + (i * len) / 8, pz + 0.2 + ((i + 1) * len) / 8), i & 1 ? '#1b1b1b' : '#e8b416']);
-    for (let i = 1; i < 6; i++) k.plain.push([B(px - 0.03, px + 0.03, 0.2, 0.95, pz + i, pz + i + 0.05), '#1b1b1b']);
+    for (let i = 1; i < 5; i++) k.plain.push([B(px - 0.03, px + 0.03, 0.2, 0.95, pz + i, pz + i + 0.05), '#1b1b1b']);
     k.plain.push([B(px - 0.04, px + 0.04, 0.2, 0.25, pz + 0.2, pz + len), '#1b1b1b'], [B(px - 0.08, px + 0.08, 0, 1.0, pz + len + 0.2, pz + len + 0.36), '#1b1b1b']);
-    k.plain.push([new THREE.CylinderGeometry(0.42, 0.42, 0.03, 8).rotateZ(Math.PI / 2).rotateX(Math.PI / 8).translate(X(px - 0.06), 1.0, Z(pz + 1.8)), '#c8201f']);
-    k.signs.push({ text: 'STOP', x: X(px - 0.09), y: 1.0, z: Z(pz + 1.8), ry: -Math.PI / 2, w: 0.55, colors: ['#c8201f', '#ffffff'] });
+    k.plain.push([new THREE.CylinderGeometry(0.42, 0.42, 0.03, 8).rotateZ(Math.PI / 2).rotateX(Math.PI / 8).translate(X(px + 0.06), 1.0, Z(pz + 1.6)), '#c8201f']);
+    k.signs.push({ text: 'STOP', x: X(px + 0.09), y: 1.0, z: Z(pz + 1.6), ry: Math.PI / 2, w: 0.55, colors: ['#c8201f', '#ffffff'] });
     for (let z = pz; z <= pz + len; z += 1.0) SOLIDS.add(px, z, 0.15);
   },
 };
 
 /** the small buildings along Volta Hall Road before Volta Hall */
-export const voltaFrontSite = createSite('volta-front', [substation, cottage, wide, washroom, fidelity, besties]);
+export const voltaFrontSite = createSite('volta-front', [substation, wide, busStop, fidelity, besties]);

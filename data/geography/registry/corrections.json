@@ -308,6 +308,26 @@
     {
       "id": "ml:dcb8a721-9dcc-471b-95f5-8d82f88ecccf",
       "reason": "Owner's second reference PDF (docs/CAMPUS_REFERENCE_AUDIT.md, part 2), page 5: the two-storey block circled red between the Graduate School and the Nursing School 'is supposed to be off (deleted)'."
+    },
+    {
+      "id": "osm:way/773887685",
+      "reason": "Owner's corrections PDF (page 4): the cottage on Volta Hall Road north of the substation is to be removed; the substation and its generator stand in its place."
+    },
+    {
+      "id": "osm:way/715027977",
+      "reason": "Owner's corrections PDF (page 3): the footprint mapped as 'Rest station' before Volta Hall is not a building but a small open bus stop (modelled in src/game/voltafront.ts)."
+    },
+    {
+      "id": "osm:way/1189695661",
+      "reason": "Owner's picture of the lane behind Old Pent from Annie Jiagge Road (circled red): the one-floor building there does not exist."
+    },
+    {
+      "id": "osm:way/1189695663",
+      "reason": "Owner's picture of the lane behind Old Pent from Annie Jiagge Road (circled red): the two-storey building there does not exist."
+    },
+    {
+      "id": "osm:way/1189695662",
+      "reason": "Owner's picture of the lane behind Old Pent from Annie Jiagge Road (circled red): the small one-floor footprint directly behind the first (hidden by it in the owner's view; the same row) there does not exist."
     }
   ],
   "heights": [
@@ -1838,20 +1858,6 @@
       "reason": "Owner's aerial (circled blue): the small buildings along the Volta Hall Road stretch north-west of CEDI are one floor."
     },
     {
-      "id": "osm:way/715027977",
-      "place": "Rest station",
-      "levels": 1,
-      "height": 4.5,
-      "reason": "Owner's aerial (circled blue): the small buildings along the Volta Hall Road stretch north-west of CEDI are one floor."
-    },
-    {
-      "id": "osm:way/773887685",
-      "place": "one-floor building",
-      "levels": 1,
-      "height": 4.5,
-      "reason": "Owner's aerial (circled blue): the small buildings along the Volta Hall Road stretch north-west of CEDI are one floor."
-    },
-    {
       "id": "ml:ba95c5d9-4ee8-47ad-acf0-e8ddff060a94",
       "place": "one-floor building",
       "levels": 1,
@@ -2018,20 +2024,6 @@
       "levels": 1,
       "height": 4.5,
       "reason": "Owner: the Department of Plant and Environmental Biology is one floor."
-    },
-    {
-      "id": "osm:way/1189695661",
-      "place": "small building behind the School of Engineering Sciences",
-      "levels": 1,
-      "height": 4,
-      "reason": "Owner: the two small square buildings behind (north of) the engineering school are one floor."
-    },
-    {
-      "id": "osm:way/1189695662",
-      "place": "small building behind the School of Engineering Sciences",
-      "levels": 1,
-      "height": 4,
-      "reason": "Owner: the two small square buildings behind (north of) the engineering school are one floor."
     },
     {
       "id": "osm:way/440338448",
@@ -3120,10 +3112,10 @@
     },
     {
       "id": "osm:way/715023114",
-      "place": "three-floor block north of the Nursing School",
+      "place": "the Nursing School's north block",
       "levels": 3,
       "height": 11.5,
-      "reason": "Owner's reference PDF of game views beside street photos (docs/CAMPUS_REFERENCE_AUDIT.md), pages 1-4: three floors, white, green-tinted windows, a maroon roof, across the Nursing School's car park. Modelled in src/game/labs.ts."
+      "reason": "Owner's top view and street photo (after the reference PDFs): the block north of the School of Nursing and Midwifery is part of the school, three floors of white wall with small windows, joined to the main block by the entrance core and stair tower. Modelled in src/game/labs.ts."
     },
     {
       "id": "osm:way/492729609",
@@ -4567,6 +4559,30 @@
         ]
       ],
       "reason": "Owner's marked aerial of the ground round the front of the N Block (eleven numbered views, registered to the N Block and the GCB Lecture Building at 0.297 m/px) and street photos of each view: the white flat-roofed building of the Ocean Margins Initiative (view 6), its roof as the aerial shows it."
+    },
+    {
+      "id": "osm:way/665124067",
+      "place": "substation on Volta Hall Road",
+      "source": "owner's corrections PDF, page 4",
+      "ring": [
+        [
+          -213.3,
+          -39.8
+        ],
+        [
+          -205.8,
+          -39.8
+        ],
+        [
+          -205.8,
+          -29.0
+        ],
+        [
+          -213.3,
+          -29.0
+        ]
+      ],
+      "reason": "The owner moved the substation (with its generator pavilion) north to the place of the cottage that is removed."
     }
   ],
   "addAreas": [

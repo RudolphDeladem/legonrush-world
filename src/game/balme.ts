@@ -375,9 +375,9 @@ const banks: Spec = {
 // ---------- the building opposite Absa, across the car park ----------
 // (owner's second reference PDF, pages 12-13: its back to the Balme Library, its front to Absa and Standard Chartered)
 // One floor of white render with small square windows high in the wall, an old dark tile roof with a deep gable of
-// dark timber boards on the west; along the front a lean-to of grey sheet on steel posts over the generators, an
-// air-conditioner, a railing of black iron bars along the kerb; a big dish at the west end, a blue water tank at the
-// east, a lattice mast behind the east end.
+// dark timber boards on the west; along the front a railing of black iron bars along the kerb with two big satellite
+// dishes behind it, an air-conditioner; at the back a lean-to of grey sheet on steel posts over the generators (the
+// owner's corrections PDF, pages 8-9); a blue water tank at the east, a lattice mast behind the east end.
 const OPP: [number, number, number, number] = [66.8, 84.8, 46.3, 57.9];
 const OO: [number, number] = [(OPP[0] + OPP[1]) / 2, (OPP[2] + OPP[3]) / 2];
 const OPP_WALL: Style = {
@@ -389,7 +389,7 @@ const opposite: Spec = {
   axis: [1, 0], origin: OO, storey: 3.2, style: OPP_WALL, roofColor: '#4e3a30', fascia: '#3a2a22', pitch: 0.42,
   replaces: [OO],
   blocks: [{ x0: OPP[0] - OO[0], x1: OPP[1] - OO[0], z0: OPP[2] - OO[1], z1: OPP[3] - OO[1], floors: 1, roof: 'none' }],
-  keep: [[64 - OO[0], 87 - OO[0], 57.9 - OO[1], 63.4 - OO[1]]],
+  keep: [[64 - OO[0], 87 - OO[0], 57.9 - OO[1], 63.4 - OO[1]], [66 - OO[0], 85 - OO[0], 40.5 - OO[1], 46.3 - OO[1]]],
   extras: (k) => {
     const X = (x: number) => x - OO[0], Z = (z: number) => z - OO[1];
     const b = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
@@ -400,26 +400,34 @@ const opposite: Spec = {
     k.plain.push([tri2([X(OPP[0]), e - 0.02, Z(OPP[3] + 0.6)], [X(OPP[0]), e - 0.02, Z(OPP[2] - 0.6)], [X(OPP[0]), top - 0.08, Z(zm)]), '#5a3b26']);
     for (let y = e + 0.2; y < top - 0.2; y += 0.3) { const w = ((top - y) / (top - e)) * ((OPP[3] - OPP[2]) / 2 + 0.6) - 0.1; k.plain.push([b(OPP[0] - 0.04, OPP[0], y, y + 0.04, zm - w, zm + w), '#3a2618']); }
     k.plain.push([b(OPP[0] - 1.6, OPP[0], e - 0.08, e - 0.02, OPP[2] - 0.8, OPP[3] + 0.8), '#8a6440']);
-    // the lean-to of grey sheet on steel posts along the front, the generators under it
-    const L0 = 68.4, L1 = 83.4, LZ = 62.2;
+    // the lean-to of grey sheet on steel posts along the back (north), the generators under it (the owner's corrections
+    // PDF, pages 8-9: not at the front)
+    const L0 = 68.4, L1 = 83.4, LZ = 41.4;
     { const g = new THREE.BufferGeometry(), y0 = 3.3, y1 = 2.75;
-      g.setAttribute('position', new THREE.Float32BufferAttribute([X(L0), y0, Z(OPP[3]), X(L1), y0, Z(OPP[3]), X(L1), y1, Z(LZ), X(L0), y1, Z(LZ)], 3));
+      g.setAttribute('position', new THREE.Float32BufferAttribute([X(L0), y0, Z(OPP[2]), X(L1), y0, Z(OPP[2]), X(L1), y1, Z(LZ), X(L0), y1, Z(LZ)], 3));
       g.setIndex([0, 2, 1, 0, 3, 2, 0, 1, 2, 0, 2, 3]); g.computeVertexNormals(); k.plain.push([g, '#6c7276']); }
-    k.plain.push([b(L0, L1, 2.6, 2.78, LZ - 0.08, LZ), '#3c4144']);
-    for (let x = L0 + 0.1; x <= L1; x += 3.7) { k.plain.push([b(x - 0.05, x + 0.05, 0, 2.75, LZ - 0.1, LZ), '#3c4144']); SOLIDS.add(x, LZ - 0.05, 0.15); }
+    k.plain.push([b(L0, L1, 2.6, 2.78, LZ, LZ + 0.08), '#3c4144']);
+    for (let x = L0 + 0.1; x <= L1; x += 3.7) { k.plain.push([b(x - 0.05, x + 0.05, 0, 2.75, LZ, LZ + 0.1), '#3c4144']); SOLIDS.add(x, LZ + 0.05, 0.15); }
     for (const [x0, x1] of [[69.2, 73.4], [77.0, 80.4]]) {
-      k.plain.push([b(x0, x1, 0, 1.75, 58.6, 60.4), '#e6e9e4'], [b(x0 - 0.05, x1 + 0.05, 0, 0.18, 58.55, 60.45), '#5b5f60']);
-      for (let x = x0 + 0.2; x < x0 + 1.1; x += 0.12) k.plain.push([b(x, x + 0.05, 0.3, 1.5, 60.4, 60.43), '#9aa09c']);
-      SOLIDS.add((x0 + x1) / 2, 59.5, (x1 - x0) / 2);
+      k.plain.push([b(x0, x1, 0, 1.75, 42.2, 44.0), '#e6e9e4'], [b(x0 - 0.05, x1 + 0.05, 0, 0.18, 42.15, 44.05), '#5b5f60']);
+      for (let x = x0 + 0.2; x < x0 + 1.1; x += 0.12) k.plain.push([b(x, x + 0.05, 0.3, 1.5, 42.17, 42.2), '#9aa09c']);
+      SOLIDS.add((x0 + x1) / 2, 43.1, (x1 - x0) / 2);
     }
-    k.plain.push([b(74.8, 75.6, 0.1, 1.0, 58.2, 59.0), '#d8dadb'], [b(81.6, 82.4, 2.2, 2.8, OPP[3], OPP[3] + 0.3), '#e9ebeb']);
+    k.plain.push([b(74.8, 75.6, 0.1, 1.0, 44.5, 45.3), '#d8dadb'], [b(81.6, 82.4, 2.2, 2.8, OPP[2] - 0.3, OPP[2]), '#e9ebeb']);
+    // at the front behind the railing, the two big satellite dishes on their frames
+    for (const [x, tilt] of [[71.0, 0.9], [80.0, 1.05]] as [number, number][]) {
+      // the dish: a shallow bowl seen from both sides, facing up toward the sky to the south
+      const bowl = new THREE.ConeGeometry(1.25, 0.35, 24, 1, true).rotateX(Math.PI);
+      const back = new THREE.ConeGeometry(1.27, 0.35, 24, 1, true);
+      for (const [g, col] of [[bowl.translate(0, 0.22, 0), '#e2dfd6'], [back.rotateX(Math.PI).scale(1, -1, 1).translate(0, 0.2, 0), '#bdb9b0']] as [THREE.BufferGeometry, string][]) k.plain.push([g.rotateX(-tilt).translate(X(x), 2.0, Z(60.6)), col]);
+      k.plain.push([b(x - 0.08, x + 0.08, 0, 1.6, 60.3, 60.5), '#6d6f70'], [new THREE.CylinderGeometry(0.03, 0.03, 1.6, 5).rotateX(-0.9).translate(X(x), 2.4, Z(60.0)), '#6d6f70']);
+      SOLIDS.add(x, 60.6, 1.0);
+    }
     // the black railing along the kerb, a gate before the lean-to
     for (let x = 64.6; x <= 86.4; x += 0.14) { if (x > 74.2 && x < 76.4) continue; k.plain.push([b(x - 0.012, x + 0.012, 0, 1.6, 62.9, 62.92), '#1e1e1e']); }
     for (const h of [0.15, 1.45]) for (const [x0, x1] of [[64.6, 74.2], [76.4, 86.4]]) k.plain.push([b(x0, x1, h, h + 0.04, 62.88, 62.94), '#1e1e1e']);
     for (let x = 64.6; x <= 86.4; x += 1.2) if (x < 74.2 || x > 76.4) SOLIDS.add(x, 62.9, 0.15);
-    // the big dish at the west end, the blue water tank at the east
-    k.plain.push([new THREE.SphereGeometry(1.6, 18, 6, 0, Math.PI * 2, 0, 0.8).rotateX(Math.PI).rotateZ(-1.0).translate(X(65.3), 1.9, Z(55.5)), '#d9d9d6'], [b(65.6, 65.8, 0, 1.4, 55.4, 55.6), '#6d6f70']);
-    SOLIDS.add(65.5, 55.5, 0.9);
+    // the blue water tank at the east
     k.plain.push([new THREE.CylinderGeometry(0.85, 0.85, 2.0, 14).translate(X(86.0), 1.0, Z(56.4)), '#2f6fb0']);
     SOLIDS.add(86.0, 56.4, 0.9);
     // the lattice mast behind the east end

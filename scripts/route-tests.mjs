@@ -166,7 +166,11 @@ try {
     if (!(Math.abs(gh(146, 374) - 0.45) < 0.01 && gh(146, 390) === 0 && gh(155, 382.4) > 0.1 && gh(155, 382.4) < 0.4)) fail('Akuafo Hall Main: the raised lawn behind the hall, its pavers or its steps are not as the owner shows'); }
   // owner PDF 2 pp. 33-45: the small buildings along Volta Hall Road each their own model (not one generic cottage)
   { const vf = (await server.ssrLoadModule('/src/game/voltafront.ts')).voltaFrontSite;
-    for (const [x, z] of [[-209.6, -23], [-208.2, -36.6], [-192.4, -38.5], [-214.4, 5.6]]) { const b = buildingAt(x, z); if (!b || !vf.replaces(b)) fail(`the building on Volta Hall Road at ${x},${z} is not its own model (owner)`); } }
+    for (const [x, z] of [[-209.6, -34.4], [-192.4, -38.5]]) { const b = buildingAt(x, z); if (!b || !vf.replaces(b)) fail(`the building on Volta Hall Road at ${x},${z} is not its own model (owner)`); }
+    // owner's corrections PDF: the cottage north of the substation removed (the substation in its place), the "Rest
+    // station" a bus stop, not a building
+    if (buildingAt(-214.4, 5.6)) fail('the bus stop before Volta Hall is still a building (owner)');
+    if (buildingAt(-209.6, -23)) fail('the substation has not moved to the place of the removed cottage (owner)'); }
   // Explore: every destination ends the guided ride with its own stop (the arrived card: drone view, riding it yourself)
   const { guideFor } = await server.ssrLoadModule('/src/data/guide.ts');
   const balme = placeByName('The Balme Library');
@@ -277,7 +281,9 @@ try {
   { for (const [x, z] of [[290, -290], [306, -297], [330, -296], [347, -296], [355, -310], [355, -290], [356, -279], [375, -287]]) { const b = buildingAt(x, z); if (!b) fail(`ISSER and Computer Science: no building at ${x},${z} (the blocks must be connected)`); else if (b.height < 10) fail(`ISSER and Computer Science: the block at ${x},${z} is not three floors`); }
     const e = ann('ISSER Building'); if (!e || Math.hypot(e[0] - 312.5, e[1] - -283.3) > 2) fail('ISSER Building: the entrance is not on the front facing the Mathematics department (owner)');
     const c = ann('Computer Science Dept'); if (!c || Math.hypot(c[0] - 349.6, c[1] - -309.5) > 2) fail('Computer Science Dept: the entrance is not on the wing\'s west face (owner)');
-    for (const [n, x, z] of [['the Department of Plant Biology', 406, -314], ['a small building behind the engineering school', 524, -472], ['the other small building behind the engineering school', 535, -473]]) { const b = buildingAt(x, z); if (!b || b.height > 5) fail(`${n} is not one floor (owner)`); }
+    // (the two small buildings behind Old Pent toward the engineering school are gone: the owner, after the third PDF)
+    for (const [x, z] of [[524, -472], [535, -473], [541, -461]]) if (buildingAt(x, z)) fail(`the building behind Old Pent at ${x},${z} the owner removed is still there`);
+    for (const [n, x, z] of [['the Department of Plant Biology', 406, -314]]) { const b = buildingAt(x, z); if (!b || b.height > 5) fail(`${n} is not one floor (owner)`); }
     if ((await server.ssrLoadModule('/src/game/issercs.ts')).isserCs.frames().length !== 1) fail('expected the ISSER and Computer Science model'); }
   // owner: south of CEDI the Faculty of Arts is two low floors (about half CEDI's height) and the building between
   // them four floors (about CEDI's height); Volta Hall's block by the Annex is straight and joins them; the
@@ -364,7 +370,7 @@ try {
     const e = ann('Department of Nutrition and Food Sciences'); if (!e || Math.hypot(e[0] - -198.4, e[1] - -206) > 3) fail('Food Science: the entrance is not at the foot of the stair core on its front (owner)');
     for (const [x, z, lo, hi] of [[-185, -204, 12, 16], [-331, -190, 10, 13], [-90, -196, 0, 5.5], [-70, -270, 0, 5.5], [-148, -235, 0, 5.5]]) { const b = buildingAt(x, z); if (!b || b.height < lo || b.height > hi) fail(`the building at ${x},${z} is not the height the owner shows`); }
     for (const [x, z] of [[-80, -255], [-120, -220], [-28, -215], [-100, -180]]) if (!cm.AREAS.some((a) => a.kind === 'wood' && inA(a, x, z))) fail(`no trees at ${x},${z} round the Animal Biology ranges (owner)`);
-    if ((await server.ssrLoadModule('/src/game/labs.ts')).labsSite.frames().length !== 5) fail('expected Food Science, Nursing, Animal Biology, the unfinished block building and the three-floor block north of Nursing');
+    if ((await server.ssrLoadModule('/src/game/labs.ts')).labsSite.frames().length !== 4) fail('expected Food Science, Nursing (with its north block), Animal Biology and the unfinished block building');
     { const u = buildingAt(-189.6, -224.2); if (!u || u.height > 4) fail('the unfinished building north of Food Science is not one floor (owner)'); } }
   // owner: the ISSER Annex below the road toward the engineering school, entered at the porch the walk from there
   // reaches; three floors in its west wing, the huts and the east wing one floor; trees where the owner circled them
