@@ -63,7 +63,11 @@ export function padMenus(container: () => HTMLElement | null, back: () => void) 
     if (f.actPressed('confirm')) {
       const cur = document.activeElement instanceof HTMLElement && root.contains(document.activeElement) && visible(document.activeElement) ? document.activeElement : null;
       const target = cur ?? [...root.querySelectorAll<HTMLElement>('.btn-primary')].find(visible) ?? null;
-      if (target && !(target instanceof HTMLInputElement && target.type === 'range')) target.click();
+      if (target && !(target instanceof HTMLInputElement && target.type === 'range')) {
+        target.click();
+        // a menu that redraws itself (the arrival card's Drone view, Learn more): the highlight stays on the same button
+        if (!target.isConnected && target.id) { const again = root.querySelector<HTMLElement>('#' + CSS.escape(target.id)); if (again && visible(again)) focus(again); }
+      }
     }
     if (f.pressed('east')) back();
   });

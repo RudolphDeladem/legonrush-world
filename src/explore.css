@@ -115,7 +115,7 @@
 
 /* ----- a game controller (gamepad.ts): the big map, the focused menu item, the settings ----- */
 .minimap.big { width: 240px !important; height: 240px !important; }
-.pad-focus { outline: 3px solid #f5c518 !important; outline-offset: 2px; }
+.pad-focus { outline: 3px solid #f5c518 !important; outline-offset: 3px; box-shadow: 0 0 0 3px #10213f !important; transform: scale(1.04); }
 .pad-set { display: grid; grid-template-columns: 1fr 120px 40px; align-items: center; gap: 8px; margin: 6px 0; font-size: 13px; text-align: left; }
 .pad-set input[type=checkbox] { justify-self: start; width: 20px; height: 20px; }
 .pad-set b { font-variant-numeric: tabular-nums; text-align: right; }
