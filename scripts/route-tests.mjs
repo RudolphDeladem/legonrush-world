@@ -697,6 +697,35 @@ try {
     if (r) lengths.push(`${c.from} -> ${c.to}: ${r.length} m`);
   }
 
+  // ---------- the UPSA junction (field reference brief): nothing solid on a road or a ridden route ----------
+  {
+    const plan = await server.ssrLoadModule('/src/game/upsaplan.ts');
+    const upsa = (await server.ssrLoadModule('/src/game/upsa.ts')).upsaSite;
+    if (upsa.frames().length !== 4) fail('UPSA junction: expected the Graduate Building, its grounds, GOIL and the roadside models');
+    if (cm.buildingAt(1026, -829.5)) fail('UPSA junction: the satellite-detected block in the UGBS car park is back');
+    const posts = plan.junctionPosts();
+    const W = [9, 7.4, 6.2, 4.6, 2.6];
+    for (const [x, z, r] of posts) {
+      for (const road of cm.ROADS) {
+        const pts = road.nodes.map((n) => [cm.NODE_XZ[n * 2], cm.NODE_XZ[n * 2 + 1]]);
+        for (let i = 0; i < pts.length - 1; i++) {
+          const [ax, az] = pts[i], [bx, bz] = pts[i + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+          const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+          if (Math.hypot(ax + dx * t - x, az + dz * t - z) < W[road.cls] / 2 + r + 0.3) { fail(`UPSA junction: the post at ${x.toFixed(1)},${z.toFixed(1)} stands on ${road.name ?? 'a road'}`); break; }
+        }
+      }
+    }
+    const ends = ['Goil', 'Stanbic', 'Standard Chartered ATM (near UGBS Graduate Campus)', 'UGBS Graduate Campus', 'UPSA Taxi Rank', 'Presec'];
+    for (const a of ends) for (const b of ends) {
+      if (a === b) continue;
+      const r = rt.exploreRoute(placeByName(a), placeByName(b), 'cycle');
+      if (!r) { fail(`UPSA junction: no ride from ${a} to ${b}`); continue; }
+      for (const [x, z, rad] of posts) if (r.track.distanceToRoad(x, z) < 3.8 + rad) { fail(`UPSA junction: the post at ${x.toFixed(1)},${z.toFixed(1)} stands on the ride ${a} -> ${b}`); break; }
+    }
+    // the gate stays open across the campus road
+    if (Math.abs(plan.GATE.x - 1111) > 1 || plan.GATE.open < 4) fail('UPSA junction: the UGBS gate no longer clears the campus road');
+  }
+
   // ---------- races never move by accident ----------
   const sig = (r) => { if (!r) return null; const s = r.track.pose(r.lead, 0), e = r.track.pose(r.lead + r.length, 0); return `${r.length} m ${s.x.toFixed(1)},${s.z.toFixed(1)} -> ${e.x.toFixed(1)},${e.z.toFixed(1)}`; };
   const lv = await server.ssrLoadModule('/src/features/levels.ts');

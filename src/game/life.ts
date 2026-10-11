@@ -946,7 +946,8 @@ export function buildCampusLife() {
   // --- parked cars in the car parks ---
   let cars = 0;
   for (const a of AREAS) {
-    if (a.kind !== 'parking' || cars > 2600) continue;
+    // (past the cap, the car parks a modelled site paves and marks itself still fill: they would stand empty)
+    if (a.kind !== 'parking' || (cars > 2600 && !BLOCK_SITES.some((s) => s.coversArea(a.pts)))) continue;
     cars += parkCars(cells, M.car, a.pts, rand);
   }
 

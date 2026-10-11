@@ -332,6 +332,10 @@
     {
       "id": "ml:d5854760-7f1c-4f84-9953-d1ada1fb77ac",
       "reason": "Satellite-detected (Microsoft ML) footprint east of the main gate, drawn as a building. The owner's main entrance brief (pairs 7, 9 and 13, corrected map 1): it is the flag plaza's long fountain basin and its stone-faced planters, open to the sky; the plaza is modelled in gateprecinct.ts."
+    },
+    {
+      "id": "ml:fe2da66f-70e1-4752-8a60-33670112ce93",
+      "reason": "Satellite-detected (Microsoft ML) footprint in the middle of the UGBS Graduate Campus car park, drawn as a two-storey block. The owner's field reference brief: the Street View frame from IPS Road facing the Graduate Building over the boundary wall, and the UGBS reference photos of the forecourt and car park (d5_19, d5_20, d5_24), show open parking with no structure there. The car park is modelled in src/game/upsa.ts."
     }
   ],
   "heights": [
@@ -3134,6 +3138,41 @@
       "levels": 1,
       "height": 4.5,
       "reason": "Owner's aerial (circled blue): the small buildings along the Volta Hall Road stretch north-west of CEDI are one floor. (Restored: the owner withdrew its removal.)"
+    },
+    {
+      "id": "osm:way/601016706",
+      "place": "UGBS Graduate Building",
+      "levels": 5,
+      "height": 22,
+      "reason": "Owner's field reference brief (UGBS reference photos d5_19-d5_24, Street View): five storeys between two end wings with steep gables; modelled in src/game/upsa.ts (eaves about 18.8 m, the gables about 23.8 m)."
+    },
+    {
+      "id": "osm:way/601016704",
+      "place": "UGBS Graduate Building rear block",
+      "levels": 4,
+      "height": 16,
+      "reason": "Block behind the UGBS Graduate Building (src/game/upsa.ts). Not photographed in the owner's brief: four storeys is an assumption, recorded as such in docs/LEGON_BUILDINGS.md."
+    },
+    {
+      "id": "osm:way/601016712",
+      "place": "GOIL shop and lube bay",
+      "levels": 1,
+      "height": 5.4,
+      "reason": "Owner's GOIL photos (d4_06): a one-floor shop and service block, the orange lube-bay box the tallest part; modelled in src/game/upsa.ts."
+    },
+    {
+      "id": "osm:way/1186044056",
+      "place": "roadside workshops east of GOIL",
+      "levels": 1,
+      "height": 3.3,
+      "reason": "Street View along IPS Road (the owner's brief): one-floor roadside workshops under sheet roofs with tyres before them; modelled in src/game/upsa.ts."
+    },
+    {
+      "id": "osm:way/1186044057",
+      "place": "timber kiosk east of the GOIL ATMs",
+      "levels": 1,
+      "height": 2.6,
+      "reason": "Small one-floor hut east of the ATM row at GOIL (Street View at the way out, approximate); modelled in src/game/upsa.ts."
     }
   ],
   "reclass": [
@@ -9132,6 +9171,121 @@
         ]
       ],
       "reason": "Owner's second Pent corrections: the wood behind the School of Engineering Sciences seen from the Pent entrance, along the west side of Annie Jiagge Road up to the school (street photo with the trees circled)."
+    },
+    {
+      "id": "owner:ugbs-graduate-parking-1",
+      "class": "parking",
+      "ring": [
+        [
+          1004,
+          -771.6
+        ],
+        [
+          1031.5,
+          -771.6
+        ],
+        [
+          1031.5,
+          -757.6
+        ],
+        [
+          1004,
+          -757.6
+        ]
+      ],
+      "reason": "UGBS Graduate Campus car park, west of the entrance before the building (the owner's field reference brief: d5_19, d5_20, d5_24 show the paved forecourt and car park full of cars). Extents fitted between the mapped aisles; paved and marked in src/game/upsa.ts."
+    },
+    {
+      "id": "owner:ugbs-graduate-parking-2",
+      "class": "parking",
+      "ring": [
+        [
+          1050.5,
+          -771.6
+        ],
+        [
+          1097,
+          -771.6
+        ],
+        [
+          1097,
+          -757.6
+        ],
+        [
+          1050.5,
+          -757.6
+        ]
+      ],
+      "reason": "UGBS Graduate Campus car park, east of the entrance before the building (the owner's field reference brief: d5_19, d5_20, d5_24 show the paved forecourt and car park full of cars). Extents fitted between the mapped aisles; paved and marked in src/game/upsa.ts."
+    },
+    {
+      "id": "owner:ugbs-graduate-parking-3",
+      "class": "parking",
+      "ring": [
+        [
+          1005.5,
+          -849
+        ],
+        [
+          1036.8,
+          -849
+        ],
+        [
+          1036.8,
+          -780.5
+        ],
+        [
+          1005.5,
+          -780.5
+        ]
+      ],
+      "reason": "UGBS Graduate Campus car park, west of the central aisle (the owner's field reference brief: d5_19, d5_20, d5_24 show the paved forecourt and car park full of cars). Extents fitted between the mapped aisles; paved and marked in src/game/upsa.ts."
+    },
+    {
+      "id": "owner:ugbs-graduate-parking-4",
+      "class": "parking",
+      "ring": [
+        [
+          1043,
+          -816.8
+        ],
+        [
+          1107,
+          -816.8
+        ],
+        [
+          1107,
+          -779.8
+        ],
+        [
+          1043,
+          -779.8
+        ]
+      ],
+      "reason": "UGBS Graduate Campus car park, east of the central aisle, north of the cross aisle (the owner's field reference brief: d5_19, d5_20, d5_24 show the paved forecourt and car park full of cars). Extents fitted between the mapped aisles; paved and marked in src/game/upsa.ts."
+    },
+    {
+      "id": "owner:ugbs-graduate-parking-5",
+      "class": "parking",
+      "ring": [
+        [
+          1043,
+          -854.5
+        ],
+        [
+          1107,
+          -854.5
+        ],
+        [
+          1107,
+          -823.6
+        ],
+        [
+          1043,
+          -823.6
+        ]
+      ],
+      "reason": "UGBS Graduate Campus car park, east of the central aisle, south of the cross aisle (the owner's field reference brief: d5_19, d5_20, d5_24 show the paved forecourt and car park full of cars). Extents fitted between the mapped aisles; paved and marked in src/game/upsa.ts."
     }
   ],
   "addWays": [

@@ -2358,3 +2358,67 @@ Triangle, A/B/X/Y, or position names such as "Bottom button" for an unknown pad)
 - **Tested** with a simulated controller in Chromium (`scripts/gamepad-test.mjs`); no physical controller was
   connected while building this, so real-hardware behaviour (per-browser button numbering, trigger ranges, Bluetooth
   reconnects) is not verified.
+
+## The UPSA junction: UGBS Graduate Building, GOIL, IPS Road
+
+The owner's field reference brief: field photos F01–F18, six UGBS reference photos (d5_19–d5_24), Street View frames
+along IPS Road and the GOIL photos (d4). Code: `src/game/upsa.ts` (models), `src/game/upsaplan.ts` (positions shared
+with the route tests). Preview views: `upsaApproach`, `upsaFacade`, `upsaPair`, `upsaJunction`, `upsaWalk`,
+`upsaMedian`, `upsaGate`, `upsaGoil`, `upsaObl`, `upsaTop`.
+
+Placement: the map puts GOIL north of IPS Road (z ≈ −955) and the UGBS Graduate Campus south of it (the building at
+z ≈ −737, facing north over its car park). The Street View frames agree (heading west, GOIL on the right; the building
+seen over the wall from the GOIL side).
+
+**From the photographs**
+- The Graduate Building: five storeys; the main block between two end wings that stand about 5 m forward (the mapped
+  footprint); white walls with grey bands and pilasters, the windows in pairs with dark bronze frames; the central
+  dark glass feature (three strips between white piers, the middle one arched) from the canopy to the eaves; the gable
+  above it with "UG | BS" in blue and "University of Ghana Business School" in red; the entrance canopy on four round
+  columns, steps, ramps with steel railings; the wings' steep white gables ruled in grey under red-brown roofs, their
+  fronts blank panels except the inner bays, which carry open balconies on the four upper storeys; lit windows at night
+  (d5_22). The paved forecourt and car park with cars (d5_20, d5_24); a white flag left of the entrance (d5_21).
+- The boundary wall: white concrete, square pillars, solid panels and balustraded bays (Street View, F04).
+- The gate (d5_23): two piers under a beam with chamfered ends, the UGBS letters with the crest, STEP INTO EXCELLENCE,
+  gatehouses with louvred windows either side, blue-grey sliding gates, a paved road through it.
+- IPS Road: a dual carriageway with a kerbed grass median (F02, F05, F06, F09; the older Street View shows the same
+  median dry and red-earthed); a tan herringbone paver sidewalk along the south carriageway with a grass verge, H-frame
+  concrete poles in the verge and their wires (F07, F08, F12); lattice transmission towers (Street View, F07, F10,
+  F15); wooden poles along the north verge; traffic signals at the N4 junction (F01).
+- GOIL: the long canopy with its orange fascia and white GOIL panels over the pumps, orange-red columns; the shop block
+  with the orange-tiled LUBE BAY SERVICE box, charcoal and grey walls with grilled windows and the GO cafe front (d4_06);
+  the pylon sign on its kerbed island between the way in and the way out, with the feather flag (Street View); the ATM
+  row of GCB, Standard Chartered, National Investment Bank and Stanbic booths on an orange tiled plinth (d4_08); the
+  yellow container shop and the lattice telecom mast beside them (Street View at the way out, F05, F06); the roadside
+  workshops east of the station with grille fronts and tyres (Street View heading east).
+
+**Approximated or assumed** (no measurement in the brief)
+- Storey height 3.6 m, so the eaves are at 18.8 m and the wing gables at about 23.8 m; the wing roof pitch and the
+  central gable's size are judged from the photos.
+- The block behind the Graduate Building (mapped, not photographed): four storeys assumed.
+- The ordering of the shop block's parts (lube bay at the west end, the GO cafe at the east) follows the one photo;
+  the canopy's size and position between the forecourt lanes are fitted to the mapped lanes.
+- The car parks' extents are fitted between the mapped aisles; the bays are marked where the game parks the cars.
+- The gate's opening is 12 m between the piers, wider than the photo suggests (about 8–9 m): a ride turning west onto
+  the service road just outside the gate otherwise runs through the west pier.
+- The ATM row stands about 5 m east of the mapped ATM points (a ride to them runs out past its arrival node toward
+  them); the container and mast stand beside it as in the Street View frame.
+- The transmission towers' spots (x 972 and x 1290 on the UGBS side) and the H-pole and wooden-pole spacing are placed
+  from the photographs, not measured. The pylon sign's price panels are drawn dark: the figures are not legible.
+- The median is drawn only where the mapped carriageways leave a metre or more between them (east of about x 1060):
+  west of that the two mapped roads overlap, though the photos show the median continuing to the merge.
+- The north side of IPS Road has no paver sidewalk in the photographs, so none is drawn there.
+- The wall runs along the UGBS landuse outline's north edge from x 985 to the gate, and 16 m east of it (d5_23).
+
+**Map changes** (`corrections.json`): the Microsoft ML footprint `ml:fe2da66f…` in the middle of the car park is
+excluded (the Street View frame over the wall and d5_20 show open parking there); heights for the Graduate Building
+(5 storeys), the block behind it (4, assumed), the GOIL block (1), the workshops (1) and the small hut east of the ATMs
+(1); five parking areas `owner:ugbs-graduate-parking-1..5`.
+
+**Engine change**: past the campus-wide limit of parked cars, car parks that a modelled site paves and marks itself
+still fill (`life.ts`); before, the last UGBS car park stood empty. No other car park changes (checked: the five
+car parks already over the limit elsewhere stay as they were).
+
+**Checks** (`scripts/route-tests.mjs`): the four models are built; the excluded block stays out; no pole, tower leg,
+signal, canopy column, pump, pier, kiosk or mast stands on a mapped road; and none on any ride between Goil, Stanbic,
+the ATM, the UGBS Graduate Campus, the UPSA Taxi Rank and Presec, in either direction.
