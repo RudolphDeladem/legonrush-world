@@ -9,7 +9,7 @@ import { buildLandmarks } from './landmarks';
 import { groundHeight, inStairs } from './relief';
 import { Tufts } from './tufts';
 import { buildCampus, buildRouteLayer, buildSky, disposeLayer, lampGlow, LANES, ROAD_HALF } from './world';
-import { AREAS, buildingAt, buildingNear, mapBounds } from './campusmap';
+import { AREAS, buildingAt, buildingNear, mapBounds, roadAt } from './campusmap';
 import { inPassage, solidAt } from './solids';
 import { roadClearance, setNightLights } from './life';
 import { onEarth } from './science';
@@ -74,6 +74,8 @@ export interface GhostRun {
 }
 const GHOST_STEP = 0.1;
 export type Vehicle = 'bike' | 'walk' | 'taxi' | 'shuttle';
+/** the rider's camera views (Game.camView): distance and height multipliers on the chase camera */
+const VIEWS: [number, number][] = [[1, 1], [1.7, 1.9], [0.55, 0.5]];
 /** extra camera distance and height for each way of travelling */
 const VEHICLE_CAM: Record<Vehicle, [number, number]> = { bike: [0, 0], walk: [-1.6, -0.6], taxi: [2, 0.6], shuttle: [4, 1.6] };
 /** bike paints for the riders beside you */
@@ -972,6 +974,61 @@ export class Game {
   }
   get droning() { return !!this.drone; }
 
+  // ---------- the rider's camera controls (a controller's right stick, look behind, views, recenter) ----------
+  /** look input this frame, -1..1: x turns the view right, y tilts it down (a controller's right stick) */
+  look = { x: 0, y: 0 };
+  /** held: the camera looks back past the rider (the bike keeps its heading) */
+  lookBehind = false;
+  /** the chase camera's distance: 0 normal, 1 far and high, 2 close and low */
+  camView = 0;
+  private lookYaw = 0;
+  private lookPitch = 0;
+  /** the next camera view */
+  cycleCamera() { this.camView = (this.camView + 1) % VIEWS.length; return this.camView; }
+  /** the camera straight behind the rider again (and, with `view`, the normal chase view) */
+  recenterCamera(view = false) { if (view) this.camView = 0; this.lookYaw = 0; this.lookPitch = 0; this.look.x = this.look.y = 0; this.lookBehind = false; }
+  /** turns the look state toward the input; with the stick at rest it eases back behind the rider */
+  private updateLook(dt: number) {
+    const yawTarget = this.lookBehind ? Math.PI : null;
+    if (yawTarget !== null) this.lookYaw += (yawTarget - this.lookYaw) * Math.min(1, dt * 8);
+    else if (Math.abs(this.look.x) > 0.01) this.lookYaw = Math.max(-2.6, Math.min(2.6, this.lookYaw + this.look.x * dt * 2.4));
+    else this.lookYaw *= Math.exp(-dt * 2.2);
+    if (Math.abs(this.look.y) > 0.01) this.lookPitch = Math.max(-0.35, Math.min(0.55, this.lookPitch + this.look.y * dt * 1.4));
+    else this.lookPitch *= Math.exp(-dt * 2.2);
+  }
+  /** the camera's target and the point it looks at, turned about the rider by the look and scaled by the view */
+  private applyLook(target: THREE.Vector3, at: THREE.Vector3, c: THREE.Vector3) {
+    const [far, up] = VIEWS[this.camView];
+    const ox = (target.x - c.x) * far, oz = (target.z - c.z) * far;
+    let oy = (target.y - c.y) * up;
+    if (Math.abs(this.lookYaw) < 1e-3 && Math.abs(this.lookPitch) < 1e-3 && this.camView === 0) return;
+    const cs = Math.cos(this.lookYaw), sn = Math.sin(this.lookYaw);
+    const rx = ox * cs + oz * sn, rz = -ox * sn + oz * cs;
+    oy += this.lookPitch * 4;
+    target.set(c.x + rx, c.y + oy, c.z + rz);
+    // never below the ground under the camera
+    target.y = Math.max(target.y, groundHeight(target.x, target.z) + 0.6);
+    const ax = at.x - c.x, az = at.z - c.z;
+    at.set(c.x + ax * cs + az * sn, at.y - this.lookPitch * 3, c.z - ax * sn + az * cs);
+  }
+
+  /**
+   * Puts a stuck bike back on the nearest road, facing along it and stopped (a free ride only; the guided and race rides
+   * keep the rider on the road themselves). Returns whether it did.
+   */
+  recoverBike() {
+    const f = this.free;
+    if (!f || this.phase !== 'riding') return false;
+    const r = roadAt(f.x, f.z);
+    if (!r) return false;
+    // facing along the road the way the bike was already heading
+    // (the bike faces (-sin yaw, -cos yaw); the road runs (sin angle, cos angle))
+    const fwd = -Math.sin(f.yaw) * Math.sin(r.angle) - Math.cos(f.yaw) * Math.cos(r.angle);
+    const yaw = r.angle + (fwd >= 0 ? Math.PI : 0);
+    f.x = r.x; f.z = r.z; f.yaw = yaw; f.v = 0; f.steer = 0; f.cruise = false; f.stopping = false;
+    return true;
+  }
+
   /**
    * Explore, on a bike: after arriving, the rider takes the bike wherever a bike can go. Nothing drives
    * it any more: steer with freeInput.steer (-1 left .. 1 right); one freePedal() and the rider keeps
@@ -983,7 +1040,7 @@ export class Game {
     const r = this.rider.root;
     this.drone = null;
     this.free = { x: r.position.x, z: r.position.z, yaw: r.rotation.y, v: 0, steer: 0, bumpT: 0, cruise: false, stopping: false, held: 0 };
-    this.freeInput = { steer: 0, brake: false };
+    this.freeInput = { steer: 0, brake: false, throttle: 0, brakeForce: 1 };
     this.speed = 0;
   }
   get freeRiding() { return !!this.free; }
@@ -1015,8 +1072,11 @@ export class Game {
     this.phase = 'finished';
     this.endTimer = 0.01;
   }
-  /** held controls during a free ride: steering, and the brake (freeBrake) */
-  freeInput = { steer: 0, brake: false };
+  /** held controls during a free ride: steering, and the brake (freeBrake); a controller's analog pedal (throttle, 0..1,
+   *  on top of the pedal toggle) and how hard its brake is pressed (brakeForce, 0..1; the keys brake fully) */
+  freeInput = { steer: 0, brake: false, throttle: 0, brakeForce: 1 };
+  /** seconds the brake is held at a standstill before the bike rolls backwards */
+  reverseDelay = 0.45;
   private free: { x: number; z: number; yaw: number; v: number; steer: number; bumpT: number; cruise: boolean; stopping: boolean; held: number } | null = null;
 
   /** a free ride: bike physics on open ground, stopped by whatever a bike can't go through */
@@ -1028,14 +1088,18 @@ export class Game {
     const top = (8 + (this.bike?.speed ?? 3) * 0.5) * (rough ? 0.8 : 1), back = 2.4;
     if (rough && f.v > 2) this.shake = Math.max(this.shake, Math.min(0.025, f.v * 0.003));
     if (inp.brake) f.held += dt;
-    if (f.cruise) f.v = f.v > top ? Math.max(top, f.v - 3 * dt) : Math.min(top, f.v + (2.6 + (this.bike?.acceleration ?? 3) * 0.3) * dt);
-    else if (inp.brake && f.held > 0.45 && f.v <= 0.05) {
+    // pedalling: the toggle pedals fully; a controller's trigger pedals as hard as it is pressed, its speed limited to
+    // match (never past the bike's top speed)
+    const thr = f.cruise ? 1 : inp.brake ? 0 : Math.max(0, Math.min(1, inp.throttle));
+    const cap = top * (0.35 + 0.65 * thr), accel = (2.6 + (this.bike?.acceleration ?? 3) * 0.3) * (0.25 + 0.75 * thr);
+    if (thr > 0 && f.v >= -0.05) { f.v = f.v > cap ? Math.max(cap, f.v - 3 * dt) : Math.min(cap, f.v + accel * dt); f.stopping = false; }
+    else if (inp.brake && f.held > this.reverseDelay && f.v <= 0.05) {
       // held on once stopped: walk the bike backwards
       f.v = Math.max(-back, f.v - 2.2 * dt);
       f.stopping = false;
     } else if (f.stopping || (!inp.brake && f.v < 0)) {
       // braking to a stop (a tap is enough), or letting go of the brake while rolling back
-      f.v = f.v > 0 ? Math.max(0, f.v - 10 * dt) : Math.min(0, f.v + 6 * dt);
+      f.v = f.v > 0 ? Math.max(0, f.v - (inp.brake ? 4 + 6 * inp.brakeForce : 10) * dt) : Math.min(0, f.v + 6 * dt);
       if (f.v === 0) f.stopping = false;
     } else f.v = Math.max(0, f.v - 0.8 * dt);
     // steering: the bars turn quickly, the bike turns more tightly when slow (and can be turned when stopped)
@@ -1123,7 +1187,7 @@ export class Game {
     this.guideWait = false;
     this.drone = null;
     this.free = null;
-    this.freeInput = { steer: 0, brake: false };
+    this.freeInput = { steer: 0, brake: false, throttle: 0, brakeForce: 1 };
     this.lane = 1;
     this.paused = false;
     this.rec = { step: GHOST_STEP, d: [], x: [] };
@@ -1979,13 +2043,16 @@ export class Game {
       const f = this.free, fx = -Math.sin(f.yaw), fz = -Math.cos(f.yaw);
       const gy = groundHeight(f.x, f.z), bx = f.x - fx * 6.4, bz = f.z - fz * 6.4;
       this.camTarget.set(bx, Math.max(groundHeight(bx, bz), gy) + 3.2, bz);
+      this.updateLook(dt);
+      this.lookAt.set(f.x + fx * 10, groundHeight(f.x + fx * 10, f.z + fz * 10) + 1.1, f.z + fz * 10);
+      this.applyLook(this.camTarget, this.lookAt, this.rider.root.position);
       cam.position.lerp(this.camTarget, Math.min(1, dt * 5));
       if (this.shake > 0 && !this.reducedMotion) {
         cam.position.x += (Math.random() - 0.5) * this.shake;
         cam.position.y += (Math.random() - 0.5) * this.shake;
         this.shake = Math.max(0, this.shake - dt);
       }
-      cam.lookAt(f.x + fx * 10, groundHeight(f.x + fx * 10, f.z + fz * 10) + 1.1, f.z + fz * 10);
+      cam.lookAt(this.lookAt);
       const fov = (innerWidth < innerHeight ? 72 : 60) + f.v * 0.25;
       cam.fov += (fov - cam.fov) * Math.min(1, dt * 4);
       cam.updateProjectionMatrix();
@@ -2020,6 +2087,12 @@ export class Game {
       // the camera follows the ground (a hollow such as the engineering school's), never below the rider's
       const gRide = this.rider.root.position.y - this.y;
       this.camTarget.set(behind.x, Math.max(groundHeight(behind.x, behind.z), gRide) + 3.1 + vUp + lift + this.y * 0.4 + this.guideLook * 1.4, behind.z);
+      // the rider's own look (a controller's right stick, look behind) and camera view
+      this.updateLook(dt);
+      const ahead0 = this.pose(this.d + 12, this.x * 0.8);
+      this.lookAt.set(ahead0.x, groundHeight(ahead0.x, ahead0.z) + 1.1, ahead0.z);
+      const looking = Math.abs(this.lookYaw) > 1e-3 || Math.abs(this.lookPitch) > 1e-3 || this.camView !== 0;
+      if (looking) this.applyLook(this.camTarget, this.lookAt, this.rider.root.position);
       // a new ride starts with the camera already behind the rider, not sweeping in from where it was
       if (this.snapCam) { cam.position.copy(this.camTarget); this.snapCam = false; }
       cam.position.lerp(this.camTarget, Math.min(1, dt * 8));
@@ -2032,7 +2105,8 @@ export class Game {
       // guided ride: stopped at a place, the camera rises a little and turns to look at it
       const stop = this.tour?.stops[this.guideIdx];
       this.guideLook += ((this.guideWait ? 1 : 0) - this.guideLook) * Math.min(1, dt * 1.6);
-      if (stop && this.guideLook > 0.001) {
+      if (looking) cam.lookAt(this.lookAt);
+      else if (stop && this.guideLook > 0.001) {
         const k = this.guideLook * 0.75;
         cam.lookAt(ahead.x + (stop.x - ahead.x) * k, groundHeight(ahead.x, ahead.z) + 1.1 + 2.5 * k, ahead.z + (stop.z - ahead.z) * k);
       } else cam.lookAt(ahead.x, groundHeight(ahead.x, ahead.z) + 1.1, ahead.z);
@@ -2053,6 +2127,7 @@ export class Game {
     this.renderer.render(this.scene, cam);
   }
   private camTarget = new THREE.Vector3();
+  private lookAt = new THREE.Vector3();
 
   /** the Garage camera: frames the bike inside the page's box, turning slowly unless the rider is dragging it */
   private garageCamera(v: BikeView, dt: number) {

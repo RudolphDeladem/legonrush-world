@@ -2214,3 +2214,45 @@ bike and the rider steers it anywhere a bike can go (`Game.freeRide`).
   the bike and it slides round it.
   The chase camera follows.
 - **Finish ride** ends the ride as arriving does.
+
+## Game controllers
+
+Any controller the browser's Gamepad API reports works alongside the keys and the touch buttons: PS5 DualSense, PS4
+DualShock, Xbox, and generic USB or Bluetooth pads (`src/gamepad.ts`, menus in `src/padmenu.ts`). The PS5 layout is
+the reference for what each control does; the labels on screen follow the controller in use (Cross/Circle/Square/
+Triangle, A/B/X/Y, or position names such as "Bottom button" for an unknown pad).
+
+| Control | Free ride | Races and road rides | Explore tour |
+| --- | --- | --- | --- |
+| Left stick | steer (dead zone, response curve, smoothing) | flick: change lane | — |
+| R2 / RT | pedal, analog: a part press rides slower | pedal | — |
+| L2 / LT | brake, as hard as pressed; held at a standstill, reverse after the reverse delay | brake (bikes with brakes) | — |
+| Right stick | look around; eases back behind when let go | look around | look around |
+| Triangle / Y | camera view: chase, far, close | same | same |
+| Circle / B | held: back on the nearest road, facing along it | — | back in menus |
+| Square / X | bell | bell | bell |
+| Cross / A | confirm in menus | jump | continue / choose |
+| L1 / LB | look behind while held | same | same |
+| R1 / RB | — | boost | — |
+| R3 | recenter the camera | same | same |
+| D-pad | menus only: moves the focus between buttons; left/right change a focused slider | | |
+| Create / View | big map | same | same |
+| Options / Menu | pause / resume | same | same |
+
+- **Detection**: connecting, disconnecting (also mid-ride), several controllers (the one last used drives), the
+  controller already plugged in when the page opens (some browsers report it only after a button press).
+- **Disconnect or pause**: every held input is let go (steer, pedal, brake, look), the guide hides and a note says the
+  keys still work. Nothing stays pressed.
+- **Guide**: in a ride, using the controller shows a small guide at the right edge with that controller's labels; a
+  key or a touch hands it back to the keys.
+- **Pause → Controller** (when a controller is connected): steering and camera sensitivity, left and right stick dead
+  zones, steering smoothing, trigger dead zone, reverse delay, invert look; any action can be moved to another button
+  (press the action, then the new button; the two swap, so no button does two things). Saved in the browser, remaps
+  per controller model. Reset restores the defaults.
+- **Non-standard pads**: they use the same button numbers (most generic pads follow them); a D-pad reported as a hat
+  switch (axes 6/7) still works in menus; anything else is fixed by remapping.
+- **Diagnostics**: `?paddebug` in the address shows what the browser reports (buttons, axes, mapping) and what the
+  game reads from it.
+- **Tested** with a simulated controller in Chromium (`scripts/gamepad-test.mjs`); no physical controller was
+  connected while building this, so real-hardware behaviour (per-browser button numbering, trigger ranges, Bluetooth
+  reconnects) is not verified.

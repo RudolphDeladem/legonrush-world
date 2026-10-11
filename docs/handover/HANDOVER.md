@@ -60,6 +60,12 @@ repository (sections 1–49 record every building batch and the owner's decision
   `waccbip.ts`, `pharmacy.ts`, `labs.ts` (Food Science, Nursing, Animal Biology, unfinished blocks), `isserannex.ts`,
   `earthscience.ts`, `physics.ts` (Physics, chemistry ranges, chemistry west entrance, covered walk, Frank Torto,
   building behind it), `basicschool.ts`, `dome.ts`, `nblock.ts`, and many more (see `src/game/`).
+- **Game controllers** `src/gamepad.ts` (the one Gamepad API reader: `pad.onFrame`, `pad.onMode`, `PAD_ACTIONS`,
+  labels per family, settings and remaps in localStorage `legonrush.pad` / `legonrush.padmap`; `?paddebug` shows the
+  raw controller) and `src/padmenu.ts` (D-pad focus in menus). The ride side is one `pad.onFrame` handler in
+  `main.ts` play(), writing the same inputs the keys do (`game.freeInput`, `freeBrake`, `action`, `setBrake`) plus the
+  camera look in `Game.updateLook/applyLook`. `node scripts/gamepad-test.mjs` (dev server on 5299) drives it with a
+  simulated controller.
 
 ## 4. Checks to run before every push
 

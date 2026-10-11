@@ -8,6 +8,8 @@ import './style.css';
 import './light.css';
 import { registerSW } from 'virtual:pwa-register';
 import { Game, type Action, type HudState, type Vehicle } from './game/Game';
+import { pad, padActionLabel, padLabel, padSettings, savePadSettings, PAD_ACTIONS, PAD_DEFAULTS, remapControl, resetRemap, steerCurve, type PadAction, type PadFamily } from './gamepad';
+import { padMenus } from './padmenu';
 import { guideFor, HALL_LIFE } from './data/guide';
 import { INTENT_EXAMPLES, matchIntents, placeQuery } from './data/intents';
 import './explore.css';
@@ -73,6 +75,18 @@ const canvas = document.getElementById('world') as HTMLCanvasElement;
 await Promise.race([document.fonts.load('700 56px Sora'), new Promise((r) => setTimeout(r, 1500))]).catch(() => {});
 const game = new Game(canvas);
 if (import.meta.env.DEV) Object.assign(window, { __game: game });
+// a controller in the menus: the open overlay, or the guided tour's card, or the screen when no ride is on; nothing while
+// the rider rides (the ride's own controller handler has it then)
+padMenus(() => {
+  const ov = app.querySelector<HTMLElement>('#pauseOverlay:not(.photo-ui), .overlay');
+  if (ov) return ov;
+  if (game.isRiding) {
+    if (game.paused || game.freeRiding) return null;
+    const gc = app.querySelector<HTMLElement>('#guideCard');
+    return gc && !gc.hidden ? gc : null;
+  }
+  return app;
+}, () => { if (backAction) history.back(); });
 
 let profile: Profile | null = loadProfile();
 const settings = loadSettings();
@@ -927,6 +941,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
         <div class="fp-steer"><button class="fp-btn" id="fpLeft" aria-label="Steer left">◀</button><button class="fp-btn" id="fpRight" aria-label="Steer right">▶</button></div>
         <div class="fp-feet"><button class="fp-btn fp-brake" id="fpBrake">Brake</button><button class="fp-btn fp-go" id="fpGo">Pedal</button></div>
       </div>` : ''}
+      <div class="pad-guide" id="padGuide" hidden></div>
       <div class="hud-bottom">
         ${brakes && !isExplore(route) ? `<button class="brake-btn" id="brakeBtn" aria-label="Brake">${icons.brake}<span>${isTouch ? 'BRAKE' : 'S / ↓'}</span></button>` : '<span class="hud-slot"></span>'}
         <div class="speedo" id="speedo">
@@ -1295,7 +1310,8 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
         ${lr || opts.challengeRide ? '' : '<button class="btn btn-ghost" data-p="restart">Restart</button>'}
         ${lr ? '' : `<button class="btn btn-ghost" data-p="photo">${icons.camera} Photo mode</button>`}
         <button class="btn btn-ghost" data-p="sound">Sound: ${settings.sound ? 'On' : 'Off'}</button>
-        <p class="muted small" style="margin:6px 0">${isTouch ? 'Swipe left/right to change lanes, up to jump, tap to boost.' : `← → or A D to steer, ↑ W or Space to jump, B or Shift to boost${profile!.gear.brakes ? ', hold S or ↓ to brake' : ''}, Esc to pause.`}</p>
+        ${pad.connected ? '<button class="btn btn-ghost" data-p="pad">Controller</button>' : ''}
+        <p class="muted small" style="margin:6px 0">${pad.mode === 'pad' ? `Controller: ${esc(guideLines(pad.family).map(([k, v]) => `${k} ${v.toLowerCase()}`).join(' · '))}.` : isTouch ? 'Swipe left/right to change lanes, up to jump, tap to boost.' : `← → or A D to steer, ↑ W or Space to jump, B or Shift to boost${profile!.gear.brakes ? ', hold S or ↓ to brake' : ''}, Esc to pause.`}</p>
         <button class="btn btn-link" data-p="exit">Exit ride</button>
       </div>`;
     app.appendChild(ov);
@@ -1310,7 +1326,56 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
       }
       if (p === 'exit') { cleanup(); leave(); }
       if (p === 'photo') photoMode();
+      if (p === 'pad') padPanel(ov);
     }));
+  };
+  // the controller's settings in the pause menu: sensitivity, dead zones, and moving an action to another button
+  const padPanel = (ov: HTMLElement) => {
+    const panel = ov.querySelector<HTMLElement>('.panel')!;
+    const g = pad.active ?? pad.pads()[0];
+    let waiting: PadAction | null = null, offCapture: (() => void) | null = null;
+    const ACTS: [PadAction, string][] = [['pedal', 'Pedal'], ['brake', 'Brake / reverse'], ['camera', 'Camera view'], ['recover', 'Back on the road'], ['bell', 'Bell'], ['confirm', 'Confirm / jump'], ['lookBack', 'Look behind'], ['boost', 'Boost'], ['recenter', 'Recenter camera'], ['map', 'Map'], ['pause', 'Pause']];
+    const slider = (k: 'steer' | 'look' | 'deadLeft' | 'deadRight' | 'reverseDelay' | 'triggerDead' | 'smooth', label: string, min: number, max: number, step: number) =>
+      `<label class="pad-set"><span>${label}</span><input type="range" data-k="${k}" min="${min}" max="${max}" step="${step}" value="${padSettings[k]}"><b>${padSettings[k].toFixed(2)}</b></label>`;
+    const draw = () => {
+      const fam = pad.family;
+      panel.innerHTML = `
+        <h2 class="title">Controller</h2>
+        <p class="muted small">${g ? esc(g.id) : 'No controller detected'}${g && g.mapping !== 'standard' ? ' · non-standard layout: check the buttons below' : ''}</p>
+        ${slider('steer', 'Steering sensitivity', 0.5, 1.5, 0.05)}
+        ${slider('look', 'Camera sensitivity', 0.3, 2, 0.05)}
+        ${slider('deadLeft', 'Left stick dead zone', 0.05, 0.4, 0.01)}
+        ${slider('deadRight', 'Right stick dead zone', 0.05, 0.4, 0.01)}
+        ${slider('smooth', 'Steering smoothing', 0, 0.9, 0.05)}
+        ${slider('triggerDead', 'Trigger dead zone', 0, 0.3, 0.01)}
+        ${slider('reverseDelay', 'Reverse delay (s)', 0.2, 1.2, 0.05)}
+        <label class="pad-set"><span>Invert look up/down</span><input type="checkbox" data-k="invertY" ${padSettings.invertY ? 'checked' : ''}></label>
+        <div class="pad-map">${ACTS.map(([a, label]) => `<button class="btn btn-ghost btn-sm" data-a="${a}">${label}: <b>${waiting === a ? 'press a button…' : esc(padActionLabel(fam, a))}</b></button>`).join('')}</div>
+        <div class="row"><button class="btn btn-ghost btn-sm" data-r="reset">Reset to defaults</button><button class="btn btn-primary" data-r="done">Done</button></div>`;
+      panel.querySelectorAll<HTMLInputElement>('input[type=range]').forEach((i) => i.addEventListener('input', () => {
+        savePadSettings({ [i.dataset.k!]: Number(i.value) });
+        i.nextElementSibling!.textContent = Number(i.value).toFixed(2);
+      }));
+      panel.querySelector<HTMLInputElement>('input[type=checkbox]')!.addEventListener('change', (e) => savePadSettings({ invertY: (e.target as HTMLInputElement).checked }));
+      panel.querySelectorAll<HTMLElement>('[data-a]').forEach((b) => b.addEventListener('click', () => {
+        if (!g) return;
+        waiting = b.dataset.a as PadAction;
+        draw();
+        // the next button pressed (after this press is let go) becomes the action's button
+        let armed = false;
+        offCapture?.();
+        pad.capturing = true;
+        offCapture = pad.onFrame((f) => {
+          if (!panel.isConnected) { offCapture?.(); offCapture = null; waiting = null; pad.capturing = false; return; }
+          if (!f || !waiting) return;
+          if (!armed) { armed = f.anyPressed === null; return; }
+          if (f.anyPressed !== null) { remapControl(f.id, PAD_ACTIONS[waiting], f.anyPressed); waiting = null; offCapture?.(); offCapture = null; setTimeout(() => (pad.capturing = false), 0); draw(); }
+        });
+      }));
+      panel.querySelector('[data-r="reset"]')!.addEventListener('click', () => { savePadSettings({ ...PAD_DEFAULTS }); if (g) resetRemap(g.id); draw(); });
+      panel.querySelector('[data-r="done"]')!.addEventListener('click', () => { offCapture?.(); pad.capturing = false; ov.remove(); game.paused = false; togglePause(); });
+    };
+    draw();
   };
   // photo mode: drag to turn the camera around your rider, then save the picture
   const photoMode = () => {
@@ -1371,6 +1436,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     const pad = app.querySelector<HTMLElement>('#freePad');
     if (!pad || game.freeRiding) return;
     game.freeRide();
+    guideKey = '';
     guideCard.hidden = true;
     pad.hidden = false;
     app.querySelector<HTMLElement>('#paceBox')?.setAttribute('hidden', '');
@@ -1413,6 +1479,85 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     addEventListener('keydown', freeKeys);
     addEventListener('keyup', freeKeys);
   }
+  // ----- a game controller (gamepad.ts): the same actions as the keys and buttons, on the PS5-style layout -----
+  const padGuide = $('padGuide');
+  const minimapEl = app.querySelector<HTMLElement>('#minimap');
+  const guideLines = (fam: PadFamily): [string, string][] => {
+    const L = (a: PadAction) => padActionLabel(fam, a);
+    if (game.freeRiding) return [['Left stick', 'Steer'], [L('pedal'), 'Pedal'], [L('brake'), 'Brake, hold to reverse'], ['Right stick', 'Look around'], [L('lookBack'), 'Look behind'], [L('camera'), 'Camera view'], [padLabel(fam, 'r3'), 'Recenter camera'], [`Hold ${L('recover')}`, 'Back on the road'], [L('bell'), 'Bell'], [L('map'), 'Map'], [L('pause'), 'Pause']];
+    if (isExplore(route)) return [['Right stick', 'Look around'], [L('lookBack'), 'Look behind'], [L('camera'), 'Camera view'], [padLabel(fam, 'r3'), 'Recenter camera'], [L('confirm'), 'Continue / choose'], ['D-pad', 'Move between buttons'], [L('bell'), 'Bell'], [L('map'), 'Map'], [L('pause'), 'Pause']];
+    return [['Left stick', 'Change lane'], [L('confirm'), 'Jump'], [L('pedal'), 'Pedal'], ...(brakes ? [[L('brake'), 'Brake'] as [string, string]] : []), [L('boost'), 'Boost'], ['Right stick', 'Look around'], [L('lookBack'), 'Look behind'], [L('camera'), 'Camera view'], [L('bell'), 'Bell'], [L('pause'), 'Pause']];
+  };
+  let guideKey = '';
+  const showPadGuide = () => {
+    const on = pad.mode === 'pad' && game.isRiding;
+    app.classList.toggle('pad-mode', pad.mode === 'pad');
+    const key = on ? `${pad.family}|${game.freeRiding}` : '';
+    if (key === guideKey) return;
+    guideKey = key;
+    padGuide.hidden = !on;
+    if (on) padGuide.innerHTML = `<b>Controller</b>${guideLines(pad.family).map(([k, v]) => `<span><kbd>${esc(k)}</kbd>${esc(v)}</span>`).join('')}`;
+  };
+  const padModeOff = pad.onMode(() => showPadGuide());
+  let padSteering = false, padBraking = false, padRaceBrake = false, lastLx = 0, bellAt = 0, recoverT = 0;
+  /** lets go of everything the controller holds (on a pause, a menu, or when it disconnects) */
+  const releasePad = () => {
+    game.freeInput.throttle = 0;
+    if (padSteering) { game.freeInput.steer = 0; padSteering = false; }
+    if (padBraking) { game.freeBrake(false); game.freeInput.brakeForce = 1; padBraking = false; }
+    if (padRaceBrake) { game.setBrake(false); padRaceBrake = false; }
+    game.look.x = game.look.y = 0;
+    game.lookBehind = false;
+    recoverT = 0;
+  };
+  const padOff = pad.onFrame((f, dt) => {
+    if (!f) { releasePad(); showPadGuide(); flash('CONTROLLER', 'Disconnected: the keys still work', 2400); return; }
+    game.reverseDelay = padSettings.reverseDelay;
+    if (pad.capturing) return;
+    showPadGuide();
+    // photo mode: the right stick turns the camera round the rider
+    if (game.photoMode) { if (f.rx || f.ry) game.orbitPhoto(f.rx * 900 * dt, f.ry * 600 * dt); return; }
+    if (f.actPressed('pause') && game.isRiding) { releasePad(); togglePause(); return; }
+    if (!game.isRiding || game.paused || app.querySelector('#pauseOverlay')) { releasePad(); return; }
+    // the camera, in every kind of ride
+    game.look.x = f.rx * padSettings.look;
+    game.look.y = (padSettings.invertY ? -1 : 1) * f.ry * padSettings.look;
+    game.lookBehind = f.act('lookBack');
+    if (f.actPressed('camera')) { const v = game.cycleCamera(); flash('CAMERA', ['Chase view', 'Far view', 'Close view'][v], 900); }
+    if (f.actPressed('recenter')) game.recenterCamera();
+    if (f.actPressed('bell') && performance.now() / 1000 - bellAt > 0.35) { bellAt = performance.now() / 1000; sfx.bell(); }
+    if (f.actPressed('map') && minimapEl) minimapEl.classList.toggle('big');
+    if (game.freeRiding) {
+      // steering: only while the controller is the device in use, so the keys keep working alongside it
+      if (pad.mode === 'pad') {
+        // eased toward the stick (the smoothing setting): a time constant of up to about a fifth of a second
+        const want = steerCurve(f.lx, padSettings.steer), tau = padSettings.smooth * 0.22;
+        const cur = padSteering ? game.freeInput.steer : 0;
+        game.freeInput.steer = tau > 0.005 ? cur + (want - cur) * Math.min(1, dt / tau) : want;
+        padSteering = true;
+      }
+      game.freeInput.throttle = f.r2;
+      // the brake: pressed past a quarter of its travel (a little hysteresis against noise), as hard as it is pressed
+      if (!padBraking && f.l2 > 0.25) { game.freeBrake(true); padBraking = true; }
+      else if (padBraking && f.l2 < 0.12) { game.freeBrake(false); padBraking = false; }
+      game.freeInput.brakeForce = padBraking ? Math.max(0.3, f.l2) : 1;
+      // back on the road: held for a moment, so a brush of the button does nothing
+      if (f.act('recover')) {
+        recoverT += dt;
+        if (recoverT > 0.6) { recoverT = -1e9; flash('BIKE', game.recoverBike() ? 'Back on the road' : 'No road near here', 1400); }
+      } else recoverT = 0;
+    } else if (!isExplore(route)) {
+      // races and rides on the road: a flick of the left stick changes lane, the buttons jump, pedal, boost and brake
+      if (f.lx < -0.6 && lastLx >= -0.6) game.action('left');
+      if (f.lx > 0.6 && lastLx <= 0.6) game.action('right');
+      lastLx = f.lx;
+      if (f.actPressed('confirm')) game.action('jump');
+      if (f.actPressed('pedal')) game.action('pedal');
+      if (f.actPressed('boost')) game.action('boost');
+      if (!padRaceBrake && f.l2 > 0.25) { game.setBrake(true); padRaceBrake = true; }
+      else if (padRaceBrake && f.l2 < 0.12) { game.setBrake(false); padRaceBrake = false; }
+    }
+  });
   // leaving the tab pauses the ride, but not in photo mode: the ride is already frozen there (it is not
   // marked paused), and pausing then put a pause menu behind the photo screen that stayed after Continue
   const onHidden = () => { if (document.hidden && game.isRiding && !game.paused && !game.photoMode) togglePause(); };
@@ -1436,6 +1581,11 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     if (freeKeys) { removeEventListener('keydown', freeKeys); removeEventListener('keyup', freeKeys); }
     freeKeys = null;
     game.setBrake(false);
+    releasePad();
+    padOff();
+    padModeOff();
+    app.classList.remove('pad-mode');
+    game.recenterCamera(true);
     document.removeEventListener('visibilitychange', onHidden);
     game.onHud = () => {};
     game.onEnd = () => {};

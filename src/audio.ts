@@ -51,6 +51,8 @@ export const sfx = {
   go: () => tone(990, 0.3, 'sine', 0.1),
   finish: () => [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => tone(f, 0.25, 'triangle', 0.08), i * 110)),
   honk: () => { tone(415, 0.22, 'square', 0.035); tone(523, 0.22, 'square', 0.03); },
+  /** the bicycle bell: two quick dings */
+  bell: () => { tone(2350, 0.35, 'sine', 0.06); tone(3120, 0.25, 'sine', 0.025); setTimeout(() => { tone(2350, 0.4, 'sine', 0.05); tone(3120, 0.3, 'sine', 0.02); }, 130); },
 };
 
 // ---------- ride music ----------
