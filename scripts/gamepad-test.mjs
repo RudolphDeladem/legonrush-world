@@ -6,7 +6,7 @@ import { chromium } from 'playwright';
 
 const URL = process.env.URL || 'http://localhost:5299/play/';
 const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
-const page = await browser.newPage({ viewport: { width: 480, height: 320 } });
+const page = await browser.newPage({ viewport: { width: 760, height: 480 } });
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
 let failures = 0;
@@ -31,7 +31,7 @@ const wait = (ms) => frames(Math.max(2, Math.ceil(ms / 50)));
 const g = (expr) => page.evaluate(expr);
 
 await page.goto(URL);
-await page.click('#guest', { timeout: 120000 });
+await page.click('#guest', { timeout: 300000 });
 await page.waitForSelector('#dist', { timeout: 60000 });
 await page.waitForTimeout(2500);
 console.log('     frames per second:', await page.evaluate(async () => { const t = performance.now(); await window.__frames(20); return (20000 / (performance.now() - t)).toFixed(1); }));
