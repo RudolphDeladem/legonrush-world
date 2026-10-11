@@ -18,7 +18,7 @@ import * as THREE from 'three';
 import { createSite, type Kit, type Spec, type Style } from './blocks';
 import { render } from './blocks';
 import { EN } from './entrance';
-import { Bag, chainBollards, fanPalm, flagpole, gh, hash, lowWing, openings, vnoise, wallSolids, facesOf, FASCIA, RED_BASE, SOFF, TILE, WALL } from './enkit';
+import { Bag, tuft, chainBollards, fanPalm, flagpole, gh, hash, lowWing, openings, vnoise, wallSolids, facesOf, FASCIA, RED_BASE, SOFF, TILE, WALL } from './enkit';
 import { hipRoof } from './waccbip';
 import { broadleaf } from './nsiaroad';
 import { drapeAt, groundCover } from './kuffourgarden';
@@ -118,9 +118,10 @@ const gateSpec: Spec = {
       if (x > bx0 - 0.4 && x < bx1 + 0.4 && z > bz0 - 0.4 && z < bz1 + 0.4) return null;
       const walk = (Math.abs(z - zm) < 1.8 && (x < bx0 || x > bx1)) || (x > bx0 - 2.6 && x < bx1 + 2.6 && z > bz0 - 2.6 && z < bz1 + 2.6) || Math.abs(x - (px0 + 3)) < 1.6;
       if (walk) return slabs(x, z);
-      const n = vnoise(x * 0.5, z * 0.5);
-      if (n > 0.72 && Math.abs(z - zm) > 6) return [[0.75, 0.18, 0.2], [0.85, 0.65, 0.15], [0.8, 0.4, 0.55]][Math.floor(hash(Math.floor(x), Math.floor(z)) * 3)] as [number, number, number];
-      return [0.3 + n * 0.08, 0.47 + n * 0.06, 0.2];
+      const n = vnoise(x * 0.5, z * 0.5), m = hash(Math.floor(x / 0.6), Math.floor(z / 0.6));
+      // flowering beds: small scattered dots of colour in the darker planted patches, not blotches
+      if (n > 0.66 && m > 0.82 && Math.abs(z - zm) > 6) return [[0.62, 0.22, 0.22], [0.7, 0.58, 0.2], [0.62, 0.38, 0.48]][Math.floor(hash(Math.floor(x * 3), Math.floor(z * 3)) * 3)] as [number, number, number];
+      return n > 0.66 ? [0.24, 0.4, 0.17] : [0.3 + n * 0.08, 0.47 + n * 0.06, 0.2];
     }), groundCover()));
     // the basin: raised in stone-faced walls with a pale coping, water, the jets along its middle
     const bw = 0.45, bh = 0.55, stone: Part[] = [];
@@ -251,7 +252,7 @@ const serviceSpec: Spec = {
     // tall grass tufts
     for (let i = 0; i < 90; i++) {
       const x = r[1] + 2 + hash(i, 3) * 60, z = 200 + hash(i, 7) * 80, h = 0.5 + hash(i, 9) * 0.6;
-      b.leaf.push([new THREE.ConeGeometry(0.25, h, 5).translate(x - SO[0], gh(x, z) + h / 2, z - SO[1]), ['#6b7a3a', '#7d8a44', '#5b6a33'][i % 3]]);
+      tuft(b, x, z, h, ['#6b7a3a', '#7d8a44', '#5b6a33'][i % 3]);
     }
     // the speed sign: a red-ringed white disc on a grey post
     const [sx, sz] = [747.5, 262];

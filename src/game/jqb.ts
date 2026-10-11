@@ -18,7 +18,7 @@ import * as THREE from 'three';
 import { BUILDINGS } from './campusmap';
 import { createSite, render, type Kit, type Spec, type Style } from './blocks';
 import { EN } from './entrance';
-import { Bag, RED_BASE, SOFF, TILE, WALL, facesOf, gh, hash, lowWing, vnoise, wallSolids, type R4 } from './enkit';
+import { Bag, tuft, RED_BASE, SOFF, TILE, WALL, facesOf, gh, hash, lowWing, vnoise, wallSolids, type R4 } from './enkit';
 import { gableTri } from './ias';
 import { hipRoof } from './waccbip';
 import { broadleaf } from './nsiaroad';
@@ -157,7 +157,7 @@ const jqbSpec: Spec = {
       const x = 536 + hash(i, 31) * 64, z = -27 + hash(i, 37) * 66;
       if (dPath(x, z) < E.half + 0.6 || z < -20) continue;
       const h = 0.5 + hash(i, 41) * 0.8;
-      b.leaf.push([new THREE.ConeGeometry(0.22, h, 4).translate(x - JO[0], gh(x, z) + h / 2, z - JO[1]), ['#8a9450', '#7d8a44', '#9a9a58', '#6b7a3a'][i % 4]]);
+      tuft(b, x, z, h, ['#8a9450', '#7d8a44', '#9a9a58', '#6b7a3a'][i % 4]);
     }
     for (let i = 0; i < 30; i++) { const t = hash(i, 51), [ax, az] = E.pts[0], [bx, bz] = E.pts[E.pts.length - 1], x = ax + (bx - ax) * t + (hash(i, 53) - 0.5) * 5, z = az + (bz - az) * t + (hash(i, 57) - 0.5) * 5; b.c.push([new THREE.IcosahedronGeometry(0.08 + hash(i, 59) * 0.1, 0).translate(x - JO[0], gh(x, z) + 0.04, z - JO[1]), '#a7a196']); }
     // mature trees framing the building without hiding the lettering

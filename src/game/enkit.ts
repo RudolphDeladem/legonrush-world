@@ -213,3 +213,17 @@ export function fanPalm(b: Bag, x: number, z: number, h: number, seed: number) {
   }
   SOLIDS.add(x, z, 0.3);
 }
+
+/** a tuft of long grass: a few narrow blades leaning out from one root (double-sided foliage), not a cone */
+export function tuft(b: Bag, x: number, z: number, h: number, col: string, seed = x * 7 + z) {
+  const y = gh(x, z), X = x - b.O[0], Z = z - b.O[1];
+  for (let i = 0; i < 5; i++) {
+    const a = (i / 5) * Math.PI * 2 + hash(seed, i) * 1.2, lean = 0.15 + hash(i, seed) * 0.35, hh = h * (0.6 + hash(seed + i, 3) * 0.5), w = 0.05 + hash(i, 9) * 0.04;
+    const tip = new THREE.Vector3(X + Math.cos(a) * lean * hh, y + hh, Z + Math.sin(a) * lean * hh);
+    const px = -Math.sin(a) * w, pz = Math.cos(a) * w;
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute([X - px, y, Z - pz, X + px, y, Z + pz, tip.x, tip.y, tip.z], 3));
+    g.computeVertexNormals();
+    b.leaf.push([g, col]);
+  }
+}

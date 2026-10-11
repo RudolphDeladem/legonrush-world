@@ -61,7 +61,7 @@ export const EN = {
  *  arrows (Map A for 1-3, the corrected maps for 4-37); estimated, not measured */
 export const EN_VIEWS: { name: string; eye: [number, number, number]; look: [number, number, number]; fov: number; note: string }[] = [
   { name: 'en1', eye: [368, 1.6, 140], look: [372, 4.5, 178], fov: 60, note: 'the Provost office frontage across Danquah Avenue' },
-  { name: 'en2', eye: [375, 1.6, 154], look: [375, 4.5, 182], fov: 55, note: 'the central entrance and the oval forecourt' },
+  { name: 'en2', eye: [375, 1.6, 148.5], look: [375, 4.5, 182], fov: 55, note: 'the central entrance and the oval forecourt' },
   { name: 'en3', eye: [404, 1.6, 164], look: [378, 3.0, 174], fov: 55, note: 'the admission side and the College sign' },
   { name: 'en4', eye: [598, 1.6, 128], look: [660, 4.0, 128], fov: 50, note: 'the gate from the axial approach' },
   { name: 'en5', eye: [611, 1.6, 100], look: [659, 4.0, 127], fov: 60, note: 'the gate from the left-curving approach' },
@@ -79,7 +79,7 @@ export const EN_VIEWS: { name: string; eye: [number, number, number]; look: [num
   { name: 'en17', eye: [699, 1.6, 142], look: [663, 4.0, 135], fov: 55, note: 'the gate portal from the south side of the island' },
   { name: 'en18', eye: [561, 1.6, 130], look: [528, 2.0, 153], fov: 55, note: 'the low pavilion from the Institute roadway' },
   { name: 'en19', eye: [507, 1.6, 118], look: [520, 2.0, 159], fov: 55, note: 'the pavilion approach and the Institute sign' },
-  { name: 'en20', eye: [514, 1.6, 76], look: [552, 5.0, 76], fov: 55, note: 'the Kwame Nkrumah Complex frontal gables' },
+  { name: 'en20', eye: [540, 1.6, 76], look: [560, 5.0, 76], fov: 62, note: 'the Kwame Nkrumah Complex frontal gables' },
   { name: 'en21', eye: [617, 1.6, 126], look: [589, 5.0, 103], fov: 55, note: 'the Institute main elevation and stepped stone court' },
   { name: 'en22', eye: [609, 1.6, 135], look: [578, 5.0, 106], fov: 55, note: 'the Institute frontage across the roadway' },
   { name: 'en23', eye: [535, 1.6, 63], look: [553, 5.0, 65], fov: 55, note: 'the Institute end gable and brick apron' },
@@ -96,5 +96,5 @@ export const EN_VIEWS: { name: string; eye: [number, number, number]; look: [num
   { name: 'en34', eye: [522, 1.6, -6], look: [555, 7.0, -24], fov: 60, note: 'the JQB lightwell and fins' },
   { name: 'en35', eye: [626, 1.6, -24], look: [597, 5.0, -55], fov: 60, note: 'the JQB parking edge' },
   { name: 'en36', eye: [628, 1.6, -48], look: [645, 3.0, -55], fov: 60, note: 'the Finance Directorate junction' },
-  { name: 'en37', eye: [640, 1.6, -38], look: [594, 6.0, -38], fov: 55, note: 'the JQB long finned frontage' },
+  { name: 'en37', eye: [611, 1.6, -27], look: [594, 6.5, -50], fov: 60, note: 'the JQB long finned frontage' },
 ];

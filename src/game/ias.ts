@@ -17,7 +17,7 @@
 import * as THREE from 'three';
 import { createSite, render, type Kit, type Spec, type Style } from './blocks';
 import { EN } from './entrance';
-import { Bag, FASCIA, RED_BASE, SOFF, TILE, WALL, facesOf, gh, hash, lowWing, openings, vnoise, wallSolids, type Face, type R4 } from './enkit';
+import { Bag, tuft, FASCIA, RED_BASE, SOFF, TILE, WALL, facesOf, gh, hash, lowWing, openings, vnoise, wallSolids, type Face, type R4 } from './enkit';
 import { hipRoof } from './waccbip';
 import { broadleaf, stoneMeshOf } from './nsiaroad';
 import { drapeAt, groundCover } from './kuffourgarden';
@@ -302,7 +302,7 @@ const pavilionSpec: Spec = {
       const x = 513 + hash(i, 11) * 33, z = 146 + hash(i, 13) * 28;
       if (x > x0 - 1 && x < x1 + 1 && z > z0 - 1 && z < z1 + 1) continue;
       const h = 0.3 + hash(i, 17) * 0.5;
-      b.leaf.push([i % 4 ? new THREE.ConeGeometry(0.22, h, 5).translate(x - PO[0], gh(x, z) + h / 2, z - PO[1]) : new THREE.IcosahedronGeometry(0.15 + h * 0.4, 0).translate(x - PO[0], gh(x, z) + 0.1, z - PO[1]), i % 4 ? ['#6b7a3a', '#55702f', '#7d8a44'][i % 3] : '#9a958a']);
+      if (i % 4) tuft(b, x, z, h, ['#6b7a3a', '#55702f', '#7d8a44'][i % 3]); else b.c.push([new THREE.IcosahedronGeometry(0.15 + h * 0.4, 0).translate(x - PO[0], gh(x, z) + 0.1, z - PO[1]), '#9a958a']);
     }
     for (const [x, z, s] of [[541.5, 160.5, 1.1], [520.5, 166, 0.8], [537, 172.5, 0.7]] as [number, number, number][]) b.leaf.push([new THREE.IcosahedronGeometry(s, 1).scale(1.3, 0.9, 1.1).translate(x - PO[0], gh(x, z) + s * 0.6, z - PO[1]), '#3f6a2c']);
     for (const [x, z, h, s] of [[515, 147, 8, 12], [544, 148, 7.5, 11], [516, 174, 8, 13]] as [number, number, number, number][]) broadleaf(k, b.leaf, x, z, { h, spread: s, seed: x * 2 + z, origin: PO });
@@ -350,7 +350,7 @@ const whiteSpec: Spec = {
     }), groundCover()));
     for (let i = 0; i < 160; i++) {
       const x = 599 + hash(i, 21) * 28, z = z1 + 1 + hash(i, 23) * 24, h = 0.5 + hash(i, 25) * 0.7;
-      b.leaf.push([new THREE.ConeGeometry(0.2, h, 4).translate(x - WO[0], gh(x, z) + h / 2, z - WO[1]), ['#7d8a44', '#6b7a3a', '#8a9450'][i % 3]]);
+      tuft(b, x, z, h, ['#7d8a44', '#6b7a3a', '#8a9450'][i % 3]);
     }
     for (const [x, z, s] of [[606, 78.5, 1.2], [624, 76, 1.5], [600.5, 60, 1.1]] as [number, number, number][]) b.leaf.push([new THREE.IcosahedronGeometry(s, 1).scale(1.3, 0.9, 1.1).translate(x - WO[0], gh(x, z) + s * 0.6, z - WO[1]), '#3f6a2c']);
     b.finish(k);

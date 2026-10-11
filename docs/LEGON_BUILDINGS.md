@@ -2173,6 +2173,65 @@ The pictures are `images/663-665.jpg`. The numbers are in `src/game/nsia.ts` (`N
 - **Estimates:** every height here (the wall at 1.35 m, the top at 2.3 m, the road's rise) is calibrated against the
   passage photo, not surveyed.
 
+## 74. The main entrance brief: the gate, the Institute of African Studies, the Jones-Quartey Building, the Provost office
+
+The owner's 52-page brief (images 670-754): 37 game/photo pairs, Map A for pairs 1-3 and three corrected maps of blue
+arrows for pairs 4-37, four further photographs. Numbers in `src/game/entrance.ts` (`EN`); the 37 comparison cameras
+`EN_VIEWS` (`?view=en1` ... `en37` in `tools/preview/halls.html`), set along the owner's arrows (the maps matched to the
+game at about 7 px/m for Map 1, 5.9 for Map 2, 5 for Map 3 and 7 for Map A). Shared pieces in `enkit.ts`.
+
+- **The main gate** (`gateprecinct.ts`, pairs 4-17): east of the La Road roundabout (Mekki Abass Circle), between
+  Danquah Avenue's two one-way carriageways, a low white through-building spanning north-south: the portal of three tall
+  openings between two slender columns under six dark transom grilles, a pier either side with a round vent, a broad
+  hipped terracotta roof over deep eaves, lower one-storey wings on a red base; the paved drive through the portal (a
+  passage: the bike rides through it). The old pillar gate over the road is gone (landmarks.ts).
+- **The flag plaza** east of the gate: the long fountain basin raised in stone-faced walls with a stepped tier and jets,
+  slab walks with grass seams, stepped stone-faced planters with clipped shrubs and flowers, two lines of flagpoles,
+  fan palms; the satellite footprint drawn there as a building is excluded (corrections.json).
+- **The black University of Ghana signs** at the plaza's east corners (pair 6 and the close photograph): polished black
+  tile wall on a two-step black base, a deep tiled canopy on pale end posts, raised gold letters on both faces. Two, as
+  the aerial shows two dark structures at the corners.
+- **The low wings** north and south of the carriageways (pairs 10, 14-16): one storey, white over a red base, sparse
+  dark windows, doors, AC units, hipped tiled roofs; the brick footway along the north wing with the blue chain
+  bollards, round the bend to La Road (pair 25); the long low wing by the southern service edge with the 50 km/h sign,
+  rough grass and red soil (pairs 11, 12).
+- **The Institute of African Studies** (`ias.ts`, pairs 18-24): the Kwame Nkrumah Complex as a cross of two-storey
+  wings; the west front's twin white gables either side of the recessed entrance with its own small gable; the
+  north-west gable nearly blank with the name, small vents and one door (pair 23); the south front's central gabled
+  block over the porch with the name on the balcony parapet; bays of dark windows and narrow arched recesses between
+  pilasters; the building on a 0.9 m terrace, a 0.45 m middle terrace before it, stone-faced retaining walls, steps up
+  the middle (relief.ts), the sculptured figures, the heavy tree by the steps; the brick parking apron, low stone walls
+  and the channel drain on the west.
+- **The pavilion** south of the avenue (pairs 18, 19): one storey on a stone-faced 0.75 m plinth, a broad hipped roof on
+  round columns over a deep veranda, slate-blue fascia, dark lattice balustrades, a glazed core, the covered entrance
+  toward the avenue, the University of Ghana sign; rough ground.
+- **The white building above the bank** (pair 26): two storeys, its gable end toward the road with the College of
+  Education's sign, a recessed side veranda; the bank rising 1.4 m gently over 22 m (relief.ts) in long grass.
+- **The Jones-Quartey Building** (`jqb.ts`, pairs 30-37): four white levels under a thin projecting roof edge (low pale
+  metal roofs behind); the south front's signed core with four slot windows, recessed louvre bays, blank end walls,
+  pilotis and steps; the west side's groups of tall fins; the east frontage's blank panels between fin groups, the dark
+  gallery band, the fascia with K. A. B. JONES-QUARTEY BUILDING, the colonnade with dark grilles behind and the low white
+  wall; the blue kiosk under its red roof; the grass strip and kerb along the parking. The red-earth approach over the
+  lawn (the mapped paths there drawn as earth: `EN.earthBox`, slower to ride), long grass round it.
+- **La Road's east side**: every footprint there drawn as one-storey white wings on a red base with tiled roofs
+  (pairs 27-29); the mural court among them with its short white wall and painted portrait (generic, not a likeness),
+  the paved court, the blue canopy, the big trees, a bin and a bench; the **Finance Directorate** (pair 36) as low wings
+  under dark roofs with its sign on pale posts at the junction, the gable-fronted end of the Archaeology wing beside it.
+- **The Provost office frontage** (`southref.ts`, pairs 1-3): the central two-storey mass behind four piers, the lantern
+  on its hipped roof, the College sign over the door; two-storey wings behind one-storey verandas on white columns; the
+  long one-storey college wings either side; the oval forecourt: asphalt loop, kerbed oval bed with clipped hedges,
+  conical shrubs, cars, the College sign on pale supports, the big tree by the road.
+- **The School of Performing Arts** beside La Road: low linked one-storey wings, red lower walls, rusty brown roofs, red
+  earth between. **The Efua Sutherland Drama Studio**: the covered black stage with its lip and steps, the low white
+  enclosing wall with vertical slots round the paved court open to the sky, the raised pale platform, the timber-panel
+  entrance.
+
+Not resolved from the photos (each would need the photo or measurement named): the gatehouse's true depth and the
+carriageways' exact line round it (an oblique aerial or a measurement of the portal); the Institute's terrace heights
+(a photo along the south front at the steps); the JQB's floor heights (a measured storey or a photo with a person by the
+south core); the pavilion's sign wording (a closer photo); the drama studio's stage orientation (an aerial looking
+north); whether the two black signs are both "University of Ghana" (a photo of the north-east one).
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain
