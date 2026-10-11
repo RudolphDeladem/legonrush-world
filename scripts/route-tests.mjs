@@ -130,7 +130,7 @@ try {
   const order = ['Addis Ababa Court', 'Dar es Salaam Court', 'Pent Admin Block', 'Kampala Court', 'Nairobi Court'].map((n) => placeByName(n));
   if (order.some((p) => !p)) fail('Pentagon: an Old Pent court or the admin block is missing');
   else for (let i = 1; i < order.length; i++) if (order[i].x <= order[i - 1].x) fail(`Pentagon: ${order[i].name} is not east of ${order[i - 1].name}`);
-  const pentMarks = { 'New Pent Block A': [569.5, -623.2], 'New Pent Block B': [568.4, -766], 'New Pent Block C': [686.8, -698], 'Kampala Court': [671.6, -538.8], 'Addis Ababa Court': [542.4, -529.5], 'Nairobi Court': [720.4, -544.4] };
+  const pentMarks = { 'New Pent Block A': [569.5, -623.2], 'New Pent Block B': [555.8, -766], 'New Pent Block C': [686.8, -698], 'Kampala Court': [671.6, -538.8], 'Addis Ababa Court': [542.4, -529.5], 'Nairobi Court': [720.4, -544.4] };
   for (const [n, [mx, mz]] of Object.entries(pentMarks)) { const a = ACCESS.get(n); if (!a || Math.hypot(a.entrance[0] - mx, a.entrance[1] - mz) > 5) fail(`${n}: the entrance is not where the owner marks it`); }
   // owner's third reference PDF: every New Pent wing one model of the shared design, the three entrances, the walls
   // and the Boba kiosk; the Kufuor Centre as its unfinished frame (not the generic building), the hoarding, the
@@ -534,12 +534,14 @@ try {
     if (bb.frames().length !== 3) fail('expected the Chemistry Extension terrace, the uncompleted building and the Chemistry Department (owner PDF)');
     if (cm.AREAS.some((a) => a.kind === 'parking' && a.pts.length && (() => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > -130) !== (zj > -130) && 82 < ((a.pts[j] - a.pts[i]) * (-130 - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; })())) fail('the car park behind the Balme Library is still there (owner PDF p. 30)');
   }
-  // owner's Pent corrections PDF: the road to Block B up on its hill behind a retaining wall, stairs up from the car
-  // park before Block A; the filling station, the Shell Select supermarket and the tyre shop modelled where Oando was
+  // owner's Pent corrections PDF and the owner's later correction: the road between Blocks A and B level; Block A's car
+  // park 1.3 m below Pent Road behind a retaining wall, stairs up from it to the road; the filling station, the Shell
+  // Select supermarket and the tyre shop modelled where Oando was
   {
     const rl = await server.ssrLoadModule('/src/game/relief.ts');
-    if (Math.abs(rl.groundHeight(560, -718) - 1.3) > 0.01 || rl.groundHeight(560, -705) !== 0 || rl.groundHeight(625, -718) !== 0) fail('New Pent: the road to Block B is not up on its hill above the car park, down at Pent Road (owner PDF)');
-    { let prev = -1, ok = true; for (let z = -709; z >= -712.2; z -= 0.1) { const h = rl.groundHeight(597.2, z); if (h < prev - 1e-6) ok = false; prev = h; } if (!ok || Math.abs(prev - 1.3) > 0.01) fail('New Pent: the stairs do not climb from the car park to the road to Block B (owner PDF)'); }
+    for (const [x, z] of [[560, -718], [600, -717], [625, -718], [625, -620], [628, -600]]) if (Math.abs(rl.groundHeight(x, z)) > 0.01) fail(`New Pent: the road at ${x},${z} is not level (owner)`);
+    if (Math.abs(rl.groundHeight(608, -620) + 1.3) > 0.01) fail('New Pent: Block A\'s car park is not below Pent Road (owner)');
+    { let prev = -2, ok = true; for (let x = 615.8; x <= 619.4; x += 0.1) { const h = rl.groundHeight(x, -615.2); if (h < prev - 1e-6) ok = false; prev = h; } if (!ok || Math.abs(prev) > 0.01) fail('New Pent: the stairs do not climb from Block A\'s car park to Pent Road (owner)'); }
     const fs = (await server.ssrLoadModule('/src/game/fuelstation.ts')).fuelSite;
     if (fs.frames().length !== 3) fail('expected the Shell Select supermarket, the tyre shop and the filling station forecourt (owner PDF)');
     for (const [x, z] of [[735, -601], [795, -640]]) { const b = buildingAt(x, z); if (!b || !fs.replaces(b)) fail(`the building at ${x},${z} by the filling station is not the one the owner shows`); }

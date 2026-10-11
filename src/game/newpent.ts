@@ -217,7 +217,7 @@ const grounds: Spec = {
   axis: [1, 0], origin: SO, storey: 3, style: NP_LONG, roofColor: ROOF_NP, fascia: FASCIA_NP, pitch: 0.4,
   onGround: true,
   blocks: [],
-  keep: [[608 - SO[0], 619 - SO[0], -712 - SO[1], -595 - SO[1]], [633 - SO[0], 656 - SO[0], -770 - SO[1], -650 - SO[1]], [552 - SO[0], 573 - SO[0], -622 - SO[1], -596 - SO[1]], [563 - SO[0], 614 - SO[0], -716 - SO[1], -697 - SO[1]], [557 - SO[0], 613 - SO[0], -601 - SO[1], -586 - SO[1]], [549 - SO[0], 613 - SO[0], -746 - SO[1], -731 - SO[1]]],
+  keep: [[596 - SO[0], 619 - SO[0], -712 - SO[1], -595 - SO[1]], [633 - SO[0], 656 - SO[0], -770 - SO[1], -650 - SO[1]], [552 - SO[0], 573 - SO[0], -622 - SO[1], -596 - SO[1]], [563 - SO[0], 614 - SO[0], -716 - SO[1], -697 - SO[1]], [557 - SO[0], 613 - SO[0], -601 - SO[1], -586 - SO[1]], [549 - SO[0], 613 - SO[0], -746 - SO[1], -731 - SO[1]]],
   extras: (k) => {
     const X = (x: number) => x - SO[0], Z = (z: number) => z - SO[1];
     const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
@@ -282,36 +282,39 @@ const grounds: Spec = {
       }
       for (const [dx, dz] of [[0.6, 0], [-0.6, 0], [0, 0.6]]) k.plain.push([box(mx + dx - 0.15, mx + dx + 0.15, y + mh - 3, y + mh - 1, mz + dz - 0.15, mz + dz + 0.15), '#e8e8e4']);
       SOLIDS.add(614.5, -706, 1.4); }
-    // ----- the rise of the road to Block B (relief.ts): the rendered retaining wall along the car park, the steps up it
-    // with their rails, the gravel car park below, benches and trees on top (the owner's Pent PDF, pages 25-27)
-    { const zw = -711.35, s0 = 596.0, s1 = 598.4;
-      for (let x = 515; x < 613; x += 2) {
-        const x1 = Math.min(613, x + 2);
-        if (x1 > s0 && x < s1) continue;
-        const top = Math.max(gy(x, zw - 0.4), gy(x1, zw - 0.4)) + 0.15;
-        c.push([B(x, x1, -0.3, top, zw - 0.15, zw + 0.15), '#c19a85']);
-        for (let xx = x; xx < x1; xx += 0.8) SOLIDS.add(xx, zw, 0.2);
+    // ----- Block A's car park below Pent Road (relief.ts; the owner's Pent PDF, pages 25-27, placed by the owner's later
+    // correction): the rendered retaining wall along the road, the steps up it with their rails and cheek walls, the
+    // gravel floor, cars along it, trees at its ends
+    { const xw = 618.75, s0 = -616.4, s1 = -614.0, top = gy(621.5, -620) + 0.15;
+      for (let z = -633; z < -606; z += 2) {
+        const z1 = Math.min(-606, z + 2);
+        if (z1 > s0 && z < s1) continue;
+        c.push([B(xw - 0.15, xw + 0.15, -1.6, top, z, z1), '#c19a85']);
+        for (let zz = z; zz < z1; zz += 0.8) SOLIDS.add(xw, zz, 0.2);
       }
-      const st = stairsOf().find((q) => q.alongZ && q.z0 === s0)!;
+      const st = stairsOf().find((q) => !q.alongZ && q.z0 === s0)!;
       for (let i = 0; i < st.steps; i++) {
-        const za = st.x0 - i * st.tread, y = st.at(za - st.tread / 2);
-        c.push([B(s0, s1, -0.2, y, za - st.tread - 0.02, za), '#b9b2a6']);
+        const xa = st.x0 + i * st.tread, y = st.at(xa + st.tread / 2);
+        c.push([B(xa, xa + st.tread + 0.02, -1.6, y, s0, s1), '#b9b2a6']);
       }
-      for (const x of [s0 - 0.2, s1]) {
-        c.push([B(x, x + 0.2, -0.2, 1.6, st.x1 - 0.2, st.x0), '#c19a85']);
-        k.plain.push([B(x + 0.08, x + 0.12, 0.2, 1.3 + 1.0, st.x0 - 0.05, st.x0), '#a9adb1'], [B(x + 0.08, x + 0.12, 1.3, 2.3, st.x1 - 0.05, st.x1), '#a9adb1']);
-        const len = Math.hypot(st.x0 - st.x1, 1.3), ang = Math.atan2(1.3, st.x0 - st.x1);
-        k.plain.push([new THREE.BoxGeometry(0.05, 0.05, len).rotateX(ang).translate(X(x + 0.1), 1.0 + 0.65, Z((st.x0 + st.x1) / 2)), '#a9adb1']);
+      for (const z of [s0 - 0.2, s1]) {
+        c.push([B(st.x0, st.x1, -1.6, top, z, z + 0.2), '#c19a85']);
+        k.plain.push([B(st.x0, st.x0 + 0.05, -1.3, -0.3, z + 0.08, z + 0.12), '#a9adb1'], [B(st.x1 - 0.05, st.x1, 0, 1.0, z + 0.08, z + 0.12), '#a9adb1']);
+        const len = Math.hypot(st.x1 - st.x0, 1.3), ang = Math.atan2(1.3, st.x1 - st.x0);
+        k.plain.push([new THREE.BoxGeometry(len, 0.05, 0.05).rotateZ(ang).translate(X((st.x0 + st.x1) / 2), -0.65 + 1.0, Z(z + 0.1)), '#a9adb1']);
       }
-      // (the car park below it: carParks below)
-      // benches and trees on top
-      for (const x of [578, 584.5, 591, 604]) {
-        const z = -714.0, y = gy(x, z);
-        k.plain.push([B(x - 0.9, x + 0.9, y + 0.42, y + 0.48, z - 0.25, z + 0.25), '#8a5a36'], [B(x - 0.9, x + 0.9, y + 0.5, y + 0.9, z + 0.22, z + 0.28), '#8a5a36']);
-        for (const dx of [-0.75, 0.75]) k.plain.push([B(x + dx - 0.04, x + dx + 0.04, y, y + 0.45, z - 0.25, z + 0.25), '#3a3a3a']);
-        SOLIDS.add(x, z, 0.6);
+      // the gravel floor and the cars along the wall and along the block
+      const fy = gy(608, -620);
+      k.plain.push([B(600, 618.5, fy + 0.01, fy + 0.04, -632, -607), '#a59b8c']);
+      const CAR = ['#e9e9ea', '#1b1d22', '#9aa1a8', '#7a1e1e', '#2b3b5a', '#c9ccd0'];
+      let ci = 0;
+      for (let z = -631.5; z + 2.6 <= -607.5; z += 2.7) {
+        if (z + 2.6 > s0 - 1.2 && z < s1 + 1.2) continue;
+        if ((ci * 7 + 3) % 5 !== 0) car(k, X(615.0), Z(z + 1.35), CAR[ci % CAR.length], fy + 0.04, -Math.PI / 2);
+        if ((ci * 5 + 1) % 4 !== 0) car(k, X(603.2), Z(z + 1.35), CAR[(ci + 3) % CAR.length], fy + 0.04, Math.PI / 2);
+        ci++;
       }
-      for (const [x, z] of [[581, -713], [594.5, -713.4]]) {
+      for (const [x, z] of [[609, -633.5], [609, -605.5]]) {
         const y = gy(x, z);
         k.plain.push([new THREE.CylinderGeometry(0.25, 0.4, 6, 7).translate(X(x), y + 3, Z(z)), '#5b4636']);
         for (const [dx, dy, dz, r] of [[0, 7.2, 0, 3.4], [2.2, 6.4, -1.3, 2.4], [-2.0, 6.6, 1.4, 2.6]]) k.plain.push([new THREE.IcosahedronGeometry(r, 1).scale(1, 0.65, 1).translate(X(x) + dx, y + dy, Z(z) + dz), '#3f6b2c']);
@@ -347,13 +350,13 @@ const grounds: Spec = {
       };
       // Block A, before the front structures
       { const y = pad(557.5, 612, -600.5, -586.5); rowX(557.5, 612, -593.8, -599.4, y, [[561.5, 566.5]]); }
-      // below the rise behind Block A, along the back wing and the retaining wall (clear of the steps)
-      { const y = pad(563, 614, -711.1, -697.6); rowX(565, 612, -703.4, -697.8, y); rowX(565, 612, -705.2, -710.8, y, [[593.5, 601]]); }
+      // behind Block A, along its back wing and the road to Block B
+      { const y = pad(563, 614, -711.1, -697.6); rowX(565, 612, -703.4, -697.8, y); rowX(565, 612, -705.2, -710.8, y); }
       // Block B, before the front structures either side of the entrance
       { const y = pad(549.5, 567.5, -740, -731.5); rowX(550, 567.5, -733, -738.6, y); }
       { const y = pad(585.5, 612, -745, -731.5); rowX(586, 612, -733, -738.6, y); rowX(586, 612, -744.6, -739.2, y); }
       // Block C, along the drive on its west side
-      { const y = pad(636.5, 643.8, -690, -664); rowZ(-689.5, -664, 643.6, 638.0, y); }
+      { const y = pad(636.5, 643.8, -690, -684.2); rowZ(-689.5, -684.2, 643.6, 638.0, y); }
       { const y = pad(650.5, 655.0, -690, -672); rowZ(-689.5, -672, 650.6, 655.0, y); } }
     // ----- before Block A's entrance (the owner's Pent PDF, pages 21-24): the forecourt of red hexagonal pavers; the open
     // way through the ground floor of the front structure east of the porch (no gate); west of the porch, before the
@@ -383,34 +386,34 @@ const grounds: Spec = {
         k.plain.push([B(554.0, 555.2, y, y + 1.0, -599.9, -599.1), '#e8621f'], [B(554.0, 555.2, y + 1.0, y + 1.75, -599.9, -599.1), '#dfe6ea'], [B(553.95, 555.25, y + 1.75, y + 1.85, -599.95, -599.05), '#e8621f']);
         SOLIDS.add(554.6, -599.5, 0.7); }
       for (const [y, z] of [[PL + NST + 1.6, -605.5], [PL + NST + 1.6, -600.0], [PL + 2 * NST + 1.6, -603.0]]) k.plain.push([new THREE.CylinderGeometry(0.42, 0.42, 0.05, 16).rotateZ(Math.PI / 2).translate(X(553.4), gy(553, z) + y, Z(z)), '#e9e9e6']); }
-    // the Boba tea kiosk on the corner by Block C (the owner's Pent PDF, page 16): a yellow box on a dark base, painted
-    // with drinks, its wide serving window under a yellow awning, the BoBa logo board standing on its roof; before it a
-    // square of artificial turf with black high tables and stools, black planter boxes of spiky palms along its edges,
-    // a lamp post and a patch of gravel
-    { const x0 = 637.0, x1 = 641.4, z0 = -659.6, z1 = -657.0, y = gy(639, -658);
-      k.plain.push([B(633.6, 646.0, y + 0.01, y + 0.05, -660.4, -650.8), '#4f9a3a']);
-      k.plain.push([B(646.0, 648.5, y + 0.01, y + 0.04, -656, -651.5), '#9b9488']);
+    // the Boba tea kiosk by Block C (the owner's Pent PDF, page 16; placed by the owner's later correction: on Block C's
+    // west side by Pent Road where the tree stood, its front facing west to the road): a yellow box on a dark base,
+    // painted with drinks, its wide serving window under a yellow awning, the BoBa logo board standing on its roof;
+    // before it a square of artificial turf with black high tables and stools, black planter boxes of spiky palms along
+    // its edges, a lamp post
+    { const x0 = 638.4, x1 = 641.0, z0 = -680.2, z1 = -675.8, y = gy(639.7, -678);
+      k.plain.push([B(632.2, x0, y + 0.01, y + 0.05, -683.6, -672.4), '#4f9a3a']);
       k.plain.push([B(x0, x1, y, y + 0.35, z0, z1), '#2a2c2e'], [B(x0, x1, y + 0.35, y + 2.7, z0, z1), '#f2d22a']);
-      // the serving window and its counter, the drinks painted on the sides
-      k.plain.push([B(x0 + 0.4, x1 - 0.4, y + 1.2, y + 2.3, z1, z1 + 0.03), '#2a2826'], [B(x0 + 0.3, x1 - 0.3, y + 1.1, y + 1.18, z1, z1 + 0.45), '#e9e7e0']);
-      for (const [x, col] of [[x0 + 0.25, '#7a4a2a'], [x1 - 0.85, '#f4efe2']] as [number, string][]) k.plain.push([B(x, x + 0.6, y + 0.6, y + 1.05, z1, z1 + 0.02), col]);
-      for (const xx of [x0 - 0.02, x1]) for (const [zz, col] of [[z0 + 0.4, '#7a4a2a'], [z0 + 1.3, '#f4efe2']] as [number, string][]) k.plain.push([B(xx, xx + 0.02, y + 0.8, y + 2.2, zz, zz + 0.7), col]);
+      // the serving window and its counter on the west front, the drinks painted on it and on the ends
+      k.plain.push([B(x0 - 0.03, x0, y + 1.2, y + 2.3, z0 + 0.4, z1 - 0.4), '#2a2826'], [B(x0 - 0.45, x0, y + 1.1, y + 1.18, z0 + 0.3, z1 - 0.3), '#e9e7e0']);
+      for (const [z, col] of [[z1 - 0.85, '#7a4a2a'], [z0 + 0.25, '#f4efe2']] as [number, string][]) k.plain.push([B(x0 - 0.02, x0, y + 0.6, y + 1.05, z, z + 0.6), col]);
+      for (const zz of [z0 - 0.02, z1]) for (const [xx, col] of [[x0 + 0.4, '#7a4a2a'], [x0 + 1.3, '#f4efe2']] as [number, string][]) k.plain.push([B(xx, xx + 0.7, y + 0.8, y + 2.2, zz, zz + 0.02), col]);
       const r = new THREE.BufferGeometry();
-      r.setAttribute('position', new THREE.Float32BufferAttribute([X(x0 - 0.1), y + 2.75, Z(z1), X(x1 + 0.1), y + 2.75, Z(z1), X(x1 + 0.1), y + 2.3, Z(z1 + 1.6), X(x0 - 0.1), y + 2.3, Z(z1 + 1.6)], 3));
+      r.setAttribute('position', new THREE.Float32BufferAttribute([X(x0), y + 2.75, Z(z0 - 0.1), X(x0), y + 2.75, Z(z1 + 0.1), X(x0 - 1.6), y + 2.3, Z(z1 + 0.1), X(x0 - 1.6), y + 2.3, Z(z0 - 0.1)], 3));
       r.setIndex([0, 2, 1, 0, 3, 2, 0, 1, 2, 0, 2, 3]); r.computeVertexNormals();
-      k.plain.push([r, '#f5d84a'], [B(x0 - 0.1, x1 + 0.1, y + 2.1, y + 2.32, z1 + 1.55, z1 + 1.62), '#e8c21a']);
-      // the logo board on the roof's west end
-      k.plain.push([B(x0 + 0.1, x0 + 2.4, y + 2.7, y + 3.5, z1 - 0.15, z1 - 0.1), '#f7f2e6'], [B(x0 + 0.15, x0 + 0.8, y + 2.75, y + 3.45, z1 - 0.1, z1 - 0.08), '#f2c41e']);
-      k.signs.push({ text: 'BoBa Udous', x: X(x0 + 1.4), y: y + 3.1, z: Z(z1 - 0.07), ry: 0, w: 2.1, colors: ['#f7f2e6', '#6a3a1e'] });
-      SOLIDS.add(639.2, -658.3, 2.3);
+      k.plain.push([r, '#f5d84a'], [B(x0 - 1.62, x0 - 1.55, y + 2.1, y + 2.32, z0 - 0.1, z1 + 0.1), '#e8c21a']);
+      // the logo board on the roof, facing the road
+      k.plain.push([B(x0 + 0.1, x0 + 0.15, y + 2.7, y + 3.5, z1 - 2.4, z1 - 0.1), '#f7f2e6'], [B(x0 + 0.08, x0 + 0.1, y + 2.75, y + 3.45, z1 - 0.8, z1 - 0.15), '#f2c41e']);
+      k.signs.push({ text: 'BoBa Udous', x: X(x0 + 0.07), y: y + 3.1, z: Z(z1 - 1.25), ry: -Math.PI / 2, w: 2.1, colors: ['#f7f2e6', '#6a3a1e'] });
+      for (let z = z0; z <= z1; z += 0.8) SOLIDS.add(639.7, z, 1.4);
       // high tables and stools on the turf
-      for (const [tx, tz] of [[635.2, -654.6], [638.0, -653.0], [641.8, -653.6], [644.4, -655.6]]) {
+      for (const [tx, tz] of [[636.4, -681.6], [634.6, -678.8], [636.2, -675.6], [634.0, -674.2]]) {
         k.plain.push([new THREE.CylinderGeometry(0.32, 0.32, 0.05, 12).translate(X(tx), y + 1.05, Z(tz)), '#1d1d1d'], [new THREE.CylinderGeometry(0.04, 0.04, 1.05, 6).translate(X(tx), y + 0.52, Z(tz)), '#1d1d1d']);
         for (const a of [0.4, 2.6, 4.4]) { const sx = X(tx) + Math.cos(a) * 0.62, sz = Z(tz) + Math.sin(a) * 0.62; k.plain.push([new THREE.CylinderGeometry(0.17, 0.17, 0.04, 10).translate(sx, y + 0.78, sz), '#1d1d1d'], [new THREE.CylinderGeometry(0.025, 0.025, 0.78, 5).translate(sx, y + 0.39, sz), '#1d1d1d']); }
         SOLIDS.add(tx, tz, 0.5);
       }
-      // black planter boxes of spiky palms along the turf's road edges
-      for (const [px, pz, alongX] of [[634.8, -651.3, true], [637.6, -651.3, true], [643.2, -651.3, true], [645.6, -653.2, false], [645.6, -656.4, false]] as [number, number, boolean][]) {
+      // black planter boxes of spiky palms along the turf's road edge and its ends, a gap left in the middle
+      for (const [px, pz, alongX] of [[632.6, -682.0, false], [632.6, -674.0, false], [634.6, -683.2, true], [634.6, -672.8, true]] as [number, number, boolean][]) {
         const hx = alongX ? 1.1 : 0.35, hz = alongX ? 0.35 : 1.1;
         k.plain.push([B(px - hx, px + hx, y, y + 0.55, pz - hz, pz + hz), '#2c2e30']);
         for (let i = 0; i < 4; i++) {
@@ -420,8 +423,13 @@ const grounds: Spec = {
         SOLIDS.add(px, pz, Math.max(hx, hz));
       }
       // the lamp post
-      k.plain.push([new THREE.CylinderGeometry(0.06, 0.09, 7, 8).translate(X(645.0), y + 3.5, Z(-652.0)), '#9ba0a4'], [B(644.6, 645.4, y + 6.9, y + 7.05, -652.15, -651.85), '#3a3c3e']);
-      SOLIDS.add(645.0, -652.0, 0.15); }
+      k.plain.push([new THREE.CylinderGeometry(0.06, 0.09, 7, 8).translate(X(632.4), y + 3.5, Z(-684.4)), '#9ba0a4'], [B(632.0, 632.8, y + 6.9, y + 7.05, -684.55, -684.25), '#3a3c3e']);
+      SOLIDS.add(632.4, -684.4, 0.15); }
+    // the tree on the corner where the kiosk stood (the two swapped places: the owner)
+    { const x = 639.2, z = -657.8, y = gy(x, z);
+      k.plain.push([new THREE.CylinderGeometry(0.22, 0.36, 4.5, 7).translate(X(x), y + 2.25, Z(z)), '#5b4636']);
+      for (const [dx, dy, dz, r] of [[0, 5.6, 0, 2.8], [1.8, 5.0, -1.0, 2.0], [-1.6, 5.2, 1.2, 2.2]]) k.plain.push([new THREE.IcosahedronGeometry(r, 1).scale(1, 0.7, 1).translate(X(x) + dx, y + dy, Z(z) + dz), '#3f6b2c']);
+      SOLIDS.add(x, z, 0.4); }
     const m = new THREE.Mesh(merge(c), concrete(0.3)); m.castShadow = true; m.receiveShadow = true; k.meshes.push(m);
   },
 };
@@ -453,7 +461,8 @@ export const newPentSite = createSite('new-pent', [
   ...WINGS.map((_, i) => wing(i)),
   // (Block A's porch stands west of the owner's mark, clear of the wing beside it on the east: owner's photo 41)
   entrance('New Pent Block A', 'A', [569.5, -628]),
-  entrance('New Pent Block B', 'B', [568.4, -766]),
+  // (in the middle between its two front structures, as Block A's: the owner's New Pent corrections, picture 1)
+  entrance('New Pent Block B', 'B', [555.8, -766]),
   entrance('New Pent Block C', 'C', [686.8, -698]),
   grounds,
 ]);

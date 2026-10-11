@@ -324,6 +324,10 @@
     {
       "id": "osm:way/1189695662",
       "reason": "Owner's picture of the lane behind Old Pent from Annie Jiagge Road (circled red): the small one-floor footprint directly behind the first (hidden by it in the owner's view; the same row) there does not exist."
+    },
+    {
+      "id": "osm:way/744998452",
+      "reason": "Owner (New Pent corrections, picture 1): Block B is the same as Block A, its entrance in the middle between the two brick-ended front structures. This small four-storey piece there is Block B's entrance tower, drawn by the entrance model in newpent.ts."
     }
   ],
   "heights": [

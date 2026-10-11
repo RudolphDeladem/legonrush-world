@@ -981,8 +981,8 @@
    "place": "New Pent Block B",
    "type": "hall entrance",
    "arrivalOn": "residential",
-   "arrivalDistance": 48.7,
-   "facing": 304
+   "arrivalDistance": 48,
+   "facing": 359
   },
   {
    "place": "New Pent Block A",
@@ -1079,7 +1079,7 @@
   {
    "place": "New Pent Block B",
    "method": "curated",
-   "arrivalDistance": 48.7
+   "arrivalDistance": 48
   },
   {
    "place": "Food vendors",
