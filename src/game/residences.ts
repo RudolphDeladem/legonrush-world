@@ -188,7 +188,7 @@ const wood: Spec = {
       if (i && g.rand() < 0.45) continue;
       const tx = x + (g.rand() - 0.5) * 7, tz = z + (g.rand() - 0.5) * 7;
       if (!g.clearOf(tx, tz)) continue;
-      g.tree(k, tx - FO[0], tz - FO[1], 1.1 + g.rand() * 0.7);
+      g.woodTree(k, tx - FO[0], tz - FO[1], 1.0 + g.rand() * 0.5);
     }
   },
 };

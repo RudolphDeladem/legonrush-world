@@ -284,6 +284,13 @@ export const TREES = {
     [cyl(0.17, 0.28, 2.6, 5), '#6b5a4a'],
     [canopy(3.1, 0, 3.9, 0, 0.36, 11, 4), 0], [canopy(1.9, 1.3, 4.1, 0.8, 0.4, 6, 5), 1],
   ], true),
+  /** woodland tree (the owner: in the woods the stems are short and hidden; the whole tree is leaves down to near the
+   *  ground, the stem only seen close to): a short stout stem under a big crown of several masses reaching low */
+  woodland: () => model([
+    [cyl(0.17, 0.27, 1.7, 5), '#5a4535'],
+    [canopy(2.7, 0, 3.4, 0, 0.82, 12, 6), 0], [canopy(2.0, 1.3, 2.1, 0.7, 0.78, 8, 7), 0],
+    [canopy(1.9, -1.2, 2.2, -0.8, 0.78, 8, 8), 0], [canopy(1.8, 0.3, 5.0, -0.4, 0.8, 8, 9), 0], [canopy(1.5, -0.6, 1.6, 1.2, 0.75, 6, 10), 0],
+  ], true),
   /** royal palm: tall smooth grey trunk, green crownshaft, drooping fronds */
   palm: () => model([
     [cyl(0.19, 0.27, 8.6, 6), '#a39886'],
@@ -297,6 +304,7 @@ const LEAF: Record<Species, string[][]> = {
   mahogany: [['#2f5e22'], ['#386b27'], ['#2b5420']],
   flame: [['#d8431c', '#4f7f2a'], ['#e0582a', '#56862e'], ['#c93a1a', '#4a7a29'], ['#4f7f2a', '#4a7a29']],
   palm: [['#4f8a2f'], ['#5a9435'], ['#467d2a']],
+  woodland: [['#2f5e22', '#3a6b28'], ['#34652a', '#2b5420'], ['#3d6f2b', '#305f24']],
 };
 
 /** Instanced trees for the ridden route layer: one draw call per species. */
@@ -324,7 +332,7 @@ function treeGeometry(s: Species) {
 const treeInstMat = groundShade(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85 }), 1.6, 0.4, 'tree');
 /** Adds route-side trees: a mix of species, as instanced meshes marked shared. */
 export function addRouteTrees(group: THREE.Group, spots: THREE.Matrix4[], rand: () => number) {
-  const by: Record<Species, THREE.Matrix4[]> = { neem: [], mahogany: [], flame: [], palm: [] };
+  const by: Record<Species, THREE.Matrix4[]> = { neem: [], mahogany: [], flame: [], palm: [], woodland: [] };
   const kinds: Species[] = ['neem', 'mahogany', 'flame', 'palm', 'palm', 'neem'];
   for (const m of spots) by[kinds[(rand() * kinds.length) | 0]].push(m);
   for (const s of Object.keys(by) as Species[]) {
@@ -798,7 +806,7 @@ export function buildCampusLife() {
     const n = Math.min(900, ((maxX - minX) * (maxZ - minZ)) / (a.kind === 'wood' ? 75 : 120));
     for (let i = 0; i < n; i++) {
       const x = minX + rand() * (maxX - minX), z = minZ + rand() * (maxZ - minZ);
-      if (inPoly(a.pts, x, z) && freeSpot(x, z, 1.5)) tree(x, z, rand() < 0.6 ? 'mahogany' : 'neem', 0.8 + rand() * 0.6);
+      if (inPoly(a.pts, x, z) && freeSpot(x, z, 1.5)) tree(x, z, a.kind === 'wood' ? (rand() < 0.75 ? 'woodland' : 'neem') : rand() < 0.6 ? 'mahogany' : 'neem', 0.8 + rand() * 0.6);
     }
   }
   for (const p of PLACES) {

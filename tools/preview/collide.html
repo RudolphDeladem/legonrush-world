@@ -1,0 +1,33 @@
+<!doctype html><html><body><script type="module">
+// The free-ride collision grid (meshcollide.ts): builds the campus and asks the grid at known spots.
+import * as THREE from 'three';
+import { buildCampus } from '/src/game/world.ts';
+import { meshBlocked } from '/src/game/meshcollide.ts';
+import { AREAS, roadAt, buildingNear } from '/src/game/campusmap.ts';
+import { solidAt } from '/src/game/solids.ts';
+const t0 = performance.now();
+const scene = new THREE.Scene(); scene.add(buildCampus());
+const out = { build: Math.round(performance.now() - t0) };
+// parked cars: sample the car parks; how much of a car park is solid (cars), and its middle aisle
+const parks = AREAS.filter((a) => a.kind === 'parking').slice(0, 6);
+const t1 = performance.now();
+out.parks = parks.map((a) => {
+  let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
+  for (let i = 0; i < a.pts.length; i += 2) { x0 = Math.min(x0, a.pts[i]); x1 = Math.max(x1, a.pts[i]); z0 = Math.min(z0, a.pts[i + 1]); z1 = Math.max(z1, a.pts[i + 1]); }
+  let n = 0, b = 0;
+  for (let x = x0; x < x1; x += 1) for (let z = z0; z < z1; z += 1) { n++; if (meshBlocked(x, z, 0)) b++; }
+  return [Math.round(x0), Math.round(z0), Math.round((100 * b) / n) + '%'];
+});
+out.tileMs = Math.round(performance.now() - t1);
+// roads: points on road centre lines should be free (a sample of roads)
+let rf = 0, rn = 0, bad = [];
+for (let x = -800; x < 900; x += 37) for (let z = -900; z < 900; z += 41) {
+  const r = roadAt(x, z); if (!r || Math.hypot(r.x - x, r.z - z) > 40) continue;
+  rn++; if (meshBlocked(r.x, r.z, 0.2) || solidAt(r.x, r.z, 0.3)) { rf++; if (bad.length < 12) bad.push([Math.round(r.x), Math.round(r.z)]); }
+}
+out.roadsBlocked = `${rf}/${rn}`; out.roadSamples = bad;
+// specific spots
+const at = (x, z) => meshBlocked(x, z, 0.2);
+out.spots = { iasLawn: at(540, 30), balmePoolWall: at(15.3, 75), plaza: at(712, 120), gatePortal: at(660, 128.8) };
+window.__res = out; console.log(JSON.stringify(out)); window.__done = true;
+</script></body></html>

@@ -351,12 +351,14 @@ export interface Settings {
   bigButtons: boolean;
   /** dark menus for riding at night */
   nightMenus: boolean;
+  /** Explore and Vibe rides (and riding it yourself): normal, or faster (30% quicker) */
+  rideSpeed: 'normal' | 'faster';
 }
 export type Difficulty = 'easy' | 'normal' | 'hard';
 
 const defaultSettings = (): Settings => ({
   sound: true, volume: 0.8, musicVolume: 0.5, graphics: 'auto', slowDevice: false, leftHanded: false, campus: 'ug', difficulty: 'normal', weather: 'changing',
-  onboarded: false, vibration: true, bigButtons: false, nightMenus: false,
+  onboarded: false, vibration: true, bigButtons: false, nightMenus: false, rideSpeed: 'normal',
   reducedMotion: typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches,
 });
 

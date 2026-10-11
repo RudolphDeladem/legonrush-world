@@ -13,6 +13,7 @@ import { AREAS, buildingAt, buildingNear, mapBounds, roadAt } from './campusmap'
 import { inPassage, solidAt } from './solids';
 import { roadClearance, setNightLights } from './life';
 import { onEarth } from './science';
+import { meshBlocked, warmCollision, warmOne } from './meshcollide';
 import { createWeatherFx, type WeatherFx } from './weatherfx';
 
 /** 'pedal' is one tap of the pedal; see Game.pedal() for press/release */
@@ -272,8 +273,11 @@ const inPts = (pts: Float32Array, x: number, z: number) => {
  */
 function freeBlocked(x: number, z: number) {
   if (inStairs(x, z)) return true;
+  // trunks, posts and what the models draw at bike height (walls, fences, parked cars, planters) stop it everywhere,
+  // on the roads too; the map's building outlines only off the roads (some reach a little over a road's edge)
+  if (solidAt(x, z, 0.3) || meshBlocked(x, z)) return true;
   if (roadClearance(x, z, 6, -1, true) <= 0) return false;
-  if ((buildingNear(x, z, 0.35) && !inPassage(x, z)) || solidAt(x, z, 0.3)) return true;
+  if (buildingNear(x, z, 0.35) && !inPassage(x, z)) return true;
   if (!wilds) {
     wilds = AREAS.filter((a) => a.kind === 'water').map((a) => {
       let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
@@ -295,7 +299,9 @@ const NEAR_MISS_COINS = 2;
 export class Game {
   readonly renderer: THREE.WebGLRenderer;
   readonly scene = new THREE.Scene();
-  readonly camera = new THREE.PerspectiveCamera(62, 1, 0.1, 1200);
+  // (the near plane at 0.3 m, not 0.1: three times the depth precision, so paint and signs set a few centimetres off a
+  // wall no longer flicker against it in the distance)
+  readonly camera = new THREE.PerspectiveCamera(62, 1, 0.3, 1200);
   private sun = new THREE.DirectionalLight('#fff1d6', 2.6);
   private sky: THREE.Mesh;
   /** grass tufts and wild flowers round the camera */
@@ -415,6 +421,8 @@ export class Game {
   }
   /** the rider's chosen cruising speed (m/s) for Explore and Vibe rides; null: the normal pace */
   cruiseSpeed: number | null = null;
+  /** Explore and Vibe rides and riding it yourself: 1 at normal speed, 1.3 at the faster setting */
+  speedFactor = 1;
   /**
    * Explore's guided ride: a slow, steady pace that rolls to a stop at each place in `stops`
    * (ride distance d, map x/z) and waits there until continueTour().
@@ -444,7 +452,9 @@ export class Game {
   constructor(canvas: HTMLCanvasElement) {
     const lowEnd = (navigator.hardwareConcurrency ?? 4) <= 4 || Math.min(screen.width, screen.height) < 500;
     this.lowEnd = lowEnd;
-    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: !lowEnd || devicePixelRatio < 2 });
+    // a logarithmic depth buffer on capable devices: surfaces a few centimetres apart (paint, signs, window panes on a
+    // wall) stay apart at any distance instead of flickering through each other as the camera moves
+    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: !lowEnd || devicePixelRatio < 2, logarithmicDepthBuffer: !lowEnd });
     this.renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
     // GPU resets: log context loss/restore so driver resets show up in the console (three.js handles the restore itself)
     canvas.addEventListener('webglcontextlost', () => console.warn('LEGONRUSH: WebGL context lost (GPU reset or driver timeout)'));
@@ -987,6 +997,23 @@ export class Game {
   cycleCamera() { this.camView = (this.camView + 1) % VIEWS.length; return this.camView; }
   /** the camera straight behind the rider again (and, with `view`, the normal chase view) */
   recenterCamera(view = false) { if (view) this.camView = 0; this.lookYaw = 0; this.lookPitch = 0; this.look.x = this.look.y = 0; this.lookBehind = false; }
+  /** keeps the camera out of buildings: from the rider's head toward where the camera wants to be, the first point
+   *  inside a building's outline (below its roof) brings the camera in to just short of it, and a little higher */
+  private clearCamera(target: THREE.Vector3) {
+    const r = this.rider.root.position, hx = r.x, hy = r.y + 1.5, hz = r.z;
+    const dx = target.x - hx, dy = target.y - hy, dz = target.z - hz, L = Math.hypot(dx, dy, dz);
+    if (L < 0.8) return;
+    const steps = Math.ceil(L / 0.3);
+    for (let i = 1; i <= steps; i++) {
+      const t = i / steps, x = hx + dx * t, y = hy + dy * t, z = hz + dz * t, g = groundHeight(x, z);
+      const b = buildingNear(x, z, 0.6);
+      if ((b && y < g + (b.height ?? 10) + 2.5 && !inPassage(x, z)) || y < g + 0.4) {
+        const k = Math.max(0.9 / L, (i - 1) / steps - 0.05);
+        target.set(hx + dx * k, hy + dy * k + (1 - k) * 1.0, hz + dz * k);
+        return;
+      }
+    }
+  }
   /** turns the look state toward the input; with the stick at rest it eases back behind the rider */
   private updateLook(dt: number) {
     const yawTarget = this.lookBehind ? Math.PI : null;
@@ -1040,6 +1067,7 @@ export class Game {
     const r = this.rider.root;
     this.drone = null;
     this.free = { x: r.position.x, z: r.position.z, yaw: r.rotation.y, v: 0, steer: 0, bumpT: 0, cruise: false, stopping: false, held: 0 };
+    warmCollision(r.position.x, r.position.z);
     this.freeInput = { steer: 0, brake: false, throttle: 0, brakeForce: 1 };
     this.speed = 0;
   }
@@ -1083,9 +1111,10 @@ export class Game {
   private updateFree(dt: number) {
     const f = this.free!, inp = this.freeInput;
     this.time += dt;
+    warmOne(f.x, f.z);
     // off the roads (and on the earth tracks of the science campus brief) the bike rolls slower and a little rougher
     const rough = onEarth(f.x, f.z) || roadClearance(f.x, f.z, 6, -1, true) > 0.5;
-    const top = (8 + (this.bike?.speed ?? 3) * 0.5) * (rough ? 0.8 : 1), back = 2.4;
+    const top = (8 + (this.bike?.speed ?? 3) * 0.5) * (rough ? 0.8 : 1) * this.speedFactor, back = 2.4;
     if (rough && f.v > 2) this.shake = Math.max(this.shake, Math.min(0.025, f.v * 0.003));
     if (inp.brake) f.held += dt;
     // pedalling: the toggle pedals fully; a controller's trigger pedals as hard as it is pressed, its speed limited to
@@ -1293,7 +1322,7 @@ export class Game {
       this.time += dt;
       const progress = this.d / this.route.length;
       const difficulty = Math.min(1, progress * 1.3 + (this.route.difficulty - 2) * 0.1);
-      let target = this.cruiseSpeed ?? this.baseSpeed + difficulty * 6;
+      let target = this.cruiseSpeed != null ? this.cruiseSpeed * this.speedFactor : this.baseSpeed + difficulty * 6;
       const boosting = this.boostTime > 0;
       if (boosting) {
         target *= 1.45;
@@ -1319,7 +1348,7 @@ export class Game {
         target *= 0.6;
         this.slowTimer -= dt;
       }
-      if (this.tour) target = this.cruiseSpeed ?? this.tour.speed;
+      if (this.tour) target = (this.cruiseSpeed ?? this.tour.speed) * this.speedFactor;
       if (this.shield > 0) this.shield -= dt;
       if (this.honkCool > 0) this.honkCool -= dt;
       const accel = 4 + (this.bike?.acceleration ?? 3) * 1.6;
@@ -2046,6 +2075,7 @@ export class Game {
       this.updateLook(dt);
       this.lookAt.set(f.x + fx * 10, groundHeight(f.x + fx * 10, f.z + fz * 10) + 1.1, f.z + fz * 10);
       this.applyLook(this.camTarget, this.lookAt, this.rider.root.position);
+      this.clearCamera(this.camTarget);
       cam.position.lerp(this.camTarget, Math.min(1, dt * 5));
       if (this.shake > 0 && !this.reducedMotion) {
         cam.position.x += (Math.random() - 0.5) * this.shake;
@@ -2092,7 +2122,7 @@ export class Game {
       const ahead0 = this.pose(this.d + 12, this.x * 0.8);
       this.lookAt.set(ahead0.x, groundHeight(ahead0.x, ahead0.z) + 1.1, ahead0.z);
       const looking = Math.abs(this.lookYaw) > 1e-3 || Math.abs(this.lookPitch) > 1e-3 || this.camView !== 0;
-      if (looking) this.applyLook(this.camTarget, this.lookAt, this.rider.root.position);
+      if (looking) { this.applyLook(this.camTarget, this.lookAt, this.rider.root.position); this.clearCamera(this.camTarget); }
       // a new ride starts with the camera already behind the rider, not sweeping in from where it was
       if (this.snapCam) { cam.position.copy(this.camTarget); this.snapCam = false; }
       cam.position.lerp(this.camTarget, Math.min(1, dt * 8));

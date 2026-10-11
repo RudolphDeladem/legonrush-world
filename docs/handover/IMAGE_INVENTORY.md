@@ -673,3 +673,88 @@ Every photo, screenshot, aerial and marked-up map the owner uploaded, in upload 
 | 667.jpg | 67 | 661x377 | 91 | 2026-10-11 | (NSIA hillside, stone wall) picture 2: the real passage, the stone wall at its end marked yellow |
 | 668.jpg | 63 | 859x414 | 91 | 2026-10-11 | (NSIA hillside, stone wall) picture 3: a stone wall of the same build (the NSIA lane wall in the game) |
 | 669.jpg | 31 | 462x280 | 92 | 2026-10-11 | (NSIA hillside, stone wall) the stone wall and hill to be pushed north (blue) until the wall touches the structure at the Frank Torto Building's far end (red) |
+| 670.jpg | 177 | 1213x883 | 93 | 2026-10-11 | (Main entrance brief) source map 1: the unlabelled aerial (roof footprints, roads, courtyards) |
+| 671.jpg | 133 | 921x831 | 93 | 2026-10-11 | (Main entrance brief) source map 2: the labelled aerial (Danquah Avenue, E A Boateng Road, La Road, Security Head Office, archives, School of Performing Arts) |
+| 672.jpg | 87 | 1117x820 | 93 | 2026-10-11 | (Main entrance brief) source map 3: the game navigation map of the area |
+| 673.jpg | 254 | 1800x1157 | 93 | 2026-10-11 | (Main entrance brief) Map A: the Provost office frontage, arrows 1-3 (kept from the earlier placement) |
+| 674.jpg | 316 | 1800x1155 | 93 | 2026-10-11 | (Main entrance brief) corrected user map 1: arrows 4-10 and 13-17 round the roundabout, gate, plaza and signs |
+| 675.jpg | 336 | 1762x1500 | 93 | 2026-10-11 | (Main entrance brief) corrected user map 2: arrows 11-12 and 18-26 (Institute of African Studies, pavilion, bend, court) |
+| 676.jpg | 251 | 1158x1500 | 93 | 2026-10-11 | (Main entrance brief) corrected user map 3: arrows 27-37 (courts, earth approach, Jones-Quartey Building, Finance offices) |
+| 677.jpg | 113 | 1023x450 | 93 | 2026-10-11 | (Main entrance brief) pair 1 (Provost office frontage across Danquah Avenue): the game |
+| 678.jpg | 172 | 1025x472 | 93 | 2026-10-11 | (Main entrance brief) pair 1 (Provost office frontage across Danquah Avenue): the real target |
+| 679.jpg | 121 | 1024x603 | 93 | 2026-10-11 | (Main entrance brief) pair 2 (Provost office central entrance and oval forecourt): the game |
+| 680.jpg | 133 | 1025x605 | 93 | 2026-10-11 | (Main entrance brief) pair 2 (Provost office central entrance and oval forecourt): the real target |
+| 681.jpg | 56 | 1025x280 | 93 | 2026-10-11 | (Main entrance brief) pair 3 (Provost office admission side and sign): the game |
+| 682.jpg | 43 | 1025x175 | 93 | 2026-10-11 | (Main entrance brief) pair 3 (Provost office admission side and sign): the real target |
+| 683.jpg | 127 | 980x707 | 93 | 2026-10-11 | (Main entrance brief) pair 4 (main gate from the axial approach): the game |
+| 684.jpg | 77 | 1025x316 | 93 | 2026-10-11 | (Main entrance brief) pair 4 (main gate from the axial approach): the real target |
+| 685.jpg | 124 | 1000x692 | 93 | 2026-10-11 | (Main entrance brief) pair 5 (main gate at the left-curving approach): the game |
+| 686.jpg | 22 | 390x260 | 93 | 2026-10-11 | (Main entrance brief) pair 5 (main gate at the left-curving approach): the real target |
+| 687.jpg | 111 | 1025x536 | 93 | 2026-10-11 | (Main entrance brief) pair 6 (black University of Ghana entrance monument): the game |
+| 688.jpg | 98 | 1023x384 | 93 | 2026-10-11 | (Main entrance brief) pair 6 (black University of Ghana entrance monument): the real target |
+| 689.jpg | 51 | 661x479 | 93 | 2026-10-11 | (Main entrance brief) pair 7 (gate plaza flags, fountain and paths): the game |
+| 690.jpg | 53 | 528x378 | 93 | 2026-10-11 | (Main entrance brief) pair 7 (gate plaza flags, fountain and paths): the real target |
+| 691.jpg | 59 | 537x631 | 93 | 2026-10-11 | (Main entrance brief) pair 8 (gatehouse front elevation between palms): the game |
+| 692.jpg | 52 | 618x323 | 93 | 2026-10-11 | (Main entrance brief) pair 8 (gatehouse front elevation between palms): the real target |
+| 693.jpg | 120 | 906x730 | 93 | 2026-10-11 | (Main entrance brief) pair 9 (gate plaza toward the flag line): the game |
+| 694.jpg | 109 | 1025x390 | 93 | 2026-10-11 | (Main entrance brief) pair 9 (gate plaza toward the flag line): the real target |
+| 695.jpg | 120 | 1025x612 | 93 | 2026-10-11 | (Main entrance brief) pair 10 (gate side wing across open grass): the game |
+| 696.jpg | 162 | 1025x577 | 93 | 2026-10-11 | (Main entrance brief) pair 10 (gate side wing across open grass): the real target |
+| 697.jpg | 97 | 1010x627 | 93 | 2026-10-11 | (Main entrance brief) pair 11 (gate side wing and low service wall): the game |
+| 698.jpg | 124 | 1023x450 | 93 | 2026-10-11 | (Main entrance brief) pair 11 (gate side wing and low service wall): the real target |
+| 699.jpg | 147 | 1025x771 | 93 | 2026-10-11 | (Main entrance brief) pair 12 (gate service edge with speed sign): the game |
+| 700.jpg | 114 | 1025x456 | 93 | 2026-10-11 | (Main entrance brief) pair 12 (gate service edge with speed sign): the real target |
+| 701.jpg | 51 | 661x479 | 93 | 2026-10-11 | (Main entrance brief) pair 13 (paved walk approaching the gate side court): the game |
+| 702.jpg | 103 | 872x585 | 93 | 2026-10-11 | (Main entrance brief) pair 13 (paved walk approaching the gate side court): the real target |
+| 703.jpg | 120 | 1025x612 | 93 | 2026-10-11 | (Main entrance brief) pair 14 (tree-lined road and brick-paved verge near the gate): the game |
+| 704.jpg | 166 | 1025x577 | 93 | 2026-10-11 | (Main entrance brief) pair 14 (tree-lined road and brick-paved verge near the gate): the real target |
+| 705.jpg | 153 | 947x825 | 93 | 2026-10-11 | (Main entrance brief) pair 15 (gate-side street with bollards and low wing): the game |
+| 706.jpg | 155 | 1025x577 | 93 | 2026-10-11 | (Main entrance brief) pair 15 (gate-side street with bollards and low wing): the real target |
+| 707.jpg | 98 | 736x768 | 93 | 2026-10-11 | (Main entrance brief) pair 16 (narrow service approach along the gate wing): the game |
+| 708.jpg | 152 | 1025x577 | 93 | 2026-10-11 | (Main entrance brief) pair 16 (narrow service approach along the gate wing): the real target |
+| 709.jpg | 59 | 537x631 | 93 | 2026-10-11 | (Main entrance brief) pair 17 (main gate portal from the opposite side): the game |
+| 710.jpg | 52 | 618x323 | 93 | 2026-10-11 | (Main entrance brief) pair 17 (main gate portal from the opposite side): the real target |
+| 711.jpg | 152 | 1025x684 | 93 | 2026-10-11 | (Main entrance brief) pair 18 (low pavilion near African Studies): the game |
+| 712.jpg | 164 | 1025x577 | 93 | 2026-10-11 | (Main entrance brief) pair 18 (low pavilion near African Studies): the real target |
+| 713.jpg | 154 | 1025x703 | 93 | 2026-10-11 | (Main entrance brief) pair 19 (pavilion approach and institute sign): the game |
+| 714.jpg | 219 | 1025x769 | 93 | 2026-10-11 | (Main entrance brief) pair 19 (pavilion approach and institute sign): the real target |
+| 715.jpg | 92 | 1024x422 | 93 | 2026-10-11 | (Main entrance brief) pair 20 (Kwame Nkrumah Complex frontal gables): the game |
+| 716.jpg | 37 | 600x277 | 93 | 2026-10-11 | (Main entrance brief) pair 20 (Kwame Nkrumah Complex frontal gables): the real target |
+| 717.jpg | 130 | 1024x666 | 93 | 2026-10-11 | (Main entrance brief) pair 21 (Institute main elevation and stepped stone court): the game |
+| 718.jpg | 149 | 1025x577 | 93 | 2026-10-11 | (Main entrance brief) pair 21 (Institute main elevation and stepped stone court): the real target |
+| 719.jpg | 120 | 1025x618 | 93 | 2026-10-11 | (Main entrance brief) pair 22 (Institute frontage across the roadway): the game |
+| 720.jpg | 174 | 1025x769 | 93 | 2026-10-11 | (Main entrance brief) pair 22 (Institute frontage across the roadway): the real target |
+| 721.jpg | 76 | 688x645 | 93 | 2026-10-11 | (Main entrance brief) pair 23 (Institute end gable and brick parking apron): the game |
+| 722.jpg | 69 | 487x630 | 93 | 2026-10-11 | (Main entrance brief) pair 23 (Institute end gable and brick parking apron): the real target |
+| 723.jpg | 108 | 860x701 | 93 | 2026-10-11 | (Main entrance brief) pair 24 (Institute entrance with foreground sculpture): the game |
+| 724.jpg | 65 | 576x324 | 93 | 2026-10-11 | (Main entrance brief) pair 24 (Institute entrance with foreground sculpture): the real target |
+| 725.jpg | 124 | 1000x692 | 93 | 2026-10-11 | (Main entrance brief) pair 25 (road bend and blue chain bollards): the game |
+| 726.jpg | 160 | 1025x577 | 93 | 2026-10-11 | (Main entrance brief) pair 25 (road bend and blue chain bollards): the real target |
+| 727.jpg | 113 | 880x769 | 93 | 2026-10-11 | (Main entrance brief) pair 26 (signposted white building above the roadside bank): the game |
+| 728.jpg | 165 | 1025x577 | 93 | 2026-10-11 | (Main entrance brief) pair 26 (signposted white building above the roadside bank): the real target |
+| 729.jpg | 136 | 1025x665 | 93 | 2026-10-11 | (Main entrance brief) pair 27 (tree-shaded low service court and mural wall): the game |
+| 730.jpg | 150 | 1025x577 | 93 | 2026-10-11 | (Main entrance brief) pair 27 (tree-shaded low service court and mural wall): the real target |
+| 731.jpg | 109 | 806x795 | 93 | 2026-10-11 | (Main entrance brief) pair 28 (mural court close view): the game |
+| 732.jpg | 188 | 1025x577 | 93 | 2026-10-11 | (Main entrance brief) pair 28 (mural court close view): the real target |
+| 733.jpg | 100 | 912x671 | 93 | 2026-10-11 | (Main entrance brief) pair 29 (tree-lined road beside low office wing): the game |
+| 734.jpg | 183 | 1025x577 | 93 | 2026-10-11 | (Main entrance brief) pair 29 (tree-lined road beside low office wing): the real target |
+| 735.jpg | 144 | 1025x733 | 93 | 2026-10-11 | (Main entrance brief) pair 30 (JQB from the roadside through long grass): the game |
+| 736.jpg | 126 | 1025x577 | 93 | 2026-10-11 | (Main entrance brief) pair 30 (JQB from the roadside through long grass): the real target |
+| 737.jpg | 94 | 808x742 | 93 | 2026-10-11 | (Main entrance brief) pair 31 (earth approach to JQB across open lawn): the game |
+| 738.jpg | 161 | 1025x577 | 93 | 2026-10-11 | (Main entrance brief) pair 31 (earth approach to JQB across open lawn): the real target |
+| 739.jpg | 144 | 1024x700 | 93 | 2026-10-11 | (Main entrance brief) pair 32 (JQB signed end and canopy side): the game |
+| 740.jpg | 163 | 1025x577 | 93 | 2026-10-11 | (Main entrance brief) pair 32 (JQB signed end and canopy side): the real target |
+| 741.jpg | 152 | 1025x672 | 93 | 2026-10-11 | (Main entrance brief) pair 33 (JQB blind side wall and corner): the game |
+| 742.jpg | 133 | 1025x577 | 93 | 2026-10-11 | (Main entrance brief) pair 33 (JQB blind side wall and corner): the real target |
+| 743.jpg | 159 | 1025x818 | 93 | 2026-10-11 | (Main entrance brief) pair 34 (JQB recessed lightwell and vertical fins): the game |
+| 744.jpg | 114 | 1025x577 | 93 | 2026-10-11 | (Main entrance brief) pair 34 (JQB recessed lightwell and vertical fins): the real target |
+| 745.jpg | 128 | 931x824 | 93 | 2026-10-11 | (Main entrance brief) pair 35 (JQB parking edge and neighbouring wing): the game |
+| 746.jpg | 123 | 1025x577 | 93 | 2026-10-11 | (Main entrance brief) pair 35 (JQB parking edge and neighbouring wing): the real target |
+| 747.jpg | 120 | 1025x589 | 93 | 2026-10-11 | (Main entrance brief) pair 36 (Finance Directorate and Student Accounts Office junction): the game |
+| 748.jpg | 165 | 1025x577 | 93 | 2026-10-11 | (Main entrance brief) pair 36 (Finance Directorate and Student Accounts Office junction): the real target |
+| 749.jpg | 91 | 1025x461 | 93 | 2026-10-11 | (Main entrance brief) pair 37 (K. A. B. Jones-Quartey Building long finned frontage): the game |
+| 750.jpg | 126 | 1025x577 | 93 | 2026-10-11 | (Main entrance brief) pair 37 (K. A. B. Jones-Quartey Building long finned frontage): the real target |
+| 751.jpg | 161 | 1024x576 | 93 | 2026-10-11 | (Main entrance brief) additional image 1: top view of the School of Performing Arts beside La Road |
+| 752.jpg | 74 | 800x447 | 93 | 2026-10-11 | (Main entrance brief) additional image 2: top view of the Efua Sutherland Drama Studio |
+| 753.jpg | 28 | 500x281 | 93 | 2026-10-11 | (Main entrance brief) additional image 3: inside the Efua Sutherland Drama Studio (stage and court) |
+| 754.jpg | 246 | 1280x939 | 93 | 2026-10-11 | (Main entrance brief) additional image 4: close view of the black University of Ghana sign at the main entrance (stock watermark; not to be copied) |

@@ -15,6 +15,7 @@ import { RELIEF_BOXES, applyRelief, densify, inStairs, reliefGround } from './re
 import { NSIA } from './nsia';
 import { KQ } from './kuffour';
 import { offAsphalt } from './science';
+import { collisionRoots } from './meshcollide';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, roadClearance, ROAD_WIDTH } from './life';
 
 export const LANES = [-2.4, 0, 2.4];
@@ -97,12 +98,19 @@ export function buildSky(top: string, bottom: string, detail = 4) {
       time: { value: 0 },
     },
     defines: { OCTAVES: detail },
-    vertexShader: `varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-    fragmentShader: `uniform vec3 top; uniform vec3 bottom; uniform vec3 sunDir; uniform vec3 sunCol; uniform float cloud; uniform vec3 cloudCol; uniform vec3 treeCol; uniform float time; varying vec3 vDir;
+    vertexShader: `#include <common>
+#include <logdepthbuf_pars_vertex>
+varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+#include <logdepthbuf_vertex>
+}`,
+    fragmentShader: `#include <logdepthbuf_pars_fragment>
+uniform vec3 top; uniform vec3 bottom; uniform vec3 sunDir; uniform vec3 sunCol; uniform float cloud; uniform vec3 cloudCol; uniform vec3 treeCol; uniform float time; varying vec3 vDir;
       float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
       float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
         return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y); }
       void main(){
+#include <logdepthbuf_fragment>
+
         vec3 d = normalize(vDir);
         float h = clamp(d.y * 2.2, 0.0, 1.0);
         vec3 col = mix(bottom, top, pow(h, 0.7));
@@ -421,6 +429,8 @@ export function buildCampus() {
   group.add(edges.group);
   // lower everything over a relief zone onto the ground (roads, areas, verges, props, buildings)
   applyRelief(group);
+  // what the free-ridden bike bumps into besides footprints and trunks (meshcollide.ts)
+  collisionRoots(halls, ...sites, life);
   cullBeyondFog(group, [...(buildings.children as THREE.Mesh[]), ...(halls.userData.cullMeshes as THREE.Mesh[]), ...sites.flatMap((s) => s.userData.cullMeshes as THREE.Mesh[]), ...(life.userData.cullMeshes as THREE.Mesh[]), ...edges.meshes]);
   return group;
 }

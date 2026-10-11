@@ -1,6 +1,7 @@
 // Small touches that make the menus feel alive: phone vibration, tap sounds,
 // numbers that count up, and campus facts for the loading screens.
 import { sfx } from '../audio';
+import { pad } from '../gamepad';
 
 let vibrate = true;
 let motion = true;
@@ -25,8 +26,10 @@ let hooked = false;
 export function hookHaptics() {
   if (hooked) return;
   hooked = true;
-  const { crash, coin, finish } = sfx;
-  sfx.crash = () => { crash(); buzz([90, 50, 160]); };
+  const { crash, coin, finish, bump } = sfx;
+  // a controller in use rumbles too: hard on a crash, a short knock on hitting a wall, a building or a car
+  sfx.crash = () => { crash(); buzz([90, 50, 160]); if (vibrate) pad.rumble(1, 0.9, 420); };
+  sfx.bump = () => { bump(); if (vibrate) pad.rumble(0.6, 0.4, 170); };
   sfx.coin = () => { coin(); buzz(12); };
   sfx.finish = () => { finish(); buzz([40, 60, 40, 60, 120]); };
 }

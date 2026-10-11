@@ -54,6 +54,20 @@ export function garden([bx0, bx1, bz0, bz1]: [number, number, number, number]) {
       k.plain.push([new THREE.IcosahedronGeometry(r, 1).scale(1, 0.72, 1).translate(x, y + h + r * 0.45, z), leaf]);
       k.plain.push([new THREE.IcosahedronGeometry(r * 0.62, 0).scale(1, 0.8, 1).translate(x + r * 0.5, y + h + r * 0.15, z - r * 0.3), leaf]);
     },
+    /** a woodland tree (the owner: in the woods the stems are short and hidden, the tree leaves down to near the
+     *  ground): a short stout stem under several crown masses reaching low */
+    woodTree(k: Kit, x: number, z: number, s = 1) {
+      const y = k.ground(x, z), r = (2.0 + rand() * 1.2) * s;
+      if (onRoad(...k.world(x, z))) return;
+      SOLIDS.add(...k.world(x, z), 0.3 * s + 0.1);
+      k.plain.push([new THREE.CylinderGeometry(0.16 * s + 0.08, 0.28 * s + 0.08, 1.8 * s, 5).translate(x, y + 0.9 * s - 0.1, z), '#5b4636']);
+      const leaf = LEAVES[(rand() * LEAVES.length) | 0], leaf2 = LEAVES[(rand() * LEAVES.length) | 0];
+      k.plain.push([new THREE.IcosahedronGeometry(r, 1).scale(1, 0.8, 1).translate(x, y + 1.6 * s + r * 0.7, z), leaf]);
+      for (let i = 0; i < 4; i++) {
+        const a = (i / 4) * Math.PI * 2 + rand(), d = r * (0.45 + rand() * 0.25), rr = r * (0.55 + rand() * 0.2);
+        k.plain.push([new THREE.IcosahedronGeometry(rr, 1).scale(1, 0.78, 1).translate(x + Math.cos(a) * d, y + 1.0 * s + rr * 0.6 + rand() * 0.8, z + Math.sin(a) * d), i % 2 ? leaf : leaf2]);
+      }
+    },
     /** a palm: tall grey trunk, green crownshaft, fronds */
     palm(k: Kit, x: number, z: number, h = 7) {
       const y = k.ground(x, z);

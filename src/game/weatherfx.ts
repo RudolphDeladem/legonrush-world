@@ -19,6 +19,8 @@ function rainMaterial() {
   return new THREE.ShaderMaterial({
     uniforms: { time: { value: 0 }, center: { value: new THREE.Vector3() }, opacity: { value: 0 }, color: { value: new THREE.Color('#eef3fa') } },
     vertexShader: `
+      #include <common>
+      #include <logdepthbuf_pars_vertex>
       uniform float time; uniform vec3 center;
       attribute float tip; attribute float speed;
       varying float vTip;
@@ -32,10 +34,14 @@ function rainMaterial() {
         p += vec3(0.15, 1.3, 0.06) * tip * (speed / 14.0);
         vTip = tip;
         gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
+        #include <logdepthbuf_vertex>
       }`,
     fragmentShader: `
+      #include <logdepthbuf_pars_fragment>
       uniform float opacity; uniform vec3 color; varying float vTip;
-      void main() { gl_FragColor = vec4(color, opacity * mix(1.0, 0.25, vTip)); }`,
+      void main() {
+        #include <logdepthbuf_fragment>
+        gl_FragColor = vec4(color, opacity * mix(1.0, 0.25, vTip)); }`,
     transparent: true,
     depthWrite: false,
   });

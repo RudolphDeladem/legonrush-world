@@ -193,6 +193,19 @@ class PadInput {
   get connected() { return this.pads().length > 0; }
   get active(): Gamepad | null { return this.pads().find((p) => p.id === this.activeId) ?? null; }
 
+  /** a short rumble on the controller in use: the browser's dual-rumble effect (Chrome and Edge drive the DualSense,
+   *  the DualShock 4 and Xbox pads with it), else a pulse of the first haptic actuator (Firefox); silent elsewhere */
+  rumble(strong: number, weak: number, ms: number) {
+    if (this.mode !== 'pad') return;
+    const p = this.active ?? this.pads()[0] as (Gamepad & { hapticActuators?: { pulse?: (v: number, ms: number) => unknown }[] }) | undefined;
+    if (!p) return;
+    try {
+      const va = (p as Gamepad & { vibrationActuator?: { playEffect?: (t: string, o: object) => Promise<unknown> } }).vibrationActuator;
+      if (va?.playEffect) void va.playEffect('dual-rumble', { startDelay: 0, duration: ms, strongMagnitude: strong, weakMagnitude: weak }).catch(() => {});
+      else (p as Gamepad & { hapticActuators?: { pulse?: (v: number, ms: number) => unknown }[] }).hapticActuators?.[0]?.pulse?.(Math.max(strong, weak), ms);
+    } catch { /* not supported */ }
+  }
+
   onFrame(fn: Listener) { this.listeners.add(fn); this.start(); return () => { this.listeners.delete(fn); }; }
   onMode(fn: ModeListener) { this.modeListeners.add(fn); return () => { this.modeListeners.delete(fn); }; }
 

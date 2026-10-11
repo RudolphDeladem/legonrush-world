@@ -2212,7 +2212,14 @@ bike and the rider steers it anywhere a bike can go (`Game.freeRide`).
   banks too steep to ride stop it, forwards or backwards; it slides along an edge it meets at an angle. A wood's
   grass is rideable between its trees (owner: the wooded lawns round the GCB Lecture Building); every trunk stops
   the bike and it slides round it.
-  The chase camera follows.
+  The chase camera follows; it never passes into a building: when one stands between the rider and the camera (the
+  controller's look, a tight spot), the camera comes in to just short of it.
+- **What stops the bike** (owner: no bike passes through walls, buildings or cars): besides the map's outlines and the
+  trunks, everything the models draw between knee and chest height — walls, fences, planters, parked cars, benches,
+  kiosks, posts — on the roads as well as off them (`src/game/meshcollide.ts`: the drawn geometry rasterised into a
+  0.35 m grid tile by tile round the rider; leaves and long grass never stop it).
+- **Bike speed** (Explore and Vibe rides, and riding it yourself after one): Normal, or Faster (30% quicker), on the
+  speed box and in the pause menu; remembered.
 - **Finish ride** ends the ride as arriving does.
 
 ## Game controllers
@@ -2246,6 +2253,9 @@ Triangle, A/B/X/Y, or position names such as "Bottom button" for an unknown pad)
 - **Disconnect or pause**: every held input is let go (steer, pedal, brake, look); the keys carry on as before.
 - **Keys and controller together**: the left stick steers only while the controller is the device in use, so a key
   press is never overridden.
+- **Rumble**: with the Vibration setting on, a controller in use rumbles hard on a crash and knocks briefly on hitting a
+  wall, a building or a car (Chrome and Edge drive the DualSense, DualShock 4 and Xbox pads; Firefox's haptic actuators
+  otherwise; untested on hardware).
 - **Pause → Controller** (when a controller is connected): steering and camera sensitivity, left and right stick dead
   zones, steering smoothing, trigger dead zone, reverse delay, invert look left/right and up/down; any action can be moved to another button
   (press the action, then the new button; the two swap, so no button does two things). Saved in the browser, remaps

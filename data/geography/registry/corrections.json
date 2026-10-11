@@ -328,6 +328,10 @@
     {
       "id": "osm:way/744998452",
       "reason": "Owner (New Pent corrections, picture 1): Block B is the same as Block A, its entrance in the middle between the two brick-ended front structures. This small four-storey piece there is Block B's entrance tower, drawn by the entrance model in newpent.ts."
+    },
+    {
+      "id": "ml:d5854760-7f1c-4f84-9953-d1ada1fb77ac",
+      "reason": "Satellite-detected (Microsoft ML) footprint east of the main gate, drawn as a building. The owner's main entrance brief (pairs 7, 9 and 13, corrected map 1): it is the flag plaza's long fountain basin and its stone-faced planters, open to the sky; the plaza is modelled in gateprecinct.ts."
     }
   ],
   "heights": [
