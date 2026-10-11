@@ -107,6 +107,18 @@ const CS_FRONT: Style = {
     aged(g, [178, 256 + 182, 0, 256]); peeling(g, 22);
   },
 };
+/** the east block's east end toward the yard (the owner's science campus brief, pair 9): barred windows, small low
+ *  openings, dark runoff stains under the solid bands */
+const CS_EAST: Style = {
+  bay: 3.0, up: [[70, 80, 116, 90]], ground: [[50, 256 + 60, 156, 110]],
+  draw: (g) => {
+    wall(g, WASHED);
+    grilled(g, 70, 80, 116, 90); grilled(g, 50, 256 + 60, 156, 110);
+    g.fillStyle = '#2b2c2d'; g.fillRect(96, 256 + 196, 64, 30); g.fillStyle = '#6b6d70'; for (let y = 256 + 200; y < 256 + 226; y += 7) g.fillRect(96, y, 64, 2);
+    for (let i = 0; i < 7; i++) { const x = 8 + i * 36, gr = g.createLinearGradient(0, 0, 0, 200); gr.addColorStop(0, 'rgba(60,58,52,0.45)'); gr.addColorStop(1, 'rgba(60,58,52,0)'); g.fillStyle = gr; g.fillRect(x, 0, 5 + (i % 3) * 3, 200); }
+    aged(g, [176, 256 + 176, 0, 256]); peeling(g, 18);
+  },
+};
 const CS_BLANK: Style = { bay: 4, up: [], ground: [], draw: (g) => { wall(g, WASHED); g.fillStyle = 'rgba(120,118,108,0.4)'; g.fillRect(0, 120, 256, 5); g.fillRect(0, 376, 256, 5); aged(g, [0, 125, 256, 381]); aged(g, [60, 300]); peeling(g, 30); } };
 /** the sides of the wing's south end: piers with dark louvred vents between them */
 const CS_LOUVRE: Style = {
@@ -155,7 +167,7 @@ const SPEC: Spec = {
     blk(350, 361.4, -282.4, -277, 2, { faces: { z1: CS_FRONT, x0: CS_LOUVRE, x1: CS_LOUVRE } }),
     blk(350, 361.4, -282.4, -277, 1, { y: 2 * ST, faces: { z1: CS_BLANK, x0: CS_LOUVRE, x1: CS_LOUVRE } }),
     blk(352, 359.5, -292, -284.5, 1, { y: 3 * ST + 0.4, faces: { z1: CS_FRONT } }),
-    blk(361.4, 393.8, -291.5, -282.4, 3, { faces: { z1: CS_GAL, x1: CS_BLANK } }),
+    blk(361.4, 393.8, -291.5, -282.4, 3, { faces: { z1: CS_GAL, x1: CS_EAST } }),
   ],
   keep: [
     [306 - O[0], 318.3 - O[0], -283.3 - O[1], -279 - O[1]],
@@ -281,6 +293,10 @@ const SPEC: Spec = {
     // the east block: balconies with solid parapets, its roof slab
     balconies(washed, k, 366.7, 393.8, -282.4, -280.6, WASHED, 6.4);
     washed.push([B(361.2, 394.0, top, top + 0.7, -291.7, -282.4), WASHED]);
+    // its east end over the yard (the owner's science campus brief, pair 9): heavy solid bands at the floors, AC units on
+    // the wall
+    for (const f of [1, 2]) washed.push([B(393.8, 394.6, PL + f * ST - 0.35, PL + f * ST + 0.25, -291.7, -280.6), WASHED]);
+    for (const [z, y] of [[-289.2, PL + 2.1], [-285.0, PL + ST + 2.2]] as [number, number][]) k.plain.push([B(393.8, 394.15, y, y + 0.6, z - 0.45, z + 0.45), '#e9e9e6'], [B(394.15, 394.17, y + 0.08, y + 0.52, z - 0.36, z + 0.36), '#9aa0a3']);
     // the diesel generator house: grey walls, orange doors behind collapsible grilles, a blue fascia, a tin roof
     washed.push([B(364, 377, 0, 2.9, -278.6, -274.6), '#cfccc4']);
     for (const [a, b] of [[365.0, 369.6], [370.6, 375.2]]) {

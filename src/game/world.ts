@@ -14,6 +14,7 @@ import { behindPentStyle } from './kufuor';
 import { RELIEF_BOXES, applyRelief, densify, inStairs, reliefGround } from './relief';
 import { NSIA } from './nsia';
 import { KQ } from './kuffour';
+import { offAsphalt } from './science';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, roadClearance, ROAD_WIDTH } from './life';
 
 export const LANES = [-2.4, 0, 2.4];
@@ -342,7 +343,8 @@ export function buildCampus() {
     // the stairway up to Commonwealth Hall is modelled step by step (commonwealth.ts): no flat path over it
     const runs: [number, number][][] = [[]];
     for (const p of all) {
-      if (r.surface === 'steps' && inStairs(p[0], p[1])) { if (runs[runs.length - 1].length) runs.push([]); } else runs[runs.length - 1].push(p);
+      // (and where the science campus brief has a road as earth or brick, drawn by sciencesite.ts)
+      if ((r.surface === 'steps' && inStairs(p[0], p[1])) || offAsphalt(p[0], p[1])) { if (runs[runs.length - 1].length) runs.push([]); } else runs[runs.length - 1].push(p);
     }
     const half = ROAD_WIDTH[r.cls] / 2;
     const footpath = r.cls === 4;
@@ -489,6 +491,17 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
     }
     if (s0 >= 0) stairs.push([Math.max(0, s0 - 0.5), L]);
     if (stairs.length && stairs[stairs.length - 1][1] > L - 25) stairs[stairs.length - 1][1] = L;
+  }
+  // (no asphalt where the science campus brief has the road as earth or brick: sciencesite.ts draws it)
+  {
+    let s0 = -1;
+    for (let d = 0; d <= L; d += 1) {
+      const p = track.pose(d), on = offAsphalt(p.x, p.z);
+      if (on && s0 < 0) s0 = d;
+      if (!on && s0 >= 0) { stairs.push([s0, d]); s0 = -1; }
+    }
+    if (s0 >= 0) stairs.push([s0, L]);
+    stairs.sort((a, b) => a[0] - b[0]);
   }
   const paved = openRuns(stairs, L), onStairs = (d: number) => stairs.some(([a, b]) => d > a && d < b);
   // stretches where the real roads carry no paint and no pavements (the owner's NSIA Road brief): the route's road

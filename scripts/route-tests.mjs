@@ -619,6 +619,25 @@ try {
     }
     if ((await server.ssrLoadModule('/src/game/kuffourgarden.ts')).kuffourSite.frames().length !== 1) fail('expected the Kuffour Quadrangle model');
   }
+  // the owner's science campus brief: the gable-fronted chemistry building one floor, the ECOWAS building one floor,
+  // the corridor to LECIAD and its branch earth (no asphalt there) and smooth to ride both ways, the Frank Torto
+  // passage open between the tower and the one-floor building
+  {
+    const sc = await server.ssrLoadModule('/src/game/science.ts'), g = (await server.ssrLoadModule('/src/game/relief.ts')).groundHeight;
+    for (const [x, z] of [[300, -77], [313, -100], [250, -77.3]]) if (!sc.offAsphalt(x, z) || !sc.onEarth(x, z)) fail(`science brief: the corridor at ${x},${z} is not an earth track`);
+    if (!sc.offAsphalt(355, -140)) fail('science brief: the ECOWAS forecourt is not paved in brick');
+    for (const [a, b] of [['LECIAD, Legon', 'Home Science Annex'], ['Home Science Annex', 'LECIAD, Legon']]) {
+      const r = rt.exploreRoute(placeByName(a), placeByName(b), 'cycle');
+      if (!r) { fail(`science brief: no Explore ride from ${a} to ${b}`); continue; }
+      let worst = 0;
+      for (const lat of [-2.4, 0, 2.4]) { let prev = null; for (let d = 0; d < r.track.length; d += 0.5) { const p = r.track.pose(d, lat), h = g(p.x, p.z), inside = p.x > 238 && p.x < 290 && p.z > -82 && p.z < -72; if (prev !== null && inside) worst = Math.max(worst, Math.abs(h - prev)); prev = h; } }
+      // (along the earth corridor itself: the ride's start down LECIAD's own bank is the older hill)
+      if (worst > 0.12) fail(`science brief: the ride from ${a} to ${b} jolts (${worst.toFixed(2)} m in half a metre)`);
+    }
+    for (let z = -99; z <= -82; z += 1) if (cm.buildingNear(210.5, z, 3.0)) fail(`science brief: the Frank Torto passage is blocked at z ${z}`);
+    const models = (await server.ssrLoadModule('/src/game/sciencesite.ts')).scienceSite.frames();
+    if (models.length !== 6) fail(`expected the six science campus models (${models.length})`);
+  }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)

@@ -21,6 +21,7 @@ import { walkGaps } from '/src/game/junctions.ts';
 import { placeByName } from '/src/game/campusmap.ts';
 import { NSIA_VIEWS } from '/src/game/nsia.ts';
 import { KQ_VIEWS } from '/src/game/kuffour.ts';
+import { SC_VIEWS } from '/src/game/science.ts';
 const canvas = document.getElementById('c');
 const r = new THREE.WebGLRenderer({ canvas, antialias: true });
 r.setSize(innerWidth, innerHeight, false);
@@ -654,7 +655,7 @@ if (v === 'csTop') { eye = V3(355, 90, -268); look = V3(355, 0, -269); }
 if (v === 'street') { eye = W(hall, -60, 1.7, hall.hz + 40); look = W(hall, 0, 6, hall.hz); }
 // the NSIA Road brief's six comparison cameras (src/game/nsia.ts): heights above the ground; ?route=1 lays the ridden
 // route from Physics to the Frank Torto Building as the game draws it
-{ const nv = [...NSIA_VIEWS, ...KQ_VIEWS].find((n) => n.name === v);
+{ const nv = [...NSIA_VIEWS, ...KQ_VIEWS, ...SC_VIEWS].find((n) => n.name === v);
   if (nv) {
     eye = new THREE.Vector3(nv.eye[0], groundHeight(nv.eye[0], nv.eye[2]) + nv.eye[1], nv.eye[2]);
     look = new THREE.Vector3(nv.look[0], groundHeight(nv.look[0], nv.look[2]) + nv.look[1], nv.look[2]);

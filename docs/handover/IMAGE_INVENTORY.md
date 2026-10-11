@@ -617,3 +617,24 @@ Every photo, screenshot, aerial and marked-up map the owner uploaded, in upload 
 | 611.jpg | 90 | 728x409 | 86 | 2026-10-10 | (Kuffour Quadrangle reconstruction brief, 18 pages) image 12, pair 6 (real reference) |
 | 612.jpg | 39 | 506x409 | 86 | 2026-10-10 | (Kuffour Quadrangle reconstruction brief, 18 pages) image 13, pair 7, the department frontage (current game) |
 | 613.jpg | 102 | 728x409 | 86 | 2026-10-10 | (Kuffour Quadrangle reconstruction brief, 18 pages) image 14, pair 7 (real reference) |
+| 614.jpg | 59 | 576x527 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 19, Map 19: the Chemistry building circled yellow |
+| 615.jpg | 91 | 633x771 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 20, Map 20: the Home Science Annex, ECOWAS and LECIAD with the coloured arrows |
+| 616.jpg | 46 | 672x302 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 21, Map 21: behind Computer Science, violet arrows |
+| 617.jpg | 55 | 724x409 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 1, pair 1, the Frank Torto passage (current game) |
+| 618.jpg | 41 | 517x409 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 2, pair 1 (real reference) |
+| 619.jpg | 31 | 408x409 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 3, pair 2, the gable-fronted Chemistry building (current game) |
+| 620.jpg | 86 | 728x409 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 4, pair 2 (real reference) |
+| 621.jpg | 62 | 787x482 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 5, pair 3, the annex past the big tree (current game) |
+| 622.jpg | 119 | 728x409 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 6, pair 3 (real reference) |
+| 623.jpg | 36 | 463x409 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 7, pair 4, the annex's projecting bay (current game) |
+| 624.jpg | 120 | 728x409 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 8, pair 4 (real reference) |
+| 625.jpg | 64 | 766x409 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 9, pair 5, the earth corridor (current game) |
+| 626.jpg | 96 | 728x409 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 10, pair 5 (real reference) |
+| 627.jpg | 28 | 365x409 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 11, pair 6, the service canopy (current game) |
+| 628.jpg | 77 | 728x409 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 12, pair 6 (real reference) |
+| 629.jpg | 41 | 509x409 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 13, pair 7, the service wall and tanks (current game) |
+| 630.jpg | 102 | 728x409 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 14, pair 7 (real reference) |
+| 631.jpg | 37 | 440x409 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 15, pair 8, the ECOWAS entrance (current game) |
+| 632.jpg | 95 | 728x409 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 16, pair 8 (real reference) |
+| 633.jpg | 59 | 793x458 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 17, pair 9, behind Computer Science (current game) |
+| 634.jpg | 117 | 728x409 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 18, pair 9 (real reference) |

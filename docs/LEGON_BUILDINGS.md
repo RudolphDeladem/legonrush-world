@@ -1992,6 +1992,110 @@ and shows its upper part. The dense hedge on top rises and falls. The slim angul
 - **Still needed:** the garden wall's height and the step at the approach, the north road's lane positions, the
   shell's real footprint and floor heights, and the department's veranda depth.
 
+## 70. The science campus: Frank Torto, the Chemistry gable, the Home Science Annex, ECOWAS, behind Computer Science (the owner's nine-pairs brief)
+
+The brief has nine game/photo pairs and three annotated maps; the pictures are `images/614-634.jpg`. The work followed
+the brief's order: blockout first, then the nine camera views, then details. The adjustable numbers are in
+`src/game/science.ts`. The nine comparison cameras are `SC_VIEWS` (`view=sc1` to `sc9` in the preview). Most of the
+scene is in `sciencesite.ts`.
+
+**Where each map falls in the game.**
+
+- **Map 19** (about 4.6 px/m): the circled building is the square block east of the Chemistry Department, at x 166–197
+  and z −35 to −10.
+- **Map 20** (4.2 px/m): the cross is the Home Science Annex. The courtyard building is ECOWAS Coastal & Marine
+  Resources, and the complex below is LECIAD.
+- **Map 21**: the yard east of the Computer Science east block, at x 394–412 and z −300 to −268.
+
+**Pair 1, the Frank Torto passage** (`physics.ts`).
+
+- **The tower's south end.** The end of the tower now stands back behind a front wall, so the stack of open landings
+  toward the west is real. There are deep openings with a slab and parapet at each floor and dark stair flights
+  rising diagonally inside, with no interior beyond. The perforated screen there is gone.
+- **The wall.** Broad white wall planes stand between proud vertical concrete members, under the parapet. The
+  department's board stays where it was.
+- **The passage.** Asphalt now runs from the lane right up to the one-floor building's front, so there is no lawn gap.
+- **The one-floor building.** It gains a ventilation-block panel, small lamps over the doors and a threshold and
+  drainage edge.
+- **Trees.** Trees stand over and behind it.
+
+**Pair 2, the Chemistry gable building.**
+
+- **Massing.** The two-floor placeholder is replaced by one tall storey. It is white with a red plinth and joins the
+  wing behind it.
+- **Roof.** A dark pitched roof runs east–west with deep eaves and a dark fascia.
+- **The east gable.** Dark louvres sit between white structural posts. The narrow glazed assembly at the middle has
+  three panels and horizontal framing.
+- **Surroundings.** The department's sign stands on two pale posts, and only its heading is written. There are
+  rounded kerbs round the lawn islands of the approach, small trees and shrubs by the wall, and a big tree shading it.
+
+**Pairs 3, 4, 6 and 7, the Home Science Annex.** It is rebuilt as a cross of laboratory wings round a court open to
+the sky.
+
+- **Walls.** White, with thick piers between the bays. The windows sit deep in their surrounds behind black security
+  grids, with a horizontal louvre division.
+- **Bays.** They vary by face: wide windows, higher shorter windows and blank bays. The north wing's service wall has
+  groups of small high louvres. The wall over the canopy has a long louvre strip, and the doors stand behind grilles.
+- **Roof edge.** A broad concrete edge stands out past the walls at slightly different heights over each wing. Shallow
+  tiled roofs sit behind it, so the roof is not all flat and not a continuous tiled strip.
+- **Projecting bay.** One stands on the west wing (pairs 3 and 4).
+- **The service canopy (pair 6).** It sits in the north-west corner and is separate from the main roof: corrugated
+  sheet on thin posts with beams and cross framing, and a worn fascia and underside. It stands on a raised concrete
+  apron with a dark exposed front face, chipped edges and a step. AC condensers stand in cages, and there is a small
+  stump in front.
+- **The water tanks (pair 7).** Black ribbed tanks stand on a raised pale plinth at the north wing's west end, with
+  simple piping and meter boxes.
+- **Ground.**
+  - The big rough tree west of the west wing, and crowns along the corridor and round the service side.
+  - Red earth and leaf litter under the trees, and weeds at the walls' feet.
+  - The ground drape fades into the lawn instead of ending in a hard edge.
+
+**Pair 5, the earth corridor.**
+
+- **The tracks.** The mapped road from NSIA Road to LECIAD, and its branch north between the annex and ECOWAS, are now
+  compacted earth. It has worn strips, irregular grassy edges, stones and litter.
+- **What is gone.** There is no asphalt, kerb, drain, lamp or route paint there (`SC.earth`; `world.ts` and
+  `life.ts` skip those stretches).
+- **Riding.** The free ride rolls a little slower and rougher off the roads and on the tracks (`Game.ts`). Leaves and
+  stones have no collision.
+
+**Pair 8, ECOWAS.**
+
+- **Massing.** The three-floor placeholder is replaced by one storey along the mapped outline. Its tiles are worn and
+  varied, with two big hipped masses on the north front.
+- **The entrance.** A lower entrance gable stands between them over a recessed, grilled entrance and a small dark sign
+  (no wording guessed).
+- **Before it.** A stone-faced terrace with a pale coping and central steps, AC condensers in cages and hedges.
+- **The forecourt.** Brick pavers in a herringbone with faint bay lines and kerbed lawn islands. The asphalt spur and
+  the grey car park are gone, and a few cars stand as props.
+
+**Pair 9, behind Computer Science** (`issercs.ts`, `sciencesite.ts`).
+
+- **The east block's east end.** Barred windows, small low openings, heavy solid bands at the floors, wall-mounted AC
+  units and dark runoff stains.
+- **The yard.** It is compacted reddish earth with litter under two mature trees and a smaller one. It has:
+  - a low concrete channel along the building's foot;
+  - simple wooden tables and benches as removable props, with room to ride between them;
+  - the pale freestanding wall at the right;
+  - weeds at the edges.
+
+**Checks.** The route tests now check:
+
+- the corridor and its branch are earth and the forecourt is brick;
+- rides between LECIAD and the annex both ways are smooth along the corridor;
+- the Frank Torto passage is clear;
+- the six science models exist.
+
+**Assumptions and what would help.**
+
+- **Cameras.** They are estimated from the maps and landmarks. Pairs 3 and 4 share the big tree and the west wing's
+  projecting bay; which face the photos show (the west face or the south face) is the least certain.
+- **Gable building.** The eaves height (6.6 m) and pitch come from the photo's proportions.
+- **Annex.** The roofs behind its parapets are assumed shallow, since the map shows tiles behind the edges.
+- **ECOWAS.** The court's size is from the map.
+- **Still needed:** the gable building's wall height; the annex's parapet heights and window sizes; the canopy's depth;
+  ECOWAS's front setback and terrace height; a photo looking back toward the Frank Torto passage's far end.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

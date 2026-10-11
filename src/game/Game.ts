@@ -12,6 +12,7 @@ import { buildCampus, buildRouteLayer, buildSky, disposeLayer, lampGlow, LANES, 
 import { AREAS, buildingAt, buildingNear, mapBounds } from './campusmap';
 import { inPassage, solidAt } from './solids';
 import { roadClearance, setNightLights } from './life';
+import { onEarth } from './science';
 import { createWeatherFx, type WeatherFx } from './weatherfx';
 
 /** 'pedal' is one tap of the pedal; see Game.pedal() for press/release */
@@ -1022,9 +1023,12 @@ export class Game {
   private updateFree(dt: number) {
     const f = this.free!, inp = this.freeInput;
     this.time += dt;
-    const top = 8 + (this.bike?.speed ?? 3) * 0.5, back = 2.4;
+    // off the roads (and on the earth tracks of the science campus brief) the bike rolls slower and a little rougher
+    const rough = onEarth(f.x, f.z) || roadClearance(f.x, f.z, 6, -1, true) > 0.5;
+    const top = (8 + (this.bike?.speed ?? 3) * 0.5) * (rough ? 0.8 : 1), back = 2.4;
+    if (rough && f.v > 2) this.shake = Math.max(this.shake, Math.min(0.025, f.v * 0.003));
     if (inp.brake) f.held += dt;
-    if (f.cruise) f.v = Math.min(top, f.v + (2.6 + (this.bike?.acceleration ?? 3) * 0.3) * dt);
+    if (f.cruise) f.v = f.v > top ? Math.max(top, f.v - 3 * dt) : Math.min(top, f.v + (2.6 + (this.bike?.acceleration ?? 3) * 0.3) * dt);
     else if (inp.brake && f.held > 0.45 && f.v <= 0.05) {
       // held on once stopped: walk the bike backwards
       f.v = Math.max(-back, f.v - 2.2 * dt);

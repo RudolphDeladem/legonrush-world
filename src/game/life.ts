@@ -19,6 +19,7 @@ import { SOLIDS } from './solids';
 import { BLOCK_SITES } from './sites';
 import { NSIA } from './nsia';
 import { KQ } from './kuffour';
+import { offAsphalt } from './science';
 
 /** real road widths by class: main, through, residential, service lane, footpath */
 export const ROAD_WIDTH = [9, 7.4, 6.2, 4.6, 2.6];
@@ -118,7 +119,7 @@ const inKeepOut = (x: number, z: number, pad = 0) => keepOut.some(([kx, kz, hx, 
 /** inside a landmark model's footprint (Night Market roofs, Great Hall, Balme Library, the Diaspora halls' courtyards and porches, porches and annexes of the block-modelled buildings) */
 export const inLandmark = (x: number, z: number, pad = 0) => inKeepOut(x, z, pad);
 /** by the Kuffour Quadrangle, where the roads' kerbs, drains and lamps are modelled from the owner's photos */
-const inKqPlain = (x: number, z: number) => KQ.plain.some(([px0, px1, pz0, pz1]) => x > px0 && x < px1 && z > pz0 && z < pz1);
+const inKqPlain = (x: number, z: number) => KQ.plain.some(([px0, px1, pz0, pz1]) => x > px0 && x < px1 && z > pz0 && z < pz1) || offAsphalt(x, z, 6);
 const freeSpot = (x: number, z: number, r: number) => roadClearance(x, z, r + 6) > r && !buildingAt(x, z, r) && !inKeepOut(x, z, r);
 
 // ---------- the sign atlas ----------

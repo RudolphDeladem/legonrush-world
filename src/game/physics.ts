@@ -20,6 +20,7 @@ import { box, merge, speckle, tri2, type Part } from './modelkit';
 import { BAND, PL, createSite, render, type Block, type Kit, type Spec, type Style } from './blocks';
 import { concrete, panel, pierced, stoneMesh } from './concrete';
 import { PASSAGES, SOLIDS } from './solids';
+import { SC } from './science';
 import { hipRoof } from './waccbip';
 import { stairsOf } from './relief';
 import { garden } from './gardens';
@@ -461,7 +462,9 @@ const torto: Spec = ((): Spec => {
       { x0: X(TB[0] + 2.2), x1: X(TPX[0]), z0: Z(TB[2] + 2.4), z1: Z(TB[3] - 2.4), floors: 1, roof: 'none', faces: { x0: T_END, x1: T_END } },
       { x0: X(TPX[1]), x1: X(TB[1]), z0: Z(TB[2] + 2.4), z1: Z(TB[3] - 2.4), floors: 1, roof: 'none', faces: { x0: T_END } },
       { x0: X(TB[0]), x1: X(TB[1]), z0: Z(TB[2]), z1: Z(TB[3]), floors: 4, roof: 'flat', y: UP - PL, faces: { x0: T_END }, floorStyle: { 0: T_GLASS } },
-      { x0: X(TW[0]), x1: X(TW[1]), z0: Z(TW[2]), z1: Z(TW[3]), floors: 5, roof: 'none', faces: { x0: T_TOWER, x1: T_TOWER, z0: T_TOWER, z1: T_END } },
+      // (its south end stands back behind a front wall, so the stack of open landings there can be real openings: the
+      // owner's science campus brief, pair 1)
+      { x0: X(TW[0]), x1: X(TW[1]), z0: Z(TW[2]), z1: Z(TW[3] - SC.landings.depth), floors: 5, roof: 'none', faces: { x0: T_TOWER, x1: T_TOWER, z0: T_TOWER, z1: T_END } },
     ],
     keep: [[X(130), X(206), Z(-137), Z(-95)]],
     extras: (k: Kit) => {
@@ -504,11 +507,27 @@ const torto: Spec = ((): Spec => {
       // its south end to the lane (owner's street photo): a stack of open landings in white frames at its west part,
       // the open ground floor under them, the department's board on the wall; hoods over the east windows
       // (the column of patterned ventilation screens up it beside the sign: the owner's NSIA Road brief, pair 1)
-      panel(TO, k, pierced(), TW[0] + 1.2, TW[3] + 0.06, TW[0] + 4.4, TW[3] + 0.06, PL + 0.9, PL + 5 * TST - 0.3, 0.6);
-      for (let f = 0; f < 5; f++) {
-        const y = PL + f * TST;
-        c.push([B(TW[0] + 1.0, TW[0] + 4.6, y + 0.75, y + 0.9, TW[3], TW[3] + 0.35), FT_CG]);
-        for (const x of [TW[0] + 1.0, TW[0] + 4.45]) c.push([B(x, x + 0.15, y, y + TST, TW[3], TW[3] + 0.35), FT_CG]);
+      // (the owner's science campus brief, pair 1: broad white wall planes between vertical concrete members, the stack
+      // of large open landings toward the west, deep enough to see the stair rising inside; no interior beyond it)
+      {
+        const L = SC.landings, d = L.depth, zf = TW[3], zb = TW[3] - d, WH = '#e9e7e1';
+        // the front wall either side of the landings: the main plane to the east, a lower plane to the west
+        c.push([B(L.x1, TW[1], 0, TT + 0.9, zf - 0.3, zf), WH], [B(TW[1] - 0.3, TW[1], 0, TT + 0.9, zb, zf), WH]);
+        c.push([B(TW[0], L.x0, 0, PL + 4 * TST + 0.6, zf - 0.3, zf), WH], [B(TW[0], TW[0] + 0.3, 0, PL + 4 * TST + 0.6, zb, zf), WH]);
+        // the vertical concrete members framing them, standing proud; the joints of the panels
+        for (const x of [L.x0 - 0.35, L.x1, TW[1] - 0.45]) c.push([B(x, x + 0.45, 0, TT + 0.9, zf, zf + 0.22), FT_CG]);
+        for (let f = 1; f < 5; f++) k.plain.push([B(L.x1 + 0.45, TW[1] - 0.45, PL + f * TST - 0.02, PL + f * TST + 0.02, zf + 0.001, zf + 0.004), '#c9c5bb']);
+        // the landings: a slab and a solid parapet at each floor, the stair's flights rising diagonally behind, the back
+        // wall dark in shade
+        k.plain.push([B(L.x0, L.x1, 0, TT, zb - 0.02, zb), '#2e2c29']);
+        c.push([B(L.x0 - 0.01, L.x0 + 0.15, 0, TT, zb, zf), '#8e8b84'], [B(L.x1 - 0.15, L.x1 + 0.01, 0, TT, zb, zf), '#8e8b84']);
+        for (let f = 0; f <= 5; f++) {
+          const y = PL + f * TST;
+          c.push([B(L.x0, L.x1, y - 0.25, y, zb, zf), f === 5 ? FT_CG : '#bdb9b0']);
+          if (f > 0 && f < 5) c.push([B(L.x0, L.x1, y, y + 1.0, zf - 0.18, zf), WH]);
+          if (f < 5) { const fl = new THREE.BoxGeometry(L.x1 - L.x0 - 0.4, 0.22, Math.hypot(d - 0.6, TST)).rotateX(Math.atan2(TST, d - 0.6)).translate(X((L.x0 + L.x1) / 2), y + TST / 2, Z(zb + d / 2 - 0.1)); c.push([fl, '#5d5a54']); }
+        }
+        c.push([B(L.x0, L.x1, TT, TT + 0.9, zf - 0.2, zf), FT_CG]);
       }
       k.plain.push([B(TW[0] + 7.2, TW[0] + 13.2, PL + 2 * TST + 1.0, PL + 2 * TST + 2.0, TW[3], TW[3] + 0.05), '#f4f6f8']);
       k.plain.push([B(TW[0] + 7.4, TW[0] + 8.1, PL + 2 * TST + 1.2, PL + 2 * TST + 1.8, TW[3] + 0.05, TW[3] + 0.07), '#1d3f8f']);
@@ -572,6 +591,11 @@ const behindTorto: Spec = (() => {
           if (kind === 's') for (let y = PL + 0.1; y < PL + 2.4; y += 0.12) k.plain.push([B(x0, x1, y, y + 0.02, sz + 0.02, sz + 0.03), '#c9c8c2']);
         } }
       for (const z of [-90.4, -87.1]) k.plain.push([B(fx - 0.3, fx, PL + 2.0, PL + 2.55, z - 0.4, z + 0.4), '#e9ebeb'], [B(fx - 0.31, fx - 0.3, PL + 2.08, PL + 2.47, z - 0.32, z + 0.32), '#9aa0a3']);
+      // (the owner's science campus brief, pair 1: the ventilation-block panel at its north end, small lamps over the
+      // doors, the threshold and the drainage edge along its foot)
+      panel(O, k, pierced(), fx - 0.03, BT[2] + 0.25, fx - 0.03, BT[2] + 1.35, PL + 0.2, PL + 2.7, 0.4);
+      for (const z of [-92.2, -88.6]) k.plain.push([B(fx - 0.22, fx, PL + 2.78, PL + 2.92, z - 0.12, z + 0.12), '#f6f1dc'], [B(fx - 0.24, fx - 0.2, PL + 2.72, PL + 2.78, z - 0.08, z + 0.08), '#3a3a38']);
+      c.push([B(fx - 1.0, fx - 0.6, 0, 0.06, BT[2] - 0.2, BT[3] + 0.2), '#3a3836']);
       const m = new THREE.Mesh(merge(c), concrete(0.6));
       m.castShadow = true; m.receiveShadow = true;
       k.meshes.push(m);
