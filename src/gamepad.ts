@@ -60,8 +60,9 @@ export const padActionLabel = (family: PadFamily, a: PadAction) => {
 /** the family from the id the browser reports (vendor 054c is Sony, 045e Microsoft); unknown stays generic */
 export function padFamily(id: string): PadFamily {
   const s = id.toLowerCase();
-  if (/054c|dualsense|dualshock|playstation|ps[345]\b|wireless controller/.test(s)) return 'playstation';
+  // Xbox first: Chrome names it "Xbox Wireless Controller", and Sony's pads report a bare "Wireless Controller"
   if (/045e|xbox|xinput|x-box/.test(s)) return 'xbox';
+  if (/054c|dualsense|dualshock|playstation|ps[345]\b|wireless controller/.test(s)) return 'playstation';
   return 'generic';
 }
 
