@@ -2096,6 +2096,49 @@ the sky.
 - **Still needed:** the gable building's wall height; the annex's parapet heights and window sizes; the canopy's depth;
   ECOWAS's front setback and terrace height; a photo looking back toward the Frank Torto passage's far end.
 
+## 71. New Pent corrections (the owner's five pictures)
+
+The pictures are `images/635-639.jpg`.
+
+- **Block B's entrance** stands in the middle between its two brick-ended front structures, as Block A's does (the two
+  blocks share one design). It was pushed to the right. The small mapped four-storey piece in the middle
+  (`osm:way/744998452`) is excluded; the entrance model draws the tower there. Its access point moved to match.
+- **The Boba kiosk** moved to Block C's west side by Pent Road, where the tree was (picture 3), with its serving window,
+  awning and logo board facing west to the road (picture 5, red square and arrow). The turf, high tables, planters and
+  lamp came with it. The tree now stands on the corner where the kiosk was.
+- **The road between Blocks A and B is level.** The rise, its retaining wall, steps and benches are gone from it.
+- **The rise is along Pent Road** (yellow arrows): Block A's car park between its east side and Pent Road lies 1.3 m
+  below the road behind the rendered retaining wall, with the steps up to the road, cars along it and trees at its
+  ends (`relief.ts`: a hollow at x 597-619, z -633 to -606).
+
+## 72. The Balme front and the Pentagon (the owner's eleven-pairs brief)
+
+The pictures are `images/640-662.jpg`. The adjustable numbers and the eleven cameras (`BP_VIEWS`, `view=bp1` to
+`bp11`) are in `src/game/balmepent.ts`. The map (image 23) matched the game at about 2.95 px/m, Pent Road at x 625.
+
+- **The Balme pool and forecourt (pairs 1 and 2).** Only the pool and its pale walking strips are down on the deck
+  2.4 m below the road; the lawns either side are raised to the middle terrace's level (1.2 m down) behind low walls of
+  warm irregular stone with a pale coping, not brown planes. The outer walls along the side lanes have a short flight of
+  steps through them. The pool is green-grey water with ripples, a dark rim, a strip of white stones along its south
+  edge and paving beyond it; five jets in a row with light spray, switchable (`BP.jets`). White tapered pots with small
+  palms line both margins, pale statues stand on the lawns, and the two short white cylinders with dark tops stand at the
+  south end.
+- **The roundabout island (pair 11, a 2014 reference state):** the lawn raised behind a pale curb, the open drain
+  outside it and a pale outer edge, as continuous rings; small clipped shrubs; no generic tree, bench or people on it.
+- **New Pent (pairs 3 to 7).** The front structures are two floors under their roofs, below the four-floor wings. Each
+  entrance tower now has open landing bays across its front behind white parapets and one tall arched opening at the
+  top under the gable (no twin arches); the porch stands on slender pale supports with dark feet under an open arch.
+  Before Block A's entrance the asphalt is gone: red-brown paths between kerbed lawn islands with a chain on posts,
+  small trees, shrubs, the service strip and three AC condensers on the brick wall. Before Block C's south front,
+  asphalt parking with the two mature trees in kerbed beds and slim lamps.
+- **Kampala Court (pair 8):** the tall palm east of the porch and the blue curved fabric car canopy on its thin frame.
+- **The entrance before Addis Ababa Court (pair 10):** the guardhouse's roof reaches out further; the grey panelled door
+  with the dark louvres beside it on the face toward the way in, small tiled steps; asphalt and paving round it.
+- **The administration block (pair 9)** already matched the brief's structure and is unchanged.
+- **Assumptions and what would help:** the pool's south paving width and the lawns' level are read from the photos;
+  the roundabout's island radius is the mapped one; pairs 3 and 6 still show the Boba kiosk because the owner placed it
+  there. Still needed: the lawn height above the pool deck, the guardhouse's size, and a current photo of the roundabout.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

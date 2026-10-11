@@ -94,7 +94,9 @@ const touches = (a: Rect, b: Rect, side: 'x0' | 'x1' | 'z0' | 'z1') => {
 const FRONTS: [number, number][] = [[582, -612], [543.2, -601.5], [576.4, -751.8], [539.9, -740.9], [704.7, -676.5]];
 function wing(i: number): Spec {
   const { b, rects } = WINGS[i];
-  const front = FRONTS.some(([x, z]) => x > b.minX && x < b.maxX && z > b.minZ && z < b.maxZ), FL = front ? NF - 1 : NF;
+  // (the front structures are two floors: the owner's Balme and Pentagon brief, pairs 3, 5 and 7 - a low wing under a broad
+  // hipped roof before the taller accommodation wings)
+  const front = FRONTS.some(([x, z]) => x > b.minX && x < b.maxX && z > b.minZ && z < b.maxZ), FL = front ? 2 : NF;
   /** the faces of a rectangle faced in brick: its two ends, or a front structure's front (+z) */
   const ends = (r: Rect): ('x0' | 'x1' | 'z0' | 'z1')[] => (front ? ['z1'] : r[1] - r[0] >= r[3] - r[2] ? ['x0', 'x1'] : ['z0', 'z1']);
   const O: [number, number] = [(b.minX + b.maxX) / 2, (b.minZ + b.maxZ) / 2];
@@ -175,15 +177,19 @@ function entrance(name: string, letter: string, at: [number, number]): Spec {
     keep: [[-4, 4, -1.5, 8]],
     extras: (k) => {
       const e = PL + NF * NST + 0.4, c: Part[] = [];
-      // the white tower, its open loggia at the top under a small tiled gable, a window on each floor below
-      c.push([box(-3.6, 3.6, 0, e, -1.5, 2.5), WHITE_NP]);
+      // the white landing tower (the owner's Balme and Pentagon brief, pair 7): open horizontal bays across its front at
+      // each landing, a solid white parapet before each, dark shade inside; one tall arched opening at the top under the
+      // gable
+      c.push([box(-3.6, 3.6, 0, e, -1.5, 2.0), WHITE_NP]);
+      for (const x of [-3.6, 3.15]) c.push([box(x, x + 0.45, 0, e, 2.0, 2.5), WHITE_NP]);
       k.plain.push([box(-3.61, 3.61, 0, 0.9, -1.5, 2.51), GREY_BASE]);
-      for (const x of [-1.5, 1.5]) {
-        k.plain.push([box(x - 0.9, x + 0.9, e - 3.0, e - 0.9, 2.5, 2.54), '#3a3c3e']);
-        k.plain.push([new THREE.CircleGeometry(0.9, 14, 0, Math.PI).translate(x, e - 0.9, 2.55), '#3a3c3e']);
-        k.plain.push([box(x - 0.9, x + 0.9, e - 3.0, e - 2.0, 2.54, 2.6), WHITE_NP]);
+      for (let f = 1; f < NF; f++) {
+        const y = PL + f * NST;
+        k.plain.push([box(-3.15, 3.15, y - 0.1, y + NST - 0.5, 1.98, 2.0), '#3e3f40']);
+        c.push([box(-3.15, 3.15, y - 0.2, y + 1.0, 2.3, 2.5), WHITE_NP], [box(-3.15, 3.15, y + NST - 0.5, y + NST - 0.1, 2.0, 2.5), WHITE_NP]);
       }
-      for (let f = 1; f < NF - 1; f++) { const y = PL + f * NST + 0.6; k.plain.push([box(-0.7, 0.7, y, y + 1.6, 2.5, 2.54), '#2a2c2e']); }
+      k.plain.push([box(-0.75, 0.75, e - 3.0, e - 0.75, 2.5, 2.52), '#3a3c3e'], [new THREE.CircleGeometry(0.75, 14, 0, Math.PI).translate(0, e - 0.75, 2.53), '#3a3c3e']);
+      c.push([box(-1.0, 1.0, e - 3.1, e - 3.0, 2.5, 2.7), WHITE_NP]);
       const top = e + 4.3 * 0.55;
       k.roof.c = new THREE.Color(ROOF_NP);
       k.roof.quad([-4.3, e, 3.1], [-4.3, e, -2.1], [0, top, -2.1], [0, top, 3.1]);
@@ -192,9 +198,12 @@ function entrance(name: string, letter: string, at: [number, number]): Spec {
       for (const sx of [-1, 1]) { const L = Math.hypot(4.3, top - e); k.plain.push([new THREE.BoxGeometry(L, 0.3, 0.08).rotateZ(-sx * Math.atan2(top - e, 4.3)).translate(sx * 2.15, (e + top) / 2, 3.12), FASCIA_NP]); }
       // the porch: square columns on grey feet, the tall arch in the middle, the rendered gable with the block's name
       const ph = 3.6, pz = 6.2;
-      for (const x of [-2.9, -1.3, 1.3, 2.9]) { c.push([box(x - 0.3, x + 0.3, 0, ph, pz - 0.6, pz), WHITE_NP]); k.plain.push([box(x - 0.31, x + 0.31, 0, 0.9, pz - 0.61, pz + 0.01), GREY_BASE]); }
+      // (slender pale supports with darker lower parts: pair 7)
+      for (const x of [-2.9, -1.3, 1.3, 2.9]) { c.push([box(x - 0.17, x + 0.17, 0, ph, pz - 0.4, pz - 0.06), WHITE_NP]); k.plain.push([box(x - 0.18, x + 0.18, 0, 1.1, pz - 0.41, pz - 0.05), '#6d6f72']); SOLIDS.add(...k.world(x, pz - 0.23), 0.2); }
       c.push([box(-3.2, 3.2, ph, ph + 0.9, 2.5, pz), WHITE_NP]);
-      k.plain.push([new THREE.CircleGeometry(1.0, 16, 0, Math.PI).translate(0, ph - 0.6, pz + 0.01), '#3a3c3e'], [box(-1.0, 1.0, 0, ph - 0.6, pz - 0.02, pz - 0.01), '#3a3c3e']);
+      // the open arch over the way in: a white arched head between the middle supports, the porch open beneath
+      { const sh = new THREE.Shape(); sh.moveTo(-1.13, ph - 1.25); sh.lineTo(-1.13, ph); sh.lineTo(1.13, ph); sh.lineTo(1.13, ph - 1.25); sh.absarc(0, ph - 1.25, 1.13, 0, Math.PI, false);
+        c.push([new THREE.ExtrudeGeometry(sh, { depth: 0.3, bevelEnabled: false, curveSegments: 12 }).translate(0, 0, pz - 0.36), WHITE_NP]); }
       const pt = ph + 0.9 + 3.5 * 0.5;
       k.roof.quad([-3.5, ph + 0.9, pz + 0.3], [-3.5, ph + 0.9, 2.5], [0, pt, 2.5], [0, pt, pz + 0.3]);
       k.roof.quad([3.5, ph + 0.9, 2.5], [3.5, ph + 0.9, pz + 0.3], [0, pt, pz + 0.3], [0, pt, 2.5]);
@@ -217,7 +226,7 @@ const grounds: Spec = {
   axis: [1, 0], origin: SO, storey: 3, style: NP_LONG, roofColor: ROOF_NP, fascia: FASCIA_NP, pitch: 0.4,
   onGround: true,
   blocks: [],
-  keep: [[596 - SO[0], 619 - SO[0], -712 - SO[1], -595 - SO[1]], [633 - SO[0], 656 - SO[0], -770 - SO[1], -650 - SO[1]], [552 - SO[0], 573 - SO[0], -622 - SO[1], -596 - SO[1]], [563 - SO[0], 614 - SO[0], -716 - SO[1], -697 - SO[1]], [557 - SO[0], 613 - SO[0], -601 - SO[1], -586 - SO[1]], [549 - SO[0], 613 - SO[0], -746 - SO[1], -731 - SO[1]]],
+  keep: [[596 - SO[0], 619 - SO[0], -712 - SO[1], -595 - SO[1]], [633 - SO[0], 656 - SO[0], -770 - SO[1], -650 - SO[1]], [552 - SO[0], 573 - SO[0], -622 - SO[1], -596 - SO[1]], [563 - SO[0], 614 - SO[0], -716 - SO[1], -697 - SO[1]], [557 - SO[0], 613 - SO[0], -612 - SO[1], -586 - SO[1]], [650 - SO[0], 736 - SO[0], -666 - SO[1], -655 - SO[1]], [549 - SO[0], 613 - SO[0], -746 - SO[1], -731 - SO[1]]],
   extras: (k) => {
     const X = (x: number) => x - SO[0], Z = (z: number) => z - SO[1];
     const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
@@ -349,7 +358,7 @@ const grounds: Spec = {
         }
       };
       // Block A, before the front structures
-      { const y = pad(557.5, 612, -600.5, -586.5); rowX(557.5, 612, -593.8, -599.4, y, [[561.5, 566.5]]); }
+      { const y = pad(573.5, 612, -600.5, -586.5); rowX(574, 612, -593.8, -599.4, y); }
       // behind Block A, along its back wing and the road to Block B
       { const y = pad(563, 614, -711.1, -697.6); rowX(565, 612, -703.4, -697.8, y); rowX(565, 612, -705.2, -710.8, y); }
       // Block B, before the front structures either side of the entrance
@@ -358,6 +367,50 @@ const grounds: Spec = {
       // Block C, along the drive on its west side
       { const y = pad(636.5, 643.8, -690, -684.2); rowZ(-689.5, -684.2, 643.6, 638.0, y); }
       { const y = pad(650.5, 655.0, -690, -672); rowZ(-689.5, -672, 650.6, 655.0, y); } }
+    // ----- the pedestrian approach to Block A's entrance from the road (the owner's Balme and Pentagon brief, pair 7): no
+    // asphalt spur; red-brown interlocking paths between kerbed lawn islands, small trees and shrubs, a low chain on
+    // posts round the lawns, the service strip with three AC condensers along the brick wall on the east
+    { const pv = (x0: number, x1: number, z0: number, z1: number) => k.plain.push([B(x0, x1, gy((x0 + x1) / 2, (z0 + z1) / 2) + 0.01, gy((x0 + x1) / 2, (z0 + z1) / 2) + 0.045, z0, z1), '#9a5444']);
+      pv(565.6, 570.2, -612, -586.5); pv(557.5, 573.5, -590.0, -586.5);
+      for (const [x0, x1] of [[557.6, 565.4], [570.4, 572.5]]) {
+        const y = gy((x0 + x1) / 2, -600);
+        c.push([B(x0, x1, y, y + 0.14, -611.8, -590.2), '#cfcabf']);
+        k.plain.push([B(x0 + 0.12, x1 - 0.12, y + 0.14, y + 0.16, -611.7, -590.3), '#5c8a38']);
+        for (let z = -611.4; z <= -590.4; z += 2.1) for (const x of [x0 + 0.2, x1 - 0.2]) { k.plain.push([B(x - 0.03, x + 0.03, y + 0.14, y + 0.6, z - 0.03, z + 0.03), '#e8e6e0']); }
+        for (const x of [x0 + 0.2, x1 - 0.2]) k.plain.push([B(x - 0.012, x + 0.012, y + 0.5, y + 0.52, -611.4, -590.4), '#3a3a3a']);
+      }
+      for (const [x, z, h] of [[561.5, -596.5, 3.2], [561.0, -606.0, 2.6], [571.4, -603.5, 2.4]] as [number, number, number][]) {
+        const y = gy(x, z) + 0.15;
+        k.plain.push([new THREE.CylinderGeometry(0.07, 0.11, h * 0.55, 6).translate(X(x), y + h * 0.27, Z(z)), '#5b4636']);
+        for (let i = 0; i < 6; i++) k.plain.push([new THREE.IcosahedronGeometry(0.75 + (i % 3) * 0.2, 1).scale(1.1, 0.8, 1.1).translate(X(x) + Math.cos(i * 1.7) * 0.6, y + h * 0.6 + (i % 2) * 0.4, Z(z) + Math.sin(i * 1.7) * 0.6), ['#4d8a33', '#5d9a3c', '#3f7a2c'][i % 3]]);
+        SOLIDS.add(x, z, 0.2);
+      }
+      for (const [x, z] of [[558.6, -592], [564.2, -610.5], [558.8, -609]] as [number, number][]) k.plain.push([new THREE.IcosahedronGeometry(0.55, 1).scale(1.2, 0.8, 1).translate(X(x), gy(x, z) + 0.55, Z(z)), '#2f5a24']);
+      // the service strip and the AC condensers on the east front structure's west wall
+      k.plain.push([B(572.5, 572.8, gy(572.6, -608) + 0.01, gy(572.6, -608) + 0.05, -621.8, -602.2), '#b5b0a5']);
+      for (const z of [-606.2, -604.9, -603.6]) {
+        const y = gy(572.3, z) + 0.05;
+        c.push([B(572.05, 572.75, y, y + 0.55, z - 0.4, z + 0.4), '#eceeed']);
+        k.plain.push([new THREE.CircleGeometry(0.2, 12).rotateY(-Math.PI / 2).translate(X(572.04), y + 0.28, Z(z) - 0.08), '#3a3c3e']);
+        k.plain.push([B(572.6, 572.65, y + 0.5, y + 2.4, z + 0.3, z + 0.34), '#d9d6cf']);
+        SOLIDS.add(572.4, z, 0.4);
+      } }
+    // ----- before Block C's south front (the owner's Balme and Pentagon brief, pair 4): asphalt from the road to the
+    // building, parking along the front, the two mature trees in kerbed beds in the middle, slim lamps
+    { const y = gy(700, -660);
+      k.plain.push([B(651, 735, y + 0.01, y + 0.035, -665.8, -655.2), '#5a5a5d']);
+      for (let x = 652; x < 734; x += 2.7) k.plain.push([B(x, x + 0.08, y + 0.035, y + 0.04, -665.6, -661.0), '#e7e6e0']);
+      const CARC = ['#e9e9ea', '#1b1d22', '#9aa1a8', '#2b3b5a', '#c9ccd0'];
+      let i = 0;
+      for (let x = 652.2; x < 732; x += 2.7, i++) if (i % 3 !== 1 && (x < 693 || x > 717)) car(k, X(x + 1.3), Z(-663.4), CARC[i % CARC.length], y + 0.035, 0);
+      for (const tx of [699.5, 711.5]) {
+        c.push([B(tx - 2.2, tx + 2.2, y, y + 0.18, -664.8, -660.2), '#d6d2c8']);
+        k.plain.push([B(tx - 2.05, tx + 2.05, y + 0.18, y + 0.2, -664.65, -660.35), '#4f7a33']);
+        k.plain.push([new THREE.CylinderGeometry(0.35, 0.5, 5.2, 8).translate(X(tx), y + 2.6, Z(-662.5)), '#5b4636']);
+        for (const [dx, dy, dz, r] of [[0, 7.2, 0, 3.8], [2.6, 6.4, -1.4, 2.8], [-2.4, 6.6, 1.5, 3.0], [0.8, 8.4, 1.0, 2.4]]) k.plain.push([new THREE.IcosahedronGeometry(r, 1).scale(1.1, 0.75, 1.1).translate(X(tx) + dx, y + dy, Z(-662.5) + dz), '#355f27']);
+        SOLIDS.add(tx, -662.5, 2.2);
+      }
+      for (const x of [690, 721]) { k.plain.push([new THREE.CylinderGeometry(0.05, 0.08, 7, 8).translate(X(x), y + 3.5, Z(-656)), '#9ba0a4'], [B(x - 0.35, x + 0.35, y + 6.9, y + 7.05, -656.15, -655.85), '#3a3c3e']); SOLIDS.add(x, -656, 0.12); } }
     // ----- before Block A's entrance (the owner's Pent PDF, pages 21-24): the forecourt of red hexagonal pavers; the open
     // way through the ground floor of the front structure east of the porch (no gate); west of the porch, before the
     // other front structure's large ground-floor windows, a terrace closed by low walls of brick panels in grey frames,

@@ -20,6 +20,8 @@
 // across the middle and along the north, and four-floor outer wings with arms reaching east and west. The Kuffour
 // Quadrangle behind the library, its fountain and monuments: kuffourgarden.ts.
 import * as THREE from 'three';
+import { BP } from './balmepent';
+import { stoneMeshOf } from './nsiaroad';
 import { WHITE, box, canvas, merge, tri2, type Part } from './modelkit';
 import { BAND, PL, createSite, gableZ, render, window_, type Block, type Kit, type Spec, type Style } from './blocks';
 import { stairsOf } from './relief';
@@ -708,19 +710,41 @@ const pool: Spec = {
   // University Square and the pool's paved area are drawn by the steps model below, level by level
   covers: [[8.6, 49.9], [8, 78]],
   extras: (k: Kit) => {
-    // the pool sits on the deck 2.4 m below the road before the library (relief.ts); its jets stand in a row
-    for (const z of [-9, -3, 3, 9]) k.plain.push([new THREE.CylinderGeometry(0.12, 0.12, 0.9, 8).translate(0, 0.45, z), '#55585c']);
-    // a long pool of still water in a dark stone kerb on the library's axis, big white planters with small palms
-    // along both sides (owner's photo of the front)
-    const [x0, x1, z0, z1] = [-4.6, 4.6, -15, 15];
-    for (const [a, b, c, d] of [[x0 - 0.45, x1 + 0.45, z0 - 0.45, z0], [x0 - 0.45, x1 + 0.45, z1, z1 + 0.45], [x0 - 0.45, x0, z0, z1], [x1, x1 + 0.45, z0, z1]]) k.plain.push([box(a, b, 0, 0.5, c, d), '#3a3d40']);
-    k.plain.push([box(x0, x1, 0, 0.32, z0, z1), '#4d7f78']);
-    for (let z = z0 + 1.5; z <= z1 - 1.4; z += 4.6) for (const x of [x0 - 1.2, x1 + 1.2]) {
-      k.plain.push([new THREE.CylinderGeometry(0.5, 0.36, 0.75, 12).translate(x, 0.375, z), '#f4f2ee']);
-      for (let i = 0; i < 5; i++) { const a = (i / 5) * Math.PI * 2; k.plain.push([box(-0.05, 0.05, 0, 0.9, -0.3, 0.3).rotateX(0.5).rotateY(a).translate(x, 0.75, z), '#4f8a3a']); }
+    // the pool on the deck 2.4 m below the road before the library (relief.ts; the owner's Balme and Pentagon brief, pairs
+    // 1 and 2): a long rectangle of green-grey water rippling a little, a dark stone rim, the pale paved walking strips
+    // either side, a strip of white stones along its south edge; the jets in a row down its middle, their spray
+    // switchable (BP.jets); white tapered pots with small palms along both margins
+    const [x0, x1, z0, z1] = [-4.6, 4.6, -13, 12.3];
+    for (const [a, b, c, d] of [[x0 - 0.45, x1 + 0.45, z0 - 0.45, z0], [x0 - 0.45, x1 + 0.45, z1, z1 + 0.45], [x0 - 0.45, x0, z0, z1], [x1, x1 + 0.45, z0, z1]]) k.plain.push([box(a, b, 0, 0.42, c, d), '#3f4143'], [box(a, b, 0.42, 0.46, c, d), '#55585a']);
+    k.plain.push([box(x0, x1, 0, 0.12, z0, z1), '#3c4a42']);
+    const water = new THREE.Mesh(new THREE.PlaneGeometry(x1 - x0, z1 - z0, 1, 1).rotateX(-Math.PI / 2).translate(0, 0.3, (z0 + z1) / 2), waterMat());
+    water.receiveShadow = true; k.meshes.push(water);
+    k.plain.push([box(x0 - 0.45, x1 + 0.45, 0, 0.06, z1 + 0.45, z1 + 1.15), '#efeee8']);
+    for (let i = 0; i < 40; i++) k.plain.push([new THREE.IcosahedronGeometry(0.06 + (i % 3) * 0.02, 0).translate(x0 - 0.3 + ((i * 37) % 100) / 100 * (x1 - x0 + 0.6), 0.08, z1 + 0.55 + ((i * 17) % 10) / 20), '#f7f6f2']);
+    for (const z of [-9, -4.5, 0, 4.5, 9]) {
+      k.plain.push([new THREE.CylinderGeometry(0.1, 0.14, 0.32, 8).translate(0, 0.3, z), '#5a5d60']);
+      if (BP.jets) for (let i = 0; i < 4; i++) k.meshes.push(new THREE.Mesh(new THREE.ConeGeometry(0.06 + i * 0.1, 1.4 - i * 0.3, 10, 1, true).rotateX(Math.PI).translate(0, 0.45 + (1.4 - i * 0.3) / 2, z), sprayMat()));
+    }
+    for (let z = z0 + 1.5; z <= z1 - 1.4; z += 4.6) for (const x of [x0 - 1.4, x1 + 1.4]) {
+      k.plain.push([new THREE.CylinderGeometry(0.42, 0.26, 0.9, 12).translate(x, 0.45, z), '#f4f2ee'], [new THREE.CylinderGeometry(0.44, 0.44, 0.06, 12).translate(x, 0.9, z), '#e6e3dc']);
+      k.plain.push([new THREE.CylinderGeometry(0.04, 0.06, 0.9, 5).translate(x, 1.3, z), '#7a6a52']);
+      for (let i = 0; i < 7; i++) { const a = (i / 7) * Math.PI * 2; k.plain.push([new THREE.ConeGeometry(0.16, 1.1, 3).rotateX(Math.PI / 2).translate(0, 0, 0.55).scale(1, 0.3, 1).rotateX(0.4).rotateY(a).translate(x, 1.72, z), '#4f8a3a']); }
     }
   },
 };
+let waterM: THREE.MeshStandardMaterial | null = null;
+/** the pool's water: green-grey, small ripples in the colour, glossy */
+const waterMat = () => {
+  if (waterM) return waterM;
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d')!;
+  g.fillStyle = '#6a8578'; g.fillRect(0, 0, 128, 128);
+  for (let i = 0; i < 260; i++) { const x = (i * 53) % 128, y = (i * 29) % 128; g.fillStyle = i % 2 ? 'rgba(200,220,210,0.18)' : 'rgba(40,60,52,0.18)'; g.beginPath(); g.ellipse(x, y, 6 + (i % 5) * 2, 1.2, 0, 0, Math.PI * 2); g.fill(); }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2, 6);
+  return (waterM = new THREE.MeshStandardMaterial({ map: t, roughness: 0.12, metalness: 0.15 }));
+};
+let sprayM: THREE.MeshStandardMaterial | null = null;
+const sprayMat = () => (sprayM ??= new THREE.MeshStandardMaterial({ color: '#eef4f4', transparent: true, opacity: 0.2, roughness: 0.3, depthWrite: false, side: THREE.DoubleSide }));
 
 // ---------- the stone terraces and stairs between the pool and the library (owner's photo from the pool) ----------
 // relief.ts sinks University Square and the pool below the road before the library: the pool deck 2.4 m down, a
@@ -740,7 +764,7 @@ const steps: Spec = {
     const xa = x(-6.6), xb = x(24.6), deck = st.foot, mid = deck / 2;
     // the paved strip down the middle (the pool deck and the middle terrace); lawns either side (owner's top view:
     // the only grass in front of the library is round the pool)
-    k.plain.push([box(x(-1), x(17), deck - 0.2, deck + 0.04, z(60.6), z(93.5)), PAVE_B]);
+    k.plain.push([box(x(0.7), x(15.3), deck - 0.2, deck + 0.04, z(60.6), z(93.5)), PAVE_B]);
     k.plain.push([box(x(-1), x(17), mid - 0.2, mid + 0.04, z(49.2), z(60.6)), PAVE_B]);
     // the paving at road level all round the sunken square (owner): from the road before the library to the upper
     // wall (round the head of the stairs), from the lanes to the side walls, and south of the pool to the footway
@@ -774,26 +798,49 @@ const steps: Spec = {
       g.tree(k, x(-22), z(wz + 3), 0.9 + g.rand() * 0.4);
       g.tree(k, x(34.8), z(wz + 1.5), 1.0 + g.rand() * 0.4);
     }
-    // a laterite stone wall from (x0..x1, z0..z1), y0 to y1, with a lighter capping
+    // low walls of warm irregular stone with a pale coping (the owner's Balme and Pentagon brief, pair 1: not brown
+    // planes), holding the raised lawns either side of the pool's deck and the terraces up to the road
+    const stoneParts: Part[] = [];
     const wall = (x0: number, x1: number, z0: number, z1: number, y0: number, y1: number) => {
-      k.plain.push([box(x0, x1, y0, y1, z0, z1), STONE]);
-      k.plain.push([box(x0 - 0.06, x1 + 0.06, y1, y1 + 0.12, z0 - 0.06, z1 + 0.06), STONE_L]);
+      stoneParts.push([box(x0, x1, y0 - 0.2, y1, z0, z1), '#ffffff']);
+      k.plain.push([box(x0 - 0.08, x1 + 0.08, y1, y1 + 0.1, z0 - 0.08, z1 + 0.08), '#e3dccb']);
     };
-    // the lower wall (pool deck up to the middle terrace) and the upper wall (up to the road), open at the stairs,
-    // each standing 0.7 m above the level behind it as a parapet
-    for (const [z0, y0, y1] of [[60.3, deck, mid + 0.7], [48.7, mid, 0.7]] as [number, number, number][]) {
-      wall(xa, x(st.z0), z(z0), z(z0 + 0.6), y0, y1);
-      wall(x(st.z1), xb, z(z0), z(z0 + 0.6), y0, y1);
-    }
-    // the side walls along the lanes, open where the footpath crosses the square
+    // the upper wall (the middle terrace up to the road), open at the stairs, a low parapet over the road's level
+    wall(xa, x(st.z0), z(48.7), z(49.3), mid, 0.35);
+    wall(x(st.z1), xb, z(48.7), z(49.3), mid, 0.35);
+    // the deck's edges: up from the walking strips to the lawns either side, and across its north end beside the stairs
+    for (const wx of [0.25, 15.3]) wall(x(wx), x(wx + 0.45), z(60.3), z(93.5), deck, mid + 0.3);
+    wall(x(0.25), x(st.z0), z(60.3), z(60.75), deck, mid + 0.3);
+    wall(x(st.z1), x(15.75), z(60.3), z(60.75), deck, mid + 0.3);
+    // the outer walls along the side lanes, up from the lawns to the road, each with a short flight of steps through it
+    // at the middle (the elevated reference's openings)
     for (const wx of [-7.2, 24.6]) {
-      wall(x(wx), x(wx + 0.6), z(48.7), z(60.3), mid, 0.7);
-      wall(x(wx), x(wx + 0.6), z(60.3), z(94.1), deck, 0.7);
+      wall(x(wx), x(wx + 0.6), z(48.7), z(75.5), mid, 0.35);
+      wall(x(wx), x(wx + 0.6), z(79.5), z(94.1), mid, 0.35);
+      for (let i = 0; i < 4; i++) {
+        const out = wx < 0 ? -1 : 1, xs = wx + 0.3 - out * (0.35 * (i + 0.5));
+        k.plain.push([box(x(xs - 0.18), x(xs + 0.18), mid - 0.4, mid + 0.3 * (i + 1), z(75.5), z(79.5)), i % 2 ? '#d9d3c6' : '#cfc9bc']);
+      }
     }
-    // the south wall, below the footway, closing the pool deck
-    wall(x(-7.2), x(25.2), z(93.5), z(94.1), deck, 0.7);
+    // the south wall below the footway: tall across the deck, low across the lawns
+    wall(x(0.25), x(15.75), z(93.5), z(94.1), deck, 0.35);
+    wall(x(-7.2), x(0.25), z(93.5), z(94.1), mid, 0.35);
+    wall(x(15.75), x(25.2), z(93.5), z(94.1), mid, 0.35);
+    stoneMeshOf(k, stoneParts);
+    // the pale statues on the lawns (pair 2), the two short white cylinders with dark tops at the south end
+    for (const [wx, wz] of BP.statues) {
+      const sx = x(wx), sz = z(wz), y = mid;
+      k.plain.push([box(sx - 0.45, sx + 0.45, y - 1.2 + 1.2 - 0.05, y + 0.9, sz - 0.45, sz + 0.45), '#e3e0d8']);
+      k.plain.push([new THREE.CylinderGeometry(0.2, 0.26, 1.0, 10).translate(sx, y + 1.4, sz), '#f1efe9'], [new THREE.CylinderGeometry(0.17, 0.2, 0.5, 10).translate(sx, y + 2.1, sz), '#f1efe9'], [new THREE.SphereGeometry(0.15, 10, 8).translate(sx, y + 2.5, sz), '#f1efe9']);
+      for (const dx of [-0.24, 0.24]) k.plain.push([new THREE.CylinderGeometry(0.05, 0.06, 0.65, 6).translate(sx + dx, y + 2.05, sz), '#f1efe9']);
+      SOLIDS.add(wx, wz, 0.5);
+    }
+    for (const [wx, wz] of BP.posts) {
+      k.plain.push([new THREE.CylinderGeometry(0.75, 0.75, 1.1, 18).translate(x(wx), 0.55, z(wz)), '#f2f1ec'], [new THREE.CylinderGeometry(0.62, 0.62, 0.06, 18).translate(x(wx), 1.12, z(wz)), '#3a3836']);
+      SOLIDS.add(wx, wz, 0.8);
+    }
     // white planters with small shrubs along the tops of the walls (owner's photo)
-    for (const [y, zz] of [[mid + 0.82, 60.6], [0.82, 49]] as [number, number][]) for (const wx of [-5, -1.5, 17, 20, 23]) {
+    for (const [y, zz] of [[mid + 0.4, 60.6], [0.45, 49]] as [number, number][]) for (const wx of (zz > 55 ? [-5, -1.5, 17, 20, 23] : [-5, -1.5, 17, 20, 23])) {
       k.plain.push([new THREE.CylinderGeometry(0.42, 0.32, 0.7, 12).translate(x(wx), y + 0.35, z(zz)), '#f2f0eb']);
       k.plain.push([new THREE.IcosahedronGeometry(0.42, 0).translate(x(wx), y + 0.85, z(zz)), '#4f8a3a']);
     }

@@ -638,3 +638,31 @@ Every photo, screenshot, aerial and marked-up map the owner uploaded, in upload 
 | 632.jpg | 95 | 728x409 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 16, pair 8 (real reference) |
 | 633.jpg | 59 | 793x458 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 17, pair 9, behind Computer Science (current game) |
 | 634.jpg | 117 | 728x409 | 87 | 2026-10-11 | (Science campus nine-pairs reconstruction brief, 23 pages) image 18, pair 9 (real reference) |
+| 635.jpg | 260 | 1903x875 | 88 | 2026-10-11 | (New Pent corrections, set 1) picture 1: Block B's front in the game, its entrance pushed to the right (blue) |
+| 636.jpg | 235 | 1280x720 | 88 | 2026-10-11 | (New Pent corrections, set 1) picture 2: Block A's front, the entrance in the middle (same design as Block B) |
+| 637.jpg | 123 | 1226x480 | 88 | 2026-10-11 | (New Pent corrections, set 1) picture 3: the Boba kiosk (blue) on the wrong side; the tree (violet) marks its place |
+| 638.jpg | 137 | 1237x583 | 88 | 2026-10-11 | (New Pent corrections, set 1) picture 4: the road between Blocks A and B (green arrows) is level, not on a hill |
+| 639.jpg | 127 | 763x831 | 88 | 2026-10-11 | (New Pent corrections, set 1) picture 5: the top view, Blocks A, B and C; the kiosk (red square, facing the arrow); the rise is along Pent Road (yellow), seen from Block A's south-east (white) |
+| 640.jpg | 122 | 783x828 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 23, the annotated New Pent map |
+| 641.jpg | 126 | 1652x467 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 1, pair 1, the Balme fountain at ground level (current game) |
+| 642.jpg | 60 | 637x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 2, pair 1 (real reference) |
+| 643.jpg | 69 | 850x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 3, pair 2, the Balme front from above (current game) |
+| 644.jpg | 48 | 556x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 4, pair 2 (real reference) |
+| 645.jpg | 47 | 522x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 5, pair 3, Block C parking (red arrow) (current game) |
+| 646.jpg | 73 | 728x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 6, pair 3 (real reference) |
+| 647.jpg | 66 | 758x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 7, pair 4, Block C front (white arrows) (current game) |
+| 648.jpg | 59 | 728x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 8, pair 4 (real reference) |
+| 649.jpg | 36 | 414x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 9, pair 5, Block A north-east (yellow arrows) (current game) |
+| 650.jpg | 60 | 728x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 10, pair 5 (real reference) |
+| 651.jpg | 52 | 633x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 11, pair 6, Block A east from Block C (green arrows) (current game) |
+| 652.jpg | 60 | 728x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 12, pair 6 (real reference) |
+| 653.jpg | 42 | 460x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 13, pair 7, Block A entrance (blue arrows) (current game) |
+| 654.jpg | 87 | 729x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 14, pair 7 (real reference) |
+| 655.jpg | 68 | 885x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 15, pair 8, Kampala Court (current game) |
+| 656.jpg | 76 | 728x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 16, pair 8 (real reference) |
+| 657.jpg | 74 | 814x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 17, pair 9, the administration block (current game) |
+| 658.jpg | 73 | 728x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 18, pair 9 (real reference) |
+| 659.jpg | 31 | 417x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 19, pair 10, the entrance before Addis Ababa Court (current game) |
+| 660.jpg | 83 | 728x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 20, pair 10 (real reference) |
+| 661.jpg | 57 | 1077x305 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 21, pair 11, the Balme front roundabout (Oct 2014) (current game) |
+| 662.jpg | 134 | 1360x427 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 22, pair 11 (real reference) |

@@ -113,7 +113,7 @@ try {
   // the Balme Library above University Square and the pool (owner's photo): road before the library and side lanes up,
   // the middle terrace 1.2 m down, the pool deck 2.4 m down, the stairs climbing between them
   if (groundHeight(8, 38) !== 0 || [49, 60, 75, 92].some((z) => groundHeight(-10, z) !== 0 || groundHeight(27, z) !== 0)) fail('Balme: the road before the library or the side lanes are not at ground level');
-  if (Math.abs(groundHeight(-4, 55) + 1.2) > 0.01 || Math.abs(groundHeight(-4, 78) + 2.4) > 0.01) fail('Balme: the middle terrace or the pool deck is not below the library');
+  if (Math.abs(groundHeight(-4, 55) + 1.2) > 0.01 || Math.abs(groundHeight(8, 78) + 2.4) > 0.01 || Math.abs(groundHeight(-4, 78) + 1.2) > 0.01) fail('Balme: the middle terrace, the raised lawns or the pool deck are not below the library');
   { let prev = -3, ok = true; for (let z = 61.5; z >= 43; z -= 0.2) { const h = groundHeight(8, z); if (h < prev - 1e-6) ok = false; prev = h; } if (!ok || prev !== 0) fail('Balme: the stairs do not climb steadily from the pool deck to the road'); }
   const eng = ACCESS.get('School of Engineering Sciences');
   if (!eng || Math.hypot(eng.entrance[0] - 452.7, eng.entrance[1] + 380) > 2) fail('engineering: the entrance is not the porch on the front block');

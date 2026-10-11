@@ -242,6 +242,21 @@ function addisKiosk(k: Kit) {
  *  pages 1-3; Kampala's court frame) */
 function kampalaWalk(k: Kit) {
   for (let z = -18; z < 24; z += 2) { const y = k.ground(20.8, z + 1) + 0.03; k.plain.push([box(19.7, 21.9, y - 0.03, y, z, z + 2.02), CONCRETE_WALK]); }
+  // (the owner's Balme and Pentagon brief, pair 8: the tall palm east of the porch, and the blue curved fabric car canopy
+  // on its thin frame over the bays on the east of the front)
+  { const px = 7.6, pz = -22.4, py = k.ground(px, pz);
+    k.plain.push([new THREE.CylinderGeometry(0.2, 0.26, 10, 8).translate(px, py + 5, pz), '#8a7c6a'], [new THREE.CylinderGeometry(0.27, 0.28, 1.4, 8).translate(px, py + 0.7, pz), '#f2f1ec']);
+    for (let i = 0; i < 11; i++) k.plain.push([new THREE.ConeGeometry(0.45, 3.4, 3).rotateX(Math.PI / 2).translate(0, 0, 1.7).scale(1, 0.25, 1).rotateX(0.3 + (i % 3) * 0.25).rotateY((i / 11) * Math.PI * 2).translate(px, py + 10.1, pz), '#4f8a2f']);
+    SOLIDS.add(...k.world(px, pz), 0.3); }
+  { const xa = 11.0, xb = 19.2, za = -24.0, zb = -18.4, y = k.ground(15, -21);
+    for (const x of [xa + 0.3, xb - 0.3]) { k.plain.push([box(x - 0.05, x + 0.05, y, y + 2.6, za - 0.05, za + 0.05), '#d9dbdd']); SOLIDS.add(...k.world(x, za), 0.12); }
+    // the arched fabric: a curved sheet from the posts' side to the far hem, its frame along the edges
+    const n = 8, pos: number[] = [], idx: number[] = [];
+    for (let i = 0; i <= n; i++) { const t = i / n, z = za + (zb - za) * t, h = y + 2.55 + Math.sin(t * Math.PI) * 0.55 - t * 0.35; pos.push(xa, h, z, xb, h, z); if (i < n) { const b = i * 2; idx.push(b, b + 1, b + 2, b + 1, b + 3, b + 2, b, b + 2, b + 1, b + 1, b + 2, b + 3); } }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+    k.plain.push([g, '#1f62b8']);
+    for (const x of [xa, xb]) for (let i = 0; i < n; i++) { const t0 = i / n, t1 = (i + 1) / n, z0 = za + (zb - za) * t0, z1 = za + (zb - za) * t1, h0 = y + 2.55 + Math.sin(t0 * Math.PI) * 0.55 - t0 * 0.35, h1 = y + 2.55 + Math.sin(t1 * Math.PI) * 0.55 - t1 * 0.35; const L = Math.hypot(z1 - z0, h1 - h0); k.plain.push([new THREE.BoxGeometry(0.06, 0.06, L).rotateX(-Math.atan2(h1 - h0, z1 - z0)).translate(x, (h0 + h1) / 2 - 0.03, (z0 + z1) / 2), '#d9dbdd']); }
+    k.plain.push([box(xa, xb, y + 2.4, y + 2.46, za - 0.05, za + 0.05), '#d9dbdd']); }
 }
 
 /** behind Nairobi (owner's third reference PDF, pages 15-17): the ground spread with gravel; the blue standby generator
@@ -311,18 +326,25 @@ const entrance: Spec = {
     // the door and louvred window toward the court, a window on the road and one on Annie Jiagge Road
     k.plain.push([B(516.1, 517.0, sy + 0.4, sy + 2.45, SP[3], SP[3] + 0.04), '#6d7680'], [B(514.6, 515.7, sy + 1.2, sy + 2.25, SP[3], SP[3] + 0.04), '#2a2826']);
     for (let y = sy + 1.28; y < sy + 2.2; y += 0.12) k.plain.push([B(514.65, 515.65, y, y + 0.05, SP[3] + 0.04, SP[3] + 0.06), '#45403a']);
-    k.plain.push([B(514.6, 515.8, sy + 1.2, sy + 2.2, SP[2] - 0.04, SP[2]), '#2c3640'], [B(SP[0] - 0.04, SP[0], sy + 1.2, sy + 2.2, -531.8, -530.2), '#2c3640']);
+    // (the window beside the door toward the road in: dark horizontal louvres, the owner's Balme and Pentagon brief, pair 10)
+    k.plain.push([B(516.0, 517.2, sy + 1.1, sy + 2.3, SP[2] - 0.04, SP[2]), '#24221f'], [B(SP[0] - 0.04, SP[0], sy + 1.2, sy + 2.2, -531.8, -530.2), '#2c3640']);
+    for (let y = sy + 1.16; y < sy + 2.26; y += 0.11) k.plain.push([B(516.05, 517.15, y, y + 0.05, SP[2] - 0.07, SP[2] - 0.04), '#4a4640']);
     // the door on the face toward the road into Pent (the owner's second Pent corrections, picture 2), its frame and step
-    k.plain.push([B(516.2, 517.25, sy + 0.35, sy + 2.5, SP[2] - 0.06, SP[2]), '#d9d2bd'], [B(516.3, 517.15, sy + 0.38, sy + 2.42, SP[2] - 0.08, SP[2] - 0.06), '#6d7680']);
-    k.plain.push([B(516.95, 517.05, sy + 1.3, sy + 1.36, SP[2] - 0.12, SP[2] - 0.08), '#c9c9c9'], [B(516.0, 517.45, sy + 0.2, sy + 0.35, SP[2] - 0.6, SP[2] - 0.3), '#d4cfc4']);
+    // (the grey panelled door west of the louvres, as the owner's Balme and Pentagon brief, pair 10, shows them; small
+    // tiled steps before it)
+    k.plain.push([B(514.5, 515.6, sy + 0.35, sy + 2.5, SP[2] - 0.06, SP[2]), '#d9d2bd'], [B(514.6, 515.5, sy + 0.38, sy + 2.42, SP[2] - 0.08, SP[2] - 0.06), '#7d868f']);
+    for (const [y0, y1] of [[0.6, 1.3], [1.5, 2.3]]) k.plain.push([B(514.7, 515.4, sy + y0, sy + y1, SP[2] - 0.095, SP[2] - 0.08), '#6d7680']);
+    k.plain.push([B(514.7, 514.8, sy + 1.3, sy + 1.36, SP[2] - 0.12, SP[2] - 0.08), '#c9c9c9'], [B(514.3, 515.8, sy + 0.2, sy + 0.35, SP[2] - 0.6, SP[2] - 0.3), '#c8a58e'], [B(514.3, 515.8, sy, sy + 0.2, SP[2] - 0.9, SP[2] - 0.6), '#c8a58e']);
     k.plain.push([B(516.0, 517.1, sy + 0.2, sy + 0.35, SP[3] + 0.3, SP[3] + 0.6), '#d4cfc4']);
-    { const e = sy + 2.85, top = e + 1.2, x0 = SP[0] - 0.5, x1 = SP[1] + 0.5, z0 = SP[2] - 0.55, z1 = SP[3] + 0.55, zm = (z0 + z1) / 2;
+    { const e = sy + 2.85, top = e + 1.2, x0 = SP[0] - 0.7, x1 = SP[1] + 0.7, z0 = SP[2] - 0.95, z1 = SP[3] + 0.95, zm = (z0 + z1) / 2;
       k.roof.c = new THREE.Color('#9a3a2c');
       k.roof.quad([X(x1), e, Z(z0)], [X(x0), e, Z(z0)], [X(x0), top, Z(zm)], [X(x1), top, Z(zm)]);
       k.roof.quad([X(x0), e, Z(z1)], [X(x1), e, Z(z1)], [X(x1), top, Z(zm)], [X(x0), top, Z(zm)]);
       for (const x of [SP[0], SP[1]]) k.plain.push([tri2([X(x), e, Z(SP[2])], [X(x), e, Z(SP[3])], [X(x), top - 0.2, Z(zm)]), '#efe7d2']);
       for (const x of [x0, x1]) for (const s of [-1, 1]) { const L = Math.hypot(z1 - zm, top - e); k.plain.push([new THREE.BoxGeometry(0.06, 0.22, L).rotateX(s * Math.atan2(top - e, z1 - zm)).translate(X(x), (e + top) / 2, Z(zm + (s * (z1 - zm)) / 2)), '#3a4652']); }
-      k.plain.push([B(x0, x1, e - 0.18, e, z0 - 0.04, z0), '#3a4652'], [B(x0, x1, e - 0.18, e, z1, z1 + 0.04), '#3a4652']); }
+      k.plain.push([B(x0, x1, e - 0.18, e, z0 - 0.04, z0), '#3a4652'], [B(x0, x1, e - 0.18, e, z1, z1 + 0.04), '#3a4652']);
+      // the asphalt round the post and its patches of paving, worn at the edges (pair 10: not lawn)
+      k.plain.push([B(509.5, 524, sy - 0.02, sy + 0.015, -541.5, -526.5), '#5b5a58'], [B(517.8, 520.4, sy, sy + 0.025, -534.0, -530.8), '#8e8b86']); }
     SOLIDS.add(515.9, -531, 2.2);
     // a plastic chair by the door
     k.plain.push([B(517.4, 517.9, sy + 0.35, sy + 0.8, -528.6, -528.1), '#2b62b8'], [B(517.4, 517.9, sy + 0.8, sy + 1.3, -528.1, -528.05), '#2b62b8']);
