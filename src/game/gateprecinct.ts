@@ -202,7 +202,7 @@ const gateSpec: Spec = {
       }
       const lm = new THREE.Mesh(merge(lk.plain), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.3, metalness: 0.8 }));
       g.add(lm);
-      k.meshes.push(g as unknown as THREE.Mesh);
+      g.updateMatrix(); for (const ch of [...g.children]) { ch.applyMatrix4(g.matrix); k.meshes.push(ch as THREE.Mesh); }
       const ca = Math.cos(yaw), sa = Math.sin(yaw);
       for (let t = -L / 2 - 0.6; t <= L / 2 + 0.6; t += 0.8) SOLIDS.add(sx + ca * t, sz - sa * t, 1.1);
     }

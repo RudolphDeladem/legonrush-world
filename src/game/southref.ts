@@ -121,7 +121,7 @@ const provostSpec: Spec = {
     sg.add(new THREE.Mesh(new THREE.BoxGeometry(4.0, 2.2, 0.2).translate(0, 2.2, 0), new THREE.MeshStandardMaterial({ color: '#f6f6f3', roughness: 0.5 })));
     for (const dx of [-1.6, 1.6]) sg.add(new THREE.Mesh(new THREE.BoxGeometry(0.28, 1.2, 0.28).translate(dx, 0.6, 0), new THREE.MeshStandardMaterial({ color: '#dcd8cf' })));
     sg.position.set(sx - AO[0], sy, sz - AO[1]); sg.rotation.y = 2.2;
-    k.meshes.push(sg as unknown as THREE.Mesh);
+    sg.updateMatrix(); for (const ch of [...sg.children]) { ch.applyMatrix4(sg.matrix); k.meshes.push(ch as THREE.Mesh); }
     k.signs.push({ text: 'UNIVERSITY OF GHANA', x: sx - AO[0] + Math.sin(2.2) * 0.11, y: sy + 2.75, z: sz - AO[1] + Math.cos(2.2) * 0.11, ry: 2.2, w: 3.4, colors: ['#f6f6f3', '#1f4f9a'] });
     for (let i = 0; i < 2; i++) SOLIDS.add(sx + Math.cos(2.2) * (i ? 1.6 : -1.6) * -1, sz + Math.sin(2.2) * (i ? 1.6 : -1.6), 0.3);
     // the big spreading tree by the road, smaller trees and palms behind the wings
