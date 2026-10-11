@@ -8,6 +8,7 @@ import type { Track } from './track';
 import { buildLandmarks } from './landmarks';
 import { groundHeight, inStairs } from './relief';
 import { Tufts } from './tufts';
+import { installLogDepthOffset, tagLogDepthOffsets } from './logdepth';
 import { buildCampus, buildRouteLayer, buildSky, disposeLayer, lampGlow, LANES, ROAD_HALF } from './world';
 import { AREAS, buildingAt, buildingNear, mapBounds, roadAt } from './campusmap';
 import { inPassage, solidAt } from './solids';
@@ -453,7 +454,10 @@ export class Game {
     const lowEnd = (navigator.hardwareConcurrency ?? 4) <= 4 || Math.min(screen.width, screen.height) < 500;
     this.lowEnd = lowEnd;
     // a logarithmic depth buffer on capable devices: surfaces a few centimetres apart (paint, signs, window panes on a
-    // wall) stay apart at any distance instead of flickering through each other as the camera moves
+    // wall) stay apart at any distance instead of flickering through each other as the camera moves. GL ignores polygon
+    // offset once the shader writes the depth, so the offset is carried into the log depth (logdepth.ts): without it
+    // the road, path and grass layers, which share one plane, flickered through each other
+    if (!lowEnd) installLogDepthOffset();
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: !lowEnd || devicePixelRatio < 2, logarithmicDepthBuffer: !lowEnd });
     this.renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
     // GPU resets: log context loss/restore so driver resets show up in the console (three.js handles the restore itself)
@@ -510,6 +514,7 @@ export class Game {
    * Everything is made visible for the pass (the fog cull and night lamps hide some), then put back as it was.
    */
   private warmUp() {
+    tagLogDepthOffsets(this.scene);
     const hidden: THREE.Object3D[] = [];
     this.scene.traverse((o) => { if (!o.visible) { hidden.push(o); o.visible = true; } });
     const seen = new Set<THREE.Texture>();

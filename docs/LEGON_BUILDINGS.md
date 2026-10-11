@@ -2281,6 +2281,21 @@ bike and the rider steers it anywhere a bike can go (`Game.freeRide`).
   speed box and in the pause menu; remembered.
 - **Finish ride** ends the ride as arriving does.
 
+## Rendering: flicker and frame cost
+
+- **Road and grass flicker** (owner): the grass, areas, paths, asphalt, road paint and the ridden route's road are flat
+  layers on one plane that stack by polygon offset alone. Since the logarithmic depth buffer went in (general fixes,
+  batch 95) the shader writes the depth itself and GL ignores polygon offset, so those layers fought each other: road
+  edge lines broken up, grass through the road. `logdepth.ts` carries each material's polygon offset into the log depth
+  (factor × the depth's slope across the pixel + units × one 24-bit depth step), as the hardware would; a uniform per
+  material, one shader variant per kind. Low-end devices (no log depth) keep the hardware offset.
+- **Frame cost**: the relief ground (about 610k triangles) was one mesh drawn every frame wherever the rider was; it is
+  now cut into 80 m tiles sharing the same vertices and normals, so only the tiles in view are drawn. Campus-life props
+  and verges are merged per 100 m cell instead of 400 m, so the sun's 60 m shadow box takes only the cells near the
+  rider. Measured on the guest ride at the start (software renderer, high-end path): triangles drawn per frame
+  1.51M → 0.36M, draw calls 356 → 273. Geometry, positions, collisions and routes are unchanged (the same triangles,
+  batched differently; route lengths and the route tests unchanged).
+
 ## Game controllers
 
 On a computer, any controller the browser's Gamepad API reports drives the bike as the keyboard does: PS5 DualSense, PS4

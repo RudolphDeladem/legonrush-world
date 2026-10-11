@@ -25,7 +25,9 @@ import { offAsphalt } from './science';
 export const ROAD_WIDTH = [9, 7.4, 6.2, 4.6, 2.6];
 /** the ridden route's road and walkway reach this far from its centre line (see world.ts) */
 const ROUTE_EDGE = 3.9;
-const CELL = 400;
+/** props and verges are merged per cell this many metres across: small enough that the sun's 60 m shadow box and the
+ *  camera's view take only the cells near them (at 400 m every cell near the rider went whole into the shadow map) */
+const CELL = 100;
 
 function rng(seed: number) {
   return () => {

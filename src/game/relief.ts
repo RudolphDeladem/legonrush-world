@@ -18,7 +18,6 @@
 // standing lower than the ground round it (PADS). A terrace's floor may also follow a function (`top`) and its west edge
 // a line (`west`): the tree belt a wall's height above the lane along NSIA Road.
 import * as THREE from 'three';
-import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { NSIA, laneX, northTop } from './nsia';
 import { KQ } from './kuffour';
 import { EN } from './entrance';
@@ -424,8 +423,11 @@ export function applyRelief(root: THREE.Object3D) {
   visit(root);
 }
 
+/** the relief ground's tile size, metres */
+const TILE_M = 80;
+
 /**
- * The ground over the relief zones: a grid that follows groundHeight, in the campus grass
+ * The ground over the relief zones: a grid that follows groundHeight, cut into tiles, in the campus grass
  * material (its UVs line up with the flat ground tiles: u = x / tile, v = -z / tile).
  * Each patch of ground is drawn by one grid only: where a small zone (a terrace, a hollow) lies inside a
  * big one (the hill), the big grid leaves its cells to the small zone's finer grid (two surfaces sampled
@@ -458,10 +460,37 @@ export function reliefGround(material: THREE.Material, tile: number, sink: (x: n
     g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
     g.setIndex(idx);
     g.computeVertexNormals();
-    geos.push(g);
+    // cut into tiles about TILE_M across that share the zone's vertices (normals computed over the whole zone, so no
+    // seams), so the camera draws only the tiles in view: as one mesh the whole relief ground (some 600k triangles)
+    // was drawn every frame wherever the rider was
+    const step = Math.max(1, Math.round(TILE_M / cell));
+    const tiles = new Map<number, number[]>();
+    for (let q = 0; q < idx.length; q += 6) {
+      const a0 = idx[q], i = a0 % (nx + 1), j = Math.floor(a0 / (nx + 1));
+      const key = Math.floor(j / step) * 100000 + Math.floor(i / step);
+      let t = tiles.get(key);
+      if (!t) tiles.set(key, (t = []));
+      for (let k = 0; k < 6; k++) t.push(idx[q + k]);
+    }
+    for (const t of tiles.values()) {
+      const tg = new THREE.BufferGeometry();
+      for (const name of ['position', 'normal', 'uv'] as const) tg.setAttribute(name, g.getAttribute(name));
+      tg.setIndex(t);
+      // bounds from this tile's own vertices (the shared position buffer covers the whole zone)
+      const box = new THREE.Box3(), v = new THREE.Vector3(), P = g.getAttribute('position');
+      for (const n of t) box.expandByPoint(v.fromBufferAttribute(P, n));
+      tg.boundingBox = box;
+      tg.boundingSphere = box.getBoundingSphere(new THREE.Sphere());
+      geos.push(tg);
+    }
   });
-  const mesh = new THREE.Mesh(geos.length > 1 ? mergeGeometries(geos) : geos[0], material);
-  mesh.receiveShadow = true;
-  mesh.name = 'relief-ground';
-  return mesh;
+  const group = new THREE.Group();
+  group.name = 'relief-ground';
+  for (const tg of geos) {
+    const tile = new THREE.Mesh(tg, material);
+    tile.receiveShadow = true;
+    tile.name = 'relief-ground';
+    group.add(tile);
+  }
+  return group;
 }

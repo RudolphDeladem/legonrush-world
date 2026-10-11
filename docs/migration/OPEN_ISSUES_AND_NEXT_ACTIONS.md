@@ -28,7 +28,9 @@ Labels: [VERIFIED] · [DECISION] · [PROPOSAL] · [INCOMPLETE] · [ASSUMPTION].
 
 ## 3. Known technical issues (from the docs) [VERIFIED as recorded]
 
-- Relief ground mesh ~432k triangles, never culled; shadows of 400 m life cells — performance on low-end phones.
+- Fixed 2026-10-12: the relief ground (~610k triangles) was one mesh drawn every frame and the 400 m life cells went
+  whole into the shadow map; now 80 m ground tiles and 100 m life cells (see `docs/LEGON_BUILDINGS.md` → Rendering:
+  flicker and frame cost). Remaining heavier items: the campus-wide instanced tree meshes still cast shadows as a whole.
 - `balmewest.ts` French spec has a stale `keep` box (harmless).
 - Aerial registrations ±1–2 m.
 - Wall/screen pieces block via `SOLIDS` circles and now also via `meshcollide.ts`; foliage is excluded by colour
