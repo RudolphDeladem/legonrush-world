@@ -941,7 +941,6 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
         <div class="fp-steer"><button class="fp-btn" id="fpLeft" aria-label="Steer left">◀</button><button class="fp-btn" id="fpRight" aria-label="Steer right">▶</button></div>
         <div class="fp-feet"><button class="fp-btn fp-brake" id="fpBrake">Brake</button><button class="fp-btn fp-go" id="fpGo">Pedal</button></div>
       </div>` : ''}
-      <div class="pad-guide" id="padGuide" hidden></div>
       <div class="hud-bottom">
         ${brakes && !isExplore(route) ? `<button class="brake-btn" id="brakeBtn" aria-label="Brake">${icons.brake}<span>${isTouch ? 'BRAKE' : 'S / ↓'}</span></button>` : '<span class="hud-slot"></span>'}
         <div class="speedo" id="speedo">
@@ -1436,7 +1435,6 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     const pad = app.querySelector<HTMLElement>('#freePad');
     if (!pad || game.freeRiding) return;
     game.freeRide();
-    guideKey = '';
     guideCard.hidden = true;
     pad.hidden = false;
     app.querySelector<HTMLElement>('#paceBox')?.setAttribute('hidden', '');
@@ -1480,7 +1478,6 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     addEventListener('keyup', freeKeys);
   }
   // ----- a game controller (gamepad.ts): the same actions as the keys and buttons, on the PS5-style layout -----
-  const padGuide = $('padGuide');
   const minimapEl = app.querySelector<HTMLElement>('#minimap');
   const guideLines = (fam: PadFamily): [string, string][] => {
     const L = (a: PadAction) => padActionLabel(fam, a);
@@ -1488,17 +1485,6 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     if (isExplore(route)) return [['Right stick', 'Look around'], [L('lookBack'), 'Look behind'], [L('camera'), 'Camera view'], [padLabel(fam, 'r3'), 'Recenter camera'], [L('confirm'), 'Continue / choose'], ['D-pad', 'Move between buttons'], [L('bell'), 'Bell'], [L('map'), 'Map'], [L('pause'), 'Pause']];
     return [['Left stick', 'Change lane'], [L('confirm'), 'Jump'], [L('pedal'), 'Pedal'], ...(brakes ? [[L('brake'), 'Brake'] as [string, string]] : []), [L('boost'), 'Boost'], ['Right stick', 'Look around'], [L('lookBack'), 'Look behind'], [L('camera'), 'Camera view'], [L('bell'), 'Bell'], [L('pause'), 'Pause']];
   };
-  let guideKey = '';
-  const showPadGuide = () => {
-    const on = pad.mode === 'pad' && game.isRiding;
-    app.classList.toggle('pad-mode', pad.mode === 'pad');
-    const key = on ? `${pad.family}|${game.freeRiding}` : '';
-    if (key === guideKey) return;
-    guideKey = key;
-    padGuide.hidden = !on;
-    if (on) padGuide.innerHTML = `<b>Controller</b>${guideLines(pad.family).map(([k, v]) => `<span><kbd>${esc(k)}</kbd>${esc(v)}</span>`).join('')}`;
-  };
-  const padModeOff = pad.onMode(() => showPadGuide());
   let padSteering = false, padBraking = false, padRaceBrake = false, lastLx = 0, bellAt = 0, recoverT = 0;
   /** lets go of everything the controller holds (on a pause, a menu, or when it disconnects) */
   const releasePad = () => {
@@ -1511,10 +1497,9 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     recoverT = 0;
   };
   const padOff = pad.onFrame((f, dt) => {
-    if (!f) { releasePad(); showPadGuide(); flash('CONTROLLER', 'Disconnected: the keys still work', 2400); return; }
+    if (!f) { releasePad(); return; }
     game.reverseDelay = padSettings.reverseDelay;
     if (pad.capturing) return;
-    showPadGuide();
     // photo mode: the right stick turns the camera round the rider
     if (game.photoMode) { if (f.rx || f.ry) game.orbitPhoto(f.rx * 900 * dt, f.ry * 600 * dt); return; }
     if (f.actPressed('pause') && game.isRiding) { releasePad(); togglePause(); return; }
@@ -1583,8 +1568,6 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     game.setBrake(false);
     releasePad();
     padOff();
-    padModeOff();
-    app.classList.remove('pad-mode');
     game.recenterCamera(true);
     document.removeEventListener('visibilitychange', onHidden);
     game.onHud = () => {};

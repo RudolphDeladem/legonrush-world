@@ -2217,9 +2217,9 @@ bike and the rider steers it anywhere a bike can go (`Game.freeRide`).
 
 ## Game controllers
 
-Any controller the browser's Gamepad API reports works alongside the keys and the touch buttons: PS5 DualSense, PS4
+On a computer, any controller the browser's Gamepad API reports drives the bike as the keyboard does: PS5 DualSense, PS4
 DualShock, Xbox, and generic USB or Bluetooth pads (`src/gamepad.ts`, menus in `src/padmenu.ts`). The PS5 layout is
-the reference for what each control does; the labels on screen follow the controller in use (Cross/Circle/Square/
+the reference for what each control does; the button names in the pause menu follow the controller in use (Cross/Circle/Square/
 Triangle, A/B/X/Y, or position names such as "Bottom button" for an unknown pad).
 
 | Control | Free ride | Races and road rides | Explore tour |
@@ -2241,10 +2241,11 @@ Triangle, A/B/X/Y, or position names such as "Bottom button" for an unknown pad)
 
 - **Detection**: connecting, disconnecting (also mid-ride), several controllers (the one last used drives), the
   controller already plugged in when the page opens (some browsers report it only after a button press).
-- **Disconnect or pause**: every held input is let go (steer, pedal, brake, look), the guide hides and a note says the
-  keys still work. Nothing stays pressed.
-- **Guide**: in a ride, using the controller shows a small guide at the right edge with that controller's labels; a
-  key or a touch hands it back to the keys.
+- **Nothing on screen**: playing with a controller shows no controller overlay or guide; the ride's screen is the same
+  as with the keyboard. The pause menu's controls line lists the controller's buttons while one is in use.
+- **Disconnect or pause**: every held input is let go (steer, pedal, brake, look); the keys carry on as before.
+- **Keys and controller together**: the left stick steers only while the controller is the device in use, so a key
+  press is never overridden.
 - **Pause → Controller** (when a controller is connected): steering and camera sensitivity, left and right stick dead
   zones, steering smoothing, trigger dead zone, reverse delay, invert look; any action can be moved to another button
   (press the action, then the new button; the two swap, so no button does two things). Saved in the browser, remaps

@@ -1,6 +1,6 @@
 // Controller test without hardware: a simulated gamepad (navigator.getGamepads replaced in the page) drives the
 // dev build. Run with the dev server up: `npx vite --port 5299` then `node scripts/gamepad-test.mjs`.
-// Checks: detection and the guide's labels per family, pause/resume, steering, analog pedal, brake and reverse,
+// Checks: detection, nothing controller-related drawn during the ride, the pause menu's labels per family, pause/resume, steering, analog pedal, brake and reverse,
 // look and camera, menu navigation with the D-pad, remapping, and that a disconnect mid-ride lets go of everything.
 import { chromium } from 'playwright';
 
@@ -36,25 +36,19 @@ await page.waitForSelector('#dist', { timeout: 60000 });
 await page.waitForTimeout(2500);
 console.log('     frames per second:', await page.evaluate(async () => { const t = performance.now(); await window.__frames(20); return (20000 / (performance.now() - t)).toFixed(1); }));
 
-// ---- detection and the guide (Sony id) ----
+// ---- detection (Sony id): the controller works, nothing is drawn for it during the ride ----
 await g(() => window.__connect('DualSense Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 0ce6)'));
 await press(0, 0);
 await wait(300);
-const guide1 = await g(() => document.querySelector('#padGuide:not([hidden])')?.textContent ?? '');
-check(/R2/.test(guide1) && /Triangle/.test(guide1) || /R2/.test(guide1), 'guide shows PlayStation labels', guide1.slice(0, 90));
-check(await g(() => document.querySelector('#app')?.classList.contains('pad-mode') || document.body.innerHTML.includes('pad-mode')), 'pad mode on after a button press');
-
-// ---- the keyboard takes the guide back ----
-await page.keyboard.press('Shift');
-await wait(200);
-check(await g(() => document.querySelector('#padGuide')?.hidden === true), 'a key press hides the controller guide');
-await press(0, 3);
-check(await g(() => document.querySelector('#padGuide')?.hidden === false), 'a controller press brings it back');
+const PAD_UI = '.pad-guide, #padGuide, .pad-focus';
+check(await g((sel) => !document.querySelector(sel), PAD_UI), 'no controller overlay on screen while riding');
 
 // ---- pause with Options, navigate, resume with Circle (back) ----
 await press(0, 9);
 check(await g(() => !!document.querySelector('#pauseOverlay') && window.__game.paused), 'Options pauses');
 check(await g(() => /Controller/.test(document.querySelector('#pauseOverlay')?.textContent ?? '')), 'pause menu offers the Controller panel');
+const psLine = await g(() => document.querySelector('#pauseOverlay p.muted')?.textContent ?? '');
+check(/R2/.test(psLine) && /Options/.test(psLine), 'pause menu names the PlayStation buttons', psLine.slice(0, 80));
 await press(0, 13);
 const focused = await g(() => document.activeElement?.textContent?.trim() ?? '');
 check(focused.length > 0, 'D-pad down focuses a menu button', focused);
@@ -114,9 +108,9 @@ await g(() => { window.__btn(0, 7, 1); window.__axis(0, 0, -1); window.__axis(0,
 await wait(500);
 await g(() => window.__disconnect(0));
 await wait(300);
-const after = await g(() => ({ steer: window.__game.freeInput.steer, thr: window.__game.freeInput.throttle, brake: window.__game.freeInput.brake, look: window.__game.look.x, behind: window.__game.lookBehind, guide: document.querySelector('#padGuide').hidden }));
+const after = await g(() => ({ steer: window.__game.freeInput.steer, thr: window.__game.freeInput.throttle, brake: window.__game.freeInput.brake, look: window.__game.look.x, behind: window.__game.lookBehind, overlay: !!document.querySelector('.pad-guide, #padGuide') }));
 check(after.steer === 0 && after.thr === 0 && !after.brake && after.look === 0 && !after.behind, 'disconnect releases steer, pedal, brake and look', JSON.stringify(after));
-check(after.guide, 'the guide hides after a disconnect');
+check(!after.overlay, 'nothing appears on screen when the controller goes');
 // the keys write the same input (the key handler belongs to the menu's Ride it yourself, which this test skips):
 // with the controller gone nothing overwrites it
 await g(() => { window.__game.freeInput.steer = -1; });
@@ -128,16 +122,19 @@ await g(() => { window.__game.freeInput.steer = 0; });
 await g(() => window.__connect('Xbox Wireless Controller (STANDARD GAMEPAD Vendor: 045e Product: 0b13)'));
 await press(1, 0);
 await wait(300);
-const gx = await g(() => document.querySelector('#padGuide').textContent);
-check(/RT/.test(gx) && /LT/.test(gx), 'guide shows Xbox labels', gx.slice(0, 80));
+await press(1, 9);
+const gx = await g(() => document.querySelector('#pauseOverlay p.muted')?.textContent ?? '');
+check(/RT/.test(gx) && /LT/.test(gx), 'pause menu names the Xbox buttons', gx.slice(0, 80));
+await press(1, 1);
+await wait(300);
 await g(() => window.__connect('USB Gamepad (Vendor: 0079 Product: 0011)', '', 12, 8));
 await press(2, 2);
 await wait(300);
-const gg = await g(() => document.querySelector('#padGuide').textContent);
-check(/Right trigger/.test(gg), 'a generic pad gets position names', gg.slice(0, 80));
 // the generic pad's hat (axes 6/7) moves the menu focus
 await press(2, 9);
 check(await g(() => !!document.querySelector('#pauseOverlay')), 'Start on the generic pad pauses');
+const gg = await g(() => document.querySelector('#pauseOverlay p.muted')?.textContent ?? '');
+check(/Right trigger/.test(gg), 'a generic pad gets position names', gg.slice(0, 80));
 await g(() => window.__axis(2, 7, 1)); await wait(150); await g(() => window.__axis(2, 7, 0)); await wait(150);
 check(await g(() => !!document.querySelector('.pad-focus')), 'the hat switch moves the menu focus');
 
