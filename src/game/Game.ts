@@ -1125,7 +1125,7 @@ export class Game {
     // pedalling: the toggle pedals fully; a controller's trigger pedals as hard as it is pressed, its speed limited to
     // match (never past the bike's top speed)
     const thr = f.cruise ? 1 : inp.brake ? 0 : Math.max(0, Math.min(1, inp.throttle));
-    const cap = top * (0.35 + 0.65 * thr), accel = (2.6 + (this.bike?.acceleration ?? 3) * 0.3) * (0.25 + 0.75 * thr);
+    const cap = top * (0.35 + 0.65 * thr), accel = (2.6 + (this.bike?.acceleration ?? 3) * 0.3) * (0.25 + 0.75 * thr) * this.speedFactor;
     if (thr > 0 && f.v >= -0.05) { f.v = f.v > cap ? Math.max(cap, f.v - 3 * dt) : Math.min(cap, f.v + accel * dt); f.stopping = false; }
     else if (inp.brake && f.held > this.reverseDelay && f.v <= 0.05) {
       // held on once stopped: walk the bike backwards
