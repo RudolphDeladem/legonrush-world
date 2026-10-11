@@ -759,7 +759,7 @@ const steps: Spec = {
   // no generated props on the stairs or in the sunken square
   keep: [[1 - SO[0], 15 - SO[0], 42 - SO[1], 62 - SO[1]], [-8 - SO[0], 26 - SO[0], 48 - SO[1], 94 - SO[1]]],
   extras: (k: Kit) => {
-    const st = stairsOf().find((q) => q.alongZ)!;
+    const st = stairsOf().find((q) => q.alongZ && q.x0 === 61.6)!; // the library's own stair (found by place, not order)
     const x = (wx: number) => wx - SO[0], z = (wz: number) => wz - SO[1];
     const xa = x(-6.6), xb = x(24.6), deck = st.foot, mid = deck / 2;
     // the paved strip down the middle (the pool deck and the middle terrace); lawns either side (owner's top view:

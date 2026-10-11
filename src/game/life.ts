@@ -86,10 +86,21 @@ export function roadClearance(x: number, z: number, reach = 12, skipRoad = -1, p
 /** Whether (x, z) lies on the road a ridden route would lay over another road (any road but footpaths, as wide as
  *  the route's road, and wider still where a route rounds the corner into it), skipping road skipRoad: a kerb, verge
  *  or drain there would show on the route's road. */
-function onRouteSurface(x: number, z: number, skipRoad: number, reach = ROUTE_EDGE + 4) {
+function onRouteSurface(x: number, z: number, skipRoad: number, reach = ROUTE_EDGE + 4, side?: { x: number; z: number; nx: number; nz: number }) {
   const cx = Math.floor(x / SG), cz = Math.floor(z / SG);
   for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) {
-    for (const s of segGrid.get(gkey(cx + i, cz + j)) ?? []) if (s.road !== skipRoad && s.cls < 4 && segDist(s, x, z) < reach) return true;
+    for (const s of segGrid.get(gkey(cx + i, cz + j)) ?? []) {
+      if (s.road === skipRoad || s.cls >= 4 || segDist(s, x, z) >= reach) continue;
+      // `side`: the point on this road's centre line and the normal toward the kerb or drain being placed. A road that
+      // only reaches this road's centre line (a side road joining from the other side, ending at the junction) does not
+      // cross this side: without this the kerb and drain opposite every T-junction were cut as well
+      if (side) {
+        const dx = s.bx - s.ax, dz = s.bz - s.az, l2 = dx * dx + dz * dz || 1;
+        const t = Math.max(0, Math.min(1, ((x - s.ax) * dx + (z - s.az) * dz) / l2));
+        if ((s.ax + dx * t - side.x) * side.nx + (s.az + dz * t - side.z) * side.nz < 1) continue;
+      }
+      return true;
+    }
   }
   return false;
 }
@@ -1097,7 +1108,7 @@ function kerbs(cells: Cells, r: (typeof ROADS)[number], ri: number, at: number) 
         const t = (j / n) * len;
         const x = ax + ux * t + nx * at, z = az + uz * t + nz * at;
         const nearJ = (junction[k] && t < 10) || (junction[k + 1] && len - t < 10);
-        const clear = roadClearance(x + nx * 0.1, z + nz * 0.1, 8, ri) > 0.3 && !onRouteSurface(x, z, ri) && !buildingAt(x, z) && !inKqPlain(x, z);
+        const clear = roadClearance(x + nx * 0.1, z + nz * 0.1, 8, ri) > 0.3 && !onRouteSurface(x, z, ri, undefined, { x: x - nx * at, z: z - nz * at, nx, nz }) && !buildingAt(x, z) && !inKqPlain(x, z);
         if (!clear) { flush(); continue; }
         // straight runs away from junctions need only their ends
         const last = run[run.length - 1];
@@ -1155,7 +1166,7 @@ export function buildRoadEdges(map: THREE.Texture) {
         for (let j = 0; j <= n + 1; j++) {
           const t = (Math.min(j, n) / n) * len;
           const x = ax + ux * t, z = az + uz * t;
-          const ok = j <= n && !inKqPlain(x, z) && roadClearance(x + nx * (at + 0.8), z + nz * (at + 0.8), 8, ri) > 0.3 && !onRouteSurface(x + nx * (at + 0.5), z + nz * (at + 0.5), ri) && !buildingAt(x + nx * (at + 1), z + nz * (at + 1));
+          const ok = j <= n && !inKqPlain(x, z) && roadClearance(x + nx * (at + 0.8), z + nz * (at + 0.8), 8, ri) > 0.3 && !onRouteSurface(x + nx * (at + 0.5), z + nz * (at + 0.5), ri, undefined, { x, z, nx, nz }) && !buildingAt(x + nx * (at + 1), z + nz * (at + 1));
           if (ok && start < 0) start = j;
           if (!ok && start >= 0) {
             const t0 = (start / n) * len, t1 = (Math.min(j - 1, n) / n) * len;

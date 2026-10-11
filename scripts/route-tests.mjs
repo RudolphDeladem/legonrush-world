@@ -649,6 +649,13 @@ try {
     if (models.length !== 6) fail(`expected the six science campus models (${models.length})`);
   }
   if ((await server.ssrLoadModule('/src/game/residences.ts')).residences.frames().length < 20) fail('expected the one-floor buildings and the lecturers\' houses with their wood');
+  // the models that build a stair's steps and walls find it by its place: a stair added at the top of the list once
+  // handed the Balme Library, Commonwealth and Volta models another's, and their walls ran hundreds of metres
+  {
+    const { stairsOf } = await server.ssrLoadModule('/src/game/relief.ts');
+    const S = stairsOf();
+    for (const [what, ok] of [['the Balme Library', (q) => q.alongZ && q.x0 === 61.6], ['Commonwealth Hall', (q) => q.x0 === -372 && q.x1 === -464], ['Volta Hall', (q) => q.x0 === -245 && q.x1 === -258.6]]) if (S.filter(ok).length !== 1) fail(`${what}'s stair is not found by its place in relief.ts STAIRS`);
+  }
   // Explore's free ride: a building blocks the bike by its real outline, not its bounding box (the lanes between
   // the Diaspora halls, set at an angle, and the roads to the Night Market lie inside the halls' boxes)
   for (const [x, z] of [[95, 1573], [-88, 1676], [210, 1509], [200, 1500]]) if (cm.buildingNear(x, z, 0.35)) fail(`free ride: the road at ${x},${z} is blocked by ${cm.buildingNear(x, z, 0.35).name ?? 'a building'}`);

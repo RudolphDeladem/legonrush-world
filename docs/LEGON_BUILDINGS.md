@@ -2296,6 +2296,23 @@ bike and the rider steers it anywhere a bike can go (`Game.freeRide`).
   1.51M → 0.36M, draw calls 356 → 273. Geometry, positions, collisions and routes are unchanged (the same triangles,
   batched differently; route lengths and the route tests unchanged).
 
+## Fixes: the bars across the roads; the drains and kerbs opposite junctions
+
+- **Raised bars across roads, paths and grass** (owner's report): the main entrance brief (commit `9c3cf48`) added the
+  Institute of African Studies stair at the top of `relief.ts → STAIRS`. Three models picked their stair by its order in
+  that list: the Balme Library steps (the first stair along z), Commonwealth Hall's stairway (`stairsOf()[0]`) and Volta
+  Hall (`stairsOf()[1]`). From then on each built its stone walls, coping and paving from another stair's coordinates:
+  the University Square walls and paving ran some 590 m east across the roads and lawns, Commonwealth's stairway walls
+  some 460 m, and Volta's steps were built again on the Commonwealth avenue. Each now finds its own stair by its
+  coordinates, as the other models already did; a route test checks the three are found. No legitimate wall moved.
+- **Drains and kerbs missing opposite T-junctions** (owner's report): the open drains, verges and raised kerbs along
+  the campus roads (`life.ts`) were cut wherever another road came within about 8 m, and a side road ending at the
+  junction is that close to the far side too, so both sides lost their drain and kerb at every T-junction. Another
+  road now cuts them only where it reaches that side of the road; the openings where roads join are kept.
+- **The route's pavement** belongs to the ridden route and ends where the route ends (riding on in free ride); its ends
+  now get the kerb face its gaps already had, instead of stopping open.
+
+
 ## Game controllers
 
 On a computer, any controller the browser's Gamepad API reports drives the bike as the keyboard does: PS5 DualSense, PS4

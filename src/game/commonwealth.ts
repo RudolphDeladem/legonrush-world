@@ -237,7 +237,8 @@ const hall: Spec = {
 
 // ---------- the approach (frame: map axes, origin at the middle of the stairway) ----------
 const A: [number, number] = [-420, 128];
-const stair = stairsOf()[0];
+// found by its place, not its order in the list (a stair added at the top once handed this model another's)
+const stair = stairsOf().find((s) => s.x0 === -372 && s.x1 === -464)!;
 // (set back from the road loop at the end of the avenue, either side of the foot of the stairs: x -382 to -373)
 const gateHouse = (z0: number, z1: number): Block => ({ x0: -382 - A[0], x1: -373 - A[0], z0: z0 - A[1], z1: z1 - A[1], floors: 1 });
 const approach: Spec = {

@@ -556,8 +556,9 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
       const walk = new THREE.Mesh(top, walkMat);
       walk.receiveShadow = true;
       group.add(walk, new THREE.Mesh(curb, walkMat));
-      // a kerb face closes each end of the pavement at a gap
-      for (const d of [d0, d1]) if (d > 0 && d < L) {
+      // a kerb face closes each end of the pavement: at a gap, and where the route itself ends (riding on past the
+      // destination the pavement, which belongs to the route, otherwise stopped open, as if a piece were missing)
+      for (const d of [d0, d1]) {
         const p = track.pose(d, s * (ROAD_HALF + 0.8));
         // on a tight bend the pavement's end can fall on the road itself: no kerb face there
         if (track.distanceToRoad(p.x, p.z) < ROAD_HALF + 0.3) continue;

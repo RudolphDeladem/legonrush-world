@@ -123,7 +123,8 @@ const FLANKS: Block[] = [W(-255.8, -243.3, 32.3, 44.4)];
 const SEB: [number, number, number, number] = [-256.4, -241.7, 88.2, 98.1];
 
 const g = garden([-380, -200, -110, 125]);
-const stair = stairsOf()[1];
+// found by its place, not its order in the list (a stair added at the top once handed this model another's)
+const stair = stairsOf().find((s) => s.x0 === -245 && s.x1 === -258.6)!;
 
 const hall: Spec = {
   name: 'Volta Hall',
