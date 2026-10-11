@@ -11,7 +11,8 @@ import { ROUTE_SOLIDS } from './solids';
 import { walkGaps } from './junctions';
 import { newPentStyle } from './pentagon';
 import { behindPentStyle } from './kufuor';
-import { RELIEF_BOXES, applyRelief, densify, inStairs, reliefGround } from './relief';
+import { RELIEF_BOXES, applyRelief, crestHeight, densify, floorHeight, inStairs, reliefGround } from './relief';
+import { alongCut, deckAt, inCutBand, inTrench } from './cutplan';
 import { NSIA } from './nsia';
 import { KQ } from './kuffour';
 import { offAsphalt } from './science';
@@ -344,6 +345,10 @@ export function buildCampus() {
   // every road and footpath, with round caps where roads meet
   const roadBuf = { pos: [] as number[], idx: [] as number[] };
   const pathBuf = { pos: [] as number[], idx: [] as number[] };
+  // the Legon Road (the N4) apart: it runs down through the cutting under the bridges, every other road over them on the
+  // decks (cutplan.ts), so the two take their heights differently
+  const n4Buf = { pos: [] as number[], idx: [] as number[] };
+  const n4Caps: THREE.BufferGeometry[] = [];
   const caps: THREE.BufferGeometry[] = [];
   const pathCaps: THREE.BufferGeometry[] = [];
   for (const r of ROADS) {
@@ -356,11 +361,12 @@ export function buildCampus() {
     }
     const half = ROAD_WIDTH[r.cls] / 2;
     const footpath = r.cls === 4;
-    const buf = footpath ? pathBuf : roadBuf;
+    const n4 = r.cls === 0 && r.name === 'J.J. Rawlings Avenue';
+    const buf = footpath ? pathBuf : n4 ? n4Buf : roadBuf;
     for (const pts of runs) {
       if (pts.length < 2) continue;
       polyStrip(pts, half, buf.pos, buf.idx);
-      for (const [x, z] of [pts[0], pts[pts.length - 1]]) (footpath ? pathCaps : caps).push(new THREE.CircleGeometry(half, 10).rotateX(-Math.PI / 2).translate(x, 0, z));
+      for (const [x, z] of [pts[0], pts[pts.length - 1]]) (footpath ? pathCaps : n4 ? n4Caps : caps).push(new THREE.CircleGeometry(half, 10).rotateX(-Math.PI / 2).translate(x, 0, z));
     }
   }
   const campusAsphalt = asphaltTexture(false);
@@ -386,7 +392,12 @@ export function buildCampus() {
   roads.receiveShadow = true;
   const paths = new THREE.Mesh(merged(flatGeometry(pathBuf.pos, pathBuf.idx), pathCaps), path);
   paths.receiveShadow = true;
-  group.add(paths, roads);
+  // (on a bridge deck these lie on the deck, not on the road in the cutting below)
+  roads.userData.heightFn = paths.userData.heightFn = crestHeight;
+  const n4Road = new THREE.Mesh(merged(flatGeometry(n4Buf.pos, n4Buf.idx), n4Caps), asphalt);
+  n4Road.receiveShadow = true;
+  n4Road.userData.heightFn = floorHeight;
+  group.add(paths, roads, n4Road);
 
   // painted centre dashes on the main and through roads, all in one mesh
   const dashPos: number[] = [], dashIdx: number[] = [];
@@ -586,7 +597,7 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
   group.add(dashes);
 
   // trees and lamps along the route, kept off buildings and off the road on tight bends
-  const clear = (p: THREE.Vector3, r: number) => track.distanceToRoad(p.x, p.z) > ROAD_HALF + 1.8 + r && !buildingAt(p.x, p.z, r + 0.5);
+  const clear = (p: THREE.Vector3, r: number) => track.distanceToRoad(p.x, p.z) > ROAD_HALF + 1.8 + r && !buildingAt(p.x, p.z, r + 0.5) && !inCutBand(p.x, p.z, r + 0.5);
   const spots: THREE.Matrix4[] = [];
   for (let d = 0; d < L; d += 13) {
     for (const s of [-1, 1]) {
@@ -603,7 +614,7 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
     for (const s of [-1, 1]) {
       const dd = d + (s > 0 ? 18 : 0);
       const p = at(dd, s * (ROAD_HALF + 1.2));
-      if (track.distanceToRoad(p.x, p.z) < ROAD_HALF + 1 || buildingAt(p.x, p.z, 0.5)) continue;
+      if (track.distanceToRoad(p.x, p.z) < ROAD_HALF + 1 || buildingAt(p.x, p.z, 0.5) || inCutBand(p.x, p.z, 1)) continue;
       lamps.push(new THREE.Matrix4().compose(p, new THREE.Quaternion().setFromAxisAngle(up, yawAt(dd) + (s > 0 ? Math.PI : 0)), one));
     }
   }
@@ -656,6 +667,16 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
   // a little way past the start line, so it does not sit over the rider and the HUD at the countdown
   group.add(gate(o.startText, at(o.start + 16, 0), yawAt(o.start + 16)));
   group.add(gate(o.finishText, at(o.finish, 0), yawAt(o.finish), true));
+  // over a bridge of the Legon Road cutting the route lies on the deck when it crosses and on the road below when it
+  // runs along under it (cutplan.ts): its heading at the nearest point says which
+  // (and its edges stay at the level of its middle: a road along the top beside the walls does not droop over them, the
+  // lowered road's pavements do not climb them)
+  group.userData.heightFn = (x: number, z: number) => {
+    if (!inTrench(x, z) && !deckAt(x, z) && !inTrench(x + 6, z) && !inTrench(x - 6, z)) return crestHeight(x, z);
+    const p = track.pose(track.project(x, z).d);
+    const low = inTrench(p.x, p.z) && (alongCut(p.tx, p.tz) || !deckAt(p.x, p.z));
+    return low ? floorHeight(x, z) : crestHeight(x, z);
+  };
   applyRelief(group);
   return group;
 }

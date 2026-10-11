@@ -6,7 +6,8 @@ import { sfx } from '../audio';
 import { buildCoin, buildObstacle, buildRider, OBSTACLES, taxi, trotro, type BikeStyle, type ObstacleKind, type ObstacleSpec, type RiderLook, type RiderRig } from './models';
 import type { Track } from './track';
 import { buildLandmarks } from './landmarks';
-import { groundHeight, inStairs } from './relief';
+import { groundFrom, groundHeight, inStairs, layerHeight } from './relief';
+import { deckAt } from './cutplan';
 import { Tufts } from './tufts';
 import { installLogDepthOffset, tagLogDepthOffsets } from './logdepth';
 import { buildCampus, buildRouteLayer, buildSky, disposeLayer, lampGlow, LANES, ROAD_HALF } from './world';
@@ -220,10 +221,12 @@ interface Obstacle {
   fling?: THREE.Vector3;
 }
 
-/** the grade under a bike at x, z heading along yaw (its nose up the slope): the ground under its two wheels */
-function slopePitch(x: number, z: number, yaw: number) {
+/** the grade under a bike at x, z heading along yaw (its nose up the slope): the ground under its two wheels (on a
+ *  bridge over the Legon Road cutting: the level it is on, from its height y when given, else from its heading) */
+function slopePitch(x: number, z: number, yaw: number, y?: number) {
   const hx = -Math.sin(yaw) * 0.55, hz = -Math.cos(yaw) * 0.55;
-  return Math.atan2(groundHeight(x + hx, z + hz) - groundHeight(x - hx, z - hz), 1.1);
+  const g = (px: number, pz: number) => (y === undefined ? layerHeight(px, pz, hx, hz) : groundFrom(px, pz, y));
+  return Math.atan2(g(x + hx, z + hz) - g(x - hx, z - hz), 1.1);
 }
 
 /** A student walking along the pavement: scenery, not an obstacle. */
@@ -1071,7 +1074,7 @@ export class Game {
     if (this.phase !== 'riding' || this.free) return;
     const r = this.rider.root;
     this.drone = null;
-    this.free = { x: r.position.x, z: r.position.z, yaw: r.rotation.y, v: 0, steer: 0, bumpT: 0, cruise: false, stopping: false, held: 0 };
+    this.free = { x: r.position.x, z: r.position.z, y: r.position.y, yaw: r.rotation.y, v: 0, steer: 0, bumpT: 0, cruise: false, stopping: false, held: 0 };
     warmCollision(r.position.x, r.position.z);
     this.freeInput = { steer: 0, brake: false, throttle: 0, brakeForce: 1 };
     this.speed = 0;
@@ -1110,7 +1113,7 @@ export class Game {
   freeInput = { steer: 0, brake: false, throttle: 0, brakeForce: 1 };
   /** seconds the brake is held at a standstill before the bike rolls backwards */
   reverseDelay = 0.45;
-  private free: { x: number; z: number; yaw: number; v: number; steer: number; bumpT: number; cruise: boolean; stopping: boolean; held: number } | null = null;
+  private free: { x: number; z: number; y: number; yaw: number; v: number; steer: number; bumpT: number; cruise: boolean; stopping: boolean; held: number } | null = null;
 
   /** a free ride: bike physics on open ground, stopped by whatever a bike can't go through */
   private updateFree(dt: number) {
@@ -1145,13 +1148,17 @@ export class Game {
     // the way it is moving (backwards when reversing): obstacles and banks are checked that way
     const sgn = f.v < 0 ? -1 : 1, fx = hx * sgn, fz = hz * sgn;
     // uphill slows, downhill rolls on
-    const g0 = groundHeight(f.x, f.z);
-    if (f.v > 0.2) f.v = Math.max(0, Math.min(top * 1.3, f.v - 9.8 * 0.6 * ((groundHeight(f.x + hx, f.z + hz) - g0) / 1) * dt));
+    // (the ground at the level it is on: over the Legon Road cutting a bridge deck and the road below share x, z)
+    const g0 = groundFrom(f.x, f.z, f.y), G = (x: number, z: number) => groundFrom(x, z, g0);
+    if (f.v > 0.2) f.v = Math.max(0, Math.min(top * 1.3, f.v - 9.8 * 0.6 * ((G(f.x + hx, f.z + hz) - g0) / 1) * dt));
     // move, sliding along whatever is in the way; a wall or a bank too steep to ride stops the bike
     if (!bounds) bounds = mapBounds();
     // (a bank steeper than about 1 in 1.5 just ahead counts as a wall)
-    const ok = (x: number, z: number) => !freeBlocked(x + fx * 0.7, z + fz * 0.7) && !freeBlocked(x, z)
-      && Math.abs(groundHeight(x + fx * 0.6, z + fz * 0.6) - groundHeight(x, z)) < 0.4
+    // (up on a bridge deck over the Legon Road cutting, what stands on the road below it, a pier, does not stop the bike)
+    const up = (x: number, z: number) => { const d = deckAt(x, z); return !!d && g0 > d.h - 2.5; };
+    const blocked = (x: number, z: number) => !up(x, z) && freeBlocked(x, z);
+    const ok = (x: number, z: number) => !blocked(x + fx * 0.7, z + fz * 0.7) && !blocked(x, z)
+      && Math.abs(G(x + fx * 0.6, z + fz * 0.6) - G(x, z)) < 0.4
       && x > bounds!.minX && x < bounds!.maxX && z > bounds!.minZ && z < bounds!.maxZ;
     const nx = f.x + hx * step, nz = f.z + hz * step;
     if (step !== 0) {
@@ -1167,9 +1174,10 @@ export class Game {
     this.speed = Math.abs(f.v);
     // the rider on the bike, leaning into the turn
     const r = this.rider;
-    r.root.position.set(f.x, groundHeight(f.x, f.z), f.z);
+    f.y = G(f.x, f.z);
+    r.root.position.set(f.x, f.y, f.z);
     r.root.rotation.y = f.yaw;
-    this.slope += (slopePitch(f.x, f.z, f.yaw) - this.slope) * Math.min(1, dt * 8);
+    this.slope += (slopePitch(f.x, f.z, f.yaw, f.y) - this.slope) * Math.min(1, dt * 8);
     r.root.rotation.order = 'YXZ'; r.root.rotation.x = this.slope;
     this.lean += (-f.steer * Math.min(1, Math.max(0, f.v) / 6) * 0.4 - this.lean) * Math.min(1, dt * 6);
     this.crank += dt * Math.max(0, f.v) * 0.9 * (f.cruise ? 1 : 0.15);
@@ -1239,7 +1247,7 @@ export class Game {
   /** Puts an object on the road at ride distance d, lateral x, facing along the road. */
   private place(obj: THREE.Object3D, d: number, x: number, y = 0, yaw = 0) {
     const p = this.pose(d, x);
-    obj.position.set(p.x, y + groundHeight(p.x, p.z), p.z);
+    obj.position.set(p.x, y + layerHeight(p.x, p.z, p.tx, p.tz), p.z);
     obj.rotation.y = p.yaw + yaw;
   }
 
@@ -1566,7 +1574,7 @@ export class Game {
         vx = (gx - px) / 0.2;
       }
       const p = this.pose(gd, gx);
-      rig.root.position.set(p.x, y + groundHeight(p.x, p.z), p.z);
+      rig.root.position.set(p.x, y + layerHeight(p.x, p.z, p.tx, p.tz), p.z);
       rig.root.rotation.y = p.yaw;
       r.crank += dt * v * 0.9;
       for (const w of rig.wheels) w.rotation.x -= (v / 0.38) * dt;
@@ -1984,7 +1992,7 @@ export class Game {
       if (c.taken) {
         c.t += dt;
         const p = this.pose(this.d, this.x);
-        c.mesh.position.set(p.x, this.y + groundHeight(p.x, p.z) + 1.2 + c.t * 6, p.z);
+        c.mesh.position.set(p.x, this.y + layerHeight(p.x, p.z, p.tx, p.tz) + 1.2 + c.t * 6, p.z);
         c.mesh.scale.setScalar(Math.max(0.01, 1 - c.t * 4));
       }
       if (c.d < behind || c.t > 0.25) {
@@ -2075,10 +2083,10 @@ export class Game {
     } else if (this.free) {
       // free ride: the chase camera sits behind the bike wherever it heads
       const f = this.free, fx = -Math.sin(f.yaw), fz = -Math.cos(f.yaw);
-      const gy = groundHeight(f.x, f.z), bx = f.x - fx * 6.4, bz = f.z - fz * 6.4;
-      this.camTarget.set(bx, Math.max(groundHeight(bx, bz), gy) + 3.2, bz);
+      const gy = groundFrom(f.x, f.z, f.y), bx = f.x - fx * 6.4, bz = f.z - fz * 6.4;
+      this.camTarget.set(bx, Math.max(groundFrom(bx, bz, gy), gy) + 3.2, bz);
       this.updateLook(dt);
-      this.lookAt.set(f.x + fx * 10, groundHeight(f.x + fx * 10, f.z + fz * 10) + 1.1, f.z + fz * 10);
+      this.lookAt.set(f.x + fx * 10, groundFrom(f.x + fx * 10, f.z + fz * 10, gy) + 1.1, f.z + fz * 10);
       this.applyLook(this.camTarget, this.lookAt, this.rider.root.position);
       this.clearCamera(this.camTarget);
       cam.position.lerp(this.camTarget, Math.min(1, dt * 5));
@@ -2121,11 +2129,11 @@ export class Game {
       }
       // the camera follows the ground (a hollow such as the engineering school's), never below the rider's
       const gRide = this.rider.root.position.y - this.y;
-      this.camTarget.set(behind.x, Math.max(groundHeight(behind.x, behind.z), gRide) + 3.1 + vUp + lift + this.y * 0.4 + this.guideLook * 1.4, behind.z);
+      this.camTarget.set(behind.x, Math.max(layerHeight(behind.x, behind.z, behind.tx, behind.tz), gRide) + 3.1 + vUp + lift + this.y * 0.4 + this.guideLook * 1.4, behind.z);
       // the rider's own look (a controller's right stick, look behind) and camera view
       this.updateLook(dt);
       const ahead0 = this.pose(this.d + 12, this.x * 0.8);
-      this.lookAt.set(ahead0.x, groundHeight(ahead0.x, ahead0.z) + 1.1, ahead0.z);
+      this.lookAt.set(ahead0.x, layerHeight(ahead0.x, ahead0.z, ahead0.tx, ahead0.tz) + 1.1, ahead0.z);
       const looking = Math.abs(this.lookYaw) > 1e-3 || Math.abs(this.lookPitch) > 1e-3 || this.camView !== 0;
       if (looking) { this.applyLook(this.camTarget, this.lookAt, this.rider.root.position); this.clearCamera(this.camTarget); }
       // a new ride starts with the camera already behind the rider, not sweeping in from where it was
@@ -2143,8 +2151,8 @@ export class Game {
       if (looking) cam.lookAt(this.lookAt);
       else if (stop && this.guideLook > 0.001) {
         const k = this.guideLook * 0.75;
-        cam.lookAt(ahead.x + (stop.x - ahead.x) * k, groundHeight(ahead.x, ahead.z) + 1.1 + 2.5 * k, ahead.z + (stop.z - ahead.z) * k);
-      } else cam.lookAt(ahead.x, groundHeight(ahead.x, ahead.z) + 1.1, ahead.z);
+        cam.lookAt(ahead.x + (stop.x - ahead.x) * k, layerHeight(ahead.x, ahead.z, ahead.tx, ahead.tz) + 1.1 + 2.5 * k, ahead.z + (stop.z - ahead.z) * k);
+      } else cam.lookAt(ahead.x, layerHeight(ahead.x, ahead.z, ahead.tx, ahead.tz) + 1.1, ahead.z);
       // the camera banks a little with the bike
       if (!this.reducedMotion) cam.rotateZ(this.lean * 0.18);
       const fovBase = innerWidth < innerHeight ? 72 : 60;

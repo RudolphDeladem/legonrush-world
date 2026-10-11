@@ -21,6 +21,7 @@ import * as THREE from 'three';
 import { NSIA, laneX, northTop } from './nsia';
 import { KQ } from './kuffour';
 import { EN } from './entrance';
+import { CUT, CUT_Z, alongCut, cutDepth, cutDrop, deckAt, inBowl, inTrench, onBowlSlope, wallE, wallW } from './cutplan';
 
 interface Hollow {
   /** hollow: sunk `depth` below the ground; terrace: raised `depth` above it */
@@ -258,8 +259,16 @@ const snap = (b: { x0: number; x1: number; z0: number; z1: number }) => ({ x0: M
 const ZONE_BOXES = ZONES.map((q) => (q.kind !== 'hill' && q.cell ? snap(boxOf(q)) : boxOf(q)));
 /** the area each zone touches (the zones, then the roads' cuts) */
 export const RELIEF_BOXES = [...ZONE_BOXES, ...PATHS.map((p) => snap(pathBox(p))), snap({ x0: NSIA.lowPad.x0 - NSIA.lowPad.bank, x1: NSIA.lowPad.x1 + NSIA.lowPad.bank, z0: NSIA.lowPad.z0 - NSIA.lowPad.bank, z1: NSIA.lowPad.z1 + NSIA.lowPad.bank })];
+// the Legon Road cutting (cutplan.ts): boxes 40 m long along it, the walls and the slope round the ring's bowl inside
+for (let z = CUT_Z[0]; z < CUT_Z[1]; z += 40) {
+  const z1 = Math.min(CUT_Z[1], z + 40);
+  let x0 = Infinity, x1 = -Infinity;
+  for (let t = z; t <= z1; t += 2.5) { x0 = Math.min(x0, wallW(t)); x1 = Math.max(x1, wallE(t)); }
+  const bowl = z1 > CUT.ring.z0 && z < CUT.ring.z1 ? CUT.ring.bank : 0;
+  RELIEF_BOXES.push(snap({ x0: x0 - 3 - bowl, x1: x1 + 3 + bowl, z0: z, z1 }));
+}
 /** the ground grid's cell over each box */
-const BOX_CELL = [...ZONES.map((q) => (q.kind !== 'hill' ? q.cell : undefined)), ...PATHS.map(() => 0.5), 0.25];
+const BOX_CELL = [...ZONES.map((q) => (q.kind !== 'hill' ? q.cell : undefined)), ...PATHS.map(() => 0.5), 0.25, ...RELIEF_BOXES.slice(ZONES.length + PATHS.length + 1).map(() => 1)];
 
 /** a hill's height along its axis */
 function profileAt(p: [number, number][], x: number) {
@@ -358,8 +367,32 @@ export function groundHeight(x: number, z: number) {
     const w = d <= 0 ? 1 : t >= 1 ? 0 : 1 - t * t * (3 - 2 * t);
     if (w > W + 1e-9) { W = w; H = p.h; }
   }
-  return W > 0 ? base + (H - base) * W : base;
+  const g = W > 0 ? base + (H - base) * W : base;
+  // the Legon Road cutting (cutplan.ts): its floor, and the slope down to it in the ring's bowl
+  return z > CUT_Z[0] && z < CUT_Z[1] ? g - cutDrop(x, z) : g;
 }
+
+/**
+ * The ground under someone heading (hx, hz) at x, z: on a bridge over the Legon Road cutting, the deck when crossing it
+ * and the lowered road when passing along it underneath; groundHeight everywhere else. (Riders on a route ask this:
+ * the route's heading says which level it is on.)
+ */
+export function layerHeight(x: number, z: number, hx: number, hz: number) {
+  const d = deckAt(x, z);
+  return d && !alongCut(hx, hz) ? zoneHeight(x, z) + d.h : groundHeight(x, z);
+}
+/** The ground under something last at height y: the deck of a bridge if it was up at the deck, else groundHeight (a free
+ *  ride keeps to the level it is on) */
+export function groundFrom(x: number, z: number, y: number) {
+  const d = deckAt(x, z);
+  if (d) { const h = zoneHeight(x, z) + d.h; if (y > h - 2.5) return h; }
+  return groundHeight(x, z);
+}
+/** the ground as if the Legon Road cutting were not there: for what lies at the top (the roads over the bridges, a
+ *  service road whose edge overhangs the wall) */
+export const crestHeight = (x: number, z: number) => (z > CUT_Z[0] && z < CUT_Z[1] ? groundHeight(x, z) + cutDrop(x, z) : groundHeight(x, z));
+/** the cutting's floor, flat across it right up to and past the walls: for what lies down on the lowered road */
+export const floorHeight = (x: number, z: number) => (z > CUT_Z[0] && z < CUT_Z[1] ? zoneHeight(x, z) - cutDepth(z) : groundHeight(x, z));
 
 const inBox = (x: number, z: number, pad = 0) => RELIEF_BOXES.some((b) => x > b.x0 - pad && x < b.x1 + pad && z > b.z0 - pad && z < b.z1 + pad);
 
@@ -384,8 +417,11 @@ export function densify(pts: [number, number][], step = 2): [number, number][] {
 export function applyRelief(root: THREE.Object3D) {
   root.updateMatrixWorld(true);
   const m = new THREE.Matrix4(), v = new THREE.Vector3(), I = new THREE.Matrix4();
-  const visit = (o: THREE.Object3D) => {
+  const visit = (o: THREE.Object3D, fn: (x: number, z: number) => number) => {
     if (o.name === 'relief-ground' || o.userData.noRelief) return;
+    // a group or mesh may say where its ground is (the roads on the bridges: the deck, not the road below)
+    if (o.userData.heightFn) fn = o.userData.heightFn;
+    const groundHeight = fn;
     if (o !== root && !o.matrix.equals(I)) {
       // a placed object: it stands where its origin is
       o.getWorldPosition(v);
@@ -418,9 +454,9 @@ export function applyRelief(root: THREE.Object3D) {
         geo.computeBoundingSphere();
       }
     }
-    for (const c of o.children) visit(c);
+    for (const c of o.children) visit(c, fn);
   };
-  visit(root);
+  visit(root, groundHeight);
 }
 
 /** the relief ground's tile size, metres */
@@ -446,12 +482,16 @@ export function reliefGround(material: THREE.Material, tile: number, sink: (x: n
     const pos: number[] = [], uv: number[] = [], idx: number[] = [];
     for (let j = 0; j <= nz; j++) for (let i = 0; i <= nx; i++) {
       const x = b.x0 + ((b.x1 - b.x0) * i) / nx, z = b.z0 + ((b.z1 - b.z0) * j) / nz;
-      pos.push(x, groundHeight(x, z) - (inStairs(x, z) ? 0.6 : sink(x, z)), z);
+      // over the Legon Road cutting the grid stops at the walls (its cells over the road are left out, legoncut.ts draws
+      // the floor): a vertex just over the edge stays up at the ground, under the walls' coping, except in the ring's bowl
+      const y = inTrench(x, z) && !inBowl(x, z) ? zoneHeight(x, z) : groundHeight(x, z);
+      pos.push(x, y - (inStairs(x, z) ? 0.6 : sink(x, z)), z);
       uv.push(x / tile, -z / tile);
     }
     for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
       const cx = b.x0 + ((b.x1 - b.x0) * (i + 0.5)) / nx, cz = b.z0 + ((b.z1 - b.z0) * (j + 0.5)) / nz;
-      if (others.some((o) => cx > o.x0 && cx < o.x1 && cz > o.z0 && cz < o.z1)) continue;
+      // (nor over the bowl's stone-pitched slope, which legoncut.ts draws)
+      if (others.some((o) => cx > o.x0 && cx < o.x1 && cz > o.z0 && cz < o.z1) || inTrench(cx, cz) || (onBowlSlope(cx, cz) && cutDrop(cx, cz) > 0.02) || !!deckAt(cx, cz)) continue;
       const a = j * (nx + 1) + i, c = a + nx + 1;
       idx.push(a, c, a + 1, a + 1, c, c + 1);
     }

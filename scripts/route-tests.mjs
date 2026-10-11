@@ -667,10 +667,12 @@ try {
   if (lowLegs) notes.push(`${lowLegs} low-confidence destinations have a building between the network and the entrance (enclosed courtyards / mapping gaps; listed in data/geography/access-report.json)`);
 
   // ---------- representative journeys ----------
+  const ridden = [];
   const check = (c, mode) => {
     const from = placeByName(c.from), to = placeByName(c.to);
     if (!from || !to) return fail(`${c.from} -> ${c.to}: unknown place`);
     const r = rt.exploreRoute(from, to, mode);
+    if (r) ridden.push([`${c.from} -> ${c.to} (${mode})`, r.track]);
     const tag = `${c.from} -> ${c.to} (${mode})`;
     if (!r) return fail(`${tag}: no route`);
     if (r.length > c.maxLength) fail(`${tag}: ${r.length} m, longer than ${c.maxLength} m`);
@@ -731,9 +733,59 @@ try {
   const lv = await server.ssrLoadModule('/src/features/levels.ts');
   const ch = await server.ssrLoadModule('/src/features/challenges/model.ts');
   const races = { [rt.CAMPUS_LOOP.id]: sig(rt.CAMPUS_LOOP) };
-  for (const r of rt.RACES) races[r.id] = sig(rt.raceRoute(r));
+  for (const r of rt.RACES) { const rr = rt.raceRoute(r); races[r.id] = sig(rr); if (rr) ridden.push([`race ${r.id}`, rr.track]); }
   for (const l of lv.LEVELS) races[`level-${l.n}`] = sig(lv.levelRoute(l));
   for (const c of ch.CH_ROUTES) races[`challenge-${c.id}`] = sig(c.build());
+  // ---------- the Legon Road cutting (owner's 30-pair brief): the ground under every ride is continuous ----------
+  // a ride over a bridge stays on its deck, a ride along the lowered road stays down under it: no step of a metre or more
+  // between two points a metre apart anywhere along a journey or a race (a slope's steepest step is well under that)
+  {
+    const rl = await server.ssrLoadModule('/src/game/relief.ts');
+    const cp = await server.ssrLoadModule('/src/game/cutplan.ts');
+    let over = 0, under = 0;
+    for (const [tag, tr] of ridden) {
+      let prev = null, onDeck = false, below = false;
+      for (let d = 0; d <= tr.length; d += 1) {
+        const p = tr.pose(d), h = rl.layerHeight(p.x, p.z, p.tx, p.tz);
+        if (prev !== null && Math.abs(h - prev) > 1.0) { fail(`${tag}: the ground jumps ${(h - prev).toFixed(1)} m at ${p.x.toFixed(0)},${p.z.toFixed(0)}`); break; }
+        prev = h;
+        if (cp.deckAt(p.x, p.z)) { if (cp.alongCut(p.tx, p.tz)) below = true; else onDeck = true; }
+      }
+      over += onDeck ? 1 : 0; under += below ? 1 : 0;
+    }
+    if (!over) fail('Legon Road cutting: no ride crosses a bridge (expected the ring\'s bridges in use)');
+    // ride both carriageways through the cutting, both ways, and both bridges' arcs: the lowered road's ground is
+    // continuous and reaches the full depth under the bridges, the arcs stay up on their decks
+    const lineOf = (pred) => cm.ROADS.map((r, i) => [r, i]).filter(([r]) => pred(r)).map(([r]) => r.nodes.map((n) => [cm.NODE_XZ[n * 2], cm.NODE_XZ[n * 2 + 1]]));
+    const ride = (pts, tag, want) => {
+      for (const dir of [1, -1]) {
+        const P = dir > 0 ? pts : [...pts].reverse();
+        let prev = null, lo = Infinity, hi = -Infinity;
+        for (let i = 0; i < P.length - 1; i++) {
+          const [ax, az] = P[i], [bx, bz] = P[i + 1], len = Math.hypot(bx - ax, bz - az);
+          if (len < 1e-6) continue;
+          const hx = (bx - ax) / len, hz = (bz - az) / len;
+          for (let t = 0; t < len; t += 1) {
+            const x = ax + hx * t, z = az + hz * t, h = rl.layerHeight(x, z, hx, hz);
+            if (prev !== null && Math.abs(h - prev) > 1.0) { fail(`${tag} (${dir > 0 ? 'one way' : 'the other way'}): the ground jumps at ${x.toFixed(0)},${z.toFixed(0)}`); return; }
+            prev = h;
+            if (cp.deckAt(x, z)) { lo = Math.min(lo, h); hi = Math.max(hi, h); }
+          }
+        }
+        if (want === 'under' && !(hi < -cp.CUT.deck - 4)) fail(`${tag}: under the bridges the road is not down in the cutting (${hi.toFixed(1)} m)`);
+        if (want === 'over' && !(lo > -0.5)) fail(`${tag}: on the bridge the road is not up on the deck (${lo.toFixed(1)} m)`);
+      }
+    };
+    for (const pts of lineOf((r) => r.cls === 0 && r.name === 'J.J. Rawlings Avenue')) if (pts.some(([x, z]) => cp.deckAt(x, z) || (z > 90 && z < 165 && x > 740 && x < 810))) ride(pts, 'the N4 through the cutting', 'under');
+    let arcs = 0;
+    for (const pts of lineOf((r) => r.cls === 2)) {
+      const on = pts.some(([x, z], i) => i < pts.length - 1 && cp.deckAt((x + pts[i + 1][0]) / 2, (z + pts[i + 1][1]) / 2));
+      if (on) { arcs++; ride(pts, 'a ring arc over the cutting', 'over'); }
+    }
+    if (arcs < 2) fail(`Legon Road cutting: expected both ring arcs on the bridges, found ${arcs}`);
+    notes.push(`Legon Road cutting: ${over} rides cross a bridge, ${under} pass under one`);
+  }
+
   const SNAP = 'scripts/race-routes.json';
   if (process.env.UPDATE_RACES) writeFileSync(SNAP, `${JSON.stringify(races, null, 1)}\n`);
   const snap = JSON.parse(readFileSync(SNAP, 'utf8'));
