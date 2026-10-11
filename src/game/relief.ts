@@ -21,6 +21,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { NSIA, laneX, northTop } from './nsia';
 import { KQ } from './kuffour';
+import { EN } from './entrance';
 
 interface Hollow {
   /** hollow: sunk `depth` below the ground; terrace: raised `depth` above it */
@@ -72,6 +73,15 @@ export const wallExposed = (z: number) => {
 export const wallX = (z: number) => laneX(z) + NSIA.wall.offset;
 
 const ZONES: Zone[] = [
+  // The Institute of African Studies (the owner's main entrance brief, pairs 20-24): the building and its upper apron
+  // stand on a terrace above the avenue; before the south front a middle terrace, each behind a stone-faced retaining
+  // wall; steps up the middle; the west side drops to the brick parking at a low stone wall
+  { kind: 'terrace', x0: EN.ias.x0 - 0.5, x1: EN.ias.x1 + 1.0, z0: EN.ias.z0 - 1.5, z1: 101.5, depth: EN.iasTerrace[1], w: 0.3, e: 1.2, n: 1.2, s: 0.3 },
+  { kind: 'terrace', x0: 559.5, x1: EN.ias.x1 + 1.0, z0: 101.5, z1: 105.5, depth: EN.iasTerrace[0], w: 0.3, e: 0.3, n: 0.3, s: 0.3 },
+  // the pavilion on its stone-faced plinth (pairs 18, 19)
+  { kind: 'terrace', x0: EN.pavilion[0], x1: EN.pavilion[1], z0: EN.pavilion[2], z1: EN.pavilion[3], depth: 0.75, w: 0.3, e: 0.3, n: 0.3, s: 0.3 },
+  // the white building above the roadside bank (pair 26): the bank rises gently from the lawn by the road
+  { kind: 'terrace', x0: EN.whiteHouse[0] - 1.5, x1: EN.whiteHouse[1] + 2.5, z0: EN.whiteHouse[2] - 2, z1: EN.whiteHouse[3] + 2, depth: EN.bank, w: 3, e: 6, n: 3, s: 22 },
   // School of Engineering Sciences: the building, its forecourt and the car park on the floor;
   // the access road from the main road on the south comes down the 23 m slope, which levels out a few metres
   // short of that road and of Annie Jiagge Road on the east, so neither tips into it (owner)
@@ -184,6 +194,8 @@ const ZONES: Zone[] = [
   { kind: 'hollow', x0: -157, x1: -150, z0: -279, z1: -271, depth: 1.0, w: 0.6, e: 18, n: 4, s: 3 },
 ];
 const STAIRS: Stairs[] = [
+  // the Institute of African Studies: up the middle of the stone court from the walk to the south entrance
+  { x0: 108.2, x1: 101.6, z0: 581.4, z1: 585.6, flights: 2, steps: 3, tread: 0.45, alongZ: true },
   // Commonwealth: from the gate houses up Legon Hill to the drive
   { x0: -372, x1: -464, z0: 118, z1: 138, flights: 7, steps: 9, tread: 0.4 },
   // Volta: from the forecourt up to the entrance

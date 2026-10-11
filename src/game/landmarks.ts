@@ -235,7 +235,7 @@ export function buildLandmarks() {
     group.add(obj);
   };
   put('Great Hall', greatHallTower(tex));
-  put('Legon Main Entrance', mainGate(16), true);
+  // (the main gate is modelled from the owner's photos in gateprecinct.ts: a low through-building, not pillars)
   // the Great Hall's tower stands on Legon Hill
   applyRelief(group);
   return group;
