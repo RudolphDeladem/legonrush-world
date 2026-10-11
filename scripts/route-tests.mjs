@@ -587,6 +587,13 @@ try {
       for (const lat of [-2.4, 0, 2.4]) { let prev = null; for (let d = 0; d < r.track.length; d += 0.5) { const p = r.track.pose(d, lat), h = g(p.x, p.z), inside = p.x > 205 && p.x < 275 && p.z > -90 && p.z < 30; if (prev !== null && inside) worst = Math.max(worst, Math.abs(h - prev)); prev = h; } }
       if (worst > 0.12) fail(`NSIA brief: the ride from ${a} to ${b} jolts (${worst.toFixed(2)} m in half a metre)`);
     }
+    // the owner's NSIA hillside correction: the raised planted ground continues north along NSIA Road to J.K.M. Hodasi
+    // Road, above the passage beside the Frank Torto tower, easing down to the junction; NSIA Road and Hodasi Road meet
+    // level and smooth
+    for (const z of [-90, -105, -120, -135, -148]) if (!(g(225, z) > 1.0)) fail(`NSIA hillside: the hill does not continue along NSIA Road at z ${z} (${g(225, z).toFixed(2)})`);
+    if (!(g(212, -104) - g(212, -99) > 1.0)) fail('NSIA hillside: no rise visible at the end of the passage beside the Frank Torto tower');
+    for (const x of [230, 236, 242]) if (Math.abs(g(x, -162)) > 0.02) fail(`NSIA hillside: Hodasi Road is not level at the junction (x ${x})`);
+    { let step = 0; for (let z = -162; z < -86; z += 0.5) for (const o of [-3.8, 0, 3.8]) step = Math.max(step, Math.abs(g(235.8 + o, z + 0.5) - g(235.8 + o, z))); if (step > 0.06) fail(`NSIA hillside: NSIA Road north of the connector is not smooth (${step.toFixed(3)} m)`); }
     if ((await server.ssrLoadModule('/src/game/nsiaroad.ts')).nsiaSite.frames().length !== 1) fail('expected the NSIA Road model');
   }
   // the owner's Kuffour Quadrangle brief: the garden a little above the roads behind its low walls, Hodasi Road and

@@ -189,7 +189,7 @@ const nsiaSpec: Spec = {
   onGround: true,
   blocks: [],
   // the belt, the verge under the tree, the porch's apron, NSIA Road's east bank: nothing generic placed on them
-  keep: [[X(213), X(232), Z(-84), Z(-27)], [X(223.6), X(232), Z(-95), Z(-84)], [X(160), X(205), Z(-89.3), Z(-80.9)], [X(203), X(208.5), Z(-79), Z(-66)], [X(239), X(248), Z(-56), Z(8)]],
+  keep: [[X(213), X(232), Z(-84), Z(-27)], [X(223.6), X(232), Z(-95), Z(-84)], [X(160), X(205), Z(-89.3), Z(-80.9)], [X(203), X(208.5), Z(-79), Z(-66)], [X(239), X(248), Z(-56), Z(8)], [X(203.5), X(232), Z(-158), Z(-79)]],
   extras: (k: Kit) => {
     const c: Part[] = [], stone: Part[] = [], trees: Part[] = [];
     const W = NSIA.wall, B = NSIA.belt;
@@ -396,6 +396,44 @@ const nsiaSpec: Spec = {
     broadleaf(k, trees, 174.5, -84.6, { h: 5.5, spread: 7, seed: 69 });
     broadleaf(k, trees, 244.8, -4.5, { h: 7.5, spread: 12, seed: 71 });
     broadleaf(k, trees, 243.2, -30, { h: 7, spread: 9, seed: 73 });
+
+    // ----- the hill's continuation north to J.K.M. Hodasi Road (the owner's NSIA hillside correction; relief.ts): the low
+    // stone wall holding it at the end of the passage beside the Frank Torto tower, a dark coping; the dry ground cover
+    // on it; mature broadleaf trees in an irregular mass with shrubs under them
+    {
+      const N = NSIA.north, zw = N.passEnd;
+      const face: [number, number, number][] = [], top: [number, number, number][] = [], capF: [number, number, number][] = [], capT: [number, number, number][] = [], capB: [number, number, number][] = [];
+      for (let x = N.x0 - 1.2; x <= N.x0e + 0.4; x += 0.5) {
+        const base = gh(x, zw + 0.5) - 0.3, t = gh(x, zw - 0.6);
+        if (t - base < 0.35) continue;
+        face.push([x, base, zw]); top.push([x, t - 0.06, zw]);
+        capF.push([x, t - 0.07, zw + 0.05]); capT.push([x, t + 0.07, zw + 0.05]); capB.push([x, t + 0.07, zw - 0.55]);
+        SOLIDS.add(x, zw - 0.2, 0.3);
+      }
+      stone.push([sheet(face, top), '#ffffff']);
+      c.push([sheet(capF, capT), '#3b342d'], [sheet(capT, capB), '#453d35']);
+      const dry = (x: number, z: number): [number, number, number] => {
+        const n = vnoise(x * 0.18, z * 0.18), m = vnoise(x * 0.9 + 9, z * 0.9 - 3), e = vnoise(x * 0.31 - 5, z * 0.37 + 2);
+        if (e > 0.7 && m > 0.45) return [0.56 + m * 0.05, 0.39, 0.28];
+        const straw = Math.min(1, Math.max(0, n * 1.2 - 0.15));
+        return [0.42 + straw * 0.2 + m * 0.03, 0.5 + straw * 0.1, 0.27 + straw * 0.03];
+      };
+      const P = NSIA.lowPad;
+      k.meshes.push(new THREE.Mesh(drape(N.x0 - 0.5, N.x1 - 0.5, N.z0 - N.n + 0.5, N.z1e, 0.5, 0.035, (x, z) => {
+        if (z > zw - 0.4 && x < N.x0e - 0.4) return null;
+        if (x > P.x0 - 0.45 && x < P.x1 + 0.45 && z > P.z0 - 0.45 && z < P.z1 + 0.45) return null;
+        return dry(x, z);
+      }), coverMat()));
+      k.meshes[k.meshes.length - 1].receiveShadow = true;
+      // the trees: dense and irregular, bigger toward NSIA Road, a few along the tower's side
+      const T: [number, number, number, number][] = [[212.5, -106, 7.5, 9], [220.5, -104.5, 8.5, 11], [228.5, -100, 8, 10], [228, -88, 7.5, 9], [216, -114, 7, 8],
+        [225, -116, 9, 12], [209.5, -124, 6.5, 8], [219, -128, 8, 10], [228.6, -131, 8.5, 11], [213, -139, 7.5, 9], [222.5, -143, 8, 10], [229, -150, 6.5, 8], [208, -146, 6, 7]];
+      T.forEach(([x, z, h, sp], i) => broadleaf(k, trees, x, z, { h, spread: sp, seed: 101 + i * 7, sparse: i === 6 }));
+      for (let i = 0; i < 46; i++) {
+        const x = N.x0 + 1 + ((i * 37) % 97) / 97 * (N.x1 - N.x0 - 4), z = N.z0 + 1 + ((i * 61) % 89) / 89 * (zw - N.z0 - 3), y = gh(x, z), r = 0.6 + (i % 4) * 0.25;
+        trees.push([new THREE.IcosahedronGeometry(r, 1).scale(1.3, 0.75, 1.1).translate(X(x), y + r * 0.5, Z(z)), ['#2f4a25', '#3e5d2e', '#36552a', '#4a6332'][i % 4]]);
+      }
+    }
 
     stoneMeshOf(k, stone);
     const m = new THREE.Mesh(merge(c), concrete(0.25)); m.castShadow = true; m.receiveShadow = true; k.meshes.push(m);

@@ -19,7 +19,7 @@
 // a line (`west`): the tree belt a wall's height above the lane along NSIA Road.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { NSIA, laneX } from './nsia';
+import { NSIA, laneX, northTop } from './nsia';
 import { KQ } from './kuffour';
 
 interface Hollow {
@@ -172,6 +172,11 @@ const ZONES: Zone[] = [
     kind: 'terrace', x0: Math.min(...[-79, -60, -48, -40, -29.5].map(wallX)) + 0.3, west: (z) => wallX(z) + 0.3, x1: NSIA.belt.x1, z0: NSIA.belt.z0, z1: NSIA.belt.z1,
     depth: 0, top: (_x, z) => laneHeight(z) + wallExposed(z), w: 0.25, e: 0.5, n: NSIA.belt.north, s: NSIA.belt.south, cell: 0.25,
   },
+  // the hill's continuation north along NSIA Road to J.K.M. Hodasi Road (the owner's NSIA hillside correction): east of
+  // the low building from the belt's end, then across from the Frank Torto tower to NSIA Road's cut north of the passage
+  // between them, held at the passage's end by a low stone wall, easing down to Hodasi Road at the junction
+  { kind: 'terrace', x0: NSIA.north.x0e, x1: NSIA.north.x1, z0: NSIA.north.passEnd, z1: NSIA.north.z1e, depth: NSIA.north.h, w: 0.6, e: 0.5, n: 0.3, s: 2.5, cell: 0.5 },
+  { kind: 'terrace', x0: NSIA.north.x0, x1: NSIA.north.x1, z0: NSIA.north.z0, z1: NSIA.north.passEnd, depth: 0, top: (_x, z) => northTop(z), w: NSIA.north.west, e: 0.5, n: NSIA.north.n, s: 0.25, cell: 0.5 },
   // the lane past the Department of Nutrition and Food Sciences (owner's photo up the lane from J.K.M. Hodasi Road):
   // it runs down a little toward its north end, below the lawn held up behind its rubble-stone wall on the west, and
   // climbs gently back along its leg east to Animal Biology

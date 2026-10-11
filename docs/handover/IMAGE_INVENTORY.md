@@ -666,3 +666,6 @@ Every photo, screenshot, aerial and marked-up map the owner uploaded, in upload 
 | 660.jpg | 83 | 728x409 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 20, pair 10 (real reference) |
 | 661.jpg | 57 | 1077x305 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 21, pair 11, the Balme front roundabout (Oct 2014) (current game) |
 | 662.jpg | 134 | 1360x427 | 89 | 2026-10-11 | (Balme and Pentagon eleven-pairs brief, 26 pages) image 22, pair 11 (real reference) |
+| 663.jpg | 154 | 1540x867 | 90 | 2026-10-11 | (NSIA hillside correction) picture 1: the game from the passage beside the Frank Torto Building, an open level lawn beyond |
+| 664.jpg | 198 | 1278x725 | 90 | 2026-10-11 | (NSIA hillside correction) picture 2: the real passage, the low white building (violet), the raised planted ground at its end (green) |
+| 665.jpg | 40 | 360x457 | 90 | 2026-10-11 | (NSIA hillside correction) picture 3: the aerial; the hill ends at the blue arrow, it should continue to J.K.M. Hodasi Road (yellow) |

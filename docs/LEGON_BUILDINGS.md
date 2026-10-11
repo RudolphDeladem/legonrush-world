@@ -2139,6 +2139,31 @@ The pictures are `images/640-662.jpg`. The adjustable numbers and the eleven cam
   the roundabout's island radius is the mapped one; pairs 3 and 6 still show the Boba kiosk because the owner placed it
   there. Still needed: the lawn height above the pool deck, the guardhouse's size, and a current photo of the roundabout.
 
+## 73. The NSIA Road hillside to J.K.M. Hodasi Road and the low building by the Frank Torto Building
+
+The pictures are `images/663-665.jpg`. The numbers are in `src/game/nsia.ts` (`NSIA.north`).
+
+- **The hill's extent.** The raised planted ground beside NSIA Road ended at z -79 (the blue arrow). It now continues to
+  J.K.M. Hodasi Road (the yellow arrow), as two terrace zones in `relief.ts`: east of the low building from the old
+  belt's end to the end of the passage (1.35 m), then across from the Frank Torto tower to NSIA Road's cut, its top
+  following a profile: 1.35 m at the passage end, rising over the planted slope to about 2.3 m, easing to 1.5 m and
+  then down a 6.5 m bank to Hodasi Road's level clear of its riding width. On the west it meets the Chemistry
+  Extension's terrace (1.0 m) round the Frank Torto Building.
+- **The passage.** A low stone wall with a dark coping holds the hill at the passage's end, so the rise reads from the
+  passage beside the tower; the passage's asphalt runs to its foot. Dense, irregular broadleaf trees and shrubs stand on
+  the hill, with dry ground cover, and no generic trees.
+- **NSIA Road** rises gently along this stretch (0 at the Hodasi junction, 0.3 m at z -130, 0.48 m at z -95, then the
+  existing profile) in its own cut, its banks easing into the hill; the junction stays level.
+- **The low building** on the passage: a deep fascia with weathering streaks, a projecting eave along the whole front
+  over its openings, and (from the south) a narrow black grille door, the large panel of ventilation blocks, a convex
+  mirror on its bracket, a second narrow grille door, a dark recessed door, an air conditioner, small lamps and a step
+  along its foot, instead of the row of large grille panels.
+- **Checks.** The route tests check that the hill continues along NSIA Road at five points, that it rises over a metre
+  at the passage end, that Hodasi Road is level at the junction and that NSIA Road north of the LECIAD road is smooth to
+  ride across its width.
+- **Estimates:** every height here (the wall at 1.35 m, the top at 2.3 m, the road's rise) is calibrated against the
+  passage photo, not surveyed.
+
 ## Explore: drone view
 
 When an Explore ride arrives, at **any** destination on the map (one the guide has no entry for gets a plain

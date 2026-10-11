@@ -30,7 +30,7 @@ export const NSIA = {
   belt: { x1: 231.5, z0: -79, z1: -29.5, north: 3.5, south: 2.0 },
   /** NSIA Road's longitudinal profile, [z, height]: a gentle hump only (the photos show the ground higher than the
    *  road at its edges, not a hill along it); flat south of z 26 past Earth Science, at 0 at Hodasi Road */
-  nsiaProfile: <[number, number][]>[[-162, 0], [-110, 0], [-95, 0.05], [-77, 0.55], [-55, 1.15], [-26, 1.45], [-5, 1.35], [10, 0.8], [22, 0.1], [30, 0], [114, 0]],
+  nsiaProfile: <[number, number][]>[[-162, 0], [-150, 0.08], [-130, 0.3], [-110, 0.42], [-95, 0.48], [-77, 0.55], [-55, 1.15], [-26, 1.45], [-5, 1.35], [10, 0.8], [22, 0.1], [30, 0], [114, 0]],
   /** NSIA Road's cut through the higher ground: flat this far either side of its centre, then a bank this wide */
   nsiaHalf: 4.6, nsiaBank: 3.5,
   /** the short retained stretch of NSIA Road's east bank (pair 6, the left of the photo): z from, to, its bank there,
@@ -51,6 +51,15 @@ export const NSIA = {
   drain: { x0: 166.5, x1: 203.0, z: -89.45, width: 0.45, depth: 0.35, barGap: 0.06 },
   /** the bare-soil verge between that drain and the range (x from, to; z to) and its big tree */
   verge: { x0: 160.5, x1: 203.4, z1: -81.2, tree: [186.5, -85.2] as [number, number] },
+  /** the hill's continuation north along NSIA Road to J.K.M. Hodasi Road (the owner's NSIA hillside correction, picture
+   *  3: the yellow arrow): its height (estimated from the passage photo, about a low wall's height plus a bank over the
+   *  passage floor); east of the low building from the belt's end to the passage end (x0e..x1, z from passEnd to z1e);
+   *  north of the passage end across to the Frank Torto tower (x0..x1, z from z0 to passEnd); the bank down to Hodasi
+   *  Road (n metres long, ending clear of its riding width) */
+  north: { h: 1.35, x0: 205.6, x0e: 224.4, x1: 231.5, z0: -150.5, passEnd: -101, z1e: -79, n: 6.5, west: 2.4,
+    /** its top along it, [z, height]: the low wall's height at the passage's end, rising over the planted slope behind,
+     *  then easing down toward Hodasi Road (estimates, calibrated against the passage photo) */
+    profile: <[number, number][]>[[-150.5, 1.5], [-138, 2.2], [-118, 2.3], [-108, 1.95], [-101, 1.35]] },
   /** where the route draws no pavements, lane paint or decorative trees (the real roads here have none) */
   plain: [150, 262, -165, 30] as [number, number, number, number],
   /** where generic palms and flame trees give way to broadleaf trees (the six views) */
@@ -67,3 +76,11 @@ export const NSIA_VIEWS: { name: string; eye: [number, number, number]; look: [n
   { name: 'pair5', eye: [212.2, 1.5, -18.5], look: [214.5, 2.2, -50], fov: 58, note: 'the corner of the lane and the connecting road: the wall tapering into the bank, the worn path' },
   { name: 'pair6', eye: [236.5, 1.2, 14], look: [244, 2.6, -14], fov: 55, note: 'NSIA Road northward: the bank rising on the east to the big tree and the service buildings, LECIAD behind' },
 ];
+
+/** the hill's top north of the passage at z (NSIA.north.profile, linear between its points) */
+export const northTop = (z: number) => {
+  const p = NSIA.north.profile;
+  if (z <= p[0][0]) return p[0][1];
+  for (let i = 0; i < p.length - 1; i++) if (z <= p[i + 1][0]) return p[i][1] + ((p[i + 1][1] - p[i][1]) * (z - p[i][0])) / (p[i + 1][0] - p[i][0]);
+  return p[p.length - 1][1];
+};

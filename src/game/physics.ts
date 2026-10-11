@@ -571,17 +571,36 @@ const behindTorto: Spec = (() => {
       // the flat roof: its slab out past the walls, a deep fascia round it
       c.push([B(BT[0] - 0.9, BT[1] + 0.5, E - 0.1, E + 0.1, BT[2] - 0.5, BT[3] + 0.5), '#e6e4dd']);
       for (const [a, b, z0, z1] of [[BT[0] - 0.9, BT[1] + 0.5, BT[2] - 0.5, BT[2] - 0.35], [BT[0] - 0.9, BT[1] + 0.5, BT[3] + 0.35, BT[3] + 0.5], [BT[0] - 0.9, BT[0] - 0.75, BT[2] - 0.5, BT[3] + 0.5], [BT[1] + 0.35, BT[1] + 0.5, BT[2] - 0.5, BT[3] + 0.5]] as number[][]) c.push([B(a, b, E - 0.35, E + 0.45, z0, z1), '#f1f0ea']);
-      // the front to the lane: black grille doors in deep white openings, a step along the foot, air-conditioners
+      // the front to the passage (the owner's NSIA hillside correction, picture 2, seen from the south): a step along its
+      // foot; from the south end a narrow black grille door, the large panel of white ventilation blocks, the convex
+      // mirror on its bracket, a second narrow grille door, a dark recessed door, an air conditioner; a projecting eave
+      // along the whole front over the openings, under the deep fascia; small lamps
       const fx = BT[0];
       c.push([B(fx - 0.6, fx, 0, PL, BT[2] - 0.2, BT[3] + 0.2), '#d6d2c8']);
-      for (const zc of [-92.2, -88.6, -85.6]) {
-        const w = zc === -85.6 ? 0.9 : 1.3;
-        k.plain.push([B(fx - 0.02, fx, PL, PL + 2.5, zc - w, zc + w), '#16130f']);
-        for (let z = zc - w + 0.1; z < zc + w; z += 0.16) k.plain.push([B(fx - 0.06, fx - 0.02, PL, PL + 2.5, z - 0.015, z + 0.015), '#2e2b28']);
-        for (let y = PL + 0.3; y < PL + 2.5; y += 0.5) k.plain.push([B(fx - 0.06, fx - 0.02, y - 0.02, y + 0.02, zc - w, zc + w), '#2e2b28']);
-        for (const z of [zc - w - 0.18, zc + w]) c.push([B(fx - 0.25, fx, PL, PL + 2.7, z, z + 0.18), '#f4f3ee']);
-        c.push([B(fx - 0.25, fx, PL + 2.5, PL + 2.7, zc - w - 0.18, zc + w + 0.18), '#f4f3ee']);
-      }
+      c.push([B(fx - 0.75, fx, PL + 2.72, PL + 2.86, BT[2] - 0.2, BT[3] + 0.2), '#f1f0ea']);
+      const grilleDoor = (za: number, zb: number) => {
+        k.plain.push([B(fx - 0.12, fx - 0.1, PL, PL + 2.45, za, zb), '#16130f']);
+        for (let z = za + 0.08; z < zb; z += 0.14) k.plain.push([B(fx - 0.16, fx - 0.12, PL, PL + 2.45, z - 0.015, z + 0.015), '#2a2724']);
+        for (let y = PL + 0.25; y < PL + 2.45; y += 0.42) k.plain.push([B(fx - 0.16, fx - 0.12, y - 0.02, y + 0.02, za, zb), '#2a2724']);
+        for (const z of [za - 0.12, zb]) c.push([B(fx - 0.15, fx, PL, PL + 2.6, z, z + 0.12), '#f4f3ee']);
+        c.push([B(fx - 0.15, fx, PL + 2.45, PL + 2.6, za - 0.12, zb + 0.12), '#f4f3ee']);
+        for (let z = za; z <= zb; z += 0.4) SOLIDS.add(fx - 0.1, z, 0.2);
+      };
+      grilleDoor(-86.2, -85.1);
+      panel(O, k, pierced(), fx - 0.04, -86.5, fx - 0.04, -89.3, PL + 0.25, PL + 2.6, 0.32);
+      c.push([B(fx - 0.18, fx, PL + 0.1, PL + 0.25, -89.4, -86.4), '#f4f3ee']);
+      { const z = -89.75, y = PL + 2.25;
+        k.plain.push([B(fx - 0.35, fx, y - 0.03, y + 0.03, z - 0.03, z + 0.03), '#9aa0a3']);
+        const mir = new THREE.SphereGeometry(0.32, 14, 10, 0, Math.PI).scale(0.3, 1, 1).rotateY(-Math.PI / 2).translate(X(fx - 0.38), y, Z(z));
+        k.plain.push([mir, '#b9b2a4']); }
+      grilleDoor(-91.0, -90.1);
+      k.plain.push([B(fx - 0.3, fx - 0.28, PL, PL + 2.3, -92.7, -91.6), '#2a2622']);
+      for (const z of [-92.75, -91.55]) c.push([B(fx - 0.3, fx, PL, PL + 2.4, z - 0.06, z + 0.06), '#f4f3ee']);
+      k.plain.push([B(fx - 0.3, fx, PL + 1.9, PL + 2.45, -93.75, -92.95), '#e9ebeb'], [B(fx - 0.31, fx - 0.3, PL + 1.98, PL + 2.37, -93.68, -93.02), '#9aa0a3']);
+      for (const z of [-87.9, -91.9]) k.plain.push([B(fx - 0.22, fx, PL + 3.0, PL + 3.14, z - 0.12, z + 0.12), '#f6f1dc'], [B(fx - 0.24, fx - 0.2, PL + 2.94, PL + 3.0, z - 0.08, z + 0.08), '#3a3a38']);
+      // weathering streaks down the fascia's face
+      for (let z = BT[2] - 0.3; z < BT[3] + 0.3; z += 0.55 + ((z * 7) % 3) * 0.2) k.plain.push([B(fx - 0.92, fx - 0.91, E - 0.3 + ((z * 13) % 4) * 0.05, E + 0.42, z, z + 0.06 + ((z * 5) % 2) * 0.05), '#a9a59a']);
+      c.push([B(fx - 1.0, fx - 0.6, 0, 0.06, BT[2] - 0.2, BT[3] + 0.2), '#3a3836']);
       // its south front, toward the higher ground (the owner's NSIA Road brief, pair 1): two black grille doors, a white
       // roller shutter, a dark opening
       { const sz = BT[3];
@@ -590,12 +609,6 @@ const behindTorto: Spec = (() => {
           if (kind === 'g') { for (let x = x0 + 0.1; x < x1; x += 0.14) k.plain.push([B(x - 0.015, x + 0.015, PL, PL + 2.4, sz + 0.02, sz + 0.06), '#2e2b28']); for (let y = PL + 0.3; y < PL + 2.4; y += 0.45) k.plain.push([B(x0, x1, y - 0.02, y + 0.02, sz + 0.02, sz + 0.06), '#2e2b28']); }
           if (kind === 's') for (let y = PL + 0.1; y < PL + 2.4; y += 0.12) k.plain.push([B(x0, x1, y, y + 0.02, sz + 0.02, sz + 0.03), '#c9c8c2']);
         } }
-      for (const z of [-90.4, -87.1]) k.plain.push([B(fx - 0.3, fx, PL + 2.0, PL + 2.55, z - 0.4, z + 0.4), '#e9ebeb'], [B(fx - 0.31, fx - 0.3, PL + 2.08, PL + 2.47, z - 0.32, z + 0.32), '#9aa0a3']);
-      // (the owner's science campus brief, pair 1: the ventilation-block panel at its north end, small lamps over the
-      // doors, the threshold and the drainage edge along its foot)
-      panel(O, k, pierced(), fx - 0.03, BT[2] + 0.25, fx - 0.03, BT[2] + 1.35, PL + 0.2, PL + 2.7, 0.4);
-      for (const z of [-92.2, -88.6]) k.plain.push([B(fx - 0.22, fx, PL + 2.78, PL + 2.92, z - 0.12, z + 0.12), '#f6f1dc'], [B(fx - 0.24, fx - 0.2, PL + 2.72, PL + 2.78, z - 0.08, z + 0.08), '#3a3a38']);
-      c.push([B(fx - 1.0, fx - 0.6, 0, 0.06, BT[2] - 0.2, BT[3] + 0.2), '#3a3836']);
       const m = new THREE.Mesh(merge(c), concrete(0.6));
       m.castShadow = true; m.receiveShadow = true;
       k.meshes.push(m);
