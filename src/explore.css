@@ -127,3 +127,6 @@
 .pad-set b { font-variant-numeric: tabular-nums; text-align: right; }
 .pad-map { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 10px 0; }
 .pad-map .btn { width: 100%; text-align: left; }
+/* the pause menu above the ride's HUD rows (they sit at z-index 2), and the Controller panel scrolling on short screens */
+#pauseOverlay.overlay { z-index: 10; }
+#pauseOverlay .panel { max-height: 100%; overflow-y: auto; }
