@@ -64,3 +64,7 @@ export const SC_VIEWS: { name: string; eye: [number, number, number]; look: [num
 export const offAsphalt = (x: number, z: number, pad = 0) => [...SC.earth, ...SC.brick].some(([x0, x1, z0, z1]) => x > x0 - pad && x < x1 + pad && z > z0 - pad && z < z1 + pad);
 /** on the earth tracks (the free ride rolls slower and rougher there) */
 export const onEarth = (x: number, z: number) => SC.earth.some(([x0, x1, z0, z1]) => x > x0 && x < x1 && z > z0 && z < z1);
+
+/** modelled paved ground where no grass tufts grow (the Frank Torto passage up to its stone wall) */
+export const PAVED: [number, number, number, number][] = [[203.5, 223.9, -100.6, -78]];
+export const onPaved = (x: number, z: number) => PAVED.some(([x0, x1, z0, z1]) => x > x0 && x < x1 && z > z0 && z < z1);

@@ -2158,6 +2158,11 @@ The pictures are `images/663-665.jpg`. The numbers are in `src/game/nsia.ts` (`N
   over its openings, and (from the south) a narrow black grille door, the large panel of ventilation blocks, a convex
   mirror on its bracket, a second narrow grille door, a dark recessed door, an air conditioner, small lamps and a step
   along its foot, instead of the row of large grille panels.
+- **The stone wall at the passage's end** (the owner's follow-up, `images/666-668.jpg`): the passage's asphalt runs on
+  to the wall north of the low building, not grass; the wall is built like the NSIA lane wall (irregular stones, a stone
+  top back over the edge, a dark coping), its face standing in front of the terrain's edge so the slope stays hidden
+  behind it, across the passage's end and turning north along the low building's north end; no grass tufts on the
+  paved passage; shrubs and trees set back from the wall.
 - **Checks.** The route tests check that the hill continues along NSIA Road at five points, that it rises over a metre
   at the passage end, that Hodasi Road is level at the junction and that NSIA Road north of the LECIAD road is smooth to
   ride across its width.

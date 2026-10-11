@@ -669,3 +669,6 @@ Every photo, screenshot, aerial and marked-up map the owner uploaded, in upload 
 | 663.jpg | 154 | 1540x867 | 90 | 2026-10-11 | (NSIA hillside correction) picture 1: the game from the passage beside the Frank Torto Building, an open level lawn beyond |
 | 664.jpg | 198 | 1278x725 | 90 | 2026-10-11 | (NSIA hillside correction) picture 2: the real passage, the low white building (violet), the raised planted ground at its end (green) |
 | 665.jpg | 40 | 360x457 | 90 | 2026-10-11 | (NSIA hillside correction) picture 3: the aerial; the hill ends at the blue arrow, it should continue to J.K.M. Hodasi Road (yellow) |
+| 666.jpg | 119 | 1069x820 | 91 | 2026-10-11 | (NSIA hillside, stone wall) picture 1: the game; the stone wall section at the passage end marked yellow |
+| 667.jpg | 67 | 661x377 | 91 | 2026-10-11 | (NSIA hillside, stone wall) picture 2: the real passage, the stone wall at its end marked yellow |
+| 668.jpg | 63 | 859x414 | 91 | 2026-10-11 | (NSIA hillside, stone wall) picture 3: a stone wall of the same build (the NSIA lane wall in the game) |

@@ -402,16 +402,29 @@ const nsiaSpec: Spec = {
     // on it; mature broadleaf trees in an irregular mass with shrubs under them
     {
       const N = NSIA.north, zw = N.passEnd;
-      const face: [number, number, number][] = [], top: [number, number, number][] = [], capF: [number, number, number][] = [], capT: [number, number, number][] = [], capB: [number, number, number][] = [];
-      for (let x = N.x0 - 1.2; x <= N.x0e + 0.4; x += 0.5) {
-        const base = gh(x, zw + 0.5) - 0.3, t = gh(x, zw - 0.6);
-        if (t - base < 0.35) continue;
-        face.push([x, base, zw]); top.push([x, t - 0.06, zw]);
-        capF.push([x, t - 0.07, zw + 0.05]); capT.push([x, t + 0.07, zw + 0.05]); capB.push([x, t + 0.07, zw - 0.55]);
-        SOLIDS.add(x, zw - 0.2, 0.3);
-      }
-      stone.push([sheet(face, top), '#ffffff']);
-      c.push([sheet(capF, capT), '#3b342d'], [sheet(capT, capB), '#453d35']);
+      // the wall (the owner's photo of the passage's end and the photo of a wall like it): irregular stones from below
+      // the asphalt up to the hill's top, its face standing just in front of the ground's edge so the terrain's slope
+      // stays behind it, its top a strip of stone back over the edge, a dark coping on it; across the passage's end,
+      // then turning north along the low building's north end to the hill east of it
+      const run = (pts: [number, number][], out: [number, number]) => {
+        const face: [number, number, number][] = [], faceTop: [number, number, number][] = [], back: [number, number, number][] = [];
+        const capF: [number, number, number][] = [], capT: [number, number, number][] = [], capB: [number, number, number][] = [];
+        for (const [x, z] of pts) {
+          const fx = x + out[0] * 0.4, fz = z + out[1] * 0.4, bx = x - out[0] * 0.7, bz = z - out[1] * 0.7;
+          const base = gh(x + out[0] * 0.9, z + out[1] * 0.9) - 0.3, t = Math.max(gh(bx, bz), base + 0.5);
+          face.push([fx, base, fz]); faceTop.push([fx, t - 0.07, fz]); back.push([bx, t - 0.07, bz]);
+          capF.push([fx + out[0] * 0.05, t - 0.08, fz + out[1] * 0.05]); capT.push([fx + out[0] * 0.05, t + 0.06, fz + out[1] * 0.05]); capB.push([bx, t + 0.06, bz]);
+          SOLIDS.add(x, z, 0.4);
+        }
+        stone.push([sheet(faceTop, face), '#ffffff'], [sheet(back, faceTop), '#ffffff']);
+        c.push([sheet(capT, capF), '#3b342d'], [sheet(capB, capT), '#453d35']);
+      };
+      const across: [number, number][] = [];
+      for (let x = N.x0 - 0.6; x <= N.x0e - 0.2; x += 0.5) across.push([Math.min(x, N.x0e - 0.2), zw]);
+      run(across, [0, 1]);
+      const along: [number, number][] = [];
+      for (let z = zw; z <= NSIA.lowPad.z0 - 0.2; z += 0.5) along.push([N.x0e - 0.2, Math.min(z, NSIA.lowPad.z0 - 0.2)]);
+      run(along, [-1, 0]);
       const dry = (x: number, z: number): [number, number, number] => {
         const n = vnoise(x * 0.18, z * 0.18), m = vnoise(x * 0.9 + 9, z * 0.9 - 3), e = vnoise(x * 0.31 - 5, z * 0.37 + 2);
         if (e > 0.7 && m > 0.45) return [0.56 + m * 0.05, 0.39, 0.28];
@@ -426,11 +439,11 @@ const nsiaSpec: Spec = {
       }), coverMat()));
       k.meshes[k.meshes.length - 1].receiveShadow = true;
       // the trees: dense and irregular, bigger toward NSIA Road, a few along the tower's side
-      const T: [number, number, number, number][] = [[212.5, -106, 7.5, 9], [220.5, -104.5, 8.5, 11], [228.5, -100, 8, 10], [228, -88, 7.5, 9], [216, -114, 7, 8],
+      const T: [number, number, number, number][] = [[212.5, -107.5, 7.5, 9], [220.5, -106.5, 8.5, 11], [228.5, -100, 8, 10], [228, -88, 7.5, 9], [216, -114, 7, 8],
         [225, -116, 9, 12], [209.5, -124, 6.5, 8], [219, -128, 8, 10], [228.6, -131, 8.5, 11], [213, -139, 7.5, 9], [222.5, -143, 8, 10], [229, -150, 6.5, 8], [208, -146, 6, 7]];
       T.forEach(([x, z, h, sp], i) => broadleaf(k, trees, x, z, { h, spread: sp, seed: 101 + i * 7, sparse: i === 6 }));
       for (let i = 0; i < 46; i++) {
-        const x = N.x0 + 1 + ((i * 37) % 97) / 97 * (N.x1 - N.x0 - 4), z = N.z0 + 1 + ((i * 61) % 89) / 89 * (zw - N.z0 - 3), y = gh(x, z), r = 0.6 + (i % 4) * 0.25;
+        const x = N.x0 + 1 + ((i * 37) % 97) / 97 * (N.x1 - N.x0 - 4), z = N.z0 + 1 + ((i * 61) % 89) / 89 * (zw - N.z0 - 4.5), y = gh(x, z), r = 0.6 + (i % 4) * 0.25;
         trees.push([new THREE.IcosahedronGeometry(r, 1).scale(1.3, 0.75, 1.1).translate(X(x), y + r * 0.5, Z(z)), ['#2f4a25', '#3e5d2e', '#36552a', '#4a6332'][i % 4]]);
       }
     }

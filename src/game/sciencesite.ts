@@ -558,7 +558,9 @@ const passageSpec: Spec = {
   extras: (k: Kit) => {
     const P = SC.passage;
     // asphalt right up to the low building's front (no lawn between), a little patched and worn
-    k.meshes.push(new THREE.Mesh(drapeAt(PO, 203.5, P.x1 - 0.65, P.z0 + 0.6, P.z1, 0.5, 0.028, (x, z) => {
+    // (and across the passage's end to the stone wall, north of the low building: the owner's correction)
+    k.meshes.push(new THREE.Mesh(drapeAt(PO, 203.5, 223.9, P.z0 + 0.3, P.z1, 0.5, 0.028, (x, z) => {
+      if (x > P.x1 - 0.65 && z > -94.2) return null;
       const n = vnoise(x * 0.5, z * 0.5), m = hash(Math.floor(x * 2), Math.floor(z * 2));
       return [0.29 + n * 0.04 + (m > 0.93 ? 0.05 : 0), 0.29 + n * 0.04, 0.3 + n * 0.04];
     }), groundCover()));

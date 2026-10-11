@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import { groundHeight } from './relief';
 import { roadClearance } from './life';
+import { onPaved } from './science';
 import { buildingAt } from './campusmap';
 
 const CELL = 2.2;
@@ -108,7 +109,7 @@ export class Tufts {
     c = null;
     if (hash(i, j, 1) < 0.62) {
       const x = (i + 0.15 + hash(i, j, 2) * 0.7) * CELL, z = (j + 0.15 + hash(i, j, 3) * 0.7) * CELL;
-      if (roadClearance(x, z, 5, -1, true) > 1.4 && !buildingAt(x, z, 0.6)) {
+      if (roadClearance(x, z, 5, -1, true) > 1.4 && !buildingAt(x, z, 0.6) && !onPaved(x, z)) {
         c = Float32Array.of(x, z, hash(i, j, 4) * 6.28, 0.7 + hash(i, j, 5) * 0.8, hash(i, j, 6) < 0.18 ? 1 : 0, 0.75 + hash(i, j, 7) * 0.35);
       }
     }
