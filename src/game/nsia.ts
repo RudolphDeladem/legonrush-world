@@ -54,12 +54,12 @@ export const NSIA = {
   /** the hill's continuation north along NSIA Road to J.K.M. Hodasi Road (the owner's NSIA hillside correction, picture
    *  3: the yellow arrow): its height (estimated from the passage photo, about a low wall's height plus a bank over the
    *  passage floor); east of the low building from the belt's end to the passage end (x0e..x1, z from passEnd to z1e);
-   *  north of the passage end across to the Frank Torto tower (x0..x1, z from z0 to passEnd); the bank down to Hodasi
+   *  north of the passage end, from the east end of the Chemistry Extension's north range (the owner: the wall touches it) to NSIA Road (x0..x1, z from z0 to passEnd); the bank down to Hodasi
    *  Road (n metres long, ending clear of its riding width) */
-  north: { h: 1.35, x0: 205.6, x0e: 224.4, x1: 231.5, z0: -150.5, passEnd: -101, z1e: -79, n: 6.5, west: 2.4,
+  north: { h: 1.35, x0: 207.0, x0e: 224.4, x1: 231.5, z0: -150.5, passEnd: -137.4, z1e: -79, n: 6.5, west: 2.4,
     /** its top along it, [z, height]: the low wall's height at the passage's end, rising over the planted slope behind,
      *  then easing down toward Hodasi Road (estimates, calibrated against the passage photo) */
-    profile: <[number, number][]>[[-150.5, 1.5], [-138, 2.2], [-118, 2.3], [-108, 1.95], [-101, 1.35]] },
+    profile: <[number, number][]>[[-150.5, 1.7], [-145, 2.0], [-141, 1.8], [-137.4, 1.35]] },
   /** where the route draws no pavements, lane paint or decorative trees (the real roads here have none) */
   plain: [150, 262, -165, 30] as [number, number, number, number],
   /** where generic palms and flame trees give way to broadleaf trees (the six views) */

@@ -2163,6 +2163,10 @@ The pictures are `images/663-665.jpg`. The numbers are in `src/game/nsia.ts` (`N
   top back over the edge, a dark coping), its face standing in front of the terrain's edge so the slope stays hidden
   behind it, across the passage's end and turning north along the low building's north end; no grass tufts on the
   paved passage; shrubs and trees set back from the wall.
+- **Moved north** (the owner's next picture, `images/669.jpg`): the wall and the hill's front now stand at the far end of
+  the passage, the wall touching the east end of the Chemistry Extension's north range (its red roof) at z -137.4; the
+  passage is level asphalt from the lane to it along the tower; along NSIA Road the planted strip east of the low
+  building runs on at 1.35 m up to the wall's line, the wall turning along it.
 - **Checks.** The route tests check that the hill continues along NSIA Road at five points, that it rises over a metre
   at the passage end, that Hodasi Road is level at the junction and that NSIA Road north of the LECIAD road is smooth to
   ride across its width.

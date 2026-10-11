@@ -672,3 +672,4 @@ Every photo, screenshot, aerial and marked-up map the owner uploaded, in upload 
 | 666.jpg | 119 | 1069x820 | 91 | 2026-10-11 | (NSIA hillside, stone wall) picture 1: the game; the stone wall section at the passage end marked yellow |
 | 667.jpg | 67 | 661x377 | 91 | 2026-10-11 | (NSIA hillside, stone wall) picture 2: the real passage, the stone wall at its end marked yellow |
 | 668.jpg | 63 | 859x414 | 91 | 2026-10-11 | (NSIA hillside, stone wall) picture 3: a stone wall of the same build (the NSIA lane wall in the game) |
+| 669.jpg | 31 | 462x280 | 92 | 2026-10-11 | (NSIA hillside, stone wall) the stone wall and hill to be pushed north (blue) until the wall touches the structure at the Frank Torto Building's far end (red) |

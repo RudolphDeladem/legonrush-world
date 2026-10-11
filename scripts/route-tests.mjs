@@ -591,7 +591,8 @@ try {
     // Road, above the passage beside the Frank Torto tower, easing down to the junction; NSIA Road and Hodasi Road meet
     // level and smooth
     for (const z of [-90, -105, -120, -135, -148]) if (!(g(225, z) > 1.0)) fail(`NSIA hillside: the hill does not continue along NSIA Road at z ${z} (${g(225, z).toFixed(2)})`);
-    if (!(g(212, -104) - g(212, -99) > 1.0)) fail('NSIA hillside: no rise visible at the end of the passage beside the Frank Torto tower');
+    if (!(g(212, -139.5) - g(212, -135) > 1.0)) fail('NSIA hillside: no rise visible at the end of the passage beside the Frank Torto tower');
+    for (const z of [-104, -120, -132]) if (Math.abs(g(214, z)) > 0.05) fail(`NSIA hillside: the passage beside the Frank Torto tower is not level at z ${z} (owner: the wall stands at its far end)`);
     for (const x of [230, 236, 242]) if (Math.abs(g(x, -162)) > 0.02) fail(`NSIA hillside: Hodasi Road is not level at the junction (x ${x})`);
     { let step = 0; for (let z = -162; z < -86; z += 0.5) for (const o of [-3.8, 0, 3.8]) step = Math.max(step, Math.abs(g(235.8 + o, z + 0.5) - g(235.8 + o, z))); if (step > 0.06) fail(`NSIA hillside: NSIA Road north of the connector is not smooth (${step.toFixed(3)} m)`); }
     if ((await server.ssrLoadModule('/src/game/nsiaroad.ts')).nsiaSite.frames().length !== 1) fail('expected the NSIA Road model');

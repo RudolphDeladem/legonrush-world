@@ -420,7 +420,7 @@ const nsiaSpec: Spec = {
         c.push([sheet(capT, capF), '#3b342d'], [sheet(capB, capT), '#453d35']);
       };
       const across: [number, number][] = [];
-      for (let x = N.x0 - 0.6; x <= N.x0e - 0.2; x += 0.5) across.push([Math.min(x, N.x0e - 0.2), zw]);
+      for (let x = N.x0; x <= N.x0e - 0.2; x += 0.5) across.push([Math.min(x, N.x0e - 0.2), zw]);
       run(across, [0, 1]);
       const along: [number, number][] = [];
       for (let z = zw; z <= NSIA.lowPad.z0 - 0.2; z += 0.5) along.push([N.x0e - 0.2, Math.min(z, NSIA.lowPad.z0 - 0.2)]);
@@ -439,11 +439,12 @@ const nsiaSpec: Spec = {
       }), coverMat()));
       k.meshes[k.meshes.length - 1].receiveShadow = true;
       // the trees: dense and irregular, bigger toward NSIA Road, a few along the tower's side
-      const T: [number, number, number, number][] = [[212.5, -107.5, 7.5, 9], [220.5, -106.5, 8.5, 11], [228.5, -100, 8, 10], [228, -88, 7.5, 9], [216, -114, 7, 8],
-        [225, -116, 9, 12], [209.5, -124, 6.5, 8], [219, -128, 8, 10], [228.6, -131, 8.5, 11], [213, -139, 7.5, 9], [222.5, -143, 8, 10], [229, -150, 6.5, 8], [208, -146, 6, 7]];
+      const T: [number, number, number, number][] = [[228.5, -100, 8, 10], [228, -88, 7.5, 9], [227.8, -112, 8.5, 11], [228.6, -124, 8.5, 11], [227.6, -134, 7.5, 9],
+        [212.5, -143.5, 7.5, 9], [220.5, -144.5, 8, 10], [229, -150, 6.5, 8], [208.5, -147.5, 6, 7], [216, -150, 6.5, 8]];
       T.forEach(([x, z, h, sp], i) => broadleaf(k, trees, x, z, { h, spread: sp, seed: 101 + i * 7, sparse: i === 6 }));
       for (let i = 0; i < 46; i++) {
-        const x = N.x0 + 1 + ((i * 37) % 97) / 97 * (N.x1 - N.x0 - 4), z = N.z0 + 1 + ((i * 61) % 89) / 89 * (zw - N.z0 - 4.5), y = gh(x, z), r = 0.6 + (i % 4) * 0.25;
+        const onStrip = i % 2 === 0, x = onStrip ? N.x0e + 1.2 + ((i * 37) % 97) / 97 * (N.x1 - N.x0e - 3) : N.x0 + 1 + ((i * 37) % 97) / 97 * (N.x1 - N.x0 - 4);
+        const z = onStrip ? zw + 2 + ((i * 61) % 89) / 89 * (N.z1e - zw - 4) : N.z0 + 0.5 + ((i * 61) % 89) / 89 * (zw - N.z0 - 3), y = gh(x, z), r = 0.6 + (i % 4) * 0.25;
         trees.push([new THREE.IcosahedronGeometry(r, 1).scale(1.3, 0.75, 1.1).translate(X(x), y + r * 0.5, Z(z)), ['#2f4a25', '#3e5d2e', '#36552a', '#4a6332'][i % 4]]);
       }
     }

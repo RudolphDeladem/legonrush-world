@@ -12,7 +12,7 @@
 export const SC = {
   /** pair 1: the asphalt between the lane and the one-floor building's front (x from, z from, to) and the stack of open
    *  landings at the tower's south end (x from, to along the face; their depth) */
-  passage: { x1: 216.1, z0: -101, z1: -78 },
+  passage: { x1: 216.1, z0: -137.4, z1: -78 },
   landings: { x0: 186.6, x1: 190.6, depth: 2.6 },
   /** pair 2: the one-floor gable-fronted building (x, z; its eaves height and roof pitch; the gable faces east) */
   gable: { x0: 163.4, x1: 197.5, z0: -33.8, z1: -11.2, eave: 6.6, pitch: 0.52, over: 1.1 },
@@ -66,5 +66,5 @@ export const offAsphalt = (x: number, z: number, pad = 0) => [...SC.earth, ...SC
 export const onEarth = (x: number, z: number) => SC.earth.some(([x0, x1, z0, z1]) => x > x0 && x < x1 && z > z0 && z < z1);
 
 /** modelled paved ground where no grass tufts grow (the Frank Torto passage up to its stone wall) */
-export const PAVED: [number, number, number, number][] = [[203.5, 223.9, -100.6, -78]];
+export const PAVED: [number, number, number, number][] = [[203.5, 223.9, -137.0, -78]];
 export const onPaved = (x: number, z: number) => PAVED.some(([x0, x1, z0, z1]) => x > x0 && x < x1 && z > z0 && z < z1);
