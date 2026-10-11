@@ -346,7 +346,7 @@ const whiteSpec: Spec = {
     // the bank toward the road: long grass, exposed red soil, a kerb of stone at its foot
     k.meshes.push(new THREE.Mesh(drapeAt(WO, 598, 628, z1 + 0.2, 101, 0.5, 0.04, (x, z) => {
       const n = vnoise(x * 0.3, z * 0.3);
-      return n > 0.72 ? [0.6, 0.38, 0.24] : [0.38 + n * 0.12, 0.47 + n * 0.08, 0.22];
+      return n > 0.82 ? [0.6, 0.38, 0.24] : [0.38 + n * 0.12, 0.47 + n * 0.08, 0.22];
     }), groundCover()));
     for (let i = 0; i < 160; i++) {
       const x = 599 + hash(i, 21) * 28, z = z1 + 1 + hash(i, 23) * 24, h = 0.5 + hash(i, 25) * 0.7;
