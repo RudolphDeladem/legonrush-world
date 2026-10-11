@@ -38,7 +38,9 @@ export const EN = {
   bank: 1.4,
   // ---------- the Jones-Quartey Building and its surroundings (pairs 27-37) ----------
   /** the JQB: its footprint, its storeys and floor height, the signed core on the south front (x) */
-  jqb: { x0: 544.0, x1: 594.0, z0: -82.0, z1: -20.5, floors: 4, fh: 3.6, core: 563.0 },
+  jqb: { x0: 543.6, x1: 593.3, z0: -82.5, z1: -34.4, floors: 4, fh: 3.6 },
+  /** where the mapped paths over the JQB's south lawn are drawn as earth, not concrete (x0, x1, z0, z1) */
+  earthBox: [536, 600, -28, 40] as [number, number, number, number],
   /** the red-earth approach from the south lawn to the JQB (centre line, half width) */
   earth: { pts: [[592, 30], [584, 14], [574, 0], [566, -12]] as [number, number][], half: 3.5 },
   /** the asphalt parking between the JQB's east front and La Road */
