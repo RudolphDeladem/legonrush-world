@@ -1348,6 +1348,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
         ${slider('smooth', 'Steering smoothing', 0, 0.9, 0.05)}
         ${slider('triggerDead', 'Trigger dead zone', 0, 0.3, 0.01)}
         ${slider('reverseDelay', 'Reverse delay (s)', 0.2, 1.2, 0.05)}
+        <label class="pad-set"><span>Invert look left/right</span><input type="checkbox" data-k="invertX" ${padSettings.invertX ? 'checked' : ''}></label>
         <label class="pad-set"><span>Invert look up/down</span><input type="checkbox" data-k="invertY" ${padSettings.invertY ? 'checked' : ''}></label>
         <div class="pad-map">${ACTS.map(([a, label]) => `<button class="btn btn-ghost btn-sm" data-a="${a}">${label}: <b>${waiting === a ? 'press a button…' : esc(padActionLabel(fam, a))}</b></button>`).join('')}</div>
         <div class="row"><button class="btn btn-ghost btn-sm" data-r="reset">Reset to defaults</button><button class="btn btn-primary" data-r="done">Done</button></div>`;
@@ -1355,7 +1356,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
         savePadSettings({ [i.dataset.k!]: Number(i.value) });
         i.nextElementSibling!.textContent = Number(i.value).toFixed(2);
       }));
-      panel.querySelector<HTMLInputElement>('input[type=checkbox]')!.addEventListener('change', (e) => savePadSettings({ invertY: (e.target as HTMLInputElement).checked }));
+      panel.querySelectorAll<HTMLInputElement>('input[type=checkbox]').forEach((i) => i.addEventListener('change', () => savePadSettings({ [i.dataset.k as 'invertX' | 'invertY']: i.checked })));
       panel.querySelectorAll<HTMLElement>('[data-a]').forEach((b) => b.addEventListener('click', () => {
         if (!g) return;
         waiting = b.dataset.a as PadAction;
@@ -1501,11 +1502,11 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     game.reverseDelay = padSettings.reverseDelay;
     if (pad.capturing) return;
     // photo mode: the right stick turns the camera round the rider
-    if (game.photoMode) { if (f.rx || f.ry) game.orbitPhoto(f.rx * 900 * dt, f.ry * 600 * dt); return; }
+    if (game.photoMode) { if (f.rx || f.ry) game.orbitPhoto((padSettings.invertX ? -1 : 1) * f.rx * 900 * dt, (padSettings.invertY ? -1 : 1) * f.ry * 600 * dt); return; }
     if (f.actPressed('pause') && game.isRiding) { releasePad(); togglePause(); return; }
     if (!game.isRiding || game.paused || app.querySelector('#pauseOverlay')) { releasePad(); return; }
     // the camera, in every kind of ride
-    game.look.x = f.rx * padSettings.look;
+    game.look.x = (padSettings.invertX ? -1 : 1) * f.rx * padSettings.look;
     game.look.y = (padSettings.invertY ? -1 : 1) * f.ry * padSettings.look;
     game.lookBehind = f.act('lookBack');
     if (f.actPressed('camera')) { const v = game.cycleCamera(); flash('CAMERA', ['Chase view', 'Far view', 'Close view'][v], 900); }

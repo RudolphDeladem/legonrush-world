@@ -2247,7 +2247,7 @@ Triangle, A/B/X/Y, or position names such as "Bottom button" for an unknown pad)
 - **Keys and controller together**: the left stick steers only while the controller is the device in use, so a key
   press is never overridden.
 - **Pause → Controller** (when a controller is connected): steering and camera sensitivity, left and right stick dead
-  zones, steering smoothing, trigger dead zone, reverse delay, invert look; any action can be moved to another button
+  zones, steering smoothing, trigger dead zone, reverse delay, invert look left/right and up/down; any action can be moved to another button
   (press the action, then the new button; the two swap, so no button does two things). Saved in the browser, remaps
   per controller model. Reset restores the defaults.
 - **Non-standard pads**: they use the same button numbers (most generic pads follow them); a D-pad reported as a hat

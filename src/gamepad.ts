@@ -78,6 +78,8 @@ export interface PadSettings {
   look: number;
   /** invert the right stick's vertical look */
   invertY: boolean;
+  /** invert the right stick's horizontal look */
+  invertX: boolean;
   /** seconds the brake must be held at a standstill before the bike rolls backwards */
   reverseDelay: number;
   /** trigger travel ignored as noise */
@@ -86,7 +88,7 @@ export interface PadSettings {
   smooth: number;
 }
 const SETTINGS_KEY = 'legonrush.pad';
-export const PAD_DEFAULTS: PadSettings = { deadLeft: 0.15, deadRight: 0.15, steer: 1, look: 1, invertY: false, reverseDelay: 0.45, triggerDead: 0.06, smooth: 0.35 };
+export const PAD_DEFAULTS: PadSettings = { deadLeft: 0.15, deadRight: 0.15, steer: 1, look: 1, invertY: false, invertX: false, reverseDelay: 0.45, triggerDead: 0.06, smooth: 0.35 };
 function loadSettings(): PadSettings {
   try { return { ...PAD_DEFAULTS, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? '{}') }; } catch { return { ...PAD_DEFAULTS }; }
 }
