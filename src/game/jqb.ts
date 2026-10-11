@@ -150,7 +150,8 @@ const jqbSpec: Spec = {
         return [0.66 + v + rut, 0.36 + v + rut, 0.22 + v];
       }
       if (d < E.half + 1.4 && m > 0.45) return [0.56, 0.42, 0.26];
-      return [0.4 + n * 0.12, 0.47 + n * 0.08, 0.21];
+      // elsewhere the lawn itself shows (no patch with an edge)
+      return null;
     }), groundCover()));
     for (let i = 0; i < 260; i++) {
       const x = 536 + hash(i, 31) * 64, z = -27 + hash(i, 37) * 66;
