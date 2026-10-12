@@ -169,7 +169,7 @@ const gateSpec: Spec = {
         flagpole(b, x, z, 8.5 + (i % 2) * 0.4, FLAGS[i % FLAGS.length], i % 3 === 1, z < zm ? -0.4 : 0.4);
       }
     }
-    for (const [x, z, h] of [[px0 + 2.2, pz0 + 1.5, 9.5], [px0 + 2.2, pz1 - 1.5, 10.2], [px1 - 4, pz0 + 1.8, 8.8], [px1 - 4, pz1 - 1.8, 9.6], [G.x0 - 3.5, n0 - 1.2, 11], [G.x0 - 3.5, n1 + 1.2, 10.4], [G.x1 + 3.8, n0 - 1.4, 10.8], [G.x1 + 3.8, n1 + 1.4, 11.4]] as [number, number, number][]) fanPalm(b, x, z, h, x + z);
+    for (const [x, z, h] of [[px0 + 2.2, pz0 + 1.5, 9.5], [px0 + 2.2, pz1 - 1.5, 10.2], [px1 - 4, pz0 + 1.8, 8.8], [px1 - 4, pz1 - 4.2, 9.6], [G.x0 - 3.5, n0 - 1.2, 11], [G.x0 - 3.5, n1 + 1.2, 10.4], [G.x1 + 3.8, n0 - 1.4, 10.8], [G.x1 + 3.8, n1 + 1.4, 11.4]] as [number, number, number][]) fanPalm(b, x, z, h, x + z);
     // ---------- the black University of Ghana signs ----------
     for (const [sx, sz, yaw] of EN.signs) {
       const g = new THREE.Group();

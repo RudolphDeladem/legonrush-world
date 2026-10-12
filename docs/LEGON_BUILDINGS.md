@@ -2735,3 +2735,43 @@ the Child Study Centre's yard); every ride's ground continuous; route lengths un
 the WACCI building's level heights and the west projection (a photo from the west); the Child Study Centre yard's extent
 and the rear range (a photo from inside the gate); the Biotechnology Centre's south wing (a photo from the south); the
 green fence's line round the corner plot.
+
+## The owner's four pictures (GCB Bank, the overhead crossing) and the Legon City Mall / GM Motors brief
+
+**The four pictures**
+- *The building beside GCB Bank near Ernest Chemist* (circled for deletion): the machine-detected outline between
+  J.J. Rawlings Avenue's east carriageway and the service road by the Legon Second bus stop
+  (ml:8ed8c673-8118-417f-8347-83a82143475c) is excluded; the bus stop stays.
+- *The GCB sign*: the tall sign on its two legs at the bank's north-west corner by the road: the white head with the
+  emblem (on both faces), the yellow and orange lower panel with "Legon Branch" and "24/7 ATM Banking" (the smaller lines
+  left unreadable); cars nosed in on the red earth either side (`tenpairs.ts`).
+- *The island at the overhead crossing* (pictures 3, 4): the ring's west slope now begins 3.4 m inside its edge
+  (`CUT.ring.shelf`, cutplan.ts); the level semicircle in front of it is heaped stone gravel between the ring's kerb and a
+  low concrete parapet at the top of the slope, the chevron boards and the keep-right sign on it.
+- *The space between the overhead and the gate* (the red arrows): the ring road's west arc was one narrow lane between the
+  island and the plaza. The plaza's east end is pulled back to x 745.5 (`EN.plaza`), and the asphalt runs out to it with
+  a kerb, a broad two-lane curve; the plaza's corner palm is moved off Danquah Avenue's south carriageway. The edge
+  strips there are the model's own (agplan.ts).
+
+**The Legon City Mall and GM Motors brief** (`Legon_City_Mall_GM_Motors_correction_brief.pdf`; cameras `mall1`,
+`mall3`, `mall5`, `mall6` in tenviews.ts)
+- *The mall* (roadside.ts): seen from its forecourt, the lighter open left (north) wing: a pale frame of columns and
+  slab edges with the glazing set back and the passage below; the darker central block, dark grey cladding with large
+  window bands in an uneven rhythm, five levels; the glazed right (south) volume; the parts behind lower and grey. The
+  ground floor toward the forecourt: shop glazing, a canopy and coloured sign bands (no invented shop names). The name
+  LEGON CITY with the three coloured stars and MALL stands free on the central block's roof at its front edge. The
+  forecourt is interlocking pavers with parking bays, cars, lamp poles; the chain-link fence on its red-brown posts stays.
+- *GMI Motors* is now the low signed frontage on the circled building (osm:way/665125606, the blue arrows): flat-roofed,
+  the long pale sign fascia with red trim and the red lettering, a front of dark glazing between slender mullions; a
+  gravelly forecourt to the open lot with modest posts and a mesh rail, a few cars. The two outlines east of it, farther
+  back toward the mall, where the GMI model stood before, are the separate plain low structure of the green arrow: pale
+  walls, a few dark openings, a shallow roof, no sign. The open lot south of GMI is gravel and earth, not lawn.
+- *The roadside cluster* (images 3, 4) on the south side of the lane to the mall (osm R593) at x 792-811: a kerb, the
+  compacted vehicle strip, a raised concrete slab, the shelter (a shallow sheet roof on slender posts, mesh and grille
+  sides, stacked tyres, a drum and a box under it), the tall advertising panel on two posts, a small sign panel, dense
+  trees and banana plants behind.
+
+*Assumed*: which mall rectangles form the three parts (by their place in the mapped outline) and their levels (4, 5, 5);
+the sign's width (30 m); the cluster's exact spot along the lane (image 3's arrow); the low structure's height.
+*Would settle it*: a photo of the mall from the north-west (the left wing's depth); a photo along the lane past the
+cluster.

@@ -770,7 +770,7 @@ try {
   // ---------- the 10-pair brief and the owner's three pictures (the JQB lane, the overhead crossing) ----------
   {
     const tp = (await server.ssrLoadModule('/src/game/tenpairs.ts')).tenPairsSite;
-    if (tp.frames().length !== 6) fail('10-pair brief: expected the bank, the parcel, GMI Motors, the dance frontage, the frame and the island signs');
+    if (tp.frames().length !== 7) fail('10-pair brief: expected the bank, the parcel, GMI Motors, the dance frontage, the frame, the island signs and the roadside cluster');
     const W = [9, 7.4, 6.2, 4.6, 2.6];
     const onRoad = (x, z, r) => {
       for (const road of cm.ROADS) {

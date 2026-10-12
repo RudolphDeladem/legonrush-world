@@ -15,8 +15,9 @@ export const EN = {
   /** the low wings north and south of the gate (one storey, white with a red base), x0, x1, z0, z1 */
   wings: [[641.3, 683.1, 97.7, 107.0], [640.8, 681.0, 149.1, 158.4]] as [number, number, number, number][],
   wingEave: 3.4,
-  /** the flag plaza east of the gate: its outline, the fountain basin, the two flag lines along its long sides */
-  plaza: [692.0, 753.0, 114.5, 142.0] as [number, number, number, number],
+  /** the flag plaza east of the gate: its outline (its east end kept back from the ring road, which is wide there: the
+   *  owner's correction), the fountain basin, the two flag lines along its long sides */
+  plaza: [692.0, 745.5, 114.5, 142.0] as [number, number, number, number],
   basin: [701.0, 732.0, 124.0, 131.5] as [number, number, number, number],
   flags: 9,
   /** the black University of Ghana signs under their tiled canopies at the plaza's east corners (x, z, facing yaw) */

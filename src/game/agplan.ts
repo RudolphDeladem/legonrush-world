@@ -13,5 +13,7 @@ export const AG_OWNED: [number, number, number, number][] = [
   [268, 325, 265.6, 269.5],
   [415, 439, 265.6, 269.5],
   [511, 516.5, 204, 214.5],
+  // (not the Agriculture side: the ring road's west arc at the main gate, widened toward the plaza, tenpairs.ts)
+  [743.5, 761, 112.5, 143.5],
 ];
 export const agOwns = (x: number, z: number) => AG_OWNED.some(([x0, x1, z0, z1]) => x > x0 && x < x1 && z > z0 && z < z1);

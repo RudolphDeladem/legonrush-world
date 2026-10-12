@@ -24,8 +24,9 @@ export const CUT = {
   ramp: [90, 90] as [number, number],
   /** the ring of the interchange: centre, the radius of its inner edge, and the open bowl between the bridges, where
    *  the west side slopes down to the road over stone pitching instead of standing as a wall (pair 13; on the east the
-   *  ring road runs too close to the cutting for a slope: the wall stands there) */
-  ring: { x: 777, z: 126, r: 19.5, z0: 104, z1: 148, bank: 7.5 },
+   *  ring road runs too close to the cutting for a slope: the wall stands there); the slope begins `shelf` m inside the
+   *  ring's edge: the level island of stone gravel in front of it (the owner's correction, from the street view) */
+  ring: { x: 777, z: 126, r: 19.5, z0: 104, z1: 148, bank: 7.5, shelf: 3.4 },
   /** the direction the cutting runs (for telling a rider passing under a bridge from one crossing it) */
   axis: [0.17, 0.985] as [number, number],
   /** bridge deck thickness (its soffit is this far below the road on it) */
@@ -71,7 +72,7 @@ export function cutDrop(x: number, z: number) {
   if (x > w && x < e) return D;
   if (!inBowl(x, z) || x >= e) return 0;
   // the slope reaches the ground at the ring's inner edge (steeper toward the bridges, where the ring closes in)
-  const R = CUT.ring, edge = R.x - Math.sqrt(Math.max(0, R.r * R.r - (z - R.z) ** 2));
+  const R = CUT.ring, ri = R.r - R.shelf, edge = R.x - Math.sqrt(Math.max(0, ri * ri - (z - R.z) ** 2));
   const d = w - x, t = d / Math.max(0.8, Math.min(R.bank, w - edge));
   return t >= 1 ? 0 : D * (1 - smooth(t));
 }

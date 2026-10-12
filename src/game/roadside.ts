@@ -251,61 +251,103 @@ const chainLink = () => (linkMat ??= (() => {
   t.repeat.set(1, 1);
   return new THREE.MeshStandardMaterial({ map: t, transparent: true, alphaTest: 0.3, side: THREE.DoubleSide, roughness: 0.6, metalness: 0.4 });
 })());
+let nameT: THREE.CanvasTexture | null = null;
+/** LEGON CITY ★★★ MALL: navy letters with the three coloured stars, standing free on the roof */
+const mallNameTex = () => (nameT ??= (() => {
+  const t = canvas(1024, 170, (g) => {
+    g.clearRect(0, 0, 1024, 170); g.fillStyle = '#26306a'; g.font = 'bold 88px Arial'; g.textBaseline = 'middle'; g.textAlign = 'left';
+    const a = 'LEGON CITY', c = 'MALL', wa = g.measureText(a).width, wc = g.measureText(c).width, gap = 130, x0 = (1024 - wa - gap - wc) / 2;
+    g.fillText(a, x0, 96); g.fillText(c, x0 + wa + gap, 96);
+    const star = (cx: number, cy: number, r: number, col: string) => { g.fillStyle = col; g.beginPath(); for (let i = 0; i < 10; i++) { const an = -Math.PI / 2 + (i * Math.PI) / 5, rr = i % 2 ? r * 0.45 : r; g.lineTo(cx + Math.cos(an) * rr, cy + Math.sin(an) * rr); } g.closePath(); g.fill(); };
+    const sx = x0 + wa + gap / 2;
+    star(sx - 30, 70, 32, '#d6262f'); star(sx + 10, 116, 28, '#2f9a3c'); star(sx + 30, 52, 24, '#f2c21b');
+  });
+  t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; return t;
+})());
 const mallSpec: Spec = {
   name: 'Legon City Mall', axis: [1, 0], origin: MO, storey: 3.6, style: PLAIN, roofColor: '#9a9a96', fascia: '#5a5a58', pitch: 0.1,
   replaces: MALL ? [centre(MALL)] : [],
   onGround: true,
   blocks: [],
-  // the forecourt is gravel (pair 20): the mapped car park there is drawn here
+  // the forecourt is paved parking (the owner's mall correction brief): the mapped car park there is drawn here
   covers: [[845, -170]],
   keep: [[826 - MO[0], 963 - MO[0], -227 - MO[1], -136 - MO[1]]],
   extras: (k: Kit) => {
     if (!MALL) return;
     const b = new Bag(MO), pos: number[] = [], uv: number[] = [], idx: number[] = [], y = gh(917, -180);
-    // the tall corner: the block at the outline's south-west corner (x 874.8-889.3, z -163.1 to -145.3), toward the road
-    const tall = (r: number[]) => r[1] < 891 && r[2] > -170 && r[3] < -144;
-    // (the outline's south-east corner reaches into the road round it: the walls there stand back at the road's edge)
-    // (the owner's 10-pair brief, pair 4: not one all-glass box but stepped rectangular masses, light-grey panelled
-    // blocks with bands of dark windows alternating with the dark blue glazed ones, each its own height)
-    const STEPS = [4, 5, 3, 5, 4, 3, 5];
+    // (the owner's Legon City Mall correction brief: a broad multi-part complex, not repeated office modules. Seen from the
+    // forecourt (west): the lighter, open left (north) wing over a passage, the darker central block with its large
+    // window bands and the name on its roof, the glazed right (south) volume; the parts behind lower and grey)
+    const kindOf = (r: number[]) => {
+      const cx = (r[0] + r[1]) / 2, cz = (r[2] + r[3]) / 2;
+      if (cz < -205 && cx < 891) return 'left';
+      if (cx < 892 && cz > -164) return 'right';
+      if (cx < 942 && cz > -207 && cz < -150) return 'centre';
+      return 'back';
+    };
+    const LEVELS = { left: 4, centre: 5, right: 5, back: 4 } as const;
+    let centreTop = y + 5 * 3.6, centreX = 888.4;
     for (const [ri, r] of rectsOf(ringOf(MALL)).map((q) => [q[0], q[1], q[2], q[1] > 925 ? Math.min(q[3], -139.9) : q[3]]).entries()) {
-      const top = y + (tall(r) ? 6 : STEPS[ri % STEPS.length]) * 3.6;
-      if (tall(r) || ri % 2 === 0) glassBox(pos, uv, idx, r[0], r[1], r[2], r[3], y, top);
-      else {
-        b.c.push([b.B(r[0], r[1], y, top, r[2], r[3]), '#c9cbcb']);
-        for (let f = 1; f * 3.6 < top - y - 1; f++) {
-          const y0 = y + f * 3.6 + 0.9, y1 = y0 + 1.5;
-          b.win.push(b.plane(true, r[3] + 0.02, 1, (r[0] + r[1]) / 2, r[1] - r[0] - 1.6, y0, y1), b.plane(true, r[2] - 0.02, -1, (r[0] + r[1]) / 2, r[1] - r[0] - 1.6, y0, y1));
-          b.win.push(b.plane(false, r[1] + 0.02, 1, (r[2] + r[3]) / 2, r[3] - r[2] - 1.6, y0, y1), b.plane(false, r[0] - 0.02, -1, (r[2] + r[3]) / 2, r[3] - r[2] - 1.6, y0, y1));
-        }
-        // the shopfronts on the ground floor
-        b.win.push(b.plane(true, r[3] + 0.02, 1, (r[0] + r[1]) / 2, r[1] - r[0] - 1.0, y + 0.2, y + 3.0), b.plane(false, r[0] - 0.02, -1, (r[2] + r[3]) / 2, r[3] - r[2] - 1.0, y + 0.2, y + 3.0));
+      const kind = kindOf(r), lv = kind === 'back' ? 3 + (ri % 2) : LEVELS[kind], top = y + lv * 3.6;
+      const faces = (fn: (alongX: boolean, at: number, out: number, a0: number, a1: number) => void) => { fn(true, r[3], 1, r[0], r[1]); fn(true, r[2], -1, r[0], r[1]); fn(false, r[1], 1, r[2], r[3]); fn(false, r[0], -1, r[2], r[3]); };
+      if (kind === 'right') glassBox(pos, uv, idx, r[0], r[1], r[2], r[3], y, top);
+      else if (kind === 'centre') {
+        // dark grey cladding, large rectangular window bands in an uneven rhythm
+        centreTop = Math.max(centreTop, top); centreX = Math.min(centreX, r[0]);
+        b.c.push([b.B(r[0], r[1], y, top, r[2], r[3]), '#4d4b58']);
+        faces((alongX, at, out, a0, a1) => {
+          const n = Math.max(1, Math.round((a1 - a0) / 6.5));
+          for (let f = 1; f < lv; f++) for (let i = 0; i < n; i++) {
+            const w = ((a1 - a0) / n) * (0.62 + 0.22 * hash(i + f, ri)), a = a0 + ((a1 - a0) * (i + 0.5)) / n;
+            k.glass.push(b.plane(alongX, at + out * 0.03, out, a, w, y + f * 3.6 + 0.55, y + f * 3.6 + 3.0));
+          }
+        });
+      } else if (kind === 'left') {
+        // the lighter, more open wing: pale frame of columns and slab edges, glazing set back behind it, the passage below
+        b.c.push([b.B(r[0] + 1.2, r[1] - 0.2, y + 3.6, top, r[2] + 0.2, r[3] - 0.2), '#c6c9cc']);
+        faces((alongX, at, out, a0, a1) => {
+          const inset = at - out * 1.0, n = Math.max(1, Math.round((a1 - a0) / 5));
+          for (let f = 1; f < lv; f++) k.glass.push(b.plane(alongX, inset + out * 0.25, out, (a0 + a1) / 2, a1 - a0 - 1.5, y + f * 3.6 + 0.4, y + f * 3.6 + 3.2));
+          for (let i = 0; i <= n; i++) { const a = a0 + ((a1 - a0) * i) / n; b.c.push([alongX ? b.B(a - 0.3, a + 0.3, y, top, Math.min(at, at - out * 0.6), Math.max(at, at - out * 0.6)) : b.B(Math.min(at, at - out * 0.6), Math.max(at, at - out * 0.6), y, top, a - 0.3, a + 0.3), '#e9eaea']); }
+          for (let f = 1; f <= lv; f++) b.c.push([alongX ? b.B(a0, a1, y + f * 3.6 - 0.35, y + f * 3.6, Math.min(at, at - out * 0.9), Math.max(at, at - out * 0.9)) : b.B(Math.min(at, at - out * 0.9), Math.max(at, at - out * 0.9), y + f * 3.6 - 0.35, y + f * 3.6, a0, a1), '#e4e5e4']);
+        });
+        b.c.push([b.B(r[0] + 6, r[1] - 0.2, y, y + 3.6, r[2] + 0.2, r[3] - 0.2), '#bfc2c4'], [b.B(r[0] + 5.8, r[0] + 6.0, y, y + 3.4, r[2] + 0.2, r[3] - 0.2), '#2c2f33']);
+      } else {
+        b.c.push([b.B(r[0], r[1], y, top, r[2], r[3]), '#9a9ca0']);
+        faces((alongX, at, out, a0, a1) => { for (let f = 1; f < lv; f++) b.win.push(b.plane(alongX, at + out * 0.02, out, (a0 + a1) / 2, a1 - a0 - 1.6, y + f * 3.6 + 0.9, y + f * 3.6 + 2.4)); });
       }
-      // the ground floor's shopfronts behind a deep concrete band, the slab edges and roof parapet, the flat roof
-      // (each a ring of four edges round the block, not a slab through it)
+      // the ground floor's varied commercial frontage toward the forecourt and the road: shop glazing, a canopy, sign bands
+      if (kind !== 'left' && r[0] < 893) {
+        k.glass.push(b.plane(false, r[0] - 0.04, -1, (r[2] + r[3]) / 2, r[3] - r[2] - 1.0, y + 0.2, y + 3.0));
+        b.c.push([b.B(r[0] - 1.6, r[0], y + 3.15, y + 3.35, r[2] + 0.3, r[3] - 0.3), '#d9d9d6']);
+        const nb = Math.max(1, Math.round((r[3] - r[2]) / 5));
+        for (let i = 0; i < nb; i++) { const z0 = r[2] + 0.4 + ((r[3] - r[2] - 0.8) * i) / nb, z1 = z0 + (r[3] - r[2] - 0.8) / nb - 0.3; b.c.push([b.B(r[0] - 0.12, r[0] - 0.02, y + 3.4, y + 4.1, z0, z1), ['#b8202a', '#e3b43a', '#2a64b8', '#3f8a3a', '#f2f2ee'][Math.floor(hash(i, ri) * 5)]]); }
+      }
       const ring = (o: number, y0: number, y1: number, t: number, col: string) => {
         const [x0, x1, z0, z1] = [r[0] - o, r[1] + o, r[2] - o, r[3] + o];
         b.c.push([b.B(x0, x1, y0, y1, z0, z0 + t), col], [b.B(x0, x1, y0, y1, z1 - t, z1), col], [b.B(x0, x0 + t, y0, y1, z0, z1), col], [b.B(x1 - t, x1, y0, y1, z0, z1), col]);
       };
-      ring(0.05, y + 3.2, y + 3.9, 0.4, '#d8d8d4');
-      ring(0.15, top, top + 1.1, 0.35, '#cfcfca');
+      ring(0.15, top, top + 1.0, 0.35, kind === 'centre' ? '#3e3d48' : '#cfcfca');
       b.c.push([b.B(r[0] + 0.2, r[1] - 0.2, top - 0.2, top + 0.15, r[2] + 0.2, r[3] - 0.2), '#8f8f8b']);
       wallSolids(r[0], r[2], r[1], r[2]); wallSolids(r[1], r[2], r[1], r[3]); wallSolids(r[1], r[3], r[0], r[3]); wallSolids(r[0], r[3], r[0], r[2]);
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); g.setIndex(idx); g.computeVertexNormals();
     const m = new THREE.Mesh(g, curtain()); m.castShadow = true; m.receiveShadow = true; k.meshes.push(m);
-    // the name on the roof of the tall corner, facing west and south (toward the road and the forecourt)
-    const nt = y + 6 * 3.6 + 1.1;
-    b.c.push([b.B(875.2, 875.5, nt, nt + 1.6, -161.5, -147.5), '#e9e9e6'], [b.B(876.5, 888, nt, nt + 1.6, -146.1, -145.8), '#e9e9e6']);
-    k.signs.push({ text: 'LEGON CITY MALL', x: 875.15 - MO[0], y: nt + 0.8, z: -154.5 - MO[1], ry: -Math.PI / 2, w: 10, colors: ['#e9e9e6', '#b8202a'] });
-    k.signs.push({ text: 'LEGON CITY MALL', x: 882.25 - MO[0], y: nt + 0.8, z: -145.75 - MO[1], ry: 0, w: 10, colors: ['#e9e9e6', '#b8202a'] });
-    // the gravel forecourt: grey-buff gravel, darker where cars stand; rusty posts along its road edges
-    k.meshes.push(new THREE.Mesh(drapeAt(MO, 826, 863, -209, -136, 0.5, 0.04, (x, z) => {
+    // the name and its coloured emblem standing on the central block's roof at its front edge, facing the forecourt
+    const st = centreTop + 1.0, sx = centreX + 0.6;
+    for (const z of [-196, -184, -172]) b.c.push([b.B(sx + 0.1, sx + 0.25, st, st + 4.2, z - 0.1, z + 0.1), '#5a5c60']);
+    k.meshes.push(new THREE.Mesh(new THREE.PlaneGeometry(30, 5).rotateY(-Math.PI / 2).translate(sx - MO[0], st + 2.6, -184 - MO[1]), new THREE.MeshBasicMaterial({ map: mallNameTex(), transparent: true, alphaTest: 0.3, side: THREE.DoubleSide })));
+    // the paved forecourt: interlocking pavers, parking bays along it, a few cars, lamp poles, curbs at the road
+    k.meshes.push(new THREE.Mesh(drapeAt(MO, 826, 872.4, -209, -136, 0.25, 0.04, (x, z) => {
       if (clearance(x, z) < -0.05) return null;
-      const n = vnoise(x * 0.5, z * 0.5), m = hash(Math.floor(x * 4), Math.floor(z * 4)) * 0.06;
-      return [0.66 - n * 0.08 - m, 0.62 - n * 0.08 - m, 0.56 - n * 0.07 - m];
+      const row = Math.floor(z / 0.22), col = Math.floor((x + (row % 2) * 0.11) / 0.22), h = hash(col, row) * 0.06, n = vnoise(x * 0.3, z * 0.3) * 0.05;
+      const bay = (Math.abs(((z + 200) % 2.6 + 2.6) % 2.6) < 0.1 && ((x > 836 && x < 841) || (x > 856 && x < 861))) || (Math.abs(x - 841) < 0.06 || Math.abs(x - 856) < 0.06);
+      if (bay && z > -205 && z < -140) return [0.92, 0.92, 0.88];
+      return [0.66 - h - n, 0.6 - h - n, 0.55 - h - n];
     }), groundCover()));
+    for (const [x, z, col] of [[838.5, -196.2, '#2b2e33'], [838.5, -188.4, '#c9ccd0'], [838.5, -175.4, '#8a8f95'], [838.5, -162.4, '#a42c2c'], [858.5, -193.6, '#e4e4e0'], [858.5, -183.2, '#2b2e33'], [858.5, -167.6, '#2f5fa8'], [858.5, -154.6, '#c9ccd0']] as [number, number, string][]) car(k, x - MO[0], z - MO[1], col, gh(x, z), Math.PI / 2);
+    for (const [x, z] of [[848.5, -200], [848.5, -170], [848.5, -145]]) { b.c.push([new THREE.CylinderGeometry(0.08, 0.12, 8, 8).translate(x - MO[0], gh(x, z) + 4, z - MO[1]), '#9aa0a5'], [b.B(x - 0.8, x + 0.8, gh(x, z) + 7.9, gh(x, z) + 8.05, z - 0.15, z + 0.15), '#5c6266']); SOLIDS.add(x, z, 0.15); }
     // the red-brown posts along its road edges, the chain-link mesh between them (pair 4: a light fence, not a wall)
     const posts = (pts: [number, number][]) => {
       let prev: [number, number] | null = null;

@@ -31,7 +31,7 @@ import { rectsOf } from './rectilinear';
 import { car } from './cc';
 import { SOLIDS } from './solids';
 import { canvas, type Part } from './modelkit';
-import { CUT } from './cutplan';
+import { CUT, deckAt } from './cutplan';
 
 const PLAIN: Style = { bay: 4, up: [], ground: [], draw: (g) => render(g, WALL) };
 /** the mapped outline whose box is (about) this one */
@@ -59,6 +59,15 @@ const gcbTex = () => tex('gcb', 256, 256, (g) => {
   g.beginPath(); g.arc(128, 150, 70, Math.PI * 1.08, Math.PI * 1.72); g.stroke();
   g.strokeStyle = '#f0b81c'; g.lineWidth = 14; g.beginPath(); g.arc(150, 120, 52, Math.PI * 1.1, Math.PI * 1.6); g.stroke();
   g.fillStyle = '#6b6f73'; g.font = 'bold 62px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('GCB', 128, 200);
+});
+/** the GCB sign's lower panel: the branch and service lines (only the larger ones read) over yellow and orange */
+const gcbPylonTex = () => tex('gcbpylon', 128, 300, (g) => {
+  g.fillStyle = '#f4f3ef'; g.fillRect(0, 0, 128, 70);
+  g.fillStyle = '#3a3a3a'; g.font = 'bold 15px Arial'; g.textAlign = 'center'; g.fillText('Legon Branch', 64, 24); g.fillText('24/7 ATM Banking', 64, 54);
+  g.fillStyle = '#c9c9c4'; g.fillRect(0, 34, 128, 3); g.fillRect(0, 68, 128, 3);
+  g.fillStyle = '#f2b51c'; g.fillRect(0, 71, 128, 229);
+  g.fillStyle = '#e88a18'; g.beginPath(); g.moveTo(0, 300); g.lineTo(0, 190); g.quadraticCurveTo(70, 210, 128, 120); g.lineTo(128, 300); g.closePath(); g.fill();
+  g.fillStyle = 'rgba(90,60,20,0.55)'; for (let i = 0; i < 4; i++) g.fillRect(28, 92 + i * 18, 70 - (i % 2) * 14, 6);
 });
 /** black-and-yellow chevron board */
 const chevronTex = () => tex('chev', 128, 64, (g) => {
@@ -192,7 +201,7 @@ const bankSpec: Spec = {
       SOLIDS.add(x, -8.2, 0.1);
     }
     // the mature spreading trees, the utility poles and their wires along the road, the parked car
-    for (const [x, z, h, s] of [[813.5, -40, 9, 14], [814, -4.5, 8.5, 13], [846, -36, 8, 11]] as [number, number, number, number][]) broadleaf(k, b.leaf, x, z, { h, spread: s, seed: x + z * 3, origin: BO });
+    for (const [x, z, h, s] of [[812.4, -54, 9, 14], [814, -4.5, 8.5, 13], [846, -36, 8, 11]] as [number, number, number, number][]) broadleaf(k, b.leaf, x, z, { h, spread: s, seed: x + z * 3, origin: BO });
     const poles: [number, number][] = [[810.3, -50], [810.3, -20], [810.4, 8]];
     for (const [x, z] of poles) { const py = gh(x, z); b.c.push([new THREE.CylinderGeometry(0.1, 0.14, 8.5, 8).translate(x - BO[0], py + 4.25, z - BO[1]), '#5a4a3b'], [b.B(x - 0.9, x + 0.9, py + 7.9, py + 8.0, z - 0.05, z + 0.05), '#4a3d30']); SOLIDS.add(x, z, 0.2); }
     for (let i = 0; i < poles.length - 1; i++) for (const dx of [-0.8, 0, 0.8]) {
@@ -205,6 +214,18 @@ const bankSpec: Spec = {
       }
     }
     car(k, 816.0 - BO[0], -12.8 - BO[1], '#22262b', gh(816, -12.8), Math.PI / 2);
+    // the tall GCB sign on its two legs at the north-west corner by the road (the owner's picture): the white head with the
+    // emblem, the yellow and orange lower panel with its service lines; cars nosed in on the red earth either side
+    {
+      const px = 813.4, pz = -39.6, py = gh(px, pz), w = 1.5, hgt = 5.6;
+      b.c.push([b.B(px - 0.18, px + 0.18, py, py + hgt, pz - w / 2, pz + w / 2), '#ededea']);
+      for (const s2 of [-1, 1]) b.c.push([b.B(px - 0.22, px + 0.22, py, py + 0.5, pz + s2 * (w / 2 - 0.12) - 0.12, pz + s2 * (w / 2 - 0.12) + 0.12), '#9a958b']);
+      board(b, k, gcbTex(), px - 0.19, py + hgt - 0.85, pz, 1.45, 1.45, -Math.PI / 2);
+      board(b, k, gcbPylonTex(), px - 0.19, py + 2.2, pz, 1.45, 3.4, -Math.PI / 2);
+      board(b, k, gcbTex(), px + 0.19, py + hgt - 0.85, pz, 1.45, 1.45, Math.PI / 2);
+      wallSolids(px, pz - w / 2, px, pz + w / 2, 0.3);
+      for (const [z, col] of [[-47.2, '#9aa0a6'], [-44.2, '#2f3a4a'], [-35.0, '#1f2328']] as [number, string][]) car(k, 815.6 - BO[0], z - BO[1], col, gh(815.6, z), Math.PI / 2);
+    }
     b.finish(k, 0.25);
   },
 };
@@ -291,40 +312,126 @@ function oriented(b: { pts: Float32Array }) {
   const am = (a0 + a1) / 2, dm = (d0 + d1) / 2;
   return { c: [am * ux - dm * uz, am * uz + dm * ux] as [number, number], ang, len: a1 - a0, dep: d1 - d0, ux, uz };
 }
-const GMI = [footprint(809.9, 844.2, -225.4, -218.7), footprint(843.8, 860.2, -227.0, -213.0)].filter((q) => !!q);
-const GO: [number, number] = [835, -220];
+/** (the owner's Legon City Mall and GM Motors correction brief: GMI Motors is the low signed frontage nearest the road (the
+ *  outline osm:way/665125606, blue arrows); the two outlines east of it, farther back toward the mall, are a separate
+ *  plain low structure (the green arrow), with no sign) */
+const GMI = footprint(782.2, 811.4, -221.8, -204.9);
+const LOWB = [footprint(809.9, 844.2, -225.4, -218.7), footprint(843.8, 860.2, -227.0, -213.0)].filter((q) => !!q);
+const GO: [number, number] = [815, -215];
 const gmiSpec: Spec = {
-  name: 'GMI Motors', axis: [1, 0], origin: GO, storey: 4.5, style: PLAIN, roofColor: '#9a9a96', fascia: '#5a5a58', pitch: 0.05,
-  replaces: GMI.map((q) => oriented(q!).c),
+  name: 'GMI Motors and the low structure behind it', axis: [1, 0], origin: GO, storey: 4.5, style: PLAIN, roofColor: '#9a9a96', fascia: '#5a5a58', pitch: 0.05,
+  replaces: [GMI, ...LOWB].filter((q) => !!q).map((q) => oriented(q!).c),
   onGround: true,
   blocks: [],
-  keep: [[808 - GO[0], 862 - GO[0], -229 - GO[1], -211 - GO[1]]],
+  keep: [[780 - GO[0], 862 - GO[0], -229 - GO[1], -180 - GO[1]]],
   extras: (k: Kit) => {
     const b = new Bag(GO);
-    for (const q of GMI) {
-      const o = oriented(q!), y = gh(o.c[0], o.c[1]), H = 4.4, L = o.len, D = o.dep;
-      // built along x in its own frame, then turned onto the outline; its front (local +z) faces the forecourt (south)
-      const parts: Part[] = [], glass: THREE.BufferGeometry[] = [];
-      parts.push([new THREE.BoxGeometry(L, H + 0.3, D).translate(0, y + (H + 0.3) / 2 - 0.3, 0), '#ecebe6']);
-      parts.push([new THREE.BoxGeometry(L + 0.2, 0.7, D + 0.2).translate(0, y + H + 0.35, 0), '#f4f3ef']);
-      parts.push([new THREE.BoxGeometry(L + 0.1, 0.6, D + 0.1).translate(0, y, 0), '#9a958b']);
-      const n = Math.max(1, Math.round(L / 4.2));
-      for (let i = 0; i < n; i++) { const a = -L / 2 + (L * (i + 0.5)) / n; glass.push(new THREE.PlaneGeometry(L / n - 0.6, 3.0).translate(a, y + 1.9, D / 2 + 0.03)); }
-      for (let i = 0; i <= n; i++) parts.push([new THREE.BoxGeometry(0.3, 3.6, 0.2).translate(-L / 2 + (L * i) / n, y + 1.8, D / 2 + 0.05), '#d8d6cf']);
+    const corners = (o: ReturnType<typeof oriented>) => [[-o.len / 2, -o.dep / 2], [o.len / 2, -o.dep / 2], [o.len / 2, o.dep / 2], [-o.len / 2, o.dep / 2]].map(([a, d]) => [o.c[0] + a * o.ux - d * o.uz, o.c[1] + a * o.uz + d * o.ux]);
+    const place = (o: ReturnType<typeof oriented>, parts: Part[], glass: THREE.BufferGeometry[]) => {
       const rot = (g: THREE.BufferGeometry) => g.rotateY(-o.ang).translate(o.c[0] - GO[0], 0, o.c[1] - GO[1]);
       for (const [g, col] of parts) b.c.push([rot(g), col]);
       for (const g of glass) k.glass.push(rot(g));
-      const cs = [[-L / 2, -D / 2], [L / 2, -D / 2], [L / 2, D / 2], [-L / 2, D / 2]].map(([a, d]) => [o.c[0] + a * o.ux - d * o.uz, o.c[1] + a * o.uz + d * o.ux]);
+      const cs = corners(o);
       for (let i = 0; i < 4; i++) wallSolids(cs[i][0], cs[i][1], cs[(i + 1) % 4][0], cs[(i + 1) % 4][1]);
-      // the sign on the fascia of the long showroom: the red letters over its middle
-      if (L > 25) {
-        const fx = o.c[0] - (D / 2 + 0.06) * o.uz, fz = o.c[1] + (D / 2 + 0.06) * o.ux;
-        board(b, k, gmiTex(), fx, y + H + 0.35, fz, 9.0, 1.7, -o.ang);
-      }
+    };
+    // GMI Motors: a low flat-roofed showroom, its long pale sign fascia with the red logo and lettering over a front
+    // subdivided by slender vertical mullions into dark glazed bays, red trim, a parapet
+    if (GMI) {
+      const o = oriented(GMI), y = gh(o.c[0], o.c[1]), L = o.len, D = o.dep, H = 4.2, parts: Part[] = [], glass: THREE.BufferGeometry[] = [];
+      parts.push([new THREE.BoxGeometry(L, H + 0.3, D).translate(0, y + (H + 0.3) / 2 - 0.3, 0), '#e9e8e3']);
+      parts.push([new THREE.BoxGeometry(L + 0.3, 1.3, 0.35).translate(0, y + H + 0.35, D / 2 + 0.1), '#f6f5f1']);
+      parts.push([new THREE.BoxGeometry(L + 0.32, 0.14, 0.38).translate(0, y + H - 0.32, D / 2 + 0.1), '#b8202a'], [new THREE.BoxGeometry(L + 0.32, 0.1, 0.38).translate(0, y + H + 1.02, D / 2 + 0.1), '#b8202a']);
+      parts.push([new THREE.BoxGeometry(L + 0.1, 0.5, D + 0.1).translate(0, y, 0), '#8b8780']);
+      const n = Math.max(2, Math.round(L / 2.6));
+      glass.push(new THREE.PlaneGeometry(L - 0.8, 3.2).translate(0, y + 1.9, D / 2 + 0.03));
+      for (let i = 0; i <= n; i++) parts.push([new THREE.BoxGeometry(0.12, 3.4, 0.14).translate(-L / 2 + 0.4 + ((L - 0.8) * i) / n, y + 1.9, D / 2 + 0.08), '#2b2d30']);
+      place(o, parts, glass);
+      const fx = o.c[0] - (D / 2 + 0.3) * o.uz, fz = o.c[1] + (D / 2 + 0.3) * o.ux;
+      board(b, k, gmiTex(), fx, y + H + 0.35, fz, Math.min(L - 2, 12), 1.1, -o.ang);
+    }
+    // the separate low structure farther back (green arrow): plain pale walls, a few dark openings, a shallow roof
+    for (const q of LOWB) {
+      const o = oriented(q!), y = gh(o.c[0], o.c[1]), L = o.len, D = o.dep, H = 3.2, parts: Part[] = [];
+      parts.push([new THREE.BoxGeometry(L, H + 0.3, D).translate(0, y + (H + 0.3) / 2 - 0.3, 0), '#dcdad3']);
+      parts.push([new THREE.BoxGeometry(L + 0.6, 0.12, D + 0.8).rotateX(0.05).translate(0, y + H + 0.15, 0), '#8e9294']);
+      const n = Math.max(1, Math.round(L / 6));
+      for (let i = 0; i < n; i++) parts.push([new THREE.BoxGeometry(i % 3 === 1 ? 2.4 : 1.4, i % 3 === 1 ? 2.4 : 1.1, 0.06).translate(-L / 2 + (L * (i + 0.5)) / n, y + (i % 3 === 1 ? 1.2 : 1.6), D / 2 + 0.03), '#2a2d30']);
+      place(o, parts, []);
+    }
+    // GMI's gravelly forecourt to the open lot, modest posts with a mesh along its front, a kerb line
+    if (GMI) {
+      k.meshes.push(new THREE.Mesh(drapeAt(GO, 784, 826, -204.5, -140, 0.4, 0.04, (x, z) => {
+        if (z > -186 && x < 790.5) return null;
+        const n = vnoise(x * 0.4, z * 0.4), m = hash(Math.floor(x * 4), Math.floor(z * 4)) * 0.07;
+        return n > 0.75 ? [0.56, 0.43, 0.32] : [0.7 - m, 0.67 - m, 0.62 - m];
+      }), groundCover()));
+      for (let x = 786; x <= 824; x += 3.8) { const z = -186.2, yy = gh(x, z); b.c.push([b.B(x - 0.05, x + 0.05, yy, yy + 1.3, z - 0.05, z + 0.05), '#7a3f2a']); SOLIDS.add(x, z, 0.08); }
+      b.c.push([b.B(786, 824, gh(805, -186.2) + 1.22, gh(805, -186.2) + 1.27, -186.23, -186.17), '#8a8f93']);
+      wallSolids(786, -186.2, 824, -186.2, 0.12);
+      for (const [x, z, col] of [[792, -199.5, '#c9ccd0'], [799, -200, '#2b2e33'], [815.5, -199.2, '#e4e4e0']] as [number, number, string][]) car(k, x - GO[0], z - GO[1], col, gh(x, z), 0.05);
     }
     b.finish(k, 0.25);
   },
 };
+
+// ---------- the roadside cluster on the south side of the lane to the mall (the mall correction brief, images 3, 4) ----------
+const RO: [number, number] = [802, -122];
+const clusterSpec: Spec = {
+  name: 'Roadside shelter cluster', axis: [1, 0], origin: RO, storey: 3, style: PLAIN, roofColor: '#888', fascia: '#888', pitch: 0.1,
+  onGround: true,
+  blocks: [],
+  keep: [[792 - RO[0], 812 - RO[0], -128 - RO[1], -106 - RO[1]]],
+  extras: (k: Kit) => {
+    const b = new Bag(RO), y = gh(802, -122);
+    // the kerb along the lane's south edge, the compacted vehicle strip, the raised concrete slab with its edge
+    for (let x = 792; x < 811.5; x += 1.5) b.c.push([b.B(x, x + 1.5, y - 0.1, y + 0.16, -128.25, -128.05), '#c9c4b8']);
+    k.meshes.push(new THREE.Mesh(drapeAt(RO, 792, 809.4, -128.0, -106, 0.35, 0.035, (x, z) => {
+      const n = vnoise(x * 0.4, z * 0.4), m = hash(Math.floor(x * 3), Math.floor(z * 3)) * 0.06;
+      if (z < -124.5) return [0.5 - m, 0.48 - m, 0.45 - m];
+      if (n > 0.6) return [0.62 - m, 0.6 - m, 0.56 - m];
+      return [0.56 + n * 0.06, 0.38 + n * 0.04, 0.27];
+    }), groundCover()));
+    b.c.push([b.B(797.0, 806.0, y - 0.2, y + 0.38, -123.8, -117.8), '#b8b3a8'], [b.B(796.9, 806.1, y + 0.3, y + 0.4, -123.9, -123.7), '#a49f94']);
+    // the shelter: a shallow sheet roof on slender metal posts, its frame, mesh and grille sides, items stored beneath
+    const sy = y + 0.38, ml: THREE.BufferGeometry[] = [];
+    for (const [px, pz] of [[797.6, -123.3], [801.4, -123.3], [805.4, -123.3], [797.6, -118.3], [801.4, -118.3], [805.4, -118.3]]) { b.c.push([b.B(px - 0.05, px + 0.05, sy, sy + 2.7 + (pz > -120 ? -0.3 : 0), pz - 0.05, pz + 0.05), '#5d6266']); SOLIDS.add(px, pz, 0.08); }
+    b.c.push([new THREE.BoxGeometry(9.2, 0.05, 6.0).rotateX(-0.06).translate(801.5 - RO[0], sy + 2.6, -120.8 - RO[1]), '#9ea3a6'], [b.B(797.0, 806.0, sy + 2.45, sy + 2.62, -123.5, -123.3), '#3d4246']);
+    const meshM = new THREE.MeshStandardMaterial({ map: (() => { const t = canvas(32, 32, (g) => { g.clearRect(0, 0, 32, 32); g.strokeStyle = 'rgba(70,74,78,0.95)'; g.lineWidth = 2; g.strokeRect(1, 1, 30, 30); }); t.wrapS = t.wrapT = THREE.RepeatWrapping; return t; })(), transparent: true, alphaTest: 0.3, side: THREE.DoubleSide });
+    for (const [ax, az, cx, cz] of [[797.6, -118.3, 805.4, -118.3], [797.6, -123.3, 797.6, -118.3], [805.4, -123.3, 805.4, -118.3]]) {
+      const L = Math.hypot(cx - ax, cz - az), g = new THREE.PlaneGeometry(L, 1.9), uv = g.attributes.uv;
+      for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * L * 4, uv.getY(i) * 1.9 * 4);
+      ml.push(g.rotateY(-Math.atan2(cz - az, cx - ax)).translate((ax + cx) / 2 - RO[0], sy + 0.95, (az + cz) / 2 - RO[1]));
+      wallSolids(ax, az, cx, cz, 0.12);
+    }
+    const mm = new THREE.Mesh(mergeGeoms(ml), meshM); mm.userData.noCollide = true; k.meshes.push(mm);
+    // stored things: stacked tyres, a blue drum, a small container box
+    for (let i = 0; i < 4; i++) b.c.push([new THREE.TorusGeometry(0.36, 0.13, 6, 12).rotateX(Math.PI / 2).translate(798.6 - RO[0], sy + 0.13 + i * 0.26, -119.6 - RO[1]), '#1d1e20']);
+    b.c.push([new THREE.CylinderGeometry(0.3, 0.3, 0.9, 12).translate(800.2 - RO[0], sy + 0.45, -119.4 - RO[1]), '#2a64b8'], [b.B(802.6, 804.6, sy, sy + 1.1, -120.4, -119.0), '#7d5a42']);
+    SOLIDS.add(799.4, -119.5, 0.7); SOLIDS.add(803.6, -119.7, 0.9);
+    // the tall advertising panel on its two posts beside the shelter, the small sign panel
+    for (const z of [-116.6, -112.2]) { b.c.push([b.B(806.95, 807.05, y, y + 6.2, z - 0.06, z + 0.06), '#5d6266']); SOLIDS.add(807, z, 0.1); }
+    b.c.push([b.B(806.8, 807.0, y + 2.6, y + 6.4, -117.2, -111.6), '#e8e6df']);
+    k.meshes.push(new THREE.Mesh(new THREE.PlaneGeometry(5.4, 3.6).rotateY(-Math.PI / 2).translate(806.78 - RO[0], y + 4.5, -114.4 - RO[1]), new THREE.MeshStandardMaterial({ color: '#c7b49a', roughness: 0.8 })));
+    for (const x of [795.2, 796.0]) b.c.push([b.B(x - 0.03, x + 0.03, y, y + 1.6, -124.6, -124.54), '#8f959a']);
+    b.c.push([b.B(795.0, 796.2, y + 1.0, y + 1.6, -124.62, -124.56), '#f2f2ee']);
+    // the dense irregular trees and the broad banana-like leaves behind and beside it
+    for (const [x, z, h, sp] of [[795, -112, 11, 16], [798.2, -106.8, 12, 18], [810, -114, 10, 14]] as [number, number, number, number][]) broadleaf(k, b.leaf, x, z, { h, spread: sp, seed: x + z * 2, origin: RO });
+    for (const [x, z] of [[799, -115], [801.5, -114], [804.5, -115.5], [794, -117]] as [number, number][]) {
+      const yy = gh(x, z);
+      b.c.push([new THREE.CylinderGeometry(0.12, 0.16, 2.4, 7).translate(x - RO[0], yy + 1.2, z - RO[1]), '#7b8a45']);
+      for (let j = 0; j < 7; j++) b.leaf.push([new THREE.BoxGeometry(0.5, 0.04, 2.2).translate(0, 0, 1.1).rotateX(-0.45).rotateY(j * 0.9 + x).translate(x - RO[0], yy + 2.3, z - RO[1]), j % 2 ? '#6f9a3a' : '#5d8a33']);
+      SOLIDS.add(x, z, 0.2);
+    }
+    b.finish(k, 0.4);
+  },
+};
+function mergeGeoms(list: THREE.BufferGeometry[]) {
+  const pos: number[] = [], uv: number[] = [], nor: number[] = [];
+  for (const g0 of list) { const g = g0.index ? g0.toNonIndexed() : g0; pos.push(...(g.attributes.position.array as Float32Array)); uv.push(...(g.attributes.uv.array as Float32Array)); nor.push(...(g.attributes.normal.array as Float32Array)); }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+  return g;
+}
 
 // ---------- the Ghana Dance Ensemble frontage by the main gate (pair 7) ----------
 const DANCE = footprint(673.0, 681.1, 162.6, 193.9);
@@ -450,17 +557,49 @@ const crossingSpec: Spec = {
     const b = new Bag(XO), R = CUT.ring;
     // the island's raised stone edge along the top of the ring's inner side, west of the cutting
     const at = (deg: number, r: number): [number, number] => [R.x + Math.cos((deg * Math.PI) / 180) * r, R.z + Math.sin((deg * Math.PI) / 180) * r];
-    for (let a = 140; a < 220; a += 4) {
-      const [ax, az] = at(a, R.r - 0.15), [cx, cz] = at(a + 4, R.r - 0.15), ya = gh(ax, az), yc = gh(cx, cz);
+    for (let a = 146; a < 214; a += 4) {
+      const [ax, az] = at(a, R.r + 1.45), [cx, cz] = at(a + 4, R.r + 1.45), ya = gh(ax, az), yc = gh(cx, cz);
       const len = Math.hypot(cx - ax, cz - az);
       b.c.push([new THREE.BoxGeometry(len + 0.05, 0.3, 0.35).rotateY(-Math.atan2(cz - az, cx - ax)).translate((ax + cx) / 2 - XO[0], (ya + yc) / 2 + 0.1, (az + cz) / 2 - XO[1]), a % 8 ? '#9b958a' : '#8a857b']);
     }
+    // the level island in front of the slope: stone gravel heaped in a semicircle between the ring's kerb and a low
+    // concrete parapet at the top of the slope (the owner's correction, from the street view: picture 4)
+    const ri = R.r - R.shelf, onIsle = (x: number, z: number) => { const d = Math.hypot(x - R.x, z - R.z); return d > ri + 0.15 && d < R.r + 1.3 && x < R.x - 6 && !deckAt(x, z) && !deckAt(x, z - 1) && !deckAt(x, z + 1); };
+    k.meshes.push(new THREE.Mesh(drapeAt(XO, R.x - R.r - 2, R.x - 6, R.z - R.r, R.z + R.r, 0.3, 0.14, (x, z) => {
+      if (!onIsle(x, z)) return null;
+      const h = hash(Math.floor(x * 6), Math.floor(z * 6)), n = vnoise(x * 1.3, z * 1.3);
+      return [0.55 + h * 0.18 - n * 0.06, 0.53 + h * 0.16 - n * 0.06, 0.5 + h * 0.15 - n * 0.06];
+    }), groundCover()));
+    for (let i = 0; i < 180; i++) {
+      const a = (138 + hash(i, 3) * 84) * (Math.PI / 180), r = ri + 0.4 + hash(i, 5) * (R.shelf - 0.9), x = R.x + Math.cos(a) * r, z = R.z + Math.sin(a) * r;
+      if (!onIsle(x, z)) continue;
+      const s = 0.07 + hash(i, 7) * 0.12;
+      b.c.push([new THREE.IcosahedronGeometry(s, 0).translate(x - XO[0], gh(x, z) + 0.12 + s * 0.3, z - XO[1]), ['#a8a29a', '#8f8a82', '#bdb6aa', '#77736d'][i % 4]]);
+    }
+    for (let a = 140; a < 220; a += 3) {
+      const [ax, az] = at(a, ri + 0.05), [cx, cz] = at(a + 3, ri + 0.05);
+      if (!onIsle(ax, az) && !onIsle(cx, cz) && !onIsle((ax + cx) / 2 + 0.3, (az + cz) / 2)) continue;
+      const len = Math.hypot(cx - ax, cz - az), ya = gh(ax + 0.2, az);
+      b.c.push([new THREE.BoxGeometry(len + 0.04, 0.75, 0.25).rotateY(-Math.atan2(cz - az, cx - ax)).translate((ax + cx) / 2 - XO[0], ya + 0.25, (az + cz) / 2 - XO[1]), '#b3ada2']);
+      SOLIDS.add((ax + cx) / 2, (az + cz) / 2, 0.2);
+    }
     // the chevron boards facing the traffic coming round off Danquah Avenue, on two posts each
     for (const a of [160, 172, 184, 196]) {
-      const [x, z] = at(a, R.r - 0.7), yy = gh(x, z), ry = Math.PI / 2 - (a * Math.PI) / 180;
+      const [x, z] = at(a, R.r - 1.1), yy = gh(x, z), ry = Math.PI / 2 - (a * Math.PI) / 180;
       for (const s of [-0.45, 0.45]) { const px = x + Math.sin((a * Math.PI) / 180) * s, pz = z - Math.cos((a * Math.PI) / 180) * s; b.c.push([b.B(px - 0.04, px + 0.04, yy, yy + 1.6, pz - 0.04, pz + 0.04), '#8f959a']); SOLIDS.add(px, pz, 0.08); }
       board(b, k, chevronTex(), x + Math.cos((a * Math.PI) / 180) * 0.06, yy + 1.25, z + Math.sin((a * Math.PI) / 180) * 0.06, 1.2, 0.6, ry);
     }
+    // the ring road's west arc between the island and the gate plaza is a broad two-lane curve: asphalt carried out to
+    // the plaza's edge (the owner's correction: the space left there was a single narrow lane)
+    const RING_W: [number, number][] = [[756.5, 113], [753.7, 118.6], [752.4, 124.7], [752.8, 131], [754.8, 137], [758.3, 142.2]];
+    const wx = (z: number) => { for (let i = 0; i < RING_W.length - 1; i++) { const [ax, az] = RING_W[i], [cx, cz] = RING_W[i + 1]; if (z >= az && z <= cz) return ax + ((cx - ax) * (z - az)) / (cz - az); } return NaN; };
+    k.meshes.push(new THREE.Mesh(drapeAt(XO, 745.6, 756, 113.5, 142, 0.25, 0.012, (x, z) => {
+      const c = wx(z);
+      if (Number.isNaN(c) || x > c - 2.4 || x < 745.7) return null;
+      const n = vnoise(x * 0.4, z * 0.4) * 0.03, h = hash(Math.floor(x * 3), Math.floor(z * 3)) * 0.03;
+      return [0.33 + n + h, 0.33 + n + h, 0.34 + n + h];
+    }), groundCover()));
+    for (let z = 114.6; z < 138.5; z += 1.5) { const x = 745.6, y = gh(x, z); b.c.push([b.B(x - 0.15, x + 0.05, y - 0.1, y + 0.14, z, z + 1.5), '#d3cec4']); }
     // the keep-right sign at the island's nose toward Danquah Avenue
     const KA = (212 * Math.PI) / 180, [kx, kz] = at(212, R.r - 0.6), ky = gh(kx, kz);
     b.c.push([b.B(kx - 0.04, kx + 0.04, ky, ky + 2.2, kz - 0.04, kz + 0.04), '#8f959a']); SOLIDS.add(kx, kz, 0.08);
@@ -471,4 +610,4 @@ const crossingSpec: Spec = {
 };
 void TILE; void hash;
 
-export const tenPairsSite = createSite('ten-pairs', [bankSpec, parcelSpec, gmiSpec, danceSpec, frameSpec, crossingSpec]);
+export const tenPairsSite = createSite('ten-pairs', [bankSpec, parcelSpec, gmiSpec, danceSpec, frameSpec, crossingSpec, clusterSpec]);

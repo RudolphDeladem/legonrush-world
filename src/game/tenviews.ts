@@ -17,4 +17,9 @@ export const TEN_VIEWS: TenView[] = [
   V(8, [604, 1.6, -44], [606, 5.0, -110], 64, 'the Jones-Quartey parking court toward the unfinished frame'),
   V(9, [743, 1.6, 112.4], [764, 0.2, 125], 66, 'the upper road curving round the splitter island at the overhead crossing'),
   V(10, [630.5, 1.6, -41], [646, 2.2, -52], 62, 'the Finance Directorate and its sign across La Road'),
+  // the Legon City Mall and GM Motors correction brief (images 1, 3, 5 and the distant check from image 6)
+  { name: 'mall1', eye: [834, 1.6, -168], look: [900, 11, -184], fov: 62, note: 'Legon City Mall across its paved forecourt (image 1)' },
+  { name: 'mall3', eye: [781, 1.6, -130.3], look: [830, 1.0, -125.5], fov: 62, note: 'the lane to the mall and the roadside cluster on its right (image 3)' },
+  { name: 'mall5', eye: [789, 1.6, -176], look: [803, 2.5, -212], fov: 62, note: 'GMI Motors, the circled building (image 5)' },
+  { name: 'mall6', eye: [800, 1.6, -160], look: [832, 6, -222], fov: 62, note: 'GMI Motors, the low structure behind it and the mall (image 6)' },
 ];

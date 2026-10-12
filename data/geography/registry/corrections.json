@@ -376,6 +376,10 @@
     {
       "id": "ml:8b8d244a-bb90-4bb1-97ac-2cb3ccf09f73",
       "reason": "Owner's 16-pair brief, pairs 10-12 (drone, front and oblique photographs of the West Africa Centre for Crop Improvement building): this machine-detected outline lies in the building's paved forecourt, where the photographs show only the parking bays, planted islands and cars (modelled in src/game/agric.ts). The game drew it as a generic two-storey block."
+    },
+    {
+      "id": "ml:8ed8c673-8118-417f-8347-83a82143475c",
+      "reason": "Owner's correction (a game screenshot beside GCB Bank near Ernest Chemist, the building circled for deletion): this machine-detected outline between J.J. Rawlings Avenue's east carriageway and the service road, by the Legon Second bus stop, is not there; the game drew it as a generic two-storey block."
     }
   ],
   "heights": [
