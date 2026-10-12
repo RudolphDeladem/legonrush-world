@@ -1,3 +1,4 @@
+import { destinationBanner, finishBanner } from './banners';
 import * as THREE from 'three';
 import { weathering } from './shading';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
@@ -470,6 +471,9 @@ export interface RouteLayerOptions {
   finish: number;
   startText: string;
   finishText: string;
+  /** what the finish line is (the owner's banner brief): an explore ride's destination entrance, under a banner with its
+   *  name, or a race's end, under the FINISH banner; the start keeps its white gate either way */
+  finishKind: 'destination' | 'race';
   labels: RouteLabel[];
   destination?: Place;
 }
@@ -685,7 +689,12 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
 
   // a little way past the start line, so it does not sit over the rider and the HUD at the countdown
   group.add(gate(o.startText, at(o.start + 16, 0), yawAt(o.start + 16)));
-  group.add(gate(o.finishText, at(o.finish, 0), yawAt(o.finish), true));
+  {
+    const end = o.finishKind === 'race' ? finishBanner(ROAD_HALF) : destinationBanner(o.finishText, ROAD_HALF);
+    end.position.copy(at(o.finish, 0));
+    end.rotation.y = yawAt(o.finish);
+    group.add(end);
+  }
   // over a bridge of the Legon Road cutting the route lies on the deck when it crosses and on the road below when it
   // runs along under it (cutplan.ts): its heading at the nearest point says which
   // (and its edges stay at the level of its middle: a road along the top beside the walls does not droop over them, the
@@ -715,9 +724,10 @@ export function disposeLayer(group: THREE.Object3D) {
   });
 }
 
-function gate(text: string, pos: THREE.Vector3, yaw: number, finish = false) {
+/** the start gate: white posts and beam with the start's name (the owner: keep it as it is) */
+function gate(text: string, pos: THREE.Vector3, yaw: number) {
   const g = new THREE.Group();
-  const postMat = new THREE.MeshStandardMaterial({ color: finish ? '#0a1020' : '#efe7d6', roughness: 0.7 });
+  const postMat = new THREE.MeshStandardMaterial({ color: '#efe7d6', roughness: 0.7 });
   for (const s of [-1, 1]) {
     const post = new THREE.Mesh(new THREE.BoxGeometry(0.8, 6, 0.8), postMat);
     post.position.set(s * (ROAD_HALF + 1.4), 3, 0);
@@ -733,22 +743,6 @@ function gate(text: string, pos: THREE.Vector3, yaw: number, finish = false) {
   const sign = new THREE.Mesh(new THREE.PlaneGeometry(Math.min(beamW - 1, 1.3 * aspect), 1.3), new THREE.MeshBasicMaterial({ map: tex, transparent: true }));
   sign.position.set(0, 6.2, 0.31);
   g.add(sign);
-  if (finish) {
-    // chequered strip on the road
-    const c = document.createElement('canvas');
-    c.width = 160; c.height = 20;
-    const x = c.getContext('2d')!;
-    for (let i = 0; i < 16; i++) for (let j = 0; j < 2; j++) {
-      x.fillStyle = (i + j) % 2 ? '#111' : '#fff';
-      x.fillRect(i * 10, j * 10, 10, 10);
-    }
-    const t = new THREE.CanvasTexture(c);
-    t.colorSpace = THREE.SRGBColorSpace;
-    const strip = new THREE.Mesh(new THREE.PlaneGeometry(ROAD_HALF * 2, 1), new THREE.MeshStandardMaterial({ map: t }));
-    strip.rotation.x = -Math.PI / 2;
-    strip.position.y = 0.01;
-    g.add(strip);
-  }
   g.position.copy(pos);
   g.rotation.y = yaw;
   return g;

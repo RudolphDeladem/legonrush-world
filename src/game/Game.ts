@@ -571,6 +571,7 @@ export class Game {
       finish: route.lead + route.length,
       startText: route.kind === 'explore' ? route.from.name : 'Start',
       finishText: route.kind === 'explore' ? route.to.name : 'Finish',
+      finishKind: route.kind === 'explore' ? 'destination' : 'race',
       labels: route.labels,
       destination: route.to,
     });

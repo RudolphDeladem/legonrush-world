@@ -2833,3 +2833,39 @@ stay out there (agplan.ts `HODASI`). The road's line is the mapped one (the fork
 lengths, the flights' exact places along the walk, the statue's spot on the blue mark, the tower's height, the
 projection's radius and the wings' height. *Would settle it*: a photo along the walk at each flight (the step count and
 wall height); a side photo of the Great Hall's curved projection; a measured height of the tower.
+
+## The finish-line and destination banners; the Crop Improvement and Agriculture Precinct brief
+
+**Banners** (`UG_Campus_Racing_and_Destination_Banners_Claude_Brief.pdf`; banners.ts, world.ts `buildRouteLayer`): the
+dark posts and beam at the end of every ride are gone. The route layer now knows what its finish is
+(`finishKind`, set in Game.ts from the route's kind): an explore ride ends under a destination banner (white columns on
+stone-clad feet outside the kerbs, a white board with navy ends and a gold rule carrying that destination's own name from
+the game data, wrapped to two lines when long, readable from both directions, its underside 5 m above the road); a race
+ends under the FINISH banner (two light square truss towers with red-and-white chequered flags, a truss across the top,
+the FINISH board between chequered ends, the chequered line on the road). The race's completion is the existing finish
+check at the same line (`d >= route.length`, once); no crest is drawn (the project has none, and none is invented). The
+start keeps its white gate unchanged (world.ts `gate`). The posts stand outside the riding lanes and are not solid.
+`.preview/finishshot.mjs` shoots the rider's view of both.
+
+**Crop Improvement and Agriculture Precinct** (`Crop_Improvement_and_Agriculture_Precinct_reconstruction_brief.pdf`;
+agprecinct.ts; cameras `crop1`, `crop2`, `crop4`, `crop6`, `crop7`, `crop9` in cropviews.ts). The generic classroom
+boxes are replaced by the low white family (white render on a red lower band, weathered red tile hips and gables with
+deep eaves, smaller dark windows, louvres and doors varying by face), each mass on its mapped outline with its own
+storey count:
+- *The department group north of Onyaa Road* (pictures 6 to 9; the old generic outlines 165, 1689, 1696, 1770-1772,
+  1764 Agric Science Extension, 1683, 1598, 1599, 202, 1699, 1794, 1797): low front wings with gable ends to the road;
+  the two long middle buildings one storey at their ends and two in their middle lengths; the U of wings round a court;
+  the Agric Science Extension under a broad deep roof; the rear row in two lengths with a covered passage between; the
+  far east rows one and two storeys. Patchy grass, bare earth under the trees and in the courts (not on the verges),
+  narrow concrete walks through the courts, mature trees of varied crowns. The College of Agric and Consumer Science,
+  Soil Science and Agriculture Economics keep their models.
+- *East of the WACCI forecourt* (pictures 2 to 5; the game's camera shows these beyond the forecourt's carport, the
+  brief's "west side"): the low hipped block, the compact annex behind it under a broad aged hip with sparse openings
+  and a wall unit, its small gabled neighbour, the gabled wing farther east with a shaded veranda (the detached
+  two-storey box, now one storey); a narrow path from the yard to the black tanks on their plinth (agric.ts).
+- *By the Child Study Centre* (picture 1): the two-storey block brought down to one storey in the family, and the two
+  neighbouring generic outlines with it.
+
+*Assumed*: the storey counts per mass, the split points of the long buildings, the angled outline 202 squared to its
+main axis, which side of WACCI pictures 2 and 3 show (from the game screenshot's carport). *Would settle it*: the
+missing picture 10 (the real top layout), for the courts' exact spacing.

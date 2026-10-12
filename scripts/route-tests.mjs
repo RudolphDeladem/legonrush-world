@@ -167,6 +167,18 @@ try {
     if (buildingAt(-1013, 158.9)?.name === 'Great Hall' || buildingAt(-977.6, 124.3) || buildingAt(-964.1, 125.6)) fail('Great Hall: the tower\'s base is inside the hall, or the forecourt is not open (S4, S5)');
     if ((await server.ssrLoadModule('/src/game/greathall.ts')).greatHallSite.frames().length !== 1) fail('expected the Great Hall model');
     if ((await server.ssrLoadModule('/src/game/hodasi.ts')).hodasiSite.frames().length !== 1) fail('expected the J.K.M. Hodasi Road bend model');
+    // the owner's Crop Improvement and Agriculture Precinct brief: no generic block left among the department group, east
+    // of the WACCI forecourt or by the Child Study Centre; the College, Soil Science and WACCI keep their models
+    {
+      const { BLOCK_SITES } = await server.ssrLoadModule('/src/game/sites.ts');
+      const { agPrecinctSite } = await server.ssrLoadModule('/src/game/agprecinct.ts');
+      if (agPrecinctSite.frames().length !== 3) fail('expected the agriculture precinct\'s three models');
+      for (const [x, z] of [[264.4, 227], [295.4, 202], [294.2, 164.5], [284, 219.4], [318.6, 232], [369.4, 221.4], [354.3, 242.6], [378.5, 240], [387.5, 242.4], [443.6, 202.3], [444.8, 165.7], [329, 297], [332.8, 315.2], [353.4, 293.3], [455, 295.5], [408.3, 287.2]]) {
+        const bd = buildingAt(x, z);
+        if (!bd || !BLOCK_SITES.some((st) => st.replaces(bd))) fail(`agriculture precinct: the outline at ${x},${z} is still a generic block`);
+      }
+      for (const [x, z] of [[370, 183.3], [300, 300]]) if (!BLOCK_SITES.some((st) => { const bd = buildingAt(x, z); return bd && st.replaces(bd); })) fail(`agriculture precinct: the model at ${x},${z} (College, WACCI) is missing`);
+    }
     const ag = await server.ssrLoadModule('/src/game/agplan.ts');
     if (!ag.agOwns(-363, -100) || ag.agOwns(-363, -200)) fail('J.K.M. Hodasi Road: its bend\'s edges are not the model\'s (pairs 5 to 7)');
   }
