@@ -219,16 +219,28 @@ const spec: Spec = {
       c.push([top, '#57554f'], [bottom, '#6f6c66']);
       for (let i = 0; i < d.pts.length; i++) {
         const [ax, az] = d.pts[i], [bx, bz] = d.pts[(i + 1) % d.pts.length];
-        const A = L(ax, az), B = L(bx, bz), mx = (ax + bx) / 2, mz = (az + bz) / 2;
+        const A = L(ax, az), B = L(bx, bz);
         c.push([run(A[0], A[1], B[0], B[1], d.h - CUT.deck, d.h - 0.04, 0.12), '#c4beb2']);
-        // the long sides over the cutting or the bowl carry a parapet and a railing; the ends sit on the ground
+        // the long sides over the cutting or the bowl carry a parapet and a railing, only along the stretch that spans the
+        // drop (a little past the wall line, onto its parapet): where a deck edge runs on over the ground it lies across
+        // the slip and service roads leaving the ring, and nothing stands there; the ends sit on the ground
         if (Math.abs(bx - ax) < 0.1) continue;
-        const over = cutDrop(mx, mz) > 1 || cutDrop(mx, mz + 1.2) > 1 || cutDrop(mx, mz - 1.2) > 1;
-        if (!over) continue;
-        c.push([run(A[0], A[1], B[0], B[1], d.h - 0.04, d.h + 0.6, 0.3), '#cdc6b8'], [run(A[0], A[1], B[0], B[1], d.h + 0.6, d.h + 0.68, 0.36), '#bab3a5']);
-        const len = Math.hypot(B[0] - A[0], B[1] - A[1]), n = Math.max(1, Math.round(len / 1.6));
-        for (let j = 0; j <= n; j++) { const t = j / n, x = A[0] + (B[0] - A[0]) * t, z = A[1] + (B[1] - A[1]) * t; c.push([box(x - 0.04, x + 0.04, d.h + 0.68, d.h + 1.3, z - 0.04, z + 0.04), '#8b9197']); }
-        c.push([run(A[0], A[1], B[0], B[1], d.h + 1.22, d.h + 1.3, 0.07), '#8b9197'], [run(A[0], A[1], B[0], B[1], d.h + 0.98, d.h + 1.03, 0.05), '#8b9197']);
+        const drop = (t: number) => { const x = ax + (bx - ax) * t, z = az + (bz - az) * t; return cutDrop(x, z) > 1 || cutDrop(x, z + 1.2) > 1 || cutDrop(x, z - 1.2) > 1; };
+        const elen = Math.hypot(bx - ax, bz - az), ns = Math.max(2, Math.ceil(elen / 0.25)), spans: [number, number][] = [];
+        for (let j = 0; j <= ns; j++) {
+          if (!drop(j / ns)) continue;
+          const t = j / ns, last = spans[spans.length - 1];
+          if (last && t - last[1] < 1.5 / ns) last[1] = t; else spans.push([t, t]);
+        }
+        for (const [s0, s1] of spans) {
+          const e = 0.35 / elen, t0 = Math.max(0, s0 - e), t1 = Math.min(1, s1 + e);
+          if ((t1 - t0) * elen < 0.6) continue;
+          const P = A[0] + (B[0] - A[0]) * t0, Q = A[1] + (B[1] - A[1]) * t0, R2 = A[0] + (B[0] - A[0]) * t1, S2 = A[1] + (B[1] - A[1]) * t1;
+          c.push([run(P, Q, R2, S2, d.h - 0.04, d.h + 0.6, 0.3), '#cdc6b8'], [run(P, Q, R2, S2, d.h + 0.6, d.h + 0.68, 0.36), '#bab3a5']);
+          const len = Math.hypot(R2 - P, S2 - Q), n = Math.max(1, Math.round(len / 1.6));
+          for (let j = 0; j <= n; j++) { const t = j / n, x = P + (R2 - P) * t, z = Q + (S2 - Q) * t; c.push([box(x - 0.04, x + 0.04, d.h + 0.68, d.h + 1.3, z - 0.04, z + 0.04), '#8b9197']); }
+          c.push([run(P, Q, R2, S2, d.h + 1.22, d.h + 1.3, 0.07), '#8b9197'], [run(P, Q, R2, S2, d.h + 0.98, d.h + 1.03, 0.05), '#8b9197']);
+        }
       }
       // the pier on the median under the deck: its run is where the deck lies over the median line
       let z0 = Infinity, z1 = -Infinity;

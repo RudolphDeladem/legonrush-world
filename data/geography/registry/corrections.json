@@ -340,6 +340,38 @@
     {
       "id": "ml:36c7121c-429d-4ac9-888a-68edf010df19",
       "reason": "Owner's 30-pair brief, pair 7 (the raised photograph of the Efua Sutherland Drama Studio from the south-east): this machine-detected 73 m\u00b2 outline lies in the middle of the studio's open-air court, where the photograph shows only the paved court and its pale raised platform (modelled in southref.ts). The game drew it as a generic white hipped block."
+    },
+    {
+      "id": "ml:703375b7-8119-41c3-8895-a52b3118d8bb",
+      "reason": "Owner's 10-pair brief, pair 3 (Street View behind GCB Bank near Ernest Chemist, from the road toward the area in front of Legon City Mall): the parcel is a mostly open rough lot of red-brown earth, tall grass, rubble and a few shrubs, with only a small pale shed well back (kept, src/game/tenpairs.ts); the brief asks for the unsupported buildings in it to be removed. This outline is one of them."
+    },
+    {
+      "id": "osm:way/603522793",
+      "reason": "Owner's 10-pair brief, pair 3 (Street View behind GCB Bank near Ernest Chemist, from the road toward the area in front of Legon City Mall): the parcel is a mostly open rough lot of red-brown earth, tall grass, rubble and a few shrubs, with only a small pale shed well back (kept, src/game/tenpairs.ts); the brief asks for the unsupported buildings in it to be removed. This outline is one of them."
+    },
+    {
+      "id": "osm:way/603522792",
+      "reason": "Owner's 10-pair brief, pair 3 (Street View behind GCB Bank near Ernest Chemist, from the road toward the area in front of Legon City Mall): the parcel is a mostly open rough lot of red-brown earth, tall grass, rubble and a few shrubs, with only a small pale shed well back (kept, src/game/tenpairs.ts); the brief asks for the unsupported buildings in it to be removed. This outline is one of them."
+    },
+    {
+      "id": "osm:way/665125614",
+      "reason": "Owner's 10-pair brief, pair 3 (Street View behind GCB Bank near Ernest Chemist, from the road toward the area in front of Legon City Mall): the parcel is a mostly open rough lot of red-brown earth, tall grass, rubble and a few shrubs, with only a small pale shed well back (kept, src/game/tenpairs.ts); the brief asks for the unsupported buildings in it to be removed. This outline is one of them."
+    },
+    {
+      "id": "ml:084fe046-f9cd-4e36-87d6-ea8c4292cd6e",
+      "reason": "Owner's 10-pair brief, pair 3 (Street View behind GCB Bank near Ernest Chemist, from the road toward the area in front of Legon City Mall): the parcel is a mostly open rough lot of red-brown earth, tall grass, rubble and a few shrubs, with only a small pale shed well back (kept, src/game/tenpairs.ts); the brief asks for the unsupported buildings in it to be removed. This outline is one of them."
+    },
+    {
+      "id": "osm:way/665125642",
+      "reason": "Owner's 10-pair brief, pair 6 (Street View south from the road opposite the roadside strip, against the Legon Police Station's side wall): the generic houses here are a row of small separate corrugated-roofed kiosks and open stalls on rough red earth against the police station's wall (modelled in src/game/roadside.ts); the brief asks for the cloned houses to be removed."
+    },
+    {
+      "id": "osm:way/665125643",
+      "reason": "Owner's 10-pair brief, pair 6 (Street View south from the road opposite the roadside strip, against the Legon Police Station's side wall): the generic houses here are a row of small separate corrugated-roofed kiosks and open stalls on rough red earth against the police station's wall (modelled in src/game/roadside.ts); the brief asks for the cloned houses to be removed."
+    },
+    {
+      "id": "osm:way/665125644",
+      "reason": "Owner's 10-pair brief, pair 6 (Street View south from the road opposite the roadside strip, against the Legon Police Station's side wall): the generic houses here are a row of small separate corrugated-roofed kiosks and open stalls on rough red earth against the police station's wall (modelled in src/game/roadside.ts); the brief asks for the cloned houses to be removed."
     }
   ],
   "heights": [
@@ -3291,32 +3323,18 @@
       "reason": "Owner's 30-pair brief, pairs 16, 17 and 21 (Street View west from Legon Road, Sep 2024): beyond the long one-storey range only low red roofs and trees show; the generic two-storey masses were not in the photographs. One storey is read from them, not surveyed."
     },
     {
-      "id": "osm:way/665125614",
-      "place": "roadside shops north of the Legon City Mall forecourt",
-      "levels": 1,
-      "height": 3.8,
-      "reason": "Owner's 30-pair brief, pair 20 (Street View east to Legon City Mall across its forecourt, Sep 2024): the buildings on the left of the forecourt are low one-storey shops and sheds (a motors showroom sign), not two-storey blocks. One storey is read from the photograph."
-    },
-    {
-      "id": "osm:way/603522792",
-      "place": "roadside shops north of the Legon City Mall forecourt",
-      "levels": 1,
-      "height": 3.8,
-      "reason": "Owner's 30-pair brief, pair 20 (Street View east to Legon City Mall across its forecourt, Sep 2024): the buildings on the left of the forecourt are low one-storey shops and sheds (a motors showroom sign), not two-storey blocks. One storey is read from the photograph."
-    },
-    {
-      "id": "osm:way/603522793",
-      "place": "roadside shops north of the Legon City Mall forecourt",
-      "levels": 1,
-      "height": 3.8,
-      "reason": "Owner's 30-pair brief, pair 20 (Street View east to Legon City Mall across its forecourt, Sep 2024): the buildings on the left of the forecourt are low one-storey shops and sheds (a motors showroom sign), not two-storey blocks. One storey is read from the photograph."
-    },
-    {
       "id": "osm:way/603522794",
       "place": "roadside building north of the market shed, east of Legon Road",
       "levels": 1,
       "height": 3.8,
       "reason": "Owner's 30-pair brief, pair 22 (Street View east across the road, Sep 2024): only the low market shed and parked cars show on this side; the generic two-storey block was not in the photograph. One storey is read from it, not surveyed."
+    },
+    {
+      "id": "osm:way/665125606",
+      "place": "the building west of GMI Motors, north of the Legon City Mall forecourt",
+      "levels": 1,
+      "height": 4.2,
+      "reason": "Owner's 10-pair brief, pair 4 (Street View north across the gravel lot): the frontage left of Legon City Mall is low, the GMI Motors showroom and its neighbours; no three-storey block stands there. One storey is read from the photograph, not surveyed."
     }
   ],
   "reclass": [

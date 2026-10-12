@@ -144,12 +144,15 @@ const gateSpec: Spec = {
     // stepped stone-faced planters along the plaza's long sides, clipped shrubs and flowering beds in them
     for (const [z0, z1] of [[pz0 + 0.6, pz0 + 3.0], [pz1 - 3.0, pz1 - 0.6]]) {
       for (let x = px0 + 6; x < px1 - 5; x += 9.5) {
-        const r: [number, number, number, number] = [x, x + 7.5, z0, z1];
+        // (the plaza's east end meets the ring road and Danquah Avenue's south carriageway: the planters stop short of
+        // them rather than stand on the road; the owner's 10-pair brief, pair 9)
+        if (z0 > 130 && x > 735) continue;
+        const r: [number, number, number, number] = [x, Math.min(x + 7.5, 749.6), z0, z1];
         for (const [lift, ins] of [[0.45, 0], [0.8, 0.5]]) {
           stone.push([b.B(r[0] + ins, r[1] - ins, 0, lift, r[2] + ins, r[3] - ins), '#fff']);
           b.c.push([b.B(r[0] + ins - 0.04, r[1] - ins + 0.04, lift, lift + 0.06, r[2] + ins - 0.04, r[3] - ins + 0.04), '#d9d2c3']);
         }
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0, n = Math.round((r[1] - r[0] - 2) / 1.35) + 1; i < n; i++) {
           const sx = r[0] + 1 + i * 1.35, sz = (r[2] + r[3]) / 2 + (hash(sx, z0) - 0.5) * 0.6, s = 0.38 + hash(sx, i) * 0.2;
           b.leaf.push([new THREE.IcosahedronGeometry(s, 1).scale(1.2, 0.85, 1.1).translate(sx - GO[0], 0.86 + s * 0.6, sz - GO[1]), ['#3f6d2c', '#527f33', '#6a8c3a', '#c64a3a', '#e0b43a'][(i + Math.round(x)) % 5]]);
         }

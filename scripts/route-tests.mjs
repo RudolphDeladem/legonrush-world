@@ -767,6 +767,32 @@ try {
     }
   }
 
+  // ---------- the 10-pair brief and the owner's three pictures (the JQB lane, the overhead crossing) ----------
+  {
+    const tp = (await server.ssrLoadModule('/src/game/tenpairs.ts')).tenPairsSite;
+    if (tp.frames().length !== 6) fail('10-pair brief: expected the bank, the parcel, GMI Motors, the dance frontage, the frame and the island signs');
+    const W = [9, 7.4, 6.2, 4.6, 2.6];
+    const onRoad = (x, z, r) => {
+      for (const road of cm.ROADS) {
+        const pts = road.nodes.map((n) => [cm.NODE_XZ[n * 2], cm.NODE_XZ[n * 2 + 1]]);
+        for (let i = 0; i < pts.length - 1; i++) {
+          const [ax, az] = pts[i], [bx, bz] = pts[i + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+          const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+          if (Math.hypot(ax + dx * t - x, az + dz * t - z) < W[road.cls] / 2 + r + 0.3) return road.name ?? 'a road';
+        }
+      }
+      return null;
+    };
+    // the Finance Directorate's sign stands in the grass, not in La Road (the owner's picture)
+    const jq = await server.ssrLoadModule('/src/game/jqb.ts');
+    for (const dz of [-1.05, 1.05]) { const on = onRoad(jq.FIN.sign[0], jq.FIN.sign[1] + dz, 0.15); if (on) fail(`the Finance sign's post stands on ${on} (owner)`); }
+    // the open parcel behind the bank and the yard before the police station's stalls: no generic block left there
+    for (const [x, z] of [[827.8, -46.7], [825.3, -72.1], [847.3, -72.0], [825.0, -94.4], [857.8, -70.9], [829.2, 74.4], [843.2, 67.9], [855.6, 75.0]]) if (buildingAt(x, z)) fail(`10-pair brief: a building still stands at ${x},${z} (pairs 3, 6)`);
+    // the lowered road runs on south of the ring to where the east carriageway meets the service road (pair 9)
+    const cut = await server.ssrLoadModule('/src/game/cutplan.ts');
+    if (cut.CUT_Z[1] < 400 || cut.cutDepth(300) < cut.CUT.depth - 0.01) fail('Legon Road cutting: the south approach no longer runs to the service road merge (pair 9)');
+  }
+
   // ---------- races never move by accident ----------
   const sig = (r) => { if (!r) return null; const s = r.track.pose(r.lead, 0), e = r.track.pose(r.lead + r.length, 0); return `${r.length} m ${s.x.toFixed(1)},${s.z.toFixed(1)} -> ${e.x.toFixed(1)},${e.z.toFixed(1)}`; };
   const lv = await server.ssrLoadModule('/src/features/levels.ts');

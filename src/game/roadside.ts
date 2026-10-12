@@ -8,8 +8,9 @@
 // - Legon City Mall (pairs 15, 20, Map C): a glazed mass of four storeys, taller at its south-west corner where its name
 //   stands on the roof, across a gravel forecourt edged with posts;
 // - east of the road (pairs 22-27, Map D): the police station compound's one-storey ranges round their courts, the
-//   block-paved forecourt along its front with white bollards, red earth verges, the market shed by the road, the row
-//   of timber stalls and the kiosk under its blue canopy at the corner.
+//   block-paved forecourt along its front with white bollards, red earth verges, the row of timber stalls and the kiosk
+//   under its blue canopy at the corner; from the owner's 10-pair brief: the vehicle shelter on the shed's outline with the
+//   rough strip before it (pair 5), and the kiosks against the police station's north wall (pair 6).
 // Everything is placed from the brief's maps and photographs, none of it measured: positions are approximate.
 import * as THREE from 'three';
 import { BUILDINGS, NODE_XZ, ROADS } from './campusmap';
@@ -21,6 +22,7 @@ import { rectsOf } from './rectilinear';
 import { car } from './cc';
 import { SOLIDS } from './solids';
 import { canvas, type Part } from './modelkit';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { STRIP_WALL, WEST_STRIP, inWestStrip, westRoadX } from './roadsideplan';
 
 const PLAIN: Style = { bay: 4, up: [], ground: [], draw: (g) => render(g, WALL) };
@@ -239,6 +241,16 @@ function glassBox(pos: number[], uv: number[], idx: number[], x0: number, x1: nu
     idx.push(n, n + 2, n + 1, n, n + 3, n + 2);
   }
 }
+let linkMat: THREE.MeshStandardMaterial | null = null;
+/** chain-link mesh: grey wire diamonds, see-through */
+const chainLink = () => (linkMat ??= (() => {
+  const t = canvas(64, 64, (g) => {
+    g.clearRect(0, 0, 64, 64); g.strokeStyle = 'rgba(150,156,160,0.95)'; g.lineWidth = 2.2;
+    for (let i = -64; i < 128; i += 16) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i + 64, 64); g.stroke(); g.beginPath(); g.moveTo(i + 64, 0); g.lineTo(i, 64); g.stroke(); }
+  });
+  t.repeat.set(1, 1);
+  return new THREE.MeshStandardMaterial({ map: t, transparent: true, alphaTest: 0.3, side: THREE.DoubleSide, roughness: 0.6, metalness: 0.4 });
+})());
 const mallSpec: Spec = {
   name: 'Legon City Mall', axis: [1, 0], origin: MO, storey: 3.6, style: PLAIN, roofColor: '#9a9a96', fascia: '#5a5a58', pitch: 0.1,
   replaces: MALL ? [centre(MALL)] : [],
@@ -253,9 +265,22 @@ const mallSpec: Spec = {
     // the tall corner: the block at the outline's south-west corner (x 874.8-889.3, z -163.1 to -145.3), toward the road
     const tall = (r: number[]) => r[1] < 891 && r[2] > -170 && r[3] < -144;
     // (the outline's south-east corner reaches into the road round it: the walls there stand back at the road's edge)
-    for (const r of rectsOf(ringOf(MALL)).map((q) => [q[0], q[1], q[2], q[1] > 925 ? Math.min(q[3], -139.9) : q[3]])) {
-      const top = y + (tall(r) ? 6 : 4) * 3.6;
-      glassBox(pos, uv, idx, r[0], r[1], r[2], r[3], y, top);
+    // (the owner's 10-pair brief, pair 4: not one all-glass box but stepped rectangular masses, light-grey panelled
+    // blocks with bands of dark windows alternating with the dark blue glazed ones, each its own height)
+    const STEPS = [4, 5, 3, 5, 4, 3, 5];
+    for (const [ri, r] of rectsOf(ringOf(MALL)).map((q) => [q[0], q[1], q[2], q[1] > 925 ? Math.min(q[3], -139.9) : q[3]]).entries()) {
+      const top = y + (tall(r) ? 6 : STEPS[ri % STEPS.length]) * 3.6;
+      if (tall(r) || ri % 2 === 0) glassBox(pos, uv, idx, r[0], r[1], r[2], r[3], y, top);
+      else {
+        b.c.push([b.B(r[0], r[1], y, top, r[2], r[3]), '#c9cbcb']);
+        for (let f = 1; f * 3.6 < top - y - 1; f++) {
+          const y0 = y + f * 3.6 + 0.9, y1 = y0 + 1.5;
+          b.win.push(b.plane(true, r[3] + 0.02, 1, (r[0] + r[1]) / 2, r[1] - r[0] - 1.6, y0, y1), b.plane(true, r[2] - 0.02, -1, (r[0] + r[1]) / 2, r[1] - r[0] - 1.6, y0, y1));
+          b.win.push(b.plane(false, r[1] + 0.02, 1, (r[2] + r[3]) / 2, r[3] - r[2] - 1.6, y0, y1), b.plane(false, r[0] - 0.02, -1, (r[2] + r[3]) / 2, r[3] - r[2] - 1.6, y0, y1));
+        }
+        // the shopfronts on the ground floor
+        b.win.push(b.plane(true, r[3] + 0.02, 1, (r[0] + r[1]) / 2, r[1] - r[0] - 1.0, y + 0.2, y + 3.0), b.plane(false, r[0] - 0.02, -1, (r[2] + r[3]) / 2, r[3] - r[2] - 1.0, y + 0.2, y + 3.0));
+      }
       // the ground floor's shopfronts behind a deep concrete band, the slab edges and roof parapet, the flat roof
       // (each a ring of four edges round the block, not a slab through it)
       const ring = (o: number, y0: number, y1: number, t: number, col: string) => {
@@ -281,8 +306,30 @@ const mallSpec: Spec = {
       const n = vnoise(x * 0.5, z * 0.5), m = hash(Math.floor(x * 4), Math.floor(z * 4)) * 0.06;
       return [0.66 - n * 0.08 - m, 0.62 - n * 0.08 - m, 0.56 - n * 0.07 - m];
     }), groundCover()));
-    for (let z = -207; z < -138; z += 3.2) { const x = 827.5; if (clearance(x, z) > 0.4) { b.c.push([new THREE.CylinderGeometry(0.05, 0.05, 1.4, 6).translate(x - MO[0], gh(x, z) + 0.7, z - MO[1]), '#6e4b35']); SOLIDS.add(x, z, 0.08); } }
-    for (let x = 829; x < 862; x += 3.2) { const z = -137.5; if (clearance(x, z) > 0.4) { b.c.push([new THREE.CylinderGeometry(0.05, 0.05, 1.4, 6).translate(x - MO[0], gh(x, z) + 0.7, z - MO[1]), '#6e4b35']); SOLIDS.add(x, z, 0.08); } }
+    // the red-brown posts along its road edges, the chain-link mesh between them (pair 4: a light fence, not a wall)
+    const posts = (pts: [number, number][]) => {
+      let prev: [number, number] | null = null;
+      for (const [x, z] of pts) {
+        if (clearance(x, z) <= 0.4) { prev = null; continue; }
+        b.c.push([new THREE.CylinderGeometry(0.05, 0.05, 1.8, 6).translate(x - MO[0], gh(x, z) + 0.9, z - MO[1]), '#7a3f2a']);
+        SOLIDS.add(x, z, 0.08);
+        if (prev) {
+          const [px, pz] = prev, L = Math.hypot(x - px, z - pz), yy = (gh(x, z) + gh(px, pz)) / 2;
+          const pg = new THREE.PlaneGeometry(L, 1.6), uv = pg.attributes.uv;
+          for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * L * 3, uv.getY(i) * 1.6 * 3);
+          mesh.push(pg.rotateY(-Math.atan2(z - pz, x - px)).translate((x + px) / 2 - MO[0], yy + 0.85, (z + pz) / 2 - MO[1]));
+          b.c.push([new THREE.BoxGeometry(L, 0.03, 0.03).rotateY(-Math.atan2(z - pz, x - px)).translate((x + px) / 2 - MO[0], yy + 1.66, (z + pz) / 2 - MO[1]), '#8a8f93']);
+          wallSolids(px, pz, x, z, 0.12);
+        }
+        prev = [x, z];
+      }
+    };
+    const mesh: THREE.BufferGeometry[] = [];
+    const west: [number, number][] = [], south: [number, number][] = [];
+    for (let z = -207; z < -138; z += 3.2) west.push([827.5, z]);
+    for (let x = 829; x < 862; x += 3.2) south.push([x, -137.5]);
+    posts(west); posts(south);
+    if (mesh.length) { const fm = new THREE.Mesh(mergeGeometries(mesh), chainLink()); fm.userData.noCollide = true; k.meshes.push(fm); }
     b.finish(k, 0.3);
   },
 };
@@ -328,20 +375,95 @@ const eastSpec: Spec = {
       if (clearance(x, z) < 0.15 || COMPOUND.some((q) => x > q.minX - 0.2 && x < q.maxX + 0.2 && z > q.minZ - 0.2 && z < q.maxZ + 0.2)) return null;
       const n = vnoise(x * 0.3, z * 0.3); return [0.62 + n * 0.06, 0.4 + n * 0.05, 0.26];
     }), groundCover()));
-    // the market shed (pair 22): a long open-fronted shed facing the road, posts carrying a rusty corrugated roof, its back
-    // wall of painted panels, counters along the front
+    // the vehicle shelter on the shed's outline (the owner's 10-pair brief, pair 5, which replaces the open market shed
+    // with its row of painted panels): a long shallow sheet-metal roof on slender posts, cars standing under it
     if (SHED) {
       // (its east end stops short of the lane that cuts its mapped corner)
-      const [x0, x1, z0, z1] = [SHED.minX, SHED.maxX - 3.0, SHED.minZ, SHED.maxZ], y = gh((x0 + x1) / 2, (z0 + z1) / 2), H = 2.9;
-      b.c.push([b.B(x0, x1, y, y + H - 0.2, z0, z0 + 0.15), '#d9d5c8']);
-      for (let x = x0 + 0.6; x < x1 - 0.5; x += 2.4) b.c.push([b.B(x, x + 2.0, y + 0.6, y + 2.2, z0 + 0.15, z0 + 0.18), ['#2f5fa8', '#e8e4d6', '#c43b2f', '#e3b43a'][Math.floor(hash(x, 5) * 4)]]);
-      for (let x = x0 + 0.3; x <= x1 - 0.2; x += (x1 - x0 - 0.5) / 8) {
-        for (const z of [z0 + 0.3, z1 - 0.3]) { if (clearance(x, z) < 0.3) continue; b.c.push([b.B(x - 0.07, x + 0.07, y, y + H, z - 0.07, z + 0.07), '#5a4a3c']); SOLIDS.add(x, z, 0.12); }
+      const [x0, x1, z0, z1] = [SHED.minX + 0.3, SHED.maxX - 3.0, SHED.minZ + 0.3, SHED.maxZ - 0.3], y = gh((x0 + x1) / 2, (z0 + z1) / 2), H = 2.7;
+      for (let x = x0; x <= x1 + 0.01; x += (x1 - x0) / 5) for (const z of [z0, z1]) {
+        if (clearance(x, z) < 0.3) continue;
+        const h = H + (z === z0 ? 0.35 : 0);
+        b.c.push([b.B(x - 0.05, x + 0.05, y, y + h, z - 0.05, z + 0.05), '#6d7378']); SOLIDS.add(x, z, 0.08);
+        if (z === z0) b.c.push([new THREE.BoxGeometry(0.06, 0.08, z1 - z0).rotateX(-Math.atan2(0.35, z1 - z0)).translate(x - EO[0], y + H + 0.18, (z0 + z1) / 2 - EO[1]), '#6d7378']);
       }
-      const roof = new THREE.BoxGeometry(x1 - x0 + 1.0, 0.06, z1 - z0 + 1.6).rotateX(-0.08).translate((x0 + x1) / 2 - EO[0], y + H + 0.1, (z0 + z1) / 2 - EO[1]);
-      b.c.push([roof, '#8a5a3e']);
-      for (let x = x0 + 1; x < x1 - 1; x += 2.4) { b.c.push([b.B(x, x + 1.8, y, y + 0.9, z1 - 1.4, z1 - 0.8), '#7a5a3e']); SOLIDS.add(x + 0.9, z1 - 1.1, 0.45); }
-      wallSolids(x0, z0 + 0.1, x1, z0 + 0.1);
+      const roof = new THREE.BoxGeometry(x1 - x0 + 1.0, 0.04, z1 - z0 + 1.2).rotateX(-Math.atan2(0.35, z1 - z0)).translate((x0 + x1) / 2 - EO[0], y + H + 0.24, (z0 + z1) / 2 - EO[1]);
+      b.c.push([roof, '#a9adaf']);
+      for (let x = x0 + 0.5; x < x1 - 0.5; x += 3.1) b.c.push([b.B(x, x + 0.08, y + H + 0.26, y + H + 0.3, z0 - 0.5, z1 + 0.5), hash(x, 3) > 0.6 ? '#8a6a52' : '#9ca0a2']);
+      for (const [x, col] of [[823.5, '#c9ccd0'], [828.8, '#2b2e33'], [834.2, '#a42c2c'], [839.0, '#e4e4e0']] as [number, string][]) if (x < x1 - 1) car(k, x - EO[0], (z0 + z1) / 2 + 0.6 - EO[1], col, gh(x, 20), 0);
+    }
+    // the rough foreground between the lane and the avenue (pair 5): the small kiosk on the left, the low masonry
+    // partitions (part broken), a patch of broken pavers, the blue tarp over a simple stall on the right, the big tree
+    {
+      const ky = gh(822.5, 39);
+      b.c.push([b.B(821.0, 824.0, ky, ky + 2.3, 37.6, 40.2), '#5d86a8'], [b.B(820.9, 824.1, ky, ky + 0.35, 37.5, 40.3), '#8a6a52']);
+      b.c.push([new THREE.BoxGeometry(3.8, 0.05, 3.4).rotateX(0.1).translate(822.5 - EO[0], ky + 2.45, 38.9 - EO[1]), '#9a7a5e']);
+      b.c.push([b.B(821.6, 823.4, ky + 1.0, ky + 1.9, 40.2, 40.24), '#1f2a30'], [b.B(821.5, 823.5, ky + 0.95, ky + 1.0, 40.2, 40.7), '#b7a48c']);
+      wallSolids(821.0, 38.9, 824.0, 38.9, 1.3);
+      for (const [ax, az, cx, cz, h] of [[826.5, 36.5, 830.5, 36.8, 0.9], [831.8, 37.0, 834.5, 37.2, 0.6], [826.4, 36.6, 826.6, 41.5, 0.8], [836.5, 35.8, 836.7, 39.4, 1.0]] as [number, number, number, number, number][]) {
+        const L = Math.hypot(cx - ax, cz - az), n = Math.max(1, Math.round(L / 0.4)), yy = gh(ax, az);
+        for (let i = 0; i < n; i++) {
+          const t = (i + 0.5) / n, hh = h * (0.55 + 0.45 * hash(i + ax, az));
+          b.c.push([new THREE.BoxGeometry(L / n + 0.01, hh, 0.2).rotateY(-Math.atan2(cz - az, cx - ax)).translate(ax + (cx - ax) * t - EO[0], yy + hh / 2, az + (cz - az) * t - EO[1]), hash(i, ax) > 0.5 ? '#a9a49a' : '#b8b3a8']);
+        }
+        wallSolids(ax, az, cx, cz, 0.15);
+      }
+      k.meshes.push(new THREE.Mesh(drapeAt(EO, 824.5, 829.5, 41.5, 45.0, 0.25, 0.05, (x, z) => {
+        const row = Math.floor(z / 0.2), col = Math.floor((x + (row % 2) * 0.1) / 0.2), h = hash(col, row);
+        return h < 0.22 ? null : [0.6 - h * 0.08, 0.56 - h * 0.08, 0.5 - h * 0.08];
+      }), groundCover()));
+      const ty = gh(847, 41);
+      for (const [px, pz] of [[845, 38.5], [849.5, 38.5], [845, 43.5], [849.5, 43.5]]) { b.c.push([b.B(px - 0.04, px + 0.04, ty, ty + 2.4 + (pz < 40 ? 0.2 : 0), pz - 0.04, pz + 0.04), '#8a8d90']); SOLIDS.add(px, pz, 0.08); }
+      b.c.push([new THREE.BoxGeometry(5.2, 0.04, 5.6).rotateX(0.05).translate(847.25 - EO[0], ty + 2.55, 41 - EO[1]), '#2a64b8']);
+      b.c.push([b.B(845.6, 848.9, ty + 0.75, ty + 0.82, 39.0, 40.2), '#7a5c40']);
+      for (let j = 0; j < 5; j++) b.c.push([new THREE.SphereGeometry(0.13, 6, 4).translate(845.9 + j * 0.65 - EO[0], ty + 0.92, 39.6 - EO[1]), ['#c4302a', '#d8a030', '#4f8a2e', '#c4302a', '#e0c040'][j]]);
+      SOLIDS.add(847.2, 39.6, 1.0);
+      if (clearance(817.5, 41) > 1.0) broadleaf(k, b.leaf, 817.5, 41, { h: 10, spread: 16, seed: 31, origin: EO });
+      const py = gh(843, 47);
+      b.c.push([new THREE.CylinderGeometry(0.1, 0.14, 8, 8).translate(843 - EO[0], py + 4, 47 - EO[1]), '#5a4a3b']); SOLIDS.add(843, 47, 0.2);
+      for (let i = 0; i < 40; i++) { const x = 815 + hash(i, 61) * 40, z = 34 + hash(i, 67) * 15; if (clearance(x, z) > 0.5) tuft(b, x, z, 0.3 + hash(i, 71) * 0.4, ['#7d8a44', '#8a9450', '#6b7a3a'][i % 3]); }
+      for (let i = 0; i < 30; i++) { const x = 815 + hash(i, 81) * 40, z = 34 + hash(i, 83) * 15, r = 0.08 + hash(i, 85) * 0.14; if (clearance(x, z) > 0.3) b.c.push([new THREE.IcosahedronGeometry(r, 0).translate(x - EO[0], gh(x, z) + r * 0.4, z - EO[1]), '#a49c8e']); }
+    }
+    // the kiosks and stalls against the police station's north wall (pair 6, opposite the strip across the avenue): small
+    // separate structures of different heights and widths, timber and painted sheet-metal fronts, low corrugated roofs
+    // pitched to the front at irregular fascias, open fronts with counters and produce, raised rough thresholds and
+    // broken steps, gaps between them; compacted reddish earth before them; the police station's own wall behind
+    {
+      k.meshes.push(new THREE.Mesh(drapeAt(EO, 822, 866, 57.5, 86.2, 0.6, 0.035, (x, z) => {
+        if (clearance(x, z) < 0.15 || COMPOUND.some((q) => x > q.minX - 0.2 && x < q.maxX + 0.2 && z > q.minZ - 0.2 && z < q.maxZ + 0.2)) return null;
+        const n = vnoise(x * 0.35, z * 0.35), m = vnoise(x * 1.7, z * 1.7);
+        return n > 0.78 ? [0.44 + m * 0.05, 0.47 + m * 0.06, 0.23] : [0.56 + m * 0.07, 0.38 + m * 0.05, 0.26 + m * 0.03];
+      }), groundCover()));
+      const STALLS: [number, number, number, number, string][] = [
+        // x0, width, depth, front height, cladding
+        [829.4, 3.4, 3.6, 2.5, '#8a5a3e'], [833.6, 2.8, 3.0, 2.3, '#3f6f9a'], [837.6, 4.2, 4.0, 2.8, '#b8b2a4'], [843.0, 3.0, 3.2, 2.4, '#a8412e'],
+        [847.2, 3.6, 3.8, 2.6, '#7a6a52'], [852.0, 2.6, 2.8, 2.2, '#4f7a52'], [855.8, 4.0, 3.4, 2.7, '#9a7a5e'],
+      ];
+      const WZ = 86.3;
+      for (const [i, [x0, w, d, h, col]] of STALLS.entries()) {
+        const x1 = x0 + w, zb = WZ - 0.05, zf = WZ - d, y = gh(x0 + w / 2, zf + d / 2), back = h + 0.45 + hash(i, 3) * 0.3;
+        // threshold slab, a broken step in front of some
+        b.c.push([b.B(x0 - 0.1, x1 + 0.1, y - 0.1, y + 0.18, zf - 0.15, zb), '#a59f93']);
+        if (hash(i, 5) > 0.4) b.c.push([b.B(x0 + 0.4 + hash(i, 7), x0 + 1.6 + hash(i, 7), y - 0.1, y + 0.09, zf - 0.6, zf - 0.15), '#9a948a']);
+        // side and back walls of sheet or timber, the counter at the open front
+        for (const x of [x0, x1 - 0.06]) b.c.push([new THREE.BoxGeometry(0.06, back - 0.1, d).translate(x + 0.03 - EO[0], y + (back - 0.1) / 2 + 0.18, zf + d / 2 - EO[1]), col]);
+        b.c.push([b.B(x0, x1, y + 0.18, y + back, zb - 0.06, zb), col]);
+        for (let x = x0 + 0.25; x < x1; x += 0.25) b.c.push([b.B(x, x + 0.03, y + 0.2, y + back - 0.1, zb - 0.09, zb - 0.06), '#4a3a2e']);
+        b.c.push([b.B(x0 + 0.1, x1 - 0.1, y + 0.18, y + 0.95, zf + 0.1, zf + 0.5), hash(i, 9) > 0.5 ? '#6b5440' : '#8c8f92']);
+        for (let j = 0; j < Math.floor(w / 0.55); j++) b.c.push([new THREE.SphereGeometry(0.12, 6, 4).translate(x0 + 0.35 + j * 0.55 - EO[0], y + 1.05, zf + 0.3 - EO[1]), ['#c4302a', '#d8a030', '#4f8a2e', '#e0c040'][(i + j) % 4]]);
+        // the corrugated roof falling to the front over a short awning, its fascia uneven
+        const ov = 0.6 + hash(i, 11) * 0.5, L = Math.hypot(d + ov, back - h), g = new THREE.BoxGeometry(w + 0.3, 0.05, L).rotateX(-Math.atan2(back - h, d + ov)).translate(x0 + w / 2 - EO[0], y + (h + back) / 2 + 0.2, zb - (d + ov) / 2 - EO[1]);
+        b.c.push([g, ['#8c5b3c', '#9c8c74', '#a9adaf', '#7d5a42'][i % 4]]);
+        for (let x = x0; x < x1; x += 0.3) b.c.push([new THREE.BoxGeometry(0.04, 0.03, L).rotateX(-Math.atan2(back - h, d + ov)).translate(x - EO[0], y + (h + back) / 2 + 0.24, zb - (d + ov) / 2 - EO[1]), '#6b4a36']);
+        for (const x of [x0 + 0.05, x1 - 0.05]) { b.c.push([b.B(x - 0.04, x + 0.04, y, y + h + 0.1, zf - ov + 0.1, zf - ov + 0.18), '#5a4a3c']); SOLIDS.add(x, zf - ov + 0.14, 0.08); }
+        wallSolids(x0, zf + 0.3, x1, zf + 0.3, Math.min(0.5, w / 4));
+        wallSolids(x0, zf, x0, zb, 0.2); wallSolids(x1, zf, x1, zb, 0.2);
+      }
+      // a white connecting wall with a steel gate farther back, between the stalls and the next range east
+      const gy = gh(862, 76);
+      b.c.push([b.B(861.9, 862.2, gy, gy + 2.2, 66, 72.5), '#ecebe6'], [b.B(861.9, 862.2, gy, gy + 2.2, 77.5, 86.3), '#ecebe6'], [b.B(861.85, 862.25, gy + 2.2, gy + 2.32, 66, 86.3), '#d9d6ce']);
+      b.c.push([b.B(862.0, 862.08, gy + 0.05, gy + 2.0, 72.6, 77.4), '#3d4448']);
+      wallSolids(862.05, 66, 862.05, 86.3, 0.2);
+      for (const [x, z, h, sp] of [[826.5, 62, 9, 13], [858, 60.5, 8.5, 12]] as [number, number, number, number][]) if (clearance(x, z) > 1.2) broadleaf(k, b.leaf, x, z, { h, spread: sp, seed: x + z, origin: EO });
     }
     // the row of timber stalls (pair 24): uneven rusty corrugated roofs on poles, tables of produce under them; small
     // and light, each its own little frame

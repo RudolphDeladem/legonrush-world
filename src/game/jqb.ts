@@ -18,7 +18,7 @@ import * as THREE from 'three';
 import { BUILDINGS } from './campusmap';
 import { createSite, render, type Kit, type Spec, type Style } from './blocks';
 import { EN } from './entrance';
-import { Bag, tuft, RED_BASE, SOFF, TILE, WALL, facesOf, gh, hash, lowWing, vnoise, wallSolids, type R4 } from './enkit';
+import { Bag, tuft, RED_BASE, SOFF, TILE, WALL, facesOf, gh, hash, lowWing, openings, vnoise, wallSolids, type R4 } from './enkit';
 import { gableTri } from './ias';
 import { hipRoof } from './waccbip';
 import { broadleaf, stoneMeshOf } from './nsiaroad';
@@ -215,7 +215,9 @@ const laRoadSpec: Spec = {
   extras: (k: Kit) => {
     const b = new Bag(LO);
     LA_WINGS.forEach((bd, wi) => {
-      const fin = isFinance(bd), rects = rectsOf(ringOf(bd));
+      // the Finance Directorate is its own model below
+      if (isFinance(bd)) return;
+      const fin = false, rects = rectsOf(ringOf(bd));
       for (const [ri, r] of rects.entries()) {
         const seed = wi * 17 + ri * 5, along = r[1] - r[0] >= r[3] - r[2] ? 'x' : 'z';
         const faces = { z0: pattern(r[1] - r[0], seed), z1: pattern(r[1] - r[0], seed + 3), x0: pattern(r[3] - r[2], seed + 7), x1: pattern(r[3] - r[2], seed + 11) };
@@ -225,21 +227,15 @@ const laRoadSpec: Spec = {
       // the Archaeology wing's west end toward the junction: a small gable-fronted white end (pair 36, right)
       if (bd.name?.startsWith('Department of Archaelogy')) gableTri(b, false, 638.1, -1, -12.2 - 0.9, -5.4 + 0.9, gh(640, -9) + 3.4 - 0.2, 0.45);
     });
-    // the Finance sign on its pale posts at the junction (only the heading is readable)
-    const [sx, sz] = [634.6, -48.2], sy = gh(sx, sz);
-    for (const dz of [-0.85, 0.85]) b.c.push([b.B(sx - 0.07, sx + 0.07, sy, sy + 2.9, sz + dz - 0.07, sz + dz + 0.07), '#e8e6e0']);
-    b.c.push([b.B(sx - 0.04, sx + 0.04, sy + 1.2, sy + 2.8, sz - 0.95, sz + 0.95), '#f4f3ef']);
-    k.signs.push({ text: 'FINANCE DIRECTORATE', x: sx - 0.06 - LO[0], y: sy + 2.5, z: sz - LO[1], ry: -Math.PI / 2, w: 1.7, colors: ['#f4f3ef', '#1d3f7a'] });
-    for (let i = 0; i < 5; i++) b.c.push([b.B(sx - 0.06, sx - 0.05, sy + 1.4 + i * 0.16, sy + 1.45 + i * 0.16, sz - 0.7, sz + 0.2 + (i % 2) * 0.4), '#8c9096']);
-    SOLIDS.add(sx, sz - 0.85, 0.15); SOLIDS.add(sx, sz + 0.85, 0.15);
     // ---- the mural court (pairs 27, 28) ----
     const [mx0, mx1, mz0, mz1] = EN.muralCourt;
     k.meshes.push(new THREE.Mesh(drapeAt(LO, mx0, mx1, mz0, mz1, 0.25, 0.05, (x, z) => {
       const row = Math.floor(z / 0.2), col = Math.floor((x + (row % 2) * 0.15) / 0.3), t = hash(col, row) * 0.07, n = vnoise(x * 0.4, z * 0.4);
       return n > 0.78 ? [0.42, 0.33, 0.24] : [0.62 - t, 0.58 - t, 0.52 - t];
     }), groundCover()));
-    // the short white wall with the portrait, facing the road
-    const wy = gh(mx0 + 2, 55), wz0 = 50.2, wz1 = 55.4, wx = mx0 + 2.4;
+    // the short white wall with the portrait, facing the road, built up against the south wall of the wing north of
+    // the court (no gap between them: the owner's correction)
+    const wy = gh(mx0 + 2, 55), wz0 = 47.1, wz1 = 55.4, wx = mx0 + 2.4;
     b.c.push([b.B(wx, wx + 0.25, wy, wy + 2.1, wz0, wz1), WALL], [b.B(wx - 0.03, wx + 0.28, wy, wy + 0.4, wz0, wz1), RED_BASE], [b.B(wx - 0.05, wx + 0.3, wy + 2.1, wy + 2.2, wz0 - 0.05, wz1 + 0.05), '#e3dfd5']);
     const mural = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.25).rotateY(-Math.PI / 2).translate(wx - 0.01 - LO[0], wy + 1.25, 53.6 - LO[1]), new THREE.MeshStandardMaterial({ map: portraitTex(), roughness: 0.8 }));
     k.meshes.push(mural);
@@ -259,6 +255,106 @@ const laRoadSpec: Spec = {
   },
 };
 
+// ---------- the Finance Directorate and Students Accounts Office (the owner's 10-pair brief, pair 10) ----------
+// The mapped outline (osm, x 637.6-670.5): a long range along La Road and a block behind it. One storey, white over a red
+// lower wall, under aged dark grey-brown tiled gable roofs (the block's ridge meeting the range's roof); the range's road
+// face in an uneven rhythm of dark barred windows and recessed doors, an AC condenser; the sign on its two posts in the
+// grass at the range's north end, off the road (it stood in La Road before: the owner's correction); the corroded
+// rectangular gate frame between the range and the Archaeology wing; long uneven grass; the broad tree across the road.
+// The wall is kept 1.3 m back from the mapped outline on the road side so the range does not stand on La Road's edge.
+const FO: [number, number] = [654, -63];
+export const FIN = { range: [638.9, 651.4, -77.4, -49.5] as R4, block: [651.4, 670.5, -72.6, -54.1] as R4, eave: 3.3, pitch: 0.42, over: 0.8, sign: [640.7, -47.3] as [number, number] };
+const DROOF = '#5e5249';
+const financeSpec: Spec = {
+  name: 'Finance Directorate and Students Accounts Office', axis: [1, 0], origin: FO, storey: 3.3, style: PLAIN, roofColor: DROOF, fascia: '#3a2f29', pitch: FIN.pitch, plinth: RED_BASE,
+  onGround: true,
+  blocks: [],
+  keep: [[636 - FO[0], 672 - FO[0], -79 - FO[1], -44 - FO[1]]],
+  extras: (k: Kit) => {
+    const b = new Bag(FO), y = Math.min(gh(640, -76), gh(640, -50), gh(669, -56)), e = y + FIN.eave, ov = FIN.over;
+    const [rx0, rx1, rz0, rz1] = FIN.range, [bx0, bx1, bz0, bz1] = FIN.block;
+    const M = (x: number, z: number): [number, number] => [x - FO[0], z - FO[1]];
+    // the walls: white over the red lower wall (to about a metre), run-off stains under the eaves
+    for (const [x0, x1, z0, z1] of [FIN.range, [rx1 - 0.3, bx1, bz0, bz1]] as R4[]) {
+      b.c.push([b.B(x0, x1, y - 0.3, e, z0, z1), WALL], [b.B(x0 - 0.04, x1 + 0.04, y - 0.3, y + 1.0, z0 - 0.04, z1 + 0.04), RED_BASE]);
+      for (let i = 0; i < 8; i++) { const f = hash(x0 + i * 3.1, z0 - i), along = x1 - x0 > z1 - z0, p = along ? x0 + (x1 - x0) * f : z0 + (z1 - z0) * f; b.c.push([along ? b.B(p, p + 0.1 + f * 0.25, e - 1.3 - f, e - 0.05, z0 - 0.015, z1 + 0.015) : b.B(x0 - 0.015, x1 + 0.015, e - 1.3 - f, e - 0.05, p, p + 0.1 + f * 0.25), '#d6d0c2']); }
+    }
+    // the roofs: the range's ridge along the road, gabled at both ends; the block's ridge running east from the range's
+    // ridge into its slope, gabled at its east end, its pitch set so the two ridges meet level
+    k.roof.c = new THREE.Color(DROOF);
+    const half = (rx1 - rx0) / 2 + ov, top = e + half * FIN.pitch - ov * FIN.pitch;
+    hipRoof(k, M, rx0 - ov, rx1 + ov, rz0 - ov, rz1 + ov, e - ov * FIN.pitch, FIN.pitch, 'z', [{ gw: 99, tri: false }, { gw: 99, tri: false }], b.c, '#3a2f29');
+    const bh = (bz1 - bz0) / 2 + ov, bp = (top - (e - ov * 0.3)) / bh;
+    hipRoof(k, M, (rx0 + rx1) / 2, bx1 + ov, bz0 - ov, bz1 + ov, e - ov * 0.3, bp, 'x', [{ gw: 99, tri: false }, { gw: 99, tri: false }], b.c, '#3a2f29');
+    // the gable walls: the range's two ends, the block's east end (white, a small vent)
+    for (const z of [rz0, rz1]) gableTri(b, true, z, z < -60 ? -1 : 1, rx0, rx1, e, FIN.pitch * ((rx1 - rx0) / 2 + ov) / ((rx1 - rx0) / 2) * 0.97);
+    gableTri(b, false, bx1, 1, bz0, bz1, e, bp * bh / ((bz1 - bz0) / 2) * 0.97);
+    for (const [x, z, alongX] of [[(rx0 + rx1) / 2, rz0 - 0.03, true], [(rx0 + rx1) / 2, rz1 + 0.03, true], [bx1 + 0.03, (bz0 + bz1) / 2, false]] as [number, number, boolean][]) b.grille.push(b.plane(alongX, alongX ? z : x, alongX ? (z < -60 ? -1 : 1) : 1, alongX ? x : z, 1.0, e + 0.5, e + 1.0));
+    // the soffits under the overhangs, the dark fascia boards
+    b.c.push([b.B(rx0 - ov, rx1 + ov, e - ov * FIN.pitch - 0.06, e - ov * FIN.pitch, rz0 - ov, rz1 + ov), SOFF]);
+    // the range's road face: an uneven rhythm of dark barred windows, recessed doors, an AC condenser (pair 10)
+    const F = facesOf(FIN.range);
+    const pat = 'WWDW-WWAWDW-WW';
+    openings(b, F.x0, pat, y, { winH: 1.25, sill: 1.1, w: 1.25 });
+    const n = pat.length, step = (rz1 - rz0) / n;
+    for (let i = 0; i < n; i++) {
+      const a = rz0 + step * (i + 0.5), ch = pat[i];
+      if (ch === 'W' || ch === 'A') b.grille.push(b.plane(false, rx0 - 0.08, -1, a, 1.3, y + 1.08, y + 2.38));
+      // the doors stand in shallow recesses with a step
+      if (ch === 'D') { b.c.push([b.B(rx0 - 0.5, rx0, y - 0.3, y + 0.16, a - 0.8, a + 0.8), '#b9b2a6'], [b.B(rx0 - 0.12, rx0, y + 1.0, y + 2.4, a - 0.72, a - 0.6), WALL], [b.B(rx0 - 0.12, rx0, y + 1.0, y + 2.4, a + 0.6, a + 0.72), WALL]); }
+    }
+    // the condenser at the foot of the wall
+    b.c.push([b.B(rx0 - 0.45, rx0 - 0.05, y, y + 0.65, -60.6, -59.7), '#d8d8d2'], [b.B(rx0 - 0.46, rx0 - 0.44, y + 0.12, y + 0.55, -60.5, -59.8), '#45484b']);
+    SOLIDS.add(rx0 - 0.25, -60.15, 0.4);
+    // the north end and the block's faces: windows and a door
+    openings(b, F.z1, 'WDW', y); openings(b, F.z0, 'W-W', y);
+    const G = facesOf([rx1, bx1, bz0, bz1]);
+    openings(b, G.z0, 'WWAWDWW', y); openings(b, G.z1, 'WWDWWAW', y); openings(b, G.x1, 'WDWW', y);
+    wallSolids(rx0, rz0, rx1, rz0); wallSolids(rx0, rz1, rx1, rz1); wallSolids(rx0, rz0, rx0, rz1); wallSolids(rx1, rz0, rx1, bz0); wallSolids(rx1, bz1, rx1, rz1);
+    wallSolids(rx1, bz0, bx1, bz0); wallSolids(rx1, bz1, bx1, bz1); wallSolids(bx1, bz0, bx1, bz1);
+    // ---- the sign on its two posts, facing the road (pair 10): the large wording read from the photograph ----
+    const [sx, sz] = FIN.sign, sy = gh(sx, sz);
+    for (const dz of [-1.05, 1.05]) { b.c.push([b.B(sx - 0.06, sx + 0.06, sy, sy + 2.9, sz + dz - 0.06, sz + dz + 0.06), '#d9d7d0']); SOLIDS.add(sx, sz + dz, 0.15); }
+    b.c.push([b.B(sx, sx + 0.06, sy + 1.25, sy + 2.75, sz - 1.2, sz + 1.2), '#e8e6df']);
+    const board = new THREE.Mesh(new THREE.PlaneGeometry(2.36, 1.46).rotateY(-Math.PI / 2).translate(sx - 0.01 - FO[0], sy + 2.0, sz - FO[1]), new THREE.MeshBasicMaterial({ map: financeBoard() }));
+    k.meshes.push(board);
+    // ---- the corroded rectangular gate frame between the range and the Archaeology wing ----
+    const gx = 646.0, gy = gh(gx, -47.2);
+    for (const z of [-49.0, -45.4]) { b.c.push([b.B(gx - 0.08, gx + 0.08, gy, gy + 2.6, z - 0.08, z + 0.08), '#7a4a2e']); SOLIDS.add(gx, z, 0.14); }
+    b.c.push([b.B(gx - 0.07, gx + 0.07, gy + 2.45, gy + 2.6, -49.0, -45.4), '#6e4330'], [b.B(gx - 0.05, gx + 0.05, gy + 0.9, gy + 1.0, -49.0, -48.2), '#7d5236']);
+    // ---- long uneven grass on the verge before the range and round the sign ----
+    for (let i = 0; i < 140; i++) {
+      const x = 638.9 + hash(i, 71) * 2.6 - 1.3, z = -79 + hash(i, 73) * 34;
+      const xx = z > -49.4 ? 639.3 + hash(i, 79) * 6 : x - 0.8;
+      if (xx < 639.0 && z < -49.4) continue;
+      tuft(b, xx, z, 0.45 + hash(i, 77) * 0.6, ['#8a9450', '#7d8a44', '#9a9a58', '#6b7a3a'][i % 4]);
+    }
+    // the broad mature tree across the road, its crown reaching over the junction
+    broadleaf(k, b.leaf, 627.5, -48.5, { h: 10, spread: 19, seed: 77, origin: FO });
+    b.finish(k);
+  },
+};
+
+let boardT: THREE.CanvasTexture | null = null;
+/** the Finance sign's face: the University's crest, then the three legible lines; the small lines under them left as
+ *  unreadable bands */
+function financeBoard() {
+  if (boardT) return boardT;
+  const c = document.createElement('canvas'); c.width = 512; c.height = 316; const g = c.getContext('2d')!;
+  g.fillStyle = '#f3f2ee'; g.fillRect(0, 0, 512, 316);
+  g.strokeStyle = '#b9bcc0'; g.lineWidth = 6; g.strokeRect(3, 3, 506, 310);
+  // the crest
+  g.fillStyle = '#1f3d7a'; g.beginPath(); g.moveTo(40, 40); g.lineTo(110, 40); g.lineTo(110, 100); g.quadraticCurveTo(75, 130, 40, 100); g.closePath(); g.fill();
+  g.fillStyle = '#d6b44a'; g.fillRect(58, 58, 34, 8); g.fillRect(70, 50, 10, 46);
+  g.fillStyle = '#1d3f7a'; g.textAlign = 'left'; g.textBaseline = 'middle';
+  g.font = 'bold 34px Arial'; g.fillText('UNIVERSITY', 128, 58); g.fillText('OF GHANA', 128, 96);
+  g.fillStyle = '#1a1a1a'; g.textAlign = 'center';
+  g.font = 'bold 38px Arial'; g.fillText('FINANCE DIRECTORATE', 256, 170);
+  g.font = 'bold 32px Arial'; g.fillText('STUDENTS ACCOUNTS OFFICE', 256, 220);
+  g.fillStyle = '#9a9ea4'; for (const [w, yy] of [[300, 262], [220, 286]]) g.fillRect(256 - w / 2, yy, w, 8);
+  boardT = new THREE.CanvasTexture(c); boardT.colorSpace = THREE.SRGBColorSpace; boardT.anisotropy = 4; return boardT;
+}
+
 let portraitT: THREE.CanvasTexture | null = null;
 /** the painted portrait on the court's wall: a figure in red robes on a pale ground, a frame (generic, not a likeness) */
 function portraitTex() {
@@ -272,6 +368,5 @@ function portraitTex() {
   g.strokeStyle = '#7a5a3a'; g.lineWidth = 3; g.strokeRect(2, 2, 124, 96);
   portraitT = new THREE.CanvasTexture(c); portraitT.colorSpace = THREE.SRGBColorSpace; return portraitT;
 }
-void facesOf;
 
-export const jqbSite = createSite('jones-quartey', [jqbSpec, laRoadSpec]);
+export const jqbSite = createSite('jones-quartey', [jqbSpec, laRoadSpec, financeSpec]);

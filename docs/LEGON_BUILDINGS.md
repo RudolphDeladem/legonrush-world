@@ -2586,3 +2586,87 @@ office's own mapped outline, which overlaps its side drive (osm:way/754146795) b
 
 **Would settle it**: a photo of the hostel's courtyard and of its back; the hostel's gate from the road side at close
 range; a photo along the school's wall where the grey wall meets the white one; the VCG compound's side and back walls.
+
+## The owner's three pictures (the JQB lane, the overhead crossing) and the 10-pair brief
+
+The owner's message of 12 October 2026: three game screenshots with circled faults, then
+`Campus_reconstruction_10_pairs_Claude_brief_1.pdf` (ten game/Street View pairs, a plan of the overhead crossing with
+purple, yellow and blue arrows). Comparison cameras `ten01`-`ten10` (`src/game/tenviews.ts`, `halls.html?view=ten01`).
+New models in `src/game/tenpairs.ts`; changes in `jqb.ts`, `roadside.ts`, `cutplan.ts`, `legoncut.ts`,
+`gateprecinct.ts`; map changes in `corrections.json`. Nothing here is surveyed.
+
+**The three pictures**
+- *The mural court by the Archaeology lane* (picture 1): the court's short white wall with the portrait now runs north
+  to the south wall of the wing beside it (it stopped 2.8 m short).
+- *The overhead crossing* (picture 2): each bridge deck carried its parapet and railing along the whole of a long edge,
+  so where an edge ran on over the ground it lay across the slip road north of the ring (osm R713 at z 92) and the east
+  service road south of it (R717 at z 155). The parapet and railing now stand only along the stretch over the drop, a
+  little past the wall line onto its parapet.
+- *The Finance sign* (picture 3): it stood inside La Road's mapped width (x 634.6). It now stands in the grass between the
+  Archaeology wing and the Finance range (x 640.7, z -47.3), facing the road; a route test checks its posts are off the
+  road.
+
+**The 10 pairs**
+- *Pairs 1, 2, GCB Bank near Ernest Chemist* (osm:way/603522794): one low bank, the same model from both cameras. The road
+  front: silver-white panel cladding with joints, a broad blue band, blue vertical zones at the ends, the dark recessed
+  central entrance, the square GCB emblem block over it, three shallow steps, the ramp with its railing on the right.
+  The south side: the deep vertical blue-glass recess in its frame, the projecting canopy on two posts over the stairs,
+  the short ramp, the GCB sign on the roof edge at the south-west corner, three flags on slender poles, planted islands
+  with low shrubs on the paved approach. Before the road front: rough pale-brown earth with sparse weeds, the low stained
+  concrete wall (gaps at the steps and the ramp) with a narrow drain, three mature trees, three timber poles with their
+  wires, a dark parked car. *Not modelled*: the red roofs and scaffolded framework behind the bank (no mapped outline
+  there; they would need a position).
+- *Pair 3, the parcel behind the bank*: the five outlines in it are excluded (two Google ML outlines and three OSM
+  ways, which had been made one storey in the 30-pair batch); the ground is red-brown earth with tall grass, paler
+  worn patches, low mounds, stones and broken blocks, banana plants and trees; the small pale shed well back on its
+  mapped outline (one storey, a low gable roof with a dark edge, few openings). The mall shows beyond on the left.
+- *Pair 4, GMI Motors and Legon City Mall*: the two outlines north of the forecourt are one low white showroom (turned
+  onto their skewed outlines) with large dark display windows and the red GMI MOTORS fascia; the building west of them
+  is one storey (heights). The mall is no longer one all-glass box: its rectangles alternate dark blue glazing with light
+  grey panelled blocks with dark window bands and shopfronts, at stepped heights (3 to 6 storeys); the name stays on the
+  tall corner. The forecourt's red-brown posts carry a chain-link mesh (a light fence).
+- *Pair 5, the strip south of the bank*: the open market shed with its row of painted panels is now a vehicle shelter
+  (a long shallow sheet roof on slender posts, cars under it); before it, beyond the lane, the small blue kiosk, low
+  masonry partitions (part broken), a patch of broken pavers, the blue tarp over a simple produce stall, a big tree, a
+  pole, stones and weeds on red earth.
+- *Pair 6, against the police station's north wall*: the three generic houses there are excluded (one carried the place
+  name Pilosoft Services); seven small separate kiosks and stalls stand against the range's north wall: different
+  widths and heights, timber and painted sheet fronts, low corrugated roofs falling to the front over short awnings,
+  counters with produce, rough thresholds and broken steps, gaps between them; compacted red earth before them; a white
+  wall with a steel gate farther back; two trees.
+- *Pair 7, the low frontage west of the gate* (osm:way/452701539, Ghana Dance Ensemble): the generic two-storey block is
+  now a low white range on a red-brown base under weathered red tiles, with the deep dark passage behind square piers
+  and grilles in the middle of its east front; at its north end the taller two-storey gable-ended block with the round
+  high vent in its gable and glazed notice boards on its front. Before it: worn grass and earth, the low stone-edged
+  bed, a conical shrub, the gravel heap, broad trees and two fan palms. *Assumed*: which mapped building the photograph
+  shows (the one the game's camera centred on, approached from the police station's side along Danquah Avenue); the tall
+  block's depth (the north 7.7 m of the outline).
+- *Pair 8, the Jones-Quartey parking*: the large outline north of the parking (osm:way/744988918) is an unfinished
+  concrete frame: exposed columns on a 6 m grid, four slab levels with bare beams and edges, open bays, bars standing out
+  of the top columns, an unrendered blockwork stair core; no walls, glazing or roof. The light carport on the court's east
+  side: thin posts along its edge, a shallow sheet roof cantilevered over the bays, cars under it. *Assumed*: the frame's
+  level count (four, from the photograph) on the whole of the outline.
+- *Pair 9, the overhead crossing*: the lowered road now runs on south of the ring to where the east carriageway meets the
+  east service road (the cutting's south end moved from z 255 to z 405; its deep run to z 315; the wall lines sampled
+  from the mapped roads every 5 m as before); the north approach is unchanged (the purple arrow). The east wall stands at
+  its least offset from the carriageway there, as it does north of z 270 (the service road runs against it). On the
+  ring's west side: the island's stone edge along the top of its slope, four black-and-yellow chevron boards toward the
+  traffic coming off Danquah Avenue, the blue keep-right sign at its nose. The plaza's two planters that stood on the ring
+  road and the south carriageway are gone and the corner one shortened (gateprecinct.ts).
+- *Pair 10, the Finance Directorate and Students Accounts Office* (the mapped range and block east of La Road): one
+  storey, white over a red lower wall, aged dark grey-brown tiled gable roofs (the block's ridge running into the range's
+  roof, the ridges level), white gables with small vents; the road face in an uneven rhythm of barred windows and
+  recessed doors with a step, an AC condenser; the range's road wall kept 1.3 m back from the outline, which reached La
+  Road's edge. The sign on two posts with the crest, UNIVERSITY OF GHANA, FINANCE DIRECTORATE, STUDENTS ACCOUNTS OFFICE
+  (the small lines below left as unreadable bands); the corroded rectangular gate frame between the range and the
+  Archaeology wing; long grass; a broad tree across the road.
+
+**Checks**: route tests (new: the Finance sign's posts off every road; no building left in the parcel or the stall yard;
+the cutting's south approach to z 405 at full depth to z 300); every ride's ground continuous; route lengths unchanged;
+cameras outside buildings; `solidroads.mjs` over the new models: nothing new on a road (the Archaeology wing's west wall
+solids at the edge of La Road and a cutting parapet post at the north bridge, both earlier, remain).
+
+**Would settle it**: the GCB Bank's depth and the buildings behind it (an aerial or a photo from the north); the mall's
+storey counts per block (a photo from the north-east); the unfinished frame's true outline and level count (a photo from
+its west); the Dance Ensemble block's north end (a photo from the north); where the cutting's south ramp really meets the
+ground (a photo along the road at the trotro station).

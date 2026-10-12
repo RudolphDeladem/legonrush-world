@@ -1,5 +1,5 @@
 {
- "destinations": 436,
+ "destinations": 435,
  "byMethod": {
   "curated": 93,
   "osm-entrance": 0,
@@ -7,12 +7,12 @@
   "path-access": 2,
   "drive-access": 18,
   "area-entry": 8,
-  "frontage": 205,
+  "frontage": 204,
   "point": 109
  },
  "byConfidence": {
   "high": 88,
-  "low": 209,
+  "low": 208,
   "medium": 139
  },
  "campusGates": 5,
@@ -362,7 +362,7 @@
  ],
  "byStatus": {
   "verified": 87,
-  "inferred": 200,
+  "inferred": 199,
   "partial": 6,
   "unverified": 9,
   "mapped": 134

@@ -337,7 +337,15 @@
    "osm:way/744998452",
    "ml:d5854760-7f1c-4f84-9953-d1ada1fb77ac",
    "ml:fe2da66f-70e1-4752-8a60-33670112ce93",
-   "ml:36c7121c-429d-4ac9-888a-68edf010df19"
+   "ml:36c7121c-429d-4ac9-888a-68edf010df19",
+   "ml:703375b7-8119-41c3-8895-a52b3118d8bb",
+   "osm:way/603522793",
+   "osm:way/603522792",
+   "osm:way/665125614",
+   "ml:084fe046-f9cd-4e36-87d6-ea8c4292cd6e",
+   "osm:way/665125642",
+   "osm:way/665125643",
+   "osm:way/665125644"
   ]
  },
  "areas": {
@@ -379,13 +387,13 @@
   }
  },
  "places": {
-  "total": 436,
-  "fromOsm": 390,
+  "total": 435,
+  "fromOsm": 389,
   "fromUgCampusMap": 38,
   "addedFromRegistry": 8,
   "movedToRegistryPosition": 7,
   "byConfidence": {
-   "high": 146,
+   "high": 145,
    "medium": 286,
    "low": 4
   },
@@ -2627,7 +2635,7 @@
    "kind": "academic",
    "ha": 48,
    "shareOutsideCampus": 0,
-   "places": 69,
+   "places": 68,
    "buildings": 178,
    "anchorsMissing": []
   },
