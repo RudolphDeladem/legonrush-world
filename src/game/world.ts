@@ -16,6 +16,7 @@ import { alongCut, deckAt, inCutBand, inTrench } from './cutplan';
 import { NSIA } from './nsia';
 import { KQ } from './kuffour';
 import { offAsphalt } from './science';
+import { ownsEdges } from './ipsplan';
 import { collisionRoots } from './meshcollide';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, roadClearance, ROAD_WIDTH } from './life';
 
@@ -540,6 +541,21 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
     if (s0 >= 0) plain.push([s0, L]);
   }
   const onPlain = (d: number) => plain.some(([a, b]) => d > a && d < b);
+  // stretches whose kerbs, sidewalks, verges, trees and lights a modelled site draws (IPS Road: upsa.ts, ipsroad.ts): the
+  // route keeps its road, edge lines and dashes there, but not its generic pavements, trees and lamps over the model's
+  // (one list per side: [left, right], tested at the pavement's middle)
+  const owned: [number, number][][] = [-1, 1].map((s) => {
+    const out: [number, number][] = [];
+    let s0 = -1;
+    for (let d = 0; d <= L; d += 1) {
+      const p = track.pose(d, s * (ROAD_HALF + 0.8)), on = ownsEdges(p.x, p.z);
+      if (on && s0 < 0) s0 = d;
+      if (!on && s0 >= 0) { out.push([s0, d]); s0 = -1; }
+    }
+    if (s0 >= 0) out.push([s0, L]);
+    return out;
+  });
+  const onOwned = (d: number, s: number) => owned[s > 0 ? 1 : 0].some(([a, b]) => d > a && d < b);
   const lined = openRuns([...stairs, ...plain].sort((a, b) => a[0] - b[0]), L);
   const roadTex = asphaltTexture();
   roadTex.repeat.set(2, 1);
@@ -558,7 +574,7 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
   conc.repeat.set(1, 4);
   const walkMat = wettable(new THREE.MeshStandardMaterial({ map: conc, roughness: 0.95, side: THREE.DoubleSide }));
   // the pavements stop where another road joins or crosses the route: a kerb across its mouth would block it
-  const gaps = walkGaps(track, ROAD_HALF, ROAD_WIDTH).map((g) => [...g, ...stairs, ...plain]);
+  const gaps = walkGaps(track, ROAD_HALF, ROAD_WIDTH).map((g, i) => [...g, ...stairs, ...plain, ...owned[i]]);
   for (const s of [-1, 1]) {
     const a = s * ROAD_HALF, c = s * (ROAD_HALF + 1.6);
     for (const [d0, d1] of openRuns(gaps[s > 0 ? 1 : 0], L)) {
@@ -603,7 +619,7 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
     for (const s of [-1, 1]) {
       const dd = d + (rand() - 0.5) * 6, p = at(dd, s * (ROAD_HALF + 4 + rand() * 5));
       const sc = 0.8 + rand() * 0.6, spin = rand() * 6.28;
-      if (!clear(p, 1.2) || onPlain(dd)) continue;
+      if (!clear(p, 1.2) || onPlain(dd) || onOwned(dd, s)) continue;
       spots.push(new THREE.Matrix4().compose(p, new THREE.Quaternion().setFromAxisAngle(up, spin), new THREE.Vector3(sc, sc, sc)));
       ROUTE_SOLIDS.add(p.x, p.z, 0.35 * sc);
     }
@@ -614,7 +630,7 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
     for (const s of [-1, 1]) {
       const dd = d + (s > 0 ? 18 : 0);
       const p = at(dd, s * (ROAD_HALF + 1.2));
-      if (track.distanceToRoad(p.x, p.z) < ROAD_HALF + 1 || buildingAt(p.x, p.z, 0.5) || inCutBand(p.x, p.z, 1)) continue;
+      if (track.distanceToRoad(p.x, p.z) < ROAD_HALF + 1 || buildingAt(p.x, p.z, 0.5) || inCutBand(p.x, p.z, 1) || onOwned(dd, s)) continue;
       lamps.push(new THREE.Matrix4().compose(p, new THREE.Quaternion().setFromAxisAngle(up, yawAt(dd) + (s > 0 ? Math.PI : 0)), one));
     }
   }

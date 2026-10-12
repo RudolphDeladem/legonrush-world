@@ -21,6 +21,7 @@ import { inCutBand } from './cutplan';
 import { NSIA } from './nsia';
 import { KQ } from './kuffour';
 import { offAsphalt } from './science';
+import { ownsEdges } from './ipsplan';
 
 /** real road widths by class: main, through, residential, service lane, footpath */
 export const ROAD_WIDTH = [9, 7.4, 6.2, 4.6, 2.6];
@@ -1168,7 +1169,8 @@ export function buildRoadEdges(map: THREE.Texture) {
         for (let j = 0; j <= n + 1; j++) {
           const t = (Math.min(j, n) / n) * len;
           const x = ax + ux * t, z = az + uz * t;
-          const ok = j <= n && !inKqPlain(x, z) && roadClearance(x + nx * (at + 0.8), z + nz * (at + 0.8), 8, ri) > 0.3 && !onRouteSurface(x + nx * (at + 0.5), z + nz * (at + 0.5), ri, undefined, { x, z, nx, nz }) && !buildingAt(x + nx * (at + 1), z + nz * (at + 1)) && !inCutBand(x + nx * at, z + nz * at, 2.5);
+          // (along IPS Road upsa.ts and ipsroad.ts draw the kerbs, sidewalks and verges themselves: ipsplan.ts)
+          const ok = j <= n && !inKqPlain(x, z) && !ownsEdges(x + nx * (at + 0.5), z + nz * (at + 0.5)) && roadClearance(x + nx * (at + 0.8), z + nz * (at + 0.8), 8, ri) > 0.3 && !onRouteSurface(x + nx * (at + 0.5), z + nz * (at + 0.5), ri, undefined, { x, z, nx, nz }) && !buildingAt(x + nx * (at + 1), z + nz * (at + 1)) && !inCutBand(x + nx * at, z + nz * at, 2.5);
           if (ok && start < 0) start = j;
           if (!ok && start >= 0) {
             const t0 = (start / n) * len, t1 = (Math.min(j - 1, n) / n) * len;

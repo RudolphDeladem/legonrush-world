@@ -728,6 +728,45 @@ try {
     if (Math.abs(plan.GATE.x - 1111) > 1 || plan.GATE.open < 4) fail('UPSA junction: the UGBS gate no longer clears the campus road');
   }
 
+  // ---------- IPS Road to the UPSA Hostel (the road-corridor and site briefs): nothing solid on a road or the ride ----------
+  {
+    const ip = await server.ssrLoadModule('/src/game/ipsplan.ts');
+    const ips = (await server.ssrLoadModule('/src/game/ipsroad.ts')).ipsSite;
+    const hostel = (await server.ssrLoadModule('/src/game/upsahostel.ts')).upsaHostelSite;
+    if (ips.frames().length !== 1 || hostel.frames().length !== 2) fail('IPS Road: expected the corridor, the hostel and the VCG office models');
+    const W = [9, 7.4, 6.2, 4.6, 2.6];
+    const onRoad = (x, z, r) => {
+      for (const road of cm.ROADS) {
+        const pts = road.nodes.map((n) => [cm.NODE_XZ[n * 2], cm.NODE_XZ[n * 2 + 1]]);
+        for (let i = 0; i < pts.length - 1; i++) {
+          const [ax, az] = pts[i], [bx, bz] = pts[i + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+          const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+          if (Math.hypot(ax + dx * t - x, az + dz * t - z) < W[road.cls] / 2 + r + 0.3) return road.name ?? 'a road';
+        }
+      }
+      return null;
+    };
+    const posts = ip.corridorPosts();
+    for (const [x, z, r] of posts) { const on = onRoad(x, z, r); if (on) fail(`IPS Road: the post at ${x.toFixed(1)},${z.toFixed(1)} stands on ${on}`); }
+    // the ride along IPS Road from the junction to past the hostel and back: no post on it
+    for (const [a, b] of [[[1000, -881], [1840, -887]], [[1840, -887], [1000, -881]]]) {
+      const p = cm.findPath(a, b, 'cycle');
+      if (!p) { fail('IPS Road: no ride along IPS Road'); continue; }
+      const line = p.nodes.map((n) => cm.nodeXZ(n));
+      for (const [x, z, r] of posts) {
+        for (let i = 0; i < line.length - 1; i++) {
+          const [ax, az] = line[i], [bx, bz] = line[i + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+          const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+          if (Math.hypot(ax + dx * t - x, az + dz * t - z) < 3.8 + r) { fail(`IPS Road: the post at ${x.toFixed(1)},${z.toFixed(1)} stands on the ride along IPS Road`); break; }
+        }
+      }
+    }
+    // the gates stay open across their roads: the school's, the VCG office's, the hostel's
+    for (const [name, g, x] of [['the school', ip.PRESEC.gate, 1739.6], ['the VCG office', ip.VCG.gate, 1664], ['the hostel', ip.HOSTEL.gate, 1731]]) {
+      if (Math.abs(g.x - x) + 2.3 > g.half) fail(`IPS Road: ${name}'s gate no longer clears its road`);
+    }
+  }
+
   // ---------- races never move by accident ----------
   const sig = (r) => { if (!r) return null; const s = r.track.pose(r.lead, 0), e = r.track.pose(r.lead + r.length, 0); return `${r.length} m ${s.x.toFixed(1)},${s.z.toFixed(1)} -> ${e.x.toFixed(1)},${e.z.toFixed(1)}`; };
   const lv = await server.ssrLoadModule('/src/features/levels.ts');

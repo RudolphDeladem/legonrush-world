@@ -2518,3 +2518,71 @@ buildings. The comparison renders are taken in one page load with `tools/preview
 **Known, left as is**: the cutting's east parapet north of the south bridge (z 155-205) stands up to 0.75 m inside the
 mapped edge of the east slip road (J.J. Rawlings Avenue's connector); the road stays passable. Moving the wall line
 there would change the cutting's geometry and wants a photo or measurement of that stretch first.
+
+## IPS Road from the UPSA junction to the UPSA Hostel; the hostel and the Vice Chancellors Ghana Office Complex
+
+The owner's two briefs of 12 October 2026: `LEGONRUSH_UPSA_Junction_to_Hostel_Road_Focused_Brief.docx` (the road,
+R01-R34) and `LEGONRUSH_IPS_Road_Site_Reconstruction_Brief_1.docx` (the sites, IMG-01 to IMG-16). The ZIP reference pack
+the briefs mention was not supplied; the images embedded in the two documents were used. Code: `src/game/ipsplan.ts`
+(positions), `src/game/ipsroad.ts` (the corridor), `src/game/upsahostel.ts` (the hostel and the VCG office),
+`src/game/ipsviews.ts` (comparison cameras `ips01`-`ips14`). Nothing here is surveyed.
+
+**Where things are, from the project data**
+- IPS Road is the mapped road osm:way/515974988 (class 1); the parallel road 13-18 m south of it is osm:way/1499858648
+  (OSM "unclassified"): near the junction the earlier field photos show the two as a dual carriageway with a grass
+  median (upsa.ts); further east the photos (IMG-04, IMG-14, R10-R12) show the strip between them as kerbed red earth
+  with trees and parked cars, and the southern road as the frontage road of the compounds.
+- The north side of the corridor is the Presbyterian Boys' Senior High School (OSM landuse "Presbyterian Boys' Senior
+  High School", x 998-2158); its arched gate is where the mapped school road (x 1739) leaves IPS Road. The sign by the
+  wall reads PRESBYTERIAN CHURCH OF GHANA / PRESBYTERIAN WORSHIP CENTRE / PWC, PRESEC - LEGON (IMG-01).
+- UPSA Hostel: the Overture place "UPSA Hostel" (x 1736, z -798) lies in osm:way/1217291474, whose outline matches the
+  photographed front exactly (end wings forward, the middle set back, a small central bay). osm:way/394252035 to the
+  east is modelled as the hostel's second block (IMG-03, R10, R11). The red-roofed one-storey building at the gate is
+  osm:way/1217291473 (Overture places "Chef Wagon", "Empomart" nearby).
+- VCG office: osm:way/1217291476, west of the hostel ("No. 6 IPS Road, adjacent to UPSA Hostel", vcg.edu.gh; the
+  photos put it west of the hostel). Its stepped side faces north to the road: the mapped outline steps out twice there
+  (the forward volume, then the canopy's footprint).
+
+**From the photographs**
+- North sidewalk: tan pavers laid herringbone between a road kerb and an outer kerb (R13-R19), from x 1205 to past the
+  hostel, open at the school's gate road; a weedy verge with red earth, wooden distribution poles with three wires,
+  streetlights with a curved arm over the road (R05-R07, R16).
+- The school's boundary: the old grey block wall over scrub (R05-R07), then the white wall with blue pilasters, coping
+  and base, and the tall green chain-link fence of the sports ground behind it (R08, R09, IMG-15); the arched gate
+  between two white gatehouses with blue bases, blue metal pyramid roofs, brown windows and the school's crest, the
+  iron gates folded open (IMG-02); the open drain with concrete lips at the gate road's mouth, passing under the road
+  (IMG-02, IMG-16).
+- The strip: kerbed red earth with dry grass, small spreading trees, a big mature tree by the hostel, a few cars.
+- The transmission line continues from the junction's tower (x 1290) to towers at x 1608 and 1893 (R14-R16, IMG-14).
+- The hostel: cream, ten storeys (IMG-04, R29); the wings' fronts in louvre strips, balcony recesses and pairs of small
+  windows; the central bay a storey taller with larger blue-glazed windows, UPSA HOSTEL, the fanlight in its gable, the
+  entrance canopy; low red-brown hipped roofs; the white wall-and-railing fence and gate, the grey-paved forecourt.
+- The VCG office: white, four storeys, flat roof; the forward volume with its row of windows over the large dark window;
+  the layered canopy on two square columns over recessed dark glazing; the blue sign VICE CHANCELLORS GHANA / OFFICE
+  COMPLEX on the top storey; the compound wall with its zig-zag top between square pillars and the black railing; the
+  black gate leaves swung open; the red-roofed gatehouse; brick-paved forecourt and side drive (IMG-05 to IMG-09, R28).
+
+**Assumed** (no photograph or data for it)
+- The hostel's courtyard and its galleries (the outline is solid in OSM; a 56 m deep block of rooms is taken to be a
+  ring round a courtyard; no courtyard photo came with these briefs) and its back; the east block's floor count (nine)
+  and its colour; storey heights (2.9 m hostel, 3.6 m office).
+- Wall lines (9.4 m north of IPS Road's centre; the compounds' front walls at z -852.6 and -848.6, matched to the mapped
+  drives and the shop's front); the VCG compound's side walls; where the old grey wall becomes the white one (x 1555);
+  the mesh fence's extent; tower, pole and streetlight spacing; the strip's trees.
+- The large outline osm:way/1217291472 (x 1474-1553, the same OSM mapping batch as the hostel) is left as the generic
+  block: no photograph shows it.
+
+**Engine changes**: `ipsplan.ownsEdges` marks the edges a model draws itself along IPS Road (the junction's median and
+south sidewalk from upsa.ts, this corridor's sidewalk, verge and strip). There the campus's generic verge-and-drain
+strips (`life.ts`) and a ridden route's generic pavements, trees and lamps (`world.ts`) are not drawn: before, a ridden
+route laid its own pavement over the median and sidewalk (the brief's R31-R34). The route keeps its road and markings.
+The compounds' paved courts are listed in `PAVED_BOXES` (`science.ts` offAsphalt): their mapped drives are paved there,
+not asphalt. `upsa.ts` exports its helpers (pavers, kerbed strips, wires, `latticeTower`) for reuse.
+
+**Checks** (`scripts/route-tests.mjs`): the three models are built; no pole, lamp, tower leg, gate pier or post stands on
+a mapped road or on the ride along IPS Road in either direction; the school's, the VCG's and the hostel's gates clear
+their roads. `tools/preview/solidroads.mjs` found no new solid on a road or path in the corridor except the VCG
+office's own mapped outline, which overlaps its side drive (osm:way/754146795) by 0.24 m in the map data.
+
+**Would settle it**: a photo of the hostel's courtyard and of its back; the hostel's gate from the road side at close
+range; a photo along the school's wall where the grey wall meets the white one; the VCG compound's side and back walls.

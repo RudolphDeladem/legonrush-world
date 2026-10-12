@@ -31,22 +31,22 @@ import { SOLIDS } from './solids';
 import { NODE_XZ, ROADS } from './campusmap';
 import { ATM, CONTAINER, GATE, GOIL, GOIL_SIGN, H_POLES, MAST, SIGNALS, TOWERS, WALL_EAST, WALL_WEST, WOOD_POLES, wallZ } from './upsaplan';
 
-type V3 = [number, number, number];
+export type V3 = [number, number, number];
 const OPEN = { gw: 99, tri: false }, HIP = { gw: 0, tri: false };
 const GRID = '#b2b5b7', WHITE = '#f3f2ee', BRONZE = '#3b2e25', ROOF = '#93503f', FASCIA = '#8d9296';
 
 /** a square bar from a to b */
-const rod = (a: V3, b: V3, w: number) => {
+export const rod = (a: V3, b: V3, w: number) => {
   const d = new THREE.Vector3(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
   return new THREE.BoxGeometry(w, w, d.length()).lookAt(d).translate((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2);
 };
 /** a box along the ground from (ax, az) to (bx, bz), y0..y1, t thick, shifted `off` to the left of a->b */
-const run = (ax: number, az: number, bx: number, bz: number, y0: number, y1: number, t: number, off = 0) => {
+export const run = (ax: number, az: number, bx: number, bz: number, y0: number, y1: number, t: number, off = 0) => {
   const len = Math.hypot(bx - ax, bz - az), ux = (bx - ax) / len, uz = (bz - az) / len;
   return new THREE.BoxGeometry(len, y1 - y0, t).rotateY(-Math.atan2(uz, ux)).translate((ax + bx) / 2 + uz * off, (y0 + y1) / 2, (az + bz) / 2 - ux * off);
 };
 /** overhead wires: one line per pair of end points, sagging `sag` in the middle */
-function wires(spans: [V3, V3][], sag: number) {
+export function wires(spans: [V3, V3][], sag: number) {
   const pos: number[] = [];
   for (const [a, b] of spans) {
     const n = 16;
@@ -66,7 +66,7 @@ function wires(spans: [V3, V3][], sag: number) {
 // ---------- materials: pavers laid herringbone, the median's grass ----------
 const paverMats = new Map<string, THREE.MeshStandardMaterial>();
 /** concrete pavers laid herringbone, one tile 4 m: tan (the sidewalks), grey (UGBS), dusty brown (GOIL) */
-function pavers(kind: 'tan' | 'grey' | 'goil') {
+export function pavers(kind: 'tan' | 'grey' | 'goil') {
   let m = paverMats.get(kind);
   if (m) return m;
   const [base, cols] = {
@@ -111,14 +111,14 @@ function medianGrass() {
   return medianMat;
 }
 /** a flat paved rectangle (model frame), the texture laid in metres */
-function pave(k: Kit, x0: number, x1: number, z0: number, z1: number, mat: THREE.Material, y = 0.025) {
+export function pave(k: Kit, x0: number, x1: number, z0: number, z1: number, mat: THREE.Material, y = 0.025) {
   const g = new THREE.PlaneGeometry(x1 - x0, z1 - z0).rotateX(-Math.PI / 2).translate((x0 + x1) / 2, y, (z0 + z1) / 2);
   const p = g.attributes.position as THREE.BufferAttribute, uv = g.attributes.uv as THREE.BufferAttribute;
   for (let i = 0; i < p.count; i++) uv.setXY(i, p.getX(i) / 4, p.getZ(i) / 4);
   const m = new THREE.Mesh(g, mat); m.receiveShadow = true; k.meshes.push(m);
 }
 /** a raised strip between two edges (lists of model-frame points), its top at y, faces down to the ground on both sides */
-function strip(k: Kit, a: [number, number][], b: [number, number][], y: number, mat: THREE.Material, edge: Part[], edgeCol: string, kerbs: [number, number] | null) {
+export function strip(k: Kit, a: [number, number][], b: [number, number][], y: number, mat: THREE.Material, edge: Part[], edgeCol: string, kerbs: [number, number] | null) {
   const pos: number[] = [], uv: number[] = [], idx: number[] = [];
   for (let i = 0; i < a.length; i++) {
     pos.push(a[i][0], y, a[i][1], b[i][0], y, b[i][1]);
@@ -153,8 +153,41 @@ function strip(k: Kit, a: [number, number][], b: [number, number][], y: number, 
   edge.push([run(a[n][0], a[n][1], b[n][0], b[n][1], 0, y + (kerbs ? 0.06 : 0), 0.06), edgeCol]);
 }
 
+/** a lattice transmission tower at px, pz (model frame) on the ground (y 0): four tapering legs braced in bays, three
+ *  pairs of cross-arms with their insulators, the earth-wire peak; returns the conductors' attachment points (the six
+ *  insulator ends, then the peak) for the spans to the next tower */
+export function latticeTower(c: Part[], px: number, pz: number, y0 = 0): V3[] {
+  const steel = '#8c9194';
+  const half = (y: number) => (y <= 20 ? 3.0 - (1.9 * y) / 20 : 1.1 - (0.25 * (y - 20)) / 11);
+  const lv = [0, 4, 8, 12, 16, 20, 23.5, 27, 31];
+  const P = (y: number, sx: number, sz: number): V3 => [px + sx * half(y), y0 + y, pz + sz * half(y)];
+  const corners: [number, number][] = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
+  for (let i = 0; i < lv.length - 1; i++) {
+    const ya = lv[i], yb = lv[i + 1];
+    for (let q = 0; q < 4; q++) {
+      const [sx, sz] = corners[q], [tx, tz] = corners[(q + 1) % 4];
+      c.push([rod(P(ya, sx, sz), P(yb, sx, sz), 0.16), steel]);
+      c.push([rod(P(yb, sx, sz), P(yb, tx, tz), 0.08), steel]);
+      c.push([rod(P(ya, sx, sz), P(yb, tx, tz), 0.06), steel], [rod(P(ya, tx, tz), P(yb, sx, sz), 0.06), steel]);
+    }
+  }
+  const at: V3[] = [];
+  for (const [y, reach] of [[20, 6.5], [23.5, 5.4], [27, 4.4]] as [number, number][]) {
+    for (const s of [-1, 1]) {
+      const tip: V3 = [px, y0 + y, pz + s * reach];
+      for (const sx of [-1, 1]) c.push([rod(P(y, sx, s), tip, 0.08), steel], [rod(P(y - 1.6, sx, s), tip, 0.06), steel]);
+      c.push([rod(tip, [tip[0], y0 + y - 1.7, tip[2]], 0.12), '#d9d6cc']);
+      at.push([tip[0], y0 + y - 1.7, tip[2]]);
+    }
+  }
+  const peak: V3 = [px, y0 + 33, pz];
+  for (const [sx, sz] of corners) c.push([rod(P(31, sx, sz), peak, 0.08), steel]);
+  at.push(peak);
+  return at;
+}
+
 // ---------- the road lines the strips follow ----------
-function roadLine(cls: number, px: number, pz: number) {
+export function roadLine(cls: number, px: number, pz: number) {
   let best: [number, number][] = [], bd = Infinity;
   for (const r of ROADS) {
     if (r.cls !== cls) continue;
@@ -169,7 +202,7 @@ function roadLine(cls: number, px: number, pz: number) {
   return best;
 }
 /** the line's z at x (lines that run west to east) */
-const zOn = (line: [number, number][], x: number) => {
+export const zOn = (line: [number, number][], x: number) => {
   for (let i = 0; i < line.length - 1; i++) {
     const [ax, az] = line[i], [bx, bz] = line[i + 1];
     if ((x - ax) * (x - bx) <= 0 && ax !== bx) return az + ((bz - az) * (x - ax)) / (bx - ax);
@@ -466,35 +499,7 @@ const grounds: Spec = {
     k.meshes.push(wires(spans, 0.9));
     // ---- the lattice transmission towers, the line between them ----
     const tw: V3[][] = [];
-    for (const [x, z] of TOWERS) {
-      const [px, pz] = L(x, z), steel = '#8c9194';
-      const half = (y: number) => (y <= 20 ? 3.0 - (1.9 * y) / 20 : 1.1 - (0.25 * (y - 20)) / 11);
-      const lv = [0, 4, 8, 12, 16, 20, 23.5, 27, 31];
-      const P = (y: number, sx: number, sz: number): V3 => [px + sx * half(y), y, pz + sz * half(y)];
-      const corners: [number, number][] = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
-      for (let i = 0; i < lv.length - 1; i++) {
-        const y0 = lv[i], y1 = lv[i + 1];
-        for (let q = 0; q < 4; q++) {
-          const [sx, sz] = corners[q], [tx, tz] = corners[(q + 1) % 4];
-          c.push([rod(P(y0, sx, sz), P(y1, sx, sz), 0.16), steel]);
-          c.push([rod(P(y1, sx, sz), P(y1, tx, tz), 0.08), steel]);
-          c.push([rod(P(y0, sx, sz), P(y1, tx, tz), 0.06), steel], [rod(P(y0, tx, tz), P(y1, sx, sz), 0.06), steel]);
-        }
-      }
-      for (const [sx, sz] of corners) solid(x + sx * 3, z + sz * 3, 0.45);
-      const at: V3[] = [];
-      for (const [y, reach] of [[20, 6.5], [23.5, 5.4], [27, 4.4]] as [number, number][]) {
-        for (const s of [-1, 1]) {
-          const tip: V3 = [px, y, pz + s * reach];
-          for (const sx of [-1, 1]) c.push([rod(P(y, sx, s), tip, 0.08), steel], [rod(P(y - 1.6, sx, s), tip, 0.06), steel]);
-          c.push([rod(tip, [tip[0], y - 1.7, tip[2]], 0.12), '#d9d6cc']);
-          at.push([tip[0], y - 1.7, tip[2]]);
-        }
-      }
-      c.push([rod(P(31, -1, -1), [px, 33, pz], 0.08), steel], [rod(P(31, 1, 1), [px, 33, pz], 0.08), steel], [rod(P(31, 1, -1), [px, 33, pz], 0.08), steel], [rod(P(31, -1, 1), [px, 33, pz], 0.08), steel]);
-      at.push([px, 33, pz]);
-      tw.push(at);
-    }
+    for (const [x, z] of TOWERS) { const [px, pz] = L(x, z); tw.push(latticeTower(c, px, pz)); for (const sx of [-1, 1]) for (const sz of [-1, 1]) solid(x + sx * 3, z + sz * 3, 0.45); }
     k.meshes.push(wires(tw[0].map((p, j) => [p, tw[1][j]] as [V3, V3]), 7));
     // ---- traffic signals at the N4 junction's corners ----
     const jx = 951.2, jz = -883.7;

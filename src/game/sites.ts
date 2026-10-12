@@ -58,5 +58,7 @@ import { upsaSite } from './upsa';
 import { legonCutSite } from './legoncut';
 import { geographySite } from './geography';
 import { roadsideSite } from './roadside';
+import { ipsSite } from './ipsroad';
+import { upsaHostelSite } from './upsahostel';
 
-export const BLOCK_SITES = [hostels, banking, vikingsLaw, engineeringSite, domeHouse, pentagon, commonwealth, volta, greatHalls, athletics, annexes, ccSite, balmeSite, parks, nightMarket, valco, westLegon, publicHealth, ugbs, stadiumSite, residences, mathStat, isserCs, enclave, basicSchool, nBlockGcb, chaletSite, waccbipSite, balmeWest, pharmacySite, labsSite, isserAnnexSite, earthScienceSite, physicsSite, liciadSite, hotspotSite, churchSite, socSciSite, biologySite, marketSite, greenhouseSite, gradSite, mastSite, behindBalmeSite, voltaFrontSite, newPentSite, kufuorSite, fuelSite, nsiaSite, kuffourSite, scienceSite, balmeFrontSite, gateSite, iasSite, jqbSite, southSite, upsaSite, legonCutSite, geographySite, roadsideSite];
+export const BLOCK_SITES = [hostels, banking, vikingsLaw, engineeringSite, domeHouse, pentagon, commonwealth, volta, greatHalls, athletics, annexes, ccSite, balmeSite, parks, nightMarket, valco, westLegon, publicHealth, ugbs, stadiumSite, residences, mathStat, isserCs, enclave, basicSchool, nBlockGcb, chaletSite, waccbipSite, balmeWest, pharmacySite, labsSite, isserAnnexSite, earthScienceSite, physicsSite, liciadSite, hotspotSite, churchSite, socSciSite, biologySite, marketSite, greenhouseSite, gradSite, mastSite, behindBalmeSite, voltaFrontSite, newPentSite, kufuorSite, fuelSite, nsiaSite, kuffourSite, scienceSite, balmeFrontSite, gateSite, iasSite, jqbSite, southSite, upsaSite, legonCutSite, geographySite, roadsideSite, ipsSite, upsaHostelSite];
