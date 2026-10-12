@@ -455,15 +455,16 @@ const nsiaSpec: Spec = {
   },
 };
 
-/** stone-faced parts as one mesh in the kit, in the irregular warm stone of the retaining walls */
-export function stoneMeshOf(k: Kit, parts: Part[]) {
+/** stone-faced parts as one mesh in the kit, in the irregular warm stone of the retaining walls (`tint` warms or darkens
+ *  the stones: the laterite of the Geography planters) */
+export function stoneMeshOf(k: Kit, parts: Part[], tint: [number, number, number] = [1, 1, 1]) {
   if (!parts.length) return;
   const geos = parts.map(([g]) => {
     const n = g.index ? g.toNonIndexed() : g;
     if (!n.attributes.normal) n.computeVertexNormals();
     const cnt = n.attributes.position.count, col = new Float32Array(cnt * 3), p = n.attributes.position as THREE.BufferAttribute;
     // a slow tint along the wall so the stones' colour drifts, as weathering does
-    for (let i = 0; i < cnt; i++) { const v = 0.86 + vnoise(p.getX(i) * 0.3, p.getZ(i) * 0.3) * 0.22; col[i * 3] = v; col[i * 3 + 1] = v * 0.97; col[i * 3 + 2] = v * 0.94; }
+    for (let i = 0; i < cnt; i++) { const v = 0.86 + vnoise(p.getX(i) * 0.3, p.getZ(i) * 0.3) * 0.22; col[i * 3] = v * tint[0]; col[i * 3 + 1] = v * 0.97 * tint[1]; col[i * 3 + 2] = v * 0.94 * tint[2]; }
     n.setAttribute('color', new THREE.BufferAttribute(col, 3));
     for (const key of Object.keys(n.attributes)) if (key !== 'position' && key !== 'normal' && key !== 'color') n.deleteAttribute(key);
     return n;

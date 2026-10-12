@@ -192,6 +192,15 @@ const ZONES: Zone[] = [
   // climbs gently back along its leg east to Animal Biology
   { kind: 'hollow', x0: -162, x1: -157, z0: -275, z1: -262, depth: 1.0, w: 0.6, e: 2.5, n: 6, s: 96 },
   { kind: 'hollow', x0: -157, x1: -150, z0: -279, z1: -271, depth: 1.0, w: 0.6, e: 18, n: 4, s: 3 },
+  // the Department of Geography and Resource Development (the owner's 30-pair brief, pairs 1-6): the front range stands
+  // up its broad stair from the lawn along Danquah Avenue, behind a stone-faced retaining wall; at the east end the
+  // ground eases down to the garden before the covered corridor (pair 3). The rise is read from the photographs (two
+  // flights of about five steps), not measured.
+  { kind: 'terrace', x0: 388.6, x1: 453.4, z0: 84.0, z1: 101.2, depth: 1.4, w: 0.3, e: 4, n: 0.3, s: 0.3, cell: 0.5 },
+  // the car park east of the Jones-Quartey Building (the brief's pair 30): it falls gently north from the lane past the
+  // building's south-east corner, its low end held below the road along the north by a low retaining edge. The fall
+  // (1.2 m over about 24 m) is read from the photograph, not measured.
+  { kind: 'hollow', x0: 598.5, x1: 615, z0: -85.5, z1: -72, depth: 1.2, w: 2.5, e: 2.5, n: 0.4, s: 24, cell: 0.5 },
 ];
 const STAIRS: Stairs[] = [
   // the Institute of African Studies: up the middle of the stone court from the walk to the south entrance
@@ -225,6 +234,8 @@ const STAIRS: Stairs[] = [
   // the back of Akuafo Hall Main (owner's second reference PDF, pages 48-54): three steps up from the hexagonal pavers
   // through the white edge of the raised lawn between the south wings
   { x0: 383.0, x1: 381.6, z0: 153.6, z1: 156.6, flights: 1, steps: 3, tread: 0.45, alongZ: true },
+  // Geography (pairs 4-6): the broad stair from the lawn up to the entrance, two flights with a landing between
+  { x0: 106.8, x1: 101.2, z0: 410.2, z1: 423.8, flights: 2, steps: 5, tread: 0.36, alongZ: true },
 ];
 
 // the roads' own cuts (the owner's NSIA Road brief): NSIA Road lies lower than the ground either side of it, the tree belt

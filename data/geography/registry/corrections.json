@@ -336,6 +336,10 @@
     {
       "id": "ml:fe2da66f-70e1-4752-8a60-33670112ce93",
       "reason": "Satellite-detected (Microsoft ML) footprint in the middle of the UGBS Graduate Campus car park, drawn as a two-storey block. The owner's field reference brief: the Street View frame from IPS Road facing the Graduate Building over the boundary wall, and the UGBS reference photos of the forecourt and car park (d5_19, d5_20, d5_24), show open parking with no structure there. The car park is modelled in src/game/upsa.ts."
+    },
+    {
+      "id": "ml:36c7121c-429d-4ac9-888a-68edf010df19",
+      "reason": "Owner's 30-pair brief, pair 7 (the raised photograph of the Efua Sutherland Drama Studio from the south-east): this machine-detected 73 m\u00b2 outline lies in the middle of the studio's open-air court, where the photograph shows only the paved court and its pale raised platform (modelled in southref.ts). The game drew it as a generic white hipped block."
     }
   ],
   "heights": [
@@ -3173,6 +3177,146 @@
       "levels": 1,
       "height": 2.6,
       "reason": "Small one-floor hut east of the ATM row at GOIL (Street View at the way out, approximate); modelled in src/game/upsa.ts."
+    },
+    {
+      "id": "osm:way/492099547",
+      "place": "Long range west of the Efua Sutherland Drama Studio",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's 30-pair brief, pair 7: the raised photograph over the studio shows only low one-storey roofs and trees on this side; the generic two-storey mass dominated the comparison view. One storey is read from that photograph, not surveyed."
+    },
+    {
+      "id": "osm:way/1184505250",
+      "place": "houses behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/1184505251",
+      "place": "houses behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/1184505252",
+      "place": "houses behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/1184505253",
+      "place": "houses behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/1184505254",
+      "place": "houses behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/1184505255",
+      "place": "houses behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/1184505256",
+      "place": "houses behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/1184505257",
+      "place": "houses behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/1184505258",
+      "place": "houses behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/492099535",
+      "place": "range behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/773861741",
+      "place": "range west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/492099513",
+      "place": "Office (School of Performing Arts, south range)",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/492099514",
+      "place": "Archeology Lecturers Offices",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 16, 17 and 21 (Street View west from Legon Road, Sep 2024): beyond the long one-storey range only low red roofs and trees show; the generic two-storey masses were not in the photographs. One storey is read from them, not surveyed."
+    },
+    {
+      "id": "osm:way/492099532",
+      "place": "College of Education (south range)",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 16, 17 and 21 (Street View west from Legon Road, Sep 2024): beyond the long one-storey range only low red roofs and trees show; the generic two-storey masses were not in the photographs. One storey is read from them, not surveyed."
+    },
+    {
+      "id": "osm:way/492099534",
+      "place": "College of Education (north range)",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 16, 17 and 21 (Street View west from Legon Road, Sep 2024): beyond the long one-storey range only low red roofs and trees show; the generic two-storey masses were not in the photographs. One storey is read from them, not surveyed."
+    },
+    {
+      "id": "osm:way/665125614",
+      "place": "roadside shops north of the Legon City Mall forecourt",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pair 20 (Street View east to Legon City Mall across its forecourt, Sep 2024): the buildings on the left of the forecourt are low one-storey shops and sheds (a motors showroom sign), not two-storey blocks. One storey is read from the photograph."
+    },
+    {
+      "id": "osm:way/603522792",
+      "place": "roadside shops north of the Legon City Mall forecourt",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pair 20 (Street View east to Legon City Mall across its forecourt, Sep 2024): the buildings on the left of the forecourt are low one-storey shops and sheds (a motors showroom sign), not two-storey blocks. One storey is read from the photograph."
+    },
+    {
+      "id": "osm:way/603522793",
+      "place": "roadside shops north of the Legon City Mall forecourt",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pair 20 (Street View east to Legon City Mall across its forecourt, Sep 2024): the buildings on the left of the forecourt are low one-storey shops and sheds (a motors showroom sign), not two-storey blocks. One storey is read from the photograph."
+    },
+    {
+      "id": "osm:way/603522794",
+      "place": "roadside building north of the market shed, east of Legon Road",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pair 22 (Street View east across the road, Sep 2024): only the low market shed and parked cars show on this side; the generic two-storey block was not in the photograph. One storey is read from it, not surveyed."
     }
   ],
   "reclass": [

@@ -215,7 +215,8 @@ const spec: Spec = {
       const shape = new THREE.Shape(d.pts.map(([x, z]) => { const [a, b] = L(x, z); return new THREE.Vector2(a, -b); }));
       const top = new THREE.ShapeGeometry(shape).rotateX(-Math.PI / 2).translate(0, d.h - 0.04, 0);
       const bottom = new THREE.ShapeGeometry(shape).rotateX(Math.PI / 2).translate(0, d.h - CUT.deck, 0);
-      c.push([top, '#b9b4aa'], [bottom, '#6f6c66']);
+      // (the top is the road's asphalt between its parapets, as the photographs show it; the footway draws its paving over it)
+      c.push([top, '#57554f'], [bottom, '#6f6c66']);
       for (let i = 0; i < d.pts.length; i++) {
         const [ax, az] = d.pts[i], [bx, bz] = d.pts[(i + 1) % d.pts.length];
         const A = L(ax, az), B = L(bx, bz), mx = (ax + bx) / 2, mz = (az + bz) / 2;
