@@ -4,6 +4,7 @@
 // and the mapped outlines; the photographs set appearance and order only. Spots marked "inferred" are read from the
 // photographs and Street View frames, not measured.
 import { NODE_XZ, ROADS } from './campusmap';
+import { agOwns } from './agplan';
 
 type Line = [number, number][];
 /** the mapped road whose line passes within a metre of (x, z), of the given class */
@@ -84,6 +85,8 @@ export const POLE_OFF = 7.6, LAMP_OFF = 7.0;
  *  north of it along this corridor (the sidewalk, the verge, the wall). There the campus's generic verge-and-drain strips
  *  (life.ts) and a ridden route's generic pavements, trees and lamps (world.ts) stay out */
 export function ownsEdges(x: number, z: number) {
+  // (and the Agriculture side's own footways, drains and aprons: agplan.ts)
+  if (agOwns(x, z)) return true;
   if (x < 955 || x > CORRIDOR.x1) return false;
   const c = zIps(x);
   if (Number.isNaN(c)) return false;

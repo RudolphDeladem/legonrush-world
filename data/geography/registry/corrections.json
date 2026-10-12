@@ -372,6 +372,10 @@
     {
       "id": "osm:way/665125644",
       "reason": "Owner's 10-pair brief, pair 6 (Street View south from the road opposite the roadside strip, against the Legon Police Station's side wall): the generic houses here are a row of small separate corrugated-roofed kiosks and open stalls on rough red earth against the police station's wall (modelled in src/game/roadside.ts); the brief asks for the cloned houses to be removed."
+    },
+    {
+      "id": "ml:8b8d244a-bb90-4bb1-97ac-2cb3ccf09f73",
+      "reason": "Owner's 16-pair brief, pairs 10-12 (drone, front and oblique photographs of the West Africa Centre for Crop Improvement building): this machine-detected outline lies in the building's paved forecourt, where the photographs show only the parking bays, planted islands and cars (modelled in src/game/agric.ts). The game drew it as a generic two-storey block."
     }
   ],
   "heights": [
@@ -3335,6 +3339,20 @@
       "levels": 1,
       "height": 4.2,
       "reason": "Owner's 10-pair brief, pair 4 (Street View north across the gravel lot): the frontage left of Legon City Mall is low, the GMI Motors showroom and its neighbours; no three-storey block stands there. One storey is read from the photograph, not surveyed."
+    },
+    {
+      "id": "osm:way/300288060",
+      "place": "the low building east of the WACCI building",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 16-pair brief, pairs 10 and 13 (drone photographs of the WACCI building and its neighbours): the buildings beside it are low one-storey ranges under tiled roofs, not two-storey blocks. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "ml:e93571e3-7b65-47d3-969e-33d38bc9fc97",
+      "place": "the low building south-east of the WACCI building",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 16-pair brief, pairs 10 and 13 (drone photographs of the WACCI building and its neighbours): the buildings beside it are low one-storey ranges under tiled roofs, not two-storey blocks. One storey is read from the photographs, not surveyed."
     }
   ],
   "reclass": [

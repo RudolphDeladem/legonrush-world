@@ -2670,3 +2670,68 @@ solids at the edge of La Road and a cutting parapet post at the north bridge, bo
 storey counts per block (a photo from the north-east); the unfinished frame's true outline and level count (a photo from
 its west); the Dance Ensemble block's north end (a photo from the north); where the cutting's south ramp really meets the
 ground (a photo along the road at the trotro station).
+
+## The Agriculture side: the 16-pair brief (east block, Child Study Centre, Biotechnology Centre, WACCI, Akuafo Road)
+
+The owner's `University_of_Ghana_16_Pair_Annotated_Reconstruction_Brief_and_Claude_Prompt.pdf`: sixteen game/real pairs
+(pair 4 with the owner's corrected game image), the numbered-arrow aerial, a drone view of the WACCI building, the
+unannotated area map and the game map. The aerial is registered to the game by E.A. Boateng Road (x 510), Onyaa Road
+(z 264) and Akuafo Road (x 235). Cameras `ag01`-`ag16` (`src/game/agviews.ts`); models in `src/game/agric.ts`; owned
+road edges in `src/game/agplan.ts` (read by `ipsplan.ownsEdges`). Nothing here is surveyed.
+
+- *Pairs 1-4, the long east block* (osm:way/492099506, east of E.A. Boateng Road): one connected two-level building
+  (two storeys of 3.6 m) under red corrugated metal roofs: a long hip over the middle and cross-gables over both ends at
+  the same ridge, white gables, a deep black fascia over 1.2 m eaves. The long sides: an upper storey of larger and
+  smaller dark windows (some in pairs) and high horizontal vents in an uneven sequence; a lower storey of doors, grilled
+  windows, dark recessed open bays between white piers and blank wall. The north side: asphalt from E.A. Boateng Road to
+  the east hardstand (drawn as a surface, not a routed road; it is not in the map data), a narrow concrete edge, the long
+  weathered corrugated hoarding on timber posts close to the road. The east end: two dark entrance recesses, the raised
+  landing with steps and black rails, varied upper glazing and narrow vents; the worn hardstand with dusty margins and
+  weeds; the two small outlines on it as the low shelter under a hipped corrugated roof and the sheet-metal enclosure; the
+  temporary panels; the large branching tree; a white pickup (a prop). *Assumed*: the cross-gables' extent (17 m), the
+  window sequence, the hoarding's line and gaps.
+- *Pair 5, the Child Study Centre* (osm:way/300288059): the two-storey block is now low: a one-storey gable-fronted
+  building facing the yard with colour-blocked lower walls (red, blue, yellow, green), a door and windows, and a connected
+  lower rear range; the yard north of it to Onyaa Road is pale gravel curving round a bare planted island with red and
+  green edging, a row of painted tyres, a small slide, a swing frame and a blue canopy; the green weld-mesh fence and the
+  tall two-leaf mesh gate (closed) on a concrete threshold. *Assumed*: the yard's extent (from the outline to the road).
+- *Pair 6, Agriculture Economics and Agribusiness* (osm:way/300288064): one storey; a 3 m covered veranda along its west
+  side under the hipped roof, square white columns with red-brown feet, the tiled floor a step up, black shuttered
+  windows and doors, a plaque, potted plants, a bench; short steps at the north end; the raised planted bed with its low
+  laterite edge and a narrow paved strip before it.
+- *Pairs 7-9, the Biotechnology Centre* (osm:way/300288065, L-shaped): one two-level building: the west wing gabled to
+  the north (the tall mostly blank white gable with a dark bargeboard edge, the sign BIOTECHNOLOGY CENTRE / UNIVERSITY OF
+  GHANA / LEGON with the crest, two wall-mounted AC units, the barred entrance recess and its step, the red-brown base)
+  and the long south wing under tiles; an upper dark window band and lower barred windows and entrances on the long
+  sides. Before the gable: the narrow central path, the clipped hedge either side, four pruned trees in wells, short
+  turf; the paved parking toward the road with cars and a white bus (props).
+- *Pairs 10-13, the West Africa Centre for Crop Improvement building* (osm:way/1138519163): five masses on the mapped
+  outline (the west wing and the east block four levels, the west projection and the east end three) under their own
+  hipped terracotta roofs, on a raised base. The front (from the road the east block is on the left): stacked white
+  patterned screens over the windows of the east block, the central recess with narrow dark glazing and canopy lines, the
+  tall three-level glazed entrance in the west wing between deep white piers with mullions, doors and steps. The rear:
+  the projecting wing's four tiers of windows with metal balcony rails. The black tanks on a pale plinth at the south-east;
+  the low service wing on the small outline at the front corner; the pale interlocking-paver forecourt to Onyaa Road with
+  bay lines, three curbed planted islands, a light carport on the east side and cars; the big tree at the forecourt's
+  west side; behind, imperfect grass with reddish patches, utility covers and a narrow path along the west side. The
+  machine-detected outline in the forecourt is excluded and the two buildings east of it are one storey (corrections).
+  *Assumed*: which mass carries which front element (from the outline's recesses and the photographs), the levels of the
+  west projection and the east end (three).
+- *Pair 14, the low roadside group* (the three outlines east of Akuafo Road, west of WACCI): one storey, white on red
+  bases, weathered tiled gables toward the road, two roof heights on the first (the lower gabled wing with its grilled
+  front and dark door), the breeze-block wall section, a hedge; the worn asphalt apron to the road with the huge tree in
+  its curbed island and a small sign.
+- *Pairs 15, 16, Akuafo Road*: on its west side the shallow open drain at the asphalt's edge and the broad brick footway
+  (z 141-262); at the Onyaa Road junction the curved brick pavement and kerb round the south-east corner; the green sheet
+  fence round the plot north-east of the junction (a gap at x 262-268), slim poles and a round sign; Soil Science (osm:way/394125202)
+  as low gabled and hipped wings on red bases set back behind the trees, a porch, the freestanding board (its lines
+  unreadable); four big trunks with roots and wide crowns, earth under them.
+
+**Checks**: route tests (new: the seven models are built, nothing left in the WACCI forecourt, no ride routed through
+the Child Study Centre's yard); every ride's ground continuous; route lengths unchanged; cameras outside buildings;
+`solidroads.mjs`: nothing on a road or path in the area.
+
+**Would settle it**: the east block's north road (is it mapped as a road?) and its roof plan (a straight-down aerial);
+the WACCI building's level heights and the west projection (a photo from the west); the Child Study Centre yard's extent
+and the rear range (a photo from inside the gate); the Biotechnology Centre's south wing (a photo from the south); the
+green fence's line round the corner plot.

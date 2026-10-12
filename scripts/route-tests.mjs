@@ -793,6 +793,18 @@ try {
     if (cut.CUT_Z[1] < 400 || cut.cutDepth(300) < cut.CUT.depth - 0.01) fail('Legon Road cutting: the south approach no longer runs to the service road merge (pair 9)');
   }
 
+  // ---------- the 16-pair brief (the Agriculture side): the models are built, the forecourt block is gone ----------
+  {
+    const ag = (await server.ssrLoadModule('/src/game/agric.ts')).agricSite;
+    if (ag.frames().length !== 7) fail('16-pair brief: expected the east block, the Child Study Centre, the colonnade, the Biotechnology Centre, WACCI, the low group and Akuafo Road');
+    if (buildingAt(304.0, 272.6)) fail('16-pair brief: a building still stands in the WACCI forecourt (pairs 10-12)');
+    // the Child Study Centre's gate stays closed: no ride is routed into its yard
+    for (const [a, b] of [[[427, 264], [235.4, 264.4]], [[427, 264], [510, 263]]]) {
+      const p = cm.findPath(a, b, 'cycle');
+      if (p && p.nodes.map((n) => cm.nodeXZ(n)).some(([x, z]) => x > 417.6 && x < 436.6 && z > 268.8 && z < 303.4)) fail('16-pair brief: a ride passes through the Child Study Centre yard (pair 5)');
+    }
+  }
+
   // ---------- races never move by accident ----------
   const sig = (r) => { if (!r) return null; const s = r.track.pose(r.lead, 0), e = r.track.pose(r.lead + r.length, 0); return `${r.length} m ${s.x.toFixed(1)},${s.z.toFixed(1)} -> ${e.x.toFixed(1)},${e.z.toFixed(1)}`; };
   const lv = await server.ssrLoadModule('/src/features/levels.ts');
