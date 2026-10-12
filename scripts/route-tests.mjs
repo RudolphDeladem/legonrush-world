@@ -928,6 +928,45 @@ try {
     if (!(lb.parkingFill(930, 1350) < 0.2) || lb.parkingFill(0, 0) !== undefined) fail('La Bawaleshie: the stadium car-park fill is wrong');
   }
 
+  // ---------- the Limbo ruin and the slabs by Annie Jiagge Road (the owner's Limbo brief) ----------
+  {
+    const lm = await server.ssrLoadModule('/src/game/limbo.ts');
+    const lb = await server.ssrLoadModule('/src/game/lbplan.ts');
+    const { BLOCK_SITES } = await server.ssrLoadModule('/src/game/sites.ts');
+    if (lm.limboSite.frames().length !== 2) fail('Limbo: expected the ruin and the strip models');
+    // the four outlines are foundations, built by the model, not the campus template
+    if (lm.SLABS.length !== 4) fail(`Limbo: found ${lm.SLABS.length} of the 4 foundation outlines`);
+    for (const s of lm.SLABS) if (!BLOCK_SITES.some((st) => st.replaces(s.b))) fail(`Limbo: the outline at ${s.at} still uses the generic template`);
+    // the tree belt west of the ruin is not a building
+    if (buildingAt(386, -65)) fail('Limbo: a building stands in the tree belt west of the ruin');
+    // the trees stand off every road and off the rides along Annie Jiagge Road
+    const edge = (x, z) => {
+      let best = Infinity;
+      for (const road of cm.ROADS) {
+        const h = lb.halfOf(road), pts = road.nodes.map((n) => [cm.NODE_XZ[n * 2], cm.NODE_XZ[n * 2 + 1]]);
+        for (let i = 0; i < pts.length - 1; i++) {
+          const [ax, az] = pts[i], [bx, bz] = pts[i + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+          const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+          best = Math.min(best, Math.hypot(ax + dx * t - x, az + dz * t - z) - h);
+        }
+      }
+      return best;
+    };
+    const trees = lm.limboTrees();
+    if (trees.length < 60) fail(`Limbo: only ${trees.length} trees round the ruin and the strip`);
+    for (const t of trees) if (edge(t.x, t.z) < 1) fail(`Limbo: the tree at ${t.x.toFixed(1)},${t.z.toFixed(1)} stands on a road`);
+    for (const [a, b2] of [[[510, 10], [510, -165]], [[510, -165], [510, 10]]]) {
+      const p = cm.findPath(a, b2, 'cycle');
+      if (!p) { fail('Limbo: no ride along Annie Jiagge Road'); continue; }
+      const line = p.nodes.map((n) => cm.nodeXZ(n));
+      for (const t of trees) for (let i = 0; i < line.length - 1; i++) {
+        const [ax, az] = line[i], [bx, bz] = line[i + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+        const u = Math.max(0, Math.min(1, ((t.x - ax) * dx + (t.z - az) * dz) / l2));
+        if (Math.hypot(ax + dx * u - t.x, az + dz * u - t.z) < 3) { fail(`Limbo: the tree at ${t.x.toFixed(1)},${t.z.toFixed(1)} stands on a ride`); break; }
+      }
+    }
+  }
+
   // ---------- the 10-pair brief and the owner's three pictures (the JQB lane, the overhead crossing) ----------
   {
     const tp = (await server.ssrLoadModule('/src/game/tenpairs.ts')).tenPairsSite;

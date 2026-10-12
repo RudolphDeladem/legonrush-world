@@ -3055,3 +3055,51 @@ No business names are written: the signs are colour bands, and no legible letter
 - a site plan of the La Bawaleshie corner plots (the map lacks the frontages east of the junction);
 - the signal layout from above;
 - the beige block's other faces.
+
+## The Limbo ruin and the slabs by Annie Jiagge Road (the owner's Limbo brief)
+
+The brief: three game screenshots with outlines circled in red, and the aerial (picture 4) with the Limbo ruin circled
+in blue and the strip by the road marked with a purple arrow. The game drew both as two-storey blocks under red tile
+roofs. On the ground they are only foundations. The model is `limbo.ts`, its cameras `limboviews.ts` (preview views
+limbo1, limbo2, limbo3, limboTop, limboStrip, limboSouth). Before and after: `docs/limbo/before-after.jpg`.
+
+**The foundations** (the mapped outlines, kept as they are; still solid to the bike):
+- the Limbo ring south of the K. A. Busia Building (osm:way/702279067) and its west range with the wing into the court
+  (osm:way/975205017): bare slabs 0.85 m high;
+- the strip by Annie Jiagge Road north of JQB, its top and lower slabs (ml:8758cc6d-..., ml:b04e3fa1-...): broken slabs
+  0.4 m high.
+
+Their tops are grey-beige concrete with the 4 m structural grid's joints, large dark mould and lichen blotches as the
+aerial shows, cracks and weeds. Round the edges: column stubs broken off low with rusty rebar standing out, rebar alone
+where a column was cut flush, a course or a few of blockwork along part of some edges, tufts and small bushes growing out
+of the cracks.
+
+**The ground round Limbo** (from the aerial):
+- a dense belt of trees and undergrowth along the north (toward the Busia Building), the west (along the residential
+  road) and the east (along Annie Jiagge Road, thinning to scattered trees and grass toward the south);
+- in the court, the north part bare red soil with grass in patches; the part east of the wing and the south part
+  dense green with small trees;
+- south of the ruin, open red soil with grass in patches and a line of six scattered trees by the red earth road.
+
+**The strip**: thick bushes, small trees and tall grass between the road and the ruined compound east of it, bare red
+earth in patches by the slabs.
+
+The machine-detected outline west of the ring (ml:6efd5aa8-..., drawn as a narrow two-storey block) is the tree belt,
+not a building, so it is dropped (`corrections.json` exclude).
+
+**Checks:** `npm run test:routes` adds:
+- the four outlines are found and built by the model, not the template;
+- no building stands in the west belt;
+- every tree stands off the roads;
+- the rides along Annie Jiagge Road pass no tree.
+
+*Assumed*:
+- the slabs' heights;
+- the column grid and where stubs, rebar and blockwork stand;
+- the belts' and the court's extents (read from the aerial, not measured);
+- the trees' sizes.
+
+The ruined compound east of the strip (x 547–599) is left as it was: it was not circled, and its frame was modelled from
+an earlier photograph.
+
+*Would settle it*: ground photographs of the ruin's edges and of the strip.

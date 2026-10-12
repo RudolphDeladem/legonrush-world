@@ -388,6 +388,10 @@
     {
       "id": "ml:f3f3317e-687e-4775-8a1c-b606afde2dcc",
       "reason": "Owner's Commonwealth and Great Hall brief (S5, S4): as the outline beside it, a machine-detected outline on the Great Hall's forecourt axis where the photographs show open paving and planted beds."
+    },
+    {
+      "id": "ml:6efd5aa8-6abf-4cda-b5d1-5b65fe127d3c",
+      "reason": "Owner's Limbo brief (picture 4, the aerial with the Limbo ruin circled in blue): this machine-detected outline on the strip between the residential road and the west range of the Limbo slabs is the dense tree belt along that side, not a building; the game drew it as a narrow two-storey block."
     }
   ],
   "heights": [
