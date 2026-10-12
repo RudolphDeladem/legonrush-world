@@ -360,7 +360,7 @@ const gate: Spec = {
 // ======================================================================================================
 // the Abednego F. O. Amartey Towers
 // ======================================================================================================
-const TW = TOWERS_AM, TO: [number, number] = [2181, -955];
+const TW = TOWERS_AM, TO: [number, number] = [2246.4, -950.1];
 const T = (r: [number, number, number, number]) => ({ x0: r[0] - TO[0], x1: r[1] - TO[0], z0: r[2] - TO[1], z1: r[3] - TO[1] });
 const winBlue = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) => {
   g.fillStyle = '#9fb0c4'; g.fillRect(x - 4, y - 4, w + 8, h + 8);
@@ -376,8 +376,7 @@ const TOWER_FACE: Style = {
 };
 const towers: Spec = {
   name: 'Abednego F. O. Amartey Towers', axis: [1, 0], origin: TO, storey: TW.storey, style: TOWER_FACE, roofColor: '#d7d6d0', fascia: '#e6e5e0', pitch: 0,
-  replaces: [[2185, -956], [2172, -957]],
-  covers: [[2178, -952]],
+  replaces: [[2231, -950], [2261, -950]],
   blocks: [
     { ...T(TW.west), floors: TW.floors, roof: 'flat' },
     { ...T(TW.east), floors: TW.floors, roof: 'flat' },
@@ -387,9 +386,14 @@ const towers: Spec = {
   extras: (k: Kit) => {
     const c: Part[] = [], top = k.wallTop(TW.floors);
     const e = T(TW.east), w = T(TW.west);
-    // the east block's full-height blue curtain glazing at its south-west corner, standing a little proud (RW11)
-    c.push([box(e.x0 - 0.05, e.x0 + 4.2, 0.6, top, e.z1 - 0.05, e.z1 + 0.25), '#2d5fa8']);
-    for (let y = 3.4; y < top; y += TW.storey) c.push([box(e.x0 - 0.06, e.x0 + 4.25, y - 0.05, y + 0.05, e.z1 + 0.25, e.z1 + 0.3), '#b9c3cc']);
+    // the large blue reflective curtain wall on the east block's road face, standing a little proud, its mullion grid and
+    // the white slab edges across it (RW11; the IPS Road pack's still 03 and recording frames 19-25)
+    const cw0 = e.x0 + 1.2, cw1 = e.x0 + 10.4;
+    c.push([box(cw0, cw1, 3.6, top, e.z1 - 0.05, e.z1 + 0.25), '#2d5fa8']);
+    for (let y = 3.6; y < top; y += TW.storey) c.push([box(cw0 - 0.05, cw1 + 0.05, y - 0.06, y + 0.06, e.z1 + 0.25, e.z1 + 0.32), '#c4ccd4']);
+    for (let x = cw0 + 1.15; x < cw1 - 0.1; x += 1.15) c.push([box(x - 0.03, x + 0.03, 3.6, top, e.z1 + 0.25, e.z1 + 0.3), '#9fb0c2']);
+    // the narrow vertical blue-glazed strips on the west block's road face
+    for (const x of [w.x0 + 3.2, w.x1 - 3.2]) c.push([box(x - 0.7, x + 0.7, 3.6, top, w.z1 - 0.05, w.z1 + 0.18), '#3466ad']);
     // the parapets and the roof plant, the white sign frame on the east block's roof with the name toward IPS Road
     for (const r of [w, e]) {
       c.push([box(r.x0 - 0.1, r.x1 + 0.1, top, top + 1.0, r.z0 - 0.1, r.z0 + 0.15), '#ecebe6'], [box(r.x0 - 0.1, r.x1 + 0.1, top, top + 1.0, r.z1 - 0.15, r.z1 + 0.1), '#ecebe6']);

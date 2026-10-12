@@ -392,6 +392,10 @@
     {
       "id": "ml:6efd5aa8-6abf-4cda-b5d1-5b65fe127d3c",
       "reason": "Owner's Limbo brief (picture 4, the aerial with the Limbo ruin circled in blue): this machine-detected outline on the strip between the residential road and the west range of the Limbo slabs is the dense tree belt along that side, not a building; the game drew it as a narrow two-storey block."
+    },
+    {
+      "id": "ml:73e6ceb9-a7e5-4b62-a680-d839e7aac3ce",
+      "reason": "Owner's correction (the UPSA landmark pack's satellite map, image 20, and the IPS Road 270-degree recording): this machine-detected outline on the mapped pitch west of the campus is the red tennis court, not a building. The Abednego F. O. Amartey Towers, first placed on it, stand on osm:way/885510985 (upsacampusplan.ts TOWERS_AM)."
     }
   ],
   "heights": [

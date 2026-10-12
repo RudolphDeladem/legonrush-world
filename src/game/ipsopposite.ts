@@ -7,12 +7,12 @@
 //   shutters under coloured sign boards (replaceable details, no invented names); the entrance bay with its tall ochre
 //   columns, recessed dark blue glazing and the projecting canopy with its small emblem (still 04); the red PRESTIGE
 //   letters along the roofline east of the bay and HOSTEL west of it (the signage the stills show); the paved forecourt to the lay-by.
-// - Northill Heights (stills 01, 08; recording frames 1-6): on the corner past the side street east of the row. No
+// - Nophil Heights (stills 01, 08; recording frames 1-6): on the corner past the side street east of the row. No
 //   source maps its outline: its spot is read from the recording's sequence (the row's east end, the side street, the
 //   corner beyond it) and is an estimate to confirm. A glazed retail ground floor with a red-framed glazed corner unit and
 //   dark cladding on one shopfront, a recessed level of narrow vertical windows behind a continuous balcony rail, the
 //   off-white box of the upper floors projecting over both street faces with its grid of large dark louvred panels, the
-//   red NORTHILL HEIGHTS letters on top of the front and the side; the broad paved apron before it.
+//   red NOPHIL HEIGHTS letters on top of the front and the side; the broad paved apron before it.
 // No parked cars are baked in; the lay-by, the side street and the shop fronts stay open.
 import * as THREE from 'three';
 import { BUILDINGS, NODE_XZ, ROADS, type Building } from './campusmap';
@@ -29,9 +29,9 @@ type P2 = [number, number];
 
 /** Prestige's row, by a point inside its mapped outline; the entrance bay's middle (world x) and width; the letters */
 export const PRESTIGE_ROW = { at: [2210, -851] as P2, bay: 2210, bayW: 7.6, floors: 4 };
-/** Northill Heights' ground floor (world x0, x1, z0, z1: its front on z0, toward the road) and how far the upper box
+/** Nophil Heights' ground floor (world x0, x1, z0, z1: its front on z0, toward the road) and how far the upper box
  *  projects over the front and the side street; its apron. Inferred from the recording, not mapped. */
-export const NORTHILL = { r: [2271.6, 2287, -857.4, -844] as [number, number, number, number], over: 1.5, apron: [2269.2, 2296, -870.4, -857.4] as [number, number, number, number] };
+export const NOPHIL = { r: [2271.6, 2287, -857.4, -844] as [number, number, number, number], over: 1.5, apron: [2269.2, 2296, -870.4, -857.4] as [number, number, number, number] };
 
 // ---------- the roads near the frontage ----------
 const segs: [number, number, number, number, number][] = [];
@@ -91,7 +91,7 @@ const mats = () => (MATS ??= {
     const gl = g.createLinearGradient(0, 0, 64, 64); gl.addColorStop(0, '#3b5d8a'); gl.addColorStop(1, '#16273f'); g.fillStyle = gl; g.fillRect(0, 0, 64, 64);
     g.fillStyle = '#9aa3aa'; g.fillRect(0, 0, 64, 2); g.fillRect(0, 0, 2, 64); g.fillRect(31, 0, 2, 64);
   }) }),
-  // Northill's off-white cladding panels with their joints
+  // Nophil's off-white cladding panels with their joints
   panel: new THREE.MeshStandardMaterial({ roughness: 0.8, side: THREE.DoubleSide, map: (() => { const t = canvas(128, 128, (g) => {
     g.fillStyle = '#ebe9e4'; g.fillRect(0, 0, 128, 128);
     g.fillStyle = '#c9c7c1'; for (let x = 0; x < 128; x += 64) g.fillRect(x, 0, 2, 128); for (let y = 0; y < 128; y += 42) g.fillRect(0, y, 128, 2);
@@ -196,18 +196,18 @@ function prestigeSpecs(): Spec[] {
 }
 
 // ======================================================================================================
-// Northill Heights on the corner past the side street (placement inferred from the recording)
+// Nophil Heights on the corner past the side street (placement inferred from the recording)
 // ======================================================================================================
 const NO: P2 = [2279, -851];
-const northill: Spec = {
-  name: 'Northill Heights', axis: [1, 0], origin: NO, storey: 3.4, style: PLAIN, roofColor: '#cfcfcb', fascia: '#3a3a3a', pitch: 0,
+const nophil: Spec = {
+  name: 'Nophil Heights', axis: [1, 0], origin: NO, storey: 3.4, style: PLAIN, roofColor: '#cfcfcb', fascia: '#3a3a3a', pitch: 0,
   blocks: [],
   onGround: true,
-  keep: [[NORTHILL.apron[0] - NO[0], NORTHILL.r[1] + 3 - NO[0], NORTHILL.apron[2] - NO[1], NORTHILL.r[3] - NO[1]]],
+  keep: [[NOPHIL.apron[0] - NO[0], NOPHIL.r[1] + 3 - NO[0], NOPHIL.apron[2] - NO[1], NOPHIL.r[3] - NO[1]]],
   extras: (k: Kit) => {
     const b = new Bag(NO), c: Part[] = [], M = mats(), wins: THREE.BufferGeometry[] = [], glass: THREE.BufferGeometry[] = [], louv: THREE.BufferGeometry[] = [], pan: THREE.BufferGeometry[] = [];
     const X = (x: number) => x - NO[0], Z = (z: number) => z - NO[1];
-    const [gx0, gx1, gz0, gz1] = NORTHILL.r, o = NORTHILL.over, GF = 4.2, L1 = 7.5, TOP = 14.2;
+    const [gx0, gx1, gz0, gz1] = NOPHIL.r, o = NOPHIL.over, GF = 4.2, L1 = 7.5, TOP = 14.2;
     // ---- the glazed retail ground floor: a slab, glazing between dark piers, the red-framed corner unit, dark cladding ----
     c.push([box(X(gx0), X(gx1), -0.3, GF, Z(gz0) + 0.6, Z(gz1)), '#dcdad4']);
     face(glass, true, Z(gz0) + 0.55, -1, X((gx0 + gx1) / 2), gx1 - gx0 - 0.4, 0.1, GF - 0.5);
@@ -244,8 +244,8 @@ const northill: Spec = {
     // small dark fixtures on the box
     for (let x = bx0 + 3.3; x < gx1 - 1; x += 3.4) c.push([box(X(x) - 0.1, X(x) + 0.1, TOP - 0.9, TOP - 0.6, Z(bz0) - 0.12, Z(bz0)), '#2a2a2a']);
     // ---- the red letters on top of the front and the side ----
-    k.meshes.push(place(textPanel(13.5, 1.5, [{ t: 'NORTHILL HEIGHTS', s: 0.85, c: '#c8221d', b: true, f: 'Arial Black, Impact, sans-serif' }], null), X((bx0 + gx1) / 2), TOP + 0.85, Z(bz0) + 0.2, Math.PI));
-    k.meshes.push(place(textPanel(11, 1.2, [{ t: 'NORTHILL HEIGHTS', s: 0.85, c: '#c8221d', b: true, f: 'Arial Black, Impact, sans-serif' }], null), X(bx0) + 0.2, TOP + 0.7, Z((bz0 + gz1) / 2), -Math.PI / 2));
+    k.meshes.push(place(textPanel(13.5, 1.5, [{ t: 'NOPHIL HEIGHTS', s: 0.85, c: '#c8221d', b: true, f: 'Arial Black, Impact, sans-serif' }], null), X((bx0 + gx1) / 2), TOP + 0.85, Z(bz0) + 0.2, Math.PI));
+    k.meshes.push(place(textPanel(11, 1.2, [{ t: 'NOPHIL HEIGHTS', s: 0.85, c: '#c8221d', b: true, f: 'Arial Black, Impact, sans-serif' }], null), X(bx0) + 0.2, TOP + 0.7, Z((bz0 + gz1) / 2), -Math.PI / 2));
     c.push([box(X(bx0) + 0.1, X(gx1) - 0.1, TOP, TOP + 0.6, Z(bz0) + 0.1, Z(gz1) - 0.1), '#d8d6d0']);
     // ---- Prestige's paved forecourt, from its front to the lay-by and the verge (world frame; drawn here) ----
     if (ROW) {
@@ -258,7 +258,7 @@ const northill: Spec = {
       }), groundCover()));
     }
     // ---- the broad paved apron before it ----
-    const [ax0, ax1, az0, az1] = NORTHILL.apron;
+    const [ax0, ax1, az0, az1] = NOPHIL.apron;
     k.meshes.push(new THREE.Mesh(drapeAt(NO, ax0, ax1, az0, az1 + 0.3, 0.4, 0.05, (x, z) => {
       if (ipsClear(x, z) < 0.2) return null;
       const m = vnoise(x * 0.9, z * 0.9) * 0.04, j = Math.abs((x % 1.2) + 1.2) % 1.2 < 0.06 || Math.abs((z % 1.2) + 1.2) % 1.2 < 0.06;
@@ -273,4 +273,4 @@ const northill: Spec = {
   },
 };
 
-export const ipsOppositeSite = createSite('ips-opposite-upsa', [...prestigeSpecs(), northill]);
+export const ipsOppositeSite = createSite('ips-opposite-upsa', [...prestigeSpecs(), nophil]);

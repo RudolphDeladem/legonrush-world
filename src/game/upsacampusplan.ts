@@ -74,13 +74,16 @@ export const GATE = { x0: 2279.8, x1: 2303.1, z0: -919.6, z1: -906.5, roadX: 229
 /** the "UPS" bus stop on the north verge west of the gate (osm:node/4988349723) */
 export const BUS_STOP: [number, number] = [2262, -893];
 
-/** the Abednego F. O. Amartey Towers (the name read on the roof sign in RW10/RW11; two blocks of ten levels joined by a
- *  bridge, commissioned December 2024): on the satellite-detected footprint (Microsoft ML, ml:73e6ceb9-...) standing on
- *  what OSM still maps as a pitch (osm:way/1009392433), behind the Senior Members' Club House; position medium-low */
+/** the Abednego F. O. Amartey Towers (the name on the roof sign in RW10/RW11; two blocks of ten levels joined in the
+ *  middle, commissioned December 2024): on the mapped outline osm:way/885510985 north of IPS Road, as the owner confirmed
+ *  against the satellite map (the UPSA landmark pack's image 20) and the IPS Road 270-degree recording. (They first stood
+ *  on a machine-detected outline at x 2166-2196, which the satellite map shows is the red tennis court: excluded,
+ *  corrections.json.) The outline is one 52 m rectangle: the two blocks at its ends, the joining part between them set
+ *  back on both faces (the split is read from the photographs, not mapped) */
 export const TOWERS_AM = {
-  west: [2166.5, 2178.8, -963.0, -951.2] as [number, number, number, number],
-  east: [2183.6, 2195.6, -962.8, -947.0] as [number, number, number, number],
-  bridge: [2178.8, 2183.6, -959.0, -954.6] as [number, number, number, number],
+  west: [2220.4, 2242.4, -957.7, -942.5] as [number, number, number, number],
+  east: [2250.4, 2272.4, -957.7, -942.5] as [number, number, number, number],
+  bridge: [2242.4, 2250.4, -956.2, -944.0] as [number, number, number, number],
   floors: 10, storey: 3.4,
 };
 

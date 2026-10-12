@@ -3214,6 +3214,13 @@ not rename either.
 `.preview/solidroads.mjs` over the three zones finds no new solid on a road. The three it lists are older generic trees
 outside this work.
 
+*Cross-checked and left unresolved* (the owner's instruction: no guess, no change until confirmed):
+- **Pair 12's near-left gable with the air-conditioning units.** The only outline near the camera on that side is the
+  Biotechnology Centre's east end (osm:way/300288065, labelled LT3 on R2). R2 shows its roof hipped, while the
+  photograph shows a gable, and no other mapped outline within 40 m fits. Identity not established.
+- **Pair 14's communications mast.** It lies beyond R3's frame, up La Road. No OSM, Overture or registry feature maps a
+  mast or tower there. Position not established.
+
 *Assumed* (adjustable in `fsplan.ts`):
 - which buildings are gables A and B (from the canopy's breadth, the mapped drive between them and the tank's shadow
   in R3);
@@ -3232,7 +3239,7 @@ outside this work.
 *Not done*: the ruined compound and other neighbours outside the marked targets are unchanged. The east building's long
 rear and B's southern length are kept low and plain (not seen in the photographs).
 
-## IPS Road opposite UPSA: Prestige and Northill Heights (the owner's reference pack)
+## IPS Road opposite UPSA: Prestige and Nophil Heights (the owner's reference pack)
 
 The pack: `LEGONRUSH_IPS_Road_Opposite_UPSA_Reference_Pack.zip`, with nine stills, a 17 s, 270° Street View recording
 (September 2024) and the brief. It is a separate pack from the UPSA campus landmarks.
@@ -3241,13 +3248,13 @@ The model is `ipsopposite.ts`, with cameras in `ipsoppviews.ts` (preview views `
 comparison sheet is `docs/ips-opposite-upsa/before-after-reference.jpg`.
 
 **Placement.** The recording pans clockwise from one point on the south side of IPS Road:
-- the unfinished tan block and Northill Heights (south-east);
+- the unfinished tan block and Nophil Heights (south-east);
 - the long Prestige block (west, along the road);
 - the road;
 - across to the Abednego F. O. Amartey Towers and the UPSA board (north).
 
 That puts the panorama by the east end of the mapped row osm:way/885510982, with the side street at x 2266 and
-Northill Heights on the corner beyond it.
+Nophil Heights on the corner beyond it.
 
 **Prestige** (osm:way/885510982, which the game drew as a generic two-storey "shop row"):
 - four storeys of tan panels between grey projecting slab bands, a grey cap, framed windows, a few sashes open, and
@@ -3261,35 +3268,46 @@ The PRESTIGE HOSTEL sign the UPSA corridor work had put on the building behind (
 OSM "prestige hostel" point) is removed. The name is on the road frontage, not repeated behind it. That building keeps
 its four storeys, forecourt and bollards.
 
-**Northill Heights** (stills 01, 08; recording frames 1-6):
+**Nophil Heights** (stills 01, 08; recording frames 1-6):
 - a glazed retail ground floor, with a red-framed glazed corner unit and dark cladding on one shopfront;
 - a recessed level of narrow vertical windows behind a continuous balcony rail;
 - the off-white upper box projecting 1.5 m over the road face and the side-street face, with its grid of large dark
   louvred panels and small fixtures;
-- red NORTHILL HEIGHTS letters on top of the front and the side;
+- red NOPHIL HEIGHTS letters on top of the front and the side;
 - a broad paved apron.
 
-*Its position is inferred, not mapped.* No source has its outline: OSM, Overture, Google and Microsoft footprints all
-leave the corner empty. Its walls carry their own collision.
+*Its position is the owner's, not mapped.* The owner confirmed the name from the Street View still (the letters
+read NOPHIL HEIGHTS) and its corner, just east of the side street beside the Prestige block's east end. No footprint
+source has an outline there: OSM, the UPSA extension, Overture and Google/Microsoft ML footprints all leave the corner
+empty. The nearest outline, osm:way/1009392387, is 56 m further east. Its 16 x 13.4 m size is therefore an estimate,
+made from the recording against the Prestige bays and the side street. Its walls carry their own collision.
 
-**The towers** across the road keep their model (`upsacampus.ts`). Their blue curtain wall is refined with the UPSA
-landmark pack.
+**The towers** move to their mapped outline (owner's correction). The Abednego F. O. Amartey Towers' model
+(`upsacampus.ts`) now stands on osm:way/885510985 (x 2220-2272, z -958..-943), north of IPS Road opposite the Prestige
+block's east end. This matches the UPSA pack's satellite map (image 20) and this pack's recording.
+
+The outline is one 52 m rectangle: the two blocks at its ends and the joining part set back between them (the split is
+read from the photographs). The east block's road face carries the large blue reflective curtain wall with its mullions
+and white slab edges; the west block has narrow vertical blue strips.
+
+The machine-detected outline they first stood on (ml:73e6ceb9, x 2166-2196) is the red tennis court in image 20, so it
+is excluded (`corrections.json`). The mapped pitch there is drawn again. The model was moved, not duplicated.
 
 **Streetscape.** The south verge's red earth, drain, poles and wires (`upsacampus.ts`) are kept. The paved forecourts are
 new. No parked cars are baked in.
 
 **Checks.** `npm run test:routes` adds:
 - the row is built by the model;
-- Northill Heights stands clear of every road and mapped outline;
+- Nophil Heights stands clear of every road and mapped outline;
 - the side street and the lay-by are still ridden.
 
 `.preview/solidroads.mjs` over the frontage finds no solid on a road.
 
 *Assumed*:
-- Northill's spot and size (16 x 13.4 m) and its storey heights;
+- Nophil's spot and size (16 x 13.4 m) and its storey heights;
 - Prestige's storey heights (3.8 m and 3.2 m);
 - the entrance bay's position along the row (x 2210);
 - the letters' sizes.
 
-*Would settle it*: Northill Heights' outline or position (an aerial or a pin), and whether the unfinished tan block
-east of it should be modelled.
+*Would settle it*: Nophil Heights' measured outline, and whether the unfinished tan block east of it should be
+modelled.
