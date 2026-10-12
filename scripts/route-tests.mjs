@@ -864,6 +864,70 @@ try {
     for (const x of oneway) { const [nx0] = cm.nodeXZ(x.nodes[0]); if (nx0 < 1950 || nx0 > 2300) fail(`UPSA: a one-way road outside the UPSA extension (${x.name ?? 'unnamed'} at x ${nx0.toFixed(0)})`); }
   }
 
+  // ---------- Legon Road by the stadium and La Bawaleshie (the owner's 19-pair brief) ----------
+  {
+    const lb = await server.ssrLoadModule('/src/game/lbplan.ts');
+    const site = (await server.ssrLoadModule('/src/game/labawaleshie.ts')).laBawaleshieSite;
+    const { BLOCK_SITES } = await server.ssrLoadModule('/src/game/sites.ts');
+    if (!site.frames().some((f) => f.name === 'La Bawaleshie neighbourhood') || !site.frames().some((f) => f.name === 'Legon Road by the stadium')) fail('La Bawaleshie: expected the neighbourhood and the corridor models');
+    const W = [9, 7.4, 6.2, 4.6, 2.6];
+    const edgeDist = (x, z) => {
+      let best = Infinity, name = null;
+      for (const road of cm.ROADS) {
+        if (road.cls === 4) continue;
+        const h = lb.halfOf(road);
+        const pts = road.nodes.map((n) => [cm.NODE_XZ[n * 2], cm.NODE_XZ[n * 2 + 1]]);
+        for (let i = 0; i < pts.length - 1; i++) {
+          const [ax, az] = pts[i], [bx, bz] = pts[i + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+          const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2)), d = Math.hypot(ax + dx * t - x, az + dz * t - z) - h;
+          if (d < best) { best = d; name = road.name ?? 'a road'; }
+        }
+      }
+      return [best, name];
+    };
+    // the posts, masts, frames and the cabinet stand off every road
+    for (const [x, z, r] of lb.lbPosts()) { const [d, n] = edgeDist(x, z); if (d < r + 0.2) fail(`La Bawaleshie: the solid at ${x.toFixed(1)},${z.toFixed(1)} stands on ${n}`); }
+    // the frontages added where the map has no outline: clear of the roads and of every mapped outline
+    for (const m of lb.MASSES) {
+      const [x0, x1, z0, z1] = m.r;
+      for (let x = x0; x <= x1 + 0.01; x += (x1 - x0) / 6) for (let z = z0; z <= z1 + 0.01; z += (z1 - z0) / 4) {
+        const [d, n] = edgeDist(x, z);
+        if (d < 0.5) { fail(`La Bawaleshie: the frontage at ${x0},${z0} reaches ${n}`); break; }
+        if (buildingAt(x, z)) { fail(`La Bawaleshie: the frontage at ${x0},${z0} overlaps a mapped outline`); break; }
+      }
+    }
+    // every signal spot has ground for its post
+    for (const [k, [cx, cz]] of Object.entries(lb.ISLANDS)) {
+      let ok = false;
+      for (let dx = -2.5; dx <= 2.5 && !ok; dx += 0.5) for (let dz = -2.5; dz <= 2.5 && !ok; dz += 0.5) if (edgeDist(cx + dx, cz + dz)[0] > 0.6) ok = true;
+      if (!ok) fail(`La Bawaleshie: no ground for the ${k} signal post`);
+    }
+    // the neighbourhood's outlines are all built by the model, not the campus template
+    let generic = 0, total = 0;
+    for (const b of BUILDINGS) {
+      const cx = (b.minX + b.maxX) / 2, cz = (b.minZ + b.maxZ) / 2;
+      if (!lb.inHood(cx, cz)) continue;
+      total++;
+      if (!BLOCK_SITES.some((st) => st.replaces(b))) generic++;
+    }
+    if (!total || generic) fail(`La Bawaleshie: ${generic} of ${total} neighbourhood outlines still use the generic template`);
+    // the photographed buildings are found among the outlines
+    for (const p of lb.PICKS) if (!BUILDINGS.some((b) => lb.pickOf(b) === p)) fail(`La Bawaleshie: the outline for ${p.name} is missing`);
+    // the rides along the N4 and La Bawaleshie Road pass no post
+    for (const [a, b2] of [[[925, 900], [1050, 1600]], [[1050, 1600], [925, 900]], [[1000, 1225], [1400, 1185]]]) {
+      const p = cm.findPath(a, b2, 'cycle');
+      if (!p) { fail('La Bawaleshie: no ride along the N4 or La Bawaleshie Road'); continue; }
+      const line = p.nodes.map((n) => cm.nodeXZ(n));
+      for (const [x, z, r] of lb.lbPosts()) for (let i = 0; i < line.length - 1; i++) {
+        const [ax, az] = line[i], [bx, bz] = line[i + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+        const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+        if (Math.hypot(ax + dx * t - x, az + dz * t - z) < 2.6 + r) { fail(`La Bawaleshie: the solid at ${x.toFixed(1)},${z.toFixed(1)} stands on a ride`); break; }
+      }
+    }
+    // the stadium's car parks stand mostly empty
+    if (!(lb.parkingFill(930, 1350) < 0.2) || lb.parkingFill(0, 0) !== undefined) fail('La Bawaleshie: the stadium car-park fill is wrong');
+  }
+
   // ---------- the 10-pair brief and the owner's three pictures (the JQB lane, the overhead crossing) ----------
   {
     const tp = (await server.ssrLoadModule('/src/game/tenpairs.ts')).tenPairsSite;

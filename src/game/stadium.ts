@@ -56,6 +56,8 @@ class Tris {
 }
 
 const TIERS = 12, D0 = 4, D1 = 22, RISE = 0.62, H0 = 1.2;
+/** the outer wall's height: the screen stands well above the back of the top tier (Pairs 6, 8, 14) */
+const BAND_H = 13.5;
 const tierH = (j: number) => H0 + j * RISE;
 /** the seating of one stand from s0 to s1: tiers of seats stepping up and out, a back walkway and the outer wall */
 function stand(T: Tris, [s0, s1]: [number, number], seat: (s: number, j: number) => [string, string], outerWall: boolean) {
@@ -81,21 +83,28 @@ function stand(T: Tris, [s0, s1]: [number, number], seat: (s: number, j: number)
     T.quad('#f2f2ee', [ox, tierH(TIERS), oz], [px, tierH(TIERS), pz], [px, top, pz], [ox, top, oz], [-nx, 0, -nz]);
   }
 }
-/** the outer wall's band: red, white and grey stripes over a blue base, leaping athletes here and there */
+/** the outer wall: the screen of muted red and pale vertical fins with a leaping athlete here and there, high up over
+ *  the pale grey concourse frame with its dark openings between the columns (the owner's Legon Road photographs,
+ *  Pairs 6, 8, 14) */
 let bandTex: THREE.Texture | null = null;
-const band = () => (bandTex ??= canvas(256, 128, (g) => {
-  g.fillStyle = '#f1f1ee'; g.fillRect(0, 0, 256, 128);
-  for (let x = 0; x < 256; x += 32) { g.fillStyle = '#c4262e'; g.fillRect(x + 2, 8, 14, 96); g.fillStyle = '#9ea2a6'; g.fillRect(x + 20, 8, 6, 96); }
-  g.fillStyle = '#2a5fae'; g.fillRect(0, 104, 256, 24);
+const band = () => (bandTex ??= canvas(256, 256, (g) => {
+  // the screen (the top 58%)
+  g.fillStyle = '#ecebe6'; g.fillRect(0, 0, 256, 150);
+  for (let x = 0; x < 256; x += 32) { g.fillStyle = '#b5463d'; g.fillRect(x + 2, 6, 14, 140); g.fillStyle = '#a7aaac'; g.fillRect(x + 20, 6, 5, 140); }
   g.fillStyle = '#1b1b1b';
   // an athlete leaping: head, body, arms and legs
-  g.beginPath(); g.arc(122, 34, 5, 0, Math.PI * 2); g.fill();
-  g.lineWidth = 5; g.lineCap = 'round'; g.strokeStyle = '#1b1b1b';
-  g.beginPath(); g.moveTo(120, 40); g.lineTo(112, 66); g.moveTo(118, 46); g.lineTo(136, 40); g.moveTo(117, 48); g.lineTo(100, 44);
-  g.moveTo(112, 66); g.lineTo(128, 78); g.moveTo(112, 66); g.lineTo(98, 86); g.stroke();
+  g.beginPath(); g.arc(122, 48, 6, 0, Math.PI * 2); g.fill();
+  g.lineWidth = 6; g.lineCap = 'round'; g.strokeStyle = '#1b1b1b';
+  g.beginPath(); g.moveTo(120, 55); g.lineTo(111, 86); g.moveTo(118, 62); g.lineTo(139, 55); g.moveTo(117, 64); g.lineTo(98, 59);
+  g.moveTo(111, 86); g.lineTo(130, 100); g.moveTo(111, 86); g.lineTo(95, 112); g.stroke();
+  // the slab edge under it, then the concourse frame: pale grey columns, dark openings, a rail
+  g.fillStyle = '#7d8084'; g.fillRect(0, 146, 256, 10);
+  g.fillStyle = '#c9c9c4'; g.fillRect(0, 156, 256, 100);
+  g.fillStyle = '#3a3d40'; for (let x = 0; x < 256; x += 64) g.fillRect(x + 12, 170, 44, 86);
+  g.fillStyle = '#d9d9d4'; for (let x = 0; x < 256; x += 64) g.fillRect(x + 12, 206, 44, 4);
 }));
 function outerBand(k: Kit, [s0, s1]: [number, number]) {
-  const n = Math.max(2, Math.ceil((s1 - s0) / 2)), h = tierH(TIERS) + 0.9, pos: number[] = [], uv: number[] = [], idx: number[] = [];
+  const n = Math.max(2, Math.ceil((s1 - s0) / 2)), h = BAND_H, pos: number[] = [], uv: number[] = [], idx: number[] = [];
   for (let i = 0; i <= n; i++) {
     const s = s0 + ((s1 - s0) * i) / n, [x, z] = at(s, D1 + 2.4), u = (s - s0) / 8;
     pos.push(x, 0, z, x, h, z); uv.push(u, 0, u, 1);
@@ -194,7 +203,12 @@ const stadium: Spec = {
     for (const s of [LS + 0.25 * LA, LS + 0.75 * LA, 2 * LS + LA + 0.25 * LA, 2 * LS + LA + 0.75 * LA]) {
       const [x, z, nx, nz] = at(s, 30), h = 36;
       k.plain.push([new THREE.CylinderGeometry(0.35, 0.6, h, 10).translate(x, h / 2, z), '#b9bcbf']);
-      k.plain.push([new THREE.BoxGeometry(5, 3, 0.4).rotateY(Math.atan2(-nx, -nz)).translate(x - nx * 0.6, h + 1, z - nz * 0.6), '#d7d9db']);
+      // the lamp array: a dark frame carrying rows of rectangular lamps, turned to the pitch (Pair 6)
+      const yaw = Math.atan2(-nx, -nz), fx = x - nx * 0.6, fz = z - nz * 0.6;
+      k.plain.push([new THREE.BoxGeometry(7, 4.6, 0.35).rotateY(yaw).translate(fx, h + 1.2, fz), '#4a4e52']);
+      for (let r = 0; r < 4; r++) for (let q = 0; q < 6; q++) {
+        k.plain.push([new THREE.BoxGeometry(0.95, 0.85, 0.12).translate(-2.9 + q * 1.16, -1.6 + r * 1.07, -0.22).rotateY(yaw).translate(fx, h + 1.2, fz), '#eef0f2']);
+      }
     }
   },
 };

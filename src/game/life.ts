@@ -22,6 +22,7 @@ import { NSIA } from './nsia';
 import { KQ } from './kuffour';
 import { offAsphalt } from './science';
 import { ownsEdges } from './ipsplan';
+import { parkingFill } from './lbplan';
 
 /** real road widths by class: main, through, residential, service lane, footpath */
 export const ROAD_WIDTH = [9, 7.4, 6.2, 4.6, 2.6];
@@ -1255,8 +1256,10 @@ function parkCars(cells: Cells, car: Model, pts: Float32Array, rand: () => numbe
     u0 = Math.min(u0, u); u1 = Math.max(u1, u); w0 = Math.min(w0, w); w1 = Math.max(w1, w);
   }
   if ((u1 - u0) * (w1 - w0) > 40000) return 0;
-  // car parks on campus are busy: most bays taken
-  const fill = 0.65 + rand() * 0.25;
+  // car parks on campus are busy: most bays taken (the stadium's lots stand mostly empty: lbplan.ts)
+  let cx = 0, cz = 0;
+  for (let i = 0; i < n; i++) { cx += pts[i * 2]; cz += pts[i * 2 + 1]; }
+  const busy = 0.65 + rand() * 0.25, fill = parkingFill(cx / n, cz / n) ?? busy;
   let count = 0;
   // rows of 5 m bays facing each other across 6 m aisles
   for (let w = w0 + 3; w < w1 - 2.5 && count < 220; w += 8) {

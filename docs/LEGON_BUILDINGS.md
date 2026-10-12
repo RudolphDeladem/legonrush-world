@@ -2958,3 +2958,100 @@ Domil Heights (RW15) is not mapped in either source and is not placed.
 - a photo of the gate from IPS Road;
 - the campus wall's colour;
 - a site plan naming the core's blocks.
+
+## Legon Road by the stadium, the La Bawaleshie junction and its neighbourhood (19 pairs)
+
+The owner's brief *Legon Road and La Bawaleshie Reconstruction Brief*: 19 game/street-view pairs and six additional
+references:
+- Reference 1: the annotated real aerial with the pair arrows.
+- Reference 3: the La Bawaleshie satellite crop.
+- References 2 and 4: the game maps, used only to find assets.
+- References 5 and 6: the flawed game aerials.
+
+Code:
+- `src/game/labawaleshie.ts` (models) and `src/game/lbplan.ts` (positions shared with the tests);
+- the stadium's outer screen and floodlights in `stadium.ts`;
+- the car-park fill hook in `life.ts`;
+- cameras `lb1` … `lb19`, `lbRef5`, `lbRef6` and `lbTop` in `lbviews.ts`.
+
+Comparisons are in `docs/legon-road-la-bawaleshie/`:
+- `pairs-before-after-real.jpg`: game before, game after and the owner's photo for every pair;
+- `aerials-before-after.jpg`: the two aerials matching References 5 and 6, and the top view aligned to Reference 1.
+
+**Where the pairs are.** The brief's "Legon Road" is the game's J.J. Rawlings Avenue (the N4) at x ≈ 930–1060:
+- the stadium lies to its west, and the La Bawaleshie junction is at (1001, 1203);
+- Pairs 1–4 are north of the junction: the photographs are taken from the southbound (west) carriageway looking across
+  the wide median at the east frontage;
+- Pairs 5–14 are round the junction and the stadium;
+- Pairs 15–16 share one spot south of the stadium approach;
+- Pairs 17–19 are at the mouth of La Bawaleshie Road (Reference 3).
+
+**Old to new**
+
+| Before | After |
+| --- | --- |
+| 195 mapped outlines east of the N4 (both sides of La Bawaleshie Road) drawn with the campus template (white walls, red tile hips) | Built as the local fabric (see the rules below), and drawn over compacted earth and dust with worn grass patches and paved forecourts by the roads instead of lawn |
+| Nine of those outlines, singled out by the photographs (`PICKS`) | Modelled to their photographs (see the list below) |
+| No outline where Pairs 11 and 17–19 show shops (the map's gaps on both sides of La Bawaleshie Road just east of the junction) | Six frontages added, with their extents estimated (`MASSES`), listed below |
+| Eight outlines of the compound west of the N4 drawn as campus blocks | Low grey and white sheds under blue and grey sheet roofs: the background roofs beyond the scrub (Pair 3) |
+| The median: plain lawn | Kerbed patchy grass and red earth, young planted trees every 19 m, shrubs between |
+| West of the N4 north of the junction: an open lawn, read as a campus (Pair 3) | A dense scrub of bushes of mixed height, tall weeds and a few small trees on dark ground; a kerb and a narrow worn red path along the road. It is kept clear of the pond and the mapped footway |
+| The stadium-side verge: lawn, with a car grid behind it | The red brick path along the road, rough grass and bare earth, the steel palisade along the car parks' service road with young trees, panel billboards on single posts, two empty rust-red steel frames, a slender lattice mast (Pair 14) |
+| The stadium car parks: 65–90% full of cars | About 10% full, as in the aerial and Pair 8; the paved and marked lots now show |
+| The stadium's outer wall: a band of red, white and grey stripes on a blue base, 9.5 m high | A 13.5 m screen of muted red and pale fins (the athletes kept) over a pale grey concourse frame with dark openings, as in Pairs 6, 8 and 14. The four floodlights now carry large rectangular lamp arrays. The separate segments and the gaps at the corners stay: the photographs show them too (Pair 14) |
+| The junction: bare corners, palms and generic trees | A signal post on each of the four corners and on both median noses; worn stone paving round them; the utility cabinet and black-and-yellow bollards at the north-west corner (Pairs 5–7, 10). The mapped slip lanes and approaches cover the corner islands at their drawn widths, so the posts stand on the corners, not on islands |
+| — | Poles and wires along both sides of La Bawaleshie Road and the N4's east frontage; the pole-mounted transformer with its stay and cabinet by the corner (Pair 19); the lattice communications mast behind the beige block (Pairs 1, 2) |
+
+**The fabric's rules**
+- Storeys come from the footprint's size and whether it fronts a road: sheds under 35 m², up to four storeys for large
+  frontage blocks.
+- Walls take the local colours.
+- Roofs are flat behind parapets (most with water tanks) or low metal hips.
+- Faces toward a road get shop bays with roller shutters and rows of plain sign bands; some get awnings or upper
+  galleries.
+
+**The photographed buildings (`PICKS`)**
+- *Pairs 1, 2:* the beige institutional block by the Ghana Revenue Authority, with its tall dark grey face wrapping
+  the north-west corner and few openings.
+- *Pair 4:* the cream three-storey block with orange corner pilasters, an orange stair face and dark window bands.
+- *Pair 11:* the taller beige mass behind the yellow frontage.
+- *Pairs 12, 19:* the two-level retail corner south-east of the junction, with upper windows, shop bays and the
+  orange lower wall.
+- The Diamed outline: two storeys, white with a blue band.
+- *Pairs 15, 16:* the commercial block at the shared 15–16 view; the green gable-front building; the pale building
+  with the red trim. Tall narrow trees beside them.
+
+**The added frontages (`MASSES`, extents estimated)**
+- the low yellow frontage with its dark display face (Pairs 11, 17);
+- two small metal-roofed shops (Pair 17);
+- a cream two-level shop block with a gallery (Pair 18);
+- the blue frontage beside the corner block (Pair 19);
+- a cream commercial block (Pairs 18, 19).
+
+**Checks:** `npm run test:routes` adds:
+- every pole, mast, frame, cabinet and the transformer stands off the roads;
+- the added frontages touch no road and no mapped outline;
+- every signal spot has ground for its post;
+- every neighbourhood outline is built by the model, not the template;
+- the nine photographed outlines are found;
+- the rides along the N4 and La Bawaleshie Road pass no solid;
+- the stadium lots' fill.
+
+`.preview/solidroads.mjs` over x 700–1470, z 850–1660 finds no solid on a road or footway. Every existing route,
+race and challenge keeps its length.
+
+*Assumed*:
+- The storeys, colours and roofs of the fabric (rules from size and frontage, not per building) and of the added
+  frontages.
+- The added frontages' extents.
+- The signal heads' layout.
+- The billboard, frame and mast spots.
+- The scrub's depth (46 m).
+- The beige block's dark face covering the north end.
+
+No business names are written: the signs are colour bands, and no legible lettering in the photographs was copied.
+
+*Would settle it*:
+- a site plan of the La Bawaleshie corner plots (the map lacks the frontages east of the junction);
+- the signal layout from above;
+- the beige block's other faces.
