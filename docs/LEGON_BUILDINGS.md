@@ -2358,3 +2358,163 @@ Triangle, A/B/X/Y, or position names such as "Bottom button" for an unknown pad)
 - **Tested** with a simulated controller in Chromium (`scripts/gamepad-test.mjs`); no physical controller was
   connected while building this, so real-hardware behaviour (per-browser button numbering, trigger ranges, Bluetooth
   reconnects) is not verified.
+
+## The UPSA junction: UGBS Graduate Building, GOIL, IPS Road
+
+The owner's field reference brief: field photos F01–F18, six UGBS reference photos (d5_19–d5_24), Street View frames
+along IPS Road and the GOIL photos (d4). Code: `src/game/upsa.ts` (models), `src/game/upsaplan.ts` (positions shared
+with the route tests). Preview views: `upsaApproach`, `upsaFacade`, `upsaPair`, `upsaJunction`, `upsaWalk`,
+`upsaMedian`, `upsaGate`, `upsaGoil`, `upsaObl`, `upsaTop`.
+
+Placement: the map puts GOIL north of IPS Road (z ≈ −955) and the UGBS Graduate Campus south of it (the building at
+z ≈ −737, facing north over its car park). The Street View frames agree (heading west, GOIL on the right; the building
+seen over the wall from the GOIL side).
+
+**From the photographs**
+- The Graduate Building: five storeys; the main block between two end wings that stand about 5 m forward (the mapped
+  footprint); white walls with grey bands and pilasters, the windows in pairs with dark bronze frames; the central
+  dark glass feature (three strips between white piers, the middle one arched) from the canopy to the eaves; the gable
+  above it with "UG | BS" in blue and "University of Ghana Business School" in red; the entrance canopy on four round
+  columns, steps, ramps with steel railings; the wings' steep white gables ruled in grey under red-brown roofs, their
+  fronts blank panels except the inner bays, which carry open balconies on the four upper storeys; lit windows at night
+  (d5_22). The paved forecourt and car park with cars (d5_20, d5_24); a white flag left of the entrance (d5_21).
+- The boundary wall: white concrete, square pillars, solid panels and balustraded bays (Street View, F04).
+- The gate (d5_23): two piers under a beam with chamfered ends, the UGBS letters with the crest, STEP INTO EXCELLENCE,
+  gatehouses with louvred windows either side, blue-grey sliding gates, a paved road through it.
+- IPS Road: a dual carriageway with a kerbed grass median (F02, F05, F06, F09; the older Street View shows the same
+  median dry and red-earthed); a tan herringbone paver sidewalk along the south carriageway with a grass verge, H-frame
+  concrete poles in the verge and their wires (F07, F08, F12); lattice transmission towers (Street View, F07, F10,
+  F15); wooden poles along the north verge; traffic signals at the N4 junction (F01).
+- GOIL: the long canopy with its orange fascia and white GOIL panels over the pumps, orange-red columns; the shop block
+  with the orange-tiled LUBE BAY SERVICE box, charcoal and grey walls with grilled windows and the GO cafe front (d4_06);
+  the pylon sign on its kerbed island between the way in and the way out, with the feather flag (Street View); the ATM
+  row of GCB, Standard Chartered, National Investment Bank and Stanbic booths on an orange tiled plinth (d4_08); the
+  yellow container shop and the lattice telecom mast beside them (Street View at the way out, F05, F06); the roadside
+  workshops east of the station with grille fronts and tyres (Street View heading east).
+
+**Approximated or assumed** (no measurement in the brief)
+- Storey height 3.6 m, so the eaves are at 18.8 m and the wing gables at about 23.8 m; the wing roof pitch and the
+  central gable's size are judged from the photos.
+- The block behind the Graduate Building (mapped, not photographed): four storeys assumed.
+- The ordering of the shop block's parts (lube bay at the west end, the GO cafe at the east) follows the one photo;
+  the canopy's size and position between the forecourt lanes are fitted to the mapped lanes.
+- The car parks' extents are fitted between the mapped aisles; the bays are marked where the game parks the cars.
+- The gate's opening is 12 m between the piers, wider than the photo suggests (about 8–9 m): a ride turning west onto
+  the service road just outside the gate otherwise runs through the west pier.
+- The ATM row stands about 5 m east of the mapped ATM points (a ride to them runs out past its arrival node toward
+  them); the container and mast stand beside it as in the Street View frame.
+- The transmission towers' spots (x 972 and x 1290 on the UGBS side) and the H-pole and wooden-pole spacing are placed
+  from the photographs, not measured. The pylon sign's price panels are drawn dark: the figures are not legible.
+- The median is drawn only where the mapped carriageways leave a metre or more between them (east of about x 1060):
+  west of that the two mapped roads overlap, though the photos show the median continuing to the merge.
+- The north side of IPS Road has no paver sidewalk in the photographs, so none is drawn there.
+- The wall runs along the UGBS landuse outline's north edge from x 985 to the gate, and 16 m east of it (d5_23).
+
+**Map changes** (`corrections.json`): the Microsoft ML footprint `ml:fe2da66f…` in the middle of the car park is
+excluded (the Street View frame over the wall and d5_20 show open parking there); heights for the Graduate Building
+(5 storeys), the block behind it (4, assumed), the GOIL block (1), the workshops (1) and the small hut east of the ATMs
+(1); five parking areas `owner:ugbs-graduate-parking-1..5`.
+
+**Engine change**: past the campus-wide limit of parked cars, car parks that a modelled site paves and marks itself
+still fill (`life.ts`); before, the last UGBS car park stood empty. No other car park changes (checked: the five
+car parks already over the limit elsewhere stay as they were).
+
+**Checks** (`scripts/route-tests.mjs`): the four models are built; the excluded block stays out; no pole, tower leg,
+signal, canopy column, pump, pier, kiosk or mast stands on a mapped road; and none on any ride between Goil, Stanbic,
+the ATM, the UGBS Graduate Campus, the UPSA Taxi Rank and Presec, in either direction.
+
+## The 30-pair reconstruction brief: Geography, the Legon Road cutting, the roadside plots, the Jones-Quartey Building
+
+The owner's PDF (`University_of_Ghana_30_Pair_Reconstruction_Brief_and_Claude_Prompt.pdf`): thirty game-vs-real pairs
+on five annotated maps (A: pairs 1-7, B: 9-14, C: 15-22, D: 8 and 23-27, E: 28-30). The blue arrows place the views;
+they are not objects in the world. Nothing in the brief is a survey: every position and size below is read from the
+maps and photographs and is approximate.
+
+**Comparison cameras** (`src/game/pairviews.ts`, preview `halls.html?view=pair01` … `pair30`): one per pair, placed
+from its arrow, matched by eye to its photograph; heights are above the ground under the eye. Pair 7 is raised (15 m:
+the photograph is taken from above). Pairs 16 and 21 share one real photograph: one frontage is modelled and the two
+cameras follow the two arrows (the second placement is an assumption). Moved in this batch: 1, 3-6 (on the Geography
+entrance, x 417), 22-26 (pair 23's old eye was inside a mapped outline; 24 nearer the stalls; 25 and 26 on the service
+road), 29 (at the foot of the real stair).
+
+### Geography (pairs 1-6; `geography.ts`, terrace and stair in `relief.ts`)
+Replaces the generic blocks of the department (the front range, the corridor range, the back-court blocks, the
+lecturers' office) with one building.
+- **From the photographs**: the front range up a broad stair from the lawn on Danquah Avenue; the central entrance
+  block a little taller under its own hipped roof; the recessed porch of three dark bays (grilled windows either side,
+  the double door behind its gate in the middle) between white piers; the department's name on the band above them;
+  one-storey wings, white on a red base under red tiles, dark windows and AC units; the deep veranda with dark doorways
+  at the west end (pair 2); the two-flight weathered stair between laterite stone-faced planters, the worn slab apron,
+  the stone-faced retaining wall with shrubs behind it; the lawn with stepping slabs, the garden lamp and the palm bed
+  (pair 1); red earth and leaf litter to the west and the blue department board, only its legible lines (pair 2); the
+  covered corridor (pair 3): tiled floor a step above the garden, square white posts on red feet, dark doors and high
+  louvred windows, the ceiling and eave, the open garden with its low laterite edge.
+- **Assumed**: the terrace rise of 1.4 m (two flights of five steps read from pairs 4-6); the entrance block 15 m wide
+  and its porch 2.5 m deep; the stair 13.6 m wide with a 1 m landing; the open porch at the east end of the front range
+  (seen far off down the corridor in pair 3); the back-court blocks and the lecturers' office as plain one-storey
+  ranges on their mapped outlines (not photographed); tree positions.
+- **Would settle it**: a frontal photo of the stair with a person on it (rise and width), the porch's depth (a photo
+  from inside it), one photo of the back court.
+
+### Pair 7: the low compound by the junction (`southref.ts`, the Efua Sutherland Drama Studio)
+The raised photograph shows the drama studio's compound from the south-east. The game's generic white block in the
+middle of the open court (a Microsoft ML outline, now excluded) is gone; the rear range is low and dark under a flat
+roof with a thin pale edge and AC units (was a tall hipped stage house); the side wings carry rusty corrugated roofs at
+low, unequal pitches, the west one behind a pale parapet; the entrance is a boxy timber-clad block under a pale slab
+roof; a black water tank stands behind. The long range west of it is one storey (it showed as a two-storey mass).
+*Would settle it*: a ground photo of the rear range (its height) and of the entrance block.
+
+### The Legon Road cutting (pairs 8, 13, 14, 18, 19; `cutplan.ts`, `legoncut.ts`, `relief.ts`, `Game.ts`, `world.ts`)
+Committed earlier in this batch: J.J. Rawlings Avenue's two carriageways run 7 m down between patterned retaining
+walls from z −305 to 255, ramping back at both ends, under the interchange ring's two bridges; the ring's inner west
+slope is stone-pitched. Riders, rivals, coins, cameras and the route layer follow the right level (the deck or the road
+below, by heading); the free ride keeps its level and is not stopped on a deck by what stands on the road below. The
+depth (7 m), the wall lines (sampled from the mapped carriageways and service roads) and the deck outlines are
+parameters in `cutplan.ts`. *Would settle it*: the clearance under a bridge (a photo with a vehicle under it) and the
+wall height at one point.
+
+### The roadside plots (`roadside.ts`, `roadsideplan.ts`)
+- **Pairs 9-12** (the planted strip west of the road north of the interchange): rough grass over red earth, the
+  strip's mapped footpaths drawn as trodden red earth (the free ride is rougher on them; the paved footway along the
+  road stays), the open earth clearing under a big tree (pair 12), mature trees kept off the paths, the gravel heap
+  (pair 9), the 50 sign (pair 10), the pale boundary wall on the west side beside its path, open where the path to the
+  houses passes (pairs 11, 12). The ranges beyond are one storey: the mapped office and the dance practical venue are
+  modelled; the houses behind the wall are one storey by height correction.
+- **Pairs 16, 21** (one photograph): the long one-storey red-roofed range west of the service road, a van and a car
+  in front; the College of Education ranges behind it one storey (they were not in the photograph).
+- **Pair 17**: the overgrown plot with its trodden path, the two lattice telecom masts and the timber pole with its
+  transformer.
+- **Pairs 15, 20, 22**: Legon City Mall as a glazed mass of four storeys, six at its south-west corner where its name
+  stands on the roof, over its gravel forecourt (the mapped car park, edged with posts); the shops north of the
+  forecourt one storey; the open market shed on the east side of the road (pair 22).
+- **Pairs 23-27**: the police station compound's ranges one storey round their courts (white, red base, red tiles),
+  the block-paved forecourt with white bollards along its front, red earth verges, the row of timber stalls with
+  corrugated roofs and the kiosk under its blue canopy at the north-east corner (each stall a small separate frame).
+- **Assumed**: the boundary wall's line (beside the mapped path, Map B); the masts' spots and heights (32 and 26 m);
+  the mall's heights and the extent of its tall corner (the mapped outline is the whole complex); the stalls' count and
+  spacing; the 50 sign's spot; which mapped outlines are the shed and the kiosk.
+- **Would settle it**: a photo along the boundary wall; the mall's storey count from the street; one photo of the
+  stall row from the road junction; a photo of the masts from the road.
+
+### The Jones-Quartey Building (pairs 28-30; `jqb.ts`, the car park slope in `relief.ts`)
+- Pair 29: the real stair at the south end of the east colonnade, nine broad warm terrazzo steps up into the covered
+  colonnade (its floor now stands 1.3 m up behind its low white wall), the stone-clad wall on its west carried on along
+  the colonnade, white square columns on the east, the ceiling over it. The bike stops at its foot (the stair is not
+  flattened; the routes go round by the lawn and the road).
+- Pair 30: the car park east of the building falls about 1.2 m to the north over some 24 m, its low end held below the
+  road on the north by a low concrete edge.
+- Pair 28: the tree that stood in front of the camera moved aside; the model of the front (blank signed core, louvre
+  bays, kiosk, colonnade) was already as the photo shows.
+- **Would settle it**: the stair's rise (a photo with a person on it) and the car park's fall (a level reading).
+
+**Map changes** (`corrections.json`): excluded the ML outline inside the drama studio's court; one-storey heights for
+the range west of the studio, the houses and ranges west of the planted strip, the College of Education and
+Archaeology ranges, the shops north of the mall's forecourt.
+
+**Checks**: route tests (every journey's and race's ground continuous, the cutting rides) pass; no new solid stands on
+a mapped road or path (`tools/preview/solidroads.mjs` over the new models); route lengths unchanged; cameras outside
+buildings. The comparison renders are taken in one page load with `tools/preview/multishot.mjs`.
+
+**Known, left as is**: the cutting's east parapet north of the south bridge (z 155-205) stands up to 0.75 m inside the
+mapped edge of the east slip road (J.J. Rawlings Avenue's connector); the road stays passable. Moving the wall line
+there would change the cutting's geometry and wants a photo or measurement of that stretch first.

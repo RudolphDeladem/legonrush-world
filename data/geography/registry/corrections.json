@@ -332,6 +332,14 @@
     {
       "id": "ml:d5854760-7f1c-4f84-9953-d1ada1fb77ac",
       "reason": "Satellite-detected (Microsoft ML) footprint east of the main gate, drawn as a building. The owner's main entrance brief (pairs 7, 9 and 13, corrected map 1): it is the flag plaza's long fountain basin and its stone-faced planters, open to the sky; the plaza is modelled in gateprecinct.ts."
+    },
+    {
+      "id": "ml:fe2da66f-70e1-4752-8a60-33670112ce93",
+      "reason": "Satellite-detected (Microsoft ML) footprint in the middle of the UGBS Graduate Campus car park, drawn as a two-storey block. The owner's field reference brief: the Street View frame from IPS Road facing the Graduate Building over the boundary wall, and the UGBS reference photos of the forecourt and car park (d5_19, d5_20, d5_24), show open parking with no structure there. The car park is modelled in src/game/upsa.ts."
+    },
+    {
+      "id": "ml:36c7121c-429d-4ac9-888a-68edf010df19",
+      "reason": "Owner's 30-pair brief, pair 7 (the raised photograph of the Efua Sutherland Drama Studio from the south-east): this machine-detected 73 m\u00b2 outline lies in the middle of the studio's open-air court, where the photograph shows only the paved court and its pale raised platform (modelled in southref.ts). The game drew it as a generic white hipped block."
     }
   ],
   "heights": [
@@ -3134,6 +3142,181 @@
       "levels": 1,
       "height": 4.5,
       "reason": "Owner's aerial (circled blue): the small buildings along the Volta Hall Road stretch north-west of CEDI are one floor. (Restored: the owner withdrew its removal.)"
+    },
+    {
+      "id": "osm:way/601016706",
+      "place": "UGBS Graduate Building",
+      "levels": 5,
+      "height": 22,
+      "reason": "Owner's field reference brief (UGBS reference photos d5_19-d5_24, Street View): five storeys between two end wings with steep gables; modelled in src/game/upsa.ts (eaves about 18.8 m, the gables about 23.8 m)."
+    },
+    {
+      "id": "osm:way/601016704",
+      "place": "UGBS Graduate Building rear block",
+      "levels": 4,
+      "height": 16,
+      "reason": "Block behind the UGBS Graduate Building (src/game/upsa.ts). Not photographed in the owner's brief: four storeys is an assumption, recorded as such in docs/LEGON_BUILDINGS.md."
+    },
+    {
+      "id": "osm:way/601016712",
+      "place": "GOIL shop and lube bay",
+      "levels": 1,
+      "height": 5.4,
+      "reason": "Owner's GOIL photos (d4_06): a one-floor shop and service block, the orange lube-bay box the tallest part; modelled in src/game/upsa.ts."
+    },
+    {
+      "id": "osm:way/1186044056",
+      "place": "roadside workshops east of GOIL",
+      "levels": 1,
+      "height": 3.3,
+      "reason": "Street View along IPS Road (the owner's brief): one-floor roadside workshops under sheet roofs with tyres before them; modelled in src/game/upsa.ts."
+    },
+    {
+      "id": "osm:way/1186044057",
+      "place": "timber kiosk east of the GOIL ATMs",
+      "levels": 1,
+      "height": 2.6,
+      "reason": "Small one-floor hut east of the ATM row at GOIL (Street View at the way out, approximate); modelled in src/game/upsa.ts."
+    },
+    {
+      "id": "osm:way/492099547",
+      "place": "Long range west of the Efua Sutherland Drama Studio",
+      "levels": 1,
+      "height": 4,
+      "reason": "Owner's 30-pair brief, pair 7: the raised photograph over the studio shows only low one-storey roofs and trees on this side; the generic two-storey mass dominated the comparison view. One storey is read from that photograph, not surveyed."
+    },
+    {
+      "id": "osm:way/1184505250",
+      "place": "houses behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/1184505251",
+      "place": "houses behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/1184505252",
+      "place": "houses behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/1184505253",
+      "place": "houses behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/1184505254",
+      "place": "houses behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/1184505255",
+      "place": "houses behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/1184505256",
+      "place": "houses behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/1184505257",
+      "place": "houses behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/1184505258",
+      "place": "houses behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/492099535",
+      "place": "range behind the wall west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/773861741",
+      "place": "range west of the planted strip",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/492099513",
+      "place": "Office (School of Performing Arts, south range)",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 10-12 (Street View west across the planted strip from Legon Road, Sep 2024): only low one-storey roofs show behind the strip's trees and its pale boundary wall; the generic two- and three-storey masses dominated the comparison views. One storey is read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/492099514",
+      "place": "Archeology Lecturers Offices",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 16, 17 and 21 (Street View west from Legon Road, Sep 2024): beyond the long one-storey range only low red roofs and trees show; the generic two-storey masses were not in the photographs. One storey is read from them, not surveyed."
+    },
+    {
+      "id": "osm:way/492099532",
+      "place": "College of Education (south range)",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 16, 17 and 21 (Street View west from Legon Road, Sep 2024): beyond the long one-storey range only low red roofs and trees show; the generic two-storey masses were not in the photographs. One storey is read from them, not surveyed."
+    },
+    {
+      "id": "osm:way/492099534",
+      "place": "College of Education (north range)",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pairs 16, 17 and 21 (Street View west from Legon Road, Sep 2024): beyond the long one-storey range only low red roofs and trees show; the generic two-storey masses were not in the photographs. One storey is read from them, not surveyed."
+    },
+    {
+      "id": "osm:way/665125614",
+      "place": "roadside shops north of the Legon City Mall forecourt",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pair 20 (Street View east to Legon City Mall across its forecourt, Sep 2024): the buildings on the left of the forecourt are low one-storey shops and sheds (a motors showroom sign), not two-storey blocks. One storey is read from the photograph."
+    },
+    {
+      "id": "osm:way/603522792",
+      "place": "roadside shops north of the Legon City Mall forecourt",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pair 20 (Street View east to Legon City Mall across its forecourt, Sep 2024): the buildings on the left of the forecourt are low one-storey shops and sheds (a motors showroom sign), not two-storey blocks. One storey is read from the photograph."
+    },
+    {
+      "id": "osm:way/603522793",
+      "place": "roadside shops north of the Legon City Mall forecourt",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pair 20 (Street View east to Legon City Mall across its forecourt, Sep 2024): the buildings on the left of the forecourt are low one-storey shops and sheds (a motors showroom sign), not two-storey blocks. One storey is read from the photograph."
+    },
+    {
+      "id": "osm:way/603522794",
+      "place": "roadside building north of the market shed, east of Legon Road",
+      "levels": 1,
+      "height": 3.8,
+      "reason": "Owner's 30-pair brief, pair 22 (Street View east across the road, Sep 2024): only the low market shed and parked cars show on this side; the generic two-storey block was not in the photograph. One storey is read from it, not surveyed."
     }
   ],
   "reclass": [
@@ -9132,6 +9315,121 @@
         ]
       ],
       "reason": "Owner's second Pent corrections: the wood behind the School of Engineering Sciences seen from the Pent entrance, along the west side of Annie Jiagge Road up to the school (street photo with the trees circled)."
+    },
+    {
+      "id": "owner:ugbs-graduate-parking-1",
+      "class": "parking",
+      "ring": [
+        [
+          1004,
+          -771.6
+        ],
+        [
+          1031.5,
+          -771.6
+        ],
+        [
+          1031.5,
+          -757.6
+        ],
+        [
+          1004,
+          -757.6
+        ]
+      ],
+      "reason": "UGBS Graduate Campus car park, west of the entrance before the building (the owner's field reference brief: d5_19, d5_20, d5_24 show the paved forecourt and car park full of cars). Extents fitted between the mapped aisles; paved and marked in src/game/upsa.ts."
+    },
+    {
+      "id": "owner:ugbs-graduate-parking-2",
+      "class": "parking",
+      "ring": [
+        [
+          1050.5,
+          -771.6
+        ],
+        [
+          1097,
+          -771.6
+        ],
+        [
+          1097,
+          -757.6
+        ],
+        [
+          1050.5,
+          -757.6
+        ]
+      ],
+      "reason": "UGBS Graduate Campus car park, east of the entrance before the building (the owner's field reference brief: d5_19, d5_20, d5_24 show the paved forecourt and car park full of cars). Extents fitted between the mapped aisles; paved and marked in src/game/upsa.ts."
+    },
+    {
+      "id": "owner:ugbs-graduate-parking-3",
+      "class": "parking",
+      "ring": [
+        [
+          1005.5,
+          -849
+        ],
+        [
+          1036.8,
+          -849
+        ],
+        [
+          1036.8,
+          -780.5
+        ],
+        [
+          1005.5,
+          -780.5
+        ]
+      ],
+      "reason": "UGBS Graduate Campus car park, west of the central aisle (the owner's field reference brief: d5_19, d5_20, d5_24 show the paved forecourt and car park full of cars). Extents fitted between the mapped aisles; paved and marked in src/game/upsa.ts."
+    },
+    {
+      "id": "owner:ugbs-graduate-parking-4",
+      "class": "parking",
+      "ring": [
+        [
+          1043,
+          -816.8
+        ],
+        [
+          1107,
+          -816.8
+        ],
+        [
+          1107,
+          -779.8
+        ],
+        [
+          1043,
+          -779.8
+        ]
+      ],
+      "reason": "UGBS Graduate Campus car park, east of the central aisle, north of the cross aisle (the owner's field reference brief: d5_19, d5_20, d5_24 show the paved forecourt and car park full of cars). Extents fitted between the mapped aisles; paved and marked in src/game/upsa.ts."
+    },
+    {
+      "id": "owner:ugbs-graduate-parking-5",
+      "class": "parking",
+      "ring": [
+        [
+          1043,
+          -854.5
+        ],
+        [
+          1107,
+          -854.5
+        ],
+        [
+          1107,
+          -823.6
+        ],
+        [
+          1043,
+          -823.6
+        ]
+      ],
+      "reason": "UGBS Graduate Campus car park, east of the central aisle, south of the cross aisle (the owner's field reference brief: d5_19, d5_20, d5_24 show the paved forecourt and car park full of cars). Extents fitted between the mapped aisles; paved and marked in src/game/upsa.ts."
     }
   ],
   "addWays": [

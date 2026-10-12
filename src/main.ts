@@ -933,7 +933,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
       <div class="prompt" id="prompt"></div>
       <div class="tip" id="tip" hidden></div>
       <div class="guide-card" id="guideCard" role="dialog" aria-live="polite" hidden></div>
-      ${isExplore(route) || opts.live?.kind === 'vibe' ? `<label class="pace-box${isExplore(route) ? ' tour' : ''}" id="paceBox"><span>${isExplore(route) ? 'Tour speed' : 'Speed'}</span><b id="paceVal"></b><input type="range" id="pace" step="1" aria-label="${isExplore(route) ? 'Tour speed' : 'Riding speed'}"><small>Slow</small><small>Fast</small><span class="pace-mode" role="group" aria-label="Bike speed"><button type="button" data-sp="normal">Normal</button><button type="button" data-sp="faster">Faster</button></span></label>` : ''}
+      ${isExplore(route) || opts.live?.kind === 'vibe' ? `<label class="pace-box${isExplore(route) ? ' tour' : ''}" id="paceBox"><span>${isExplore(route) ? 'Tour speed' : 'Speed'}</span><b id="paceVal"></b><input type="range" id="pace" step="1" aria-label="${isExplore(route) ? 'Tour speed' : 'Riding speed'}"><small>Slow</small><small>Fast</small></label>` : ''}
       ${isExplore(route) ? '<div class="xp-say" id="xpSay" hidden></div>' : ''}
       ${isExplore(route) ? `<div class="free-pad" id="freePad" hidden>
         <p class="fp-hint">${isTouch ? 'Hold the arrows to steer · tap Pedal to ride · tap Brake to stop, hold it to reverse' : 'Steer ← → (A / D) · ↑ (W) pedal · ↓ (S) brake, hold to reverse'}</p>
@@ -1309,7 +1309,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
         ${lr || opts.challengeRide ? '' : '<button class="btn btn-ghost" data-p="restart">Restart</button>'}
         ${lr ? '' : `<button class="btn btn-ghost" data-p="photo">${icons.camera} Photo mode</button>`}
         <button class="btn btn-ghost" data-p="sound">Sound: ${settings.sound ? 'On' : 'Off'}</button>
-        ${isExplore(route) || lr?.kind === 'vibe' ? `<button class="btn btn-ghost" data-p="speed">Bike speed: ${settings.rideSpeed === 'faster' ? 'Faster' : 'Normal'}</button>` : ''}
+        ${speedy ? `<button class="btn btn-ghost" data-p="speed">Bike speed: ${settings.rideSpeed === 'faster' ? 'Faster' : 'Normal'}</button>` : ''}
         ${pad.connected ? '<button class="btn btn-ghost" data-p="pad">Controller</button>' : ''}
         <p class="muted small" style="margin:6px 0">${pad.mode === 'pad' ? `Controller: ${esc(guideLines(pad.family).map(([k, v]) => `${k} ${v.toLowerCase()}`).join(' · '))}.` : isTouch ? 'Swipe left/right to change lanes, up to jump, tap to boost.' : `← → or A D to steer, ↑ W or Space to jump, B or Shift to boost${profile!.gear.brakes ? ', hold S or ↓ to brake' : ''}, Esc to pause.`}</p>
         <button class="btn btn-link" data-p="exit">Exit ride</button>
@@ -1606,10 +1606,10 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
   const setRideSpeed = (v: 'normal' | 'faster') => {
     if (v !== settings.rideSpeed) changeSettings({ rideSpeed: v });
     game.speedFactor = speedy && v === 'faster' ? 1.3 : 1;
-    app.querySelectorAll<HTMLElement>('.pace-mode [data-sp]').forEach((b) => b.classList.toggle('on', b.dataset.sp === v));
   };
+  // (the choice lives in the pause menu only, the owner: nothing about it on the screen while riding; it holds for the
+  // guided ride and for riding it yourself after arriving)
   setRideSpeed(settings.rideSpeed ?? 'normal');
-  app.querySelectorAll<HTMLElement>('.pace-mode [data-sp]').forEach((b) => b.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); setRideSpeed(b.dataset.sp as 'normal' | 'faster'); }));
   if (paceIn) {
     const key = `legonrush.pace.${lr ? 'vibe' : way?.id ?? 'explore'}`;
     const [lo, mid, hi] = way?.pace ?? [4, 18, 35];

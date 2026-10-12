@@ -24,6 +24,7 @@ import { KQ_VIEWS } from '/src/game/kuffour.ts';
 import { SC_VIEWS } from '/src/game/science.ts';
 import { BP_VIEWS } from '/src/game/balmepent.ts';
 import { EN_VIEWS } from '/src/game/entrance.ts';
+import { PAIR_VIEWS } from '/src/game/pairviews.ts';
 const canvas = document.getElementById('c');
 const r = new THREE.WebGLRenderer({ canvas, antialias: true });
 r.setSize(innerWidth, innerHeight, false);
@@ -374,6 +375,21 @@ if (v === 'iaCar') { eye = V3(301.5, 8, -325); look = V3(301.5, 0, -360); }
 if (v === 'tallH') { eye = V3(135, 2, 45); look = V3(135, 4, 20); }
 if (v === 'ftW2') { eye = V3(122, 3, -113); look = V3(150, 9, -124); }
 if (v === 'gcbRamp') { eye = V3(-128, 2.2, -428); look = V3(-137, 1.5, -411); }
+if (v === 'usq') { eye = V3(10, 2.6, 92); look = V3(8, 1.5, 20); }
+if (v === 'usqAir') { eye = V3(10, 120, 60); look = V3(10, 0, 59); }
+if (v === 'upsaTop') { eye = V3(1040, 330, -840); look = V3(1040, 0, -841); }
+if (v === 'upsaObl') { eye = V3(1050, 60, -990); look = V3(1040, 5, -790); }
+if (v === 'upsaApproach') { eye = V3(985, 2.0, -881.5); look = V3(1060, 5, -868); }
+if (v === 'upsaFacade') { eye = V3(1041, 2.2, -792); look = V3(1041, 12, -745); }
+if (v === 'upsaPair') { eye = V3(1160, 48, -985); look = V3(1055, 0, -850); }
+if (v === 'upsaJunction') { eye = V3(1000, 28, -935); look = V3(952, 0, -885); }
+if (v === 'upsaWalk') { eye = V3(1022, 1.6, -887.5); look = V3(1060, 0.3, -885.5); }
+if (v === 'upsaMedian') { eye = V3(1085, 1.7, -877.5); look = V3(1140, 0.3, -872); }
+if (v === 'upsaGate') { eye = V3(1111, 2.0, -886); look = V3(1109, 4, -850); }
+if (v === 'upsaGoil') { eye = V3(1053, 2.0, -881); look = V3(1060, 3, -935); }
+if (v === 'upsaRoad') { eye = V3(1060, 2.2, -876); look = V3(1040, 12, -740); }
+if (v === 'jqbTop') { eye = V3(560, 140, -40); look = V3(560, 0, -41); }
+if (v === 'lawTop') { eye = V3(450, 140, -230); look = V3(450, 0, -231); }
 if (v === 'lsPorch') { eye = V3(-28, 1.7, 124); look = V3(-34, 4, 108); }
 if (v === 'frSW') { eye = V3(-150, 1.7, 128); look = V3(-162, 4, 100); }
 if (v === 'frPass') { eye = V3(-161.2, 1.7, 104); look = V3(-161.2, 1.5, 80); }
@@ -657,7 +673,7 @@ if (v === 'csTop') { eye = V3(355, 90, -268); look = V3(355, 0, -269); }
 if (v === 'street') { eye = W(hall, -60, 1.7, hall.hz + 40); look = W(hall, 0, 6, hall.hz); }
 // the NSIA Road brief's six comparison cameras (src/game/nsia.ts): heights above the ground; ?route=1 lays the ridden
 // route from Physics to the Frank Torto Building as the game draws it
-{ const nv = [...NSIA_VIEWS, ...KQ_VIEWS, ...SC_VIEWS, ...BP_VIEWS, ...EN_VIEWS].find((n) => n.name === v);
+{ const nv = [...NSIA_VIEWS, ...KQ_VIEWS, ...SC_VIEWS, ...BP_VIEWS, ...EN_VIEWS, ...PAIR_VIEWS].find((n) => n.name === v);
   if (nv) {
     eye = new THREE.Vector3(nv.eye[0], groundHeight(nv.eye[0], nv.eye[2]) + nv.eye[1], nv.eye[2]);
     look = new THREE.Vector3(nv.look[0], groundHeight(nv.look[0], nv.look[2]) + nv.look[1], nv.look[2]);
@@ -677,5 +693,15 @@ r.render(scene, cam);
 let nb=0; scene.traverse(o=>{ if (o.isMesh && o.material.isMeshBasicMaterial && o.material.map) nb++; }); console.log('basic meshes', nb); scene.traverse(o=>{ if (o.name==='hall-sign') { const p=new THREE.Vector3(); o.getWorldPosition(p); console.log('sign', p.x.toFixed(1), p.y.toFixed(1), p.z.toFixed(1), o.geometry.parameters.width, o.geometry.parameters.height, o.material.map.image.width, o.visible, o.parent.name); } });
 scene.traverse(o=>{ if (o.name==='School of Engineering Sciences' || o.name==='relief-ground') { const b=new THREE.Box3().setFromObject(o); console.log('DBG', o.name, o.position.y.toFixed(2), b.min.y.toFixed(2), b.max.y.toFixed(2)); } });
 console.log('DBG gh', groundHeight(452,-380), groundHeight(429,-345), groundHeight(429,-360));
-window.__done = true;
+// re-aim at another named view without rebuilding the campus (the preview's multi-shot: .preview/multishot.mjs)
+window.__view = (name) => {
+  const nv = [...NSIA_VIEWS, ...KQ_VIEWS, ...SC_VIEWS, ...BP_VIEWS, ...EN_VIEWS, ...PAIR_VIEWS].find((n) => n.name === name);
+  if (!nv) return false;
+  const e = new THREE.Vector3(nv.eye[0], groundHeight(nv.eye[0], nv.eye[2]) + nv.eye[1], nv.eye[2]), l = new THREE.Vector3(nv.look[0], groundHeight(nv.look[0], nv.look[2]) + nv.look[1], nv.look[2]);
+  cam.fov = nv.fov; cam.updateProjectionMatrix(); cam.position.copy(e); cam.lookAt(l);
+  sun.position.copy(l).add(new THREE.Vector3(-90, 160, 70)); sun.target.position.copy(l);
+  scene.updateMatrixWorld(true); r.render(scene, cam); r.render(scene, cam);
+  return true;
+};
+window.__scene = scene; window.__done = true;
 </script></body></html>

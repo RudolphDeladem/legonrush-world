@@ -21,7 +21,7 @@ import { EN } from './entrance';
 import { Bag, tuft, RED_BASE, SOFF, TILE, WALL, facesOf, gh, hash, lowWing, vnoise, wallSolids, type R4 } from './enkit';
 import { gableTri } from './ias';
 import { hipRoof } from './waccbip';
-import { broadleaf } from './nsiaroad';
+import { broadleaf, stoneMeshOf } from './nsiaroad';
 import { drapeAt, groundCover } from './kuffourgarden';
 import { letters } from './letters';
 import { rectsOf } from './rectilinear';
@@ -67,7 +67,7 @@ const jqbSpec: Spec = {
     // the open colonnade: dark decorative grilles on the set-back wall, slender columns, the low white wall in front
     b.grille.push(b.plane(false, X1 - 2.38, 1, (Z0 + ZS) / 2, ZS - Z0 - 1.6, y, gal0 - 0.1));
     for (let z = Z0 + 1.2; z < ZS - 1; z += 4.0) { b.c.push([b.B(X1 - 0.38, X1 - 0.02, y, gal0, z - 0.18, z + 0.18), W2]); SOLIDS.add(X1 - 0.2, z, 0.3); }
-    b.c.push([b.B(X1 - 0.3, X1, y - 0.2, y + 1.15, Z0 + 0.4, ZS - 4), '#f1efe9']);
+    b.c.push([b.B(X1 - 0.3, X1, y - 0.2, y + 1.6, Z0 + 0.4, ZS - 4), '#f1efe9']);
     for (let z = Z0 + 1.6; z < ZS - 5; z += 1.3) b.grille.push(b.plane(false, X1 + 0.01, 1, z, 0.9, y + 0.55, y + 0.68));
     wallSolids(X1 - 0.15, Z0 + 0.4, X1 - 0.15, ZS - 4, 0.25);
     b.c.push([b.B(X1 - 2.4, X1, gal0 - 0.15, gal0, Z0 + 0.4, ZS - 1.0), SOFF]);
@@ -115,9 +115,26 @@ const jqbSpec: Spec = {
     b.grille.push(b.plane(true, ZS - 1.38, 1, (551 + C0) / 2, C0 - 551 - 0.8, y, y + 3.0));
     for (const x of [578.5, 582.3, 586.0]) { b.c.push([b.B(x - 0.25, x + 0.25, y, y + J.fh, ZS - 0.6, ZS - 0.1), W2]); SOLIDS.add(x, ZS - 0.35, 0.35); }
     b.grille.push(b.plane(true, ZS - 1.38, 1, (C1 + 586.4) / 2, 586.4 - C1 - 0.6, y, y + 3.0));
-    for (let i = 0; i < 5; i++) b.c.push([b.B(588.0, 592.6, y - 0.3, y + 0.15 * (5 - i), ZS - 0.2 + i * 0.32, ZS + 0.12 + i * 0.32), '#c9c2b4']);
-    // the blank end walls
-    for (const [a0, a1] of [[X0 + 0.3, 551.0], [586.4, X1]]) b.c.push([b.B(a0, a1, y - 0.3, H, ZS - 1.4, ZS + 0.2), '#f7f6f2']);
+    // the stair at the south end of the east colonnade (the owner's 30-pair brief, pair 29): broad warm terrazzo steps
+    // climbing north into the covered colonnade, whose floor stands up behind its low white wall; the stone-clad wall on
+    // their west side carried on along the colonnade's back wall, white square columns on the east, the ceiling over
+    // them. The rise (nine steps) is read from the photograph, not measured; the bike stops at the foot.
+    const SX0 = 589.2, SX1 = X1 - 0.35, rise = 1.3, nst = 9, tr = 0.34, top = ZS - 0.2, foot = top + nst * tr;
+    for (let i = 0; i < nst; i++) {
+      const z1 = foot - i * tr;
+      b.c.push([b.B(SX0, SX1, y - 0.3, y + (rise * (i + 1)) / nst, z1 - tr, z1), i % 2 ? '#c08f6c' : '#b88566']);
+      b.c.push([b.B(SX0, SX1, y + (rise * (i + 1)) / nst - 0.025, y + (rise * (i + 1)) / nst + 0.004, z1 - 0.05, z1), '#7e5a44']);
+    }
+    // the colonnade's raised floor, its terrazzo running north from the stair's head
+    b.c.push([b.B(X1 - 2.38, X1 - 0.3, y - 0.3, y + rise, Z0 + 0.4, top), '#c49a7a']);
+    const stone: Part[] = [[b.B(SX0 - 0.35, SX0, y - 0.3, y + rise + 2.6, top - 4.0, foot), '#ffffff'], [b.B(X1 - 2.38, X1 - 2.3, y + rise, y + rise + 1.1, Z0 + 0.4, top), '#ffffff']];
+    stoneMeshOf(k, stone, [1.0, 0.82, 0.66]);
+    for (const z of [foot - 0.25, top - 0.2]) { b.c.push([b.B(SX1 - 0.18, SX1 + 0.18, y, gal0, z - 0.18, z + 0.18), W2]); SOLIDS.add(SX1, z, 0.25); }
+    b.c.push([b.B(SX0 - 0.35, X1, gal0 - 0.15, gal0 + 0.2, top, foot + 0.2), '#f2f0ea'], [b.B(SX0, X1 - 0.2, gal0 - 0.2, gal0 - 0.15, top, foot), SOFF]);
+    wallSolids(SX0, foot + 0.05, SX1, foot + 0.05, 0.3); wallSolids(SX0 - 0.2, top, SX0 - 0.2, foot, 0.25);
+    // the blank end walls (the east one stops at the stair, a lintel over it)
+    for (const [a0, a1] of [[X0 + 0.3, 551.0], [586.4, SX0 - 0.35]]) b.c.push([b.B(a0, a1, y - 0.3, H, ZS - 1.4, ZS + 0.2), '#f7f6f2']);
+    b.c.push([b.B(SX0 - 0.35, X1, gal0 + 0.2, H, ZS - 1.4, ZS + 0.2), '#f7f6f2']);
     k.signs.push({ text: 'UNIVERSITY OF GHANA BOOKSHOP', x: 556.5 - JO[0], y: y + 3.25, z: ZS - 1.36 - JO[1], ry: 0, w: 2.6, colors: ['#1d3f7a', '#ffffff'] });
     // the walls stop a bike
     wallSolids(X0, Z0, X1, Z0); wallSolids(X0, Z0, X0, ZS); wallSolids(X0, ZS, C0, ZS); wallSolids(C0, CZ, C1, CZ); wallSolids(C1, ZS, X1, ZS);
@@ -132,6 +149,9 @@ const jqbSpec: Spec = {
     // ---- the grass strip and kerb along the parking (pair 37) ----
     k.meshes.push(new THREE.Mesh(drapeAt(JO, X1 + 0.05, X1 + 2.3, Z0, ZS + 1, 0.4, 0.04, (x, z) => { const n = vnoise(x, z * 0.5); return [0.33 + n * 0.08, 0.48 + n * 0.06, 0.2]; }), groundCover()));
     b.c.push([b.B(X1 + 2.3, X1 + 2.5, y - 0.1, y + 0.15, Z0, ZS + 1), '#cfc9bc']);
+    // ---- the car park's low end held below the road on the north by a low concrete edge (relief.ts; pair 30) ----
+    b.c.push([b.B(596.0, 617.5, gh(606, -84) - 0.3, 0.35, -85.95, -85.55), '#bdb7aa'], [b.B(596.0, 617.5, 0.35, 0.41, -86.0, -85.5), '#cfc9bc']);
+    wallSolids(596.0, -85.75, 617.5, -85.75, 0.25);
     // ---- the red-earth approach and the long-grass lawn south of the building (pairs 30, 31) ----
     const E = EN.earth;
     const dPath = (x: number, z: number) => {
@@ -161,7 +181,7 @@ const jqbSpec: Spec = {
     }
     for (let i = 0; i < 30; i++) { const t = hash(i, 51), [ax, az] = E.pts[0], [bx, bz] = E.pts[E.pts.length - 1], x = ax + (bx - ax) * t + (hash(i, 53) - 0.5) * 5, z = az + (bz - az) * t + (hash(i, 57) - 0.5) * 5; b.c.push([new THREE.IcosahedronGeometry(0.08 + hash(i, 59) * 0.1, 0).translate(x - JO[0], gh(x, z) + 0.04, z - JO[1]), '#a7a196']); }
     // mature trees framing the building without hiding the lettering
-    for (const [x, z, h, s] of [[540, -12, 8.5, 14], [556, 4, 9, 15], [585, 8, 8, 13], [598.5, -10, 9, 14], [600, -50, 8.5, 13], [600, -78, 9, 14], [540, -86, 8, 13]] as [number, number, number, number][]) broadleaf(k, b.leaf, x, z, { h, spread: s, seed: x * 5 + z, origin: JO });
+    for (const [x, z, h, s] of [[531, 0, 8.5, 14], [556, 4, 9, 15], [585, 8, 8, 13], [598.5, -10, 9, 14], [621, -60, 8.5, 13], [619.5, -78, 9, 14], [540, -86, 8, 13]] as [number, number, number, number][]) broadleaf(k, b.leaf, x, z, { h, spread: s, seed: x * 5 + z, origin: JO });
     b.finish(k);
   },
 };

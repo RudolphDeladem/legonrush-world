@@ -2,6 +2,7 @@
 // authoritative Legon geography (data/geography/, built by scripts/geography/), plus
 // route finding and turn-by-turn directions over the road network.
 import raw from '../data/legon-map.json';
+import { cutDepth, inTrench } from './cutplan';
 
 export type RoadClass = 0 | 1 | 2 | 3 | 4; // main, through, residential, service lane, footpath
 export type PlaceKind = 'hall' | 'academic' | 'landmark' | 'food' | 'bank' | 'transport' | 'worship' | 'sport' | 'health' | 'other';
@@ -304,6 +305,16 @@ ROADS.forEach((r, ri) => {
     adj[b].push({ to: a, len, road: ri });
   }
 });
+// The Legon Road cutting (cutplan.ts): down in it the N4 shares a few nodes with the footways mapped across it at the
+// ground, which now cross on the bridges above. A route on one level never turns onto the other there.
+const lowRoad = (ri: number) => ROADS[ri].cls === 0 && ROADS[ri].name === 'J.J. Rawlings Avenue';
+const SPLIT = new Set<number>();
+adj.forEach((es, i) => {
+  if (!es.length || !inTrench(nx(i), nz(i)) || cutDepth(nz(i)) < 1) return;
+  if (es.some((e) => lowRoad(e.road)) && es.some((e) => !lowRoad(e.road))) SPLIT.add(i);
+});
+/** may a route arriving at node v by road `from` (-1: it starts there) leave it by road `to` */
+const turnOk = (v: number, from: number, to: number) => from < 0 || !SPLIT.has(v) || lowRoad(from) === lowRoad(to);
 export const nodeDegree = (i: number) => adj[i].length;
 /** the network edges at a node */
 export const nodeEdges = (i: number) => adj[i].map((e) => ({ to: e.to, road: e.road, len: e.len }));
@@ -424,6 +435,7 @@ function search(s: number, t: number, mode: TravelMode, campus: boolean): PathRe
     done[v] = 1;
     if (v === t) break;
     for (const e of adj[v]) {
+      if (!turnOk(v, v === s ? -1 : prevRoad[v], e.road)) continue;
       const c = g[v] + e.len * edgeCost(e.road);
       if (c < g[e.to]) {
         g[e.to] = c;
