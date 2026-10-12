@@ -33,7 +33,7 @@ const BLUE = '#2f5d9e', WHITE = '#eeece6';
 
 let earthMat: THREE.MeshStandardMaterial | null = null;
 /** the strip's red earth: packed laterite with tyre-worn patches and tufts of dry and green grass (IMG-04, R10-R12) */
-function redEarth() {
+export function redEarth() {
   if (earthMat) return earthMat;
   let s = 19;
   const r = () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
@@ -63,7 +63,7 @@ function chainLink() {
 }
 
 /** samples along x of a band beside a road line: [x, zInner, zOuter] for x0..x1 every metre, skipping the gaps */
-function band(x0: number, x1: number, inner: (x: number) => number, outer: (x: number) => number, gaps: [number, number][]) {
+export function band(x0: number, x1: number, inner: (x: number) => number, outer: (x: number) => number, gaps: [number, number][]) {
   const runs: [number, number, number][][] = [];
   let cur: [number, number, number][] = [];
   for (let x = x0; x <= x1 + 1e-6; x += 1) {

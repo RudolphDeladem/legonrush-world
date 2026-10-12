@@ -800,6 +800,70 @@ try {
     }
   }
 
+  // ---------- the UPSA Hostel to the UPSA academic core (docs/upsa-hostel-to-school/evidence-audit.md) ----------
+  {
+    const up = await server.ssrLoadModule('/src/game/upsacampusplan.ts');
+    const site = (await server.ssrLoadModule('/src/game/upsacampus.ts')).upsaCampusSite;
+    const { BLOCK_SITES } = await server.ssrLoadModule('/src/game/sites.ts');
+    if (site.frames().length !== 5) fail('UPSA: expected the approach, the gate, the towers, Prestige Hostel\'s front and the core models');
+    const hostel = placeByName('UPSA Hostel'), upsa = placeByName('University of Professional Studies, Accra (UPSA)');
+    if (!hostel || !upsa) fail('UPSA: the UPSA Hostel or UPSA place is missing');
+    else {
+      // the places: the hostel south of IPS Road at its mapped outline, UPSA's core inside the campus north of it
+      if (Math.hypot(hostel.x - 1740, hostel.z + 783) > 15) fail(`UPSA: the UPSA Hostel moved (${hostel.x.toFixed(0)},${hostel.z.toFixed(0)})`);
+      if (upsa.x < up.CORE.x0 || upsa.x > up.CORE.x1 || upsa.z < up.CORE.z0 || upsa.z > up.CORE.z1) fail('UPSA: the UPSA place is not on the academic core block');
+      const r = rt.exploreRoute(hostel, upsa);
+      if (!r) fail('UPSA: no ride from the UPSA Hostel to UPSA');
+      else {
+        const d = (x, z) => r.track.project(x, z);
+        if (r.length < 900 || r.length > 1150) fail(`UPSA: the ride is ${r.length} m (expected about 1000 m)`);
+        // continuous: the track's points never jump
+        for (let s2 = 0; s2 < r.track.length - 2; s2 += 2) { const a = r.track.pose(s2), b = r.track.pose(s2 + 2); if (Math.hypot(a.x - b.x, a.z - b.z) > 3) { fail(`UPSA: the ride jumps at ${s2} m`); break; } }
+        // in order: round the roundabout's south side (counter-clockwise), east on the south carriageway, through the Main
+        // Gate, along the campus road, to the core's door; never on the westbound north carriageway
+        const marks = [['the roundabout\'s south side', up.RING.x, up.RING.z + up.RING.r], ['the eastbound carriageway', 2150, up.zSouth(2150)], ['the Main Gate', up.GATE.roadX, (up.GATE.z0 + up.GATE.z1) / 2], ['the campus road', 2278, -1020], ['the quadrangle\'s south side', 2330, -1060.5]];
+        let last = -1;
+        for (const [name, x, z] of marks) {
+          const p = d(x, z);
+          if (p.dist > 3) fail(`UPSA: the ride does not pass ${name} (${p.dist.toFixed(1)} m off)`);
+          else if (p.d < last) fail(`UPSA: the ride passes ${name} out of order`);
+          last = p.d;
+        }
+        if (d(2150, up.zNorth(2150)).dist < 6) fail('UPSA: the ride uses the westbound north carriageway');
+        if (d(up.RING.x, up.RING.z - up.RING.r).dist < 5) fail('UPSA: the ride goes round the roundabout clockwise');
+        const end = r.track.pose(r.lead + r.length);
+        if (Math.hypot(end.x - 2383.4, end.z + 1114.6) > 3) fail('UPSA: the ride does not finish at the core\'s drive');
+        // nothing solid on the ride
+        for (const [x, z, rad] of up.upsaPosts()) { const p = d(x, z); if (p.d > 5 && p.d < r.track.length - 5 && p.dist < 2.6 + rad) fail(`UPSA: the solid at ${x.toFixed(1)},${z.toFixed(1)} stands on the ride`); }
+      }
+    }
+    // nothing solid on a road: the gate's columns, the hoarding, the tower legs, the stalls
+    const W = [9, 7.4, 6.2, 4.6, 2.6];
+    const onRoad = (x, z, rad) => {
+      for (const road of cm.ROADS) {
+        if (road.cls === 4) continue;
+        const pts = road.nodes.map((n) => [cm.NODE_XZ[n * 2], cm.NODE_XZ[n * 2 + 1]]);
+        for (let i = 0; i < pts.length - 1; i++) {
+          const [ax, az] = pts[i], [bx, bz] = pts[i + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+          const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+          if (Math.hypot(ax + dx * t - x, az + dz * t - z) < Math.min(3.5, W[road.cls] / 2) + rad) return road.name ?? 'a road';
+        }
+      }
+      return null;
+    };
+    for (const [x, z, rad] of up.upsaPosts()) { const on = onRoad(x, z, rad); if (on) fail(`UPSA: the solid at ${x.toFixed(1)},${z.toFixed(1)} stands on ${on}`); }
+    // the gate's clear opening holds the mapped entrance road; the canopy and the towers' footprints are modelled, not generic
+    if (up.GATE.roadX - 2 < up.GATE.clear[0] + 0.6 || up.GATE.roadX + 2 > up.GATE.clear[1] - 0.6) fail('UPSA: the Main Gate no longer clears its road');
+    for (const [x, z, name] of [[up.GATE.roadX + 0.5, -913, 'the gate canopy'], [2185, -956, 'the Amartey Towers']]) {
+      const bd = buildingAt(x, z);
+      if (bd && !BLOCK_SITES.some((st) => st.replaces(bd))) fail(`UPSA: ${name}'s outline is still a generic block`);
+    }
+    // the extension: one-way only on the divided road and the roundabout; the Legon network rides both ways as before
+    const oneway = cm.ROADS.filter((x) => x.oneway);
+    if (!oneway.length) fail('UPSA: the divided road and the roundabout lost their one-way direction');
+    for (const x of oneway) { const [nx0] = cm.nodeXZ(x.nodes[0]); if (nx0 < 1950 || nx0 > 2300) fail(`UPSA: a one-way road outside the UPSA extension (${x.name ?? 'unnamed'} at x ${nx0.toFixed(0)})`); }
+  }
+
   // ---------- the 10-pair brief and the owner's three pictures (the JQB lane, the overhead crossing) ----------
   {
     const tp = (await server.ssrLoadModule('/src/game/tenpairs.ts')).tenPairsSite;

@@ -24,6 +24,9 @@ const SRC = {
   s2: json(`${G}/sources/sentinel2-composite.json`),
   ugPois: json(`${G}/sources/ug-campus-map-pois.json`),
   ugBoundary: json(`${G}/sources/ug-campus-map-boundary.json`),
+  // the UPSA extension: OSM features east of the study extent, for the UPSA Hostel to UPSA route (scripts/geography/
+  // fetch_upsa_extension.py; docs/upsa-hostel-to-school/evidence-audit.md)
+  upsa: json(`${G}/sources/upsa-extension.geojson`),
 };
 const REG = { landmarks: json(`${G}/registry/landmarks.json`), zones: json(`${G}/registry/zones.json`), naming: json(`${G}/registry/naming.json`), corrections: json(`${G}/registry/corrections.json`) };
 const SUSPECT = new Map(REG.corrections.exclude.map((e) => [e.id, e.reason]));
@@ -49,6 +52,14 @@ const [LX0, LZ1] = toLocal(5.633, -0.199), [LX1, LZ0] = toLocal(5.668, -0.175);
 const inLegacyBox = ([x, z]) => x >= LX0 && x <= LX1 && z >= LZ0 && z <= LZ1;
 const inContext = (p) => inLegacyBox(p) || inCampus(p) || distToLine(p, CAMPUS, true) <= 150;
 const anyInContext = (pts) => pts.some(inContext);
+// the UPSA extension's own box (IPS Road east of x 1950, the frontage south of it, the UPSA campus north of it): its
+// features are added under their own provenance and never move or replace what the Legon sources already hold
+const [UW, US, UE, UN] = SRC.upsa.metadata.extent;
+const [UX0, UZ1] = toLocal(US, UW), [UX1, UZ0] = toLocal(UN, UE);
+const inUpsa = ([x, z]) => x >= UX0 && x <= UX1 && z >= UZ0 && z <= UZ1;
+const anyInUpsa = (pts) => pts.some(inUpsa);
+const UPSA_SRC = 'osm-via-overture-upsa';
+const osmId = (ref) => `osm:${ref.startsWith('w') ? 'way' : ref.startsWith('n') ? 'node' : 'relation'}/${ref.slice(1)}`;
 
 // UG Campus Map's own outline against the OSM one
 {
@@ -112,9 +123,9 @@ const roadWidth = (t) => {
   return [DEFAULT_WIDTH[t.highway] ?? WIDTH[ROAD_CLASS[t.highway]], 'class-default'];
 };
 let roadCount = 0;
-function addRoad(id, pts, t, src) {
+function addRoad(id, pts, t, src, ctx = anyInContext) {
   const cls = ROAD_CLASS[t.highway];
-  if (cls === undefined || pts.length < 2 || !anyInContext(pts)) return;
+  if (cls === undefined || pts.length < 2 || !ctx(pts)) return;
   // same exclusions as the game always had: parking aisles, mapped areas and private drives stay out of the network
   // (and ways the owner's evidence rules out: corrections.json exclude)
   const game = !(t.service === 'parking_aisle' || t.area === 'yes' || t.access === 'private' || SUSPECT.has(id));
@@ -179,6 +190,53 @@ for (const f of SRC.supplement.features) {
   supplementIds.add(k);
   addRoad(k, ringLocal(f.geometry.coordinates), t, 'osm-via-overture');
 }
+// the UPSA extension's roads: ways the Legon sources lack; a supplement way cut at the study extent's east edge takes
+// its whole line from the extension (same id)
+{
+  const have = new Map();
+  for (const f of features) if (f.layer === 'road' || f.layer === 'path') { const k = f.id.split('#')[0]; have.set(k, [...(have.get(k) ?? []), f]); }
+  const cutX = toLocal(5.65, -0.1670)[0] - 0.5;
+  const pieces = new Map();
+  for (const f of SRC.upsa.features) if (f.properties.layer === 'segment') pieces.set(f.properties.osm, (pieces.get(f.properties.osm) ?? 0) + 1);
+  // the extension's coordinates carry another rounding than the supplement's: a vertex within 0.3 m of a mapped road's
+  // vertex is that vertex, so the ways meet as they do in OSM
+  const vx = new Grid(2);
+  const verts = [];
+  for (const f of features) if (f.layer === 'road' || f.layer === 'path') for (const q of f.line) { vx.add(verts.length, { minX: q[0], maxX: q[0], minZ: q[1], maxZ: q[1] }); verts.push(q); }
+  const snap = (line) => line.map((q) => {
+    let best = null, bd = 0.3;
+    for (const i of vx.query({ minX: q[0] - 0.3, maxX: q[0] + 0.3, minZ: q[1] - 0.3, maxZ: q[1] + 0.3 })) { const d = Math.hypot(verts[i][0] - q[0], verts[i][1] - q[1]); if (d < bd) { bd = d; best = verts[i]; } }
+    return best ? [best[0], best[1]] : q;
+  });
+  // one-way ways (Overture does not carry OSM's oneway tag): the divided IPS Road's two carriageways and the roundabout at
+  // Trinity Avenue, each drawn in its direction of travel (the ring counter-clockwise, the south carriageway eastbound,
+  // the north one westbound: RW09-RW11; docs/upsa-hostel-to-school/evidence-audit.md)
+  const ONEWAY = new Set(['w1491866764', 'w1491866766', 'w1491866767', 'w515974987', 'w1492309154']);
+  const seen = new Set();
+  let added = 0, extended = 0;
+  for (const f of SRC.upsa.features) {
+    const p = f.properties;
+    if (p.layer !== 'segment' || p.subtype !== 'road' || f.geometry.type !== 'LineString') continue;
+    const hw = OV_HIGHWAY(p);
+    if (!hw) continue;
+    const id = osmId(p.osm), line = snap(ringLocal(f.geometry.coordinates));
+    const old = have.get(id);
+    if (old) {
+      const o = old[0];
+      if (old.length === 1 && pieces.get(p.osm) === 1 && o.src[0] === 'osm-via-overture' && o.line.some(([x]) => x >= cutX) && lineLength(line) > lineLength(o.line) + 1) {
+        o.line = line; o.src.push(UPSA_SRC); extended++;
+      }
+      continue;
+    }
+    let k = id, n = 1;
+    while (seen.has(k)) k = `${id}#${++n}`;
+    seen.add(k);
+    const before = features.length;
+    addRoad(k, line, { highway: hw, name: p.name ?? undefined, service: p.subclass === 'parking_aisle' ? 'parking_aisle' : p.subclass === 'driveway' ? 'driveway' : undefined, oneway: ONEWAY.has(p.osm) ? 'yes' : undefined }, UPSA_SRC, anyInUpsa);
+    if (features.length > before) added++;
+  }
+  report.roads.upsaExtension = { added, extended };
+}
 
 // junctions: where three or more road ends meet, and roundabouts
 {
@@ -197,7 +255,7 @@ for (const f of SRC.supplement.features) {
   }
   let n = 0;
   for (const [k, d] of deg) {
-    if (d.n < 3 || !inContext(d.p) || d.cls > 3) continue;
+    if (d.n < 3 || !(inContext(d.p) || inUpsa(d.p)) || d.cls > 3) continue;
     features.push({ id: `junction:${k}`, layer: 'junction', class: d.n >= 4 ? 'crossroads' : 'tee', cls: d.cls, name: d.names.size > 1 ? [...d.names].sort().join(' / ') : undefined, conf: 'high', src: ['osm'], point: d.p });
     n++;
   }
@@ -270,12 +328,12 @@ function buildingHeight(t, pts) {
   return [undefined, undefined];
 }
 const buildings = [];
-function addBuilding(id, rings, t, src) {
+function addBuilding(id, rings, t, src, ctx = anyInContext) {
   const reshape = RESHAPE.get(id);
   const [outer, ...holes] = reshape ? [reshape.ring.map(([x, z]) => [x, z]), ...(reshape.holes ?? rings.slice(1))] : rings;
   if (outer.length < 3) return;
   const c = centroid(outer);
-  if (!anyInContext(outer)) return; // like the legacy extract: anything reaching into the study area
+  if (!ctx(outer)) return; // like the legacy extract: anything reaching into the study area
   const fix = HEIGHT_FIX.get(id);
   const [h, hSrc] = fix ? [fix.height, 'reference-photos'] : buildingHeight(t, outer);
   const b = {
@@ -307,6 +365,18 @@ for (const f of SRC.supplement.features) {
     const [outer, ...inner] = poly.map((r) => ringLocal(dropClosing(r)));
     addBuilding(`osm:${p.osm.startsWith('w') ? 'way' : 'relation'}/${p.osm.slice(1)}${i ? `#${i + 1}` : ''}`, [outer, ...inner], { building: p.class ?? 'yes', name: p.name ?? undefined, height: p.height ?? undefined, 'building:levels': p.floors ?? undefined }, 'osm-via-overture');
   });
+}
+// the UPSA extension's OSM buildings (those the Legon sources lack)
+{
+  const have = new Set(buildings.map((b) => b.id.split('#')[0]));
+  for (const f of SRC.upsa.features) {
+    const p = f.properties;
+    if (p.layer !== 'building' || have.has(osmId(p.osm))) continue;
+    polysOf(f.geometry).forEach((poly, i) => {
+      const [outer, ...inner] = poly.map((r) => ringLocal(dropClosing(r)));
+      addBuilding(`${osmId(p.osm)}${i ? `#${i + 1}` : ''}`, [outer, ...inner], { building: p.class ?? 'yes', name: p.name ?? undefined, height: p.height ?? undefined, 'building:levels': p.floors ?? undefined }, UPSA_SRC, anyInUpsa);
+    });
+  }
 }
 // validate OSM footprints against Google Open Buildings (satellite-derived, independent of OSM)
 const gob = SRC.gob.features.flatMap((f) => polysOf(f.geometry).map((poly) => { const ring = ringLocal(dropClosing(poly[0])); return { ring, box: bbox(ring), conf: f.properties.confidence }; }));
@@ -357,6 +427,24 @@ for (const f of SRC.ml.features) {
     mlAdded++;
   }
 }
+// the UPSA campus: machine-learned footprints fill its buildings missing from OSM, by the same rules as on the UG campus
+// (the fetch keeps only those inside UPSA's own outline, osm:way/309660062)
+let mlUpsa = 0;
+for (const f of SRC.upsa.features) {
+  const p = f.properties;
+  if (p.layer !== 'ml-building') continue;
+  for (const poly of polysOf(f.geometry)) {
+    const ring = RESHAPE.get(`ml:${p.id}`)?.ring.map(([x, z]) => [x, z]) ?? ringLocal(dropClosing(poly[0]));
+    const c = centroid(ring), a = area(ring), box = bbox(ring);
+    if (a < 60 || (p.confidence != null && p.confidence < 0.8)) continue;
+    let hit = false;
+    for (const i of bGrid.query(box)) if (overlap(ring, buildings[i].ring, 1).inter > 0) { hit = true; break; }
+    if (hit) continue;
+    const fix = HEIGHT_FIX.get(`ml:${p.id}`);
+    buildings.push({ id: `ml:${p.id}`, layer: 'building', class: 'unknown', area: Math.round(a), orient: orientation(ring), onCampus: false, campus: 'upsa', src: [p.dataset === 'Google Open Buildings' ? 'google-open-buildings' : 'microsoft-ml-buildings', UPSA_SRC], conf: 'medium', mlConfidence: p.confidence ?? undefined, ring, holes: [], c, box, ...(fix && { height: fix.height, heightSrc: 'reference-photos', levels: fix.levels }) });
+    mlUpsa++;
+  }
+}
 {
   const n = buildings.length;
   const by = (k) => Object.fromEntries(Object.entries(buildings.reduce((m, b) => ((m[b[k]] = (m[b[k]] ?? 0) + 1), m), {})).sort((a, b) => b[1] - a[1]));
@@ -366,7 +454,7 @@ for (const f of SRC.ml.features) {
     bySource: by('_src'),
     osmOnCampusChecked: checked, osmValidatedByGoogleOpenBuildings: validated, validatedShare: Math.round((validated / checked) * 1000) / 1000,
     medianCentroidOffsetToGoogleM: { x: med(offsets.map((o) => o[0])), z: med(offsets.map((o) => o[1])), n: offsets.length },
-    mlAdded, mlRejected,
+    mlAdded, mlRejected, mlUpsa,
     byCategory: by('class'), byConfidence: by('conf'),
   };
   for (const b of buildings) b._src = b.src[0];
@@ -395,14 +483,14 @@ function areaClass(t) {
   return null;
 }
 const areas = [];
-function addArea(id, rings, t, src) {
+function addArea(id, rings, t, src, ctx = anyInContext) {
   const fix = RECLASS.get(id);
   const cls = fix ? [fix.class, fix.subclass] : areaClass(t);
   if (!cls || rings[0].length < 3) return;
   if (id === `osm:way/${BOUNDARY_WAY}`) return;
   const [outer, ...holes] = rings;
   const c = centroid(outer);
-  if (!anyInContext(outer)) return;
+  if (!ctx(outer)) return;
   areas.push({ id, layer: 'area', class: cls[0], subclass: cls[1], name: t.name, area: Math.round(area(outer)), conf: fix ? 'medium' : 'high', src: [src], ring: outer, holes, c, ...(fix && { note: `mapped as ${areaClass(t)?.[0] ?? 'unclassified'}; ${fix.reason}` }),
     // an area the evidence shows is not there (corrections.json exclude) stays in the master, kept out of the game
     ...(SUSPECT.has(id) && { suspect: SUSPECT.get(id), conf: 'low', game: false }) });
@@ -435,6 +523,17 @@ for (const f of SRC.supplement.features) {
   const t = OV_AREA_TAG(p);
   if (!t) continue;
   polysOf(f.geometry).forEach((poly, i) => addArea(`osm:${p.osm.startsWith('w') ? 'way' : 'relation'}/${p.osm.slice(1)}${i ? `#${i + 1}` : ''}`, poly.map((r) => ringLocal(dropClosing(r))), { ...t, name: p.name ?? undefined }, 'osm-via-overture'));
+}
+// the UPSA extension's land use and car parks (those the Legon sources lack)
+{
+  const have = new Set(areas.map((a) => a.id.split('#')[0]));
+  for (const f of SRC.upsa.features) {
+    const p = f.properties;
+    if (p.layer !== 'landuse' || have.has(osmId(p.osm))) continue;
+    const t = OV_AREA_TAG(p) ?? (p.class === 'university' || p.class === 'school' || p.class === 'college' ? { amenity: p.class } : null);
+    if (!t) continue;
+    polysOf(f.geometry).forEach((poly, i) => addArea(`${osmId(p.osm)}${i ? `#${i + 1}` : ''}`, poly.map((r) => ringLocal(dropClosing(r))), { ...t, name: p.name ?? undefined }, UPSA_SRC, anyInUpsa));
+  }
 }
 // areas the owner's imagery shows and the sources lack (corrections.json: addAreas)
 for (const a of REG.corrections.addAreas ?? []) {
@@ -779,6 +878,7 @@ for (const z of REG.zones.zones) {
 report.sources = {
   osm: { file: 'data/legon.osm', snapshot: osm.timestamp, ways: osm.ways.size, nodes: osm.nodes.size, extent: '5.633-5.668 N, 0.199-0.175 W' },
   overtureOsmSupplement: { file: `${G}/sources/overture-osm-supplement.geojson`, features: SRC.supplement.features.length, release: SRC.supplement.metadata.source },
+  upsaExtension: { file: `${G}/sources/upsa-extension.geojson`, features: SRC.upsa.features.length, release: SRC.upsa.metadata.source, extent: SRC.upsa.metadata.extent, note: 'the UPSA Hostel to UPSA campus route (docs/upsa-hostel-to-school/evidence-audit.md)' },
   mlBuildings: { file: `${G}/sources/overture-ml-buildings.geojson`, features: SRC.ml.features.length },
   googleOpenBuildings: { file: `${G}/sources/google-open-buildings.geojson`, features: SRC.gob.features.length },
   overturePlaces: { file: `${G}/sources/overture-places.geojson`, features: SRC.places.features.length },
@@ -802,7 +902,7 @@ const out = {
     generator: 'scripts/geography/build-master.mjs',
     crs: 'EPSG:4326 (WGS84 longitude, latitude)',
     gameFrame: { datum: [LAT0, LNG0], metresPerDegreeLat: M_LAT, metresPerDegreeLng: +M_LNG.toFixed(3), axes: 'x = metres east of the datum, z = metres south of the datum' },
-    extent: 'the legacy OSM extract (5.633-5.668 N, 0.199-0.175 W) plus everything within 150 m of the OSM campus boundary',
+    extent: 'the legacy OSM extract (5.633-5.668 N, 0.199-0.175 W) plus everything within 150 m of the OSM campus boundary, plus the UPSA extension (5.6575-5.6642 N, 0.1695-0.1640 W)',
     sources: report.sources,
     layers: LAYER_ORDER,
     confidence: { high: 'two or more independent sources agree (or OSM geometry confirmed by satellite footprints / written claims)', medium: 'one reliable source, or interpretive (zones, derived shapes)', low: 'sources conflict or a written claim fails' },

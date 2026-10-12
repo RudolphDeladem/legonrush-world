@@ -1,7 +1,7 @@
 {
- "destinations": 435,
+ "destinations": 437,
  "byMethod": {
-  "curated": 93,
+  "curated": 95,
   "osm-entrance": 0,
   "gate": 1,
   "path-access": 2,
@@ -13,7 +13,7 @@
  "byConfidence": {
   "high": 88,
   "low": 208,
-  "medium": 139
+  "medium": 141
  },
  "campusGates": 5,
  "problems": [],
@@ -363,7 +363,7 @@
  "byStatus": {
   "verified": 87,
   "inferred": 199,
-  "partial": 6,
+  "partial": 8,
   "unverified": 9,
   "mapped": 134
  },
@@ -409,6 +409,20 @@
    "arrivalOn": "service",
    "arrivalDistance": 13.9,
    "facing": 179
+  },
+  {
+   "place": "University of Professional Studies, Accra (UPSA)",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 0,
+   "facing": 95
+  },
+  {
+   "place": "UPSA Hostel",
+   "type": "hall entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 0,
+   "facing": 184
   },
   {
    "place": "Standard Chartered ATM (near Balme Library Fountain)",
@@ -1098,6 +1112,10 @@
   }
  ],
  "networkPassagesThroughBuildings": [
+  {
+   "way": "osm:way/1009392398",
+   "building": "osm:way/1009392399"
+  },
   {
    "way": "osm:way/1443694526",
    "building": "osm:way/1217291481"

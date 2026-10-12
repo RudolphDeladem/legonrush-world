@@ -24,8 +24,8 @@ const zAt = (line: Line, x: number) => {
   return NaN;
 };
 /** IPS Road (the north carriageway in the map, class 1, 7.4 m) and the frontage road south of it (class 2, 6.2 m) */
-export const IPS_LINE = lineThrough(1, 1963.6, -887.8);
-export const FRONT_LINE = lineThrough(2, 1958, -868);
+export const IPS_LINE = lineThrough(1, 1508.8, -884.1);
+export const FRONT_LINE = lineThrough(2, 1589.6, -867.5);
 export const zIps = (x: number) => zAt(IPS_LINE, x);
 export const zFront = (x: number) => zAt(FRONT_LINE, x);
 export const IPS_HALF = 3.7, FRONT_HALF = 3.1;
@@ -87,6 +87,9 @@ export const POLE_OFF = 7.6, LAMP_OFF = 7.0;
 export function ownsEdges(x: number, z: number) {
   // (and the Agriculture side's own footways, drains and aprons: agplan.ts)
   if (agOwns(x, z)) return true;
+  // (and on east of the hostel to the UPSA Main Gate: the strip, the roundabout's island, the median and both verges of
+  // the divided road, upsacampus.ts)
+  if (x >= CORRIDOR.x1 && x <= 2300 && z > -907 && z < -852) return true;
   if (x < 955 || x > CORRIDOR.x1) return false;
   const c = zIps(x);
   if (Number.isNaN(c)) return false;

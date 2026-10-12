@@ -3,6 +3,8 @@
  "citations": {
   "ug-legon-campus": "https://old1.ug.edu.gh/node/38",
   "ug-gates": "https://www.graphic.com.gh/news/general-news/univ-of-ghana-blocks-access-routes-to-public.html",
+  "owner-upsa-route": "docs/upsa-hostel-to-school/evidence-audit.md (the owner's UPSA Hostel to UPSA campus brief, Street View frames RW01-RW15)",
+  "osm-upsa": "https://www.openstreetmap.org/relation/13514869 (via Overture Maps release 2026-09-23.1)",
   "ug-gates-2": "https://citifmonline.com/2014/03/chaos-at-ug-over-blocked-roads/",
   "ug-stadium-gate": "https://old1.ug.edu.gh/node/70293",
   "univers-level100": "https://univers.ug.edu.gh/finding-your-way-on-the-streets-of-legon-a-level-100-guide/",
@@ -2231,6 +2233,59 @@
      -24.0,
      -281.0
     ]
+   ]
+  },
+  {
+   "place": "UPSA Hostel",
+   "footprint": "osm:way/1217291474",
+   "entrance": {
+    "at": [
+     1739.6,
+     -805.4
+    ]
+   },
+   "arrival": {
+    "way": "way/794296950",
+    "near": [
+     1740,
+     -815
+    ]
+   },
+   "type": "hall entrance",
+   "status": "partial",
+   "confidence": "medium",
+   "cite": "owner-upsa-route",
+   "approach": "From IPS Road and its frontage road up the hostel road (x 1731) through the gate in the white fence, across the grey-paved forecourt to the door under the canopy in the central bay.",
+   "evidence": "The owner's site brief (IMG-03, IMG-04, R29, R30): the central bay with the UPSA HOSTEL letters and the entrance canopy faces the road; the mapped forecourt drive (osm:way/794296950) runs up to it.",
+   "refs": [
+    "owner's UPSA Hostel site brief",
+    "RW01"
+   ]
+  },
+  {
+   "place": "University of Professional Studies, Accra (UPSA)",
+   "footprint": "osm:relation/13514869",
+   "entrance": {
+    "at": [
+     2389.2,
+     -1114.7
+    ]
+   },
+   "arrival": {
+    "way": "way/958917244",
+    "near": [
+     2383.4,
+     -1114.6
+    ]
+   },
+   "type": "public entrance",
+   "status": "partial",
+   "confidence": "medium",
+   "cite": "osm-upsa",
+   "approach": "In at the Main Gate on IPS Road (x 2290), north on the campus road past AB Block and the car parks, east along the south side of the central quadrangle, north again to the mapped drive between the car-park strips, and up to the west front of the block east of the quadrangle.",
+   "evidence": "OSM (via Overture): the drive osm:way/958917244 leaves the campus road at the middle of the block's west front, between the car parks osm:way/1009392413 and /1009392414. The door's exact position is inferred (the middle of that front).",
+   "refs": [
+    "docs/upsa-hostel-to-school/evidence-audit.md"
    ]
   }
  ],

@@ -39,7 +39,15 @@
    "url": "https://registry.opendata.aws/copernicus-dem/"
   },
   "owner-banking-square": "The owner's aerial of the banking square with the banks labelled (C: CBG, F: UMB (first labelled First Bank Ghana, corrected by the owner), S: Stanbic; ATMs; the car-park entrance) and photos of the CBG front and the Union Building, registered to the OSM footprints by roof colour (4.2 px/m, 1\u00b0 rotation)",
-  "owner-dome": "The owner's aerial of the Diaspora Dome (open front and gates marked), a labelled map placing it north-west of the Lizalex Quadrangle, and two photos of its marquee halls"
+  "owner-dome": "The owner's aerial of the Diaspora Dome (open front and gates marked), a labelled map placing it north-west of the Lizalex Quadrangle, and two photos of its marquee halls",
+  "osm-upsa": {
+   "title": "OpenStreetMap via Overture Maps release 2026-09-23.1: the UPSA campus (way 309660062), its gate, walls and roads",
+   "url": "https://www.openstreetmap.org/way/309660062"
+  },
+  "owner-upsa-route": {
+   "title": "The owner's UPSA Hostel to UPSA campus brief and Street View frames RW01-RW15 (docs/upsa-hostel-to-school/evidence-audit.md)",
+   "url": "docs/upsa-hostel-to-school/evidence-audit.md"
+  }
  },
  "landmarks": [
   {
@@ -1781,6 +1789,78 @@
    "claims": [],
    "maxConfidence": "medium",
    "notes": "Owner: the one-floor supermarket on the east side of the Night Market (circled black on the owner's aerial)."
+  },
+  {
+   "id": "upsa-hostel",
+   "name": "UPSA Hostel",
+   "kind": "hall",
+   "category": "residence",
+   "importance": 3,
+   "geometry": {
+    "osm": "way/1217291474"
+   },
+   "match": {
+    "osm": [],
+    "overture": [],
+    "ugmap": []
+   },
+   "claims": [
+    {
+     "cite": "owner-upsa-route",
+     "text": "The UPSA Hostel stands on the south side of IPS Road, behind its frontage road, west of the junction with Trinity Avenue.",
+     "test": {
+      "type": "side-of-road",
+      "road": "^IPS Road$",
+      "side": "south"
+     }
+    }
+   ],
+   "maxConfidence": "medium",
+   "notes": "The University of Professional Studies hostel on IPS Road (the owner's site brief, IMG-03/04, R29/R30; modelled in src/game/upsahostel.ts). Not Prestige Hostel (a private hostel at x 2197) and not Domil Heights."
+  },
+  {
+   "id": "upsa",
+   "name": "University of Professional Studies, Accra (UPSA)",
+   "kind": "academic",
+   "category": "academic",
+   "importance": 2,
+   "geometry": {
+    "osm": "relation/13514869"
+   },
+   "match": {
+    "osm": [
+     "University of Professional Studies"
+    ],
+    "overture": [],
+    "ugmap": []
+   },
+   "aliases": [
+    "UPSA",
+    "University of Professional Studies"
+   ],
+   "claims": [
+    {
+     "cite": "osm-upsa",
+     "text": "The UPSA campus lies on the north side of IPS Road, its Main Gate on IPS Road.",
+     "test": {
+      "type": "side-of-road",
+      "road": "^IPS Road$",
+      "side": "north"
+     }
+    },
+    {
+     "cite": "owner-upsa-route",
+     "text": "The ride from the UPSA Hostel runs east along IPS Road to UPSA.",
+     "test": {
+      "type": "direction",
+      "other": "upsa-hostel",
+      "dir": "east",
+      "min": 400
+     }
+    }
+   ],
+   "maxConfidence": "medium",
+   "notes": "The academic core: the large block east of the central quadrangle (OSM relation 13514869, from the UPSA extension), which holds Overture's place \"University of Professional Studies\". Which named building it is (Central Administration, a lecture block) is not established."
   }
  ]
 }

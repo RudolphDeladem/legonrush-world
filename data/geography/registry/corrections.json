@@ -392,6 +392,27 @@
   ],
   "heights": [
     {
+      "id": "osm:way/1238177036",
+      "place": "Prestige Hostel, south of IPS Road (the UPSA extension)",
+      "levels": 4,
+      "height": 14.6,
+      "reason": "Owner's UPSA Hostel to UPSA campus brief (docs/upsa-hostel-to-school/evidence-audit.md): RW14 shows the hostel's long front of four storeys behind its paved forecourt; Overture places 'prestige hostel' on this outline's east edge. Storeys read from the photograph, not surveyed."
+    },
+    {
+      "id": "osm:way/885510982",
+      "place": "the long commercial row on the south side of IPS Road opposite the UPSA campus",
+      "levels": 2,
+      "height": 7.6,
+      "reason": "Owner's UPSA Hostel to UPSA campus brief (docs/upsa-hostel-to-school/evidence-audit.md): RW10-RW13 show the shop and car-care row along the south carriageway two storeys high. Read from the photographs, not surveyed."
+    },
+    {
+      "id": "osm:way/394252091",
+      "place": "the Trinity Baptist Church complex south of IPS Road",
+      "levels": 2,
+      "height": 7.8,
+      "reason": "Owner's UPSA Hostel to UPSA campus brief (docs/upsa-hostel-to-school/evidence-audit.md): RW12 and RW13 show two-storey commercial fronts round a paved forecourt; Overture places Trinity Baptist Church and TBC Ghana here. Read from the photographs, not surveyed."
+    },
+    {
       "id": "osm:relation/5288833",
       "place": "Dr. Hilla Limann Hall",
       "levels": 4,

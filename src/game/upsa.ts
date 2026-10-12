@@ -94,7 +94,7 @@ export function pavers(kind: 'tan' | 'grey' | 'goil') {
 }
 let medianMat: THREE.MeshStandardMaterial | null = null;
 /** the median's cut grass with bare red earth showing through (F02, F06, F09; Street View) */
-function medianGrass() {
+export function medianGrass() {
   if (medianMat) return medianMat;
   const cv = document.createElement('canvas');
   cv.width = cv.height = 256;

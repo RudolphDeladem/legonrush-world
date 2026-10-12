@@ -12,6 +12,18 @@
    "features": 4815,
    "release": "Overture Maps Foundation release 2026-09-23.1"
   },
+  "upsaExtension": {
+   "file": "data/geography/sources/upsa-extension.geojson",
+   "features": 573,
+   "release": "Overture Maps Foundation release 2026-09-23.1",
+   "extent": [
+    -0.1695,
+    5.6575,
+    -0.164,
+    5.6642
+   ],
+   "note": "the UPSA Hostel to UPSA campus route (docs/upsa-hostel-to-school/evidence-audit.md)"
+  },
   "mlBuildings": {
    "file": "data/geography/sources/overture-ml-buildings.geojson",
    "features": 3861
@@ -67,16 +79,20 @@
   "legacyExtractCoverage": 0.717
  },
  "roads": {
-  "junctions": 1207,
+  "upsaExtension": {
+   "added": 106,
+   "extended": 1
+  },
+  "junctions": 1280,
   "roundabouts": 18,
-  "count": 1559,
+  "count": 1665,
   "kmByClass": {
-   "service": 70.8,
-   "residential": 66,
-   "path": 25.8,
-   "tertiary": 14.1,
-   "footway": 12.6,
-   "unclassified": 12.4,
+   "service": 74.5,
+   "residential": 68.4,
+   "path": 25.9,
+   "tertiary": 15.7,
+   "unclassified": 13.1,
+   "footway": 12.9,
    "secondary": 9.2,
    "trunk": 8.4,
    "track": 3.8,
@@ -88,13 +104,14 @@
   "fromSupplement": 414
  },
  "buildings": {
-  "total": 2824,
+  "total": 3144,
   "onCampus": 1758,
   "bySource": {
    "osm": 1603,
    "osm-via-overture": 930,
-   "microsoft-ml-buildings": 153,
-   "google-open-buildings": 138
+   "osm-via-overture-upsa": 303,
+   "microsoft-ml-buildings": 163,
+   "google-open-buildings": 145
   },
   "osmOnCampusChecked": 1467,
   "osmValidatedByGoogleOpenBuildings": 1327,
@@ -111,8 +128,9 @@
    "lowConfidence": 58,
    "overlapsOsm": 4
   },
+  "mlUpsa": 17,
   "byCategory": {
-   "unknown": 2320,
+   "unknown": 2640,
    "housing": 291,
    "academic": 103,
    "residence": 75,
@@ -123,7 +141,7 @@
    "health": 2
   },
   "byConfidence": {
-   "medium": 1497,
+   "medium": 1817,
    "high": 1327
   },
   "osmNotSeenBySatellite": [
@@ -362,24 +380,24 @@
    "ha": 6.7
   },
   "landuse": {
-   "count": 32,
-   "ha": 1845.6
+   "count": 34,
+   "ha": 1897.7
   },
   "grass": {
-   "count": 33,
-   "ha": 95.7
+   "count": 38,
+   "ha": 95.9
   },
   "pitch": {
-   "count": 32,
-   "ha": 12.8
+   "count": 35,
+   "ha": 13.2
   },
   "plaza": {
    "count": 16,
    "ha": 1.5
   },
   "parking": {
-   "count": 122,
-   "ha": 11.1
+   "count": 134,
+   "ha": 12.2
   },
   "track": {
    "count": 3,
@@ -391,14 +409,14 @@
   }
  },
  "places": {
-  "total": 435,
+  "total": 437,
   "fromOsm": 389,
   "fromUgCampusMap": 38,
-  "addedFromRegistry": 8,
+  "addedFromRegistry": 10,
   "movedToRegistryPosition": 7,
   "byConfidence": {
-   "high": 145,
-   "medium": 286,
+   "high": 146,
+   "medium": 287,
    "low": 4
   },
   "requiredNamesChecked": 152,
@@ -2610,6 +2628,68 @@
    "sources": {},
    "claims": [],
    "notes": "Owner: the one-floor supermarket on the east side of the Night Market (circled black on the owner's aerial)."
+  },
+  {
+   "id": "upsa-hostel",
+   "name": "UPSA Hostel",
+   "category": "residence",
+   "importance": 3,
+   "geometry": "osm:way/1217291474",
+   "lat": 5.658872,
+   "lng": -0.171389,
+   "x": 1741,
+   "z": -782,
+   "elevationM": 72,
+   "confidence": "medium",
+   "sourcesAgreeingWithin150m": [],
+   "sources": {},
+   "claims": [
+    {
+     "cite": "owner-upsa-route",
+     "text": "The UPSA Hostel stands on the south side of IPS Road, behind its frontage road, west of the junction with Trinity Avenue.",
+     "test": "side-of-road",
+     "pass": true,
+     "detail": "south of the road by 104 m"
+    }
+   ],
+   "notes": "The University of Professional Studies hostel on IPS Road (the owner's site brief, IMG-03/04, R29/R30; modelled in src/game/upsahostel.ts). Not Prestige Hostel (a private hostel at x 2197) and not Domil Heights."
+  },
+  {
+   "id": "upsa",
+   "name": "University of Professional Studies, Accra (UPSA)",
+   "category": "academic",
+   "importance": 2,
+   "geometry": "osm:relation/13514869",
+   "lat": 5.661916,
+   "lng": -0.165324,
+   "x": 2412,
+   "z": -1119,
+   "elevationM": 78,
+   "confidence": "medium",
+   "sourcesAgreeingWithin150m": [],
+   "sources": {
+    "osm": {
+     "found": false
+    }
+   },
+   "claims": [
+    {
+     "cite": "osm-upsa",
+     "text": "The UPSA campus lies on the north side of IPS Road, its Main Gate on IPS Road.",
+     "test": "side-of-road",
+     "pass": true,
+     "detail": "north of the road by 242 m"
+    },
+    {
+     "cite": "owner-upsa-route",
+     "text": "The ride from the UPSA Hostel runs east along IPS Road to UPSA.",
+     "test": "direction",
+     "pass": true,
+     "value": 672,
+     "detail": "672 m east of UPSA Hostel (need 400 m)"
+    }
+   ],
+   "notes": "The academic core: the large block east of the central quadrangle (OSM relation 13514869, from the UPSA extension), which holds Overture's place \"University of Professional Studies\". Which named building it is (Central Administration, a lecture block) is not established."
   }
  ],
  "zones": [
@@ -2786,6 +2866,20 @@
     1026
    ],
    "distanceM": 1081
+  },
+  {
+   "place": "UPSA Hostel",
+   "at": [
+    1741,
+    -782
+   ],
+   "other": "UPSA",
+   "source": "osm",
+   "otherAt": [
+    2304,
+    -1000
+   ],
+   "distanceM": 604
   },
   {
    "place": "International House",

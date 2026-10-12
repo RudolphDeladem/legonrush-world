@@ -2869,3 +2869,92 @@ storey count:
 *Assumed*: the storey counts per mass, the split points of the long buildings, the angled outline 202 squared to its
 main axis, which side of WACCI pictures 2 and 3 show (from the game screenshot's carport). *Would settle it*: the
 missing picture 10 (the real top layout), for the courts' exact spacing.
+
+## The UPSA Hostel to the UPSA academic core: IPS Road, the Main Gate and the campus
+
+The owner's brief *LEGONRUSH UPSA Hostel to Campus*: master prompt, reconstruction pack 2 (Street View frames
+RW01–RW15, register, online sources), Brief 1 (hostel to campus) and Brief 2 (the GOIL/UGBS junction, rebuilt
+earlier). The evidence audit came first: `docs/upsa-hostel-to-school/evidence-audit.md` holds the inventory, the
+source hierarchy, the route with provenance and confidence, the conflicts and the mismatch list. The ride's frames and
+the before/after views are in the same folder (`ride.jpg`, `before-after.jpg`).
+
+**A separate UPSA extension of the map.** UPSA lay beyond the study extent: IPS Road stopped at x 1963.6, and the
+roundabout and everything east of it was missing.
+- `scripts/geography/fetch_upsa_extension.py` writes `data/geography/sources/upsa-extension.geojson`: OpenStreetMap
+  via Overture 2026-09-23.1, ids kept, box x 1950–2559, z −1376..−635. Machine-learned footprints are kept only
+  inside UPSA's own outline, osm:way/309660062.
+- `build-master.mjs` adds its roads, buildings and areas under `osm-via-overture-upsa`, skipping any id already in
+  the map. Vertices within 0.3 m of a mapped road's vertex snap to it. Booktrust Street, cut at the old extent's
+  edge, takes its whole line.
+- No existing feature moved or changed id. The only geometry change is Booktrust Street's longer line.
+- The divided IPS Road and the roundabout are one-way for riders, in their mapped direction: counter-clockwise, the
+  south carriageway eastbound, the north one westbound. This is a flag only these extension roads carry, so every
+  Legon route and race rides as before.
+- Places "UPSA Hostel" and "University of Professional Studies, Accra (UPSA)" (registry landmarks with access
+  entries).
+- `ipsplan.ts` now picks IPS Road and the frontage road by mid-road vertices. Its old end-point lookup would have
+  caught a piece of the new roundabout.
+
+**The ride** (1004 m; `.preview/upsaride.mjs` rides it in the game):
+1. out of the hostel's central bay across its forecourt;
+2. east on IPS Road;
+3. counter-clockwise round the roundabout at Trinity Avenue;
+4. east on the south carriageway;
+5. left through the Main Gate;
+6. north on the campus road past AB Block and the car parks, then east along the quadrangle's south side and north
+   to the drive;
+7. it ends at the west front of the block east of the central quadrangle (osm:relation/13514869).
+
+**Models** (upsacampus.ts; numbers in upsacampusplan.ts; cameras `upsa1` … `upsa12` in upsacviews.ts):
+- *On from the hostel corridor* (RW01–RW08): the tan paver sidewalk, the weedy verge, the poles and streetlights;
+  the kerbed red-earth strip; tyre stacks and a plank lean-to on the red earth by the tower; scrub and trees in the
+  fork.
+- *The blue panel hoarding* along the north side from PRESEC's white wall to the campus wall (RW06, RW08, RW09).
+- *The roundabout's island* (RW09): kerbed black and white; red earth and grass; a spreading tree; a vendor's table
+  under an umbrella; a billboard frame with a plain panel (no advertisement copied).
+- *The divided road* (RW10, RW11): the kerbed grass median; the south verge's red earth with its open concrete drain
+  (left out where the mapped lay-bys run); the wooden poles and wires; the next lattice tower at x 2176, west of the
+  shop row's lay-by. On the north verge: scrub, bushes, streetlights and the "UPS" bus stop shelter.
+- *The campus wall* on its mapped lines either side of the gate, open where drives pass.
+- *The Main Gate* on the mapped canopy outline (osm:way/1009392399):
+  - a blue-and-white canopy on white columns, its fascia reading UNIVERSITY OF PROFESSIONAL STUDIES, ACCRA both
+    ways, a UPSA panel over the front;
+  - a gatehouse in each outer bay;
+  - lift barriers, raised, 12 m clear between them over the 4 m entrance road.
+- *The Abednego F. O. Amartey Towers* (name read in RW10/RW11; two blocks of ten levels joined by a bridge):
+  - white with blue-glazed windows and the east block's blue curtain strip, the name on the roof;
+  - on the satellite-detected footprint behind the Senior Members' Club House, which OSM still maps as a pitch.
+- *Prestige Hostel* (RW14): four storeys, its name, the grey-paved forecourt and chained bollards.
+- *The shop row and the Trinity Baptist Church complex*: two storeys (registry heights).
+- *At the core*: an entrance canopy on four columns between the mapped service lane and the wall, the paved apron,
+  and trees round the quadrangle.
+
+**Tests:** `npm run test:routes` adds the UPSA checks:
+- both places exist where mapped;
+- the ride is about 1000 m and continuous;
+- it passes the roundabout's south side, the eastbound carriageway, the Main Gate, the campus road and the
+  quadrangle, in that order, and never the north carriageway;
+- it finishes at the core's drive;
+- no modelled solid stands on the ride or on a road;
+- the gate clears its road;
+- the canopy and the towers' outlines are modelled;
+- one-way roads exist only in the extension.
+
+`.preview/solidroads.mjs` finds no solid on a road in the area.
+
+*Assumed*:
+- The walls' colours (UPSA's blue and white).
+- The gate's depth, its gatehouses and its barriers: the gate photographs (Wikimedia Commons, UPSA's posts) could
+  not be opened from this environment, so the gate follows the written descriptions.
+- The extent of the hoarding.
+- The tower and pole spots.
+- The storeys of the campus blocks (generic heights).
+- The towers' position (a satellite footprint).
+- Which named building the end block is: the place is named for the university, not for a building.
+
+Domil Heights (RW15) is not mapped in either source and is not placed.
+
+*Would settle it*:
+- a photo of the gate from IPS Road;
+- the campus wall's colour;
+- a site plan naming the core's blocks.

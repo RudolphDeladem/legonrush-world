@@ -20,6 +20,9 @@ export interface Road {
   cls: RoadClass;
   /** informal trail (path, track) or steps: campus routing keeps bikes off them where it can */
   surface?: 'trail' | 'steps';
+  /** one-way for riders and drivers, in the order of its nodes (the UPSA extension's divided IPS Road and roundabout);
+   *  walkers use it both ways */
+  oneway?: boolean;
   nodes: number[];
 }
 export interface Building {
@@ -40,7 +43,7 @@ interface RawData {
   attribution: string;
   origin: [number, number];
   nodes: number[];
-  roads: { c: number; w: number[]; n?: string; k?: 1 | 2 }[];
+  roads: { c: number; w: number[]; n?: string; k?: 1 | 2; o?: 1 }[];
   /** m: footprint only seen by satellite (no OSM outline); u: OSM outline no satellite footprint matches; q: 2 low confidence */
   buildings: { p: number[]; h?: number; n?: string; i?: number[][]; m?: 1; u?: 1; q?: 2 }[];
   areas: { k: string; p: number[] }[];
@@ -70,7 +73,7 @@ const M_LAT = 110574, M_LNG = 111320 * Math.cos((LAT0 * Math.PI) / 180);
 export const toLatLng = (x: number, z: number): [number, number] => [LAT0 - z / M_LAT, LNG0 + x / M_LNG];
 /** road graph node positions: x, z pairs in metres */
 export const NODE_XZ = Float32Array.from(data.nodes, (v) => v / 10);
-export const ROADS: Road[] = data.roads.map((r) => ({ name: r.n, cls: r.c as RoadClass, nodes: r.w, ...(r.k && { surface: r.k === 2 ? 'steps' as const : 'trail' as const }) }));
+export const ROADS: Road[] = data.roads.map((r) => ({ name: r.n, cls: r.c as RoadClass, nodes: r.w, ...(r.k && { surface: r.k === 2 ? 'steps' as const : 'trail' as const }), ...(r.o && { oneway: true }) }));
 export const BUILDINGS: Building[] = data.buildings.map((b) => {
   const pts = Float32Array.from(b.p, (v) => v / 10);
   let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
@@ -293,7 +296,8 @@ const COST: Record<TravelMode, Record<RoadClass, number>> = {
   // taxis and the shuttle keep to proper roads
   drive: { 0: 1, 1: 1, 2: 1.05, 3: 1.3, 4: 60 },
 };
-interface Edge { to: number; len: number; road: number }
+/** back: against a one-way road's direction (walkers only) */
+interface Edge { to: number; len: number; road: number; back?: boolean }
 const adj: Edge[][] = Array.from({ length: NODE_XZ.length / 2 }, () => []);
 const nx = (i: number) => NODE_XZ[i * 2];
 const nz = (i: number) => NODE_XZ[i * 2 + 1];
@@ -302,7 +306,7 @@ ROADS.forEach((r, ri) => {
     const a = r.nodes[k], b = r.nodes[k + 1];
     const len = Math.hypot(nx(a) - nx(b), nz(a) - nz(b));
     adj[a].push({ to: b, len, road: ri });
-    adj[b].push({ to: a, len, road: ri });
+    adj[b].push({ to: a, len, road: ri, ...(r.oneway && { back: true }) });
   }
 });
 // The Legon Road cutting (cutplan.ts): down in it the N4 shares a few nodes with the footways mapped across it at the
@@ -435,6 +439,7 @@ function search(s: number, t: number, mode: TravelMode, campus: boolean): PathRe
     done[v] = 1;
     if (v === t) break;
     for (const e of adj[v]) {
+      if (e.back && mode !== 'walk') continue;
       if (!turnOk(v, v === s ? -1 : prevRoad[v], e.road)) continue;
       const c = g[v] + e.len * edgeCost(e.road);
       if (c < g[e.to]) {

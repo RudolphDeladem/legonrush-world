@@ -62,6 +62,9 @@ for (const f of [...by('road'), ...by('path')]) {
   // surface for campus routing: 1 informal trail (path/track), 2 steps
   if (TRAIL.has(p.class)) road.k = 1;
   if (p.class === 'steps') road.k = 2;
+  // one-way for riders: only the UPSA extension's divided IPS Road and its roundabout (the Legon network keeps riding
+  // both ways, as it always has, so race routes and ghosts are unchanged)
+  if (p.oneway && p.src.includes('osm-via-overture-upsa')) road.o = 1;
   roads.push(road);
 }
 // access points: entrance, the node to ride to (arrival) and the node a car stops at (drop-off)
