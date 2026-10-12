@@ -3231,3 +3231,65 @@ outside this work.
 
 *Not done*: the ruined compound and other neighbours outside the marked targets are unchanged. The east building's long
 rear and B's southern length are kept low and plain (not seen in the photographs).
+
+## IPS Road opposite UPSA: Prestige and Northill Heights (the owner's reference pack)
+
+The pack: `LEGONRUSH_IPS_Road_Opposite_UPSA_Reference_Pack.zip`, with nine stills, a 17 s, 270° Street View recording
+(September 2024) and the brief. It is a separate pack from the UPSA campus landmarks.
+
+The model is `ipsopposite.ts`, with cameras in `ipsoppviews.ts` (preview views `ipso1`-`ipso7`, `ipsoTop`). The
+comparison sheet is `docs/ips-opposite-upsa/before-after-reference.jpg`.
+
+**Placement.** The recording pans clockwise from one point on the south side of IPS Road:
+- the unfinished tan block and Northill Heights (south-east);
+- the long Prestige block (west, along the road);
+- the road;
+- across to the Abednego F. O. Amartey Towers and the UPSA board (north).
+
+That puts the panorama by the east end of the mapped row osm:way/885510982, with the side street at x 2266 and
+Northill Heights on the corner beyond it.
+
+**Prestige** (osm:way/885510982, which the game drew as a generic two-storey "shop row"):
+- four storeys of tan panels between grey projecting slab bands, a grey cap, framed windows, a few sashes open, and
+  grey pilasters;
+- shops on the ground floor behind roller shutters, under coloured sign boards (no invented names);
+- the entrance bay (still 04): tall ochre columns, recessed dark blue glazing, a projecting canopy with a small emblem;
+- red roof letters: PRESTIGE east of the bay and HOSTEL west of it, as stills 02, 04 and 07 show them;
+- the paved forecourt to the lay-by.
+
+The PRESTIGE HOSTEL sign the UPSA corridor work had put on the building behind (osm:way/1238177036, which carries the
+OSM "prestige hostel" point) is removed. The name is on the road frontage, not repeated behind it. That building keeps
+its four storeys, forecourt and bollards.
+
+**Northill Heights** (stills 01, 08; recording frames 1-6):
+- a glazed retail ground floor, with a red-framed glazed corner unit and dark cladding on one shopfront;
+- a recessed level of narrow vertical windows behind a continuous balcony rail;
+- the off-white upper box projecting 1.5 m over the road face and the side-street face, with its grid of large dark
+  louvred panels and small fixtures;
+- red NORTHILL HEIGHTS letters on top of the front and the side;
+- a broad paved apron.
+
+*Its position is inferred, not mapped.* No source has its outline: OSM, Overture, Google and Microsoft footprints all
+leave the corner empty. Its walls carry their own collision.
+
+**The towers** across the road keep their model (`upsacampus.ts`). Their blue curtain wall is refined with the UPSA
+landmark pack.
+
+**Streetscape.** The south verge's red earth, drain, poles and wires (`upsacampus.ts`) are kept. The paved forecourts are
+new. No parked cars are baked in.
+
+**Checks.** `npm run test:routes` adds:
+- the row is built by the model;
+- Northill Heights stands clear of every road and mapped outline;
+- the side street and the lay-by are still ridden.
+
+`.preview/solidroads.mjs` over the frontage finds no solid on a road.
+
+*Assumed*:
+- Northill's spot and size (16 x 13.4 m) and its storey heights;
+- Prestige's storey heights (3.8 m and 3.2 m);
+- the entrance bay's position along the row (x 2210);
+- the letters' sizes.
+
+*Would settle it*: Northill Heights' outline or position (an aerial or a pin), and whether the unfinished tan block
+east of it should be modelled.

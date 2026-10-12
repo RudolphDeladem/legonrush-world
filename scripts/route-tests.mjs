@@ -1011,6 +1011,23 @@ try {
     if (!cg || Math.hypot(cg.x - 420.5, cg.z - 364.5) > 12) fail('Fire station brief: CEGENSA is not placed on the signed cluster');
   }
 
+  // ---------- IPS Road opposite UPSA: Prestige's row and Northill Heights (the owner's reference pack) ----------
+  {
+    const ip = await server.ssrLoadModule('/src/game/ipsopposite.ts');
+    const { BLOCK_SITES } = await server.ssrLoadModule('/src/game/sites.ts');
+    if (ip.ipsOppositeSite.frames().length !== 2) fail('IPS Road opposite UPSA: expected the Prestige block and Northill Heights');
+    const row = buildingAt(...ip.PRESTIGE_ROW.at);
+    if (!row || !BLOCK_SITES.some((s) => s.replaces(row))) fail('IPS Road opposite UPSA: the Prestige row still uses the generic template');
+    // Northill Heights (no mapped outline) stands clear of every road and outline, its apron clear of the carriageway
+    const [x0, x1, z0, z1] = ip.NORTHILL.r;
+    for (let x = x0 - 1.5; x <= x1 + 0.01; x += 0.5) for (let z = z0 - 1.5; z <= z1 + 0.01; z += 0.5) {
+      if (ip.ipsClear(x, z) < 1) { fail(`IPS Road opposite UPSA: Northill Heights reaches a road at ${x.toFixed(1)},${z.toFixed(1)}`); x = Infinity; break; }
+      if (buildingAt(x, z)) { fail(`IPS Road opposite UPSA: Northill Heights overlaps a mapped outline at ${x.toFixed(1)},${z.toFixed(1)}`); x = Infinity; break; }
+    }
+    // the side street past its west face and the lay-by before the row stay ridden
+    for (const [a, b2] of [[[2266.4, -876], [2266.9, -790]], [[2186, -876], [2245, -875.6]]]) if (!cm.findPath(a, b2, 'cycle')) fail(`IPS Road opposite UPSA: no ride from ${a} to ${b2}`);
+  }
+
   // ---------- the 10-pair brief and the owner's three pictures (the JQB lane, the overhead crossing) ----------
   {
     const tp = (await server.ssrLoadModule('/src/game/tenpairs.ts')).tenPairsSite;

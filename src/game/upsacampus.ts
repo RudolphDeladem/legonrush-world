@@ -422,8 +422,9 @@ const prestige: Spec = {
   keep: [[PRESTIGE.x0 - PO[0], PRESTIGE.x1 - PO[0], -14, 0]],
   extras: (k: Kit) => {
     const b = new Bag(PO), w = PRESTIGE.x1 - PRESTIGE.x0;
-    // the name along the top of the front (RW14), the grey-paved forecourt, the chained bollards along its edge
-    k.signs.push({ text: 'PRESTIGE HOSTEL', x: 0, y: 12.6, z: -0.08, ry: Math.PI, w: Math.min(12, w - 2), colors: ['#f3f1ea', '#8a1f22'] });
+    // the grey-paved forecourt, the chained bollards along its edge
+    // (the PRESTIGE and HOSTEL letters are on the long block along the road, the owner's IPS Road opposite UPSA pack,
+    // ipsopposite.ts; not repeated on this building behind it)
     const fz0 = -13.5;
     if (clear(PO[0], PO[1] + fz0 / 2, 0.5)) {
       const pv = new THREE.Mesh(new THREE.PlaneGeometry(w, -fz0).rotateX(-Math.PI / 2).translate(0, 0.03, fz0 / 2), pavers('grey'));
