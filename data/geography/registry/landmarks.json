@@ -47,6 +47,10 @@
   "owner-upsa-route": {
    "title": "The owner's UPSA Hostel to UPSA campus brief and Street View frames RW01-RW15 (docs/upsa-hostel-to-school/evidence-audit.md)",
    "url": "docs/upsa-hostel-to-school/evidence-audit.md"
+  },
+  "owner-fire-station-brief": {
+   "title": "The owner's Legon Fire Station, Child Lab and E.A. Boateng Road brief (Pairs 1-14, real aerials R1-R3; docs/LEGON_BUILDINGS.md)",
+   "url": "docs/LEGON_BUILDINGS.md"
   }
  },
  "landmarks": [
@@ -1861,6 +1865,36 @@
    ],
    "maxConfidence": "medium",
    "notes": "The academic core: the large block east of the central quadrangle (OSM relation 13514869, from the UPSA extension), which holds Overture's place \"University of Professional Studies\". Which named building it is (Central Administration, a lecture block) is not established."
+  },
+  {
+   "id": "cegensa",
+   "name": "CEGENSA",
+   "kind": "other",
+   "category": "academic",
+   "importance": 3,
+   "geometry": {
+    "osm": "way/439690551"
+   },
+   "match": {
+    "osm": [],
+    "overture": [],
+    "ugmap": [
+     "^CEGENSA$"
+    ]
+   },
+   "claims": [
+    {
+     "cite": "owner-fire-station-brief",
+     "text": "CEGENSA's signed gable and its direction sign stand in the compact cluster inside E.A. Boateng Road's bend (Pairs 9 and 13, R2).",
+     "test": {
+      "type": "near-road",
+      "road": "^E\\.A\\. Boateng Road$",
+      "within": 40
+     }
+    }
+   ],
+   "maxConfidence": "medium",
+   "notes": "The Centre for Gender Studies and Advocacy: its name is on the gable of the cluster's east wing and on the freestanding sign beside the path (the owner's Fire Station and Child Lab brief, Pairs 9 and 13, registered to R2). The campus map's point lay 65 m north-west, on the Biotechnology Centre's outline. CEDSA shares the cluster (its screen and gate on the south side) and keeps its own name."
   }
  ]
 }

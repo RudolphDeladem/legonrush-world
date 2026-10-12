@@ -127,7 +127,9 @@ const NORTH: Mass[] = [
   // the far rows to the east (the Department of Animal Science side): one in two lengths, one of two storeys
   { r: [418.3, 441.5, 195.9, 208.7], lv: 1, along: 'x', ends: [9, 0], faces: { z1: 'W-WDW-W-W', z0: 'w-w-w-w', x0: 'W-W' } },
   { r: [443.7, 469.0, 195.9, 208.7], lv: 1, along: 'x', ends: [0, 9], roof: 3, faces: { z1: 'W-W-DW-W-W', z0: 'w-w-w-w', x1: 'WD' } },
-  { r: [419.5, 470.2, 159.3, 172.1], lv: 2, along: 'x', roof: 1, faces: { z1: 'W-W-WDW-W-W-W-W', z0: 'W-W-W-W-W-W-W-W' }, up: { z1: 'W-W-W-W-W-W-W-W-W', z0: 'w-w-w-w-w-w-w-w' } },
+  // (one storey: the courtyard complex is a low perimeter of wings round an open court, the owner's Fire Station and Child
+  // Lab brief, R1 and Pair 1; boateng.ts draws the court)
+  { r: [419.5, 470.2, 159.3, 172.1], lv: 1, along: 'x', roof: 1, faces: { z1: 'W-W-WDW-W-W-W-W', z0: 'W-W-W-W-W-W-W-W' } },
 ];
 const NO: [number, number] = [365, 210];
 const northSpec: Spec = {
@@ -201,7 +203,9 @@ const SOUTH: Mass[] = [
   { r: [403.3, 413.3, 283.2, 291.2], lv: 1, along: 'x', roof: 2, faces: { z0: 'WDW', z1: 'w-w', x1: 'W' } },
   { r: [408.2, 413.1, 354.8, 370.4], lv: 1, along: 'z', roof: 1, faces: { x0: 'W-W-W', x1: 'W-D-W', z0: 'W' } },
   { r: [413.1, 428.7, 366.2, 374.3], lv: 1, along: 'x', roof: 3, faces: { z0: 'W-WDW', z1: 'w-w-w-w' } },
-  { r: [425.7, 432.8, 354.5, 366.2], lv: 1, along: 'z', roof: 1, faces: { x0: 'W-D', x1: 'W-W-W', z0: 'W' } },
+  // (its north end is CEGENSA's gable, the owner's Fire Station and Child Lab brief, Pair 9: the gable wall up to the ridge;
+  // boateng.ts adds its sign, vent, louvre and awning; the wall units on the east face, Pair 13)
+  { r: [425.7, 432.8, 354.5, 366.2], lv: 1, along: 'z', ends: [9, 0], roof: 1, faces: { x0: 'W-D', x1: 'A-W-A', z0: '-' } },
 ];
 const SO: [number, number] = [435, 320];
 const southSpec: Spec = {

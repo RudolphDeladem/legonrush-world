@@ -7,13 +7,13 @@
   "path-access": 2,
   "drive-access": 18,
   "area-entry": 8,
-  "frontage": 204,
-  "point": 109
+  "frontage": 205,
+  "point": 108
  },
  "byConfidence": {
   "high": 88,
-  "low": 208,
-  "medium": 141
+  "low": 209,
+  "medium": 140
  },
  "campusGates": 5,
  "problems": [],
@@ -362,10 +362,10 @@
  ],
  "byStatus": {
   "verified": 87,
-  "inferred": 199,
+  "inferred": 200,
   "partial": 8,
   "unverified": 9,
-  "mapped": 134
+  "mapped": 133
  },
  "curated": [
   {

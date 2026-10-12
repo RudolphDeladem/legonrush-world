@@ -414,7 +414,7 @@
   "fromOsm": 389,
   "fromUgCampusMap": 38,
   "addedFromRegistry": 10,
-  "movedToRegistryPosition": 7,
+  "movedToRegistryPosition": 8,
   "byConfidence": {
    "high": 146,
    "medium": 287,
@@ -505,6 +505,18 @@
      -112
     ],
     "distanceM": 19
+   },
+   {
+    "name": "CEGENSA",
+    "from": [
+     377,
+     299
+    ],
+    "to": [
+     421,
+     365
+    ],
+    "distanceM": 80
    }
   ]
  },
@@ -2691,6 +2703,39 @@
     }
    ],
    "notes": "The academic core: the large block east of the central quadrangle (OSM relation 13514869, from the UPSA extension), which holds Overture's place \"University of Professional Studies\". Which named building it is (Central Administration, a lecture block) is not established."
+  },
+  {
+   "id": "cegensa",
+   "name": "CEGENSA",
+   "category": "academic",
+   "importance": 3,
+   "geometry": "osm:way/439690551",
+   "lat": 5.648495,
+   "lng": -0.183301,
+   "x": 421,
+   "z": 365,
+   "elevationM": 90,
+   "confidence": "medium",
+   "sourcesAgreeingWithin150m": [
+    "ugCampusMap"
+   ],
+   "sources": {
+    "ugCampusMap": {
+     "name": "CEGENSA",
+     "distanceM": 80
+    }
+   },
+   "claims": [
+    {
+     "cite": "owner-fire-station-brief",
+     "text": "CEGENSA's signed gable and its direction sign stand in the compact cluster inside E.A. Boateng Road's bend (Pairs 9 and 13, R2).",
+     "test": "near-road",
+     "pass": true,
+     "value": 21,
+     "detail": "21 m from the road (limit 40 m)"
+    }
+   ],
+   "notes": "The Centre for Gender Studies and Advocacy: its name is on the gable of the cluster's east wing and on the freestanding sign beside the path (the owner's Fire Station and Child Lab brief, Pairs 9 and 13, registered to R2). The campus map's point lay 65 m north-west, on the Biotechnology Centre's outline. CEDSA shares the cluster (its screen and gate on the south side) and keeps its own name."
   }
  ],
  "zones": [

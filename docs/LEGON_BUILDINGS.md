@@ -3103,3 +3103,131 @@ The ruined compound east of the strip (x 547–599) is left as it was: it was no
 an earlier photograph.
 
 *Would settle it*: ground photographs of the ruin's edges and of the strip.
+
+## The Legon Fire Station, the Child Lab vicinity and E.A. Boateng Road (14 pairs, R1-R3, G1-G6)
+
+The brief: `Legon_Fire_Station_Child_Lab_Detailed_Claude_Brief.pdf`, with 14 game/real pairs and three annotated real
+aerials:
+- R1: Pairs 1-2;
+- R2: Pairs 7-13;
+- R3: Pairs 3-6 and 14.
+
+It also has five game aerials (G1-G5) and a game map crop (G6). The models are `firestation.ts` and `boateng.ts`, with
+shared pieces in `fskit.ts`, numbers in `fsplan.ts` and cameras in `fsviews.ts` (preview views `fs1`-`fs14`,
+`fsG1`-`fsG5`, `fsR1`-`fsR3`).
+
+Comparison sheets are in `docs/fire-station-child-lab/`: `pairs-1-7.jpg`, `pairs-8-14.jpg` (before, after, real) and
+`aerials-before-after.jpg`. The before renders use the first camera estimates; some cameras were tuned afterwards, so
+a few before/after framings differ.
+
+**Registration.** Each real crop was matched to the mapped outlines and roads on its own:
+- R3 by the long buildings and the dance venue's roofs;
+- R1 by the courtyard ranges and E.A. Boateng Road;
+- R2 by the cluster's outline and the road's bend.
+
+Arrow tails gave the camera zones and heads gave the directions.
+
+**Old to new (by mapped outline):**
+
+| Outline | Was | Now |
+| --- | --- | --- |
+| osm:way/773861741 | generic block | gable A: low pale gable, rusty sheet roof, the fire-service lettering, the doorway and wall unit (`firestation.ts` station) |
+| osm:way/492099511 | generic two/three-storey block | gable B: the long low west building, grey sheet roof (`firestation.ts` long west building) |
+| osm:way/603522789 | generic block | the small low shed beside B |
+| osm:way/430197440 | generic block | the long low building by La Road, pale sheet roof |
+| osm:way/492099542 | generic block | the low office (Pair 6) |
+| osm:way/492099499 (mapped name "Soil Science") | generic tall block | the courtyard's low east range, its link and passage (`boateng.ts` court) |
+| osm:way/492099515 | two storeys (`agprecinct.ts`) | one storey (R1: a low perimeter round the court) |
+| osm:way/492099547 | generic hip block, big windows | the low long building, shallow gables (`boateng.ts`) |
+| osm:way/439690551 | three low wings (`agprecinct.ts`), hip at the east wing's north end | the same wings, the east wing's north end now CEGENSA's gable |
+
+The CEDSA screen and gate, the stone court and path, the CEGENSA sign and the planting are new pieces in `boateng.ts`.
+
+**The station (Pairs 3-6, 14).** One ensemble seen from three angles:
+- gable A, with the lettering and the black ribbed tank on its stand in front;
+- the broad dark open canopy over the mapped drive between A and B: a thin sheet on beams and slender posts, open-sided;
+- gable B behind the railing fence;
+- the weathered pale wall with planting along the car park, and the vehicle opening on the drive between pale piers;
+- the railing fence on a low wall, with the SAFETY WEEK banner (only its major words are legible);
+- the worn hardstanding yard;
+- the low red railing and flower bed across the car park (Pair 5).
+
+Lettering is only what the photographs show legibly: GHANA NATIONAL FIRE SERVICE, UNIVERSITY OF GHANA - LEGON and
+EMERGENCY 192. No numbers are invented.
+
+The office (Pair 6):
+- off-white over a reddish-brown band, low dark roof edge;
+- the tall pale door, barred windows with wall units under them;
+- block paving along its front, short painted posts;
+- the hedge-lined red earth access beside it;
+- a pole with wires.
+
+La Road's east side (Pair 14):
+- a block-paved footway behind a pale kerb;
+- a contained drain opening at the kerb (visual only, no hole or step);
+- a low pale wall;
+- two mature broadleaf trees instead of palms.
+
+The mapped access spur into the car park is real (R3), so it is kept. The fire engine and cars are left out so the
+drive stays clear; the yard keeps generic parked cars out.
+
+**R1 (Pairs 1, 2).**
+- The courtyard complex is low all round:
+  - the east range is one storey, with small dark openings and a narrower link with a passage;
+  - the north range comes down from two storeys to one;
+  - the open court has grass panels between two north-south walks and one east-west walk that runs on through the
+    passage to the road, with one tree.
+- Across the road, the low long building:
+  - a shallow red gable roof with a dark fascia, and pale walls on a dark plinth;
+  - the north end is mostly blank, with a door at one side and a small wall fitting;
+  - the east side has pilasters and small openings;
+  - the solar lamp, the clipped hedge, and the big tree on the pavilion's side.
+- The veranda pavilion keeps its existing model.
+
+**R2 (Pairs 7-13).**
+- CEDSA:
+  - the perforated screen on its red base along the cluster's south side;
+  - the central gate: piers, black grid, small tiled cap, and the fascia CENTRE FOR DISABILITY STUDIES AND ADVOCACY (CEDSA);
+  - the notice panel (pictures only; its words are not legible);
+  - the dark forecourt.
+- CEGENSA:
+  - the east wing's north end is now a gable, with the sign, the high vent, the tall louvred opening and the small
+    tiled awning;
+  - a kerbed bed in front of it.
+- The irregular tan stone court north of the wings and in their inner court.
+- The mapped service road from the court to E.A. Boateng Road is drawn as a stone path (`fsplan.ts` `FS_PAVED` and
+  `science.ts` `offAsphalt`). It is still ridden, and its last metres at the road stay asphalt.
+- A planted border, three tall conical shrubs, and a patchy garden with trees and small palms.
+- The CEGENSA direction sign with its red arrow (contact lines left out).
+- West of the court (Pair 12): a worn earth track across tall unmown grass.
+
+CEGENSA's destination moves from the Biotechnology Centre's outline to the signed cluster (`landmarks.json`
+`cegensa`); its entrance is now at the gable. CEDSA and CEGENSA keep separate names, and the map's IT business pin does
+not rename either.
+
+**Checks.** `npm run test:routes` adds:
+- every replaced outline is built by a model;
+- the posts, piers, tank legs, canopy posts and signs clear every road;
+- the station drive and the R2 drive are ridden without passing a solid;
+- CEGENSA sits on the cluster.
+
+`.preview/solidroads.mjs` over the three zones finds no new solid on a road. The three it lists are older generic trees
+outside this work.
+
+*Assumed* (adjustable in `fsplan.ts`):
+- which buildings are gables A and B (from the canopy's breadth, the mapped drive between them and the tank's shadow
+  in R3);
+- the canopy's extent and heights;
+- the wall line and the gate opening;
+- the tank's spot;
+- the railing's spot;
+- the courtyard walks' spacing;
+- storey heights and roof pitches;
+- the stone court's extent.
+
+*Deferred, with questions for the owner*:
+- Pair 12's near-left gable with the air-conditioning units: the R2 arrow does not tell which building it is.
+- Pair 14's communications mast: its spot is not evidenced.
+
+*Not done*: the ruined compound and other neighbours outside the marked targets are unchanged. The east building's long
+rear and B's southern length are kept low and plain (not seen in the photographs).

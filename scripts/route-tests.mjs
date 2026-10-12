@@ -967,6 +967,50 @@ try {
     }
   }
 
+  // ---------- the fire station, the Child Lab vicinity and E.A. Boateng Road (the owner's 14-pair brief) ----------
+  {
+    const fs = await server.ssrLoadModule('/src/game/fsplan.ts');
+    const lb = await server.ssrLoadModule('/src/game/lbplan.ts');
+    const { BLOCK_SITES } = await server.ssrLoadModule('/src/game/sites.ts');
+    if ((await server.ssrLoadModule('/src/game/firestation.ts')).fireStationSite.frames().length !== 3) fail('Fire station: expected the station and its two long buildings');
+    if ((await server.ssrLoadModule('/src/game/boateng.ts')).boatengSite.frames().length !== 3) fail('E.A. Boateng Road: expected the court, the long building and the cluster');
+    // every replaced outline is built by a model, not the classroom template
+    for (const [x, z, what] of [[669, 380, 'gable A'], [645, 400, 'gable B'], [635, 358, 'the shed'], [615, 380, 'the building by La Road'], [651, 310, 'the office'], [487, 183, 'the courtyard\'s east range'], [563, 180, 'the low long building'], [430, 360, 'the R2 cluster']]) {
+      const b = buildingAt(x, z);
+      if (!b || !BLOCK_SITES.some((s) => s.replaces(b))) fail(`Fire station brief: ${what} still uses the generic template`);
+    }
+    const edge = (x, z) => {
+      let best = Infinity;
+      for (const road of cm.ROADS) {
+        const pts = road.nodes.map((n) => [cm.NODE_XZ[n * 2], cm.NODE_XZ[n * 2 + 1]]);
+        // (the drive and the track the models pave themselves are still ridden: their posts must clear them too)
+        const h = lb.halfOf(road);
+        for (let i = 0; i < pts.length - 1; i++) {
+          const [ax, az] = pts[i], [bx, bz] = pts[i + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+          const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+          best = Math.min(best, Math.hypot(ax + dx * t - x, az + dz * t - z) - h);
+        }
+      }
+      return best;
+    };
+    // the posts, piers, the tank's legs, the canopy's posts and the signs stand off every road and footway
+    for (const [x, z, r] of fs.fsPosts()) if (edge(x, z) < r + 0.15) fail(`Fire station brief: the solid at ${x.toFixed(1)},${z.toFixed(1)} stands on a road`);
+    // the station's drive under the canopy and the R2 drive stay rideable
+    for (const [a, b2] of [[[643, 327], [658, 376]], [[461, 379], [411, 345]]]) {
+      const p = cm.findPath(a, b2, 'cycle');
+      if (!p) { fail(`Fire station brief: no ride from ${a} to ${b2}`); continue; }
+      const line = p.nodes.map((n) => cm.nodeXZ(n));
+      for (const [x, z, r] of fs.fsPosts()) for (let i = 0; i < line.length - 1; i++) {
+        const [ax, az] = line[i], [bx, bz] = line[i + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+        const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+        if (Math.hypot(ax + dx * t - x, az + dz * t - z) < 1.8 + r) { fail(`Fire station brief: the solid at ${x.toFixed(1)},${z.toFixed(1)} stands on a ride`); break; }
+      }
+    }
+    // CEGENSA's destination is the signed cluster, not the Biotechnology Centre's outline
+    const cg = PLACES.find((p) => p.name === 'CEGENSA');
+    if (!cg || Math.hypot(cg.x - 420.5, cg.z - 364.5) > 12) fail('Fire station brief: CEGENSA is not placed on the signed cluster');
+  }
+
   // ---------- the 10-pair brief and the owner's three pictures (the JQB lane, the overhead crossing) ----------
   {
     const tp = (await server.ssrLoadModule('/src/game/tenpairs.ts')).tenPairsSite;

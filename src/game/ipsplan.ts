@@ -6,6 +6,7 @@
 import { NODE_XZ, ROADS } from './campusmap';
 import { agOwns } from './agplan';
 import { ownsLb } from './lbplan';
+import { ownsFs } from './fsplan';
 
 type Line = [number, number][];
 /** the mapped road whose line passes within a metre of (x, z), of the given class */
@@ -90,6 +91,8 @@ export function ownsEdges(x: number, z: number) {
   if (agOwns(x, z)) return true;
   // (and the N4 by the stadium and La Bawaleshie: the median, the scrub, the verges, the frontage: labawaleshie.ts)
   if (ownsLb(x, z)) return true;
+  // (and the fire station's La Road frontage and the R2 cluster's forecourt and court, firestation.ts, boateng.ts)
+  if (ownsFs(x, z)) return true;
   // (and on east of the hostel to the UPSA Main Gate: the strip, the roundabout's island, the median and both verges of
   // the divided road, upsacampus.ts)
   if (x >= CORRIDOR.x1 && x <= 2300 && z > -907 && z < -852) return true;
