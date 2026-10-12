@@ -380,6 +380,14 @@
     {
       "id": "ml:8ed8c673-8118-417f-8347-83a82143475c",
       "reason": "Owner's correction (a game screenshot beside GCB Bank near Ernest Chemist, the building circled for deletion): this machine-detected outline between J.J. Rawlings Avenue's east carriageway and the service road, by the Legon Second bus stop, is not there; the game drew it as a generic two-storey block."
+    },
+    {
+      "id": "ml:6246503a-006d-4899-a38f-f429c84935e1",
+      "reason": "Owner's Commonwealth and Great Hall brief (S5, the Great Hall's front from the forecourt; S4, the oblique aerial): the forecourt before the portico is open paving with low planted beds; this machine-detected outline on the axis 10 m before the front is not a building (the game drew it as a two-storey block across the approach)."
+    },
+    {
+      "id": "ml:f3f3317e-687e-4775-8a1c-b606afde2dcc",
+      "reason": "Owner's Commonwealth and Great Hall brief (S5, S4): as the outline beside it, a machine-detected outline on the Great Hall's forecourt axis where the photographs show open paving and planted beds."
     }
   ],
   "heights": [

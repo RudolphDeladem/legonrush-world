@@ -2775,3 +2775,61 @@ green fence's line round the corner plot.
 the sign's width (30 m); the cluster's exact spot along the lane (image 3's arrow); the low structure's height.
 *Would settle it*: a photo of the mall from the north-west (the left wing's depth); a photo along the lane past the
 cluster.
+
+## The Commonwealth Hall and Great Hall brief (pairs 1-7, S1-S8, M1)
+
+(`Commonwealth_Great_Hall_reconstruction_brief.pdf`; cameras `cw1` ... `cw7`, `cwAxis`, `cwGreat`, `cwStairs` in
+cwviews.ts, preview halls.html.)
+
+**The hill's levels** (relief.ts `CW_LEVELS`, S8 and its stair diagram): four flights with level walks between them.
+The first is the entrance's broad steps (8, weathered red) from the asphalt parking up to the front terrace (10.5 m,
+1.5 m above the drive) under the whole front row; the front row, the entrance block and the first court stand on it.
+The other three climb the walk at the long crossbars (to 11.7 m), at the second crossbars (12.9 m) and at the stubs
+beyond (14.2 m, to the end building). Each level is flat (terrace and hollow set against the hill); across the courts
+at each flight's foot a stone retaining wall with a coping, open where the walk climbs, stone cheeks either side of the
+steps; the walk's slabs lie on each level. The bike meets the walls as walls and climbs the steps as steps.
+
+**The approach** (pair 2): the stairway from the gate houses is uneven now (`plan`): four street steps, a level landing
+8.4 m long through the gateway, then flights of 9, 9, 8, 8, 7, 7 and 6 steps with level walks of 11 to 9.5 m between
+them, the flights shorter higher up. The gateway: white piers either side of the opening at the road and at the back of
+the landing, short white walls joining them; the gate houses' aged gable roofs with their ends to the road and a
+stone-faced plinth. Palms beside each landing above the gateway, the pools on the second landing.
+
+**The front** (pairs 1, 3, 4): one entrance asset: the chimney and lantern are gone; a broad weathered red-tile hip roof
+with 1.7 m eaves over a dark soffit, the patterned ventilation band under them across the front; the doorway set back
+between strong white piers that rise through both floors, the dark grilled doors with the name over them, the upper
+floor's dark glazing in the recess. Short joining blocks close the gaps between the entrance block and the wings (the
+aerial's continuous front). The forecourt's orange slab and painted circle are gone: asphalt parking from the foot of the
+steps to the drive with bay lines and a few cars (props, the walk to the steps left free), aged stone paving from the
+drive to the top of the stairway; one crest on its stone plinth front-left of the steps; palms at the parking's ends; the
+front terrace's stone-faced edge with low planting at its foot. *The pharmacy* is the south lane's gabled end
+(Joepharma, pair 4): deep red-tile eaves 1.5 m past the gable over a dark underside, three small high vents in the
+gable, narrow dark louvred shutters on both floors, the entrance bay standing forward with its glazed doors and the
+PHARMACY sign, its walls below the terrace's level faced in stone, steps down to the parking apron between two tiers of
+stone-faced planting beds with shrubs and a small palm; the lower one-storey wing beside it to the south.
+
+**The courts** (S7, S8): Bacchus (a bronze figure, one arm raised, on a tapered stone plinth) in the first court beside
+the walk, between the palms, facing back east toward the rear of the entrance block.
+
+**The Great Hall** (greathall.ts; S3 to S6, O2, O3): the auditorium under a broad weathered red-tile hip roof with deep
+eaves, white walls with a row of high dark ventilation windows; before it the two-storey entrance block, a portico of
+seven strong white piers with dark doors between them and the patterned band over them; behind it, between the two road
+loops, the semicircular projection (a curved wall ringed by columns under a curved roof). The hall stands on a
+stone-faced plinth; before the portico the raised entrance terrace (1.2 m, relief.ts), stone-faced, with shallow curved
+steps down its middle and a ramp leaving its north end. The side wings are the mapped L-shaped outlines, one storey, dark
+shutters and AC units, joined to the hall by short links; with the hall they wrap the forecourt (paving, planted beds,
+palms). Between the wings' east ends the formal garden: hedged beds round a paved cross and a round bed, between the
+paired small buildings. The clock tower now stands on its own mapped base south of the hall (landmarks.ts), not inside
+it. The two machine-detected outlines on the forecourt's axis are excluded (S5 shows open paving there).
+
+**J.K.M. Hodasi Road's bend** (hodasi.ts; pairs 5-7; M1 places them on this road west of the Volta Hall Annex, not on
+Commonwealth's drive): the dashed centre line on the bend (world.ts), a concrete kerb along both edges, the narrow brick
+footway on the west side with two utility covers and a few slender poles, tall mixed grass and scrub on darker earth on
+the east verge, mature broadleaf trees close along both sides with their crowns over the road, and a deeper screen with
+an understorey to the east so that the Annex and its water tower show only through gaps. The generic verges and drains
+stay out there (agplan.ts `HODASI`). The road's line is the mapped one (the fork with the side road is real and kept).
+
+*Assumed*: every rise and level (10.5, 11.7, 12.9, 14.2 m; the Great Hall's terrace 1.2 m), the stair counts and landing
+lengths, the flights' exact places along the walk, the statue's spot on the blue mark, the tower's height, the
+projection's radius and the wings' height. *Would settle it*: a photo along the walk at each flight (the step count and
+wall height); a side photo of the Great Hall's curved projection; a measured height of the tower.

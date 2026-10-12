@@ -126,7 +126,7 @@ function nearestRoad(x: number, z: number, maxCls = 2, reach = 90) {
 
 /** Places a landmark model covers, kept clear of props: [x, z, half x, half z]. */
 const keepOut: [number, number, number, number][] = [];
-for (const [name, hx, hz, dz] of [['Night Market', 22, 22, -6], ['Great Hall', 8, 8, 0], ['The Balme Library', 12, 12, 0]] as const) {
+for (const [name, hx, hz, dz] of [['Night Market', 22, 22, -6], ['Great Hall', 8, 8, 30.7], ['The Balme Library', 12, 12, 0]] as const) {
   const p = placeByName(name);
   if (p) keepOut.push([p.x, p.z + dz, hx, hz]);
 }

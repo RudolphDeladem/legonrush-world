@@ -234,7 +234,9 @@ export function buildLandmarks() {
     } else obj.position.set(p.x + dx, 0, p.z + dz);
     group.add(obj);
   };
-  put('Great Hall', greatHallTower(tex));
+  // (on its own mapped base south of the hall, -1013, 158.9: the owner's Commonwealth and Great Hall brief, S4 and S5,
+  // put it beside the hall, not in it)
+  put('Great Hall', greatHallTower(tex), false, -3.1, 30.7);
   // (the main gate is modelled from the owner's photos in gateprecinct.ts: a low through-building, not pillars)
   // the Great Hall's tower stands on Legon Hill
   applyRelief(group);

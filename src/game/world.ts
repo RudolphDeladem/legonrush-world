@@ -403,13 +403,16 @@ export function buildCampus() {
   // painted centre dashes on the main and through roads, all in one mesh
   const dashPos: number[] = [], dashIdx: number[] = [];
   for (const r of ROADS) {
-    if (r.cls > 1) continue;
+    // (and J.K.M. Hodasi Road's bend west of the Volta Hall Annex: the owner's Commonwealth and Great Hall brief, pairs 5
+    // to 7, shows its dashed centre line)
+    const bend = r.name === 'J.K.M. Hodasi Road';
+    if (r.cls > 1 && !bend) continue;
     let carry = 2;
     for (let k = 0; k < r.nodes.length - 1; k++) {
       const a = r.nodes[k], c = r.nodes[k + 1];
       const ax = NODE_XZ[a * 2], az = NODE_XZ[a * 2 + 1], cx = NODE_XZ[c * 2], cz = NODE_XZ[c * 2 + 1];
       const len = Math.hypot(cx - ax, cz - az);
-      if (len < 1e-3) continue;
+      if (len < 1e-3 || (bend && (Math.max(ax, cx) > -295 || Math.max(az, cz) > 10))) continue;
       const dx = (cx - ax) / len, dz = (cz - az) / len, nx = -dz * 0.07, nz = dx * 0.07;
       let t = carry;
       for (; t + 3 <= len; t += 9) {

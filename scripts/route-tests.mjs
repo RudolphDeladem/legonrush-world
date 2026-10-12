@@ -149,6 +149,27 @@ try {
   if (!(foot === 0 && forecourt > 8 && hallEnd > forecourt + 4 && summit > hallEnd)) fail(`Legon Hill: the ground does not rise from the avenue (${foot}) up the stairs (${forecourt}) through the hall (${hallEnd}) to the Great Hall (${summit})`);
   if (groundHeight(-340, 128) !== 0 || groundHeight(-600, 600) !== 0) fail('Legon Hill: the avenue below the stairs or the campus beside the hill is not flat');
   if ((await server.ssrLoadModule('/src/game/commonwealth.ts')).commonwealth.frames().length !== 2) fail('expected the Commonwealth Hall and stairway models');
+  // the owner's Commonwealth and Great Hall brief: the stairway's level landing through the gateway and flights separated by
+  // level walks (pair 2); the front terrace above the parking up the entrance's steps (pairs 1, 3); the courts' level
+  // terraces with a flight between each (S8); the Great Hall on its terrace, its tower beside it, its forecourt open
+  {
+    const rl = await server.ssrLoadModule('/src/game/relief.ts');
+    const st = rl.stairsOf().find((q) => q.x0 === -372 && q.x1 === -464);
+    const gate = [-374.5, -377, -379.5, -381.5].map((x) => groundHeight(x, 128));
+    if (!st?.plan || gate.some((h) => Math.abs(h - gate[0]) > 1e-6) || !(gate[0] > 0)) fail(`Commonwealth: no level landing through the gateway (${gate.map((h) => h.toFixed(2))})`);
+    if (!st || st.segs.filter((q) => q.landing).length < 7) fail('Commonwealth: the stairway is not separate flights with level walks between them');
+    const lv = (x) => groundHeight(x, 128), near = (a, b) => Math.abs(a - b) < 0.01;
+    if (!(near(lv(-490), 10.5) && near(groundHeight(-482.5, 100), groundHeight(-482.5, 160)) && lv(-482.5) < 9.5)) fail('Commonwealth: the entrance is not on the front terrace above the parking');
+    for (const [xs, h] of [[[-495, -520, -547, -565], 10.5], [[-580, -600, -618], 11.7], [[-630, -660, -684], 12.9], [[-692, -700, -720], 14.2]]) for (const x of xs) for (const z of [110, 128, 150]) if (!near(groundHeight(x, z), h)) fail(`Commonwealth: the court at ${x},${z} is not level at ${h} (${groundHeight(x, z).toFixed(2)})`);
+    if (rl.stairsOf().filter((q) => q.z0 === 125 && q.z1 === 131 && q.top - q.foot > 1).length !== 3) fail('Commonwealth: expected the three flights up the walk through the courts (S8)');
+    if (!rl.stairsOf().some((q) => q.x0 === -484 && q.x1 === -489 && q.top - q.foot > 1.2)) fail('Commonwealth: the entrance\'s broad steps from the parking are missing');
+    if (!(Math.abs(groundHeight(-990, 127) - 22.2) < 0.01) || !rl.stairsOf().some((q) => q.x0 === -982 && q.x1 === -985)) fail('Great Hall: the entrance terrace or its steps are missing (S6)');
+    if (buildingAt(-1013, 158.9)?.name === 'Great Hall' || buildingAt(-977.6, 124.3) || buildingAt(-964.1, 125.6)) fail('Great Hall: the tower\'s base is inside the hall, or the forecourt is not open (S4, S5)');
+    if ((await server.ssrLoadModule('/src/game/greathall.ts')).greatHallSite.frames().length !== 1) fail('expected the Great Hall model');
+    if ((await server.ssrLoadModule('/src/game/hodasi.ts')).hodasiSite.frames().length !== 1) fail('expected the J.K.M. Hodasi Road bend model');
+    const ag = await server.ssrLoadModule('/src/game/agplan.ts');
+    if (!ag.agOwns(-363, -100) || ag.agOwns(-363, -200)) fail('J.K.M. Hodasi Road: its bend\'s edges are not the model\'s (pairs 5 to 7)');
+  }
   // Volta Hall (owner): the entrance on the front block's east face up its steps; the hall on its terrace,
   // the Annex at road level on its roof in the owner's aerial
   const vh = ACCESS.get('Volta Hall');

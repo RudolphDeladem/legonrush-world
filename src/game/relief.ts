@@ -49,7 +49,10 @@ interface Hill {
  * `alongZ` it climbs along z instead (x0, x1 are then z values, z0, z1 the x span). It climbs from the ground at its
  * foot to the ground at its top.
  */
-interface Stairs { x0: number; x1: number; z0: number; z1: number; flights: number; steps: number; tread: number; alongZ?: boolean }
+interface Stairs { x0: number; x1: number; z0: number; z1: number; flights: number; steps: number; tread: number; alongZ?: boolean;
+  /** an uneven stairway instead: its flights in order, each `steps` steps then a level landing of `landing` m (the steps all
+   *  of one rise; the last landing runs to the top) */
+  plan?: [number, number][] }
 type Zone = Hollow | Hill;
 /**
  * a road's own cut or fill: along the polyline (x, z, height at each point, linear between) the ground is the road's
@@ -72,6 +75,45 @@ export const wallExposed = (z: number) => {
 /** the wall's face line along the lane (x at z) */
 export const wallX = (z: number) => laneX(z) + NSIA.wall.offset;
 
+/** Legon Hill's height along its axis: the end of the avenue (x -362) at 0; Commonwealth's stairway climbs 9 m to the
+ *  drive and the front block (x -464 to -500); the hall rises 6 m more to its west end; the Great Hall's summit about
+ *  21 m up; then down again behind it */
+const HILL: [number, number][] = [[-1260, 0], [-1160, 11], [-1060, 21], [-960, 21], [-900, 19.5], [-780, 16.5], [-740, 15.5], [-500, 9.3], [-488, 9], [-464, 9], [-372, 0], [-362, 0]];
+/** Commonwealth Hall's levels (the owner's Commonwealth and Great Hall brief, S8: four flights, green, with level walks
+ *  between them, violet). The first flight is the entrance's broad steps from the drive's parking up to the front
+ *  terrace; the front row, the entrance block and the first court (the statue's) stand on that terrace; the other three
+ *  climb the walk at the long crossbars and at the stubs beyond them, each court level from its flight to the next.
+ *  The rises are read from the brief's diagram and photographs, not measured. */
+export const CW_LEVELS = {
+  /** the front terrace's edge above the drive (x) and height; the entrance's broad steps down to the parking */
+  front: { x1: -489.0, h: 10.5, steps: { x0: -484.0, x1: -489.0, z0: 119.5, z1: 135.5, n: 8 } },
+  /** the upper courts: x from (east, the top of its flight), x to, height */
+  courts: [[-572.7, -621.0, 11.7], [-623.7, -686.0, 12.9], [-688.7, -723.0, 14.2]] as [number, number, number][],
+  /** the flights up the walk between the levels (x foot, x top); a retaining wall across the courts at each foot */
+  flights: [[-570.0, -572.7], [-621.0, -623.7], [-686.0, -688.7]] as [number, number][],
+  walk: [125, 131] as [number, number],
+  /** the levels run under the whole hall (x west end, z), its lanes and crossbars standing on them */
+  x0: -723.0,
+  z: [72, 186] as [number, number],
+};
+/** the height of Commonwealth's ground at x: level terraces, each from the foot of its flight (the flights themselves
+ *  are modelled stairways; beside them the change of level is a retaining wall) */
+export function cwCourtLevel(x: number) {
+  const C = CW_LEVELS.courts, F = CW_LEVELS.flights;
+  for (let i = F.length - 1; i >= 0; i--) if (x <= F[i][0]) return C[i][2];
+  return CW_LEVELS.front.h;
+}
+/** the levels set against the hill: a terrace where they stand above it, a hollow where below (the hollow's box a little
+ *  bigger, so the two grids do not both draw the same ground) */
+function cwZones(): Zone[] {
+  const hillAt = (x: number) => profileAt(HILL, x);
+  const { x0, z } = CW_LEVELS, x1 = CW_LEVELS.front.x1;
+  return [
+    { kind: 'terrace', x0, x1, z0: z[0], z1: z[1], depth: 0, w: 0.4, e: 0.3, n: 3, s: 3, cell: 1, top: (x) => Math.max(0, cwCourtLevel(x) - hillAt(x)) },
+    { kind: 'hollow', x0, x1, z0: z[0], z1: z[1], depth: 0, w: 0.4, e: 0.3, n: 4, s: 4, cell: 1, top: (x) => Math.max(0, hillAt(x) - cwCourtLevel(x)) },
+  ];
+}
+
 const ZONES: Zone[] = [
   // The Institute of African Studies (the owner's main entrance brief, pairs 20-24): the building and its upper apron
   // stand on a terrace above the avenue; before the south front a middle terrace, each behind a stone-faced retaining
@@ -89,10 +131,15 @@ const ZONES: Zone[] = [
   // Legon Hill: the end of the avenue (x -362) at 0; Commonwealth's stairway climbs 9 m to the drive and
   // the front block (x -464 to -500); the hall rises 6 m more to its west end; the Great Hall's summit
   // about 21 m up; then down again behind it
-  {
-    kind: 'hill', zc: 128, full: 150, fall: 140,
-    profile: [[-1260, 0], [-1160, 11], [-1060, 21], [-960, 21], [-900, 19.5], [-780, 16.5], [-740, 15.5], [-500, 9.3], [-488, 9], [-464, 9], [-372, 0], [-362, 0]],
-  },
+  { kind: 'hill', zc: 128, full: 150, fall: 140, profile: HILL },
+  // Commonwealth Hall's levels (the owner's Commonwealth and Great Hall brief, S8 and the stair diagram): the front row
+  // stands on a terrace above the drive and its parking, reached by the entrance's broad steps; inside, the courts climb
+  // to the end building in level terraces with a flight of steps up the walk between each (the green marks) and level
+  // walks between them (the violet arrows), not a continuous slope (CW_LEVELS).
+  ...cwZones(),
+  // the Great Hall (the owner's Commonwealth and Great Hall brief, S6): a stone-faced entrance terrace before the portico,
+  // 1.2 m above the forecourt (read from the photograph, not measured); greathall.ts draws its faces, steps and ramp
+  { kind: 'terrace', x0: -1001.5, x1: -985.0, z0: 111.5, z1: 140.5, depth: 1.2, w: 0.3, e: 0.3, n: 0.3, s: 0.3, cell: 0.5 },
   // Volta Hall: the hall stands 2.4 m above Volta Hall Road, its east front over a stone retaining
   // wall; the Annex to the north is at road level. Two rectangles over the hall's blocks only (the courts
   // and the east front; the west block), so the lawn corner south-west of the hall and the road round it
@@ -206,7 +253,16 @@ const STAIRS: Stairs[] = [
   // the Institute of African Studies: up the middle of the stone court from the walk to the south entrance
   { x0: 108.2, x1: 101.6, z0: 581.4, z1: 585.6, flights: 2, steps: 3, tread: 0.45, alongZ: true },
   // Commonwealth: from the gate houses up Legon Hill to the drive
-  { x0: -372, x1: -464, z0: 118, z1: 138, flights: 7, steps: 9, tread: 0.4 },
+  // (the owner's Commonwealth and Great Hall brief, pair 2: the lower street steps, a level landing through the gateway
+  // between the gate houses, then flights separated by level walks, shorter higher up; the counts are read from the
+  // photographs, not measured)
+  { x0: -372, x1: -464, z0: 118, z1: 138, flights: 8, steps: 9, tread: 0.4, plan: [[4, 8.4], [9, 11], [9, 10.5], [8, 10], [8, 9.5], [7, 9.5], [7, 9.9], [6, 0]] },
+  // Commonwealth's courts: the flights up the walk between the courts' level terraces (the brief's S8 green marks)
+  ...CW_LEVELS.flights.map(([a, b]) => ({ x0: a, x1: b, z0: CW_LEVELS.walk[0], z1: CW_LEVELS.walk[1], flights: 1, steps: 6, tread: Math.abs(b - a) / 6 })),
+  // the entrance's broad steps from the parking up to the front terrace (pairs 1 and 3; S8's first flight)
+  ...[CW_LEVELS.front.steps].map((q) => ({ x0: q.x0, x1: q.x1, z0: q.z0, z1: q.z1, flights: 1, steps: q.n, tread: Math.abs(q.x1 - q.x0) / q.n })),
+  // the Great Hall: the curved steps from the forecourt up to the entrance terrace (their walkable run; greathall.ts)
+  { x0: -982, x1: -985, z0: 123, z1: 135, flights: 1, steps: 6, tread: 0.5 },
   // Volta: from the forecourt up to the entrance
   { x0: -245, x1: -258.6, z0: 60, z1: 72, flights: 3, steps: 5, tread: 0.4 },
   // the Balme Library: from the pool deck up to the middle terrace and on up to the road before the library
@@ -296,6 +352,18 @@ function stairAt(s: Stairs, foot: number, top: number, x: number) {
   const dir = Math.sign(s.x1 - s.x0), len = Math.abs(s.x1 - s.x0), u = (x - s.x0) * dir;
   if (u <= 0) return foot;
   if (u >= len) return top;
+  if (s.plan) {
+    const n = s.plan.reduce((m, [k]) => m + k, 0), r = (top - foot) / n;
+    let a = 0, done = 0;
+    for (const [k, land] of s.plan) {
+      const fl = k * s.tread;
+      if (u < a + fl) return foot + (done + Math.min(k, Math.floor((u - a) / s.tread) + 1)) * r;
+      done += k; a += fl;
+      if (u < a + land) return foot + done * r;
+      a += land;
+    }
+    return top;
+  }
   const seg = len / s.flights, rise = (top - foot) / s.flights, r = rise / s.steps, k = Math.floor(u / seg), w = u - k * seg;
   return foot + k * rise + Math.min(s.steps, Math.floor(w / s.tread) + 1) * r;
 }
@@ -306,7 +374,21 @@ const topOf = (s: Stairs) => endOf(s, s.x1);
 const footOf = (s: Stairs) => endOf(s, s.x0 - Math.sign(s.x1 - s.x0) * 0.5);
 /** where the stairways are, the height of their top and foot, and the tread height along the climb */
 export function stairsOf() {
-  return STAIRS.map((s) => { const top = topOf(s), foot = footOf(s); return { ...s, top, foot, at: (u: number) => stairAt(s, foot, top, u) }; });
+  return STAIRS.map((s) => {
+    const top = topOf(s), foot = footOf(s);
+    // its parts in order along the climb (u from the foot): each step and each landing, with the height of its tread
+    const segs: { u0: number; u1: number; h: number; landing: boolean }[] = [], len = Math.abs(s.x1 - s.x0);
+    const plan = s.plan ?? Array.from({ length: s.flights }, () => [s.steps, len / s.flights - s.steps * s.tread] as [number, number]);
+    const n = plan.reduce((m, [k]) => m + k, 0), r = (top - foot) / n;
+    let a = 0, done = 0;
+    plan.forEach(([k, land], i) => {
+      for (let j = 0; j < k; j++) { segs.push({ u0: a, u1: a + s.tread, h: foot + (done + j + 1) * r, landing: false }); a += s.tread; }
+      done += k;
+      const l = i === plan.length - 1 ? Math.max(0, len - a) : land;
+      if (l > 0.01) { segs.push({ u0: a, u1: a + l, h: foot + done * r, landing: true }); a += l; }
+    });
+    return { ...s, top, foot, segs, at: (u: number) => stairAt(s, foot, top, u) };
+  });
 }
 
 /** inside a stairway (its steps are modelled: the ground mesh keeps below them) */
