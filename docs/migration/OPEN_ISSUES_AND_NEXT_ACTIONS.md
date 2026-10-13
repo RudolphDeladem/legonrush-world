@@ -60,8 +60,8 @@ a wider screenshot is needed.
 The UPSA campus's second layer (`docs/upsa-campus/evidence-ledger.md`). **Not on `main`**: the owner's UPSA packs ask
 for no push to `main` without approval. Open for the owner: approval to publish; the towers' footprint (the aerial shows
 two larger blocks west of the confirmed outline); Ewuntoma Medical Centre and the CIMG building's positions; the names of
-the six-storey block and the four-storey group; the stand's roof. Next: the bush west of the campus wall (the aerial's
-woodland, via `scripts/landcover/cover.py` and `scrubkit.ts`), trees in the car parks and the quadrangle.
+the six-storey block and the four-storey group; the stand's roof. Batch 128 added the bush west of the wall and the campus's shade trees from the aerial (also branch only). Next: paved
+walks and drains along the Astro Turf and between the blocks (the owner's photos).
 
 ## 1. Awaiting the owner (decisions, as of 2026-10-11)
 

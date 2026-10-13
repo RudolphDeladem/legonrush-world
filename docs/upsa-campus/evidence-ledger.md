@@ -47,7 +47,8 @@ Labels: [VERIFIED] [DECISION] [ASSUMPTION] [INCOMPLETE].
 | C1 | Ewuntoma Medical Centre | P2 photo_18 (sign); owner's second document: plus code MR7M+4RF | white three-storey block, a canopy with the name, a red cross | 3 visible | the plus code decodes to x 2398, z −1218: inside KOKA's mapped outline, beside machine-detected outline 63, which the aerial shows as KOKA's roof | low | **not placed** |
 | C2 | CIMG building | P2 photo_13–15 (CIMG sign, "…J.N. MARTEY") | white, blue stair tower, blue windows | 4 visible | no pin, no footprint | low | not placed |
 | D1 | Other campus blocks | aerial (flat white roofs); all clips | white, blue windows, flat roofs | estimates by footprint: 1–4 | mapped outlines inside the campus (the mapped outline widened to the campus wall and round the turf) | finish high; storeys low | finished: white walls, blue windows, flat roofs behind a parapet (generic builder, `upsaStyle`) |
-| E1 | Woodland and bush west of the campus wall | aerial; every clip | dense bush and trees to the wall | – | x < 2138 | high | **not built**; the next step |
+| E1 | Woodland and bush west of the campus wall | aerial; every clip | dense bush and trees to the wall, bare red patches | – | x 2028–2135, the aerial's extent (it continues west beyond the picture: not drawn there) | high | built (batch 128): the aerial's cover painted over the grass, crowns by its dense green (`upsagreen.ts`) |
+| E2 | Shade trees on the campus | aerial; P2 photo_31, 32; web `images (14)`, `(16)` | broad crowns on the lawns, round the quadrangle | – | where the aerial's crowns are, off roads, paths, buildings, car-park bays and the models | medium (heights and trunks estimated) | built (batch 128) |
 
 ## Conflicts recorded before any change
 

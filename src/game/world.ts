@@ -20,6 +20,7 @@ import { KQ } from './kuffour';
 import { offAsphalt } from './science';
 import { EARTH_ROADS } from './ghlplan';
 import { buildScrubLands } from './ghlandscape';
+import { buildUpsaGreen } from './upsagreen';
 import { ownsEdges } from './ipsplan';
 import { collisionRoots } from './meshcollide';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, roadClearance, ROAD_WIDTH } from './life';
@@ -482,6 +483,9 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
   // the land behind the Great Hall and the tennis complex's belt: the aerials' ground cover and plants (ghlandscape.ts)
   const scrub = buildScrubLands();
   group.add(scrub);
+  yield 'step';
+  // the UPSA campus's shade trees and the bush west of its wall, from the owner's aerial (upsagreen.ts)
+  group.add(buildUpsaGreen());
   yield 'step';
 
   // trees, kerbs, lamps, stops, signs, cars, kiosks and people (see life.ts)

@@ -3716,3 +3716,22 @@ Route lengths are identical and access is unchanged.
 - The bush west of the wall (next).
 
 **Not on `main`** until the owner approves; the UPSA packs ask for that.
+
+## UPSA planting: the bush west of the wall and the campus's shade trees (from the owner's aerial)
+
+The owner's Apple aerial is read into a 2 m ground-cover grid by `scripts/landcover/cover.py` (`UPSA_COVER`, the same
+classes as the Great Hall's land; here a cell counts as dense green below a brightness of 0.31, since crowns are darker
+than lawns in this capture). `upsagreen.ts` uses the grid in two places.
+
+**West of the campus wall.** From x 2028 to 2135, the aerial's mosaic is painted over the grass: the thicket floor, the
+green and dry cover, and the bare red and pale patches. On it stand crowns by the dense green: trees on short trunks
+where it is thickest, low bushes round them, and scattered shrubs on the open patches. Every clip of the UPSA packs
+shows this bush up to the wall (`docs/upsa-campus/sheet-green.jpg`).
+
+**On the campus.** Shade trees stand only where the aerial shows crowns, clear of the roads, the paths, the buildings,
+the car-park bays and the models' pitch and courts. That is mostly round the quadrangle and on the lawns.
+
+*Assumed.* Every plant's height and trunk. *Incomplete.* The bush continues west beyond the aerial's edge; nothing is
+drawn past it.
+
+Route lengths are identical; the route tests, the build and the smoke ride pass. **Not on `main`** until the owner approves.
