@@ -3311,3 +3311,58 @@ new. No parked cars are baked in.
 
 *Would settle it*: Nophil Heights' measured outline, and whether the unfinished tan block east of it should be
 modelled.
+
+## UPSA landmarks: the new Main Entrance, KOKA, Justice Aryeetey, the Administration, the Library (the owner's pack)
+
+The pack is `LEGONRUSH_UPSA_Landmark_Reconstruction_Brief.docx`, with 35 embedded images. It is a separate pack from
+the IPS Road opposite UPSA work. The evidence, the landmark-to-outline table and the confidence of each part are in
+`docs/upsa-landmarks/evidence-audit.md`; the comparison sheets are in the same folder.
+
+The models are in `upsalandmarks.ts`, with their numbers in `upsalandmarksplan.ts` and their cameras in
+`upsalmviews.ts` (preview views `upsl1`-`upsl11`, `upslTop`). Every landmark stands on its mapped outline.
+
+**The new Main Entrance** (osm:way/1009392399) replaces the older blue-and-white canopy gate and its banner. It is a
+white square-tiled portal:
+- the quarter arch sweeps from the ground on the west up to the header, over a deep soffit with skylights;
+- the tall tiled block on the east has blue windows;
+- the outer fascia carries the name, the motto, "UPSA" and the crest;
+- under the arch: the booth and the raised barriers; at its foot, the ramp with black rails, and the planting bed;
+- paving runs either side of the road.
+
+The road's opening is unchanged and open its whole height. `upsacampus.ts` keeps only the campus wall.
+
+**Kofi Ohene-Konadu Auditorium (KOKA)** (osm:way/1009392441):
+- the white tiled side masses with slot windows;
+- the broad convex blue glass curtain wall over the dark-column entrance;
+- the blue metal roof;
+- the paved forecourt.
+
+**The court.** The fountain, with its stepped orange rim, sits where the quadrangle's mapped walks meet. Benches stand
+beside the walks, and the "We love UPSA" letters stand on the lawn.
+
+**The Justice Aryeetey Building** (osm:relation/13514869, to KOKA's right as one faces it) has six storeys round its two
+courtyards. Blue strips run up its west front. The central blue bay has an arched cap over the main entrance, where the
+UPSA ride ends.
+
+**The Opoku Ampomah Building / Central Administration** (osm:way/1009392440):
+- the drum, with the curved blue glass band facing the car park;
+- the OPOKU AMPOMAH BUILDING band under the glass, and the grey CENTRAL ADMINISTRATION band over the entrance;
+- "UPSA" on the roof edge.
+
+Its wings (osm:way/376818534, osm:way/885510988) have blue cladding panels under pale blue hipped roofs.
+
+**The Joshua Alabi Library** (osm:way/885510989) has six storeys on its mapped plan. The taller central bay faces the
+road on the north, with:
+- the arched window and the pediment;
+- the blue columns;
+- the JOSHUA ALABI LIBRARY sign.
+
+**The Abednego F. O. Amartey Twin Towers** are unchanged: they stay on osm:way/885510985 (the IPS Road work).
+
+**Not supplied.** The brief names three things the upload did not include:
+- `reference_images/document_ready/`;
+- `ONLINE_SOURCE_REGISTER.csv`;
+- the contact sheet.
+
+**Estimates.** All heights, the gate's lane arrangement, KOKA's rear and the library's front (the north face, from the
+map) are estimates. They are documented in the audit.

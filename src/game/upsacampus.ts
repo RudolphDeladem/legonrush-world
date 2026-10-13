@@ -11,11 +11,10 @@
 // - the divided road: the kerbed grass median (RW10, RW11), the south verge of red earth with its open concrete drain,
 //   the wooden poles and their wires, the next lattice tower of the line (RW11), the north verge with its scrub and
 //   streetlights, the "UPS" bus stop;
-// - the UPSA campus wall either side of the Main Gate; the gate: the blue-and-white canopy over the entrance road with
-//   the university's name on its fascia, a gatehouse in each outer bay, the lift barriers raised (appearance from the
-//   written descriptions of the gate photographs: medium-low confidence);
+// - the UPSA campus wall either side of the Main Gate (the gate itself: the new tiled portal of the owner's UPSA landmark
+//   pack, upsalandmarks.ts);
 // - the Abednego F. O. Amartey Towers: two white blocks of ten levels with blue glazing, joined by a bridge, the name on
-//   the roof (RW10, RW11; footprint satellite-detected);
+//   the roof (RW10, RW11; on the mapped outline osm:way/885510985, the owner's correction);
 // - Prestige Hostel's name and its paved forecourt behind chained bollards (RW14);
 // - at the academic core: the entrance canopy on the block's west front, the paved apron to it, trees round the
 //   quadrangle.
@@ -31,6 +30,7 @@ import { NODE_XZ, ROADS } from './campusmap';
 import { latticeTower, medianGrass, pavers, rod, run, strip, wires, type V3 } from './upsa';
 import { band, redEarth } from './ipsroad';
 import { FRONT_HALF, IPS_HALF, LAMP_OFF, NORTH_WALK, POLE_OFF, TOWERS_E, zFront, zIps } from './ipsplan';
+import { PORTAL } from './upsalandmarksplan';
 import {
   BUS_STOP, CORE, CW_HALF, FORK, GATE, HOARD_LINE, HOARDING, MEDIAN, PRESTIGE, QUAD, RING, SOUTH_VERGE, S_POLES, TOWER_S, TOWERS_AM, TYRES,
   WALL_E, WALL_H, WALL_W, WEST, zNorth, zSouth,
@@ -283,15 +283,15 @@ const approach: Spec = {
 };
 
 // ======================================================================================================
-// the campus wall and the Main Gate
+// the campus wall either side of the Main Gate (the new tiled portal itself is the owner's UPSA landmark pack's:
+// upsalandmarks.ts; the older blue-and-white canopy gate is gone)
 // ======================================================================================================
 const GO: [number, number] = [(GATE.x0 + GATE.x1) / 2, (GATE.z0 + GATE.z1) / 2];
 const G = (x: number, z: number): [number, number] => [x - GO[0], z - GO[1]];
 const gate: Spec = {
-  name: 'UPSA Main Gate', axis: [1, 0], origin: GO, storey: 3.2, style: PLAIN, roofColor: '#e9e8e3', fascia: UPSA_BLUE, pitch: 0,
-  replaces: [[GATE.roadX + 0.5, (GATE.z0 + GATE.z1) / 2]],
+  name: 'UPSA campus wall', axis: [1, 0], origin: GO, storey: 3.2, style: PLAIN, roofColor: '#e9e8e3', fascia: UPSA_BLUE, pitch: 0,
   blocks: [],
-  keep: [[GATE.x0 - 2 - GO[0], GATE.x1 + 2 - GO[0], GATE.z0 - 4 - GO[1], GATE.z1 + 2 - GO[1]]],
+  keep: [],
   extras: (k: Kit) => {
     const b = new Bag(GO), c: Part[] = [];
     // ---- the campus wall: rendered cream panels between pilasters, a blue coping (colours assumed: UPSA's blue and
@@ -309,44 +309,9 @@ const gate: Spec = {
         }
       }
     }
-    // ---- the gate ----
-    const [x0, z0] = G(GATE.x0, GATE.z0), [x1, z1] = G(GATE.x1, GATE.z1), H = GATE.h;
-    const [c0] = G(GATE.clear[0], 0), [c1] = G(GATE.clear[1], 0);
-    // the gatehouses in the outer bays: white over a blue base, a sliding window and a door toward the road
-    for (const [h0, h1, s] of [[x0 + 0.3, c0 - 0.3, 1], [c1 + 0.3, x1 - 0.3, -1]] as [number, number, number][]) {
-      const zf = z0 + 1.2, zb = z1 - 1.2;
-      c.push([box(h0, h1, 0, 3.0, zf, zb), WHITE], [box(h0 - 0.03, h1 + 0.03, 0, 0.7, zf - 0.03, zb + 0.03), UPSA_BLUE], [box(h0 - 0.15, h1 + 0.15, 3.0, 3.2, zf - 0.15, zb + 0.15), UPSA_BLUE]);
-      const face = s > 0 ? h1 : h0, zm = (zf + zb) / 2;
-      b.win.push(new THREE.PlaneGeometry(2.4, 1.1).rotateY((s * Math.PI) / 2).translate(face + s * 0.03, 1.75, zm - 2));
-      b.door.push(new THREE.PlaneGeometry(0.95, 2.1).rotateY((s * Math.PI) / 2).translate(face + s * 0.03, 1.05, zm + 2.2));
-      b.win.push(new THREE.PlaneGeometry(1.8, 1.0).translate((h0 + h1) / 2, 1.8, zb + 0.03));
-      wallSolids(h0 + GO[0], zf + GO[1], h1 + GO[0], zf + GO[1], 0.3); wallSolids(h1 + GO[0], zf + GO[1], h1 + GO[0], zb + GO[1], 0.3);
-      wallSolids(h1 + GO[0], zb + GO[1], h0 + GO[0], zb + GO[1], 0.3); wallSolids(h0 + GO[0], zb + GO[1], h0 + GO[0], zf + GO[1], 0.3);
-    }
-    // the canopy: white columns at its corners and either side of the road, a deep slab, the blue fascia all round
-    for (const x of [x0 + 0.5, c0 - 0.35, c1 + 0.35, x1 - 0.5]) for (const z of [z0 + 0.5, z1 - 0.5]) {
-      c.push([new THREE.CylinderGeometry(0.32, 0.36, H - 0.6, 14).translate(x, (H - 0.6) / 2, z), WHITE]);
-      SOLIDS.add(x + GO[0], z + GO[1], 0.4);
-    }
-    c.push([box(x0 - 0.4, x1 + 0.4, H - 0.6, H - 0.45, z0 - 0.4, z1 + 0.4), '#e2e1dc'], [box(x0 - 0.5, x1 + 0.5, H - 0.45, H + 0.7, z0 - 0.5, z1 + 0.5), UPSA_BLUE]);
-    c.push([box(x0 - 0.52, x1 + 0.52, H + 0.7, H + 0.85, z0 - 0.52, z1 + 0.52), WHITE]);
-    // the crest panel standing up over the middle of the front, white with the blue UPSA letters
-    c.push([box(-3.2, 3.2, H + 0.85, H + 2.3, z1 + 0.1, z1 + 0.5), WHITE]);
-    k.signs.push({ text: 'UNIVERSITY OF PROFESSIONAL STUDIES, ACCRA', x: 0, y: H + 0.12, z: z1 + 0.53, ry: 0, w: 19.5, colors: [UPSA_BLUE, '#ffffff'] });
-    k.signs.push({ text: 'UNIVERSITY OF PROFESSIONAL STUDIES, ACCRA', x: 0, y: H + 0.12, z: z0 - 0.53, ry: Math.PI, w: 19.5, colors: [UPSA_BLUE, '#ffffff'] });
-    k.signs.push({ text: 'UPSA', x: 0, y: H + 1.58, z: z1 + 0.52, ry: 0, w: 4.4, colors: ['#ffffff', UPSA_BLUE] });
-    // the lift barriers, their arms raised
-    for (const [bx, s] of [[c0 + 0.35, 1], [c1 - 0.35, -1]] as [number, number][]) {
-      const bz = (z0 + z1) / 2;
-      c.push([box(bx - 0.18, bx + 0.18, 0, 1.05, bz - 0.18, bz + 0.18), '#e8e6e0'], [box(bx - 0.19, bx + 0.19, 0.9, 1.05, bz - 0.19, bz + 0.19), '#c8392f']);
-      for (let i = 0; i < 6; i++) {
-        const a: V3 = [bx + s * 0.1 + s * i * 0.12, 1.0 + i * 0.6, bz], e: V3 = [bx + s * 0.1 + s * (i + 1) * 0.12, 1.0 + (i + 1) * 0.6, bz];
-        c.push([rod(a, e, 0.08), i % 2 ? '#c8392f' : '#f2f2f2']);
-      }
-      SOLIDS.add(bx + GO[0], bz + GO[1], 0.25);
-    }
-    // the short walls closing the gaps between the gatehouses and the campus wall's ends
-    for (const [[ax, az], [bx, bz]] of [[WALL_W[WALL_W.length - 1], [GATE.x0 + 0.3, GATE.z1 - 1.2]], [WALL_E[0], [GATE.x1 - 0.3, GATE.z1 - 1.2]]] as [[number, number], [number, number]][]) {
+    // the short walls closing the gaps between the campus wall's ends and the new Main Entrance's outer front
+    // (upsalandmarks.ts)
+    for (const [[ax, az], [bx, bz]] of [[WALL_W[WALL_W.length - 1], [PORTAL.foot + 0.3, PORTAL.zS - 0.1]], [WALL_E[0], [WALL_E[0][0], PORTAL.zS - 0.1]]] as [[number, number], [number, number]][]) {
       const [px, pz] = G(ax, az), [qx, qz] = G(bx, bz);
       if (Math.hypot(qx - px, qz - pz) < 0.3) continue;
       c.push([run(px, pz, qx, qz, 0, WALL_H, 0.22), '#e9e4d6'], [run(px, pz, qx, qz, WALL_H, WALL_H + 0.1, 0.3), UPSA_BLUE]);

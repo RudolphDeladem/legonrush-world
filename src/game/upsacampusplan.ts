@@ -67,9 +67,8 @@ export const WALL_W: [number, number][] = [[2155.4, -902.3], [2250.2, -901.9], [
 export const WALL_E: [number, number][] = [[2300.1, -905.8], [2315.7, -906.0], [2316.4, -901.7], [2393.1, -898.3]];
 export const WALL_H = 2.4;
 
-/** the UPSA Main Gate: the canopy over the entrance road (footprint osm:way/1009392399), the entrance road
- *  (osm:way/1009392398) through it; the blue-and-white canopy with the university's name on its fascia, the gatehouses
- *  in its outer bays, the lift barriers (appearance from the written descriptions of the sources' gate photographs) */
+/** the UPSA Main Gate: its outline (osm:way/1009392399), the entrance road (osm:way/1009392398) through it, the opening
+ *  kept clear for it (the new tiled portal on it: upsalandmarksplan.ts PORTAL) */
 export const GATE = { x0: 2279.8, x1: 2303.1, z0: -919.6, z1: -906.5, roadX: 2291.0, clear: [2285.2, 2297.2] as [number, number], h: 6.2 };
 /** the "UPS" bus stop on the north verge west of the gate (osm:node/4988349723) */
 export const BUS_STOP: [number, number] = [2262, -893];
@@ -105,10 +104,7 @@ export function upsaPosts(): [number, number, number][] {
   out.push([1895, -861.5, 1.6]);
   for (const sx of [-1, 1]) for (const sz of [-1, 1]) out.push([TOWER_S[0] + sx * 3, TOWER_S[1] + sz * 3, 0.45]);
   out.push([BUS_STOP[0], BUS_STOP[1], 1.6]);
-  // the gate: its columns (the corners and either side of the road), the barrier posts
-  const zc = (GATE.z0 + GATE.z1) / 2;
-  for (const x of [GATE.x0 + 0.5, GATE.clear[0] - 0.35, GATE.clear[1] + 0.35, GATE.x1 - 0.5]) for (const z of [GATE.z0 + 0.5, GATE.z1 - 0.5]) out.push([x, z, 0.4]);
-  out.push([GATE.clear[0] + 0.35, zc, 0.25], [GATE.clear[1] - 0.35, zc, 0.25]);
+  // (the Main Entrance's solids: upsalandmarksplan.ts landmarkPosts)
   // the roundabout island's stall and billboard, the core's canopy columns
   out.push([RING.x - 9, RING.z + 4, 1.4], [RING.x + 7.9, RING.z - 3, 0.2], [RING.x + 11.1, RING.z - 3, 0.2]);
   for (const dz of [-3.2, 3.2]) out.push([CORE.door[0] - 2.6, CORE.door[1] + dz, 0.3]);
