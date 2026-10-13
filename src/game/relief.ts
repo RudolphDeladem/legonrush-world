@@ -25,6 +25,7 @@ import { CUT, CUT_Z, alongCut, cutDepth, cutDrop, deckAt, inBowl, inTrench, onBo
 import { GH } from './greathallplan';
 import { BANKS, bankFace, bankTop, type Bank } from './okplan';
 import { EAST_SCRUB, PLOT, RWALL, eastEdge, eastKerb, tierBack, westKerb } from './lfplan';
+import { TC_BOX, TC_WALL_BOX, tcGround } from './tennisplan';
 
 interface Hollow {
   /** hollow: sunk `depth` below the ground; terrace: raised `depth` above it */
@@ -394,6 +395,10 @@ for (let z = CUT_Z[0]; z < CUT_Z[1]; z += 40) {
 }
 /** the ground grid's cell over each box */
 const BOX_CELL = [...ZONES.map((q) => (q.kind !== 'hill' ? q.cell : undefined)), ...PATHS.map(() => 0.5), 0.25, ...RELIEF_BOXES.slice(ZONES.length + PATHS.length + 1).map(() => 1)];
+// the Commonwealth west tennis complex's terrace (tennisplan.ts): the floor cut into the hill's slope and the ground easing
+// back from its walls; finer over the walls' strip, where the ground steps up behind the stones
+RELIEF_BOXES.push(snap({ x0: TC_BOX[0], x1: TC_BOX[1], z0: TC_BOX[2], z1: TC_BOX[3] }), snap({ x0: TC_WALL_BOX[0], x1: TC_WALL_BOX[1], z0: TC_WALL_BOX[2], z1: TC_WALL_BOX[3] }));
+BOX_CELL.push(1, 0.5);
 
 /** a hill's height along its axis */
 function profileAt(p: [number, number][], x: number) {
@@ -475,7 +480,8 @@ function zoneHeight(x: number, z: number) {
       hill += profileAt(q.profile, x) * t * t * (3 - 2 * t);
     }
   }
-  return hill + low + high;
+  // (the tennis complex's terrace replaces the hill's slope round it: tennisplan.ts)
+  return tcGround(x, z, hill + low + high) ?? hill + low + high;
 }
 
 /** a flat pad for a building standing lower than the ground round it (or higher): the ground is `h` over the rectangle

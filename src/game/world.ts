@@ -17,6 +17,8 @@ import { alongCut, deckAt, inCutBand, inTrench } from './cutplan';
 import { NSIA } from './nsia';
 import { KQ } from './kuffour';
 import { offAsphalt } from './science';
+import { EARTH_ROADS } from './ghlplan';
+import { buildScrubLands } from './ghlandscape';
 import { ownsEdges } from './ipsplan';
 import { collisionRoots } from './meshcollide';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, roadClearance, ROAD_WIDTH } from './life';
@@ -250,6 +252,18 @@ function grassMaterial(map: THREE.Texture) {
   return mat;
 }
 
+/** every road earth for part of its length (ghlplan.ts) */
+const EARTH_SET = new Set(EARTH_ROADS);
+/** a polyline with a point every 2 m */
+function densifyAll(pts: [number, number][]) {
+  const out: [number, number][] = [pts[0]];
+  for (let i = 1; i < pts.length; i++) {
+    const [ax, az] = pts[i - 1], [bx, bz] = pts[i], n = Math.max(1, Math.ceil(Math.hypot(bx - ax, bz - az) / 2));
+    for (let k = 1; k <= n; k++) out.push([ax + ((bx - ax) * k) / n, az + ((bz - az) * k) / n]);
+  }
+  return out;
+}
+
 /**
  * The real campus, built once: ground, ground areas (pitches, parking, water),
  * every road and footpath at its real width, and every building footprint.
@@ -353,8 +367,9 @@ export function buildCampus() {
   const n4Caps: THREE.BufferGeometry[] = [];
   const caps: THREE.BufferGeometry[] = [];
   const pathCaps: THREE.BufferGeometry[] = [];
-  for (const r of ROADS) {
-    const all = densify(r.nodes.map((i) => [NODE_XZ[i * 2], NODE_XZ[i * 2 + 1]] as [number, number]));
+  for (const [ri, r] of ROADS.entries()) {
+    // (a road partly earth, ghlplan.ts: sampled every 2 m, so its asphalt or concrete stops where the earth begins)
+    const all = EARTH_SET.has(ri) ? densifyAll(r.nodes.map((i) => [NODE_XZ[i * 2], NODE_XZ[i * 2 + 1]] as [number, number])) : densify(r.nodes.map((i) => [NODE_XZ[i * 2], NODE_XZ[i * 2 + 1]] as [number, number]));
     // the stairway up to Commonwealth Hall is modelled step by step (commonwealth.ts): no flat path over it
     const runs: [number, number][][] = [[]];
     for (const p of all) {
@@ -434,6 +449,9 @@ export function buildCampus() {
   const halls = buildDiasporaHalls();
   const sites = BLOCK_SITES.map((s) => s.build());
   group.add(halls, ...sites);
+  // the land behind the Great Hall and the tennis complex's belt: the aerials' ground cover and plants (ghlandscape.ts)
+  const scrub = buildScrubLands();
+  group.add(scrub);
 
   // trees, kerbs, lamps, stops, signs, cars, kiosks and people (see life.ts)
   const life = buildCampusLife();
@@ -447,7 +465,7 @@ export function buildCampus() {
   applyRelief(group);
   // what the free-ridden bike bumps into besides footprints and trunks (meshcollide.ts)
   collisionRoots(halls, ...sites, life);
-  cullBeyondFog(group, [...(buildings.children as THREE.Mesh[]), ...(halls.userData.cullMeshes as THREE.Mesh[]), ...sites.flatMap((s) => s.userData.cullMeshes as THREE.Mesh[]), ...(life.userData.cullMeshes as THREE.Mesh[]), ...edges.meshes]);
+  cullBeyondFog(group, [...(buildings.children as THREE.Mesh[]), ...(halls.userData.cullMeshes as THREE.Mesh[]), ...sites.flatMap((s) => s.userData.cullMeshes as THREE.Mesh[]), ...(life.userData.cullMeshes as THREE.Mesh[]), ...edges.meshes, ...(scrub.userData.cullMeshes as THREE.Mesh[])]);
   return group;
 }
 

@@ -3590,3 +3590,45 @@ with its board, the rocks.
 
 *Assumed*: every height and unmapped span; the slab as the Ghana Water views' taller block (inferred); the slab and wing
 split; the second hut; illegible sign lines left as bands. *Would settle it*: the ECG and Ghana Water site plans.
+
+## The Commonwealth west tennis complex: the owner's correction brief (Pictures 1-12)
+
+The evidence, the registration and the open questions are in `docs/tennis-west/evidence-audit.md` (the pictures in
+`docs/tennis-west/refs/`). The code is in `tennis.ts`, the numbers in `tennisplan.ts`, the terrace in `relief.ts`
+(`tcGround`), the belt beyond the modelled trees in `ghlandscape.ts`, and the cameras `tc*` in `tcviews.ts`.
+
+**What was wrong.** The two mapped pitches north of Commonwealth Hall were drawn as striped football grass on the
+hill's open slope, under a few palms and orange flame trees (Pictures 9-11).
+
+**The terrace (brief p.4; Pictures 1, 4, 7).** One level floor cut into the slope, held on all four sides by stone
+retaining walls of irregular tan, grey and reddish stones; their exposed height steps along each side (about 0.6 to 1.6
+m, higher at the corners); the ground behind them eases back up to the hill.
+
+**The courts (Pictures 1-8, 12).** West, the hard court: faded blue in a pale green run-off, the full line system, worn
+patches, scuffs and cracks as texture, one net. East, the red-soil ground: two courts side by side with their own nets,
+and red ground on to the trees (Picture 12) without lines. Chain-link fence on thin posts with braces, a fence between
+the two surfaces, vines on the red side; the lattice mast and the chair-like frame plainly (Picture 8).
+
+**The belt (Pictures 5-8, 12).** Broad mature crowns and shrubs close round the fence where the aerial is dense, the
+three round trees south of the red courts, the belt beyond as instanced crowns from the aerial; palms and flame trees in
+the local scene become broadleaf street trees.
+
+*Assumed*: the floor's level, every wall height and step, the fence's height, the trees' heights; the mast's spot.
+*Open*: the way in (no gate, stair or ramp is shown: none modelled), the use of the east red strip, the name.
+
+## The land behind the Great Hall: the owner's landscape correction brief (Pictures 1-3)
+
+The evidence, the registration and the open questions are in `docs/great-hall-landscape/evidence-audit.md` (the pictures
+in `docs/great-hall-landscape/refs/`). The aerials are read into ground-cover grids by `scripts/landcover/cover.py`
+(written to `landcover.ts`); the work area, the earth tracks and the pale clearing are in `ghlplan.ts`; the painted
+ground and the plants in `ghlandscape.ts` with `scrubkit.ts`; the cameras `ghl*` in `ghlviews.ts`.
+
+**What was wrong.** From the Legon ByPass to the Great Hall's compound the game had one mown lawn, the mapped tracks as
+concrete strips and asphalt, and a 49 m red-roofed building on an outline the aerials show as a pale flat clearing.
+
+**Now.** The aerials' mosaic over the whole marked area: dense thickets and short-stemmed tree clusters with open gaps,
+low green cover, dry olive cover, exposed red-orange soil, dark brown ground with small shrubs; the mapped tracks as
+narrow worn earth (routes unchanged); the pale clearing as ground; grass tufts and a fine ground grain near the camera.
+
+*Assumed*: every plant's height and trunk (the aerials do not show them; the owner's short-stem preference is the
+baseline). *Open*: the pale clearing's function; the land south of z +487 (no aerial); unmapped worn paths.

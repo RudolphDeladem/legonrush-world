@@ -26,6 +26,7 @@ import { ownsEdges } from './ipsplan';
 import { parkingFill } from './lbplan';
 import { inLfKeep } from './lfplan';
 import { inEcKeep } from './ecgplan';
+import { inTcLocal } from './tennisplan';
 
 /** real road widths by class: main, through, residential, service lane, footpath */
 export const ROAD_WIDTH = [9, 7.4, 6.2, 4.6, 2.6];
@@ -713,6 +714,9 @@ export function buildCampusLife() {
   const tree = (x: number, z: number, sp: Species, sc = 1) => {
     // by NSIA Road the mature broadleaf trees of the owner's photos, not palms or flame trees (the NSIA Road brief)
     if ((sp === 'palm' || sp === 'flame') && x > bx0 && x < bx1 && z > bz0 && z < bz1) sp = rand() < 0.6 ? 'mahogany' : 'neem';
+    // round the Commonwealth west tennis complex the belt's broadleaf trees, not palms or orange-flowering flame trees (the
+    // owner's tennis brief, Pictures 10 and 11; a hash, not the shared random sequence, so nothing else moves)
+    else if ((sp === 'palm' || sp === 'flame') && inTcLocal(x, z)) sp = hash(x, z) < 0.6 ? 'mahogany' : 'neem';
     const leaf = pick(rand, LEAF[sp]).map(C);
     cells.p(x, z).add(T[sp], yawM(x, 0, z, rand() * 6.28, sc), leaf, 0.9 + rand() * 0.18);
     SOLIDS.add(x, z, 0.35 * sc);

@@ -41,6 +41,14 @@ Known technical points from this period [VERIFIED]:
 Next: the owner's next brief. Candidate areas not yet given a brief: the four Bani Hostel blocks, the rest of the
 UPSA campus beyond the landmarks, the neighbourhoods off La Bawaleshie Road.
 
+## 0b. Update 2026-10-13 (batches 124, 125)
+
+Two briefs done in one batch each: the Commonwealth west tennis complex (`docs/tennis-west/evidence-audit.md`) and the
+land behind the Great Hall (`docs/great-hall-landscape/evidence-audit.md`). Open for the owner: the tennis complex's way
+in (no gate, stair or ramp is shown: the fence closes it), the east red strip's use, the mast, the name; the pale
+clearing's function, an aerial south of z +487, the unmapped worn paths. New tool: `scripts/landcover/cover.py` reads an
+aerial into a ground-cover grid (`src/game/landcover.ts`) for `scrubkit.ts` (painted ground, instanced crowns and tufts).
+
 ## 1. Awaiting the owner (decisions, as of 2026-10-11)
 
 | # | Question | Why it matters |
