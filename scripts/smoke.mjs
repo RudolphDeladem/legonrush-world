@@ -32,7 +32,8 @@ try {
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto(`http://localhost:${PORT}/play/`);
   await page.click('#guest', { timeout: 90000 });
-  await page.waitForSelector('#dist', { timeout: 30000 });
+  // the world builds in the background behind the menu; the ride starts once it is ready
+  await page.waitForSelector('#dist', { timeout: 300000 });
   // the tutorial ride starts straight away; wait until the rider has covered some road
   await page.waitForFunction(() => Number(document.querySelector('#dist')?.textContent) >= 0.03, null, { timeout: 120000 });
   console.log(`smoke: rode ${await page.textContent('#dist')} km`);

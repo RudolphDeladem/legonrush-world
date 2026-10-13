@@ -70,7 +70,7 @@ export function coverOverlay(o: Overlay): THREE.Mesh[] {
   const [x0, x1, z0, z1] = o.box, W = Math.ceil((x1 - x0) / o.mpp), H = Math.ceil((z1 - z0) / o.mpp);
   const cv = document.createElement('canvas');
   cv.width = W; cv.height = H;
-  const g = cv.getContext('2d')!;
+  const g = cv.getContext('2d', { willReadFrequently: true })!;
   const img = g.createImageData(W, H), d = img.data;
   for (let j = 0; j < H; j++) {
     const z = z0 + (j + 0.5) * o.mpp;

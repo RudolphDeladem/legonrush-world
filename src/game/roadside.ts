@@ -13,6 +13,7 @@
 //   rough strip before it (pair 5), and the kiosks against the police station's north wall (pair 6).
 // Everything is placed from the brief's maps and photographs, none of it measured: positions are approximate.
 import * as THREE from 'three';
+import { segIndex, type Seg5 } from './seggrid';
 import { BUILDINGS, NODE_XZ, ROADS } from './campusmap';
 import { createSite, render, type Kit, type Spec, type Style } from './blocks';
 import { Bag, RED_BASE, WALL, gh, hash, lowWing, tuft, vnoise, wallSolids, type R4 } from './enkit';
@@ -42,14 +43,8 @@ const segDist = (s: Seg, x: number, z: number) => {
   return Math.hypot(x - s.ax - dx * t, z - s.az - dz * t);
 };
 /** how far (x, z) is from the nearest road or path edge (negative on it) */
-const clearance = (x: number, z: number) => {
-  let best = 99;
-  for (const s of SEGS) {
-    if (Math.min(s.ax, s.bx) > x + 40 || Math.max(s.ax, s.bx) < x - 40 || Math.min(s.az, s.bz) > z + 40 || Math.max(s.az, s.bz) < z - 40) continue;
-    best = Math.min(best, segDist(s, x, z) - s.half);
-  }
-  return best;
-};
+const SEG_NEAR = segIndex(SEGS.map((s) => [s.ax, s.az, s.bx, s.bz, s.half] as Seg5));
+const clearance = (x: number, z: number) => SEG_NEAR(x, z, 40);
 /** the distance from (x, z) to the nearest of a set of polylines */
 const nearLine = (lines: [number, number][][], x: number, z: number) => {
   let best = 99;

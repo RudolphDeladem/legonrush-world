@@ -570,9 +570,10 @@ export function densify(pts: [number, number][], step = 2): [number, number][] {
 /**
  * Sets the ground under everything in a group: a merged world-space mesh has each vertex dropped
  * by the ground height at its x, z; an instanced mesh each instance by the height under its origin;
- * a placed object (a model, a sign, an arch) as a whole by the height under its position.
+ * a placed object (a model, a sign, an arch) as a whole by the height under its position. With `only`, just that child of
+ * the root (the campus is lowered a part at a time).
  */
-export function applyRelief(root: THREE.Object3D) {
+export function applyRelief(root: THREE.Object3D, only?: THREE.Object3D) {
   root.updateMatrixWorld(true);
   const m = new THREE.Matrix4(), v = new THREE.Vector3(), I = new THREE.Matrix4();
   const visit = (o: THREE.Object3D, fn: (x: number, z: number) => number) => {
@@ -614,7 +615,7 @@ export function applyRelief(root: THREE.Object3D) {
     }
     for (const c of o.children) visit(c, fn);
   };
-  visit(root, groundHeight);
+  visit(only ?? root, groundHeight);
 }
 
 /** the relief ground's tile size, metres */

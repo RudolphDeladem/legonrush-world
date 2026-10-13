@@ -889,7 +889,7 @@ function lastRide(): { last: LastRide; route: () => Route | null } | null {
 /** a new route takes a moment to build: show a campus fact meanwhile */
 function play(tutorial: boolean, route: Route = CAMPUS_LOOP, opts: PlayOpts = {}) {
   if (!profile) return;
-  if (game.currentRoute === route) return ride(tutorial, route, opts);
+  if (game.currentRoute === route && game.isReady) return ride(tutorial, route, opts);
   render(`
     <div class="screen solid center loading light-ui fade-in">
       <div class="brand-mark">LEGON<em>RUSH</em></div>
@@ -898,11 +898,20 @@ function play(tutorial: boolean, route: Route = CAMPUS_LOOP, opts: PlayOpts = {}
       <div class="splash-bar"><div></div></div>
       ${factBox()}
     </div>`);
-  // let the loading screen paint before the world is built
-  setTimeout(() => {
+  // let the loading screen paint before the route is built; the campus itself may still be building in the background
+  // (Game.ready): the ride starts when it is done
+  const shown = app.firstElementChild;
+  // while the campus builds, the bar fills with its progress (a looping animation competed with the build on slow devices)
+  if (!game.isReady) {
+    const bar = app.querySelector<HTMLElement>('.splash-bar');
+    bar?.classList.add('fill');
+    game.onProgress = (p) => { if (bar?.isConnected) (bar.firstElementChild as HTMLElement).style.width = `${Math.round(p * 100)}%`; };
+  }
+  void game.ready.then(() => setTimeout(() => {
+    if (app.firstElementChild !== shown) return; // (the rider left the loading screen meanwhile)
     game.setRoute(route);
     setTimeout(() => ride(tutorial, route, opts), 500);
-  }, 60);
+  }, 60));
 }
 
 function ride(tutorial: boolean, route: Route, opts: PlayOpts) {

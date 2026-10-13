@@ -857,7 +857,8 @@ const anglicanHall: Spec = (() => {
  *  (world) of cs-metre cells onto the ground, and plant the bushes and trees (a tree on one cell in treeEvery) */
 function openGround(k: Kit, O: [number, number], rows: string[], x0: number, z0: number, cs: number, seed: number, treeEvery: number, bushEvery: number) {
   const X = (x: number) => x - O[0], Z = (z: number) => z - O[1];
-  const H = rows.length, W = rows[0].length, P = cs >= 3 ? 8 : 10;
+  // (a cell's pixels, the picture kept within 1536 px on its long side: it reached 1024 x 5696, the game's largest texture)
+  const H = rows.length, W = rows[0].length, P = Math.max(2, Math.min(cs >= 3 ? 8 : 10, Math.floor(1536 / Math.max(W, H))));
   const soil = ['#a8714a', '#b27d52', '#9d6943'], mixed = ['#9a7c4c', '#8d7a49', '#a2814f'], grass = ['#7c8a45', '#6e7f3e', '#879348', '#8a8a4c'];
   const tex = canvas(W * P, H * P, (g) => {
     g.clearRect(0, 0, W * P, H * P);
@@ -873,13 +874,13 @@ function openGround(k: Kit, O: [number, number], rows: string[], x0: number, z0:
       if (ch === '.') continue;
       const pal = ch === 's' ? soil : ch === 'm' ? mixed : grass;
       g.fillStyle = pal[((i + 1) * (j + 3)) % pal.length]; g.globalAlpha = 0.6;
-      g.beginPath(); g.ellipse((i + 0.5) * P + (rnd() - 0.5) * 4, (j + 0.5) * P + (rnd() - 0.5) * 4, P * 0.9, P * 0.75, rnd() * 3, 0, Math.PI * 2); g.fill();
+      g.beginPath(); g.ellipse((i + 0.5) * P + (rnd() - 0.5) * P * 0.5, (j + 0.5) * P + (rnd() - 0.5) * P * 0.5, P * 0.9, P * 0.75, rnd() * 3, 0, Math.PI * 2); g.fill();
     }
     g.globalAlpha = 1;
     speckle(g, 0, 0, W * P, H * P, Math.round(W * H * 2), ['rgba(70,90,40,0.35)', 'rgba(150,100,60,0.35)', 'rgba(200,170,120,0.25)']);
     // tracks worn across it: the soil cells that run in lines show through a little lighter
     g.globalCompositeOperation = 'destination-out';
-    for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) if (rows[j][i] === '.') g.fillRect(i * P - 2, j * P - 2, P + 4, P + 4);
+    for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) if (rows[j][i] === '.') g.fillRect(i * P - P / 4, j * P - P / 4, P * 1.5, P * 1.5);
     g.globalCompositeOperation = 'source-over';
   });
   const mat = new THREE.MeshStandardMaterial({ map: tex, roughness: 1, transparent: true, alphaTest: 0.5 });

@@ -1,11 +1,12 @@
 import * as THREE from 'three';
+import { liteCanvas } from './lite';
 
 function canvasTexture(size: number, draw: (ctx: CanvasRenderingContext2D, size: number) => void) {
   const c = document.createElement('canvas');
   c.width = c.height = size;
-  const ctx = c.getContext('2d')!;
+  const ctx = c.getContext('2d', { willReadFrequently: true })!;
   draw(ctx, size);
-  const tex = new THREE.CanvasTexture(c);
+  const tex = new THREE.CanvasTexture(liteCanvas(c));
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   tex.anisotropy = 4;
@@ -180,6 +181,39 @@ export const facadeTexture = () =>
     ctx.fillRect(winX - 10, winY + winH + 3, winW + 20, 8);
     ctx.fillStyle = 'rgba(70,60,50,0.35)';
     ctx.fillRect(winX - 10, winY + winH + 11, winW + 20, 4);
+  });
+
+/**
+ * The same bay as facadeTexture with the Great Hall's and Commonwealth Hall's windows instead of glass: white paint, a
+ * plain frame, two leaves of brown timber louvres (the owner: the buildings round the Great Hall have wooden windows,
+ * not glass).
+ */
+export const louvreFacadeTexture = () =>
+  canvasTexture(256, (ctx, s) => {
+    ctx.fillStyle = '#fbfaf7';
+    ctx.fillRect(0, 0, s, s);
+    speckle(ctx, s, 2600, ['#f1eee6', '#ffffff', '#ece8de'], 1.6);
+    const winX = 46, winW = 164, winY = 44, winH = 128;
+    const streak = ctx.createLinearGradient(0, winY + winH + 10, 0, s - 14);
+    streak.addColorStop(0, 'rgba(120,100,80,0.16)');
+    streak.addColorStop(1, 'rgba(120,100,80,0)');
+    ctx.fillStyle = streak;
+    ctx.fillRect(winX + 6, winY + winH + 10, winW - 12, s - winY - winH - 24);
+    ctx.fillStyle = '#e4ded2'; ctx.fillRect(0, s - 14, s, 14);
+    ctx.fillStyle = '#cfc7b8'; ctx.fillRect(0, s - 14, s, 2);
+    ctx.fillStyle = '#b9b2a4'; ctx.fillRect(winX - 6, winY - 6, winW + 12, winH + 12);
+    ctx.fillStyle = '#f4f2ee'; ctx.fillRect(winX - 3, winY - 3, winW + 6, winH + 6);
+    // two timber leaves, louvre blades lit on top and shaded below
+    ctx.fillStyle = '#5c3b22'; ctx.fillRect(winX + 4, winY + 4, winW - 8, winH - 8);
+    for (let y = winY + 8; y < winY + winH - 8; y += 8) {
+      ctx.fillStyle = '#7a5232'; ctx.fillRect(winX + 6, y, winW - 12, 4);
+      ctx.fillStyle = '#3f2816'; ctx.fillRect(winX + 6, y + 4, winW - 12, 2);
+    }
+    ctx.fillStyle = '#4a2f1b';
+    ctx.fillRect(winX + winW / 2 - 3, winY + 4, 6, winH - 8);
+    ctx.fillRect(winX + 4, winY + 4, winW - 8, 5); ctx.fillRect(winX + 4, winY + winH - 9, winW - 8, 5);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(winX - 10, winY + winH + 3, winW + 20, 8);
+    ctx.fillStyle = 'rgba(70,60,50,0.35)'; ctx.fillRect(winX - 10, winY + winH + 11, winW + 20, 4);
   });
 
 /**

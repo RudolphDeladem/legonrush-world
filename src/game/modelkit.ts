@@ -2,12 +2,14 @@
 // textures, textured facade runs, merged vertex-coloured parts, tiled roof slopes and signs.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { liteCanvas } from './lite';
 
 export function canvas(w: number, h: number, draw: (g: CanvasRenderingContext2D) => void, srgb = true) {
   const c = document.createElement('canvas');
   c.width = w; c.height = h;
-  draw(c.getContext('2d')!);
-  const t = new THREE.CanvasTexture(c);
+  // (a CPU canvas: many pictures are drawn pixel by pixel, and reading a GPU canvas back stalls)
+  draw(c.getContext('2d', { willReadFrequently: true })!);
+  const t = new THREE.CanvasTexture(liteCanvas(c));
   t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
   t.anisotropy = 4;
@@ -15,8 +17,10 @@ export function canvas(w: number, h: number, draw: (g: CanvasRenderingContext2D)
 }
 let seed = 9137;
 export const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
+// (the specks a colour at a time: setting the paint for every speck made the large ground pictures take seconds)
 export const speckle = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, n: number, cols: string[]) => {
-  for (let i = 0; i < n; i++) { g.fillStyle = cols[(rnd() * cols.length) | 0]; g.fillRect(x + rnd() * w, y + rnd() * h, 1 + rnd(), 1 + rnd()); }
+  const per = Math.ceil(n / cols.length);
+  for (const c of cols) { g.fillStyle = c; for (let i = 0; i < per; i++) g.fillRect(x + rnd() * w, y + rnd() * h, 1 + rnd(), 1 + rnd()); }
 };
 
 /** a building's name on a sign board: white letters on blue unless colours are given */

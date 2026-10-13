@@ -49,6 +49,12 @@ in (no gate, stair or ramp is shown: the fence closes it), the east red strip's 
 clearing's function, an aerial south of z +487, the unmapped worn paths. New tool: `scripts/landcover/cover.py` reads an
 aerial into a ground-cover grid (`src/game/landcover.ts`) for `scrubkit.ts` (painted ground, instanced crowns and tufts).
 
+## 0c. Update 2026-10-13 (batch 126)
+
+Loading rebuilt (background build, compacted geometry, freed CPU copies, phone textures): see the last section of
+`docs/LEGON_BUILDINGS.md`. Open: confirm on a real phone and laptop; the pit by the pavement (Picture 7) was not located,
+a wider screenshot is needed.
+
 ## 1. Awaiting the owner (decisions, as of 2026-10-11)
 
 | # | Question | Why it matters |

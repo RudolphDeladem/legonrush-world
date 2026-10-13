@@ -83,6 +83,28 @@ export const BUILDINGS: Building[] = data.buildings.map((b) => {
   }
   return { name: b.n, height: b.h, pts, holes: (b.i ?? []).map((h) => Float32Array.from(h, (v) => v / 10)), minX, maxX, minZ, maxZ };
 });
+/** outlines that the map draws over a road's edge, pulled back clear of it (the owner: buildings by the Great Hall standing
+ *  on the road): a point inside each; the corners over a road (cls 0-3, at its drawn width) move out to 0.5 m from its
+ *  edge, so the building is a little shallower; the mapped roads are kept as they are */
+const PULL_BACK: [number, number][] = [[-787.0, 104.9], [-823.6, 75.3]];
+{
+  const HALF = [4.5, 3.7, 3.1, 2.3];
+  for (const [px, pz] of PULL_BACK) {
+    const b = BUILDINGS.find((o) => px > o.minX && px < o.maxX && pz > o.minZ && pz < o.maxZ);
+    if (!b) continue;
+    for (let i = 0; i < b.pts.length; i += 2) for (const r of ROADS) {
+      if (r.cls > 3) continue;
+      for (let k = 0; k < r.nodes.length - 1; k++) {
+        const ax = NODE_XZ[r.nodes[k] * 2], az = NODE_XZ[r.nodes[k] * 2 + 1], dx = NODE_XZ[r.nodes[k + 1] * 2] - ax, dz = NODE_XZ[r.nodes[k + 1] * 2 + 1] - az;
+        const x = b.pts[i], z = b.pts[i + 1], t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz || 1)));
+        const qx = ax + dx * t, qz = az + dz * t, d = Math.hypot(x - qx, z - qz), want = HALF[r.cls] + 0.5;
+        if (d < want && d > 1e-3) { b.pts[i] = qx + ((x - qx) / d) * want; b.pts[i + 1] = qz + ((z - qz) / d) * want; }
+      }
+    }
+    b.minX = b.maxX = b.pts[0]; b.minZ = b.maxZ = b.pts[1];
+    for (let i = 0; i < b.pts.length; i += 2) { b.minX = Math.min(b.minX, b.pts[i]); b.maxX = Math.max(b.maxX, b.pts[i]); b.minZ = Math.min(b.minZ, b.pts[i + 1]); b.maxZ = Math.max(b.maxZ, b.pts[i + 1]); }
+  }
+}
 export const AREAS: Area[] = data.areas.map((a) => ({ kind: a.k as Area['kind'], pts: Float32Array.from(a.p, (v) => v / 10) }));
 export const PLACES: Place[] = data.places.map((p) => ({ name: p.n, kind: p.k as PlaceKind, x: p.x / 10, z: p.z / 10, ...(p.l && { lines: p.l }) }));
 /** trotro line ref -> the places it runs between */

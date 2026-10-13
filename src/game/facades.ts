@@ -8,7 +8,8 @@
 import * as THREE from 'three';
 import { groundShade, weathering } from './shading';
 import type { Building } from './campusmap';
-import { facadeTexture, roofTileTexture, windowLightTexture } from './textures';
+import { groundHeight } from './relief';
+import { facadeTexture, louvreFacadeTexture, roofTileTexture, windowLightTexture } from './textures';
 
 type V = [number, number];
 
@@ -26,7 +27,7 @@ const WALL_COLORS = ['#fbf3df', '#f8eccf', '#fdf9ee', '#f4e6c6', '#faefd6', '#f2
 const ROOF_COLORS = ['#b4532e', '#a94a2b', '#bf5f36', '#9c4429', '#b65a3a', '#a65335'];
 const PLINTH_COLORS = ['#8b8072', '#7f7466', '#93877a', '#7a6253'];
 
-let shared: { wall: THREE.MeshStandardMaterial; roof: THREE.MeshStandardMaterial; facade: THREE.Texture; tiles: THREE.Texture } | null = null;
+let shared: { wall: THREE.MeshStandardMaterial; roof: THREE.MeshStandardMaterial; louvreWall: THREE.MeshStandardMaterial; facade: THREE.Texture; tiles: THREE.Texture } | null = null;
 /** how many bays and storeys the lit-window pattern spans before it repeats */
 const LIT_BAYS = 8, LIT_STOREYS = 4;
 
@@ -43,6 +44,7 @@ export function buildingMaterials() {
     // walls darken toward the ground (rain splash, dirt and the shade at the foot of a wall)
     wall: weathering(groundShade(new THREE.MeshStandardMaterial({ map: facade, vertexColors: true, roughness: 0.9, side: THREE.DoubleSide, emissive: '#ffffff', emissiveMap: litWindows(), emissiveIntensity: 0 }), 2.2, 0.3, 'wall'), 'wall', 16, 0.3),
     roof: new THREE.MeshStandardMaterial({ map: tiles, vertexColors: true, roughness: 0.78, side: THREE.DoubleSide }),
+    louvreWall: weathering(groundShade(new THREE.MeshStandardMaterial({ map: louvreFacadeTexture(), vertexColors: true, roughness: 0.9, side: THREE.DoubleSide }), 2.2, 0.3, 'wall'), 'wall', 16, 0.3),
   };
   return shared;
 }
@@ -287,13 +289,13 @@ function slopes(rb: Batch, outer: V[], inner: V[], eave: number, top: number, c:
 
 /** Builds every building footprint into merged, per-cell meshes. */
 /** colours that override the random palette for a building (buildings modelled after photos) */
-export type BuildingStyle = (b: Building) => { wall?: string; roof?: string } | undefined;
+export type BuildingStyle = (b: Building) => { wall?: string; roof?: string; louvres?: boolean } | undefined;
 
 export function buildBuildings(buildings: Building[], styleOf?: BuildingStyle) {
   const group = new THREE.Group();
-  const { wall, roof } = buildingMaterials();
+  const { wall, roof, louvreWall } = buildingMaterials();
   const rand = seeded(23);
-  const cells = new Map<string, { wb: Batch; rb: Batch }>();
+  const cells = new Map<string, { wb: Batch; rb: Batch; louvres: boolean }>();
   const trimBase = new THREE.Color('#fbf8f1');
   const soffitBase = new THREE.Color('#d9d0bf');
 
@@ -317,10 +319,11 @@ export function buildBuildings(buildings: Building[], styleOf?: BuildingStyle) {
     let cx = 0, cz = 0;
     for (const [x, z] of outer) { cx += x; cz += z; }
     cx /= outer.length; cz /= outer.length;
-    const key = `${Math.floor(cx / CELL)},${Math.floor(cz / CELL)}`;
+    const key = `${Math.floor(cx / CELL)},${Math.floor(cz / CELL)}${st?.louvres ? 'L' : ''}`;
     let cell = cells.get(key);
-    if (!cell) cells.set(key, (cell = { wb: new Batch(), rb: new Batch() }));
+    if (!cell) cells.set(key, (cell = { wb: new Batch(), rb: new Batch(), louvres: !!st?.louvres }));
     const { wb, rb } = cell;
+    const w0 = wb.pos.length, r0 = rb.pos.length;
 
     const eave = h - OVERHANG * PITCH;
     for (const ring of [outer, ...holes]) ringWalls(wb, ring, h, bay, storeys, wallC, plinthC);
@@ -358,14 +361,27 @@ export function buildBuildings(buildings: Building[], styleOf?: BuildingStyle) {
       const baseIdx = all.map((p) => rb.vert(p.x, top, p.y, p.x / 2, p.y / 2, flat));
       for (const t of THREE.ShapeUtils.triangulateShape(contour, holeVs)) rb.tri(baseIdx[t[0]], baseIdx[t[1]], baseIdx[t[2]]);
     }
+    // level on sloping ground (relief.ts): the whole building stands on the highest ground under its outline, its plinth
+    // carried down to the lowest, instead of each corner following the slope (the owner: a building tilted on the edge
+    // of Volta Hall's terrace)
+    let gMin = Infinity, gMax = -Infinity;
+    for (let i = 0; i < outer.length; i++) {
+      const [ax, az] = outer[i], [bx, bz] = outer[(i + 1) % outer.length];
+      for (const f of [0, 0.5]) { const g = groundHeight(ax + (bx - ax) * f, az + (bz - az) * f); gMin = Math.min(gMin, g); gMax = Math.max(gMax, g); }
+    }
+    const lift = (b: Batch, from: number) => { for (let k = from + 1; k < b.pos.length; k += 3) b.pos[k] = b.pos[k] < 0.01 ? gMin - 0.15 : b.pos[k] + gMax; };
+    lift(wb, w0);
+    lift(rb, r0);
   }
 
-  for (const { wb, rb } of cells.values()) {
-    const walls = new THREE.Mesh(wb.geometry(), wall);
+  for (const { wb, rb, louvres } of cells.values()) {
+    const walls = new THREE.Mesh(wb.geometry(), louvres ? louvreWall : wall);
     walls.castShadow = walls.receiveShadow = true;
     const roofs = new THREE.Mesh(rb.geometry(), roof);
     roofs.castShadow = roofs.receiveShadow = true;
     walls.userData.shared = roofs.userData.shared = true;
+    // (each building already stands on its ground, levelled above)
+    walls.userData.noRelief = roofs.userData.noRelief = true;
     group.add(walls, roofs);
   }
   return group;

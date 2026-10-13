@@ -73,12 +73,21 @@ function lightsFor(st: Style) {
 
 /** one wall material per facade style, made on first use */
 const wallMats = new Map<Style, THREE.MeshStandardMaterial>();
+const litByLayout = new Map<string, THREE.CanvasTexture>();
 function wallMaterial(st: Style) {
   let m = wallMats.get(st);
   if (!m) {
-    const lights = lightsFor(st);
-    lights.channel = 1;
-    lights.repeat.set(1 / LIT_BAYS, 1 / LIT_FLOORS);
+    // one lit-window picture per window layout: styles alike share it (drawn anyway, so the random sequence the rest of
+    // the campus is placed by does not change)
+    const drawn = lightsFor(st), key = JSON.stringify([st.up, st.ground]);
+    let lights = litByLayout.get(key);
+    if (lights) drawn.dispose();
+    else {
+      lights = drawn;
+      lights.channel = 1;
+      lights.repeat.set(1 / LIT_BAYS, 1 / LIT_FLOORS);
+      litByLayout.set(key, lights);
+    }
     const map = canvas(256, 512, st.draw);
     m = weathering(groundShade(new THREE.MeshStandardMaterial({ map, roughness: 0.88, side: THREE.DoubleSide, emissive: '#ffffff', emissiveMap: lights, emissiveIntensity: 0 }), 2.2, 0.3, 'wall'), 'wall', 16, 0.3);
     m.emissiveIntensity = lightsOn ? 1.1 : 0;
@@ -345,6 +354,13 @@ export function createSite(name: string, specs: Spec[]) {
     frames: () => frames.map((f) => ({ name: f.spec.name, cx: f.cx, cz: f.cz, ux: f.ux, uz: f.uz })),
     /** every model placed in the world; meshes in userData.cullMeshes for fog culling */
     build() {
+      const it = this.buildSteps();
+      let r = it.next();
+      while (!r.done) r = it.next();
+      return r.value;
+    },
+    /** the same, a model at a time: the caller may pause between them (the game builds the campus in the background) */
+    *buildSteps(): Generator<string | void, THREE.Group> {
       const group = new THREE.Group();
       group.name = name;
       const { plain, glass } = materials();
@@ -380,6 +396,7 @@ export function createSite(name: string, specs: Spec[]) {
           node.add(sign);
         }
         group.add(node);
+        yield f.spec.name;
       }
       group.updateMatrixWorld(true);
       group.userData.cullMeshes = cull;

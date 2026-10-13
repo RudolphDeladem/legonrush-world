@@ -269,6 +269,29 @@ function densifyAll(pts: [number, number][]) {
  * every road and footpath at its real width, and every building footprint.
  */
 export function buildCampus() {
+  const it = campusSteps();
+  let r = it.next();
+  while (!r.done) r = it.next();
+  return r.value;
+}
+
+/** the campus built in the background: a step at a time, the page kept responsive between them (the owner: the page froze
+ *  on loading, "Page Unresponsive", and phones never got past it) */
+export async function buildCampusAsync(slice = 40, onStep?: (n: number) => void) {
+  const it = campusSteps();
+  let t = performance.now(), r = it.next(), n = 0;
+  while (!r.done) {
+    if (performance.now() - t > slice) { await new Promise((res) => setTimeout(res, 0)); t = performance.now(); }
+    const s = performance.now();
+    r = it.next();
+    onStep?.(++n);
+    if (import.meta.env.DEV && performance.now() - s > 800) console.log(`[T] step ${Math.round(performance.now() - s)} ms before ${String(r.value ?? '')}`);
+  }
+  if (import.meta.env.DEV) console.log(`[T] steps ${n}`);
+  return r.value as THREE.Group;
+}
+
+function* campusSteps(): Generator<string | void, THREE.Group> {
   const group = new THREE.Group();
 
   // ground: 200 m tiles merged into one mesh, each with its own UV origin, because
@@ -305,7 +328,9 @@ export function buildCampus() {
   const ground = new THREE.Mesh(mergeGeometries(tiles), grass);
   ground.receiveShadow = true;
   // under the roads the relief grid sinks out of sight (a road's strip is flat across, the slope under it is not)
+  yield 'ground';
   group.add(ground, reliefGround(grass, TILE, (x, z) => { const c = roadClearance(x, z, 6, -1, true); return c < -0.4 ? 0.6 : c < 0 ? (0.6 * -c) / 0.4 : 0; }));
+  yield 'step';
 
   // pitches, tracks, car parks, water and woods
   const AREA_COLOR: Record<string, string> = { pitch: '#4f9a3a', track: '#b4533a', parking: '#8d9096', water: '#4f8fbf', wood: '#2f6b2a', plaza: '#cfc5b2' };
@@ -415,6 +440,7 @@ export function buildCampus() {
   n4Road.receiveShadow = true;
   n4Road.userData.heightFn = floorHeight;
   group.add(paths, roads, n4Road);
+  yield 'step';
 
   // painted centre dashes on the main and through roads, all in one mesh
   const dashPos: number[] = [], dashIdx: number[] = [];
@@ -444,29 +470,47 @@ export function buildCampus() {
 
   // every building: cream walls with window bays, a plinth, and terracotta tile roofs
   // (buildings modelled from photos are built by halls.ts and the block-model sites instead)
-  const buildings = buildBuildings(BUILDINGS.filter((b) => !isDiasporaHall(b) && !BLOCK_SITES.some((s) => s.replaces(b))), (b) => newPentStyle(b) ?? behindPentStyle(b) ?? whitePaint(b));
+  const buildings = buildBuildings(BUILDINGS.filter((b) => !isDiasporaHall(b) && !BLOCK_SITES.some((s) => s.replaces(b))), (b) => greatHallPrecinct(b) ?? newPentStyle(b) ?? behindPentStyle(b) ?? whitePaint(b));
   group.add(buildings);
+  yield 'step';
   const halls = buildDiasporaHalls();
-  const sites = BLOCK_SITES.map((s) => s.build());
+  yield 'step';
+  const sites: THREE.Group[] = [];
+  for (const s of BLOCK_SITES) sites.push(yield* s.buildSteps());
   group.add(halls, ...sites);
   // the land behind the Great Hall and the tennis complex's belt: the aerials' ground cover and plants (ghlandscape.ts)
   const scrub = buildScrubLands();
   group.add(scrub);
+  yield 'step';
 
   // trees, kerbs, lamps, stops, signs, cars, kiosks and people (see life.ts)
   const life = buildCampusLife();
   group.add(life);
+  yield 'step';
   // skip whatever lies past the fog: building and life cells far from the camera
   // concrete verges and open drains along the roads
   const edges = buildRoadEdges(concreteTexture());
   wettable(edges.material);
   group.add(edges.group);
-  // lower everything over a relief zone onto the ground (roads, areas, verges, props, buildings)
-  applyRelief(group);
+  yield 'step';
+  // lower everything over a relief zone onto the ground (roads, areas, verges, props, buildings), a part at a time
+  group.updateMatrixWorld(true);
+  const I = new THREE.Matrix4();
+  for (const c of [...group.children]) {
+    if (c.matrix.equals(I)) { applyRelief(c); yield 'relief ' + c.name; }
+    else applyRelief(group, c);
+  }
   // what the free-ridden bike bumps into besides footprints and trunks (meshcollide.ts)
   collisionRoots(halls, ...sites, life);
   cullBeyondFog(group, [...(buildings.children as THREE.Mesh[]), ...(halls.userData.cullMeshes as THREE.Mesh[]), ...sites.flatMap((s) => s.userData.cullMeshes as THREE.Mesh[]), ...(life.userData.cullMeshes as THREE.Mesh[]), ...edges.meshes, ...(scrub.userData.cullMeshes as THREE.Mesh[])]);
   return group;
+}
+
+/** round the Great Hall and Commonwealth Hall (the hill from the Great Hall's compound to Commonwealth's north side): the
+ *  map's other buildings in the halls' own look, white paint and brown timber louvres, not glass (the owner) */
+function greatHallPrecinct(b: { minX: number; maxX: number; minZ: number; maxZ: number }) {
+  const cx = (b.minX + b.maxX) / 2, cz = (b.minZ + b.maxZ) / 2;
+  return cx > -1130 && cx < -540 && cz > -30 && cz < 300 ? { wall: '#f7f6f2', louvres: true } : undefined;
 }
 
 /** where the owner says every building is painted white, not cream: round the Balme Library (CEDI, the faculties,

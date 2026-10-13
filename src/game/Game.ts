@@ -10,7 +10,8 @@ import { groundFrom, groundHeight, inStairs, layerHeight } from './relief';
 import { deckAt } from './cutplan';
 import { Tufts } from './tufts';
 import { installLogDepthOffset, tagLogDepthOffsets } from './logdepth';
-import { buildCampus, buildRouteLayer, buildSky, disposeLayer, lampGlow, LANES, ROAD_HALF } from './world';
+import { buildCampusAsync, buildRouteLayer, buildSky, disposeLayer, lampGlow, LANES, ROAD_HALF } from './world';
+import { compactGeometry, freeAfterUpload } from './memory';
 import { AREAS, buildingAt, buildingNear, mapBounds, roadAt } from './campusmap';
 import { inPassage, solidAt } from './solids';
 import { roadClearance, setNightLights } from './life';
@@ -300,6 +301,8 @@ const GRAVITY = 22;
 const JUMP_V = 7;
 const RIDER_LEN = 1.6;
 const RIDER_W = 0.6;
+/** the campus build's steps (buildCampusAsync), as counted in the preview: the loading bar's scale */
+const BUILD_STEPS = 560;
 const REPAIR_TIME = 1.8;
 const NEAR_MISS_COINS = 2;
 
@@ -468,7 +471,8 @@ export class Game {
     this.renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
     // GPU resets: log context loss/restore so driver resets show up in the console (three.js handles the restore itself)
     canvas.addEventListener('webglcontextlost', () => console.warn('LEGONRUSH: WebGL context lost (GPU reset or driver timeout)'));
-    canvas.addEventListener('webglcontextrestored', () => console.info('LEGONRUSH: WebGL context restored'));
+    // (the campus's buffers keep no copy in memory once on the GPU, memory.ts: a lost context is restored by reloading)
+    canvas.addEventListener('webglcontextrestored', () => { console.info('LEGONRUSH: WebGL context restored'); location.reload(); });
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.05;
     this.renderer.shadowMap.enabled = true;
@@ -494,7 +498,6 @@ export class Game {
     this.sun.shadow.bias = -0.0005;
     this.scene.add(this.sun, this.sun.target);
 
-    this.scene.add(buildCampus(), buildLandmarks());
     this.tufts = new Tufts(lowEnd);
     this.scene.add(this.tufts.group);
     this.setRoute(CAMPUS_LOOP);
@@ -511,15 +514,107 @@ export class Game {
     this.resize();
     addEventListener('resize', () => this.resize());
     this.renderer.setAnimationLoop(() => this.frame());
-    this.warmUp();
+    this.ready = this.buildWorld();
+  }
+
+  /** the campus is built after the menus show, a step at a time (the owner: "Page Unresponsive" on laptops, phones never
+   *  opening the game); a ride waits for this */
+  readonly ready: Promise<void>;
+  isReady = false;
+  /** how far the build has come (0..1), for the loading bar */
+  onProgress?: (p: number) => void;
+  private progress(p: number) { this.onProgress?.(Math.min(1, p)); }
+  private async buildWorld() {
+    const T = (s: string, t0: number) => { if (import.meta.env.DEV) console.log(`[T] ${s} ${Math.round(performance.now() - t0)} ms`); };
+    await new Promise((r) => setTimeout(r, 30));
+    let t0 = performance.now();
+    // the campus's steps make up most of the bar (BUILD_STEPS: their count, as measured), the upload the rest
+    const campus = await buildCampusAsync(40, (n) => this.progress(0.85 * Math.min(1, n / BUILD_STEPS)));
+    T('campus', t0); t0 = performance.now();
+    const landmarks = buildLandmarks();
+    T('landmarks', t0); t0 = performance.now();
+    // every byte counted (memory.ts; phones' textures at half size where they are drawn, lite.ts)
+    compactGeometry(campus); compactGeometry(landmarks);
+    T('compact', t0); await new Promise((r) => setTimeout(r, 0)); t0 = performance.now();
+    freeAfterUpload(campus); freeAfterUpload(landmarks);
+    T('free', t0); t0 = performance.now();
+    // textures and shader programs ready before the campus joins the scene (compiled in parallel where the GPU can),
+    // then every buffer uploaded a batch at a time, so no single frame has to do it
+    await this.warmUpAsync([campus, landmarks]);
+    T('warm', t0); t0 = performance.now();
+    await this.uploadAll([campus, landmarks]);
+    T('upload', t0);
+    this.progress(1);
+    this.scene.add(campus, landmarks);
+    tagLogDepthOffsets(this.scene);
+    this.isReady = true;
+    performance.mark('legonrush:world-ready');
   }
 
   /**
-   * Compiles every shader program and uploads every texture the campus uses, once, before anyone rides: done lazily they
-   * were built the first time a site came into view, in the middle of a ride, and the guided ride stuttered (owner).
-   * Everything is made visible for the pass (the fog cull and night lamps hide some), then put back as it was.
+   * Every buffer of the campus sent to the GPU now, part by part, in a tiny off-screen draw (no culling): their JavaScript
+   * copies are then dropped (memory.ts freeAfterUpload) instead of staying until each part first comes into view.
    */
+  private async uploadAll(roots: THREE.Object3D[]) {
+    const r = this.renderer, rt = new THREE.WebGLRenderTarget(1, 1), fog = this.scene.fog as THREE.Fog, far = fog.far;
+    const meshes: [THREE.Mesh, boolean, boolean][] = [];
+    for (const root of roots) root.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh && !(m as THREE.InstancedMesh).isInstancedMesh) meshes.push([m, m.frustumCulled, m.visible]); });
+    const keep = this.scene.children.map((c) => [c, c.visible] as const);
+    const parents: THREE.Object3D[] = [];
+    for (const root of roots) root.traverse((o) => { if (!(o as THREE.Mesh).isMesh) parents.push(o); });
+    const parentVis = parents.map((o) => o.visible);
+    try {
+      fog.far = 1e9;
+      for (const [c] of keep) c.visible = false;
+      for (const o of parents) o.visible = true;
+      for (const [m] of meshes) { m.frustumCulled = false; m.visible = false; }
+      this.scene.add(...roots);
+      r.setRenderTarget(rt);
+      // batches of about 150k vertices a draw
+      let t = performance.now(), batch: THREE.Mesh[] = [], n = 0, i = 0;
+      const flush = () => { this.progress(0.85 + 0.15 * (i / meshes.length)); for (const m of batch) m.visible = true; r.render(this.scene, this.camera); for (const m of batch) m.visible = false; batch = []; n = 0; };
+      for (const [m] of meshes) {
+        i++;
+        batch.push(m); n += m.geometry.attributes.position?.count ?? 0;
+        if (n > 150000) { flush(); if (performance.now() - t > 30) { await new Promise((res) => setTimeout(res, 0)); t = performance.now(); } }
+      }
+      if (batch.length) flush();
+    } finally {
+      r.setRenderTarget(null);
+      this.scene.remove(...roots);
+      for (const [c, v] of keep) c.visible = v;
+      parents.forEach((o, i) => { o.visible = parentVis[i]; });
+      for (const [m, fc, v] of meshes) { m.frustumCulled = fc; m.visible = v; }
+      fog.far = far;
+      rt.dispose();
+    }
+  }
+
+  /** warmUp a slice at a time, for parts not yet in the scene: their textures uploaded a few at a frame, then their
+   *  programs compiled as they will be drawn in this scene */
+  private async warmUpAsync(roots: THREE.Object3D[]) {
+    for (const r of roots) tagLogDepthOffsets(r);
+    const seen = new Set<THREE.Texture>(), list: THREE.Texture[] = [];
+    for (const root of roots) root.traverse((o) => {
+      const m = (o as THREE.Mesh).material;
+      if (m) for (const mat of Array.isArray(m) ? m : [m]) for (const v of Object.values(mat)) if ((v as THREE.Texture)?.isTexture && !seen.has(v as THREE.Texture)) { seen.add(v as THREE.Texture); list.push(v as THREE.Texture); }
+    });
+    let t = performance.now();
+    for (const tex of list) {
+      this.renderer.initTexture(tex);
+      if (performance.now() - t > 30) { await new Promise((r) => setTimeout(r, 0)); t = performance.now(); }
+    }
+    for (const root of roots) {
+      const hidden: THREE.Object3D[] = [];
+      root.traverse((o) => { if (!o.visible) { hidden.push(o); o.visible = true; } });
+      const done = this.renderer.compileAsync(root, this.camera, this.scene).catch(() => undefined);
+      for (const o of hidden) o.visible = false;
+      await done;
+    }
+  }
+
   private warmUp() {
+    if (!this.isReady) return;
     tagLogDepthOffsets(this.scene);
     const hidden: THREE.Object3D[] = [];
     this.scene.traverse((o) => { if (!o.visible) { hidden.push(o); o.visible = true; } });
@@ -1287,6 +1382,8 @@ export class Game {
 
   private frame() {
     if (this.sleep && this.phase === 'showcase') return;
+    // (nothing to draw while the campus builds behind the menus: the time goes to building it)
+    if (!this.isReady) return;
     this.timer.update();
     const raw = this.timer.getDelta();
     const dt = Math.min(raw, 1 / 20);

@@ -185,8 +185,11 @@ export const flagMat = () => (FLAG ??= (() => {
     const rgb = (h: string) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
     const cols = seeds.map((s) => rgb(s[2]));
     for (let y = 0; y < 512; y++) for (let x = 0; x < 512; x++) {
+      // (only the stones of the 5 x 5 cells round the pixel: the nearest two are always among them)
       let b1 = 1e9, b2 = 1e9, k1 = 0;
-      for (let k = 0; k < seeds.length; k++) {
+      const ci = Math.floor(x / (512 / N)), cj = Math.floor(y / (512 / N));
+      for (let di = -2; di <= 2; di++) for (let dj = -2; dj <= 2; dj++) {
+        const k = (((ci + di) % N) + N) % N * N + ((((cj + dj) % N) + N) % N);
         let dx = Math.abs(x - seeds[k][0]), dy = Math.abs(y - seeds[k][1]);
         if (dx > 256) dx = 512 - dx; if (dy > 256) dy = 512 - dy;
         const dd = dx * dx + dy * dy;

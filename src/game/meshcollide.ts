@@ -106,5 +106,9 @@ export function warmOne(x: number, z: number) {
     if (!tiles.has(k)) { tiles.set(k, buildTile(ti + di, tj + dj)); return; }
   }
 }
+/** the geometries the grid is rasterised from (their arrays must stay in memory: memory.ts frees the others' after upload) */
+export function collisionGeometries() {
+  return new Set(sources().map((s) => s.mesh.geometry));
+}
 /** forget the grid (after the campus changes) */
 export function resetCollision() { tiles.clear(); srcs = null; }

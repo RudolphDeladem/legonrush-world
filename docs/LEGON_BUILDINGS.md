@@ -3632,3 +3632,43 @@ narrow worn earth (routes unchanged); the pale clearing as ground; grass tufts a
 
 *Assumed*: every plant's height and trunk (the aerials do not show them; the owner's short-stem preference is the
 baseline). *Open*: the pale clearing's function; the land south of z +487 (no aerial); unmapped worn paths.
+
+## Loading, the tilted block behind Volta, the Great Hall's neighbours (the owner's nine pictures)
+
+**Loading (Pictures 1-4).** On a laptop the splash stayed for a long time, then Chrome's "Page Unresponsive"; on phones the
+page crashed and reloaded ("A problem repeatedly occurred"). The cause: the whole campus was built, compiled and uploaded
+in one blocking run of about a minute, and it kept every vertex array twice (on the CPU and on the GPU), about 1 GB of
+heap. Now (`Game.buildWorld`, `world.buildCampusAsync`, `memory.ts`, `lite.ts`):
+
+- the menu shows at once; the campus builds in slices of about 40 ms (each block site a frame at a time), and a ride
+  started early waits on the loading screen until it is ready;
+- normals and colours are stored as bytes, and every vertex array is dropped from the CPU once it is on the GPU (the
+  collision meshes keep their positions); heap after loading about 360 MB, against about 1070 MB;
+- shaders are compiled before the campus joins the scene, and the buffers are uploaded in batches of about 150k vertices
+  to an off-screen 1x1 target, so the first frame does not stall;
+- on phones and devices with four cores or fewer, canvas textures of 256x256 and over are half size;
+- the block sites' lit-window pictures are shared by window layout (1184 textures to 1026; on a phone about 214 MB of
+  textures, against well over twice that before the halving);
+- the loading bar fills with the build's real progress instead of looping (in the preview the looping bar slowed the
+  build five-fold on four software cores: each composite waited on the GPU work);
+- slow loops found by profiling made fast (road-clearance and building lookups by grid, the flag Voronoi, the red-earth
+  ground mask's resolution).
+
+Measured in the headless software renderer (much slower than a real GPU; `tools/preview/load.mjs`, `prodride.mjs`,
+`texlist.mjs`): the menu at about 4 s, the campus built and uploaded at about 45-50 s with the page answering between
+slices (longest single task about 5 s; before, one task of about 60 s before anything showed). The software renderer's
+GPU work lands wherever the page next composites, so its timings after "ready" do not stand for a real GPU.
+[INCOMPLETE] not measured on a real phone or laptop: the owner's check is needed.
+
+**The tilted block (Pictures 5, 6).** A generic block behind Volta Hall, north-west, facing Commonwealth Hall, stood on
+the terrace's slope and followed it. Every generic building now stands level: its floor at the highest ground under its
+outline, a plinth down to the lowest.
+
+**The pit (Picture 7).** [INCOMPLETE] The circled grass by the pavement was not found from the crop: the
+Commonwealth/Volta junction, the University Avenue verges and a scan of every off-road ground cell (depressions under
+the road level) show nothing there. A wider screenshot or the map position is needed.
+
+**The Great Hall's neighbours (Pictures 8, 9).** The generic buildings round the Great Hall (x -1130..-540, z -30..300) had
+the campus's glazed windows; they now have the hall's white walls and brown timber louvres (`louvreFacadeTexture`). Two
+blocks whose outlines reached into the road (about -787, 105 and -824, 75) are pulled back to 0.5 m clear of its edge
+(`PULL_BACK` in `campusmap.ts`). [ASSUMPTION] the precinct's extent.

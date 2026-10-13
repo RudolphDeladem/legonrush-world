@@ -160,6 +160,7 @@ h1, h2, h3, p { margin: 0; }
 .splash-bar { width: 160px; height: 3px; background: rgba(255,255,255,0.12); border-radius: 2px; overflow: hidden; margin: 28px auto 0; }
 .splash-bar div { height: 100%; width: 40%; background: var(--gold); animation: load 1s ease-in-out infinite; }
 @keyframes load { from { transform: translateX(-100%); } to { transform: translateX(260%); } }
+.splash-bar.fill div { width: 0; animation: none; }
 .fade-in { animation: fade 0.35s ease both; }
 @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 

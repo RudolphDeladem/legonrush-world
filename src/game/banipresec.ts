@@ -20,6 +20,7 @@
 //   shaded gathering ground at the mouth, the two sheds, the elevated billboard; the low roadside shops and the "Presec"
 //   stop's shelter (Pair 20).
 import * as THREE from 'three';
+import { segIndex } from './seggrid';
 import { createSite, render, type Kit, type Spec, type Style } from './blocks';
 import { box, canvas, merge, type Part } from './modelkit';
 import { concrete } from './concrete';
@@ -27,7 +28,7 @@ import { SOLIDS } from './solids';
 import { Bag, hash, tuft, vnoise, wallSolids } from './enkit';
 import { broadleaf } from './nsiaroad';
 import { drapeAt, groundCover } from './kuffourgarden';
-import { BUILDINGS, NODE_XZ, ROADS } from './campusmap';
+import { NODE_XZ, ROADS, buildingAt } from './campusmap';
 import { latticeTower, pavers, rod, run, wires, type V3 } from './upsa';
 import { place, textPanel } from './fskit';
 import { TOWERS } from './upsaplan';
@@ -47,23 +48,11 @@ for (const r of ROADS) for (let i = 0; i < r.nodes.length - 1; i++) {
   SEGS.push([ax, az, bx, bz, [9, 7.4, 6.2, 4.6, 2.6][r.cls] / 2]);
 }
 /** distance from (x, z) to the nearest mapped road or path edge (negative on it) */
-const roadGap = (x: number, z: number) => {
-  let best = Infinity;
-  for (const [ax, az, bx, bz, h] of SEGS) {
-    const dx = bx - ax, dz = bz - az, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz || 1)));
-    best = Math.min(best, Math.hypot(ax + dx * t - x, az + dz * t - z) - h);
-  }
-  return best;
-};
-const inRing = (pts: Float32Array, x: number, z: number) => {
-  let c = false;
-  for (let i = 0, j = pts.length - 2; i < pts.length; j = i, i += 2) {
-    const xi = pts[i], zi = pts[i + 1], xj = pts[j], zj = pts[j + 1];
-    if (zi > z !== zj > z && x < ((xj - xi) * (z - zi)) / (zj - zi) + xi) c = !c;
-  }
-  return c;
-};
-const inBuilding = (x: number, z: number, pad = 0) => BUILDINGS.some((b) => x > b.minX - pad && x < b.maxX + pad && z > b.minZ - pad && z < b.maxZ + pad && (pad > 0 || inRing(b.pts, x, z)));
+const SEG_NEAR = segIndex(SEGS);
+/** (within 12 m: every use asks about a few metres) */
+const roadGap = (x: number, z: number) => SEG_NEAR(x, z, 12);
+// (the map's building grid: the same answer as testing every outline, without scanning them all)
+const inBuilding = (x: number, z: number, pad = 0) => !!buildingAt(x, z, pad);
 const inPoly = (pts: [number, number][], x: number, z: number) => {
   let c = false;
   for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
