@@ -1,5 +1,8 @@
 # UPSA campus refinement: analysis of the owner's material (before building)
 
+> Superseded in part by `evidence-ledger.md` (batch 127, after the owner's second layer): the PCU building stands behind
+> the Astro Turf's **north** goal, not the south end; Ewuntoma's plus code falls inside KOKA's outline and stays unplaced.
+
 The owner sent, on 2026-10-13, for "the refinement of upsa campus", saying one more file will follow before the build:
 
 1. An Apple Maps hybrid satellite screenshot, north up (`refs/aerial-apple-hybrid.jpg`), with the frame link

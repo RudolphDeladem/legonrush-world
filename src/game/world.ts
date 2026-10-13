@@ -2,7 +2,8 @@ import { destinationBanner, finishBanner } from './banners';
 import * as THREE from 'three';
 import { weathering } from './shading';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { AREAS, BUILDINGS, NODE_XZ, ROADS, buildingAt, mapBounds, type Place, type PlaceKind } from './campusmap';
+import { AREAS, BUILDINGS, NODE_XZ, ROADS, buildingAt, mapBounds, type Building, type Place, type PlaceKind } from './campusmap';
+import { UPSA_FINISH, UPSA_LAND } from './upsawestplan';
 import type { Track } from './track';
 import { asphaltTexture, billboardTexture, concreteTexture, grassMacroTexture, grassTexture, labelTexture, pitchTexture } from './textures';
 import { buildBuildings } from './facades';
@@ -470,7 +471,7 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
 
   // every building: cream walls with window bays, a plinth, and terracotta tile roofs
   // (buildings modelled from photos are built by halls.ts and the block-model sites instead)
-  const buildings = buildBuildings(BUILDINGS.filter((b) => !isDiasporaHall(b) && !BLOCK_SITES.some((s) => s.replaces(b))), (b) => greatHallPrecinct(b) ?? newPentStyle(b) ?? behindPentStyle(b) ?? whitePaint(b));
+  const buildings = buildBuildings(BUILDINGS.filter((b) => !isDiasporaHall(b) && !BLOCK_SITES.some((s) => s.replaces(b))), (b) => greatHallPrecinct(b) ?? upsaStyle(b) ?? newPentStyle(b) ?? behindPentStyle(b) ?? whitePaint(b));
   group.add(buildings);
   yield 'step';
   const halls = buildDiasporaHalls();
@@ -512,6 +513,28 @@ function greatHallPrecinct(b: { minX: number; maxX: number; minZ: number; maxZ: 
   const cx = (b.minX + b.maxX) / 2, cz = (b.minZ + b.maxZ) / 2;
   return cx > -1130 && cx < -540 && cz > -30 && cz < 300 ? { wall: '#f7f6f2', louvres: true } : undefined;
 }
+
+/** the UPSA campus's blocks (the owner's UPSA packs, docs/upsa-campus/): white walls, blue-glazed windows, flat roofs behind a
+ *  parapet, four storeys in the group the clips show and by footprint elsewhere (estimates); a few hipped roofs and roof
+ *  colours where the clips show them (upsawestplan.ts UPSA_FINISH) */
+function upsaStyle(b: Building) {
+  const cx = (b.minX + b.maxX) / 2, cz = (b.minZ + b.maxZ) / 2;
+  if (cx < 2130 || cx > 2460 || cz < -1270 || cz > -890 || !inPoly(UPSA_LAND, cx, cz)) return undefined;
+  const f = UPSA_FINISH.find(({ at: [x, z] }) => x >= b.minX && x <= b.maxX && z >= b.minZ && z <= b.maxZ && inRingF(b.pts, x, z));
+  const area = (b.maxX - b.minX) * (b.maxZ - b.minZ);
+  const storeys = f?.storeys ?? (area < 80 ? 1 : area < 250 ? 2 : area < 600 ? 3 : 4);
+  return { wall: '#f6f6f3', roof: f?.roof ?? '#d3d3ce', blue: !f?.plain, flat: !f?.hip, storeys };
+}
+const inPoly = (r: [number, number][], x: number, z: number) => {
+  let o = false;
+  for (let i = 0, j = r.length - 1; i < r.length; j = i++) if ((r[i][1] > z) !== (r[j][1] > z) && x < ((r[j][0] - r[i][0]) * (z - r[i][1])) / (r[j][1] - r[i][1]) + r[i][0]) o = !o;
+  return o;
+};
+const inRingF = (p: Float32Array, x: number, z: number) => {
+  let o = false;
+  for (let i = 0, j = p.length - 2; i < p.length; j = i, i += 2) if ((p[i + 1] > z) !== (p[j + 1] > z) && x < ((p[j] - p[i]) * (z - p[i + 1])) / (p[j + 1] - p[i + 1]) + p[i]) o = !o;
+  return o;
+};
 
 /** where the owner says every building is painted white, not cream: round the Balme Library (CEDI, the faculties,
  *  the University Square blocks) and round Volta Hall */

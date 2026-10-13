@@ -3672,3 +3672,47 @@ the road level) show nothing there. A wider screenshot or the map position is ne
 the campus's glazed windows; they now have the hall's white walls and brown timber louvres (`louvreFacadeTexture`). Two
 blocks whose outlines reached into the road (about -787, 105 and -824, 75) are pulled back to 0.5 m clear of its edge
 (`PULL_BACK` in `campusmap.ts`). [ASSUMPTION] the precinct's extent.
+
+## UPSA campus, the second layer: the Astro Turf, the courts, the PCU building (the owner's two UPSA packs)
+
+The evidence, the ledger and the conflicts are in `docs/upsa-campus/evidence-ledger.md`. The first look, before the
+second pack arrived, is in `analysis.md`. The aerial's registration and the comparison sheets are there too. Numbers are
+in `upsawestplan.ts` and the models in `upsawest.ts`; the campus blocks' finish is `world.ts` `upsaStyle`.
+
+**What was wrong.**
+- No Astro Turf: five machine-detected boxes and a service road stood on it.
+- The hard courts were striped grass.
+- The PCU building and three other blocks were missing.
+- The campus's blocks were cream two-storey houses under red hipped roofs.
+
+**Now.**
+- **The turf.** Bands across the pitch, the full lines, goals, a red edge, a welded-mesh fence on a low upstand, six
+  floodlight masts, and the stand of blue and white seats with its pavilion on the west side.
+- **The courts.** The four courts in one red surround: basketball north, tennis south, chain-link fences. The tower
+  court is beside the towers.
+- **The PCU building.** Three storeys over the navy raking colonnade, the dark band under its name, and the blue glass
+  bay at the east end, behind the north goal.
+- **Three new blocks.** The six-storey block with its curved fins, the low grey-roofed block, the slate-roofed block.
+- **The courtyard group.** Its red, green and tan roofs and the round fountain.
+- **Every other campus block.** White, blue windows, a flat roof behind a parapet.
+
+*Map changes.* Excluded with their reasons in `corrections.json`:
+- seven phantom outlines;
+- OSM outline osm:way/1009392429;
+- the service road osm:way/626139046.
+
+Route lengths are identical and access is unchanged.
+
+*Assumed.*
+- The PCU building's depth.
+- The six-storey block's footprint.
+- Every storey count not counted in a clip.
+- The masts' spots.
+
+*Open.*
+- The towers' footprint.
+- Ewuntoma and CIMG.
+- The unnamed blocks.
+- The bush west of the wall (next).
+
+**Not on `main`** until the owner approves; the UPSA packs ask for that.

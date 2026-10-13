@@ -55,6 +55,14 @@ Loading rebuilt (background build, compacted geometry, freed CPU copies, phone t
 `docs/LEGON_BUILDINGS.md`. Open: confirm on a real phone and laptop; the pit by the pavement (Picture 7) was not located,
 a wider screenshot is needed.
 
+## 0d. Update 2026-10-13 (batch 127, UPSA campus; working branch only)
+
+The UPSA campus's second layer (`docs/upsa-campus/evidence-ledger.md`). **Not on `main`**: the owner's UPSA packs ask
+for no push to `main` without approval. Open for the owner: approval to publish; the towers' footprint (the aerial shows
+two larger blocks west of the confirmed outline); Ewuntoma Medical Centre and the CIMG building's positions; the names of
+the six-storey block and the four-storey group; the stand's roof. Next: the bush west of the campus wall (the aerial's
+woodland, via `scripts/landcover/cover.py` and `scrubkit.ts`), trees in the car parks and the quadrangle.
+
 ## 1. Awaiting the owner (decisions, as of 2026-10-11)
 
 | # | Question | Why it matters |

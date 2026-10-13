@@ -217,6 +217,38 @@ export const louvreFacadeTexture = () =>
   });
 
 /**
+ * The same bay as facadeTexture in UPSA's campus finish (the owner's UPSA packs: the drone views and photos of the
+ * campus blocks): white render, a wide window of blue glass in a white frame with slim mullions, a pale slab band at
+ * the foot of each storey.
+ */
+export const upsaFacadeTexture = () =>
+  canvasTexture(256, (ctx, s) => {
+    ctx.fillStyle = '#fbfbf9';
+    ctx.fillRect(0, 0, s, s);
+    speckle(ctx, s, 2000, ['#f1f1ee', '#ffffff', '#ecebe7'], 1.4);
+    const winX = 30, winW = 196, winY = 46, winH = 124;
+    ctx.fillStyle = '#e6e6e2'; ctx.fillRect(0, s - 16, s, 16);
+    ctx.fillStyle = '#c9cac6'; ctx.fillRect(0, s - 16, s, 2);
+    ctx.fillStyle = '#bfc3c6'; ctx.fillRect(winX - 5, winY - 5, winW + 10, winH + 10);
+    ctx.fillStyle = '#f6f7f7'; ctx.fillRect(winX - 3, winY - 3, winW + 6, winH + 6);
+    const glass = ctx.createLinearGradient(0, winY, 0, winY + winH);
+    glass.addColorStop(0, '#7fb2e8');
+    glass.addColorStop(0.45, '#2f6cc0');
+    glass.addColorStop(1, '#1d4a8c');
+    ctx.fillStyle = glass;
+    ctx.fillRect(winX + 3, winY + 3, winW - 6, winH - 6);
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.beginPath();
+    ctx.moveTo(winX + 40, winY + 3); ctx.lineTo(winX + 86, winY + 3); ctx.lineTo(winX + 30, winY + winH - 3); ctx.lineTo(winX + 3, winY + winH - 3); ctx.lineTo(winX + 3, winY + 70);
+    ctx.fill();
+    ctx.fillStyle = '#f2f3f3';
+    for (const x of [winX + winW / 4, winX + winW / 2, winX + (3 * winW) / 4]) ctx.fillRect(x - 2, winY, 4, winH);
+    ctx.fillRect(winX, winY + 40, winW, 4);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(winX - 8, winY + winH + 3, winW + 16, 7);
+    ctx.fillStyle = 'rgba(60,70,80,0.3)'; ctx.fillRect(winX - 8, winY + winH + 10, winW + 16, 3);
+  });
+
+/**
  * Which windows are lit at night, laid out exactly like facadeTexture's window
  * (one 32 px cell per bay and storey): warm, cool or off, some with a curtain.
  */

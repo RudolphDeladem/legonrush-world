@@ -9,7 +9,7 @@ import * as THREE from 'three';
 import { groundShade, weathering } from './shading';
 import type { Building } from './campusmap';
 import { groundHeight } from './relief';
-import { facadeTexture, louvreFacadeTexture, roofTileTexture, windowLightTexture } from './textures';
+import { facadeTexture, louvreFacadeTexture, roofTileTexture, upsaFacadeTexture, windowLightTexture } from './textures';
 
 type V = [number, number];
 
@@ -27,7 +27,7 @@ const WALL_COLORS = ['#fbf3df', '#f8eccf', '#fdf9ee', '#f4e6c6', '#faefd6', '#f2
 const ROOF_COLORS = ['#b4532e', '#a94a2b', '#bf5f36', '#9c4429', '#b65a3a', '#a65335'];
 const PLINTH_COLORS = ['#8b8072', '#7f7466', '#93877a', '#7a6253'];
 
-let shared: { wall: THREE.MeshStandardMaterial; roof: THREE.MeshStandardMaterial; louvreWall: THREE.MeshStandardMaterial; facade: THREE.Texture; tiles: THREE.Texture } | null = null;
+let shared: { wall: THREE.MeshStandardMaterial; roof: THREE.MeshStandardMaterial; louvreWall: THREE.MeshStandardMaterial; blueWall: THREE.MeshStandardMaterial; facade: THREE.Texture; tiles: THREE.Texture } | null = null;
 /** how many bays and storeys the lit-window pattern spans before it repeats */
 const LIT_BAYS = 8, LIT_STOREYS = 4;
 
@@ -45,6 +45,7 @@ export function buildingMaterials() {
     wall: weathering(groundShade(new THREE.MeshStandardMaterial({ map: facade, vertexColors: true, roughness: 0.9, side: THREE.DoubleSide, emissive: '#ffffff', emissiveMap: litWindows(), emissiveIntensity: 0 }), 2.2, 0.3, 'wall'), 'wall', 16, 0.3),
     roof: new THREE.MeshStandardMaterial({ map: tiles, vertexColors: true, roughness: 0.78, side: THREE.DoubleSide }),
     louvreWall: weathering(groundShade(new THREE.MeshStandardMaterial({ map: louvreFacadeTexture(), vertexColors: true, roughness: 0.9, side: THREE.DoubleSide }), 2.2, 0.3, 'wall'), 'wall', 16, 0.3),
+    blueWall: weathering(groundShade(new THREE.MeshStandardMaterial({ map: upsaFacadeTexture(), vertexColors: true, roughness: 0.75, side: THREE.DoubleSide }), 2.2, 0.3, 'wall'), 'wall', 16, 0.3),
   };
   return shared;
 }
@@ -241,6 +242,20 @@ function ringWalls(wb: Batch, ring: V[], h: number, bay: number, storeys: number
   }
 }
 
+/** A plain parapet round a flat roof: its outer face, its cap and its inner face, 0.8 m above the roof. */
+function parapet(wb: Batch, rb: Batch, ring: V[], h: number, trimC: THREE.Color, roofC: THREE.Color) {
+  const n = ring.length, inner = offset(ring, 0.22), top = h + 0.8, capC = trimC.clone().multiplyScalar(0.95);
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    const [ax, az] = ring[i], [bx, bz] = ring[j], [px, pz] = inner[i], [qx, qz] = inner[j];
+    const len = Math.hypot(bx - ax, bz - az);
+    wb.quad(wb.vert(ax, h, az, 0, 0.005, trimC), wb.vert(bx, h, bz, len / 3, 0.005, trimC), wb.vert(bx, top, bz, len / 3, TRIM_V, trimC), wb.vert(ax, top, az, 0, TRIM_V, trimC));
+    wb.quad(wb.vert(ax, top, az, 0, 0.005, capC), wb.vert(bx, top, bz, len / 3, 0.005, capC), wb.vert(qx, top, qz, len / 3, TRIM_V, capC), wb.vert(px, top, pz, 0, TRIM_V, capC));
+    const ic = roofC.clone().lerp(trimC, 0.6);
+    rb.quad(rb.vert(qx, h, qz, len / 2, 0, ic), rb.vert(px, h, pz, 0, 0, ic), rb.vert(px, top, pz, 0, 0.4, ic), rb.vert(qx, top, qz, len / 2, 0.4, ic));
+  }
+}
+
 /** Soffit under the overhang and the white fascia board along the eaves. */
 function eaves(wb: Batch, inner: V[], outer: V[], eave: number, trimC: THREE.Color, soffitC: THREE.Color) {
   const n = inner.length;
@@ -289,13 +304,15 @@ function slopes(rb: Batch, outer: V[], inner: V[], eave: number, top: number, c:
 
 /** Builds every building footprint into merged, per-cell meshes. */
 /** colours that override the random palette for a building (buildings modelled after photos) */
-export type BuildingStyle = (b: Building) => { wall?: string; roof?: string; louvres?: boolean } | undefined;
+/** wall and roof colours; louvres: timber louvred windows (the halls); blue: UPSA's blue-glazed windows; flat: a flat
+ *  roof behind a parapet instead of the hipped roof; storeys: the height in storeys instead of the footprint's guess */
+export type BuildingStyle = (b: Building) => { wall?: string; roof?: string; louvres?: boolean; blue?: boolean; flat?: boolean; storeys?: number } | undefined;
 
 export function buildBuildings(buildings: Building[], styleOf?: BuildingStyle) {
   const group = new THREE.Group();
-  const { wall, roof, louvreWall } = buildingMaterials();
+  const { wall, roof, louvreWall, blueWall } = buildingMaterials();
   const rand = seeded(23);
-  const cells = new Map<string, { wb: Batch; rb: Batch; louvres: boolean }>();
+  const cells = new Map<string, { wb: Batch; rb: Batch; skin: string }>();
   const trimBase = new THREE.Color('#fbf8f1');
   const soffitBase = new THREE.Color('#d9d0bf');
 
@@ -306,10 +323,10 @@ export function buildBuildings(buildings: Building[], styleOf?: BuildingStyle) {
     const holes = bd.holes.map(clean).filter((h) => h.length >= 3).map((h) => (area(h) > 0 ? h.reverse() : h));
     const footprint = Math.abs(area(outer));
     const r1 = rand(), r2 = rand(), r3 = rand(), r4 = rand();
-    const h = bd.height ?? (footprint < 60 ? 3.6 : footprint < 350 ? 7 : r1 < 0.5 ? 7 : 10.5);
+    const st = styleOf?.(bd);
+    const h = st?.storeys ? PLINTH + st.storeys * STOREY : (bd.height ?? (footprint < 60 ? 3.6 : footprint < 350 ? 7 : r1 < 0.5 ? 7 : 10.5));
     const storeys = Math.max(1, Math.round((h - PLINTH) / STOREY));
     const bay = 2.9 + r2 * 0.8;
-    const st = styleOf?.(bd);
     const wallC = tint(st?.wall ?? WALL_COLORS[(r3 * WALL_COLORS.length) | 0], rand);
     const roofC = tint(st?.roof ?? ROOF_COLORS[(r4 * ROOF_COLORS.length) | 0], rand, 0.05);
     const plinthC = tint(PLINTH_COLORS[(rand() * PLINTH_COLORS.length) | 0], rand);
@@ -319,9 +336,10 @@ export function buildBuildings(buildings: Building[], styleOf?: BuildingStyle) {
     let cx = 0, cz = 0;
     for (const [x, z] of outer) { cx += x; cz += z; }
     cx /= outer.length; cz /= outer.length;
-    const key = `${Math.floor(cx / CELL)},${Math.floor(cz / CELL)}${st?.louvres ? 'L' : ''}`;
+    const skin = st?.louvres ? 'L' : st?.blue ? 'B' : '';
+    const key = `${Math.floor(cx / CELL)},${Math.floor(cz / CELL)}${skin}`;
     let cell = cells.get(key);
-    if (!cell) cells.set(key, (cell = { wb: new Batch(), rb: new Batch(), louvres: !!st?.louvres }));
+    if (!cell) cells.set(key, (cell = { wb: new Batch(), rb: new Batch(), skin }));
     const { wb, rb } = cell;
     const w0 = wb.pos.length, r0 = rb.pos.length;
 
@@ -331,7 +349,15 @@ export function buildBuildings(buildings: Building[], styleOf?: BuildingStyle) {
     const box = orientedBox(outer);
     const bw = box.u1 - box.u0, bdp = box.w1 - box.w0;
     const rect = !holes.length && footprint / box.area > 0.86 && Math.min(bw, bdp) <= 28;
-    if (rect) {
+    if (st?.flat) {
+      // a flat roof behind a plain parapet (UPSA's campus blocks)
+      for (const ring of [outer, ...holes]) parapet(wb, rb, ring, h, trimC, roofC);
+      const vec = (r: V[]) => r.map(([x, z]) => new THREE.Vector2(x, z));
+      const contour = vec(outer), holeVs = holes.map(vec), all = contour.concat(...holeVs);
+      const flat = roofC.clone().multiplyScalar(0.92);
+      const baseIdx = all.map((p) => rb.vert(p.x, h + 0.04, p.y, p.x / 2, p.y / 2, flat));
+      for (const t of THREE.ShapeUtils.triangulateShape(contour, holeVs)) rb.tri(baseIdx[t[0]], baseIdx[t[1]], baseIdx[t[2]]);
+    } else if (rect) {
       // a true hipped roof over the footprint's box
       const corner = (u: number, w: number): V => [u * box.c - w * box.s, u * box.s + w * box.c];
       const inner: V[] = [corner(box.u0, box.w0), corner(box.u1, box.w0), corner(box.u1, box.w1), corner(box.u0, box.w1)];
@@ -374,8 +400,8 @@ export function buildBuildings(buildings: Building[], styleOf?: BuildingStyle) {
     lift(rb, r0);
   }
 
-  for (const { wb, rb, louvres } of cells.values()) {
-    const walls = new THREE.Mesh(wb.geometry(), louvres ? louvreWall : wall);
+  for (const { wb, rb, skin } of cells.values()) {
+    const walls = new THREE.Mesh(wb.geometry(), skin === 'L' ? louvreWall : skin === 'B' ? blueWall : wall);
     walls.castShadow = walls.receiveShadow = true;
     const roofs = new THREE.Mesh(rb.geometry(), roof);
     roofs.castShadow = roofs.receiveShadow = true;

@@ -404,6 +404,42 @@
     {
       "id": "ml:0782e359-6e64-4fdb-b77a-1373e5234acd",
       "reason": "The owner's Bani, PRESEC and IPS Road brief (R4 aerial): this machine-detected strip west of J.J. Rawlings Avenue lies on open scrub crossed by a dirt track; the aerial shows no building there."
+    },
+    {
+      "id": "ml:19aebf1b-c628-47ca-b320-c0a51f4c637b",
+      "reason": "The owner's UPSA campus packs (docs/upsa-campus/): the Apple hybrid aerial registered at 2.42 px/m, the AeroVision drone post of 2025-06-23 and the DroneStories clips IMG_9677: this machine-detected outline lies on the Rev. J. K. Antwi Astro Turf, a striped synthetic football pitch in every view; no building stands there."
+    },
+    {
+      "id": "ml:11814940-1b71-4055-a65c-7d01d32ea451",
+      "reason": "The owner's UPSA campus packs (docs/upsa-campus/): the Apple hybrid aerial registered at 2.42 px/m, the AeroVision drone post of 2025-06-23 and the DroneStories clips IMG_9677: on the Astro Turf's west touchline; no building there."
+    },
+    {
+      "id": "ml:296d9fe1-2929-4cd3-a2e7-29ac3d04b1e1",
+      "reason": "The owner's UPSA campus packs (docs/upsa-campus/): the Apple hybrid aerial registered at 2.42 px/m, the AeroVision drone post of 2025-06-23 and the DroneStories clips IMG_9677: on the Astro Turf; no building there."
+    },
+    {
+      "id": "ml:5b78ee8b-1054-49e5-9fb1-e6621d06c930",
+      "reason": "The owner's UPSA campus packs (docs/upsa-campus/): the Apple hybrid aerial registered at 2.42 px/m, the AeroVision drone post of 2025-06-23 and the DroneStories clips IMG_9677: on the Astro Turf's north-west corner; no building there."
+    },
+    {
+      "id": "ml:bd3189e1-8ffc-4673-9ba2-e1c6e0465457",
+      "reason": "The owner's UPSA campus packs (docs/upsa-campus/): the Apple hybrid aerial registered at 2.42 px/m, the AeroVision drone post of 2025-06-23 and the DroneStories clips IMG_9677: on the Astro Turf; no building there."
+    },
+    {
+      "id": "ml:a9c261f6-ac2b-453a-84a8-77f154bbe794",
+      "reason": "The owner's UPSA campus packs (docs/upsa-campus/): the Apple hybrid aerial registered at 2.42 px/m, the AeroVision drone post of 2025-06-23 and the DroneStories clips IMG_9677: on the fenced red-and-green hard courts west of the Astro Turf; no building there."
+    },
+    {
+      "id": "osm:way/1009392429",
+      "reason": "The owner's UPSA campus packs (docs/upsa-campus/): the Apple hybrid aerial registered at 2.42 px/m, the AeroVision drone post of 2025-06-23 and the DroneStories clips IMG_9677: this OSM outline covers the north half of the hard courts west of the Astro Turf (two green courts with basketball posts in a red surround, fenced); the six-storey block next to them stands north of it."
+    },
+    {
+      "id": "ml:d2d5f0f0-bc7d-4ec9-aa07-7e641de9921b",
+      "reason": "The owner's UPSA campus packs (docs/upsa-campus/): the Apple hybrid aerial registered at 2.42 px/m, the AeroVision drone post of 2025-06-23 and the DroneStories clips IMG_9677: in the courtyard of the four-storey blocks south of the hard courts, which the clips show as lawn and paving round a round fountain."
+    },
+    {
+      "id": "osm:way/626139046",
+      "reason": "The owner's UPSA campus packs (docs/upsa-campus/): the Apple hybrid aerial registered at 2.42 px/m, the AeroVision drone post of 2025-06-23 and the DroneStories clips IMG_9677: this service road runs across the Astro Turf's north third; the aerial and every drone view show the pitch, its fence and track edge there, and no road. (The walkway along the pitch's west side, osm:way/1009392428, stays.)"
     }
   ],
   "heights": [
