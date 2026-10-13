@@ -14,4 +14,18 @@ export const CW_VIEWS: CwView[] = [
   { name: 'cwAxis', eye: [-420, 70, 128], look: [-760, 8, 128], fov: 50, note: 'the axis from Commonwealth up to the Great Hall (raised)' },
   { name: 'cwGreat', eye: [-950, 22, 170], look: [-1005, 12, 132], fov: 58, note: 'the Great Hall and its tower (raised)' },
   { name: 'cwStairs', eye: [-549, 9, 139], look: [-626, 0, 128], fov: 56, note: 'the flights and level walks through the courts, the statue (raised)' },
+  // the owner's Commonwealth correction brief (Pictures 1-6): the overhead matched to Picture 6, the court and pharmacy
+  // views of Pictures 1, 2 and 4, the close-ups of the connectors, the stone faces and the stairs
+  { name: 'cwcTop', eye: [-615, 240, 112], look: [-615, 0, 111.9], fov: 50, note: 'the whole hall from above (Picture 6)' },
+  { name: 'cwcP1', eye: [-606, 3.5, 222], look: [-606, 6, 150], fov: 62, note: 'the south range and its junctions from the slope (Picture 1)' },
+  { name: 'cwcP1b', eye: [-560, 3.5, 128], look: [-640, 6, 128], fov: 62, note: 'the court and the crossbars from the first court (Picture 1)' },
+  { name: 'cwcP2', eye: [-469, 1.7, 182], look: [-494, 5, 160], fov: 62, note: 'the pharmacy and the low link south of it (Picture 2)' },
+  { name: 'cwcP3', eye: [-472, 14, 100], look: [-496, 5, 117], fov: 58, note: 'the low link north of the entrance from above (Picture 3)' },
+  { name: 'cwcP4', eye: [-478, 1.7, 172], look: [-482, 3, 130], fov: 62, note: 'the drive past the pharmacy: stone faces, steps (Picture 4)' },
+  { name: 'cwcP5', eye: [-481, 1.6, 147], look: [-491, 3, 136], fov: 58, note: 'the front terrace and the entrance steps close up (Picture 5)' },
+  { name: 'cwcLinkD', eye: [-478, 6, 80], look: [-496, 4, 90], fov: 58, note: 'the link between the front north block and the lane (mark d)' },
+  { name: 'cwcDining', eye: [-600, 14, 98], look: [-612, 4, 70], fov: 58, note: 'the dining hall, its wings and their links (marks a-c)' },
+  { name: 'cwcChapel', eye: [-604, 9, 222], look: [-605, 4, 190], fov: 58, note: 'the chapel and its links to the crossbars (marks j, k)' },
+  { name: 'cwcLibrary', eye: [-690, 10, 127], look: [-712, 4, 127], fov: 62, note: 'the end building and its links to the stubs (marks h, i)' },
+  { name: 'cwcWin', eye: [-560, 4, 112], look: [-575, 6, 104], fov: 50, note: 'the timber windows close up (court side)' },
 ];

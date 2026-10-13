@@ -23,8 +23,10 @@
 // Every block stands on the ground under it (Spec.onGround): the lanes are built in short lengths that step up the
 // hill's levels.
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { PAVE, WHITE, box, canvas, flat, tri2 } from './modelkit';
-import { PL, createSite, render, slab, window_, type Block, type Kit, type Spec, type Style } from './blocks';
+import { PL, createSite, louvre as woodWin, render, slab, type Block, type Kit, type Spec, type Style } from './blocks';
+import type { Part } from './modelkit';
 import { garden } from './gardens';
 import { CW_LEVELS, groundHeight, stairsOf } from './relief';
 import { NODE_XZ, ROADS } from './campusmap';
@@ -34,28 +36,124 @@ import { SOLIDS } from './solids';
 
 const ROOF = '#c4613a', AGED = '#b25a3c', FASCIA = '#fbf9f3', FRAME = '#5a3b28', STONE = '#9b8a72', STONE_DARK = '#7d6d58', SOFFIT_DARK = '#4a3a30';
 const ST = 3.3;
+/** marker colours for the stair treads and nosings (replaced by the textured dark-brown stair material) */
+const TREAD = '#4b3326', NOSE = '#2e1f17';
 
-/** white render, a dark window in a brown frame per bay on both floors */
+// ---------- the owner's material correction: irregular stone on the stone-faced surfaces, worn dark-brown stairs ----------
+let STONE_TEX: THREE.CanvasTexture | null = null;
+/** irregular rubble stone: rough stones of varied size and earthy colour (brown, reddish, grey) in dark joints, in uneven
+ *  courses, 2.5 m to a repeat (Picture 5) */
+const stoneTex = () => (STONE_TEX ??= (() => {
+  const t = canvas(512, 512, (g) => {
+    g.fillStyle = '#3f352d'; g.fillRect(0, 0, 512, 512);
+    const cols = ['#8a6a52', '#9b7b5e', '#7a5a46', '#a08a72', '#6e5e50', '#b08468', '#8c857a', '#a3765a', '#776a5c', '#94704f', '#a0563e', '#7f7468'];
+    let seed = 41; const r = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    /** one rough stone: an irregular polygon round the rectangle, shaded and speckled */
+    const stone = (x: number, y: number, w: number, h: number) => {
+      const j = 3, pts: [number, number][] = [];
+      const n = 3 + ((r() * 3) | 0);
+      for (let i = 0; i < n; i++) pts.push([x + j + (w - 2 * j) * (i / n) + r() * 6, y + j + r() * 6]);
+      for (let i = 0; i < 2; i++) pts.push([x + w - j - r() * 7, y + j + (h - 2 * j) * ((i + 0.5) / 2) + r() * 4]);
+      for (let i = n; i > 0; i--) pts.push([x + j + (w - 2 * j) * (i / n) - r() * 6, y + h - j - r() * 6]);
+      for (let i = 2; i > 0; i--) pts.push([x + j + r() * 7, y + j + (h - 2 * j) * ((i - 0.5) / 2) - r() * 4]);
+      const c = cols[(r() * cols.length) | 0];
+      g.save(); g.beginPath(); g.moveTo(...pts[0]); for (const q of pts.slice(1)) g.lineTo(...q); g.closePath();
+      g.fillStyle = c; g.fill(); g.clip();
+      const gr = g.createLinearGradient(x, y, x + w * 0.4, y + h);
+      gr.addColorStop(0, 'rgba(255,240,220,0.14)'); gr.addColorStop(1, 'rgba(0,0,0,0.16)');
+      g.fillStyle = gr; g.fillRect(x, y, w, h);
+      for (let k = 0; k < (w * h) / 60; k++) { g.fillStyle = r() > 0.5 ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)'; g.fillRect(x + r() * w, y + r() * h, 1 + r() * 3, 1 + r() * 2); }
+      g.restore();
+    };
+    // rough courses of uneven height; some stones split into two smaller ones stacked
+    for (let y = 0; y < 512;) {
+      const h = 38 + r() * 52;
+      for (let x = -r() * 80; x < 512;) {
+        const w = 46 + r() * 120;
+        if (r() < 0.25 && h > 60) { const a = h * (0.4 + r() * 0.2); stone(x, y, w, a); stone(x + r() * 10 - 5, y + a, w, h - a); } else stone(x, y, w, h);
+        x += w;
+      }
+      y += h;
+    }
+  });
+  t.repeat.set(1 / 2.5, 1 / 2.5);
+  return t;
+})());
+const stoneMats = new Map<string, THREE.MeshStandardMaterial>();
+const stoneMat = (tint: string) => { let m = stoneMats.get(tint); if (!m) { m = new THREE.MeshStandardMaterial({ map: stoneTex(), color: tint, roughness: 0.95 }); stoneMats.set(tint, m); } return m; };
+let STAIR_MAT: THREE.MeshStandardMaterial | null = null;
+/** worn dark-brown treads: a little grain, scuffs, darker edges, 1 m to a repeat */
+const stairMat = () => (STAIR_MAT ??= (() => {
+  const t = canvas(128, 128, (g) => {
+    g.fillStyle = '#4e3528'; g.fillRect(0, 0, 128, 128);
+    let seed = 7; const r = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    for (let i = 0; i < 260; i++) { g.fillStyle = `rgba(${r() > 0.5 ? '120,90,70' : '30,20,14'},${0.12 + r() * 0.2})`; g.fillRect(r() * 128, r() * 128, 2 + r() * 10, 1 + r() * 3); }
+    for (let i = 0; i < 14; i++) { g.fillStyle = 'rgba(150,120,95,0.18)'; g.beginPath(); g.ellipse(r() * 128, r() * 128, 6 + r() * 12, 3 + r() * 6, r() * 3, 0, Math.PI * 2); g.fill(); }
+  });
+  return new THREE.MeshStandardMaterial({ map: t, roughness: 0.9 });
+})());
+/** uvs in metres by each face's direction, so a texture keeps its scale on every face */
+function metreUV(g: THREE.BufferGeometry) {
+  const p = g.attributes.position, n = g.attributes.normal, uv = g.attributes.uv as THREE.BufferAttribute | undefined;
+  if (!uv || !n) return g;
+  for (let i = 0; i < p.count; i++) {
+    const ax = Math.abs(n.getX(i)), ay = Math.abs(n.getY(i));
+    if (ay > 0.7) uv.setXY(i, p.getX(i), p.getZ(i)); else if (ax > 0.7) uv.setXY(i, p.getZ(i), p.getY(i)); else uv.setXY(i, p.getX(i), p.getY(i));
+  }
+  uv.needsUpdate = true;
+  return g;
+}
+/** take the stone-coloured and stair parts out of a kit's plain parts into their own textured meshes */
+function skinStone(k: Kit) {
+  const groups = new Map<string, THREE.BufferGeometry[]>(), keep: Part[] = [];
+  for (const part of k.plain) {
+    const [geo, col] = part;
+    const key = col === STONE ? 'stone' : col === STONE_DARK ? 'stoneDark' : col === TREAD ? 'tread' : col === NOSE ? 'nose' : null;
+    if (!key) { keep.push(part); continue; }
+    const g = geo.index ? geo.toNonIndexed() : geo;
+    if (!g.attributes.normal) g.computeVertexNormals();
+    if (!g.attributes.uv) g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(g.attributes.position.count * 2), 2));
+    (groups.get(key) ?? groups.set(key, []).get(key)!).push(metreUV(g));
+  }
+  k.plain.length = 0; k.plain.push(...keep);
+  const mats: Record<string, THREE.Material> = { stone: stoneMat('#ffffff'), stoneDark: stoneMat('#cdbfb0'), tread: stairMat(), nose: new THREE.MeshStandardMaterial({ color: '#2b1d15', roughness: 0.85 }) };
+  for (const [key, gs] of groups) {
+    const me = new THREE.Mesh(mergeGeometries(gs.map((g) => { const c = g.clone(); for (const a of Object.keys(c.attributes)) if (!['position', 'normal', 'uv'].includes(a)) c.deleteAttribute(a); return c; })), mats[key]);
+    me.castShadow = true; me.receiveShadow = true; k.meshes.push(me);
+  }
+}
+
+/** a brown timber louvred window on a face across z (x0..x1, y0..y1 at z, facing `side`): frame, slats, a mullion */
+function timberWin(k: Kit, x0: number, x1: number, y0: number, y1: number, z: number, side: number) {
+  const o = side * 0.05;
+  k.plain.push([box(x0 - 0.08, x1 + 0.08, y0 - 0.08, y1 + 0.08, Math.min(z, z + o), Math.max(z, z + o)), FRAME]);
+  for (let y = y0 + 0.08; y < y1 - 0.06; y += 0.17) k.plain.push([box(x0, x1, y, y + 0.08, Math.min(z + o, z + 2 * o), Math.max(z + o, z + 2 * o)), '#6b4a32']);
+  k.plain.push([box((x0 + x1) / 2 - 0.03, (x0 + x1) / 2 + 0.03, y0, y1, Math.min(z + o, z + 2 * o), Math.max(z + o, z + 2 * o)), FRAME]);
+}
+
+/** white paint, a brown wooden louvred window per bay on both floors (the owner's correction: timber, not glass) */
 const CW_WIN: Style = {
   bay: 3.4,
   up: [[70, 56, 116, 120]],
   ground: [[70, 256 + 60, 116, 120]],
   draw: (g) => {
-    render(g, '#f8f6f1');
-    window_(g, [70, 56, 116, 120], FRAME, 2, 0.28);
+    render(g, '#f8f7f3');
+    woodWin(g, [70, 56, 116, 120], FRAME);
     slab(g, 238, 18);
-    window_(g, [70, 256 + 60, 116, 120], FRAME, 2, 0.28);
+    woodWin(g, [70, 256 + 60, 116, 120], FRAME);
   },
 };
+/** white paint, no openings: the narrow ends of the low links */
+const CW_PLAIN: Style = { bay: 3.4, up: [], ground: [], draw: (g) => { render(g, '#f8f7f3'); slab(g, 238, 18); } };
 /** the entrance block's court side: tall narrow windows through the upper floor, plain wall below */
 const CW_TALL: Style = {
   bay: 1.9,
   up: [[78, 18, 100, 220]],
   ground: [],
   draw: (g) => {
-    render(g, '#f8f6f1');
-    window_(g, [78, 18, 100, 220], '#4a3426', 1, 0.62);
-    g.fillStyle = '#f2efe8'; g.fillRect(0, 256, 256, 256);
+    render(g, '#f8f7f3');
+    woodWin(g, [78, 18, 100, 220], '#4a3426');
+    g.fillStyle = '#f6f5f1'; g.fillRect(0, 256, 256, 256);
   },
 };
 
@@ -72,7 +170,7 @@ const CW_SHUT: Style = {
   up: [],
   ground: [],
   draw: (g) => {
-    render(g, '#f4f1ea');
+    render(g, '#f8f7f3');
     louvre(g, 100, 60, 56, 150); g.fillStyle = '#3a332d'; g.fillRect(104, 18, 48, 20);
     slab(g, 238, 18);
     louvre(g, 100, 316, 56, 150);
@@ -100,7 +198,10 @@ function ventBand(k: Kit, x: number, z0: number, z1: number, y0: number, y1: num
 /** a modelled stairway (relief.ts) in a model's frame: each step and landing a solid block down into the ground, a
  *  nosing at the front of each step */
 type Stair = ReturnType<typeof stairsOf>[number];
-function drawStair(k: Kit, s: Stair, X: (x: number) => number, Z: (z: number) => number, step: [string, string], landing: string, nose: string, depth = 1.6) {
+function drawStair(k: Kit, s: Stair, X: (x: number) => number, Z: (z: number) => number, _step: [string, string], _landing: string, _nose: string, depth = 1.6) {
+  // (every flight dark brown, the owner's correction: the treads and landings in the worn stair material, the nosings
+  // darker; skinStone turns these marker colours into textured meshes)
+  const step: [string, string] = [TREAD, TREAD], landing = TREAD, nose = NOSE;
   const dir = Math.sign(s.x1 - s.x0);
   s.segs.forEach((q, i) => {
     const xa = X(s.x0 + dir * q.u0), xb = X(s.x0 + dir * q.u1);
@@ -153,18 +254,43 @@ const BARS = [
 ];
 /** the two-storey pavilions on the walk through the court (a passage through each) */
 const PAVILIONS: [number, number, number, number][] = [[-582.5, -575, 120.3, 134], [-634, -624.1, 120.4, 136.2]];
+/** the single-storey links at the owner's short blue marks (Picture 6; e, f and g are in FRONT): lower than the blocks they
+ *  join, under their own roofs, each set a little back from the blocks' faces and reaching 0.15 m into both, so no slit of
+ *  grass is left between them. Widths and heights are estimates, not surveyed. */
+const LINKS = [
+  W(-620.55, -616.05, 64.4, 72.0, 1), // a: the west wing to the dining hall
+  W(-634.4, -625.6, 72.85, 81.45, 1), // b: the west wing to the north-west crossbar
+  W(-580.9, -571.7, 71.85, 78.75, 1), // c: the east wing to the north-east crossbar
+  W(-501.7, -492.1, 87.65, 89.15, 1, { roof: 'flat', faces: { x0: CW_PLAIN, x1: CW_PLAIN } }), // d: the front north block to the lane's block
+  W(-715.1, -705.6, 111.15, 116.95, 1), // h: the north stub to the end building
+  W(-715.1, -705.6, 137.45, 143.15, 1), // i: the end building to the south stub
+  W(-625.15, -620.35, 184.6, 192.9, 1), // j: the south-west crossbar to the chapel
+  W(-590.85, -583.05, 184.6, 191.6, 1), // k: the chapel to the south-east crossbar
+];
+/** the rest of the hall on Picture 6, drawn by the generic builder until now (cream paint, glass windows): the dining hall
+ *  (osm:way/100307631) and its wings (osm:way/100307668, 100307692), the chapel (osm:way/492731364), the prayer lounge
+ *  (ml:4023e6d6), and the block against the east wing's north side (ml:639f89d8). Their storeys are estimates (the map has
+ *  none). */
+const COMPLEX = [
+  W(-619.3, -592, 26.7, 41.4, 2), W(-616.4, -594.7, 41.4, 74.4, 2),
+  W(-640.1, -620.4, 63.3, 73, 2), W(-588, -568.2, 63.3, 72, 2),
+  W(-585.7, -570.6, 40.5, 63.4, 2), W(-590.6, -585.6, 53.9, 60.9, 2),
+  W(-620.5, -590.7, 183.7, 194.1, 2),
+  W(-695.9, -687.4, 110.4, 118.9, 1),
+];
 /** the front terrace's height (relief.ts): the front row and the first court stand on it */
 const FH = CW_LEVELS.front.h;
 const FRONT = [
   W(-502.4, -491.8, 73.6, 87.8, 2),
   W(-502, -490.5, 89, 114, 2),
-  // the entrance block's joins to the wings either side (the aerial's continuous front: a wall set back, a roof return)
-  W(-501.4, -492.2, 113.6, 118.4, 2),
+  // the entrance block's joins to the wings either side: single-storey links under their own roofs (Picture 3; Picture 6
+  // marks e and f)
+  W(-501.4, -492.2, 113.6, 118.4, 1),
   W(-501.7, -491.1, 118.1, 136.7, 2, { faces: { x0: CW_TALL }, roof: 'none' }),
-  W(-501.4, -492.2, 136.4, 141.4, 2),
+  W(-501.4, -492.2, 136.4, 141.4, 1),
   W(-502, -490.5, 141, 159.5, 2),
-  // the lower wing beside the pharmacy (pair 4)
-  W(-502, -490.5, 159.5, 166, 1),
+  // the lower wing beside the pharmacy (pair 4), on to the next block (Picture 6 mark g: it closes the slit there)
+  W(-502, -490.5, 159.5, 167.55, 1),
   W(-502.3, -490.3, 167.4, 184.5, 2),
   // the end building, across the walk at the top of the court
   W(-722.6, -704, 116.8, 137.6, 2),
@@ -257,12 +383,15 @@ const hall: Spec = {
   name: 'Commonwealth Hall',
   axis: [1, 0], origin: O, storey: ST, style: CW_WIN, roofColor: ROOF, fascia: FASCIA, pitch: 0.5,
   onGround: true,
-  replaces: [[-540, 101.5], [-672, 101.8], [-654, 154.4], [-534.5, 154.6], [-713.3, 127.2], [-497.1, 80.7], [-496.4, 127.4], [-496.3, 175.9], [-578.8, 127.2], [-629, 128.3]],
-  blocks: [...LANES, ...BARS, ...FRONT, ...ENDS],
+  replaces: [[-540, 101.5], [-672, 101.8], [-654, 154.4], [-534.5, 154.6], [-713.3, 127.2], [-497.1, 80.7], [-496.4, 127.4], [-496.3, 175.9], [-578.8, 127.2], [-629, 128.3],
+    [-605, 34], [-605, 60], [-630, 68], [-578, 67.6], [-605.6, 189], [-691.6, 114.6], [-578, 50]],
+  // the plinths in stone (skinStone), not taupe paint
+  plinth: STONE_DARK,
+  blocks: [...LANES, ...BARS, ...FRONT, ...ENDS, ...LINKS, ...COMPLEX],
   keep: [[L(-735), L(-478), -6, 6], [L(-760), L(-730), -18, 18], [L(-490), L(-476), Lz(145), Lz(163)]],
   extras: (k) => {
     g.reseed(7);
-    for (const b of [...LANES, ...BARS, ...FRONT, ...ENDS]) g.clear.push([b.x0 + O[0] - 2, b.x1 + O[0] + 2, b.z0 + O[1] - 2, b.z1 + O[1] + 2]);
+    for (const b of [...LANES, ...BARS, ...FRONT, ...ENDS, ...LINKS, ...COMPLEX]) g.clear.push([b.x0 + O[0] - 2, b.x1 + O[0] + 2, b.z0 + O[1] - 2, b.z1 + O[1] + 2]);
     g.clear.push([-760, -478, 122, 134], [-760, -728, 108, 148], [-492, -476, 70, 188]);
     // the retaining walls across the courts at each flight's foot are drawn below; keep bushes off them
     for (const [f] of CW_LEVELS.flights) g.clear.push([f - 1, f + 2.2, 70, 188]);
@@ -305,7 +434,8 @@ const hall: Spec = {
     for (const z of [-2.55, -0.85, 0.85, 2.55]) k.plain.push([box(ex1 + 0.04, ex1 + 0.16, fy + PL, fy + PL + 3.1, z - 0.07, z + 0.07), '#e6e1d6']);
     k.plain.push([box(ex1 + 0.04, ex1 + 0.16, fy + PL + 3.0, fy + PL + 3.2, -2.6, 2.6), '#e6e1d6']);
     k.signs.push({ text: 'COMMONWEALTH HALL', x: ex1 + 0.09, y: fy + PL + 3.55, z: 0, ry: Math.PI / 2, w: 3.6, colors: ['#f7f4ec', '#7a2430'] });
-    k.plain.push([box(ex1 + 0.04, ex1 + 0.09, fy + PL + ST + 0.5, wt - 0.5, -2.4, 2.4), '#2f3438']);
+    k.plain.push([box(ex1 + 0.04, ex1 + 0.09, fy + PL + ST + 0.5, wt - 0.5, -2.4, 2.4), '#4a3426']);
+    for (let y = fy + PL + ST + 0.62; y < wt - 0.55; y += 0.2) k.plain.push([box(ex1 + 0.09, ex1 + 0.12, y, y + 0.07, -2.4, 2.4), '#6b4a32']);
     for (let z = -2.4; z <= 2.41; z += 1.2) k.plain.push([box(ex1 + 0.09, ex1 + 0.13, fy + PL + ST + 0.5, wt - 0.5, z - 0.05, z + 0.05), '#e6e1d6']);
     for (const s of [-1, 1]) k.plain.push([box(ex1, ex1 + P, fy, eave - 0.15, s > 0 ? rz : -rz - 1.3, s > 0 ? rz + 1.3 : -rz), WHITE]);
     k.plain.push([box(ex1, ex1 + P, wt - 0.15, eave - 0.15, -rz, rz), WHITE]);
@@ -338,7 +468,7 @@ const hall: Spec = {
       k.plain.push([box(bx, bx + 1.8, dy - 0.3, py - 0.2, b0, b1), STONE_DARK]);
       // the steps down to the apron, between the planters
       const n = 7, run = 0.32, rise = (py - dy) / n;
-      for (let i = 0; i < n; i++) k.plain.push([box(bx + 1.8 + i * run, bx + 1.8 + (i + 1) * run, dy - 0.3, py - rise * (i + 1) + rise, b0 + 0.6, b1 - 0.6), i % 2 ? '#c9bba5' : '#bfb19a']);
+      for (let i = 0; i < n; i++) k.plain.push([box(bx + 1.8 + i * run, bx + 1.8 + (i + 1) * run, dy - 0.3, py - rise * (i + 1) + rise, b0 + 0.6, b1 - 0.6), TREAD]);
       // the planting terraces: two tiers of stone-faced beds, soil and shrubs on top
       for (const [za, zb] of [[Lz(z0) + 0.1, b0 + 0.55], [b1 - 0.55, Lz(z1) - 0.1]] as [number, number][]) {
         k.plain.push([box(bx, bx + 2.4, dy - 0.3, dy + 0.95, za, zb), STONE]);
@@ -358,11 +488,12 @@ const hall: Spec = {
     for (const [x0, x1, z0, z1] of PAVILIONS) {
       const a = L(x0), b = L(x1), c = Lz(z0), d = Lz(z1), y = baseOf(k, a, b, c, d);
       k.plain.push([box(a, b, y, y + k.wallTop(2), c, d), WHITE]);
-      k.plain.push([box(a, b, y, y + PL, c - 0.05, d + 0.05), '#8c8174']);
+      k.plain.push([box(a, b, y, y + PL, c - 0.05, d + 0.05), STONE_DARK]);
       for (const x of [a - 0.03, b + 0.03]) k.plain.push([box(x - 0.02, x + 0.02, y + PL, y + 3.2, -1.6, 1.6), '#2f2a26']);
-      for (const z of [c, d]) for (let x = a + 1.6; x < b - 1; x += 2.6) k.glass.push(box(x, x + 1.1, y + PL + ST + 0.6, y + PL + ST + 2.2, z - 0.04, z + 0.04));
+      for (const z of [c, d]) for (let x = a + 1.6; x < b - 1; x += 2.6) timberWin(k, x, x + 1.1, y + PL + ST + 0.6, y + PL + ST + 2.2, z, z === c ? -1 : 1);
       k.roof.c = new THREE.Color(ROOF);
-      hip(k, a - 0.8, b + 0.8, c - 0.8, d + 0.8, y + k.wallTop(2), 0.5);
+      // a short overhang: the pavilions stay detached from the crossbars, their roofs too (the owner's green circles)
+      hip(k, a - 0.3, b + 0.3, c - 0.3, d + 0.3, y + k.wallTop(2), 0.5);
     }
 
     // ---- the courts' levels (S8): the flights up the walk, stone cheeks either side, and across the courts at each
@@ -413,6 +544,7 @@ const hall: Spec = {
     g.scatter(-745, -480, 162, 210, 80, (x, z) => (g.rand() < 0.75 ? g.tree(k, L(x), Lz(z), 0.9 + g.rand() * 0.5) : g.bush(k, L(x), Lz(z))));
     g.scatter(-800, -745, 70, 190, 60, (x, z) => g.tree(k, L(x), Lz(z), 1 + g.rand() * 0.6));
     g.scatter(-740, -505, 92, 164, 60, (x, z) => g.bush(k, L(x), Lz(z), 0.6 + g.rand() * 0.4));
+    skinStone(k);
   },
 };
 
@@ -427,7 +559,7 @@ const GATE_HOUSES: [number, number][] = [[106.5, 116], [140, 149.5]];
 const approach: Spec = {
   name: 'Commonwealth Hall stairway',
   axis: [1, 0], origin: A, storey: 3.2, style: CW_WIN, roofColor: '#7d4f3e', fascia: '#4e3b30', pitch: 0.45,
-  onGround: true,
+  onGround: true, plinth: STONE_DARK,
   replaces: [[-452.4, 131.5]],
   blocks: GATE_HOUSES.map(([a, b]) => gateHouse(a, b)),
   keep: [[-464 - A[0], -360 - A[0], -14, 14], [-490 - A[0], -464 - A[0], -22, 22], [-383 - A[0], -363 - A[0], -23, 23]],
@@ -550,6 +682,7 @@ const approach: Spec = {
     g.scatter(-464, -378, 40, 112, 90, (x, z) => (g.rand() < 0.7 ? g.tree(k, X(x), Z(z), 0.9 + g.rand() * 0.6) : g.bush(k, X(x), Z(z))));
     g.scatter(-464, -378, 144, 216, 90, (x, z) => (g.rand() < 0.7 ? g.tree(k, X(x), Z(z), 0.9 + g.rand() * 0.6) : g.bush(k, X(x), Z(z))));
     for (let x = -460; x < -380; x += 7) for (const z of [stair.z0 - 6, stair.z1 + 6]) if (g.clearOf(x, z)) g.bush(k, X(x), Z(z), 0.8);
+    skinStone(k);
   },
 };
 

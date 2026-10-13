@@ -3407,3 +3407,31 @@ The blue shelters there are removed.
 
 Two false machine-detected outlines are excluded (`corrections.json`). The four Bani Hostel blocks are in no pair and
 keep the generic model.
+
+## Commonwealth Hall: the owner's correction brief (Pictures 1-6)
+
+The details are in `docs/commonwealth-correction/README.md`, with before and after images. The code is in
+`commonwealth.ts`, and the cameras are `cwcTop` ... `cwcWin` in `cwviews.ts`.
+
+**Links.** Single-storey links, under their own roofs, now stand at all 11 of Picture 6's short blue marks:
+- a-c: the dining wings to the dining hall and the crossbars;
+- d-g: along the front (e and f were two-storey joins and are now low);
+- h, i: the end building to the stubs;
+- j, k: the chapel to the crossbars.
+
+Each link is lower than the blocks it joins and reaches into both, so no grass slit is left.
+
+**Exceptions kept:**
+- the two green-circled pavilions stay detached (the west one's eaves shortened to keep a gap at roof level);
+- the break south of the dining hall stays open.
+
+**Newly modelled.** The dining hall, its wings, the block against the east wing, the chapel and the prayer lounge were
+on the generic cream template. They are now part of the hall model. Their storeys are estimates.
+
+**Materials** (scoped to this model):
+- brown timber louvred windows everywhere, with no glass, including the entrance's upper glazing and the pavilions;
+- white paint;
+- irregular rubble stone on the plinths, retaining walls, cheeks, terraces, the stairway's walls and the arches;
+- worn, textured dark-brown stairs on every flight, the pharmacy steps included.
+
+The planting is kept.
