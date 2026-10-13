@@ -1074,6 +1074,42 @@ try {
     if (!src.includes('JOSHUA ALABI LIBRARY') || /larbi/i.test(src)) fail('UPSA landmarks: the library is not named the Joshua Alabi Library');
   }
 
+  // ---------- the Bani Hostel, PRESEC and IPS Road brief (docs/bani-presec-ips/evidence-audit.md) ----------
+  {
+    const bp = await server.ssrLoadModule('/src/game/bpiplan.ts');
+    const site = (await server.ssrLoadModule('/src/game/banipresec.ts')).baniPresecSite;
+    const { BLOCK_SITES } = await server.ssrLoadModule('/src/game/sites.ts');
+    if (site.frames().length !== 6) fail('Bani/PRESEC/IPS: expected the corridor, the junction, PRESEC, the Bani side road and the two Bani blocks');
+    // the two Bani blocks by the avenue are modelled, not generic; the false machine-detected outlines are gone
+    for (const [x, z, name] of [[...bp.BANI_CREAM.pt, 'the cream Bani block (osm:way/1334286313)'], [...bp.BANI_PEACH.pt, 'the peach Bani block (osm:way/1334286314)']]) {
+      const bd = buildingAt(x, z);
+      if (!bd) fail(`Bani/PRESEC/IPS: no outline under ${name}`); else if (!BLOCK_SITES.some((st) => st.replaces(bd))) fail(`Bani/PRESEC/IPS: ${name} still uses the generic template`);
+    }
+    for (const [x, z] of [[926, -1183], [917, -1084]]) if (buildingAt(x, z)) fail(`Bani/PRESEC/IPS: the excluded machine-detected outline at ${x},${z} is back (R4 shows open ground)`);
+    // no generic shuttle shelter at the stops the brief models
+    for (const n of ['UPS', 'UPSA Taxi Rank', 'Presec']) if (!bp.MODELLED_STOPS.includes(n) || !placeByName(n)) fail(`Bani/PRESEC/IPS: the stop ${n} lost its place or its modelled shelter`);
+    // nothing solid on a road or a walk
+    const W = [9, 7.4, 6.2, 4.6, 2.6];
+    const onWay = (x, z, rad) => {
+      for (const road of cm.ROADS) {
+        const pts = road.nodes.map((n) => [cm.NODE_XZ[n * 2], cm.NODE_XZ[n * 2 + 1]]);
+        for (let i = 0; i < pts.length - 1; i++) {
+          const [ax, az] = pts[i], [bx, bz] = pts[i + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+          const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+          if (Math.hypot(ax + dx * t - x, az + dz * t - z) < W[road.cls] / 2 + rad) return `${road.name ?? (road.cls === 4 ? 'a walk' : 'a road')} (${road.cls})`;
+        }
+      }
+      return null;
+    };
+    for (const [x, z, rad] of bp.bpiPosts()) { const on = onWay(x, z, rad); if (on) fail(`Bani/PRESEC/IPS: the solid at ${x.toFixed(1)},${z.toFixed(1)} stands on ${on}`); }
+    // the gate keeps the entry road open; the rides along the avenue, through the IPS junction, into Bani and to PRESEC
+    if (bp.GATE.open < 7) fail('Bani/PRESEC/IPS: the PRESEC gate narrows its entry road');
+    for (const [a, b2, name] of [[[818, -560], [1000, -1080], 'north along the avenue'], [[994, -1120], [830, -580], 'south along the avenue'], [[930, -860], [1050, -880], 'through the IPS Road junction'],
+      [[990, -1150], [900, -1196], 'into the side road opposite PRESEC'], [[900, -1196], [1060, -1167], 'from Bani to the PRESEC gate']]) {
+      if (!cm.findPath(a, b2, 'cycle')) fail(`Bani/PRESEC/IPS: no ride ${name}`);
+    }
+  }
+
   // ---------- the 10-pair brief and the owner's three pictures (the JQB lane, the overhead crossing) ----------
   {
     const tp = (await server.ssrLoadModule('/src/game/tenpairs.ts')).tenPairsSite;

@@ -17,6 +17,7 @@ import { inDiasporaHall, setHallLights } from './halls';
 import { setBlockLights } from './blocks';
 import { SOLIDS } from './solids';
 import { BLOCK_SITES } from './sites';
+import { MODELLED_STOPS } from './bpiplan';
 import { inCutBand } from './cutplan';
 import { NSIA } from './nsia';
 import { KQ } from './kuffour';
@@ -884,6 +885,8 @@ export function buildCampusLife() {
   const fasciaText = atlas.text('UG SHUTTLE  ·  BUS STOP', '#1f4e9b', '#ffffff');
   for (const p of PLACES) {
     if (p.kind !== 'transport' || Math.hypot(p.x, p.z) > 2200) continue;
+    // (the stops whose real shelters, or the open ground without one, a site models: banipresec.ts)
+    if (MODELLED_STOPS.includes(p.name)) continue;
     const r = nearestRoad(p.x, p.z, 2, 60);
     if (!r) continue;
     const side = Math.sign((p.x - r.x) * -r.uz + (p.z - r.z) * r.ux) || 1;

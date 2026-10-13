@@ -3366,3 +3366,44 @@ road on the north, with:
 
 **Estimates.** All heights, the gate's lane arrangement, KOKA's rear and the library's front (the north face, from the
 map) are estimates. They are documented in the audit.
+
+## J.J. Rawlings Avenue from Shell to PRESEC and Bani (the owner's Bani, PRESEC and IPS Road brief)
+
+The brief is `Bani_PRESEC_IPS_Detailed_Claude_Brief.pdf`, with 20 street pairs and the aerials R1-R4 and G1. The models
+are in `banipresec.ts`, with their numbers in `bpiplan.ts` and their cameras in `bpiviews.ts` (preview views `bpi1`-`bpi20`
+and the overheads `bpiR1`-`bpiR4`, `bpiG1`). Evidence, the old-to-new mapping, the deletions and the open questions are
+in `docs/bani-presec-ips/evidence-audit.md`; the per-pair comparisons and the coverage check are in the same folder.
+
+The section's map data was complete. The game had drawn it with generic models: lawn, palm avenues, classroom blocks
+and the blue shuttle shelters. This pass rebuilds it from the photographs, on the mapped roads and outlines.
+
+**Pairs 1-6** (R2):
+- the Shell pylon and the forecourt paved out to the road;
+- the open scrub and red soil on both sides of the avenue, in place of lawn;
+- one drooping palm, the skeletal billboard frame, and the tall edge-on billboard;
+- the lattice towers and their line, the poles with crossarms and their wires, and billboards along the corridor;
+- the unroofed frame east of the avenue. It has no outline in any source, so it is provisional and its height is
+  unconfirmed.
+
+**Pairs 7-10** (R1, R3):
+- the overhead signal arm at the IPS Road junction;
+- at the GOIL corner: the paved walk, the stone-lined drain and its crossing slab, the white cabinets, the exposed rust
+  frame, the stall roof, kiosks, umbrellas, the mast and boards;
+- the pale concrete shelter at the "UPS" stop, under its tall billboard.
+
+The blue shelters there are removed.
+
+**Pairs 11-14, 20** (R4):
+- the signal arms at the PRESEC junction;
+- PRESEC's gate: the PRESEC span on red piers, the lettered wing walls, the blue plinth, the white boundary wall, the
+  stone-faced verges, the walks and posts;
+- dense trees screening the school;
+- the roadside shops and the "Presec" stop's shelter.
+
+**Pairs 15-19** (R4):
+- the cream five-storey Bani block (osm:way/1334286313) and the peach four-storey block (osm:way/1334286314);
+- the low wall and boards along the side road, its poles, the shaded gathering ground, two sheds, and the elevated
+  billboard.
+
+Two false machine-detected outlines are excluded (`corrections.json`). The four Bani Hostel blocks are in no pair and
+keep the generic model.

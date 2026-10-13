@@ -396,6 +396,14 @@
     {
       "id": "ml:73e6ceb9-a7e5-4b62-a680-d839e7aac3ce",
       "reason": "Owner's correction (the UPSA landmark pack's satellite map, image 20, and the IPS Road 270-degree recording): this machine-detected outline on the mapped pitch west of the campus is the red tennis court, not a building. The Abednego F. O. Amartey Towers, first placed on it, stand on osm:way/885510985 (upsacampusplan.ts TOWERS_AM)."
+    },
+    {
+      "id": "ml:9b53eda1-fc34-43c2-a0e3-7a0b484bb241",
+      "reason": "The owner's Bani, PRESEC and IPS Road brief (R4 aerial; Pairs 16, 17, 19): this 38 m machine-detected bar along the south side of the side road opposite PRESEC is open ground between two small roadside sheds, not a building. The two sheds are modelled on their own (bpiplan.ts SHEDS)."
+    },
+    {
+      "id": "ml:0782e359-6e64-4fdb-b77a-1373e5234acd",
+      "reason": "The owner's Bani, PRESEC and IPS Road brief (R4 aerial): this machine-detected strip west of J.J. Rawlings Avenue lies on open scrub crossed by a dirt track; the aerial shows no building there."
     }
   ],
   "heights": [
