@@ -45,7 +45,7 @@ const lazy = <T,>(f: () => T) => { let v: T | null = null; return () => (v ??= f
 // ======================================================================================================
 const mats = new Map<string, THREE.MeshStandardMaterial>();
 /** a picture as a material: w x h canvas pixels, drawn once */
-function pic(key: string, w: number, h: number, draw: (g: CanvasRenderingContext2D) => void, opts: { rough?: number; transparent?: boolean } = {}) {
+export function pic(key: string, w: number, h: number, draw: (g: CanvasRenderingContext2D) => void, opts: { rough?: number; transparent?: boolean } = {}) {
   let m = mats.get(key);
   if (!m) {
     const t = canvas(w, h, draw);
@@ -54,7 +54,7 @@ function pic(key: string, w: number, h: number, draw: (g: CanvasRenderingContext
   }
   return m;
 }
-class Pics {
+export class Pics {
   by = new Map<THREE.Material, THREE.BufferGeometry[]>();
   constructor(public O: P2) {}
   add(m: THREE.Material, g: THREE.BufferGeometry) { (this.by.get(m) ?? this.by.set(m, []).get(m)!).push(g); }
@@ -107,7 +107,7 @@ const RUBBLE = lazy(() => pic('rubble', 256, 128, (g) => {
   g.fillStyle = 'rgba(60,50,40,0.25)'; g.fillRect(0, 112, 256, 16);
 }));
 /** concrete slabs of the forecourts and sidewalks: grey squares, dark joints, stains (1.5 m to a repeat) */
-const SLABS = lazy(() => pic('slabs', 128, 128, (g) => {
+export const SLABS = lazy(() => pic('slabs', 128, 128, (g) => {
   g.fillStyle = '#7d7972'; g.fillRect(0, 0, 128, 128);
   for (const [x, y] of [[0, 0], [64, 0], [0, 64], [64, 64]]) { g.fillStyle = ['#a29d94', '#9a958c', '#a8a39a', '#958f86'][(x + y) % 4 === 0 ? 0 : (x / 64 + y / 32) | 0]; g.fillRect(x + 2, y + 2, 60, 60); }
   speck(g, 128, 128, 500, ['#8a857c', '#b2ada3', '#6e6a63'], 7);
@@ -117,7 +117,7 @@ const SLABS = lazy(() => pic('slabs', 128, 128, (g) => {
 // ---------- the walls' paint: one storey (the block styles) ----------
 const W8 = '#2a3a48';
 /** an aluminium-framed window with its glass and a sill; bars optional */
-const win = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, o: { frame?: string; glass?: string; bars?: boolean; panes?: number } = {}) => {
+export const win = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, o: { frame?: string; glass?: string; bars?: boolean; panes?: number } = {}) => {
   g.fillStyle = o.frame ?? '#eeeeea'; g.fillRect(x - 5, y - 5, w + 10, h + 10);
   const gl = g.createLinearGradient(0, y, 0, y + h); gl.addColorStop(0, o.glass ?? '#6c8296'); gl.addColorStop(1, W8);
   g.fillStyle = gl; g.fillRect(x, y, w, h);
@@ -253,8 +253,8 @@ const BLUE_HOUSE = st(3.6, (g) => {
 // small helpers for the models: textured boards, coloured words, plants
 // ======================================================================================================
 /** a board's face as a picture: draw on a w x h canvas */
-const board = (key: string, w: number, h: number, draw: (g: CanvasRenderingContext2D, w: number, h: number) => void) => pic(key, w, h, (g) => draw(g, w, h), { rough: 0.6 });
-const text = (g: CanvasRenderingContext2D, s: string, x: number, y: number, size: number, col: string, weight = 800, align: CanvasTextAlign = 'center', font = 'Sora, system-ui, sans-serif') => {
+export const board = (key: string, w: number, h: number, draw: (g: CanvasRenderingContext2D, w: number, h: number) => void) => pic(key, w, h, (g) => draw(g, w, h), { rough: 0.6 });
+export const text = (g: CanvasRenderingContext2D, s: string, x: number, y: number, size: number, col: string, weight = 800, align: CanvasTextAlign = 'center', font = 'Sora, system-ui, sans-serif') => {
   g.font = `${weight} ${size}px ${font}`; g.fillStyle = col; g.textAlign = align; g.textBaseline = 'middle'; g.fillText(s, x, y);
 };
 /** a word in raised letters, each letter its own colour over a dark outline (3D SIGN SHOP, ALPHA LED) */
@@ -271,7 +271,7 @@ function colourWord(k: Kit, word: string, cols: string[], x: number, y: number, 
   });
 }
 /** a compact tree: a short stem, foliage in irregular clusters reaching low (the median, Pairs 1, 2, 4) */
-function compactTree(leaf: Part[], wood: Part[], O: P2, x: number, z: number, y: number, h: number, w: number, seed: number) {
+export function compactTree(leaf: Part[], wood: Part[], O: P2, x: number, z: number, y: number, h: number, w: number, seed: number) {
   const X = x - O[0], Z = z - O[1], r = (i: number) => hash(seed + i * 1.31, seed * 0.43 - i);
   const stem = 0.45 + r(1) * 0.7;
   wood.push([new THREE.CylinderGeometry(0.07 + w * 0.012, 0.11 + w * 0.015, stem + 0.6, 6).translate(X, y + (stem + 0.6) / 2, Z), '#5a4838']);
@@ -292,7 +292,7 @@ function compactTree(leaf: Part[], wood: Part[], O: P2, x: number, z: number, y:
   SOLIDS.add(x, z, 0.16);
 }
 /** a low shrub: two or three clusters (the open stretch, Pairs 13, 14; the planted plots) */
-function shrub(leaf: Part[], O: P2, x: number, z: number, y: number, h: number, seed: number, cols = ['#4e7a32', '#5b8438', '#3f6b2b', '#6a8a3e']) {
+export function shrub(leaf: Part[], O: P2, x: number, z: number, y: number, h: number, seed: number, cols = ['#4e7a32', '#5b8438', '#3f6b2b', '#6a8a3e']) {
   const X = x - O[0], Z = z - O[1], n = 2 + ((hash(seed, 1) * 2) | 0);
   for (let i = 0; i < n; i++) {
     const a = hash(seed, i + 3) * 6.28, d = h * 0.3 * hash(i, seed), rad = h * (0.42 + hash(seed + i, 7) * 0.2);
@@ -300,7 +300,7 @@ function shrub(leaf: Part[], O: P2, x: number, z: number, y: number, h: number, 
   }
 }
 /** a boundary wall along a line: body, cap and base; its colours; a solid all along (`skip` leaves gates open) */
-function wallLine(c: Part[], O: P2, a: P2, b: P2, h: number, t: number, body: string, cap: string, base = '#77706a', solid = true) {
+export function wallLine(c: Part[], O: P2, a: P2, b: P2, h: number, t: number, body: string, cap: string, base = '#77706a', solid = true) {
   const X = (p: P2): P2 => [p[0] - O[0], p[1] - O[1]], A = X(a), B = X(b), y = Math.min(gh(a[0], a[1]), gh(b[0], b[1]));
   c.push([run(A[0], A[1], B[0], B[1], y - 0.3, y + h, t), body]);
   c.push([run(A[0], A[1], B[0], B[1], y + h, y + h + 0.1, t + 0.08), cap]);

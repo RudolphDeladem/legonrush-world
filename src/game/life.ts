@@ -24,6 +24,7 @@ import { KQ } from './kuffour';
 import { offAsphalt } from './science';
 import { ownsEdges } from './ipsplan';
 import { parkingFill } from './lbplan';
+import { inLfKeep } from './lfplan';
 
 /** real road widths by class: main, through, residential, service lane, footpath */
 export const ROAD_WIDTH = [9, 7.4, 6.2, 4.6, 2.6];
@@ -796,7 +797,7 @@ export function buildCampusLife() {
           lampSide = -lampSide;
           const off = kerbAt + 1.7;
           const x = ax + ux * lt + nx * lampSide * off, z = az + uz * lt + nz * lampSide * off;
-          if (roadClearance(x, z, 8, ri) < 0.5 || buildingAt(x, z, 0.5) || inKqPlain(x, z) || inCutBand(x, z, 1)) continue;
+          if (roadClearance(x, z, 8, ri) < 0.5 || buildingAt(x, z, 0.5) || inKqPlain(x, z) || inCutBand(x, z, 1) || inLfKeep(x, z)) continue;
           // the arm reaches out over the road
           const yaw = Math.atan2(-nx * lampSide, -nz * lampSide) - Math.PI / 2;
           cells.p(x, z).add(M.lampPole, yawM(x, 0, z, yaw));
