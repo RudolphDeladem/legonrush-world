@@ -67,6 +67,13 @@ approved · [INCOMPLETE] partly done · [ASSUMPTION] unchecked belief.
 - Work comes in batches of marked pictures or PDF briefs; each batch is answered completely: inspect, model, render,
   test, commit, push to branch and `main`, confirm CI + Pages, report with renders [DECISION].
 - No pull requests; push the same commit to `main` [DECISION, account 1 and 2].
+- "Always push and deploy after testing whenever a prompt of updates is sent" (2026-10-12): every batch goes to the
+  working branch and to `main`, and the reply states the CI and Pages results [DECISION, account 1's return].
+- PDF/Word briefs with game/real pairs and aerials: read every page and image, register the aerials on the mapped
+  outlines, write an evidence audit, render each pair before and after, list what stays estimated or unresolved;
+  never guess an identity, a name or sign text [DECISION, 2026-10-12/13].
+- In-ride tools stay off the screen during riding: speed is in the pause menu, the full map is the pause menu's
+  "View map" [DECISION, 2026-10-11/13].
 - No model names in commits, code or docs [DECISION/system rule].
 - The handover images and account 1's text conversation log were put in the public repo by the owner's earlier
   decision (account 1, `ef2123c`) [VERIFIED]. For **this** migration the owner ruled: **do not upload full chat

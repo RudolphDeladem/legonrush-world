@@ -2,6 +2,28 @@
 
 Labels: [VERIFIED] · [DECISION] · [PROPOSAL] · [INCOMPLETE] · [ASSUMPTION].
 
+## 0. Update 2026-10-13 [VERIFIED]
+
+| Ref | SHA | Meaning |
+|---|---|---|
+| `main` | `7e114a0` + this handover commit | Production |
+| `claude/nifty-gauss-z13ch8` | same as `main` | Account 1's working branch, used again 2026-10-11 → 10-13 |
+| `claude/legonrush-buildings-rebuild-jq9rwh` | `303aff7` | Account 2's branch; an ancestor of `main` (kept for history) |
+
+Latest runs before the handover: CI #119 and Deploy #117 for `7e114a0`, both success. The README was updated
+(`f579429`); `netlify.toml` remains but is unused. The working routine since 2026-10-12 (owner: "Always push and
+deploy after testing"):
+
+```bash
+npx tsc --noEmit -p . && npm run test:routes && npm run build      # smoke runs in CI (times out in the container)
+git add <files> && git commit                                      # message ends with the session's trailer lines
+git push -u origin <working-branch>
+git push origin HEAD:main                                           # fast-forward only; never force
+```
+
+Then read the CI and Deploy runs for the commit (GitHub MCP `actions_list`) and report both results. If `main` has
+moved, `git fetch origin main && git merge origin/main` first (never rebase or force-push `main`).
+
 ## 1. Remotes and branches [VERIFIED 2026-10-11 via GitHub API]
 
 | Ref | SHA | Meaning |
@@ -48,7 +70,7 @@ git fetch -q origin main && git merge-base --is-ancestor origin/main HEAD \
 Then confirm the "CI" and "Deploy to GitHub Pages" runs for that SHA succeed. No pull requests. No model names in
 commits or code. Commit messages end with the session's attribution lines.
 
-## 5. Publish THIS migration package (awaiting owner approval — not done)
+## 5. Publish the 2026-10-11 migration package (done: approved and pushed as `8f9eaec`)
 
 Only `docs/migration/` is new. Proposed commands, to run **only after the owner approves**:
 ```bash

@@ -3,6 +3,22 @@
 Status at `303aff7` (2026-10-11). Labels: [VERIFIED] present in code / checked · [DECISION] · [PROPOSAL] ·
 [INCOMPLETE] · [ASSUMPTION]. "Present in code" does not mean tested in production with real users.
 
+**Added 2026-10-11 → 10-13 (`7e114a0`)** [VERIFIED present, CI green, deployed]:
+- **View map** in the pause menu: the campus map full screen over the paused ride, the rider's arrow and heading, the
+  route and destination pin (not in races); drag, pinch, wheel, zoom buttons, back to the rider; Back to ride, Escape
+  or M close it and the ride resumes where it was; controller: left stick pans, R2/L2 zoom, R3 recentres, Options,
+  Create or Circle close (`src/features/map/ridemap.ts`, `src/main.ts`).
+- **Fly-over camera**: Triangle / Y cycles chase, far, close, fly-over (about 30 m up, 11 m behind, turning with the
+  heading) in free rides, guided rides and races (`Game.ts` VIEWS, `flyOver`).
+- **Destination and FINISH banners** at ride ends (`9fc65ea`).
+- **Bike speed** only in the pause menu, kept after "Ride it yourself" (`8fffda5`).
+- **Map extension to UPSA**: a provenance-tagged OSM/Overture extension with the roundabout, divided IPS Road, the
+  Main Gate and campus, and the UPSA ride (`85bdade`).
+- **N4 cutting** under the main gate interchange with layered heights (`9061865`).
+- **Rendering**: flicker fix under the log depth buffer, ground tiles and smaller life cells (triangles per frame
+  1.51M → 0.36M on the guest ride) (`cd057db`).
+- Building reconstruction now at **121 batches** (`docs/handover/TASKS.md`).
+
 ## 1. Riding and world
 
 | Feature | Status | Where |

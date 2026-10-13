@@ -1,0 +1,15 @@
+Work autonomously on a SEPARATE LEGONRUSH reconstruction task for the IPS Road commercial frontage opposite UPSA. Read this entire brief and inspect every supplied reference image plus the full 270° screen recording before changing code.
+
+TARGET ASSETS
+1) Northill Heights: off-white modern mid-rise with projecting box-like upper floor, dark louvred panels, red rooftop lettering, continuous balcony railing, vertical window bays, mixed retail ground floor and red-trimmed glazed corner unit.
+2) Prestige commercial/hostel frontage: long tan/grey multi-storey block with repeated windows, horizontal projecting bands, red PRESTIGE roof lettering, a distinctive entrance bay with tall gold/ochre columns and recessed glazing, and ground-floor shops.
+3) Abednego F. O. Amartey Towers: separate white multi-storey tower with a large blue-glass curtain-wall face and smaller blue windows.
+4) IPS Road streetscape: road, dusty verge/shoulder, paved forecourts, utility poles and overhead wires as supported by the footage.
+
+First inspect repository geography, building registry, source assets, rendering architecture, tests and recent history. Use authoritative existing road/path/building geometry for placement. Use the supplied video as sequential visual evidence; do not treat screenshots as exact coordinates. Do not model Google Maps UI or overlays. Do not merge these assets with the separate UPSA campus landmark pack. Do not invent coordinates or replace unrelated existing buildings.
+
+Implement each target as a distinct, performance-conscious landmark. Preserve all existing road geometry, route IDs, race/challenge routes, collision, access points, ghosts, records and leaderboards. Do not alter campus topology to fit façades. Keep driveways and entrances usable. Avoid adding visual clutter or static cars that block playable routes.
+
+After implementation, run the project's relevant type checks, tests, geography/route validations, production build and smoke test. Visually inspect the target corridor from multiple angles and both travel directions. Fix any clipping, z-fighting, floating objects, road/grass flicker, sidewalk gaps or collision obstruction caused by the changes. Do not claim success unless the checks actually pass.
+
+Commit/push only to the current working branch if allowed by the project's workflow. Do not push to main, merge to main, or deploy to production without explicit user approval. Finish with a concise report of root findings, files changed, asset/source mapping, tests and results, unresolved uncertainty, and commit/branch/push status.

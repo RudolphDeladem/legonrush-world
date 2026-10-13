@@ -50,6 +50,42 @@ owner sent while Claude was working are marked "b" (e.g. 22b). The private extra
 | 43b | 10-11 10:07 (mid-task) | General fixes: bike through walls/buildings/cars; paint blinking; forest trees with short stems hidden by leaves; PS5 vibration on hits; Normal vs Faster (+30%) speed in Explore and Vibe; camera through buildings. | Batch 95; all deployed (`178a596`). |
 | 44 | 10-11 17:12 | Complete account migration, handover and backup; no commit/push without approval. | This package. |
 
+## Account 1's return (2026-10-11 17:51 → 10-13 11:04)
+
+Session `session_016EyqT7MACv8MGjU16uQWvw`, branch `claude/nifty-gauss-z13ch8`. The full text is in
+`docs/handover/conversation-log-2.md`; `#` below is its owner-message number. "(q)" marks a message sent while
+Claude was working.
+
+| # | Date (UTC) | Owner asked | Outcome / decision |
+|---|---|---|---|
+| 69–70 | 10-11 17:51 | "I went to do a whole lot of work in another Claude account… update to continue." | Account 2's batches 64–96 read and merged; baseline checked. |
+| 71–72 | 10-11 18:10 | Update CLAUDE.md and the README; show the diff and wait for approval; then commit. | `f579429`. |
+| 73–74 | 10-11 18:25 | Road–grass flicker and lag; work autonomously; push to the branch only, then "push it for testing". | Batch 98 (`cd057db`). |
+| 75–76 | 10-11 19:51 | Urgent regression: bars across roads; sidewalks and gutters missing (two bug-report zips). | Batch 99 (`1e09f42`): stairs looked up by order. |
+| 77 | 10-11 21:35 | UPSA junction field-reference brief (UGBS Graduate Building, GOIL, roads); images 755–759. | Batch 100. |
+| 78 (q) | 10-11 22:21 | Speed mode vanishes after "Ride it yourself"; the 30-pair PDF. | **Decision:** speed only in the pause menu, nothing on screen. Batches 101–103. |
+| 80 | 10-12 00:56 | IPS Road junction-to-hostel road brief and the site brief. | Batch 104. |
+| 82–83 | 10-12 04:02 | "push and deploy", "retry". | Batch 104 pushed to the branch and `main` (`201fbc0`); `main` already held this branch through pull request #2 (merged on GitHub at 01:16), merged back as `84dd585`. |
+| 84 | 10-12 04:09 | Three pictures (JQB wall/fence, overhead crossing over the road, signboard on the road) and the 10-pair PDF. **"Always push and deploy after testing whenever a prompt of updates is sent."** | **Decision (standing):** every batch goes to the branch and to `main`. Batch 105. |
+| 85 (q) | 10-12 04:16 | 16-pair Agriculture PDF. | Batch 106. |
+| 87 | 10-12 06:51 | Four pictures (delete the structure by GCB, the GCB sign, the gravel semicircle, widen the road by the gate); the Commonwealth/Great Hall and mall/GM Motors PDFs. | Batches 107–108. |
+| 89 | 10-12 11:31 | Banners brief and Crop Improvement brief. | Batch 109. |
+| 90–92 | 10-12 13:17 | UPSA Hostel to UPSA campus pack (master prompt, pack, two briefs); "push and deploy, make it live". | Batch 110. |
+| 94 | 10-12 16:29 | Legon Road / La Bawaleshie 19-pair PDF. | Batch 111. |
+| 95 | 10-12 19:02 | Limbo: the circled buildings are only foundations; trees, red soil, grass (images 769–772). | Batch 112. |
+| 96 (q) | 10-12 19:08 | "I don't think you pushed and deployed… confirm if it is live." | Confirmed with the run results. |
+| 97 | 10-12 20:39 | Fire Station / Child Lab 14-pair PDF. | Batch 113. |
+| 98 (q) | 10-12 21:26 | IPS Road opposite UPSA pack and brief, the UPSA landmark brief, two master prompts (images 773–774). | Batches 114–115, branch first. |
+| 99 | 10-12 22:21 | IPS Road commercial corridor pack; **approval to merge to main**; the sign reads **NOPHIL HEIGHTS**; the Towers belong on osm:way/885510985; **Fire Station Pair 12 building and Pair 14 mast: leave unresolved until verified.** | Batch 114 corrections. **Decision:** unresolved identities stay unresolved, no guessing. |
+| 100–101 | 10-12 23:19 | "when will it start", "push deploy and make it live". | UPSA landmarks deployed. |
+| 102 | 10-13 00:36 | Bani/PRESEC/IPS 20-pair PDF: "pull the map of that section from your map data". | Batch 116: the data was complete; the game had drawn it generically. |
+| 104–105 (q) | 10-13 01:56, 02:35 | Commonwealth correction PDF, then the Great Hall PDF ("go through every page slowly and carefully"). | Batches 117–118. |
+| 106 | 10-13 05:38 | Okponglo to UG Stadium PDF (35 pages), same instruction. | Batch 119. |
+| 108 | 10-13 08:55 | "View map" in the pause menu without leaving the ride; a 4th camera view, fly-over. | Batch 120. |
+| 109 | 10-13 11:04 | "Prepare a detailed handover… push everything for the next Claude account, include chat history, like the other time." | This update (batch 121). |
+
+Messages 81, 88, 93, 103 and 107 were "I hit my usage limit… continue" or "Try again": the work resumed where it was.
+
 ## Cross-cutting decisions (both accounts)
 
 - Owner photos and marked aerials override map data where they disagree; ask nothing the photos answer.
@@ -57,8 +93,11 @@ owner sent while Claude was working are marked "b" (e.g. 22b). The private extra
 - No invented clutter; remove only what is marked; restore when the owner withdraws a removal.
 - Trees are trees; woods rideable between trunks; the bike stops at walls, buildings, cars.
 - Controllers: computer only, nothing on screen.
-- Migration: no full chat histories or private image archives added to the public repo; no commit/push without
-  approval.
+- Migration (2026-10-11, account 2): no full chat histories or private image archives added to the public repo; no
+  commit/push without approval. Superseded for the first account's material on 2026-10-13: the owner asked for the
+  chat history and everything to be pushed (as on 2026-10-09).
+- Unclear identities, names, text and positions stay unresolved and are listed in the brief's audit, never guessed.
+- When a brief has pairs, render each pair's game view before and after and put them beside the real picture.
 
 ## Tone and working style the owner responds to
 

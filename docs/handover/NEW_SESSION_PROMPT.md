@@ -1,3 +1,6 @@
+> **Superseded.** This was the first prompt for account 2 (2026-10-09). Use the ready-to-paste prompt in
+> `docs/migration/NEW_ACCOUNT_START_HERE.md` instead; it covers all 121 batches.
+
 I'm continuing my LEGONRUSH project from another Claude account that ran out of credits. You have no memory of our
 earlier work, so everything you need is in this repository (RudolphDeladem/legonrush-world). Please read carefully
 before doing anything.

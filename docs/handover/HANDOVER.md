@@ -1,5 +1,9 @@
 # LEGONRUSH — handover for a new Claude account
 
+> **Later work:** account 2 (2026-10-09 → 10-11, batches 64–96) and the first account again (2026-10-11 → 10-13,
+> batches 97–121) followed this handover. Start from `docs/migration/NEW_ACCOUNT_START_HERE.md` for the current state;
+> this file still describes the project, the owner's way of working and the tools correctly.
+
 Prepared 2026-10-09 at the end of the first account's work. Read this first, then `docs/LEGON_BUILDINGS.md` in the
 repository (sections 1–49 record every building batch and the owner's decisions in detail).
 

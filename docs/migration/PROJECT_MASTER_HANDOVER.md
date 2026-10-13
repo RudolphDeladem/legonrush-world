@@ -1,5 +1,9 @@
 # LEGONRUSH — project master handover
 
+**Update 2026-10-13.** The first account came back (session `session_016EyqT7MACv8MGjU16uQWvw`, branch
+`claude/nifty-gauss-z13ch8`, 2026-10-11 17:51 → 10-13) and did batches 97–121; see §2a and the history table. The rest
+of this file was written on 2026-10-11 and still holds except where §2a says otherwise.
+
 Prepared 2026-10-11 at the end of the second Claude account's work (session `session_0114N9DgARn7EcRLZFQhCEdw`,
 2026-10-09 → 2026-10-11). It supersedes nothing: the first account's handover in `docs/handover/` stays valid and is
 referenced throughout. Read `NEW_ACCOUNT_START_HERE.md` first if you are a new Claude account.
@@ -50,6 +54,21 @@ Labels used in every migration document:
 
 Nothing from the development work is uncommitted. The only uncommitted files are this `docs/migration/` folder.
 
+## 2a. State at handover, 2026-10-13 [VERIFIED]
+
+| Item | Value |
+|---|---|
+| Branch worked on | `claude/nifty-gauss-z13ch8` |
+| `origin/main` before the handover commit | `7e114a0034bfca6ab8357375321c51def132ab9b` "View map in the pause menu and a fly-over camera view" |
+| CI and Pages for `7e114a0` | both `success` (runs 38383733854, 38383733849, 2026-10-13 10:29 UTC) |
+| Handover commit | docs only (`docs/handover/`, `docs/migration/`, `CLAUDE.md`), pushed to the branch and to `main` |
+| `src/game/` | 139 files |
+| Owner pictures | `docs/handover/images/` 1–775 |
+| Owner briefs and packs | `docs/handover/uploads/` (34 files, about 231 MB: PDFs, Word briefs, zips, prompt files) |
+| Chat | `conversation-log.md` (account 1, owner messages 1–64) and `conversation-log-2.md` (65–109) |
+
+Nothing from the development work is uncommitted.
+
 ## 3. History in one page
 
 | Period | Account | Work |
@@ -57,8 +76,12 @@ Nothing from the development work is uncommitted. The only uncommitted files are
 | 2026-10-06 → 10-09 | Account 1 (session on branch `claude/nifty-gauss-z13ch8`) | Authoritative campus geography pipeline, destination access and routing, then building-by-building reconstruction, batches 1–63 (`docs/handover/TASKS.md`). Handover written in `docs/handover/` (commit `ef2123c`, final `6114216`). |
 | 2026-10-09 → 10-11 | Account 2 (this session, branch `claude/legonrush-buildings-rebuild-jq9rwh`) | Batches 64–96: passages, galleries, French Dept, churches, N Block, three reference PDFs (38/54/67 pages), Pent corrections, NSIA Road, Volta, Kuffour Quadrangle, science campus, Balme/Pent, NSIA hillside, game controllers, Map tab freeze, general fixes (collision with walls/cars, flicker, woodland trees, rumble, bike speed, camera), main entrance brief (37 pairs). Images 221–754. |
 | 2026-10-11 | Account 2 | This migration package. |
+| 2026-10-11 → 10-13 | Account 1 again (branch `claude/nifty-gauss-z13ch8`; merged with account 2's work through pull request #2) | Batches 97–121: flicker/lag, the bars across roads, the UPSA junction, the N4 cutting and the 30-pair brief, IPS Road to the UPSA Hostel, the 10- and 16-pair briefs, the mall and GMI, Commonwealth and the Great Hall (twice each), banners, the agriculture precinct, UPSA (corridor, campus, landmarks), La Bawaleshie, Limbo, the Fire Station, IPS Road opposite UPSA, Bani/PRESEC, Okponglo, the in-ride map and fly-over camera. Images 755–775 and 33 attached briefs. Chat in `docs/handover/conversation-log-2.md`. |
+| 2026-10-13 | Account 1 | This update of the handover (owner: "push everything for the next claude account, include chat history"). |
 
-Detailed per-batch records: `docs/LEGON_BUILDINGS.md` sections 1–74 plus the Explore and Game controllers sections.
+Detailed per-batch records: `docs/LEGON_BUILDINGS.md` sections 1–74, then the titled sections after them (Explore,
+Rendering, Fixes, Game controllers, and one per brief from "The UPSA junction" to "In-ride map and the fly-over
+camera"). The larger recent briefs also have their own folders under `docs/` (evidence audits, before/after sheets).
 
 ## 4. Architecture summary
 
@@ -70,7 +93,8 @@ Detailed per-batch records: `docs/LEGON_BUILDINGS.md` sections 1–74 plus the E
   (`x = (lng + 0.1871) · 110778.848`, `z = (5.6518 − lat) · 110574`). `src/data/legon-map.json` stores ×10.
 - **Geography pipeline**: `npm run geo` → `scripts/geography/build-master.mjs` → `build-access.mjs` →
   `master-to-game.mjs`; inputs in `data/geography/registry/` (see `GEOGRAPHY_AND_CAMPUS_FIDELITY.md`).
-- **3D world**: `src/game/` (89 files). `world.ts` builds the campus; `sites.ts` lists modelled building sites
+- **3D world**: `src/game/` (89 files at 10-11, 139 at 10-13; each recent area is a site file plus a `*plan.ts` of
+  numbers and a `*views.ts` of comparison cameras). `world.ts` builds the campus; `sites.ts` lists modelled building sites
   (BLOCK_SITES); `blocks.ts` is the block engine; `relief.ts` holds ground ZONES and STAIRS; `solids.ts` and
   `meshcollide.ts` stop the free-ridden bike; `Game.ts` is the loop, physics and camera; `life.ts`, `gardens.ts` trees.
 - **App**: `src/main.ts` screens; `src/tabs/` (map, events, challenges, community, garage); `src/features/`
@@ -108,5 +132,9 @@ Detailed per-batch records: `docs/LEGON_BUILDINGS.md` sections 1–74 plus the E
 | `ASSET_INVENTORY.md` | Every asset family with location, size, public/private status. |
 | `ATTACHMENT_RECOVERY_CHECKLIST.md` | Exporting chats, saving uploads, the `D:\LEGONRUSH-MIGRATION\` backup. |
 
-Private material (owner PDFs, the account-2 text log) is **not** in the repository; it was delivered to the owner as a
+**2026-10-13:** on the owner's instruction ("push everything … include chat history … like the other time"), the
+first account's chat (`conversation-log-2.md`), its pictures (755–775) and every file attached to it (`uploads/`) are
+committed, as account 1 did on 2026-10-09. The repository is public, so they are public too.
+
+Account 2's private material (its owner PDFs, its text log) is still **not** in the repository; it was delivered to the owner as a
 separate private three-part zip (see `ASSET_INVENTORY.md` §6 and `ATTACHMENT_RECOVERY_CHECKLIST.md`).

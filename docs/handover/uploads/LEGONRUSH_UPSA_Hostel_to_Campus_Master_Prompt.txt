@@ -1,0 +1,137 @@
+LEGONRUSH — MASTER PROMPT: EVIDENCE-FIRST RECONSTRUCTION FROM UPSA HOSTEL AREA THROUGH THE MAIN GATE TO THE UPSA SCHOOL / ACADEMIC CAMPUS CORE
+
+ROLE AND OUTCOME
+You are working in the existing LEGONRUSH repository. Reconstruct one continuous, geographically faithful, playable route that begins in the UPSA Hostel-area / IPS Road corridor shown in the supplied references, follows the real external approach, reaches and passes through the University of Professional Studies, Accra (UPSA) Main Gate, and continues along the actual internal campus road network to the UPSA school/academic campus area. The task must NOT stop at the gate or merely at the first landmark if the academic/school area lies farther inside. Intermediate landmarks should help establish the route, not become the arbitrary endpoint.
+
+NON-NEGOTIABLE PHASE 0 — READ AND AUDIT ALL PROVIDED MATERIAL BEFORE MAKING DECISIONS
+Do not edit source code, generate replacement geometry, choose a route, infer a building identity, or decide what to model until you have completed this evidence-intake phase.
+
+1. INVENTORY THE MATERIALS FIRST
+- Recursively inventory every file supplied in the current UPSA Hostel-to-Campus reference pack and every accessible, task-related UPSA / IPS Road / UPSA Junction / UPSA Hostel / VC Complex / UGBS reference pack already present in the working environment or explicitly attached to this task.
+- Include Word/PDF briefs, README files, text prompts, source lists, CSV image registers, contact sheets, route/topology diagrams, raw user screenshots, game screenshots, online reference images and any map/geographic extracts.
+- Produce an inventory table with path/name, file type, short role, and review status. Do not claim a file was reviewed if it was not opened/read.
+- Keep unrelated branding, marketing or general UI assets out of the reconstruction evidence set unless a document explicitly ties them to this place. Record them as unrelated rather than silently mixing them into site evidence.
+
+2. READ EVERY TASK-RELATED DOCUMENT IN FULL
+- Read every relevant DOCX, PDF, TXT, Markdown, CSV and other text-based project document completely before implementation decisions.
+- Extract and read the full instructions in the current brief, its source register, README_FIRST.md, ONLINE_SOURCES.md, and this master prompt; inspect the brief's embedded images, diagrams, tables, captions, notes and acceptance criteria too.
+- Read the related previous road-focused, UPSA Junction, hostel / VC Complex and UGBS briefs that are available in the materials. Resolve their scope boundaries and preserve their corrections about building identity.
+- Read the repository's CLAUDE.md / README, geographic documentation, migration/handover notes, relevant code comments and test expectations before modifying the project.
+
+3. VIEW ALL ORIGINAL IMAGES, NOT JUST CONTACT SHEETS
+- Open and visually inspect every original uploaded real-world image individually, including all 15 user Street View / road screenshots included in this pack and all task-related images in earlier reference packs that are accessible.
+- Inspect all current-game screenshots separately. They describe the present implementation and defects; they are NOT authoritative real-world geography.
+- Inspect each contact sheet and the conceptual route diagram, but never treat a contact sheet or schematic as a substitute for the original image.
+- Match each source image to its register ID and description. Note what it proves, what it only suggests, the visible direction/viewpoint, and any limitations caused by screenshot overlays, perspective, cropping, Street View navigation arrows or dates.
+- If any file is missing, unreadable, corrupt or inaccessible, record the exact item and the impact. Do not pretend to have reviewed it or fill its evidence gap by guessing.
+
+4. CHECK THE ONLINE SOURCES
+- Open the links supplied in ONLINE_SOURCES.md and verify the relevant parts where available.
+- Search authoritative UPSA sources for the campus plan, Main Gate, academic/lecture blocks, Central Administration, library, auditorium / student facilities, roads, and campus names. Use official campus information for identity and terminology, not to infer a building's exact order on the route without map evidence.
+- Check OpenStreetMap or another traceable geospatial reference for road connectivity, campus entries and building footprints. Record the source, access date, coordinate reference system where known, data limitations and confidence.
+- Use the supplied Google Street View screenshots for the visible roadside appearance and sequence. They are dated/perspective views, not a survey. Treat online gate photos as appearance references only unless their positions and current state are independently verified.
+- Add a source/provenance note for every geography or identity decision. Do not say an online image was downloaded or embedded if it is only linked.
+
+5. CREATE AN EVIDENCE LEDGER BEFORE IMPLEMENTATION
+Only after steps 1–4 are complete, write a concise project note (for example, docs/upsa-hostel-to-school/evidence-audit.md) with:
+- The complete materials inventory and what was actually read/viewed.
+- A source hierarchy and per-source reliability/confidence.
+- A route sequence supported by map/road-network evidence.
+- Confirmed features vs estimates vs unresolved facts.
+- Conflicts between sources and the chosen resolution, with reasons.
+- The current-game mismatch list and intended changes.
+- A file/data impact plan showing what is likely to change and what must remain untouched.
+Do not start implementation until this audit note exists. Work autonomously after the audit; do not ask for routine approvals. Ask the user only if a genuinely critical route/identity ambiguity remains after all provided materials and sensible online checks have been exhausted. If uncertainty is non-blocking, mark it explicitly and choose a conservative, reversible solution.
+
+EVIDENCE HIERARCHY
+Use sources for the aspects they are best qualified to support:
+1. Existing repository's authoritative road/building geography, stable IDs, connectivity, CRS, route data and tests control placement, topology and existing gameplay compatibility.
+2. User-supplied real-world Street View / field screenshots control the visible physical appearance and roadside sequence in their views.
+3. Official UPSA sources control official names, building identity and campus terminology.
+4. Traceable OSM / map data and openly licensed sources supplement road connectivity and geospatial context.
+5. Current-game screenshots are diagnostics to compare against reality, not evidence of real-world layout.
+6. Conceptual diagrams are orientation aids only; they are not surveyed maps and must never determine coordinates, scale or road geometry.
+When sources conflict, explain the conflict in the evidence ledger and avoid silently replacing higher-confidence evidence with an assumption.
+
+GEOGRAPHIC SCOPE — DO THE WHOLE ROUTE TO THE SCHOOL AREA
+A. START: establish the actual route start from repository anchors and the uploaded images around the UPSA Hostel / IPS Road corridor. Do not confuse university-owned UPSA Hostel with nearby private properties whose signage includes “Prestige Hostel” or “Domil Heights.”
+
+B. EXTERNAL APPROACH: reconstruct the connected road corridor from the hostel-area reference sequence toward UPSA Main Gate. Depending on the documented route, the context may include asphalt carriageway and lane markings; actual branches and junctions; paver sidewalks; kerbs; open gutters, culverts and driveway crossings; red lateritic shoulders; boundary walls and fences; mature trees and weeds; exposed plots; older concrete/frontage buildings; shops and commercial blocks; private hostel/hotel buildings; forecourts and parking; billboard structures; streetlights; distribution poles; overhead cables; and the lattice high-voltage transmission tower. Place each feature only where the evidence and map support it.
+
+C. JUNCTIONS / CONNECTIONS: derive side-road and turning geometry from the geographic road network and the supplied multi-view images. Street View perspective, the viewing vehicle, labels and navigation arrows are not geometry. Do not invent a roundabout, straighten real bends, close a true side road, or create impossible/overlapping intersections to simplify the model.
+
+D. UPSA MAIN GATE: accurately connect the external road to the correct UPSA Main Gate and threshold. Use the supplied/openly licensed gate images for the blue-and-white gatehouse/canopy, university name fascia, columns, gatehouse volumes, vehicle/pedestrian entry arrangement, barriers and approach paving. Verify current orientation, number and layout of openings and location against geographic evidence before placing them. Do NOT substitute the unrelated Presbyterian Church gate shown in some corridor references.
+
+E. INSIDE UPSA: continue THROUGH the gate and along the real connected internal road. Reconstruct the internal-road connection, gates/guards/booths if verified, pavement transitions, footpaths, kerbs, drainage, boundary edges, landscaping and the first internal buildings/landmarks encountered in their correct order.
+
+F. ENDPOINT — UPSA SCHOOL / ACADEMIC CAMPUS AREA: continue beyond the first gate-side landmark(s) to the actual campus school/academic area. Do not stop at the gate, in the entry apron, or at whichever landmark happens to be closest if the core academic area is further inside. Using official UPSA campus information together with mapped building footprints and actual road connectivity, identify the appropriate endpoint around the lecture/academic and/or main administration/library core that is reached by the genuine connected road. Include the major campus buildings and public-space edges that define this arrival area, but do not invent the sequence from building names alone. If sources support more than one academic cluster, select the one genuinely reached by the road being reconstructed and explain why in the evidence ledger. The final ride must visibly arrive at the UPSA school/academic area, not merely show a road disappearing into generic green space.
+
+CRITICAL GEOGRAPHY RULE
+The existing LEGONRUSH geography is strongly associated with University of Ghana / Legon. First verify whether its authoritative geographic data truly includes the IPS Road corridor, UPSA Main Gate and internal UPSA road/building network.
+- If it does, use it without perturbing its stable geometry.
+- If it does not, create a clearly separated, documented, provenance-tagged and georeferenced UPSA extension with its own namespaces/IDs, transform rules and tests. Do NOT shift, warp or relabel the University of Ghana/Legon map to force UPSA into it.
+- Establish CRS and coordinate transformations explicitly. Never guess GPS coordinates, scale or metres-per-unit from perspective images.
+- Never place a building by eyeballing a screenshot when a footprint/anchor can be sourced. Where no reliable anchor exists, preserve a known anchor or defer a precise claim; record the uncertainty.
+- Keep the route graph connected and navigable from the external start through the gate to the academic endpoint. New IDs must be stable and unique.
+
+VISUAL RECONSTRUCTION REQUIREMENTS
+- Asphalt: plausible colour, aggregate/wear variation, carriageway width, camber/elevation, lane/edge markings and transitions grounded in the images.
+- Roadside surfaces: tan/red/brown lateritic soil, hard shoulder, concrete edges, pavers, kerbs and visible drainage features; represent side-to-side differences rather than mirror-copying the same verge.
+- Urban frontage: trees/canopies, walls, fences, building setbacks, commercial facades, sign supports and parking/forecourts at evidenced locations; maintain the recognisable roadside character around IPS Road.
+- Utilities: accurately position transmission tower and poles, avoid implausible cable connections, and model overhead lines at suitable height/scale using efficient geometry. Do not turn distribution poles into high-voltage pylons or vice versa.
+- UPSA gate and internal campus: correct identity, massing, paving, boundary transitions, circulation and academic-area context.
+- Signage: use only persistent/identifying signs supported by references. Do not copy Google UI, watermarks, Street View arrows, screenshot browser chrome, transient adverts or temporary people/vehicles into permanent world assets. Keep temporary traffic as reusable game assets if appropriate.
+- The visual style must integrate with the current LEGONRUSH renderer and player scale but must not substitute a generic green campus for the documented urban corridor and real academic campus.
+
+CURRENT-GAME CORRECTION / DEFECT REVIEW
+Compare the current game diagnostics against the real-world image set after the evidence audit. The screenshots may show generic low-poly green land, stylized roads/trees, simplified frontages, a Balme Library tour or other locations; do not mistake these for UPSA.
+Investigate and fix relevant causes of:
+- road/asphalt flicker against grass or terrain;
+- long raised strips/bars across roads;
+- missing or broken sidewalks and gutters;
+- floating road/curb/wall meshes;
+- z-fighting, terrain intersections, black seams and duplicate strips;
+- disconnected road branches, implausible curb continuity or blocked driveways;
+- misaligned markings, broken surface joins and unnecessary frame cost.
+Fix the real source in geometry/data/mesh generation and validate in the browser. Do not hide problems with arbitrary height offsets, duplicated cosmetic geometry, or edits to unrelated parts of campus.
+
+PRESERVE EXISTING GAME CONTENT
+- Do not redesign the entire game.
+- Preserve all unrelated University of Ghana / Legon geographic layers, roads, junctions, building footprints, destination/access IDs, landmark IDs, challenge/race routes, ghost recordings, leaderboard compatibility, collisions, player controls, UI features and unrelated campus content.
+- Do not relabel a Balme Library route as UPSA, do not repurpose existing IDs, and do not change unrelated stable route geometry.
+- Put UPSA-specific additions in separately named data/modules where necessary and update generators and tests coherently.
+- Do not commit secrets, copy copyrighted source imagery into permanent game textures without appropriate rights, or claim a source is open-licensed without verification.
+
+IMPLEMENTATION SEQUENCE — NO SKIPPING THE EVIDENCE GATE
+PHASE 0. Inventory all task-related uploads and reference packs; read every relevant document; open every original image; review all source links; read repository geography instructions. No code edits.
+PHASE 1. Create evidence-audit.md and a route table with start, junctions/branches, approach segments, landmarks, gate threshold, internal road anchors and the UPSA academic endpoint. For each, include provenance, confidence and evidence. No coordinates sourced solely from a perspective view.
+PHASE 2. Inspect the live/current game and source files; document exact mismatches and establish repeatable viewpoints for before/after comparison.
+PHASE 3. Implement the external road and true intersections with continuous road mesh, lane markings and height/elevation consistency.
+PHASE 4. Add side-specific sidewalks, pavers, curbs, drainage, culverts, shoulders and transitions; preserve real driveway/gate openings.
+PHASE 5. Add geographically grounded roadside context: vegetation, walls, shops/frontages, private hostel buildings, billboards/supports, streetlights, distribution poles, overhead cables and transmission tower.
+PHASE 6. Implement the correct UPSA Main Gate, entry apron and road/pedestrian connections.
+PHASE 7. Continue the route inside UPSA through the first mapped landmarks and farther into the academic/school campus core. Model key visible building masses and grounds only at verified/defensible footprints; do not stop at the first landmark if it is not the school-area endpoint.
+PHASE 8. Synchronize derived/generated map data and update geospatial provenance/route tests.
+PHASE 9. Run type checks, relevant unit/integration tests, geometry/intersection/access/route tests, map generation consistency checks and production build.
+PHASE 10. Launch in a browser. Ride or inspect the full continuous route from the Hostel/IPS Road start through the correct gate and into UPSA's academic area. Inspect both sides of every road section, junction joins, gate clearance, road markings, sidewalks/drains, power infrastructure, surface intersections, collisions and performance. Capture before/after screenshots from repeatable angles; fix visible defects and repeat tests.
+
+ACCEPTANCE CRITERIA
+- Every task-related uploaded document/image has been inventoried and reviewed; inaccessible items and their impact are documented.
+- The external corridor follows evidenced real-world road connectivity and distinctive roadside context.
+- The road correctly reaches and passes through UPSA Main Gate.
+- The road continues inside UPSA all the way to a mapped, explained endpoint in the school/academic campus area; it does not stop at the gate or a random first landmark.
+- Building identities and order are sourced, not guessed from nearby signs or image perspective.
+- All road/ground/sidewalk/curb/drain/driveway transitions are continuous and plausible, with no unexplained gaps, floating meshes, flicker, raised bars or blocked access.
+- The UPSA additions use stable unique IDs and do not move/overwrite unrelated UG/Legon geometry or routes.
+- Generated data is synchronized; all relevant tests and the production build pass.
+- Browser inspection / full-route ride is completed and comparison screenshots are saved.
+- Remaining uncertainty, evidence gaps and confidence are reported honestly.
+
+FINAL REPORT REQUIRED
+Report: materials inventory totals and any unreadable/missing files; documents and individual images reviewed; external sources actually checked; geographic coverage and CRS; route sequence and each key anchor; exact reason for choosing the UPSA academic endpoint; verified facts vs estimates; files/data/IDs created or changed; fixes for current-game defects; tests/build results; browser screenshots and full-route ride results; performance impact; unresolved uncertainty; Git status and commit hash if one was created.
+
+GIT / DEPLOYMENT SAFETY
+Work autonomously after completing the evidence audit. Do not push to main, merge into main, deploy to production, or trigger a live deployment without the user's explicit approval. Do not say work is deployed unless the deployment workflow confirms it.
+
+FINAL PRIORITY
+Read everything before deciding. Then reconstruct a geographically coherent, visually grounded, playable route from the UPSA Hostel / IPS Road area THROUGH UPSA Main Gate and ONWARD TO THE UPSA SCHOOL / ACADEMIC CAMPUS CORE. Preserve the existing LEGONRUSH world and clearly distinguish source evidence, verified geography and uncertain inference.

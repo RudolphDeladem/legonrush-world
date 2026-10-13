@@ -2,7 +2,46 @@
 
 Labels: [VERIFIED] · [DECISION] · [PROPOSAL] · [INCOMPLETE] · [ASSUMPTION].
 
-## 1. Awaiting the owner (decisions)
+## 0. Update 2026-10-13 (account 1's return, batches 97–121)
+
+Settled since 2026-10-11: D1 (the migration docs were committed and pushed on the owner's approval, `8f9eaec`); D3
+(README rewritten, `f579429`); D2 for the first account's material (the owner asked again for the chat history and
+everything to be pushed; done in this handover). D4 and D5 stay open.
+
+Not yet confirmed by the owner in play [INCOMPLETE]:
+- **View map** in the pause menu and the **fly-over** camera (`7e114a0`): tested in a headless browser with a
+  simulated ride and keyboard; not tried with a physical controller.
+- **Okponglo** (`b2ca9b5`), the **Great Hall** (`8308d4b`) and **Commonwealth** corrections (`3228d30`): deployed, CI
+  green, no feedback yet.
+
+Unresolved by evidence (each listed in its own audit; no guess until the owner supplies more):
+- Fire Station brief: the near-left gabled building with AC units in Pair 12, and the communications mast in Pair 14
+  (owner: "leave both unresolved until verified"; `docs/LEGON_BUILDINGS.md` → Fire Station section).
+- Nophil Heights has no mapped outline anywhere; its footprint is an estimate (`docs/LEGON_BUILDINGS.md` → IPS Road
+  opposite UPSA).
+- Bani/PRESEC: the unroofed frame east of the avenue (no outline in any source), the four Bani Hostel blocks not in any
+  pair, the named Bani facilities, levels (`docs/bani-presec-ips/evidence-audit.md`).
+- Commonwealth: storeys of the dining hall, wings and chapel; the links' sizes; no doors on links
+  (`docs/commonwealth-correction/README.md`).
+- Great Hall: every height read from photographs; clock faces on two sides only; the dark rounded object; the
+  "...QUADRANGLE" sign (`docs/great-hall/evidence-audit.md`).
+- Okponglo: every height and setback, the mast's spot, plot corners; the plaza's other signs not copied
+  (`docs/okponglo/evidence-audit.md`).
+- UPSA landmarks and the UPSA corridor: see `docs/upsa-landmarks/` and `docs/upsa-hostel-to-school/` evidence audits.
+
+Known technical points from this period [VERIFIED]:
+- `npm run smoke` times out inside the cloud container for environmental reasons (headless software rendering); it
+  passes in CI. Use CI's result.
+- Headless renders are slow (minutes per view); editing a file during a `multishot.mjs` run reloads the page and
+  breaks the run.
+- Specs marked `onGround` are not lifted by relief: their parts must use `groundHeight` directly.
+- The modelkit `merge()` drops uvs; textured pieces use `mergeGeometries` (see `okponglo.ts` Pics).
+- Never `pkill -f` with a pattern that appears in the same command line (it kills its own shell).
+
+Next: the owner's next brief. Candidate areas not yet given a brief: the four Bani Hostel blocks, the rest of the
+UPSA campus beyond the landmarks, the neighbourhoods off La Bawaleshie Road.
+
+## 1. Awaiting the owner (decisions, as of 2026-10-11)
 
 | # | Question | Why it matters |
 |---|---|---|

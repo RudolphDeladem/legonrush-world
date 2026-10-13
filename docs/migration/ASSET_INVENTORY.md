@@ -3,7 +3,23 @@
 Every asset family, where it is, its size, whether it is public, and whether its preservation was verified.
 Checked 2026-10-11 at `303aff7`. Labels: [VERIFIED] · [DECISION] · [PROPOSAL] · [INCOMPLETE] · [ASSUMPTION].
 
-## 1. In the public repository (preserved by Git + GitHub) [VERIFIED]
+## 0. Update 2026-10-13 [VERIFIED]
+
+Added by the first account's return (batches 97–121) and this handover, all in the public repository:
+
+| Asset | Path | Size / count |
+|---|---|---|
+| Chat, part 2 (owner messages 65–109 with Claude's replies and the folded context summaries) | `docs/handover/conversation-log-2.md` | about 470 KB |
+| Owner pictures 755–775 | `docs/handover/images/` (rows at the end of `IMAGE_INVENTORY.md`) | 21 files, about 3.7 MB |
+| Every file attached to the first account (PDF and Word briefs, zip packs, master prompts) | `docs/handover/uploads/` | 34 files, about 231 MB (largest 26.5 MB) |
+| Per-brief evidence audits and before/after sheets | `docs/bani-presec-ips/`, `commonwealth-correction/`, `fire-station-child-lab/`, `great-hall/`, `ips-opposite-upsa/`, `legon-road-la-bawaleshie/`, `limbo/`, `okponglo/`, `upsa-hostel-to-school/`, `upsa-landmarks/` | — |
+| Game source | `src/game/` | 139 files |
+
+The uploads include the owner's briefs with third-party photographs (Street View captures, stock images); they are
+reference material only, not game assets. Comparison renders made during the work are in the per-brief folders where
+they were kept; the rest were scratchpad files and are regenerated with the preview cameras.
+
+## 1. In the public repository (preserved by Git + GitHub) [VERIFIED at 303aff7]
 
 | Asset | Path | Size / count |
 |---|---|---|

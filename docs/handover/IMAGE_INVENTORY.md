@@ -758,3 +758,34 @@ Every photo, screenshot, aerial and marked-up map the owner uploaded, in upload 
 | 752.jpg | 74 | 800x447 | 93 | 2026-10-11 | (Main entrance brief) additional image 2: top view of the Efua Sutherland Drama Studio |
 | 753.jpg | 28 | 500x281 | 93 | 2026-10-11 | (Main entrance brief) additional image 3: inside the Efua Sutherland Drama Studio (stage and court) |
 | 754.jpg | 246 | 1280x939 | 93 | 2026-10-11 | (Main entrance brief) additional image 4: close view of the black University of Ghana sign at the main entrance (stock watermark; not to be copied) |
+
+## Images 755-775 (account 1 resumed, 2026-10-11 → 10-13)
+
+These came after account 2's images 221-754. The `msg` column reads `log2 #N`: owner message N in
+`conversation-log-2.md` (that file numbers on from part 1, so its 65-109 are not the 65-93 used for images 221-754
+above, which follow account 2's private log). 767/768 and 773/774 are byte-identical pairs (sent twice). Most pictures
+of this period came inside PDF, Word and zip briefs rather than pasted; those are in `uploads/` under their own names.
+
+| file | KB | size | msg | date | owner message (excerpt) |
+|---|---|---|---|---|---|
+| 755.webp | 143 | 768x1024 | log2 #77 | 2026-10-11 21:35 | (UPSA junction brief) UGBS Graduate Building (University of Ghana Business School Graduate School) front: dark glazed entrance bay with the UGBS sign, white floors, paved forecourt |
+| 756.webp | 351 | 2000x1333 | log2 #77 | 2026-10-11 21:35 | (UPSA junction brief) UGBS Graduate Building from its car park: white blocks with red roofs, the dark glazed centre bay, paved parking |
+| 757.png | 140 | 356x200 | log2 #77 | 2026-10-11 21:35 | (UPSA junction brief) UGBS Graduate Building, the long side and the glazed bay over the car park |
+| 758.png | 262 | 547x365 | log2 #77 | 2026-10-11 21:35 | (UPSA junction brief) UGBS Graduate Building from the road: gravel verge, palms, cars in front |
+| 759.png | 68 | 194x259 | log2 #77 | 2026-10-11 21:35 | (UPSA junction brief) the highway by the UGBS Graduate Building: wide carriageway, palms, the building beyond |
+| 760.png | 133 | 362x288 | log2 #84 | 2026-10-12 04:09 | picture 1: by the Department of Archaeology at the front of the JQB; the building wall must touch the fence |
+| 761.png | 286 | 551x498 | log2 #84 | 2026-10-12 04:09 | picture 2: the circled structure of the overhead crossing reaches across the road |
+| 762.webp | 64 | 852x718 | log2 #84 | 2026-10-12 04:09 | picture 3: the archaeology lane at the front of the JQB; the circled signboard stands on the road |
+| 763.webp | 106 | 981x745 | log2 #87 | 2026-10-12 06:51 | picture 1: the blue-circled structure beside the GCB Bank (near Ernest Chemist), to delete |
+| 764.webp | 105 | 981x843 | log2 #87 | 2026-10-12 06:51 | picture 2: the GCB signboard missing beside the GCB Bank |
+| 765.webp | 115 | 1116x696 | log2 #87 | 2026-10-12 06:51 | picture 3: blue circle, the semicircular gravel island in front; red arrow, too little room between the overhead crossing and the main gate entrance |
+| 766.webp | 119 | 1356x715 | log2 #87 | 2026-10-12 06:51 | picture 4: the real street view of the same area (gravel semicircle, the wider road by the gate) |
+| 767.jpg | 283 | 1140x1100 | log2 #90 | 2026-10-12 13:17 | (UPSA Hostel to UPSA campus pack) contact sheet of the IPS Road street-view frames, sheet 1 |
+| 768.jpg | 283 | 1140x1100 | log2 #90 | 2026-10-12 13:17 | (UPSA Hostel to UPSA campus pack) contact sheet of the IPS Road street-view frames, sheet 2 |
+| 769.webp | 246 | 1903x912 | log2 #95 | 2026-10-12 19:02 | picture 1 (Limbo): the two red-circled buildings are only foundations; trees round them |
+| 770.webp | 208 | 1902x891 | log2 #95 | 2026-10-12 19:02 | picture 2 (Limbo): red-circled buildings that are also only foundations (purple arrow in picture 4) |
+| 771.webp | 203 | 1897x861 | log2 #95 | 2026-10-12 19:02 | picture 3 (Limbo): circled buildings, the surrounding trees, red soil and grass |
+| 772.webp | 105 | 673x756 | log2 #95 | 2026-10-12 19:02 | picture 4: top layout of the buildings circled in pictures 1-3 (blue circles and the purple arrow mark the foundations) |
+| 773.jpg | 149 | 1020x810 | log2 #98 | 2026-10-12 21:26 | (IPS Road opposite UPSA pack, sent mid-task) contact sheet 01-09: Northill/Nophil Heights front, the Prestige commercial block, Abednego F. O. Amartey Towers, the IPS Road corridor |
+| 774.jpg | 149 | 1020x810 | log2 #98 | 2026-10-12 21:26 | (IPS Road opposite UPSA pack, sent mid-task) the same contact sheet again |
+| 775.jpg | 193 | 1020x1140 | log2 #99 | 2026-10-12 22:21 | (IPS Road commercial corridor pack) contact sheet 01-12 with the original file names: Nophil Heights, Prestige, the Towers, video frames 001-003 |
