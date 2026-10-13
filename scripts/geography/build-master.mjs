@@ -330,7 +330,12 @@ function buildingHeight(t, pts) {
 const buildings = [];
 function addBuilding(id, rings, t, src, ctx = anyInContext) {
   const reshape = RESHAPE.get(id);
-  const [outer, ...holes] = reshape ? [reshape.ring.map(([x, z]) => [x, z]), ...(reshape.holes ?? rings.slice(1))] : rings;
+  // a building a passage runs right through (an arch): each part its own footprint, the first keeping the id
+  if (reshape?.parts) { reshape.parts.forEach((ring, i) => addPart(i ? `${id}#${i + 1}` : id, [ring.map(([x, z]) => [x, z])], t, src, ctx)); return; }
+  addPart(id, reshape ? [reshape.ring.map(([x, z]) => [x, z]), ...(reshape.holes ?? rings.slice(1))] : rings, t, src, ctx);
+}
+function addPart(id, rings, t, src, ctx) {
+  const [outer, ...holes] = rings;
   if (outer.length < 3) return;
   const c = centroid(outer);
   if (!ctx(outer)) return; // like the legacy extract: anything reaching into the study area

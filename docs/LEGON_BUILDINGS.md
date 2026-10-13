@@ -3435,3 +3435,48 @@ on the generic cream template. They are now part of the hall model. Their storey
 - worn, textured dark-brown stairs on every flight, the pharmacy steps included.
 
 The planting is kept.
+
+## The Great Hall precinct: the owner's correction brief (A01, R01-R59, G01-G10)
+
+The evidence, the registration, the comparison images and the open questions are in `docs/great-hall/evidence-audit.md`.
+The code is in `greathall.ts`, the numbers in `greathallplan.ts`, the levels and steps in `relief.ts`, and the cameras
+`gh*` in `ghviews.ts`. This supersedes the Great Hall paragraph of the Commonwealth and Great Hall brief above.
+
+**The through-road.** The asphalt and lane markings through the court were the route's last leg drawn as road. The
+compound is now paved, and the route lays no road there. The way in runs:
+1. through the gateway building's arch (its outline is split at the passage);
+2. across the lower court;
+3. up two flights of worn dark grey steps between stone planters with red coping;
+4. across the upper court to the portico's steps.
+
+**The hall.**
+- the high hall with its clerestory, under a broad weathered hip roof, and aisles with long grilles;
+- the lower tiled canopy over four tall white supports;
+- the entrance wall with its grilles, the roundels, Established 1948 and GREAT HALL, and the dark doors.
+
+**The clock tower.** A rectangular white shaft at the upper court's corner, with:
+- small square openings and the projecting window with its pointed red cap;
+- the balustrade, the square clock stage and the red cap.
+
+The cylindrical tower is gone.
+
+**The upper court.**
+- **Wings.** One storey, with white-columned verandas, white walls over a cream band, brown shutters, barred windows and
+  doors, and an arched gable passage in the middle of each side wing.
+- **Court.** Slab paving with lawn panels, grates, crazy-paving patches, two big shade trees, and the dark rounded
+  object on its white base.
+- **The way down.** The lantern piers and the black tanks on their stands.
+
+**The lower court.**
+- **Bust walk.** Twelve busts, six with legible plaques.
+- **Wings.** The crimson-roofed bust wing and a narrow north wing.
+- **Court.** Raised beds and frangipani.
+
+**The gateway building.** Two storeys, with the window row and the arch with its reveals, gate leaves and red-riser
+steps. Its pavilions, the links and the covered walks are also modelled.
+
+**The approach.**
+- the semicircular garden inside the turning loop;
+- the formal garden between the two roads east of the cross road: a paved grid of lawn panels, a second square, and
+  flowering trees;
+- the long single-storey ranges either side of it.

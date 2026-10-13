@@ -163,9 +163,40 @@ try {
     for (const [xs, h] of [[[-495, -520, -547, -565], 10.5], [[-580, -600, -618], 11.7], [[-630, -660, -684], 12.9], [[-692, -700, -720], 14.2]]) for (const x of xs) for (const z of [110, 128, 150]) if (!near(groundHeight(x, z), h)) fail(`Commonwealth: the court at ${x},${z} is not level at ${h} (${groundHeight(x, z).toFixed(2)})`);
     if (rl.stairsOf().filter((q) => q.z0 === 125 && q.z1 === 131 && q.top - q.foot > 1).length !== 3) fail('Commonwealth: expected the three flights up the walk through the courts (S8)');
     if (!rl.stairsOf().some((q) => q.x0 === -484 && q.x1 === -489 && q.top - q.foot > 1.2)) fail('Commonwealth: the entrance\'s broad steps from the parking are missing');
-    if (!(Math.abs(groundHeight(-990, 127) - 22.2) < 0.01) || !rl.stairsOf().some((q) => q.x0 === -982 && q.x1 === -985)) fail('Great Hall: the entrance terrace or its steps are missing (S6)');
+    // the owner's Great Hall correction brief (greathallplan.ts): the upper court level from the portico to the wings' east
+    // arms, two flights down to the lower court, the gateway's passage floor; the portico on its platform up its steps
+    {
+      const gp = await server.ssrLoadModule('/src/game/greathallplan.ts'), GH = gp.GH;
+      for (const [x, z, h, what] of [[-960, 128, GH.upper.h, 'the upper court'], [-945, 110, GH.upper.h, 'the upper court by the north arm'], [-920, 128, GH.lower.h, 'the lower court'], [-928, 150, GH.lower.h, 'the bust walk'], [-995, 128.6, GH.floor, 'the portico'], [-905, 128.6, GH.gate.floor, 'the gateway passage']]) {
+        if (!near(groundHeight(x, z), h)) fail(`Great Hall: ${what} at ${x},${z} is not level at ${h} (${groundHeight(x, z).toFixed(2)})`);
+      }
+      const st = rl.stairsOf();
+      const flights = st.find((q) => q.x0 === GH.courtStairs.x0 && q.x1 === GH.courtStairs.x1);
+      if (!flights || !near(flights.top - flights.foot, GH.upper.h - GH.lower.h) || flights.segs.filter((q) => q.landing).length < 2) fail('Great Hall: the two flights from the lower court up to the upper court are missing (R46-R50)');
+      for (const [q, what] of [[GH.porticoSteps, 'the portico steps'], [GH.gateStepsW, 'the gateway\'s west threshold steps'], [GH.gateStepsE, 'the gateway\'s east threshold steps']]) if (!st.some((s) => s.x0 === q.x0 && s.x1 === q.x1 && s.top - s.foot > 0.3)) fail(`Great Hall: ${what} are missing`);
+      // the courts are paved, not a road: no asphalt through them
+      const sci = await server.ssrLoadModule('/src/game/science.ts');
+      for (const [x, z] of [[-960, 128], [-920, 128], [-905, 128.6], [-988, 128.6]]) if (!sci.offAsphalt(x, z)) fail(`Great Hall: the route would lay asphalt in the courts at ${x},${z}`);
+      // the way in: from the turning loop through the gateway's arch, the lower court, up the flights, across the upper court
+      const ga = ACCESS.get('Great Hall'), via = ga?.via ?? [];
+      const through = (x0, x1, z0, z1) => via.some(([x, z]) => x > x0 && x < x1 && z > z0 && z < z1);
+      if (!through(GH.gate.x0, GH.gate.x1 + 5, GH.gate.arch[0], GH.gate.arch[1]) || !through(-950, -934, 116, 138) || !through(-990, -960, 120, 136)) fail('Great Hall: the access path does not go through the arch, up the flights and across the upper court');
+      const ride = rt.exploreRoute(placeByName('Commonwealth Hall'), placeByName('Great Hall'), 'cycle');
+      let inGate = 0, wrong = 0;
+      for (let d = 0; d < ride.track.length; d += 0.5) {
+        const p = ride.track.pose(d);
+        if (p.x > GH.gate.x0 && p.x < GH.gate.x1 && p.z > 100 && p.z < 156) { inGate++; if (p.z < GH.gate.arch[0] + 0.4 || p.z > GH.gate.arch[1] - 0.4) wrong++; }
+      }
+      if (!inGate || wrong) fail(`Great Hall: the ride from Commonwealth Hall does not pass through the gateway's arch (${inGate} points in the gateway's span, ${wrong} outside the arch)`);
+      // the clock tower: a rectangular shaft at the upper court's corner beside the hall's front, not in the hall
+      const T = gp.TOWER;
+      if (!(T.x1 - T.x0 > 4 && T.z1 - T.z0 > 4) || buildingAt((T.x0 + T.x1) / 2, (T.z0 + T.z1) / 2)?.name === 'Great Hall') fail('Great Hall: the clock tower is not the rectangular shaft at the court\'s corner');
+      if (readFileSync('src/game/landmarks.ts', 'utf8').includes('greatHallTower')) fail('Great Hall: the old cylindrical tower is still built (landmarks.ts)');
+      // the busts once each along the lower court's walk, the legible plaques only
+      if (gp.BUSTS.length < 10 || new Set(gp.BUSTS.map((b) => b.x)).size !== gp.BUSTS.length) fail('Great Hall: the busts are not placed once each along the walk');
+    }
     if (buildingAt(-1013, 158.9)?.name === 'Great Hall' || buildingAt(-977.6, 124.3) || buildingAt(-964.1, 125.6)) fail('Great Hall: the tower\'s base is inside the hall, or the forecourt is not open (S4, S5)');
-    if ((await server.ssrLoadModule('/src/game/greathall.ts')).greatHallSite.frames().length !== 1) fail('expected the Great Hall model');
+    if ((await server.ssrLoadModule('/src/game/greathall.ts')).greatHallSite.frames().length !== 2) fail('expected the Great Hall model and the ranges beside its approach garden');
     if ((await server.ssrLoadModule('/src/game/hodasi.ts')).hodasiSite.frames().length !== 1) fail('expected the J.K.M. Hodasi Road bend model');
     // the owner's Crop Improvement and Agriculture Precinct brief: no generic block left among the department group, east
     // of the WACCI forecourt or by the Child Study Centre; the College, Soil Science and WACCI keep their models

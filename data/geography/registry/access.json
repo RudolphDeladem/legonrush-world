@@ -164,27 +164,39 @@
    "via": [
     [
      -896,
-     115
+     128.6
     ],
     [
-     -920,
-     115
+     -905,
+     128.6
     ],
     [
-     -932,
-     133
+     -913,
+     128.4
     ],
     [
-     -985,
-     133
+     -922,
+     123.6
+    ],
+    [
+     -936,
+     123.6
+    ],
+    [
+     -950,
+     128.4
+    ],
+    [
+     -986,
+     128.8
     ]
    ],
    "status": "verified",
    "confidence": "high",
    "cite": "user-layouts",
    "stop": "outside",
-   "approach": "Up Legon Hill on the axial road from the east, stop at its turning loop, then cross the Convocation courtyard west to the hall's east front.",
-   "evidence": "great_hall_and_directorate_4: the public front is the gable end with three doors at the end of a long paved courtyard with lawn panels between low flanking wings, the tower beside it. great_hall_and_directorate_3: the opposite (west) end is the curved, terraced end above the loop road. Reference atlas sheet 2: the paved courtyard lies east of the hall, between it and the axial road loop (OSM way 424526319). Previous entrance (west side, at the turning circles) was the back of the hall.",
+   "approach": "Up Legon Hill on the axial road from the east, stop at its turning loop, then walk west through the gateway building's arch, across the lower court and up its two flights to the upper court, and across the upper court to the portico steps.",
+   "evidence": "great_hall_and_directorate_4: the public front is the gable end with three doors at the end of a long paved courtyard with lawn panels between low flanking wings, the tower beside it. great_hall_and_directorate_3: the opposite (west) end is the curved, terraced end above the loop road. Reference atlas sheet 2: the paved courtyard lies east of the hall, between it and the axial road loop (OSM way 424526319). Previous entrance (west side, at the turning circles) was the back of the hall. Owner's Great Hall correction brief (A01 aerial, tour R11-R54): the compound is entered through the transverse gateway building's arch, the lower court climbs to the upper court by two flights on the axis, and the portico steps rise from the upper court; the path follows that sequence (the courts are paved, not a road).",
    "refs": [
     "great_hall_and_directorate_2_labeled.png",
     "great_hall_and_directorate_3_labeled.png",

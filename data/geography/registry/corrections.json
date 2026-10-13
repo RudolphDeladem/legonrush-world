@@ -4838,6 +4838,50 @@
         ]
       ],
       "reason": "Owner's marked aerial of the ground round the front of the N Block (eleven numbered views, registered to the N Block and the GCB Lecture Building at 0.297 m/px) and street photos of each view: the white flat-roofed building of the Ocean Margins Initiative (view 6), its roof as the aerial shows it."
+    },
+    {
+      "id": "osm:way/100307658",
+      "place": "Great Hall gateway building",
+      "source": "OpenStreetMap outline, split at the arch",
+      "parts": [
+        [
+          [
+            -901.1,
+            117.7
+          ],
+          [
+            -901.0,
+            127.1
+          ],
+          [
+            -909.2,
+            127.1
+          ],
+          [
+            -909.3,
+            117.7
+          ]
+        ],
+        [
+          [
+            -901.0,
+            130.1
+          ],
+          [
+            -900.9,
+            140.0
+          ],
+          [
+            -909.1,
+            140.1
+          ],
+          [
+            -909.2,
+            130.1
+          ]
+        ]
+      ],
+      "reason": "Owner's Great Hall correction brief (aerial A01; tour R15-R17, R21-R23, R34-R36): the transverse building east of the lower court is entered through a central arch, a real passage through it to the approach garden (the gate leaves stand open in it). The outline is split either side of the passage (z 127.1 to 130.1, greathallplan.ts GH.gate.arch) so that the passage is open ground; the two parts are the building's two halves."
     }
   ],
   "addAreas": [

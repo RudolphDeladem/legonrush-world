@@ -22,6 +22,7 @@ import { NSIA, laneX, northTop } from './nsia';
 import { KQ } from './kuffour';
 import { EN } from './entrance';
 import { CUT, CUT_Z, alongCut, cutDepth, cutDrop, deckAt, inBowl, inTrench, onBowlSlope, wallE, wallW } from './cutplan';
+import { GH } from './greathallplan';
 
 interface Hollow {
   /** hollow: sunk `depth` below the ground; terrace: raised `depth` above it */
@@ -114,6 +115,20 @@ function cwZones(): Zone[] {
   ];
 }
 
+/** the Great Hall's levels (the owner's Great Hall correction brief, greathallplan.ts): the upper court level from the
+ *  hall's front to the wings' east arms, the lower court sunk below the hill's slope from there to the gateway building,
+ *  the gateway's passage floor on its own pad; the steps between them are stairways (below) */
+function ghZones(): Zone[] {
+  const hillAt = (x: number) => profileAt(HILL, x), U = GH.upper, Lo = GH.lower, g = GH.gate;
+  return [
+    { kind: 'terrace', x0: U.x0, x1: U.x1, z0: U.z0, z1: U.z1, depth: 0, w: 0.3, e: 0.3, n: 3, s: 3, cell: 1, top: (x) => Math.max(0, U.h - hillAt(x)) },
+    { kind: 'hollow', x0: Lo.x0, x1: Lo.x1, z0: Lo.z0, z1: Lo.z1, depth: 0, w: 0.3, e: 0.3, n: 2, s: 2, cell: 1, top: (x) => Math.max(0, hillAt(x) - Lo.h) },
+    { kind: 'terrace', x0: g.pad[0], x1: g.pad[1], z0: g.z0 - 1.7, z1: g.z1 + 1.4, depth: 0, w: 0.3, e: 0.3, n: 0.3, s: 0.3, cell: 0.5, top: (x) => Math.max(0, g.floor - hillAt(x)) },
+    // the hall's platform under the portico (R54), above the upper court
+    { kind: 'terrace', x0: GH.platform.x0, x1: GH.platform.x1, z0: GH.platform.z0, z1: GH.platform.z1, depth: GH.floor - U.h, w: 0.3, e: 0.3, n: 0.3, s: 0.3, cell: 0.5 },
+  ];
+}
+
 const ZONES: Zone[] = [
   // The Institute of African Studies (the owner's main entrance brief, pairs 20-24): the building and its upper apron
   // stand on a terrace above the avenue; before the south front a middle terrace, each behind a stone-faced retaining
@@ -137,9 +152,9 @@ const ZONES: Zone[] = [
   // to the end building in level terraces with a flight of steps up the walk between each (the green marks) and level
   // walks between them (the violet arrows), not a continuous slope (CW_LEVELS).
   ...cwZones(),
-  // the Great Hall (the owner's Commonwealth and Great Hall brief, S6): a stone-faced entrance terrace before the portico,
-  // 1.2 m above the forecourt (read from the photograph, not measured); greathall.ts draws its faces, steps and ramp
-  { kind: 'terrace', x0: -1001.5, x1: -985.0, z0: 111.5, z1: 140.5, depth: 1.2, w: 0.3, e: 0.3, n: 0.3, s: 0.3, cell: 0.5 },
+  // the Great Hall (the owner's Great Hall correction brief): the upper and lower courts, the gateway's floor, the hall's
+  // platform (in place of the earlier raised entrance terrace before the portico)
+  ...ghZones(),
   // Volta Hall: the hall stands 2.4 m above Volta Hall Road, its east front over a stone retaining
   // wall; the Annex to the north is at road level. Two rectangles over the hall's blocks only (the courts
   // and the east front; the west block), so the lawn corner south-west of the hall and the road round it
@@ -261,8 +276,10 @@ const STAIRS: Stairs[] = [
   ...CW_LEVELS.flights.map(([a, b]) => ({ x0: a, x1: b, z0: CW_LEVELS.walk[0], z1: CW_LEVELS.walk[1], flights: 1, steps: 6, tread: Math.abs(b - a) / 6 })),
   // the entrance's broad steps from the parking up to the front terrace (pairs 1 and 3; S8's first flight)
   ...[CW_LEVELS.front.steps].map((q) => ({ x0: q.x0, x1: q.x1, z0: q.z0, z1: q.z1, flights: 1, steps: q.n, tread: Math.abs(q.x1 - q.x0) / q.n })),
-  // the Great Hall: the curved steps from the forecourt up to the entrance terrace (their walkable run; greathall.ts)
-  { x0: -982, x1: -985, z0: 123, z1: 135, flights: 1, steps: 6, tread: 0.5 },
+  // the Great Hall (the owner's Great Hall correction brief): the portico steps (R54); the two flights from the lower
+  // court up to the upper court (R46-R50); the gateway's threshold steps either side of its passage (R34-R36)
+  ...[GH.porticoSteps, GH.gateStepsW, GH.gateStepsE].map((q) => ({ x0: q.x0, x1: q.x1, z0: q.z0, z1: q.z1, flights: 1, steps: q.steps, tread: q.tread })),
+  { ...GH.courtStairs },
   // Volta: from the forecourt up to the entrance
   { x0: -245, x1: -258.6, z0: 60, z1: 72, flights: 3, steps: 5, tread: 0.4 },
   // the Balme Library: from the pool deck up to the middle terrace and on up to the road before the library

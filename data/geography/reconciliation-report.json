@@ -104,17 +104,17 @@
   "fromSupplement": 414
  },
  "buildings": {
-  "total": 3144,
-  "onCampus": 1758,
+  "total": 3145,
+  "onCampus": 1759,
   "bySource": {
-   "osm": 1603,
+   "osm": 1604,
    "osm-via-overture": 930,
    "osm-via-overture-upsa": 303,
    "microsoft-ml-buildings": 163,
    "google-open-buildings": 145
   },
-  "osmOnCampusChecked": 1467,
-  "osmValidatedByGoogleOpenBuildings": 1327,
+  "osmOnCampusChecked": 1468,
+  "osmValidatedByGoogleOpenBuildings": 1328,
   "validatedShare": 0.905,
   "medianCentroidOffsetToGoogleM": {
    "x": 0.6,
@@ -130,7 +130,7 @@
   },
   "mlUpsa": 17,
   "byCategory": {
-   "unknown": 2640,
+   "unknown": 2641,
    "housing": 291,
    "academic": 103,
    "residence": 75,
@@ -142,7 +142,7 @@
   },
   "byConfidence": {
    "medium": 1817,
-   "high": 1327
+   "high": 1328
   },
   "osmNotSeenBySatellite": [
    {
@@ -2749,7 +2749,7 @@
    "ha": 30,
    "shareOutsideCampus": 0,
    "places": 14,
-   "buildings": 62,
+   "buildings": 63,
    "anchorsMissing": []
   },
   {

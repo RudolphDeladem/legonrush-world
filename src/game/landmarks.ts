@@ -13,26 +13,6 @@ const cream = new THREE.MeshStandardMaterial({ color: '#e3d6bd', roughness: 0.9 
 const tile = new THREE.MeshStandardMaterial({ color: '#9c4a2c', roughness: 0.8 });
 const dark = new THREE.MeshStandardMaterial({ color: '#2b2f3a', roughness: 0.7 });
 
-function clockTexture() {
-  const c = document.createElement('canvas');
-  c.width = c.height = 128;
-  const x = c.getContext('2d')!;
-  x.fillStyle = '#f7f3e8';
-  x.beginPath(); x.arc(64, 64, 60, 0, Math.PI * 2); x.fill();
-  x.strokeStyle = '#1d2333'; x.lineWidth = 6; x.stroke();
-  for (let i = 0; i < 12; i++) {
-    const a = (i / 12) * Math.PI * 2;
-    x.fillStyle = '#1d2333';
-    x.fillRect(64 + Math.sin(a) * 46 - 3, 64 - Math.cos(a) * 46 - 3, 6, 6);
-  }
-  x.lineCap = 'round';
-  x.lineWidth = 7; x.beginPath(); x.moveTo(64, 64); x.lineTo(64 + 24, 64 - 14); x.stroke();
-  x.lineWidth = 5; x.beginPath(); x.moveTo(64, 64); x.lineTo(64 - 4, 64 - 42); x.stroke();
-  const t = new THREE.CanvasTexture(c);
-  t.colorSpace = THREE.SRGBColorSpace;
-  return t;
-}
-
 /** many small coloured parts merged into one mesh (one draw call) */
 const detailMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.75 });
 function detail(parts: [THREE.BufferGeometry, string][]) {
@@ -74,73 +54,6 @@ const hip = (w: number, h: number, y: number) => {
   m.castShadow = true;
   return m;
 };
-const clocks = (g: THREE.Group, size: number, half: number, y: number, tex: THREE.Texture) => {
-  const mat = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.6 });
-  for (let k = 0; k < 4; k++) {
-    const f = new THREE.Mesh(new THREE.CircleGeometry(size, 24), mat);
-    const a = (k * Math.PI) / 2;
-    f.position.set(Math.sin(a) * (half + 0.03), y, Math.cos(a) * (half + 0.03));
-    f.rotation.y = a;
-    g.add(f);
-  }
-};
-
-/**
- * Great Hall, from DELA's photo: a very tall, slim white tower with a clock near the top.
- * Detail added without photos: a stepped podium, string courses, an open belfry under
- * the cap, and a finial with the national flag.
- */
-function greatHallTower(tex: THREE.Texture) {
-  const g = new THREE.Group();
-  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 2.9, 38, 16), white);
-  shaft.position.y = 19;
-  shaft.castShadow = true;
-  g.add(shaft);
-  // vertical window slits
-  for (let k = 0; k < 4; k++) {
-    const a = (k * Math.PI) / 2;
-    const slit = at(box(0.5, 20, 0.2, dark), Math.sin(a) * 2.75, 18, Math.cos(a) * 2.75);
-    slit.rotation.y = a;
-    g.add(slit);
-  }
-  clocks(g, 1.6, 2.65, 34, tex);
-  const parts: [THREE.BufferGeometry, string][] = [
-    // stepped podium and a plinth
-    [B(9, 0.5, 9, 0, 0.25, 0), '#d8d1c3'],
-    [B(7.6, 0.5, 7.6, 0, 0.75, 0), '#e4ddd0'],
-    [new THREE.CylinderGeometry(3.15, 3.15, 1.6, 16).translate(0, 1.8, 0), '#cfc6b6'],
-    // doorway on the front
-    [B(1.6, 2.8, 0.4, 0, 2.4, 2.85), '#3a2a20'],
-    [B(2.2, 0.3, 0.5, 0, 3.95, 2.9), '#f6f2ea'],
-    // fins flanking the slits
-    ...[0, 1, 2, 3].flatMap((k) => {
-      const a = (k * Math.PI) / 2;
-      return [-0.55, 0.55].map((o) => [B(0.18, 21, 0.3, o, 18, 0).translate(0, 0, 2.78).rotateY(a), '#f7f4ee'] as [THREE.BufferGeometry, string]);
-    }),
-    // a cornice round the clock stage
-    [new THREE.CylinderGeometry(2.95, 2.95, 0.35, 16).translate(0, 31.4, 0), '#f7f4ee'],
-  ];
-  // string courses up the shaft
-  for (const y of [8, 15, 22, 29]) parts.push([new THREE.CylinderGeometry(2.9 - y * 0.007, 2.9 - y * 0.007, 0.22, 16).translate(0, y, 0), '#e2dbcd']);
-  // open belfry: a dark core with eight piers round it, under the cap
-  parts.push([new THREE.CylinderGeometry(1.9, 1.9, 2.4, 12).translate(0, 39.2, 0), '#1e1a18']);
-  for (let k = 0; k < 8; k++) {
-    const a = (k / 8) * Math.PI * 2;
-    parts.push([B(0.5, 2.4, 0.5, Math.sin(a) * 2.35, 39.2, Math.cos(a) * 2.35), '#f4f0e8']);
-  }
-  parts.push([new THREE.CylinderGeometry(2.75, 2.75, 0.3, 16).translate(0, 38.05, 0), '#f7f4ee']);
-  // finial and flagpole
-  parts.push([new THREE.ConeGeometry(1.2, 2.2, 12).translate(0, 42.6, 0), '#8a3b22']);
-  parts.push([new THREE.CylinderGeometry(0.05, 0.06, 5, 6).translate(0, 45.5, 0), '#d8d8d8']);
-  for (const [y, c] of [[47.6, '#ce1126'], [47.2, '#fcd116'], [46.8, '#006b3f']] as [number, string][]) parts.push([B(0.02, 0.4, 1.6, 0.03, y, 0.82), c]);
-  parts.push([B(0.03, 0.2, 0.2, 0.04, 47.2, 0.82), '#111111']);
-  g.add(detail(parts));
-  // the old cap sits on the belfry
-  const cap = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 2.9, 1.2, 16), new THREE.MeshStandardMaterial({ color: '#8a3b22', roughness: 0.7 }));
-  cap.position.y = 41;
-  g.add(cap);
-  return g;
-}
 
 /**
  * Main entrance: two big rendered pillars with recessed panels and lamps, a beam
@@ -222,7 +135,6 @@ function mainGate(span: number) {
 
 export function buildLandmarks() {
   const group = new THREE.Group();
-  const tex = clockTexture();
   const put = (name: string, obj: THREE.Object3D, onRoad = false, dx = 0, dz = 0) => {
     const p = placeByName(name);
     if (!p) return;
@@ -234,11 +146,9 @@ export function buildLandmarks() {
     } else obj.position.set(p.x + dx, 0, p.z + dz);
     group.add(obj);
   };
-  // (on its own mapped base south of the hall, -1013, 158.9: the owner's Commonwealth and Great Hall brief, S4 and S5,
-  // put it beside the hall, not in it)
-  put('Great Hall', greatHallTower(tex), false, -3.1, 30.7);
+  // (the Great Hall's clock tower is modelled with the hall, greathall.ts: the owner's Great Hall correction brief has it a
+  // rectangular shaft at the upper court's corner)
   // (the main gate is modelled from the owner's photos in gateprecinct.ts: a low through-building, not pillars)
-  // the Great Hall's tower stands on Legon Hill
   applyRelief(group);
   return group;
 }
