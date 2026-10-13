@@ -13,8 +13,9 @@
 //   streetlights, the "UPS" bus stop;
 // - the UPSA campus wall either side of the Main Gate (the gate itself: the new tiled portal of the owner's UPSA landmark
 //   pack, upsalandmarks.ts);
-// - the Abednego F. O. Amartey Towers: two white blocks of ten levels with blue glazing, joined by a bridge, the name on
-//   the roof (RW10, RW11; on the mapped outline osm:way/885510985, the owner's correction);
+// - the Abednego F. O. Amartey Towers: two white blocks of ten levels on the two mapped slabs, bridges between them over
+//   five levels, the blue curtain wall on the south block's road face, the names on the roofs (RW10, RW11; the owner's
+//   UPSA packs: osm:way/885510985 and osm:way/885510984, docs/upsa-campus/evidence-ledger.md);
 // - Prestige Hostel's name and its paved forecourt behind chained bollards (RW14);
 // - at the academic core: the entrance canopy on the block's west front, the paved apron to it, trees round the
 //   quadrangle.
@@ -325,7 +326,7 @@ const gate: Spec = {
 // ======================================================================================================
 // the Abednego F. O. Amartey Towers
 // ======================================================================================================
-const TW = TOWERS_AM, TO: [number, number] = [2246.4, -950.1];
+const TW = TOWERS_AM, TO: [number, number] = [2239.3, -964];
 const T = (r: [number, number, number, number]) => ({ x0: r[0] - TO[0], x1: r[1] - TO[0], z0: r[2] - TO[1], z1: r[3] - TO[1] });
 const winBlue = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) => {
   g.fillStyle = '#9fb0c4'; g.fillRect(x - 4, y - 4, w + 8, h + 8);
@@ -341,38 +342,49 @@ const TOWER_FACE: Style = {
 };
 const towers: Spec = {
   name: 'Abednego F. O. Amartey Towers', axis: [1, 0], origin: TO, storey: TW.storey, style: TOWER_FACE, roofColor: '#d7d6d0', fascia: '#e6e5e0', pitch: 0,
-  replaces: [[2231, -950], [2261, -950]],
+  // both mapped slabs (south osm:way/885510985; north osm:way/885510984 and the small piece osm:way/1009392391 at its west end)
+  replaces: [[2231, -950], [2261, -950], [2246, -980.5], [2213, -980.2]],
   blocks: [
-    { ...T(TW.west), floors: TW.floors, roof: 'flat' },
-    { ...T(TW.east), floors: TW.floors, roof: 'flat' },
-    { ...T(TW.bridge), floors: TW.floors - 3, roof: 'flat', y: TW.storey * 2 },
+    { ...T(TW.south), floors: TW.floors, roof: 'flat' },
+    { ...T(TW.north), floors: TW.floors, roof: 'flat' },
+    { ...T(TW.bridge), floors: TW.bridgeFloors, roof: 'flat', y: TW.storey },
   ],
-  keep: [[TW.west[0] - 3 - TO[0], TW.east[1] + 3 - TO[0], TW.west[2] - 3 - TO[1], TW.east[3] + 3 - TO[1]]],
+  keep: [[TW.north[0] - 3 - TO[0], TW.south[1] + 3 - TO[0], TW.north[2] - 3 - TO[1], TW.south[3] + 3 - TO[1]]],
   extras: (k: Kit) => {
     const c: Part[] = [], top = k.wallTop(TW.floors);
-    const e = T(TW.east), w = T(TW.west);
-    // the large blue reflective curtain wall on the east block's road face, standing a little proud, its mullion grid and
-    // the white slab edges across it (RW11; the IPS Road pack's still 03 and recording frames 19-25)
-    const cw0 = e.x0 + 1.2, cw1 = e.x0 + 10.4;
-    c.push([box(cw0, cw1, 3.6, top, e.z1 - 0.05, e.z1 + 0.25), '#2d5fa8']);
-    for (let y = 3.6; y < top; y += TW.storey) c.push([box(cw0 - 0.05, cw1 + 0.05, y - 0.06, y + 0.06, e.z1 + 0.25, e.z1 + 0.32), '#c4ccd4']);
-    for (let x = cw0 + 1.15; x < cw1 - 0.1; x += 1.15) c.push([box(x - 0.03, x + 0.03, 3.6, top, e.z1 + 0.25, e.z1 + 0.3), '#9fb0c2']);
-    // the narrow vertical blue-glazed strips on the west block's road face
-    for (const x of [w.x0 + 3.2, w.x1 - 3.2]) c.push([box(x - 0.7, x + 0.7, 3.6, top, w.z1 - 0.05, w.z1 + 0.18), '#3466ad']);
-    // the parapets and the roof plant, the white sign frame on the east block's roof with the name toward IPS Road
-    for (const r of [w, e]) {
+    const s = T(TW.south), n = T(TW.north), br = T(TW.bridge);
+    // the large blue reflective curtain wall over the west part of the south block's road face, standing a little proud,
+    // its mullion grid and the white slab edges across it (photos 1-3; RW11; the clips)
+    const cw0 = TW.curtain[0] - TO[0], cw1 = TW.curtain[1] - TO[0];
+    c.push([box(cw0, cw1, 3.6, top, s.z1 - 0.05, s.z1 + 0.25), '#2d5fa8']);
+    for (let y = 3.6; y < top; y += TW.storey) c.push([box(cw0 - 0.05, cw1 + 0.05, y - 0.06, y + 0.06, s.z1 + 0.25, s.z1 + 0.32), '#c4ccd4']);
+    for (let x = cw0 + 1.15; x < cw1 - 0.1; x += 1.15) c.push([box(x - 0.03, x + 0.03, 3.6, top, s.z1 + 0.25, s.z1 + 0.3), '#9fb0c2']);
+    // its west end turns the corner in the same glass (photo 3)
+    c.push([box(s.x0 - 0.25, s.x0 + 0.05, 3.6, top, s.z1 - 6, s.z1 + 0.25), '#2d5fa8']);
+    // the north block: narrow vertical blue-glazed strips on its long faces (Twin-Towers.jpg)
+    for (const z of [n.z0 - 0.18, n.z1]) for (let x = n.x0 + 6; x < n.x1 - 3; x += 12) c.push([box(x - 0.7, x + 0.7, 3.6, top, z, z + 0.18), '#3466ad']);
+    // the parapets and the roof plant on each block
+    for (const r of [s, n]) {
       c.push([box(r.x0 - 0.1, r.x1 + 0.1, top, top + 1.0, r.z0 - 0.1, r.z0 + 0.15), '#ecebe6'], [box(r.x0 - 0.1, r.x1 + 0.1, top, top + 1.0, r.z1 - 0.15, r.z1 + 0.1), '#ecebe6']);
-      c.push([box(r.x0 + 2, r.x0 + 5, top, top + 2.2, r.z0 + 3, r.z0 + 6), '#c9c8c2']);
+      c.push([box(r.x0 + 3, r.x0 + 9, top, top + 2.2, r.z0 + 2, r.z1 - 2), '#c9c8c2'], [box(r.x1 - 16, r.x1 - 4, top, top + 1.4, r.z0 + 2, r.z1 - 2), '#5d6670']);
     }
-    c.push([box(e.x0 + 0.6, e.x1 - 0.6, top + 1.0, top + 2.4, e.z1 - 0.6, e.z1 - 0.4), '#f4f4f1']);
-    k.signs.push({ text: 'ABEDNEGO F. O. AMARTEY TOWERS', x: (e.x0 + e.x1) / 2, y: top + 1.7, z: e.z1 - 0.38, ry: 0, w: e.x1 - e.x0 - 1.6, colors: ['#f4f4f1', '#1f3f88'] });
-    // the bridge's glazing between the blocks
-    const br = T(TW.bridge);
-    c.push([box(br.x0, br.x1, TW.storey * 2 + 0.4, top - TW.storey, br.z1 - 0.02, br.z1 + 0.06), '#3b6aa8']);
-    // the entrance canopy on the south front of each block
-    for (const r of [w, e]) {
-      const xm = (r.x0 + r.x1) / 2;
-      // (only where the campus drive south of the blocks leaves room for its columns)
+    // the names: the university's along the south block's roof edge toward IPS Road (the clips IMG_9677 16-38 s), the
+    // towers' name on a raised frame on the north block, seen over the south block from the road (RW10, RW11)
+    c.push([box(s.x0 + 6, s.x1 - 6, top + 1.0, top + 2.3, s.z1 - 0.6, s.z1 - 0.4), '#f4f4f1']);
+    k.signs.push({ text: 'UNIVERSITY OF PROFESSIONAL STUDIES ACCRA', x: (s.x0 + s.x1) / 2, y: top + 1.65, z: s.z1 - 0.38, ry: 0, w: s.x1 - s.x0 - 13, colors: ['#f4f4f1', '#1f3f88'] });
+    const nf0 = n.x0 + 16, nf1 = n.x1 - 8;
+    c.push([box(nf0, nf1, top + 1.0, top + 4.6, n.z1 - 0.7, n.z1 - 0.5), '#f4f4f1']);
+    for (const x of [nf0 + 1, nf1 - 1]) c.push([box(x - 0.12, x + 0.12, top, top + 1.0, n.z1 - 0.7, n.z1 - 0.5), '#cfcfca']);
+    k.signs.push({ text: 'ABEDNEGO F. O. AMARTEY TOWERS', x: (nf0 + nf1) / 2, y: top + 2.8, z: n.z1 - 0.48, ry: 0, w: nf1 - nf0 - 1.5, colors: ['#f4f4f1', '#1f3f88'] });
+    // the bridges between the blocks: glazed both sides, white slab edges at each level
+    for (const [x, d] of [[br.x0, -1], [br.x1, 1]] as [number, number][]) c.push([box(x + (d < 0 ? -0.06 : 0), x + (d < 0 ? 0 : 0.06), TW.storey + 0.4, TW.storey * (TW.bridgeFloors + 1) - 0.2, br.z0, br.z1), '#3b6aa8']);
+    for (let f = 1; f <= TW.bridgeFloors + 1; f++) c.push([box(br.x0 - 0.15, br.x1 + 0.15, TW.storey * f - 0.15, TW.storey * f + 0.15, br.z0, br.z1), '#ecebe6']);
+    // the LED screen in its blue frame at the south block's south-east corner (the clips IMG_9677 24-34 s)
+    c.push([box(s.x1 - 6, s.x1 - 0.5, 0, 4.2, s.z1 + 0.3, s.z1 + 3.2), '#2a5ea8'], [box(s.x1 - 5.6, s.x1 - 0.9, 0.8, 3.8, s.z1 + 3.2, s.z1 + 3.3), '#1b2433']);
+    SOLIDS.add(s.x1 - 3.25 + TO[0], s.z1 + 1.75 + TO[1], 1.6);
+    // the entrance canopy on the south front of each block's middle
+    for (const r of [s]) {
+      const xm = (r.x0 + r.x1) / 2 + 4;
       if (![-2.2, 2.2].every((dx) => clear(xm + dx + TO[0], r.z1 + 2.2 + TO[1], 0.6))) continue;
       c.push([box(xm - 2.5, xm + 2.5, 3.2, 3.45, r.z1, r.z1 + 2.4), '#e2e1dc']);
       for (const dx of [-2.2, 2.2]) { c.push([box(xm + dx - 0.12, xm + dx + 0.12, 0, 3.2, r.z1 + 2.1, r.z1 + 2.35), '#e2e1dc']); SOLIDS.add(xm + dx + TO[0], r.z1 + 2.2 + TO[1], 0.2); }

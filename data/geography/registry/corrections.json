@@ -440,6 +440,14 @@
     {
       "id": "osm:way/626139046",
       "reason": "The owner's UPSA campus packs (docs/upsa-campus/): the Apple hybrid aerial registered at 2.42 px/m, the AeroVision drone post of 2025-06-23 and the DroneStories clips IMG_9677: this service road runs across the Astro Turf's north third; the aerial and every drone view show the pitch, its fence and track edge there, and no road. (The walkway along the pitch's west side, osm:way/1009392428, stays.)"
+    },
+    {
+      "id": "osm:way/394252218",
+      "reason": "The owner's UPSA campus packs (docs/upsa-campus/; the Apple hybrid aerial registered at 2.42 px/m; the DroneStories clips IMG_9677 40-50 s and IMG_9677j 0-8 s): this OSM outline lies on the courtyard's lawn and the north block's south edge; the north block is reshaped onto its roof (osm:way/1009392437) and the courtyard is open ground round a fountain."
+    },
+    {
+      "id": "osm:way/1009392428",
+      "reason": "The owner's UPSA campus packs (docs/upsa-campus/; the Apple hybrid aerial registered at 2.42 px/m; the DroneStories clips IMG_9677 40-50 s and IMG_9677j 0-8 s): this service way runs through the Astro Turf stand's seats and the long grey-roofed block south of it; the aerial shows the stand against the hard courts' fence with the walk between the stand and the pitch fence, and no road. With the road across the pitch excluded it was a dead end."
     }
   ],
   "heights": [
@@ -4918,6 +4926,86 @@
         ]
       ],
       "reason": "Owner's Great Hall correction brief (aerial A01; tour R15-R17, R21-R23, R34-R36): the transverse building east of the lower court is entered through a central arch, a real passage through it to the approach garden (the gate leaves stand open in it). The outline is split either side of the passage (z 127.1 to 130.1, greathallplan.ts GH.gate.arch) so that the passage is open ground; the two parts are the building's two halves."
+    },
+    {
+      "id": "osm:way/1009392437",
+      "place": "UPSA four-storey group, north block (red roof)",
+      "source": "the owner's Apple hybrid aerial (registered)",
+      "ring": [
+        [
+          2147,
+          -1092.8
+        ],
+        [
+          2205,
+          -1092.8
+        ],
+        [
+          2205,
+          -1075
+        ],
+        [
+          2147,
+          -1075
+        ]
+      ],
+      "reason": "The owner's UPSA campus packs (docs/upsa-campus/; the Apple hybrid aerial registered at 2.42 px/m; the DroneStories clips IMG_9677 40-50 s and IMG_9677j 0-8 s): the block with the red roof on the north side of the courtyard, its galleries facing the courtyard. The OSM outline lies about 25 m east of the roof the aerial shows; the ring is measured on the aerial (its north edge kept clear of the mapped lane north of it)."
+    },
+    {
+      "id": "osm:way/394252216",
+      "place": "UPSA four-storey group, south block (green roof)",
+      "source": "the owner's Apple hybrid aerial (registered)",
+      "ring": [
+        [
+          2150,
+          -1043
+        ],
+        [
+          2163,
+          -1043
+        ],
+        [
+          2163,
+          -1049
+        ],
+        [
+          2200,
+          -1049
+        ],
+        [
+          2200,
+          -1031
+        ],
+        [
+          2150,
+          -1031
+        ]
+      ],
+      "reason": "The owner's UPSA campus packs (docs/upsa-campus/; the Apple hybrid aerial registered at 2.42 px/m; the DroneStories clips IMG_9677 40-50 s and IMG_9677j 0-8 s): the block with the green roof on the courtyard's south side and its gallery wing along the courtyard. The OSM outline lies about 18 m east of the roof; measured on the aerial."
+    },
+    {
+      "id": "osm:way/394252217",
+      "place": "UPSA four-storey group, the long south block (tan roof; the 'UPSA book shop' pin)",
+      "source": "the owner's Apple hybrid aerial (registered)",
+      "ring": [
+        [
+          2147,
+          -1018.6
+        ],
+        [
+          2226,
+          -1018.6
+        ],
+        [
+          2226,
+          -1007
+        ],
+        [
+          2147,
+          -1007
+        ]
+      ],
+      "reason": "The owner's UPSA campus packs (docs/upsa-campus/; the Apple hybrid aerial registered at 2.42 px/m; the DroneStories clips IMG_9677 40-50 s and IMG_9677j 0-8 s): the long block with the tan roof south of the group. The OSM outline lies about 17 m east of the roof and is 10 m short; measured on the aerial (its north edge kept off the diagonal wing's outline)."
     }
   ],
   "addAreas": [

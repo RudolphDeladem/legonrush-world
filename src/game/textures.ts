@@ -221,6 +221,35 @@ export const louvreFacadeTexture = () =>
  * campus blocks): white render, a wide window of blue glass in a white frame with slim mullions, a pale slab band at
  * the foot of each storey.
  */
+export const galleryFacadeTexture = () =>
+  canvasTexture(256, (ctx, s) => {
+    // UPSA's four-storey group (the clips IMG_9677 40-50 s): each storey an open gallery behind a white parapet with a
+    // railing, the rooms' doors and blue windows set back in its shade, a white slab edge above
+    ctx.fillStyle = '#f7f7f4'; ctx.fillRect(0, 0, s, s);
+    speckle(ctx, s, 1600, ['#efefec', '#ffffff', '#e9e8e4'], 1.4);
+    const g = ctx.createLinearGradient(0, 30, 0, 170);
+    g.addColorStop(0, '#5b6066'); g.addColorStop(1, '#8a8e92');
+    ctx.fillStyle = g; ctx.fillRect(0, 30, s, 140);
+    // a door and a window in the back wall of the gallery
+    ctx.fillStyle = '#4b3a2c'; ctx.fillRect(28, 66, 46, 104);
+    const gl = ctx.createLinearGradient(0, 70, 0, 140);
+    gl.addColorStop(0, '#6f9fd6'); gl.addColorStop(1, '#2a5a9c');
+    ctx.fillStyle = '#d9dbdc'; ctx.fillRect(108, 66, 120, 76);
+    ctx.fillStyle = gl; ctx.fillRect(112, 70, 112, 68);
+    ctx.fillStyle = '#d9dbdc'; ctx.fillRect(166, 70, 4, 68);
+    // the soffit's shadow and the slab edge above
+    ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.fillRect(0, 30, s, 10);
+    ctx.fillStyle = '#ecebe7'; ctx.fillRect(0, 0, s, 30);
+    ctx.fillStyle = '#cfcfca'; ctx.fillRect(0, 28, s, 3);
+    // the parapet with its railing on top
+    ctx.fillStyle = '#f4f4f1'; ctx.fillRect(0, 170, s, 70);
+    ctx.fillStyle = '#d6d6d1'; ctx.fillRect(0, 170, s, 3);
+    ctx.fillStyle = '#7a7f84';
+    ctx.fillRect(0, 140, s, 4);
+    for (let x = 6; x < s; x += 16) ctx.fillRect(x, 140, 3, 30);
+    ctx.fillStyle = '#e6e6e2'; ctx.fillRect(0, s - 16, s, 16);
+  });
+
 export const upsaFacadeTexture = () =>
   canvasTexture(256, (ctx, s) => {
     ctx.fillStyle = '#fbfbf9';

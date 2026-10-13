@@ -527,7 +527,7 @@ function upsaStyle(b: Building) {
   const f = UPSA_FINISH.find(({ at: [x, z] }) => x >= b.minX && x <= b.maxX && z >= b.minZ && z <= b.maxZ && inRingF(b.pts, x, z));
   const area = (b.maxX - b.minX) * (b.maxZ - b.minZ);
   const storeys = f?.storeys ?? (area < 80 ? 1 : area < 250 ? 2 : area < 600 ? 3 : 4);
-  return { wall: '#f6f6f3', roof: f?.roof ?? '#d3d3ce', blue: !f?.plain, flat: !f?.hip, storeys };
+  return { wall: '#f6f6f3', roof: f?.roof ?? '#d3d3ce', blue: !f?.plain && !f?.gallery, gallery: !!f?.gallery, flat: !f?.hip, storeys };
 }
 const inPoly = (r: [number, number][], x: number, z: number) => {
   let o = false;

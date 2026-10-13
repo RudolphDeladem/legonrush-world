@@ -73,17 +73,20 @@ export const GATE = { x0: 2279.8, x1: 2303.1, z0: -919.6, z1: -906.5, roadX: 229
 /** the "UPS" bus stop on the north verge west of the gate (osm:node/4988349723) */
 export const BUS_STOP: [number, number] = [2262, -893];
 
-/** the Abednego F. O. Amartey Towers (the name on the roof sign in RW10/RW11; two blocks of ten levels joined in the
- *  middle, commissioned December 2024): on the mapped outline osm:way/885510985 north of IPS Road, as the owner confirmed
- *  against the satellite map (the UPSA landmark pack's image 20) and the IPS Road 270-degree recording. (They first stood
- *  on a machine-detected outline at x 2166-2196, which the satellite map shows is the red tennis court: excluded,
- *  corrections.json.) The outline is one 52 m rectangle: the two blocks at its ends, the joining part between them set
- *  back on both faces (the split is read from the photographs, not mapped) */
+/** the Abednego F. O. Amartey Towers (two blocks of ten levels, bridges between them over five levels, commissioned
+ *  December 2024): the two parallel mapped slabs north of IPS Road, osm:way/885510985 (south, the owner's correction of
+ *  batch 114) and osm:way/885510984 (north) with osm:way/1009392391 at its west end, 18 m apart. The owner's Apple aerial
+ *  shows two towers there, each with its own roof and plant; the game had drawn both blocks side by side on the south
+ *  slab and the north slab as an ordinary block (docs/upsa-campus/evidence-ledger.md). The bridges' spot along the gap
+ *  and their levels (1 to 5) are estimates. */
 export const TOWERS_AM = {
-  west: [2220.4, 2242.4, -957.7, -942.5] as [number, number, number, number],
-  east: [2250.4, 2272.4, -957.7, -942.5] as [number, number, number, number],
-  bridge: [2242.4, 2250.4, -956.2, -944.0] as [number, number, number, number],
-  floors: 10, storey: 3.4,
+  south: [2220.4, 2272.4, -957.7, -942.5] as [number, number, number, number],
+  north: [2206.2, 2271.6, -985.4, -975.7] as [number, number, number, number],
+  bridge: [2242, 2251, -975.7, -957.7] as [number, number, number, number],
+  /** the south block's road face: the blue curtain wall over its west part (the owner's photos 1-3, the clips IMG_9677
+   *  16-30 s) */
+  curtain: [2221.6, 2240.5] as [number, number],
+  floors: 10, storey: 3.4, bridgeFloors: 5,
 };
 
 /** the academic core: the block east of the central quadrangle (osm:relation/13514869), its west door at the mapped drive

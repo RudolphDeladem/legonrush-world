@@ -3735,3 +3735,21 @@ the car-park bays and the models' pitch and courts. That is mostly round the qua
 drawn past it.
 
 Route lengths are identical; the route tests, the build and the smoke ride pass. Published to `main` on the owner's word (2026-10-13).
+
+## UPSA layout and facade corrections (the owner: "check and make correction to the upsa building layout and facade")
+
+Every outline was rechecked on the owner's aerial at four times its size with a 10 m grid. The findings and their
+evidence are in `docs/upsa-campus/evidence-ledger.md` (batch 129).
+
+- **Twin towers.** Two ten-storey blocks on the two mapped slabs (osm:way/885510985 south, osm:way/885510984 north), with
+  glazed bridges over five levels between them, instead of both blocks side by side on the south slab. The blue curtain
+  wall and the LED screen are on the south block. The names are on the roofs.
+- **Four-storey group.** Its outlines were 17-25 m east of the roofs and are reshaped onto them (`corrections.json`
+  reshape). One stray outline on the courtyard is excluded. The walls are white with open galleries and railings,
+  doors and blue windows in their shade (`textures.ts` galleryFacadeTexture, `facades.ts` gallery). The slate block and
+  the fountain are moved to the aerial.
+- **Stand and grey-roofed block.** The stand is against the courts' fence, with the walk between it and the pitch fence.
+  The grey-roofed block has its full length. The dead-end way through both is excluded.
+
+*Not changed.* KOKA's outline: the aerial's lean is ambiguous. The small house by the tower court: it would land on its
+road loop.

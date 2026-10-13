@@ -9,7 +9,7 @@ import * as THREE from 'three';
 import { groundShade, weathering } from './shading';
 import type { Building } from './campusmap';
 import { groundHeight } from './relief';
-import { facadeTexture, louvreFacadeTexture, roofTileTexture, upsaFacadeTexture, windowLightTexture } from './textures';
+import { facadeTexture, galleryFacadeTexture, louvreFacadeTexture, roofTileTexture, upsaFacadeTexture, windowLightTexture } from './textures';
 
 type V = [number, number];
 
@@ -27,7 +27,7 @@ const WALL_COLORS = ['#fbf3df', '#f8eccf', '#fdf9ee', '#f4e6c6', '#faefd6', '#f2
 const ROOF_COLORS = ['#b4532e', '#a94a2b', '#bf5f36', '#9c4429', '#b65a3a', '#a65335'];
 const PLINTH_COLORS = ['#8b8072', '#7f7466', '#93877a', '#7a6253'];
 
-let shared: { wall: THREE.MeshStandardMaterial; roof: THREE.MeshStandardMaterial; louvreWall: THREE.MeshStandardMaterial; blueWall: THREE.MeshStandardMaterial; facade: THREE.Texture; tiles: THREE.Texture } | null = null;
+let shared: { wall: THREE.MeshStandardMaterial; roof: THREE.MeshStandardMaterial; louvreWall: THREE.MeshStandardMaterial; blueWall: THREE.MeshStandardMaterial; galleryWall: THREE.MeshStandardMaterial; facade: THREE.Texture; tiles: THREE.Texture } | null = null;
 /** how many bays and storeys the lit-window pattern spans before it repeats */
 const LIT_BAYS = 8, LIT_STOREYS = 4;
 
@@ -45,6 +45,7 @@ export function buildingMaterials() {
     wall: weathering(groundShade(new THREE.MeshStandardMaterial({ map: facade, vertexColors: true, roughness: 0.9, side: THREE.DoubleSide, emissive: '#ffffff', emissiveMap: litWindows(), emissiveIntensity: 0 }), 2.2, 0.3, 'wall'), 'wall', 16, 0.3),
     roof: new THREE.MeshStandardMaterial({ map: tiles, vertexColors: true, roughness: 0.78, side: THREE.DoubleSide }),
     louvreWall: weathering(groundShade(new THREE.MeshStandardMaterial({ map: louvreFacadeTexture(), vertexColors: true, roughness: 0.9, side: THREE.DoubleSide }), 2.2, 0.3, 'wall'), 'wall', 16, 0.3),
+    galleryWall: weathering(groundShade(new THREE.MeshStandardMaterial({ map: galleryFacadeTexture(), vertexColors: true, roughness: 0.85, side: THREE.DoubleSide }), 2.2, 0.3, 'wall'), 'wall', 16, 0.3),
     blueWall: weathering(groundShade(new THREE.MeshStandardMaterial({ map: upsaFacadeTexture(), vertexColors: true, roughness: 0.75, side: THREE.DoubleSide }), 2.2, 0.3, 'wall'), 'wall', 16, 0.3),
   };
   return shared;
@@ -304,13 +305,14 @@ function slopes(rb: Batch, outer: V[], inner: V[], eave: number, top: number, c:
 
 /** Builds every building footprint into merged, per-cell meshes. */
 /** colours that override the random palette for a building (buildings modelled after photos) */
-/** wall and roof colours; louvres: timber louvred windows (the halls); blue: UPSA's blue-glazed windows; flat: a flat
+/** wall and roof colours; louvres: timber louvred windows (the halls); blue: UPSA's blue-glazed windows; gallery: open
+ *  galleries with railings and doors (UPSA's four-storey group); flat: a flat
  *  roof behind a parapet instead of the hipped roof; storeys: the height in storeys instead of the footprint's guess */
-export type BuildingStyle = (b: Building) => { wall?: string; roof?: string; louvres?: boolean; blue?: boolean; flat?: boolean; storeys?: number } | undefined;
+export type BuildingStyle = (b: Building) => { wall?: string; roof?: string; louvres?: boolean; blue?: boolean; gallery?: boolean; flat?: boolean; storeys?: number } | undefined;
 
 export function buildBuildings(buildings: Building[], styleOf?: BuildingStyle) {
   const group = new THREE.Group();
-  const { wall, roof, louvreWall, blueWall } = buildingMaterials();
+  const { wall, roof, louvreWall, blueWall, galleryWall } = buildingMaterials();
   const rand = seeded(23);
   const cells = new Map<string, { wb: Batch; rb: Batch; skin: string }>();
   const trimBase = new THREE.Color('#fbf8f1');
@@ -336,7 +338,7 @@ export function buildBuildings(buildings: Building[], styleOf?: BuildingStyle) {
     let cx = 0, cz = 0;
     for (const [x, z] of outer) { cx += x; cz += z; }
     cx /= outer.length; cz /= outer.length;
-    const skin = st?.louvres ? 'L' : st?.blue ? 'B' : '';
+    const skin = st?.louvres ? 'L' : st?.blue ? 'B' : st?.gallery ? 'G' : '';
     const key = `${Math.floor(cx / CELL)},${Math.floor(cz / CELL)}${skin}`;
     let cell = cells.get(key);
     if (!cell) cells.set(key, (cell = { wb: new Batch(), rb: new Batch(), skin }));
@@ -401,7 +403,7 @@ export function buildBuildings(buildings: Building[], styleOf?: BuildingStyle) {
   }
 
   for (const { wb, rb, skin } of cells.values()) {
-    const walls = new THREE.Mesh(wb.geometry(), skin === 'L' ? louvreWall : skin === 'B' ? blueWall : wall);
+    const walls = new THREE.Mesh(wb.geometry(), skin === 'L' ? louvreWall : skin === 'B' ? blueWall : skin === 'G' ? galleryWall : wall);
     walls.castShadow = walls.receiveShadow = true;
     const roofs = new THREE.Mesh(rb.geometry(), roof);
     roofs.castShadow = roofs.receiveShadow = true;

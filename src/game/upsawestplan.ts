@@ -19,9 +19,10 @@ export const TURF = {
 /** the pitch's markings inside the turf (standard dimensions; the photos show the full set) */
 export const FIELD = { inset: 1.6 };
 
-/** the stand on the turf's west side (aerial: blue and white seat rows; the walkway west of it stays clear) and the small
- *  two-storey pavilion in its middle (the clips' white and blue block among the seats) */
-export const STAND = { x0: 2199.6, x1: 2204.9, z0: -1208, z1: -1160, tiers: 6, rise: 0.45, pav: [-1189, -1178] as [number, number], pavH: 7 };
+/** the stand on the turf's west side, against the hard courts' fence, the walk between it and the pitch fence (aerial: the
+ *  blue and white seat rows), and the small two-storey pavilion in its middle (the clips' white and blue block among the
+ *  seats) */
+export const STAND = { x0: 2190.5, x1: 2201.4, z0: -1208, z1: -1161, tiers: 8, rise: 0.45, pav: [-1188, -1178] as [number, number], pavH: 7 };
 
 /** the hard courts west of the Astro Turf: one fenced red surround, two green courts with basketball posts north, two
  *  green tennis courts south (aerial; IMG_9677j 10-16 s; photos 22, 23) */
@@ -47,15 +48,15 @@ export const PCU = { x0: 2228.5, x1: 2288.4, z0: -1260, z1: -1247.5, bay: 9, sto
  *  curved fins round blue windows, Pack 1's U-01): its footprint from the aerial roof less the lean of a 20 m block */
 export const WU = { x0: 2144, x1: 2170, z0: -1240, z1: -1214, floors: 6 };
 
-/** the long low block between the hard courts and the four-storey blocks (aerial: a light grey metal roof; IMG_9677j 8 s);
- *  its east end kept clear of the walkway along the pitch */
-export const GREY = { x0: 2149, x1: 2194, z0: -1115.7, z1: -1101.5, floors: 2 };
+/** the long low block between the hard courts and the four-storey group (aerial: a light grey metal roof, its full length;
+ *  IMG_9677j 8 s), its south face kept clear of the mapped lane south of it */
+export const GREY = { x0: 2149, x1: 2215, z0: -1115.7, z1: -1101.2, floors: 2 };
 
 /** the slate-roofed four-storey block at the west of the four-storey group (aerial; IMG_9677 44-48 s) */
-export const SLATE = { x0: 2139.7, x1: 2163, z0: -1075, z1: -1041, floors: 4 };
+export const SLATE = { x0: 2141, x1: 2163, z0: -1077, z1: -1043, floors: 4 };
 
 /** the round fountain in the four-storey group's courtyard (IMG_9677j 4 s) */
-export const FOUNTAIN = { x: 2190, z: -1051, r: 3 };
+export const FOUNTAIN = { x: 2181, z: -1062, r: 3 };
 
 /** the campus as the aerial shows it, for the generic blocks' UPSA finish: the mapped outline (osm:way/309660062) taken out
  *  west to the campus wall and north round the Astro Turf and the PCU building */
@@ -65,14 +66,13 @@ export const UPSA_LAND: [number, number][] = [
   [2430.5, -938.3], [2399.2, -938.7], [2397.2, -894.4],
 ];
 
-/** per-building finishes inside UPSA_LAND that the clips show (a point inside the outline): the four-storey group's roofs
- *  (IMG_9677 44-48 s: a red pitched roof, a green flat roof, a tan flat roof), the small hipped house by the tower court
- *  (IMG_9677 34 s) */
-export const UPSA_FINISH: { at: [number, number]; roof?: string; hip?: boolean; storeys?: number; plain?: boolean }[] = [
-  { at: [2199, -1087], roof: '#b0503f', hip: true, storeys: 4 },
-  { at: [2191.6, -1071], roof: '#d6d5cf', storeys: 4 },
-  { at: [2190.6, -1031.7], roof: '#7d9c78', storeys: 4 },
-  { at: [2203.7, -1011], roof: '#c8a27c', storeys: 4 },
-  { at: [2226, -1050], storeys: 4 },
+/** per-building finishes inside UPSA_LAND that the clips show (a point inside the outline): the four-storey group (IMG_9677
+ *  40-50 s, IMG_9677j 0-6 s: white blocks with open galleries and railings, a red pitched roof, a green flat roof, a tan
+ *  flat roof, the diagonal wing), the small hipped house by the tower court (IMG_9677 34 s) */
+export const UPSA_FINISH: { at: [number, number]; roof?: string; hip?: boolean; storeys?: number; plain?: boolean; gallery?: boolean }[] = [
+  { at: [2176, -1084], roof: '#b0503f', hip: true, storeys: 4, gallery: true },
+  { at: [2175, -1037], roof: '#7d9c78', storeys: 4, gallery: true },
+  { at: [2186, -1013], roof: '#c8a27c', storeys: 4, gallery: true },
+  { at: [2226, -1050], storeys: 4, gallery: true },
   { at: [2185.3, -936.5], roof: '#9a4a3a', hip: true, storeys: 1, plain: true },
 ];

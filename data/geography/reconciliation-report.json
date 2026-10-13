@@ -83,7 +83,7 @@
    "added": 106,
    "extended": 1
   },
-  "junctions": 1277,
+  "junctions": 1276,
   "roundabouts": 18,
   "count": 1665,
   "kmByClass": {
@@ -104,13 +104,13 @@
   "fromSupplement": 414
  },
  "buildings": {
-  "total": 3145,
+  "total": 3144,
   "onCampus": 1759,
   "bySource": {
    "osm": 1604,
    "osm-via-overture": 930,
    "osm-via-overture-upsa": 303,
-   "microsoft-ml-buildings": 163,
+   "microsoft-ml-buildings": 162,
    "google-open-buildings": 145
   },
   "osmOnCampusChecked": 1468,
@@ -128,9 +128,9 @@
    "lowConfidence": 58,
    "overlapsOsm": 4
   },
-  "mlUpsa": 17,
+  "mlUpsa": 16,
   "byCategory": {
-   "unknown": 2641,
+   "unknown": 2640,
    "housing": 291,
    "academic": 103,
    "residence": 75,
@@ -141,7 +141,7 @@
    "health": 2
   },
   "byConfidence": {
-   "medium": 1817,
+   "medium": 1816,
    "high": 1328
   },
   "osmNotSeenBySatellite": [
@@ -380,7 +380,9 @@
    "ml:a9c261f6-ac2b-453a-84a8-77f154bbe794",
    "osm:way/1009392429",
    "ml:d2d5f0f0-bc7d-4ec9-aa07-7e641de9921b",
-   "osm:way/626139046"
+   "osm:way/626139046",
+   "osm:way/394252218",
+   "osm:way/1009392428"
   ]
  },
  "areas": {

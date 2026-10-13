@@ -94,3 +94,46 @@ Labels: [VERIFIED] [DECISION] [ASSUMPTION] [INCOMPLETE].
 
 Comparison sheets: `sheet-top.jpg` (the aerial, the game before, the game after) and `sheet-views.jpg` (six clip frames
 against the game from about the same viewpoints; the camera positions are approximate).
+
+## Batch 129: layout and facade corrections (the owner: "check and make correction to the upsa building layout and facade")
+
+Every outline was checked again on the aerial, enlarged with a 10 m grid (`sheet-corrections.jpg`, `sheet-corrections-views.jpg`).
+
+**The towers.**
+- *Finding.* The map has two parallel slabs north of IPS Road, 18 m apart: osm:way/885510985 (south) and
+  osm:way/885510984 (north), with the small osm:way/1009392391 at the north one's west end. The aerial shows two towers
+  there, each with its own roof and plant. The game drew both blocks side by side on the south slab, and the north slab
+  as a generic four-storey block.
+- *Correction.* Two ten-storey blocks, one on each slab, with glazed bridges over five levels between them. The
+  bridges' spot along the gap is an estimate. The blue curtain wall covers the west part of the south block's road face
+  and turns its west corner. The LED screen stands at its south-east corner.
+- *Names.* The university's name runs along the south block's roof edge (IMG_9677 16-38 s). The towers' name sits on a
+  raised frame on the north block (RW10, RW11).
+- *Conflict 2 above.* Settled without moving any outline.
+
+**The four-storey group.**
+- *Finding.* Its OSM outlines lay 17-25 m east of the roofs.
+- *Correction.* Reshaped on the aerial in `corrections.json`:
+  - the red-roofed north block, osm:way/1009392437;
+  - the green-roofed south block with its gallery wing, osm:way/394252216;
+  - the long tan-roofed block, osm:way/394252217.
+- *Excluded.* osm:way/394252218, which lay on the courtyard's lawn.
+- *Moved.* The slate block (x 2141-2163, z -1077..-1043) and the fountain (2181, -1062) moved to the aerial's
+  positions.
+- *Facade.* White with open galleries and railings, doors and blue windows set back in their shade (IMG_9677 40-50 s),
+  instead of plain blue windows.
+
+**The stand and the grey-roofed block.**
+- *Finding.* The mapped service way osm:way/1009392428 ran through the stand's seats and the grey-roofed block. With
+  the road across the pitch gone, it was a dead end.
+- *Correction.* The way is excluded. The stand stands against the courts' fence (x 2190.5-2201.4) with the walk
+  between it and the pitch fence, as in the aerial. The grey-roofed block has its full length (x 2149-2215).
+
+**Left as they are.**
+- *KOKA.* The aerial shows a facade strip north of its roof, which may mean a lean of about 13 m. Its outline was not
+  moved on that alone.
+- *The small hipped house by the tower court.* Its roof is about 13 m west of its outline, but moving it would put it
+  on the mapped road loop round it.
+
+Route lengths identical, access unchanged. The route tests, the build and the smoke ride pass.
+
