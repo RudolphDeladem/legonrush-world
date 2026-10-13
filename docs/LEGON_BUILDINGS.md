@@ -3715,7 +3715,7 @@ Route lengths are identical and access is unchanged.
 - The unnamed blocks.
 - The bush west of the wall (next).
 
-**Not on `main`** until the owner approves; the UPSA packs ask for that.
+Published to `main` on the owner's word (2026-10-13).
 
 ## UPSA planting: the bush west of the wall and the campus's shade trees (from the owner's aerial)
 
@@ -3734,4 +3734,4 @@ the car-park bays and the models' pitch and courts. That is mostly round the qua
 *Assumed.* Every plant's height and trunk. *Incomplete.* The bush continues west beyond the aerial's edge; nothing is
 drawn past it.
 
-Route lengths are identical; the route tests, the build and the smoke ride pass. **Not on `main`** until the owner approves.
+Route lengths are identical; the route tests, the build and the smoke ride pass. Published to `main` on the owner's word (2026-10-13).

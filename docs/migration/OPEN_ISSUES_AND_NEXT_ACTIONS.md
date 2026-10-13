@@ -55,12 +55,11 @@ Loading rebuilt (background build, compacted geometry, freed CPU copies, phone t
 `docs/LEGON_BUILDINGS.md`. Open: confirm on a real phone and laptop; the pit by the pavement (Picture 7) was not located,
 a wider screenshot is needed.
 
-## 0d. Update 2026-10-13 (batch 127, UPSA campus; working branch only)
+## 0d. Update 2026-10-13 (batches 127, 128, UPSA campus; published on the owner's word)
 
-The UPSA campus's second layer (`docs/upsa-campus/evidence-ledger.md`). **Not on `main`**: the owner's UPSA packs ask
-for no push to `main` without approval. Open for the owner: approval to publish; the towers' footprint (the aerial shows
+The UPSA campus's second layer (`docs/upsa-campus/evidence-ledger.md`). Published to `main` on the owner's word. Open for the owner: the towers' footprint (the aerial shows
 two larger blocks west of the confirmed outline); Ewuntoma Medical Centre and the CIMG building's positions; the names of
-the six-storey block and the four-storey group; the stand's roof. Batch 128 added the bush west of the wall and the campus's shade trees from the aerial (also branch only). Next: paved
+the six-storey block and the four-storey group; the stand's roof. Batch 128 added the bush west of the wall and the campus's shade trees from the aerial . Next: paved
 walks and drains along the Astro Turf and between the blocks (the owner's photos).
 
 ## 1. Awaiting the owner (decisions, as of 2026-10-11)
