@@ -77,8 +77,11 @@ export interface GhostRun {
 }
 const GHOST_STEP = 0.1;
 export type Vehicle = 'bike' | 'walk' | 'taxi' | 'shuttle';
-/** the rider's camera views (Game.camView): distance and height multipliers on the chase camera */
-const VIEWS: [number, number][] = [[1, 1], [1.7, 1.9], [0.55, 0.5]];
+/** the rider's camera views (Game.camView): distance and height multipliers on the chase camera; the last is the
+ *  fly-over (FLY_OVER), placed by its own rule */
+const VIEWS: [number, number][] = [[1, 1], [1.7, 1.9], [0.55, 0.5], [1, 1]];
+/** the fly-over view: the camera high above and a little behind the bike, looking down on it as it moves */
+const FLY_OVER = 3, FLY_HEIGHT = 30, FLY_BACK = 11;
 /** extra camera distance and height for each way of travelling */
 const VEHICLE_CAM: Record<Vehicle, [number, number]> = { bike: [0, 0], walk: [-1.6, -0.6], taxi: [2, 0.6], shuttle: [4, 1.6] };
 /** bike paints for the riders beside you */
@@ -998,7 +1001,7 @@ export class Game {
   look = { x: 0, y: 0 };
   /** held: the camera looks back past the rider (the bike keeps its heading) */
   lookBehind = false;
-  /** the chase camera's distance: 0 normal, 1 far and high, 2 close and low */
+  /** the camera view: 0 the normal chase, 1 far and high, 2 close and low, 3 the fly-over from above */
   camView = 0;
   private lookYaw = 0;
   private lookPitch = 0;
@@ -1046,6 +1049,21 @@ export class Game {
     target.y = Math.max(target.y, groundHeight(target.x, target.z) + 0.6);
     const ax = at.x - c.x, az = at.z - c.z;
     at.set(c.x + ax * cs + az * sn, at.y - this.lookPitch * 3, c.z - ax * sn + az * cs);
+  }
+
+  /** the fly-over view: the camera FLY_HEIGHT above the ground and FLY_BACK behind the bike along its heading (fx, fz),
+   *  looking down at a point a little ahead of it; the right stick still turns the view round the bike */
+  private flyOver(dt: number, fx: number, fz: number) {
+    const cam = this.camera, r = this.rider.root.position;
+    this.updateLook(dt);
+    const cs = Math.cos(this.lookYaw), sn = Math.sin(this.lookYaw), bx = -fx * cs - fz * sn, bz = fx * sn - fz * cs;
+    this.camTarget.set(r.x + bx * FLY_BACK, Math.max(r.y, groundHeight(r.x, r.z)) + FLY_HEIGHT + this.lookPitch * 8, r.z + bz * FLY_BACK);
+    if (this.snapCam) { cam.position.copy(this.camTarget); this.snapCam = false; }
+    cam.position.lerp(this.camTarget, Math.min(1, dt * 3));
+    cam.lookAt(r.x - bx * 4, r.y + 0.5, r.z - bz * 4);
+    const fov = innerWidth < innerHeight ? 66 : 54;
+    cam.fov += (fov - cam.fov) * Math.min(1, dt * 3);
+    cam.updateProjectionMatrix();
   }
 
   /**
@@ -2081,6 +2099,8 @@ export class Game {
       const fov = innerWidth < innerHeight ? 66 : 52;
       cam.fov += (fov - cam.fov) * Math.min(1, dt * 3);
       cam.updateProjectionMatrix();
+    } else if (this.free && this.camView === FLY_OVER) {
+      this.flyOver(dt, -Math.sin(this.free.yaw), -Math.cos(this.free.yaw));
     } else if (this.free) {
       // free ride: the chase camera sits behind the bike wherever it heads
       const f = this.free, fx = -Math.sin(f.yaw), fz = -Math.cos(f.yaw);
@@ -2100,6 +2120,10 @@ export class Game {
       const fov = (innerWidth < innerHeight ? 72 : 60) + f.v * 0.25;
       cam.fov += (fov - cam.fov) * Math.min(1, dt * 4);
       cam.updateProjectionMatrix();
+    } else if (this.camView === FLY_OVER && this.phase !== 'showcase') {
+      // a guided ride or a race seen from above: the heading along the route
+      const p0 = this.pose(this.d), p1 = this.pose(this.d + 6), L = Math.hypot(p1.x - p0.x, p1.z - p0.z) || 1;
+      this.flyOver(dt, (p1.x - p0.x) / L, (p1.z - p0.z) / L);
     } else if (this.phase === 'showcase' && this.bikeView) {
       this.garageCamera(this.bikeView, dt);
     } else if (this.phase === 'showcase') {

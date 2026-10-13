@@ -32,6 +32,7 @@ import * as fx from './features';
 import * as money from './features/money-ui';
 import * as vb from './features/vibe';
 import { tabView, type TabId } from './tabs/registry';
+import { openRideMap, type RideMap } from './features/map/ridemap';
 // Garage & Store: bike looks and the stats rides use
 import * as garage from './features/garage/garage';
 import { openStore, setGarageView } from './tabs/garage';
@@ -1135,8 +1136,13 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     if (tutStage === 'free' && !helmetTipShown && route.kind !== 'explore' && h.distance > h.routeLength * 0.45) helmetTip(false);
   };
   let lastCoins = 0;
+  /** where the rider was at the last HUD update (for the full-screen map) */
+  let lastSpot = { x: route.from.x, z: route.from.z, yaw: 0 };
+  /** the full-screen map over the paused ride, while it is open */
+  let rideMap: RideMap | null = null;
 
   game.onHud = (h: HudState) => {
+    lastSpot = { x: h.pos[0], z: h.pos[1], yaw: h.yaw };
     missionTick?.(h);
     opts.eventPlay?.hud(h);
     challengeTick?.(h);
@@ -1307,6 +1313,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
         <h2 class="title">Paused</h2>
         <button class="btn btn-primary" data-p="continue">Continue</button>
         ${lr || opts.challengeRide ? '' : '<button class="btn btn-ghost" data-p="restart">Restart</button>'}
+        <button class="btn btn-ghost" data-p="map">${icons.map} View map</button>
         ${lr ? '' : `<button class="btn btn-ghost" data-p="photo">${icons.camera} Photo mode</button>`}
         <button class="btn btn-ghost" data-p="sound">Sound: ${settings.sound ? 'On' : 'Off'}</button>
         ${speedy ? `<button class="btn btn-ghost" data-p="speed">Bike speed: ${settings.rideSpeed === 'faster' ? 'Faster' : 'Normal'}</button>` : ''}
@@ -1326,6 +1333,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
       }
       if (p === 'exit') { cleanup(); leave(); }
       if (p === 'photo') photoMode();
+      if (p === 'map') viewMap(ov);
       if (p === 'pad') padPanel(ov);
       if (p === 'speed') { setRideSpeed(settings.rideSpeed === 'faster' ? 'normal' : 'faster'); b.textContent = `Bike speed: ${settings.rideSpeed === 'faster' ? 'Faster' : 'Normal'}`; }
     }));
@@ -1379,6 +1387,25 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     };
     draw();
   };
+  // the campus map full screen over the paused ride; closing it comes back to the pause menu, the ride where it was
+  const viewMap = (ov: HTMLElement) => {
+    if (rideMap) return;
+    ov.hidden = true;
+    const close = () => rideMap?.close();
+    rideMap = openRideMap(app, {
+      you: lastSpot,
+      route: route.track.outline(6),
+      dest: route.kind === 'race' ? undefined : { x: route.to.x, z: route.to.z, name: route.to.name.split(' (')[0] },
+      onClose: () => {
+        rideMap = null;
+        if (!ov.isConnected || !game.paused) return;
+        ov.hidden = false;
+        ov.querySelector<HTMLElement>('[data-p="map"]')?.focus();
+        onBack(resume);
+      },
+    });
+    onBack(close);
+  };
   // photo mode: drag to turn the camera around your rider, then save the picture
   const photoMode = () => {
     app.querySelector('#pauseOverlay')?.remove();
@@ -1411,6 +1438,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     });
   };
   const resume = () => {
+    rideMap?.close();
     game.paused = false;
     music(true);
     startAmbience(ambience());
@@ -1505,13 +1533,23 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     if (pad.capturing) return;
     // photo mode: the right stick turns the camera round the rider
     if (game.photoMode) { if (f.rx || f.ry) game.orbitPhoto((padSettings.invertX ? -1 : 1) * f.rx * 900 * dt, (padSettings.invertY ? -1 : 1) * f.ry * 600 * dt); return; }
+    // the full-screen map: the left stick moves it, the triggers zoom, the recenter button finds the rider again;
+    // Options, the map button or Circle closes it (back to the pause menu)
+    if (rideMap) {
+      releasePad();
+      if (f.actPressed('pause') || f.actPressed('map') || f.actPressed('recover')) { rideMap.close(); return; }
+      if (Math.abs(f.lx) > 0.15 || Math.abs(f.ly) > 0.15) rideMap.pan(f.lx * 600 * dt, f.ly * 600 * dt);
+      if (f.r2 > 0.1 || f.l2 > 0.1) rideMap.zoom(Math.pow(1.9, (f.r2 - f.l2) * dt * 2));
+      if (f.actPressed('recenter')) rideMap.recenter();
+      return;
+    }
     if (f.actPressed('pause') && game.isRiding) { releasePad(); togglePause(); return; }
     if (!game.isRiding || game.paused || app.querySelector('#pauseOverlay')) { releasePad(); return; }
     // the camera, in every kind of ride
     game.look.x = (padSettings.invertX ? -1 : 1) * f.rx * padSettings.look;
     game.look.y = (padSettings.invertY ? -1 : 1) * f.ry * padSettings.look;
     game.lookBehind = f.act('lookBack');
-    if (f.actPressed('camera')) { const v = game.cycleCamera(); flash('CAMERA', ['Chase view', 'Far view', 'Close view'][v], 900); }
+    if (f.actPressed('camera')) { const v = game.cycleCamera(); flash('CAMERA', ['Chase view', 'Far view', 'Close view', 'Fly-over view'][v], 900); }
     if (f.actPressed('recenter')) game.recenterCamera();
     if (f.actPressed('bell') && performance.now() / 1000 - bellAt > 0.35) { bellAt = performance.now() / 1000; sfx.bell(); }
     if (f.actPressed('map') && minimapEl) minimapEl.classList.toggle('big');
@@ -1552,6 +1590,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
   document.addEventListener('visibilitychange', onHidden);
 
   function cleanup() {
+    rideMap?.close();
     // Map tab: the You marker starts where this ride ended
     rememberRidePos(game.riderXZ, settings.campus);
     app.classList.remove('photo-on');

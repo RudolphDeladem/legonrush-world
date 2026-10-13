@@ -2326,7 +2326,7 @@ Triangle, A/B/X/Y, or position names such as "Bottom button" for an unknown pad)
 | R2 / RT | pedal, analog: a part press rides slower | pedal | — |
 | L2 / LT | brake, as hard as pressed; held at a standstill, reverse after the reverse delay | brake (bikes with brakes) | — |
 | Right stick | look around; eases back behind when let go | look around | look around |
-| Triangle / Y | camera view: chase, far, close | same | same |
+| Triangle / Y | camera view: chase, far, close, fly-over (from above, following the bike) | same | same |
 | Circle / B | held: back on the nearest road, facing along it | — | back in menus |
 | Square / X | bell | bell | bell |
 | Cross / A | confirm in menus | jump | continue / choose |
@@ -3521,3 +3521,16 @@ the median's kerbed ground, the verges, the junction and the neighbourhood's oth
 *Assumed*: every height, setback and unmapped span; the median plants' places; the mast's spot from four views'
 bearings. *Would settle it*: a measured section of the stadium-side banks; the plots' boundaries; a clearer crop of the
 forecourt sign of Pair 8.
+
+## In-ride map and the fly-over camera (owner)
+
+**View map** (pause menu): the campus map full screen over the paused ride (`src/features/map/ridemap.ts`, the same map
+as the Map tab): where the rider is and which way they face (the yellow arrow), the ride's route in blue and its
+destination's red pin (not in races). Drag, pinch, the wheel or the + and - buttons look around; the locate button comes
+back to the rider. "Back to ride", Escape or M close it and return to the pause menu with the ride exactly where it was
+(Continue then carries on; nothing is restarted). With a controller: the left stick moves the map, R2 and L2 zoom, R3
+finds the rider, Options, Create or Circle close it. Nothing on the map starts another ride.
+
+**Fly-over camera**: Triangle / Y now cycles chase, far, close and fly-over. The fly-over hangs about 30 m above the
+ground and 11 m behind the bike, looking down on it as it moves and turning with its heading, in free rides, guided
+rides and races; the right stick still turns it round the bike.
