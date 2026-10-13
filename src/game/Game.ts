@@ -552,7 +552,7 @@ export class Game {
   }
 
   /**
-   * Every buffer of the campus sent to the GPU now, part by part, in a tiny off-screen draw (no culling): their JavaScript
+   * Every buffer of the campus sent to the GPU now, part by part, in an empty off-screen draw (no culling): their JavaScript
    * copies are then dropped (memory.ts freeAfterUpload) instead of staying until each part first comes into view.
    */
   private async uploadAll(roots: THREE.Object3D[]) {
@@ -563,7 +563,12 @@ export class Game {
     const parents: THREE.Object3D[] = [];
     for (const root of roots) root.traverse((o) => { if (!(o as THREE.Mesh).isMesh) parents.push(o); });
     const parentVis = parents.map((o) => o.visible);
+    // each draw is empty (a draw range of nothing): the buffers and programs are set up all the same, but no vertex is
+    // shaded (drawing the whole campus once cost minutes on software renderers)
+    const ranges = new Map<THREE.BufferGeometry, number>();
+    for (const [m] of meshes) if (!ranges.has(m.geometry)) ranges.set(m.geometry, m.geometry.drawRange.count);
     try {
+      for (const g of ranges.keys()) g.drawRange.count = 0;
       fog.far = 1e9;
       for (const [c] of keep) c.visible = false;
       for (const o of parents) o.visible = true;
@@ -585,6 +590,7 @@ export class Game {
       for (const [c, v] of keep) c.visible = v;
       parents.forEach((o, i) => { o.visible = parentVis[i]; });
       for (const [m, fc, v] of meshes) { m.frustumCulled = fc; m.visible = v; }
+      for (const [g, c] of ranges) g.drawRange.count = c;
       fog.far = far;
       rt.dispose();
     }

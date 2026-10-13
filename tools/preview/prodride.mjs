@@ -7,7 +7,7 @@ page.on('pageerror', (e) => console.log('PAGEERROR', e.message));
 await page.addInitScript(() => { window.__long = []; new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__long.push(Math.round(e.duration)); }).observe({ type: 'longtask', buffered: true }); });
 const t0 = Date.now(), at = (s) => console.log(s, ((Date.now() - t0) / 1000).toFixed(1), 's');
 await page.goto(url);
-await page.click('#guest', { timeout: 120000 }); at('menu / guest clicked'); await page.waitForTimeout(20000); await page.screenshot({ path: process.env.SHOT ?? '/dev/null' }); console.log('bar', await page.evaluate(() => document.querySelector('.splash-bar div')?.style.width));
+await page.click('#guest', { timeout: 120000 }); at('menu / guest clicked'); await page.waitForTimeout(20000); if (process.env.SHOT) await page.screenshot({ path: process.env.SHOT }); console.log('bar', await page.evaluate(() => document.querySelector('.splash-bar div')?.style.width));
 await page.waitForFunction(() => performance.getEntriesByName('legonrush:world-ready').length, null, { timeout: 900000, polling: 500 }); at('world ready');
 console.log(await page.evaluate(() => 'longest tasks so far ms: ' + window.__long.slice().sort((a, b) => b - a).slice(0, 8).join(', ')));
 await page.waitForSelector('#dist', { timeout: 900000 }); at('ride on screen');

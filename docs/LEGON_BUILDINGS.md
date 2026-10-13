@@ -3655,9 +3655,9 @@ heap. Now (`Game.buildWorld`, `world.buildCampusAsync`, `memory.ts`, `lite.ts`):
   ground mask's resolution).
 
 Measured in the headless software renderer (much slower than a real GPU; `tools/preview/load.mjs`, `prodride.mjs`,
-`texlist.mjs`): the menu at about 4 s, the campus built and uploaded at about 45-50 s with the page answering between
-slices (longest single task about 5 s; before, one task of about 60 s before anything showed). The software renderer's
-GPU work lands wherever the page next composites, so its timings after "ready" do not stand for a real GPU.
+`texlist.mjs`): the production build shows the menu at about 5 s and has the campus built and uploaded at about 35 s, the
+page answering between slices (longest single task about 2 s; before, one task of about 60 s before anything showed).
+The upload draws are empty (a zero draw range: buffers and programs set up, no vertex shaded).
 [INCOMPLETE] not measured on a real phone or laptop: the owner's check is needed.
 
 **The tilted block (Pictures 5, 6).** A generic block behind Volta Hall, north-west, facing Commonwealth Hall, stood on
