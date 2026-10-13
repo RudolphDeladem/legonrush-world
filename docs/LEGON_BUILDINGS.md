@@ -3534,3 +3534,59 @@ finds the rider, Options, Create or Circle close it. Nothing on the map starts a
 **Fly-over camera**: Triangle / Y now cycles chase, far, close and fly-over. The fly-over hangs about 30 m above the
 ground and 11 m behind the bike, looking down on it as it moves and turning with its heading, in free rides, guided
 rides and races; the right stick still turns it round the bike.
+
+## Legon overhead to Okponglo: the owner's correction brief (Pairs 1-16, A01-A04, M01)
+
+The evidence, the registration, the comparison images and the open questions are in
+`docs/legon-first-total/evidence-audit.md`. The code is in `legonfirst.ts`, the numbers in `lfplan.ts`, the raised plot,
+the retaining wall's ground and the east scrub's rise in `relief.ts` (`lfZones`), and the cameras `lf*` in `lfviews.ts`.
+
+**The trading corner and the kiosk line (Pairs 1-3).** The curved kerb and brick corner at the side lane's mouth with
+its short striped posts; umbrellas, canopy stalls and kiosks on bare red earth; the long low shelter on its outline; the
+tall narrow board. The police compound north of the lane stays as `roadside.ts` built it.
+
+**The Legon 1st frame (Pair 4).** The tall dark open frame with the small name panel, over a rough open plot.
+
+**The TotalEnergies station (Pairs 5-8, 10).** One group: the low grey takeaway building with CHICKEN MAN, pinkberry and
+DRIVE THRU and its air-conditioning units; the open red-trimmed canopy over two pump islands; the service strip's open
+bays; the access with its grass islands, striped posts, no-entry discs, STOP, the price pylon and the restaurant pylons.
+Family Health stays on its outline.
+
+**The raised plot (Pairs 9, 15, 16).** The stained wall holding the plot about a metre up, tapering at the access; the
+small white building with the peeling red fascia, the unfinished frame, the empty blue billboard skeleton, the red frame,
+the railing and white posts.
+
+**The corridor (Pairs 11-14).** The low concrete divider; the grass strip and its lamps; the long panelled retaining wall
+with the wooded ground over it, stepping down in two tiers under the two small red-roof structures; the dense scrub and
+the lattice tower on the east; the planted separation of short-stemmed young trees and shrubs.
+
+*Assumed*: every height, setback and unmapped span; the stalls' and plants' places; the wall's and the tiers' heights
+from Pairs 11, 14 and 16. *Would settle it*: a measured section of the retaining wall; the station's site plan.
+
+## The ECG area: the owner's correction brief (Pairs 1-18, A01-A03, M01)
+
+The evidence, the registration, the comparison images and the open questions are in `docs/ecg-area/evidence-audit.md`.
+The code is in `ecg.ts`, the numbers in `ecgplan.ts`, and the cameras `ec*` in `ecgviews.ts`.
+
+**The ECG office (Pairs 4, 12, 13).** One building on outline 317: the four-storey white slab with its narrow dark glazed
+recess and ECG marks, the lower broad blue-glass wing north of it with its rounded end and pale fascia; the frontage wall,
+the planting, the ECG GOES CASHLESS board; the two halls under yellow-green curved roofs behind (849, 850).
+
+**The guesthouse (Pair 14).** The white hall under the grey gable with the blue-glazed bay, the lower brown-roofed west
+part, the green-roofed entrance huts, the blue sign, the tank stand.
+
+**The Ghana Water compound (Pairs 2, 6, 9-11, 18).** The blue wall and fence open at the access lane, the gate posts and
+open leaves, the blue-roofed guardhouse, the stepped white office with its cap, the canopy, the court, the striped posts,
+the lattice tower and the red and white mast, the banana plants and palms.
+
+**The low cream building and the yard (Pairs 3, 5).** The red hipped roof, moved 3.4 m east off the service road's kerb
+(estimated); the black picket fence and the utility yard.
+
+**The highway (Pairs 1, 3, 4, 7, 8).** The low divider dropping toward the cutting, the planted separation, the 50 signs,
+the utility corridor with its H-frames and towers.
+
+**The trading frontage (Pairs 15-17).** Twelve stalls of five kinds on bare earth, the slab footway and drain, the pole
+with its board, the rocks.
+
+*Assumed*: every height and unmapped span; the slab as the Ghana Water views' taller block (inferred); the slab and wing
+split; the second hut; illegible sign lines left as bands. *Would settle it*: the ECG and Ghana Water site plans.

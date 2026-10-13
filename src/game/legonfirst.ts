@@ -18,6 +18,7 @@
 import * as THREE from 'three';
 import { createSite, render, type Spec, type Style } from './blocks';
 import { box, merge, type Part } from './modelkit';
+import { NODE_XZ, ROADS } from './campusmap';
 import { SOLIDS } from './solids';
 import { Bag, hash, tuft, vnoise, wallSolids } from './enkit';
 import { broadleaf } from './nsiaroad';
@@ -28,9 +29,32 @@ import { concrete } from './concrete';
 import { Pics, board, compactTree, pic, shrub, text, win } from './okponglo';
 import { brick, divider, edges, hFrame, kerbLine, offLine, postBoard, ribbon, sane, spans, stall, streetLight, stripedPost, utilityPole } from './roadkit';
 import {
-  CORNER, CORNER_SHOPS, DIVIDER, EAST_SCRUB, ESVC, LEGON1ST, LF_KEEP, N4_HALF, NB, OPEN_OUTLINES, PLANTED, PLOT, POLE_BOARD, RWALL, SB, SHELTER,
-  SIDE_LANE_Z, STALLS, STATION, SVC_HALF, TALL_BOARD, TIER_HOUSES, TOWERS, WSVC, eastEdge, eastKerb, westKerb, xAt, type Box, type P2,
+  CORNER, DIVIDER, EAST_SCRUB, ESVC, LEGON1ST, LF_KEEP, N4_HALF, NB, OPEN_OUTLINES, PLANTED, PLOT, POLE_BOARD, RWALL, SB, SHELTER,
+  SIDE_LANE_Z, STALLS, STATION, SVC_HALF, TALL_BOARD, TIER_HOUSES, TOWERS, WSVC, eastEdge, tierBack, eastKerb, westKerb, xAt, type Box, type P2,
 } from './lfplan';
+
+/** the mapped roads and paths near this work (their half widths), so plants, posts and walls keep off them */
+const SEGS: [number, number, number, number, number][] = [];
+for (const r of ROADS) for (let i = 0; i < r.nodes.length - 1; i++) {
+  const ax = NODE_XZ[r.nodes[i] * 2], az = NODE_XZ[r.nodes[i] * 2 + 1], bx = NODE_XZ[r.nodes[i + 1] * 2], bz = NODE_XZ[r.nodes[i + 1] * 2 + 1];
+  if (Math.max(ax, bx) < 760 || Math.min(ax, bx) > 1010 || Math.max(az, bz) < 130 || Math.min(az, bz) > 880) continue;
+  SEGS.push([ax, az, bx, bz, [9, 7.4, 6.2, 4.6, 2.6][r.cls] / 2]);
+}
+const nearRoad = (x: number, z: number, pad: number) => SEGS.some(([ax, az, bx, bz, h]) => {
+  const dx = bx - ax, dz = bz - az, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz || 1)));
+  return Math.hypot(ax + dx * t - x, az + dz * t - z) < h + pad;
+});
+/** the stretches of a west-east line at z between x0 and x1 that keep clear of the mapped roads (a wall left open where
+ *  a road passes through it) */
+const clearRuns = (x0: number, x1: number, z: number, pad: number) => {
+  const out: [number, number][] = []; let a = NaN;
+  for (let x = x0; x <= x1 + 1e-6; x += 0.25) {
+    const ok = !nearRoad(x, z, pad);
+    if (ok && Number.isNaN(a)) a = x;
+    if ((!ok || x + 0.25 > x1 + 1e-6) && !Number.isNaN(a)) { const b = ok ? x : x - 0.25; if (b - a > 0.6) out.push([a, b]); a = NaN; }
+  }
+  return out;
+};
 
 const drapeMesh = (g: THREE.BufferGeometry) => Object.assign(new THREE.Mesh(g, groundCover()), { receiveShadow: true, userData: { noCollide: true } });
 const st = (bay: number, draw: (g: CanvasRenderingContext2D) => void): Style => ({ bay, up: [], ground: [], draw });
@@ -118,7 +142,7 @@ const STAINED = () => pic('lfStained', 256, 64, (g) => {
 const NO: P2 = [840, 260];
 const corner: Spec = {
   name: 'Legon First trading corner', axis: [1, 0], origin: NO, storey: 3, style: PLAIN, roofColor: '#888', fascia: '#888', pitch: 0.2,
-  replaces: CORNER_SHOPS.map((s) => [(s.box[0] + s.box[1]) / 2, (s.box[2] + s.box[3]) / 2] as P2).concat([[(SHELTER[0] + SHELTER[1]) / 2, (SHELTER[2] + SHELTER[3]) / 2]]),
+  replaces: [[(SHELTER[0] + SHELTER[1]) / 2, (SHELTER[2] + SHELTER[3]) / 2]],
   blocks: [], keep: [], onGround: true,
   extras: (k) => {
     const c: Part[] = [], leaf: Part[] = [], wood: Part[] = [], b = new Bag(NO), P = new Pics(NO);
@@ -166,11 +190,13 @@ const corner: Spec = {
       const [x0, x1, z0, z1] = SHELTER, y = gh((x0 + x1) / 2, (z0 + z1) / 2), h = 2.7;
       const g = new THREE.BoxGeometry(x1 - x0 + 1.2, 0.1, z1 - z0 + 0.6).rotateZ(-0.05).translate((x0 + x1) / 2 - NO[0], y + h + 0.15, (z0 + z1) / 2 - NO[1]);
       c.push([g, '#8f969a']);
-      for (let z = z0 + 0.4; z <= z1 - 0.3; z += 3.2) for (const x of [x0 + 0.3, x1 - 0.3]) { c.push([box(x - 0.06 - NO[0], x + 0.06 - NO[0], y, y + h, z - 0.06 - NO[1], z + 0.06 - NO[1]), '#5f6366']); SOLIDS.add(x, z, 0.14); }
+      for (let z = z0 + 0.4; z <= z1 - 0.3; z += 3.2) for (const x of [x0 + 0.3, x1 - 0.3]) { if (nearRoad(x, z, 0.2)) continue; c.push([box(x - 0.06 - NO[0], x + 0.06 - NO[0], y, y + h, z - 0.06 - NO[1], z + 0.06 - NO[1]), '#5f6366']); SOLIDS.add(x, z, 0.14); }
       // grilles along the back and the ends, open to the road
-      for (let z = z0 + 0.4; z < z1 - 0.3; z += 0.35) c.push([box(x1 - 0.32 - NO[0], x1 - 0.28 - NO[0], y + 0.3, y + 2.3, z - 0.02 - NO[1], z + 0.02 - NO[1]), '#3e4144']);
-      c.push([box(x1 - 0.35 - NO[0], x1 - 0.25 - NO[0], y + 2.3, y + 2.4, z0 - NO[1], z1 - NO[1]), '#3e4144']);
-      wallSolids(x1 - 0.3, z0 + 0.4, x1 - 0.3, z1 - 0.4, 0.2);
+      // (the grille stops short where the back lane's end meets the shelter's corner, so the lane stays open)
+      let gz0 = z0 + 0.4, gz1 = z1 - 0.4; while (gz0 < z1 - 1 && nearRoad(x1 - 0.3, gz0, 0.3)) gz0 += 0.35; while (gz1 > gz0 + 1 && nearRoad(x1 - 0.3, gz1, 0.3)) gz1 -= 0.35;
+      for (let z = gz0; z < gz1; z += 0.35) c.push([box(x1 - 0.32 - NO[0], x1 - 0.28 - NO[0], y + 0.3, y + 2.3, z - 0.02 - NO[1], z + 0.02 - NO[1]), '#3e4144']);
+      c.push([box(x1 - 0.35 - NO[0], x1 - 0.25 - NO[0], y + 2.3, y + 2.4, gz0 - NO[1], gz1 - NO[1]), '#3e4144']);
+      wallSolids(x1 - 0.3, gz0, x1 - 0.3, gz1, 0.2);
       // counters inside
       for (let z = z0 + 2; z < z1 - 2; z += 5) c.push([box(x0 + 1.2 - NO[0], x0 + 2.2 - NO[0], y, y + 0.9, z - NO[1], z + 2.6 - NO[1]), '#8a6a48']);
     }
@@ -184,18 +210,9 @@ const corner: Spec = {
       c.push([box(px - 0.12, px + 0.12, y + 3.3, y + 5.1, pz - 0.42, pz + 0.42), '#e9e4d6']);
       SOLIDS.add(x, z, 0.15);
     }
-    // the low shops north of the side lane on their outlines: one storey, sheet roofs
-    for (const s of CORNER_SHOPS) {
-      const [x0, x1, z0, z1] = s.box, y = Math.min(gh(x0, z0), gh(x1, z1)), h = 3.0;
-      c.push([box(x0 - NO[0], x1 - NO[0], y, y + h, z0 - NO[1], z1 - NO[1]), s.wall]);
-      const g = new THREE.BoxGeometry(x1 - x0 + 0.8, 0.1, z1 - z0 + 0.8).rotateX(0.06).translate((x0 + x1) / 2 - NO[0], y + h + 0.3, (z0 + z1) / 2 - NO[1]);
-      c.push([g, s.roof]);
-      // shop fronts to the lane: dark openings and pale shutters
-      for (let x = x0 + 0.8; x < x1 - 1.6; x += 3.2) c.push([box(x - NO[0], x + 2.2 - NO[0], y + 0.1, y + 2.3, z1 - NO[1], z1 + 0.03 - NO[1]), (x | 0) % 2 ? '#2a2826' : '#9fa6aa']);
-      wallSolids(x0, z0, x1, z0, 0.3); wallSolids(x0, z1, x1, z1, 0.3); wallSolids(x0, z0, x0, z1, 0.3); wallSolids(x1, z0, x1, z1, 0.3);
-    }
+    // (north of the side lane is the police station compound, modelled with the 30-pair brief in roadside.ts: left as it is)
     // the mature leafy trees behind the trading line and round the parking (Pairs 1-3; the aerial's crowns)
-    for (const [x, z, h, s] of [[862, 214, 7.5, 9], [876, 221, 8, 10], [886, 252, 7, 9], [879, 293, 7.5, 10], [890, 294, 7, 8], [851, 300, 6.5, 7], [866, 178, 7, 8], [818, 160, 7.5, 9]] as [number, number, number, number][]) broadleaf(k, leaf, x, z, { h, spread: s, seed: x + z, origin: NO, round: true });
+    for (const [x, z, h, s] of [[862, 214, 7.5, 9], [876, 221, 8, 10], [886, 252, 7, 9], [879, 293, 7.5, 10], [890, 294, 7, 8], [851, 300, 6.5, 7]] as [number, number, number, number][]) if (!nearRoad(x, z, 1.2)) broadleaf(k, leaf, x, z, { h, spread: s, seed: x + z, origin: NO, round: true });
 
     // ---------- the Legon 1st frame and the open plot (Pair 4) ----------
     {
@@ -217,7 +234,7 @@ const corner: Spec = {
     k.meshes.push(drapeMesh(drapeAt(NO, 830, 910, LEGON1ST.plot.z0, LEGON1ST.plot.z1, 1.0, 0.04, (x, z) => (plotIn(x, z) ? scrubGround(x, z) : null))));
     for (let i = 0; i < 1400; i++) {
       const z = LEGON1ST.plot.z0 + 2 + hash(i, 0.31) * (LEGON1ST.plot.z1 - LEGON1ST.plot.z0 - 4), x = eastKerb(z) + 3.5 + hash(0.77, i) * (LEGON1ST.plot.depth - 5);
-      if (!plotIn(x, z) || SOLIDS.at(x, z, 0.5)) continue;
+      if (!plotIn(x, z) || SOLIDS.at(x, z, 0.5) || nearRoad(x, z, 0.8)) continue;
       const r = hash(i, 4.1), y = gh(x, z);
       if (r < 0.62) tuft(b, x, z, 0.4 + hash(i, 5) * 0.8, ['#7d8a44', '#8d9450', '#a39a5a', '#6b7a3a', '#5f7a35'][i % 5], i + 9000);
       else if (r < 0.95) shrub(leaf, NO, x, z, y, 0.4 + hash(i, 6) * 0.9, i, ['#4e7a32', '#5b8438', '#3f6b2b', '#6a8a3e', '#7a8a40']);
@@ -283,10 +300,10 @@ const station: Spec = {
     for (const [z0, z1] of [[431.5, m0 - 0.5], [m1 + 0.5, 482]] as [number, number][]) {
       const pts: P2[] = []; for (let z = z0; z <= z1 + 0.01; z += 1.5) pts.push(offLine(ESVC, z, SVC_HALF + 1.2));
       kerbLine(c, SO, pts, 0.16, 0.25, '#c9c5bb');
-      for (let i = 1; i < pts.length - 1; i += 2) stripedPost(c, SO, pts[i][0] + 0.5, pts[i][1]);
+      for (let i = 1; i < pts.length - 1; i += 2) if (!nearRoad(pts[i][0] + 0.5, pts[i][1], 0.1)) stripedPost(c, SO, pts[i][0] + 0.5, pts[i][1]);
     }
-    for (let i = 0; i < 6; i++) { const a = (i / 5) * (Math.PI / 2), x = 873 + Math.cos(a) * 6, z = 437 - Math.sin(a) * 6; stripedPost(c, SO, x, z + 13, { band: '#c8261e' }); }
-    for (let x = 866; x < 879; x += 2.2) { stripedPost(c, SO, x, m0 - 0.8); stripedPost(c, SO, x, m1 + 0.8); }
+    for (let i = 0; i < 6; i++) { const a = (i / 5) * (Math.PI / 2), x = 873 + Math.cos(a) * 6, z = 437 - Math.sin(a) * 6; if (!nearRoad(x, z + 13, 0.1)) stripedPost(c, SO, x, z + 13, { band: '#c8261e' }); }
+    for (let x = 866; x < 879; x += 2.2) for (const z of [m0 - 0.8, m1 + 0.8]) if (!nearRoad(x, z, 0.1)) stripedPost(c, SO, x, z);
     // the brick footway along the service road crossing the islands (Pair 10), its kerb
     const [fa, fb] = edges(ESVC, 400, PLOT.access[0] - 1, SVC_HALF, SVC_HALF + 2.0);
     k.meshes.push(ribbon(SO, fa, fb, 0.1, brick())); kerbLine(c, SO, fa.filter((p) => p[1] < m0 || p[1] > m1), 0.13);
@@ -324,7 +341,7 @@ const station: Spec = {
         k.plain.push([B((x0 + x1) / 2 - 0.4, (x0 + x1) / 2 + 0.4, y + 0.2, y + 1.2, z - 0.25, z + 0.25), '#d6201f']);
       }
       // the round concrete planter bases in the open forecourt (Pair 7)
-      for (const [x, z] of [[906, 486.5], [893, 488]] as P2[]) { c.push([new THREE.CylinderGeometry(0.75, 0.9, 0.5, 14).translate(x - SO[0], gh(x, z) + 0.25, z - SO[1]), '#a39d92']); SOLIDS.add(x, z, 0.9); }
+      for (const [x, z] of [[906, 486.5], [893, 488]] as P2[]) { if (nearRoad(x, z, 0.6)) continue; c.push([new THREE.CylinderGeometry(0.75, 0.9, 0.5, 14).translate(x - SO[0], gh(x, z) + 0.25, z - SO[1]), '#a39d92']); SOLIDS.add(x, z, 0.9); }
     }
     // ---------- the takeaway: the white fascia band and its signs, the air-conditioning units, the shopfront ----------
     {
@@ -386,8 +403,9 @@ const station: Spec = {
       SOLIDS.add(x, z, 0.1);
     }
     // the low white wall along the south side (Pair 10), slender palms round the forecourt
-    { const z = STATION.southWall; c.push([B(eastKerb(z) + 2.5, 924, g0, g0 + 0.8, z - 0.12, z + 0.12), '#efefea'], [B(eastKerb(z) + 2.5, 924, g0 + 0.8, g0 + 0.88, z - 0.16, z + 0.16), '#d6d3cb']); wallSolids(eastKerb(z) + 2.5, z, 924, z, 0.2); }
-    for (const [x, z, h] of [[884.5, 452.5, 7.5], [882.0, 436.5, 8], [919, 433, 7], [921, 509, 7.5], [868, 494, 6.5]] as [number, number, number][]) christmasPalm(fr, tr, SO, x, z, h, x + z);
+    // (open where the plot's mapped access road passes through it)
+    { const z = STATION.southWall; for (const [a, bb] of clearRuns(eastKerb(z) + 2.5, 924, z, 0.4)) { c.push([B(a, bb, g0, g0 + 0.8, z - 0.12, z + 0.12), '#efefea'], [B(a, bb, g0 + 0.8, g0 + 0.88, z - 0.16, z + 0.16), '#d6d3cb']); wallSolids(a, z, bb, z, 0.2); } }
+    for (const [x, z, h] of [[884.5, 452.5, 7.5], [882.0, 436.5, 8], [919, 433, 7], [921, 509, 7.5], [868, 494, 6.5]] as [number, number, number][]) if (!nearRoad(x, z, 0.8)) christmasPalm(fr, tr, SO, x, z, h, x + z);
     // the utility frames and the communications support near the frontage (Pair 5)
     const poles: V3[][] = [];
     for (const z of [412, 424]) poles.push(hFrame(c, SO, eastKerb(z) + 3.6, z, 0, 9.5));
@@ -404,7 +422,7 @@ const station: Spec = {
       const top = base + 0.35 + (PLOT.h + 0.25 - 0.35) * Math.max(ta, tb);
       P.wall(STAINED(), xb, z2, xa, z, base - 0.2, top, 1, Math.max(0.4, (top - base) / 1.2), 0);
       c.push([run(xa - SO[0] + 0.12, z - SO[1], xb - SO[0] + 0.12, z2 - SO[1], base - 0.2, top, 0.26), '#a9a192']);
-      wallSolids(xa + 0.1, z, xb + 0.1, z2, 0.22);
+      wallSolids(xa + 0.1, z, xb + 0.1, z2, 0.22); 
     }
     // the access: a broad hard apron up onto the plot, gravel, the railing and the short white posts (Pair 16)
     k.meshes.push(drapeMesh(drapeAt(SO, 870, 990, PLOT.access[0] - 2, PLOT.z1 + 4, 0.8, 0.04, (x, z) => {
@@ -415,12 +433,14 @@ const station: Spec = {
       if (x < f + 30 && m > 0.45) return worn(x, z);
       return scrubGround(x, z);
     })));
-    for (let x = face(PLOT.access[1]) + 2; x < face(PLOT.access[1]) + 20; x += 2) {
-      const z = PLOT.access[1] - 0.3, y = gh(x, z);
-      c.push([B(x - 0.04, x + 0.04, y, y + 1.1, z - 0.04, z + 0.04), '#c9c9c4'], [B(x - 1.0, x + 1.0, y + 1.05, y + 1.1, z - 0.03, z + 0.03), '#c9c9c4']);
+    // (the railing and the posts leave the mapped access road open where it runs on south over the plot)
+    for (const [ra, rb] of clearRuns(face(PLOT.access[1]) + 2, face(PLOT.access[1]) + 20, PLOT.access[1] - 0.3, 0.4)) {
+      const z = PLOT.access[1] - 0.3;
+      for (let x = ra; x <= rb + 1e-6; x += Math.max(0.5, (rb - ra) / Math.max(1, Math.round((rb - ra) / 2)))) { const y = gh(x, z); c.push([B(x - 0.04, x + 0.04, y, y + 1.1, z - 0.04, z + 0.04), '#c9c9c4']); }
+      const y = gh((ra + rb) / 2, z); c.push([B(ra, rb, y + 1.05, y + 1.1, z - 0.03, z + 0.03), '#c9c9c4']);
+      wallSolids(ra, z, rb, z, 0.15);
     }
-    wallSolids(face(PLOT.access[1]) + 2, PLOT.access[1] - 0.3, face(PLOT.access[1]) + 20, PLOT.access[1] - 0.3, 0.15);
-    for (let i = 0; i < 6; i++) { const x = face(PLOT.access[1]) + 1.2 + i * 1.6; stripedPost(c, SO, x, PLOT.access[1] - 1.4, { band: '#e8e6e0', h: 0.9 }); }
+    for (let i = 0; i < 6; i++) { const x = face(PLOT.access[1]) + 1.2 + i * 1.6; if (!nearRoad(x, PLOT.access[1] - 1.4, 0.3)) stripedPost(c, SO, x, PLOT.access[1] - 1.4, { band: '#e8e6e0', h: 0.9 }); }
     // the small white flat-roofed building, its peeling red fascia, the broad pale front; the unfinished frame
     {
       const [x0, x1, z0, z1] = PLOT.white, y = Math.min(gh(x0, z0), gh(x1, z1)), h = 3.3;
@@ -450,7 +470,7 @@ const station: Spec = {
     { const x = 900, z = 535, y = gh(x, z); c.push([new THREE.SphereGeometry(1.4, 8, 6).scale(1.4, 0.45, 1).translate(x - SO[0], y, z - SO[1]), '#9fb3c9']); }
     for (let i = 0; i < 900; i++) {
       const z = PLOT.access[1] + 2 + hash(i, 0.13) * (PLOT.z1 - PLOT.access[1] - 4), x = face(z) + 1.5 + hash(0.29, i) * (PLOT.depth - 4);
-      if (SOLIDS.at(x, z, 0.6) || (x > PLOT.white[0] - 1 && x < PLOT.frame[1] + 1 && z > PLOT.frame[2] - 1 && z < PLOT.white[3] + 1)) continue;
+      if (SOLIDS.at(x, z, 0.6) || nearRoad(x, z, 0.8) || (x > PLOT.white[0] - 1 && x < PLOT.frame[1] + 1 && z > PLOT.frame[2] - 1 && z < PLOT.white[3] + 1)) continue;
       const r = hash(i, 2.2), y = gh(x, z);
       if (x < face(z) + 26 && z < PLOT.access[1] + 12) continue;
       if (r < 0.75) tuft(b, x, z, 0.4 + hash(i, 5) * 0.9, ['#7d8a44', '#8d9450', '#a39a5a', '#6b7a3a'][i % 4], i + 12000);
@@ -537,7 +557,7 @@ const corridor: Spec = {
       const z = 412 + hash(i, 6.1) * (PLANTED.z0 - 412), w = xAt(WSVC, z) + SVC_HALF + 0.8, e = xAt(SB, z) - N4_HALF - 0.8;
       if (Number.isNaN(w) || e - w < 1) continue;
       const x = w + hash(2.3, i) * (e - w);
-      if (SOLIDS.at(x, z, 0.8)) continue;
+      if (SOLIDS.at(x, z, 0.8) || nearRoad(x, z, 0.8)) continue;
       if (hash(i, 7.3) < 0.12) shrub(leaf, CO, x, z, gh(x, z), 0.5 + hash(i, 8) * 0.5, i);
       else tuft(b, x, z, 0.3 + hash(i, 9) * 0.4, ['#7d8a44', '#8d9450', '#6b7a3a'][i % 3], i + 15000);
     }
@@ -546,7 +566,7 @@ const corridor: Spec = {
       const w = xAt(WSVC, z) + SVC_HALF + 0.6, e = xAt(SB, z) - N4_HALF - 0.6;
       if (Number.isNaN(w) || Number.isNaN(e) || e - w < 1.2 || hash(z, 4.2) < 0.2) continue;
       const x = w + (e - w) * (0.3 + hash(z, 3.3) * 0.4), y = gh(x, z);
-      if (SOLIDS.at(x, z, 0.8)) continue;
+      if (SOLIDS.at(x, z, 0.8) || nearRoad(x, z, 0.8)) continue;
       if (hash(z, 5.5) < 0.55) compactTree(leaf, wood, CO, x, z, y, 1.8 + hash(z, 6) * 1.6, Math.min(e - w, 1.2 + hash(z, 7) * 1.3), z);
       else shrub(leaf, CO, x, z, y, 0.5 + hash(z, 8) * 0.7, z);
     }
@@ -566,7 +586,7 @@ const corridor: Spec = {
       wallSolids(xa - 0.15, z, xb - 0.15, z2, 0.22);
       if (tier) {
         // the upper tier's wall a few metres back
-        const ua = xa - 4, ub = xb - 4, ubase = base + RWALL.tiers.h[0], utop = base + RWALL.tiers.h[1] + 0.15;
+        const ua = tierBack(z, xa), ub = tierBack(z2, xb), ubase = base + RWALL.tiers.h[0], utop = base + RWALL.tiers.h[1] + 0.15;
         P.wall(PANEL_WALL(), ua, z, ub, z2, ubase - 0.2, utop, 1.5, 0.4, 0);
         c.push([run(ua - CO[0] - 0.15, z - CO[1], ub - CO[0] - 0.15, z2 - CO[1], ubase - 0.2, utop, 0.3), '#8c8272'], [run(ua - CO[0] - 0.15, z - CO[1], ub - CO[0] - 0.15, z2 - CO[1], utop, utop + 0.1, 0.42), '#b9b0a0']);
         wallSolids(ua - 0.15, z, ub - 0.15, z2, 0.2);
@@ -579,18 +599,18 @@ const corridor: Spec = {
     })));
     for (let i = 0; i < 2600; i++) {
       const z = RWALL.z0 + 4 + hash(i, 0.53) * (RWALL.tiers.z1 - RWALL.z0 - 6), d = 1.2 + Math.pow(hash(0.61, i), 1.1) * (RWALL.back - 4), x = rface(z) - d;
-      if (Number.isNaN(x) || SOLIDS.at(x, z, 0.8) || TIER_HOUSES.some(([a, bb, cc, dd]) => x > a - 2 && x < bb + 2 && z > cc - 2 && z < dd + 2)) continue;
+      if (Number.isNaN(x) || SOLIDS.at(x, z, 0.8) || nearRoad(x, z, 0.8) || TIER_HOUSES.some(([a, bb, cc, dd]) => x > a - 2 && x < bb + 2 && z > cc - 2 && z < dd + 2)) continue;
       if (z > RWALL.tiers.z0 - 2 && d < 5) continue;
       const r = hash(i, 3.7), y = gh(x, z);
       if (r < 0.5) tuft(b, x, z, 0.5 + hash(i, 5) * 0.8, ['#7d8a44', '#8d9450', '#6b7a3a', '#5f7a35'][i % 4], i + 18000);
       else if (r < 0.88) shrub(leaf, CO, x, z, y, 0.6 + hash(i, 6) * 1.2, i, ['#3f6a2a', '#4d7a31', '#5b7f36', '#36602a', '#557331']);
       else if (r < 0.975) compactTree(leaf, wood, CO, x, z, y, 3 + hash(i, 10) * 2.5, 2.4 + hash(i, 11) * 2, i);
-      else if (r < 0.996) broadleaf(k, leaf, x, z, { h: 6 + hash(i, 12) * 3, spread: 7 + hash(i, 13) * 4, seed: i, origin: CO, round: true });
+      else if (r < 0.996) broadleaf(k, leaf, x, z, { h: 5 + hash(i, 12) * 2.5, spread: 7 + hash(i, 13) * 4, seed: i, origin: CO });
       else broadleaf(k, leaf, x, z, { h: 11 + hash(i, 14) * 3, spread: 5, sparse: true, seed: i, origin: CO });
     }
     // the small unfinished concrete frame among the trees (Pair 14)
     {
-      const x0 = 812, z0 = 524, y = gh(x0 + 2, z0 + 2);
+      const x0 = 805.5, z0 = 524, y = gh(x0 + 2, z0 + 2); // (placed clear of the mapped footway 1513)
       for (const dx of [0, 3.5]) for (const dz of [0, 3]) { c.push([box(x0 + dx - 0.12 - CO[0], x0 + dx + 0.12 - CO[0], y, y + 2.8, z0 + dz - 0.12 - CO[1], z0 + dz + 0.12 - CO[1]), '#a19b90']); SOLIDS.add(x0 + dx, z0 + dz, 0.2); }
       c.push([box(x0 - 0.12 - CO[0], x0 + 3.62 - CO[0], y + 2.6, y + 2.85, z0 - 0.12 - CO[1], z0 + 0.12 - CO[1]), '#a19b90'], [box(x0 - 0.12 - CO[0], x0 + 3.62 - CO[0], y, y + 1.1, z0 + 2.9 - CO[1], z0 + 3.1 - CO[1]), '#b2aca0']);
     }
@@ -603,12 +623,13 @@ const corridor: Spec = {
     })));
     for (let i = 0; i < 2600; i++) {
       const z = PLOT.z1 + 6 + hash(i, 0.83) * (EAST_SCRUB.z1 - PLOT.z1 - 8), d = 2.8 + Math.pow(hash(0.37, i), 1.2) * (EAST_SCRUB.depth - 4), x = eastEdge(z) + d;
-      if (Number.isNaN(x) || SOLIDS.at(x, z, 0.8)) continue;
+      if (Number.isNaN(x) || SOLIDS.at(x, z, 0.8) || nearRoad(x, z, 0.8)) continue;
       const r = hash(i, 4.4), y = gh(x, z);
       if (r < 0.4) tuft(b, x, z, 0.5 + hash(i, 5) * 1.0, ['#7d8a44', '#8d9450', '#6b7a3a', '#a39a5a'][i % 4], i + 21000);
       else if (r < 0.86) shrub(leaf, CO, x, z, y, 0.7 + hash(i, 6) * 1.5, i, ['#3f6a2a', '#4d7a31', '#5b7f36', '#36602a', '#66803a', '#557331']);
       else if (r < 0.97) compactTree(leaf, wood, CO, x, z, y, 3 + hash(i, 10) * 2.2, 2.4 + hash(i, 11) * 1.8, i);
-      else broadleaf(k, leaf, x, z, { h: 6 + hash(i, 12) * 3, spread: 6 + hash(i, 13) * 4, seed: i, origin: CO, round: true });
+      // (the taller growth in the scrub: bushy, reaching low, not trees on bare trunks: Pair 12)
+      else compactTree(leaf, wood, CO, x, z, y, 5 + hash(i, 12) * 1.8, 3.6 + hash(i, 13) * 1.6, i + 40000);
     }
     // exposed rock-like patches on the rising verge
     for (let i = 0; i < 18; i++) { const z = 612 + hash(i, 1.4) * 140, x = eastKerb(z) + 5 + hash(i, 2.4) * 8, y = gh(x, z); c.push([new THREE.DodecahedronGeometry(0.5 + hash(i, 3.4) * 0.6, 0).scale(1.5, 0.6, 1.1).translate(x - CO[0], y + 0.1, z - CO[1]), '#8f877a']); }
@@ -635,9 +656,9 @@ const corridor: Spec = {
       if (z > 430 && z < 520) continue; // (the station's own frontage)
       const k0 = eastKerb(z); if (Number.isNaN(k0)) continue;
       const lx = k0 + (z > PLOT.access[0] && z < PLOT.z1 ? PLOT.wallOff - 0.6 : z < 400 ? 2.3 : 1.6);
-      if (!SOLIDS.at(lx, z, 1.0)) streetLight(c, CO, lx, z, Math.PI, { twin: z > 400 });
+      if (!SOLIDS.at(lx, z, 1.0) && !nearRoad(lx, z, 0.3)) streetLight(c, CO, lx, z, Math.PI, { twin: z > 400 });
       const px = k0 + (z > PLOT.access[0] && z < PLOT.z1 ? PLOT.wallOff + 2.0 : z < 312 ? 13.5 : 4.2), pz = z + 19;
-      if (pz < 860 && !(pz > 430 && pz < 520) && !SOLIDS.at(px, pz, 1.0)) epoles.push(utilityPole(c, CO, px, pz, 0, 9.5));
+      if (pz < 860 && !(pz > 430 && pz < 520) && !SOLIDS.at(px, pz, 1.0) && !nearRoad(px, pz, 0.3)) epoles.push(utilityPole(c, CO, px, pz, 0, 9.5));
     }
     spans(c, epoles, 0.55);
 

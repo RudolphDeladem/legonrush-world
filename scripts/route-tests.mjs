@@ -1310,6 +1310,44 @@ try {
     notes.push(`Legon Road cutting: ${over} rides cross a bridge, ${under} pass under one`);
   }
 
+  // ---------- the Legon overhead to Okponglo and the ECG area (the owner's 16-pair and 18-pair briefs) ----------
+  {
+    const lf = await server.ssrLoadModule('/src/game/lfplan.ts');
+    const lfm = await server.ssrLoadModule('/src/game/legonfirst.ts');
+    const ec = await server.ssrLoadModule('/src/game/ecgplan.ts');
+    const ecm = await server.ssrLoadModule('/src/game/ecg.ts');
+    const rel = await server.ssrLoadModule('/src/game/relief.ts');
+    const lfNames = lfm.legonFirstSite.frames().map((f) => f.name), ecNames = ecm.ecgSite.frames().map((f) => f.name);
+    for (const n of ['Legon First trading corner', 'TotalEnergies Legon 2']) if (!lfNames.includes(n)) fail(`Legon First: the ${n} model is missing`);
+    for (const n of ['ECG Legon office', 'Guesthouse block by the ECG office', 'Guesthouse entrance huts', 'Ghana Water compound', 'Utility yard building', 'N4 by the ECG office', 'Stalls by the ECG side access']) if (!ecNames.includes(n)) fail(`ECG area: the ${n} model is missing`);
+    // the photographed outlines are built by these models, not by the generic blocks
+    const at = (x, z) => BUILDINGS.filter((b) => x >= b.minX && x <= b.maxX && z >= b.minZ && z <= b.maxZ);
+    for (const [x, z, what] of [[919, 415, 'Family Health'], [907.4, 541.3, 'the white building on the plot'], [917.3, 536.8, 'the frame on the plot'], [928.8, 515.0, 'outline 37 on the plot'], [927.8, 561.7, 'outline 67 on the plot']])
+      for (const b of at(x, z)) if (!lfm.legonFirstSite.replaces(b)) fail(`Legon First: ${what} is left to the generic builder`);
+    for (const [x, z, what] of [[707, -364, 'the ECG office'], [700, -406, 'the guesthouse hall'], [665, -406, 'the guesthouse west block'], [663.6, -319.5, 'the Ghana Water office'], [788.4, -357.5, 'the utility yard building'], [821.5, -373.6, 'the yard outline 122'], [724.2, -437.1, 'the green-roofed hut'], [659, -383, 'the curved-roof hall 849'], [674.6, -380.4, 'the curved-roof hall 850']])
+      for (const b of at(x, z)) if (!ecm.ecgSite.replaces(b)) fail(`ECG area: ${what} is left to the generic builder`);
+    // the raised plot and the retaining wall: the sidewalk before each wall level, the ground behind it raised
+    for (const z of [530, 560, 590]) { const f = lf.eastKerb(z) + lf.PLOT.wallOff; if (Math.abs(rel.groundHeight(f - 0.3, z)) > 0.02 || Math.abs(rel.groundHeight(f + 3, z) - lf.PLOT.h) > 0.02) fail(`Legon First: the raised plot at z ${z} is not behind its wall`); }
+    for (const z of [520, 600]) { const f = lf.westKerb(z) - lf.RWALL.off; if (Math.abs(rel.groundHeight(f + 0.3, z)) > 0.02 || Math.abs(rel.groundHeight(f - 6, z) - lf.RWALL.h) > 0.02) fail(`Legon First: the retained ground at z ${z} is not behind the panelled wall`); }
+    for (const [x, z] of [[860, 300], [900, 650], [930, 800]]) if (!Number.isFinite(rel.groundHeight(x, z))) fail(`Legon First: the ground at ${x},${z} is not a number`);
+    // nothing of these models stands on a carriageway: the stalls, the divider, the masts, the boards
+    const lfRoads = [[lf.SB, lf.N4_HALF], [lf.NB, lf.N4_HALF], [lf.ESVC, lf.SVC_HALF], [lf.WSVC, lf.SVC_HALF]];
+    const distTo = (line, x, z) => { let d = Infinity; for (let i = 0; i < line.length - 1; i++) { const [ax, az] = line[i], [bx, bz] = line[i + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz; const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2)); d = Math.min(d, Math.hypot(x - ax - dx * t, z - az - dz * t)); } return d; };
+    const lfClear = (x, z) => Math.min(...lfRoads.map(([l, h]) => distTo(l, x, z) - h));
+    for (const [z, kind, w, d] of lf.STALLS) { const x = lf.eastKerb(z) + lf.CORNER.foot + lf.CORNER.strip[0] + d / 2; if (lfClear(x, z) < 0.3) fail(`Legon First: the ${kind} stall at z ${z} reaches a road`); void w; }
+    for (let z = lf.DIVIDER.z0; z <= lf.DIVIDER.z1; z += 4) { const m = (lf.xAt(lf.SB, z) + lf.xAt(lf.NB, z)) / 2; if (!(Math.min(distTo(lf.SB, m, z) - lf.N4_HALF, distTo(lf.NB, m, z) - lf.N4_HALF) > 0.4)) { fail(`Legon First: the divider at z ${z} is on a carriageway`); break; } }
+    const ecRoads = [[ec.SB, ec.N4_HALF], [ec.NB, ec.N4_HALF], [ec.ESV, ec.SVC_HALF], [ec.WSV, ec.SVC_HALF], [ec.FRONT, ec.LANE_HALF], [ec.LANE173, ec.LANE_HALF], [ec.SIDE174, ec.LANE_HALF], [ec.SIDE175, ec.LANE_HALF]];
+    const ecClear = (x, z) => Math.min(...ecRoads.map(([l, h]) => distTo(l, x, z) - h));
+    for (const [x, z, kind, w, d] of ec.STALLS) if (ecClear(x, z) < Math.hypot(w, d) / 2 + 0.3) fail(`ECG area: the ${kind} stall at ${x},${z} reaches a road`);
+    for (const [x, z] of [ec.TRADE.pole, ec.ECG.board, ec.GUEST.sign, ec.GUEST.tank, [ec.GW.tower[0], ec.GW.tower[1]], [ec.GW.mast[0], ec.GW.mast[1]], ...ec.SIGNS50.map(([a, b]) => [a, b]), ...ec.TOWERS.map(([a, b]) => [a, b])]) if (ecClear(x, z) < 0.5) fail(`ECG area: the post at ${x},${z} stands on a road`);
+    for (let z = ec.DIV.z0; z <= ec.DIV.z1; z += 4) { const m = (ec.xAt(ec.SB, z) + ec.xAt(ec.NB, z)) / 2; if (!(Math.min(distTo(ec.SB, m, z), distTo(ec.NB, m, z)) - ec.N4_HALF > 0.4)) { fail(`ECG area: the divider at z ${z} is on a carriageway`); break; } }
+    // the compound's gate is open over the access lane; the ECG wall and the yard fence stand off the roads
+    { const lz = ec.zAt(ec.LANE173, ec.GW.fenceX); if (!(lz - ec.LANE_HALF > ec.GW.gate[0] && lz + ec.LANE_HALF < ec.GW.gate[1])) fail('ECG area: the Ghana Water gate does not open over the access lane'); }
+    for (let z = ec.ECG.wall[0]; z <= ec.ECG.wall[1]; z += 2) if (ecClear(ec.ECG.wallX, z) < 0.3) { fail(`ECG area: the ECG frontage wall at z ${z} is on the frontage road`); break; }
+    for (let z = ec.GW.fence[0]; z <= ec.GW.fence[1]; z += 2) if ((z < ec.GW.gate[0] || z > ec.GW.gate[1]) && ecClear(ec.GW.fenceX, z) < 0.3) { fail(`ECG area: the blue fence at z ${z} is on a road`); break; }
+    for (const [a, b] of [['ECG office', ec.ECG.slab], ['guesthouse', ec.GUEST.hall], ['yard building', ec.SUB.house]]) for (const [x, z] of [[b[0], b[2]], [b[1], b[2]], [b[0], b[3]], [b[1], b[3]]]) if (ecClear(x, z) < 0.3) fail(`ECG area: a corner of the ${a} is on a road`);
+  }
+
   const SNAP = 'scripts/race-routes.json';
   if (process.env.UPDATE_RACES) writeFileSync(SNAP, `${JSON.stringify(races, null, 1)}\n`);
   const snap = JSON.parse(readFileSync(SNAP, 'utf8'));

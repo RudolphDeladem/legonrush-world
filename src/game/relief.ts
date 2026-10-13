@@ -24,7 +24,7 @@ import { EN } from './entrance';
 import { CUT, CUT_Z, alongCut, cutDepth, cutDrop, deckAt, inBowl, inTrench, onBowlSlope, wallE, wallW } from './cutplan';
 import { GH } from './greathallplan';
 import { BANKS, bankFace, bankTop, type Bank } from './okplan';
-import { EAST_SCRUB, PLOT, RWALL, eastEdge, eastKerb, westKerb } from './lfplan';
+import { EAST_SCRUB, PLOT, RWALL, eastEdge, eastKerb, tierBack, westKerb } from './lfplan';
 
 interface Hollow {
   /** hollow: sunk `depth` below the ground; terrace: raised `depth` above it */
@@ -152,9 +152,10 @@ function bankZone(b: Bank): Zone {
  *  gently east of the east verge (Pair 12). The walls themselves are modelled, so their slopes are short. */
 function lfZones(): Zone[] {
   const span = (z0: number, z1: number, f: (z: number) => number) => { const v: number[] = []; for (let z = z0; z <= z1; z += 2) v.push(f(z)); return [Math.min(...v), Math.max(...v)]; };
-  const plotFace = (z: number) => eastKerb(Math.min(PLOT.z1, Math.max(PLOT.access[1], z))) + PLOT.wallOff;
+  // (the raised floor starts a little behind each wall's face, so that the ground before the wall, the sidewalk, stays level)
+  const plotFace = (z: number) => eastKerb(Math.min(PLOT.z1, Math.max(PLOT.access[1], z))) + PLOT.wallOff + 0.45;
   const [p0, p1] = span(PLOT.access[1], PLOT.z1, plotFace);
-  const wallFace = (z: number) => westKerb(Math.min(RWALL.tiers.z1, Math.max(RWALL.z0, z))) - RWALL.off;
+  const wallFace = (z: number) => westKerb(Math.min(RWALL.tiers.z1, Math.max(RWALL.z0, z))) - RWALL.off - 0.45;
   const [w0, w1] = span(RWALL.z0, RWALL.tiers.z1, wallFace);
   const scrubFoot = (z: number) => eastEdge(Math.min(EAST_SCRUB.z1, Math.max(EAST_SCRUB.z0, z))) + 4;
   const sz0 = PLOT.z1 + 8, [s0, s1] = span(sz0, EAST_SCRUB.z1, scrubFoot);
@@ -162,7 +163,7 @@ function lfZones(): Zone[] {
     { kind: 'terrace', x0: p0, x1: p1 + PLOT.depth, z0: PLOT.access[1] + PLOT.taper, z1: PLOT.z1, depth: PLOT.h, west: plotFace, w: 0.3, e: 6, n: PLOT.taper, s: 4, cell: 0.5 },
     { kind: 'terrace', x0: w0 - RWALL.back, x1: w1, z0: RWALL.z0, z1: RWALL.tiers.z0, depth: RWALL.h, east: wallFace, w: 8, e: 0.3, n: 6, s: 0.3, cell: 0.5 },
     { kind: 'terrace', x0: w0 - RWALL.back, x1: w1, z0: RWALL.tiers.z0, z1: RWALL.tiers.z1, depth: 0, east: wallFace, w: 8, e: 0.3, n: 0.3, s: 6, cell: 0.5,
-      top: (x, z) => (x > wallFace(z) - 4 ? RWALL.tiers.h[0] : RWALL.tiers.h[1]) },
+      top: (x, z) => (x > tierBack(z, wallFace(z) + 0.45) - 0.45 ? RWALL.tiers.h[0] : RWALL.tiers.h[1]) },
     { kind: 'terrace', x0: s0, x1: s1 + EAST_SCRUB.depth, z0: sz0, z1: EAST_SCRUB.z1, depth: 0, west: scrubFoot, w: 2, e: 8, n: 4, s: 12, cell: 1,
       top: (x, z) => EAST_SCRUB.rise * Math.min(1, Math.max(0, (x - scrubFoot(z)) / EAST_SCRUB.depth)) },
   ];

@@ -64,8 +64,8 @@ export const VAULTS: Box[] = [[651.4, 666.8, -391.1, -375.6], [667.0, 682.3, -38
  * `sign`: the blue vertical sign; `tank`: the raised stand with two black tanks; `fence`: the low wall and railing.
  */
 export const GUEST = {
-  hall: [683.0, 714.9, -421.9, -391.0] as Box, hallH: 7.6, ridge: 5.6,
-  west: [648.8, 683.0, -421.9, -391.0] as Box,
+  hall: [683.0, 714.9, -421.3, -391.0] as Box, hallH: 7.6, ridge: 5.6,
+  west: [648.8, 683.0, -421.3, -391.0] as Box,
   huts: [[717.9, 730.6, -442.2, -432.1], [720.0, 726.4, -418.6, -412.4]] as Box[],
   sign: [729.2, -420.4] as P2, tank: [718.6, -393.6] as P2,
   fenceX: 717.6, fence: [-411.5, -390.5] as [number, number],
@@ -85,7 +85,7 @@ export const GW = {
   guard: [709.6, 715.0, -297.6, -291.6] as Box,
   office: [653.5, 673.8, -331.0, -307.9] as Box, annex: [[673.0, 676.1, -331.6, -322.4], [676.9, 680.7, -334.9, -322.9]] as Box[],
   cap: [658.5, 668.0, -324.5, -314.0] as Box,
-  canopy: [675.5, 683.5, -306.5, -300.5] as Box,
+  canopy: [675.5, 683.5, -305.8, -300.5] as Box,
   court: [670.0, 716.0, -336.0, -286.0] as Box,
   tower: [721.2, -341.5, 22] as [number, number, number], mast: [703.5, -293.0, 26] as [number, number, number],
   tree: [694.0, -326.0] as P2,
@@ -112,7 +112,7 @@ export const PLANT = { z0: -470, z1: -262 };
 export const CORR = { z0: -480, z1: -238, verge: 3.5, walk: 2.0, frameOff: 7.6, frameStep: 42, depth: 70 };
 export const TOWERS: [number, number, number][] = [[818, -274, 30], [846, -432, 30]];
 /** the circular 50 signs (Pairs 6, 7): x, z, the direction their faces look */
-export const SIGNS50: [number, number, number][] = [[758.2, -318.0, Math.PI / 2], [741.8, -330.0, Math.PI / 2]];
+export const SIGNS50: [number, number, number][] = [[764.4, -318.0, Math.PI / 2], [734.7, -330.0, Math.PI / 2]];
 
 /**
  * The roadside trading frontage (Pairs 15-17; A03 arrows 15-17): north of the side access (175), west of the frontage
@@ -122,7 +122,7 @@ export const SIGNS50: [number, number, number][] = [[758.2, -318.0, Math.PI / 2]
  */
 export type StallKind = 'blueCanopy' | 'darkKiosk' | 'shack' | 'kiosk' | 'canopy';
 export const STALLS: [number, number, StallKind, number, number, number][] = [
-  [745.5, -462.5, 'blueCanopy', 4.2, 3.4, 2.7], [741.0, -466.5, 'blueCanopy', 3.6, 3.0, 2.6], [747.5, -470.0, 'kiosk', 2.6, 2.4, 2.5],
+  [742.5, -460.5, 'blueCanopy', 4.2, 3.4, 2.7], [741.0, -466.5, 'blueCanopy', 3.6, 3.0, 2.6], [747.5, -470.0, 'kiosk', 2.6, 2.4, 2.5],
   [736.5, -469.5, 'shack', 3.2, 2.8, 2.4], [743.0, -476.0, 'blueCanopy', 4.6, 3.6, 2.8], [751.0, -480.0, 'darkKiosk', 4.0, 3.0, 2.6],
   [738.0, -480.5, 'blueCanopy', 3.4, 3.0, 2.6], [745.5, -486.5, 'shack', 3.0, 2.6, 2.3], [733.0, -476.0, 'kiosk', 2.4, 2.2, 2.4],
   [740.0, -491.5, 'blueCanopy', 4.0, 3.2, 2.7], [748.5, -494.0, 'canopy', 3.4, 3.0, 2.5], [733.5, -488.0, 'shack', 2.8, 2.6, 2.3],

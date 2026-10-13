@@ -56,14 +56,6 @@ export const STALLS: [number, StallKind, number, number, number][] = [
 export const SHELTER: Box = [837.7, 845.4, 279.4, 302.9];
 /** the tall narrow roadside board with its red top (Pair 3): z, metres out from the kerb */
 export const TALL_BOARD = { z: 276, off: 1.4 };
-/** the low shops north of the side lane on their mapped outlines (the aerial's red-brown roofs; Pairs 1, 2 background):
- *  one storey, sheet roofs, not campus blocks. osm ids for reference. */
-export const CORNER_SHOPS: { box: Box; roof: string; wall: string; note: string }[] = [
-  { box: [835.6, 849.6, 185.0, 193.0], roof: '#8c5a3c', wall: '#d9cdb2', note: 'ml outline north of the side lane, its front to the lane' },
-  { box: [825.3, 832.8, 169.8, 190.1], roof: '#7d5236', wall: '#cfc4a8', note: 'the corner block west of it' },
-  { box: [828.6, 861.8, 161.4, 168.8], roof: '#8a6248', wall: '#d6c9ad', note: 'the long row behind' },
-  { box: [852.5, 859.7, 170.2, 190.3], roof: '#7a4f3a', wall: '#d2c7ab', note: 'the row east of the corner' },
-];
 
 /**
  * The Legon 1st frame and the open plot south of the kiosk line (Pair 4; A03 arrows 4): the tall dark open frame on thin
@@ -102,8 +94,9 @@ export const STATION = {
   southWall: 511.5,
 };
 /** footprints the map has where the aerials show open forecourt or bare ground (the generic builder leaves them; the
- *  machine-detected outlines 249 and 101 on the station's forecourt, 100 on the raised plot's open ground) */
-export const OPEN_OUTLINES: P2[] = [[878.8, 476.8], [887.8, 505.2], [916.8, 585.0]];
+ *  machine-detected outlines 249 and 101 on the station's forecourt, 100, 37 and 67 on the raised plot's
+ *  open ground, where Pairs 9, 15 and 16 show only the small white building, the frame and scrub) */
+export const OPEN_OUTLINES: P2[] = [[878.8, 476.8], [887.8, 505.2], [916.8, 585.0], [928.8, 515.0], [927.8, 561.7]];
 
 /**
  * The raised plot south of the station (Pairs 9, 15, 16; A02, A04): the stained concrete wall along the brick
@@ -115,7 +108,7 @@ export const OPEN_OUTLINES: P2[] = [[878.8, 476.8], [887.8, 505.2], [916.8, 585.
  */
 export const PLOT = { z0: 508, z1: 604, wallOff: 3.3, h: 0.95, depth: 72, access: [500.5, 508.0] as [number, number], taper: 6,
   white: [901.8, 913.7, 537.4, 545.2] as Box, frame: [913.4, 921.1, 531.4, 542.2] as Box,
-  billboard: [896.0, 572.0, 8.5] as [number, number, number], redFrame: [889.5, 600.0, 6.0] as [number, number, number] };
+  billboard: [896.0, 572.0, 8.5] as [number, number, number], redFrame: [901.5, 600.0, 6.0] as [number, number, number] };
 
 /**
  * The corridor south of the station to Okponglo (Pairs 11-14; A01): the low concrete divider between the carriageways
@@ -129,7 +122,12 @@ export const DIVIDER = { z0: 412, z1: 690, h: 0.85 };
 export const RWALL = { z0: 470, z1: 668, off: 1.4, h: 1.7, back: 46, tiers: { z0: 668, z1: 718, h: [0.8, 1.6] as [number, number] } };
 /** the two small cream red-roof structures above the tiers (Pair 11; osm 3028 and 2618) */
 export const TIER_HOUSES: Box[] = [[838.1, 845.8, 668.4, 681.2], [845.5, 855.5, 681.8, 694.4]];
-export const EAST_SCRUB = { z0: 560, z1: 760, depth: 50, rise: 1.6 };
+/** the mapped footway (osm path 1420) along the lower tier: the upper tier's wall stands back behind it, so the path is
+ *  never walled across (the tiers' depths are read from Pair 11, the path's line is the map's) */
+export const FOOT_W: Line = [[843.2, 615.2], [866.4, 717.9], [879.5, 781.6]];
+/** the upper tier wall's line at z, given the lower wall's face there: 4 m back, or further where the footway needs it */
+export const tierBack = (z: number, face: number) => { const f = xAt(FOOT_W, z); return Number.isNaN(f) ? face - 4 : Math.min(face - 4, f - 1.3 - 0.9); };
+export const EAST_SCRUB = { z0: 560, z1: 700, depth: 50, rise: 1.6 };
 /** the lattice towers (Pairs 1, 12): x, z, height; the pole billboard (Pair 13) */
 export const TOWERS: [number, number, number][] = [[930, 650, 34], [804, 132, 30]];
 export const POLE_BOARD: [number, number] = [938, 765];
@@ -137,7 +135,7 @@ export const PLANTED = { z0: 700, z1: 860 };
 
 /** where this work draws the ground and props itself (the generic trees, lamps and verges stay out): x0, x1, z0, z1 */
 export const LF_KEEP: Box[] = [
-  [790, 905, 140, 312], // the trading corner, the kiosk line, the corner shops
+  [790, 905, 200, 312], // the trading corner, the kiosk line (north of the side lane: the police compound, roadside.ts)
   [820, 905, 300, 432], // the Legon 1st plot
   [835, 955, 395, 520], // the station
   [850, 1000, 500, 620], // the raised plot

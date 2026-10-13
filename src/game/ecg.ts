@@ -209,7 +209,7 @@ const SLAB_SIDE: Style = st(6.2, (g) => {
 const SLAB_PLAIN: Style = st(6, (g) => { render(g, '#f2f2ef'); g.fillStyle = '#e1e1dd'; g.fillRect(0, 0, 2, 512); });
 const ecgOffice: Spec = {
   name: 'ECG Legon office', axis: [1, 0], origin: EO, storey: ECG.storey, style: SLAB_PLAIN, roofColor: '#c9c4ba', fascia: '#e8e8e4', pitch: 0.1,
-  replaces: [[707, -364], [707, -370], [707, -355]],
+  replaces: [[707, -364], [707, -370], [707, -355], ...VAULTS.map(([a, b, c, d]) => [(a + b) / 2, (c + d) / 2] as P2)],
   blocks: [
     { x0: ECG.slab[0] - EO[0], x1: ECG.slab[1] - EO[0], z0: ECG.slab[2] - EO[1], z1: ECG.slab[3] - EO[1], floors: ECG.slabFloors, roof: 'flat', faces: { x1: SLAB_EAST, z1: SLAB_SIDE, x0: SLAB_SIDE, z0: SLAB_PLAIN } },
   ],
@@ -236,6 +236,7 @@ const ecgOffice: Spec = {
     const glass = new THREE.ExtrudeGeometry(shape, { depth: H - 1.3, bevelEnabled: false }).rotateX(-Math.PI / 2).translate(0, y + 0.4, 0);
     // the glass's uvs by world metres round the walls: one picture to 4 m
     { const p = glass.attributes.position as THREE.BufferAttribute, uv = glass.attributes.uv as THREE.BufferAttribute; for (let i = 0; i < p.count; i++) uv.setXY(i, (p.getX(i) + p.getZ(i)) / 4, (p.getY(i) - y) / 4); }
+    glass.setIndex([...Array(glass.attributes.position.count).keys()]);
     P.add(CURTAIN(), glass);
     c.push([ring(y, 0.4, 0.05), '#8c8a84']);
     c.push([ring(y + H - 0.9, 1.15, 0.12), '#e3e2dc'], [ring(y + H - 0.9 + 1.15, 0.12, 0.2), '#cfcdc6']);
@@ -445,7 +446,7 @@ const compound: Spec = {
     blueFence(c, GO, [fx, f1], [690, f1], GW.wallH, GW.fenceH);
     for (const zz of [gt0, gt1]) { const yy = gh(fx, zz); c.push([box(X(fx) - 0.42, X(fx) + 0.42, yy, yy + 2.9, Z(zz) - 0.42, Z(zz) + 0.42), BLUE], [box(X(fx) - 0.48, X(fx) + 0.48, yy + 2.9, yy + 3.05, Z(zz) - 0.48, Z(zz) + 0.48), '#e9e9e6']); SOLIDS.add(fx, zz, 0.5); }
     // the two gate leaves standing open inward against the fence (Pair 10)
-    for (const [zz, s] of [[gt0, 1], [gt1, -1]] as [number, number][]) {
+    for (const [zz, s] of [[gt0, -1], [gt1, 1]] as [number, number][]) { // (each folded back beside its post, clear of the opening)
       const yy = gh(fx, zz), ax = fx - 0.5, bx = fx - 0.5 - 3.2;
       for (const h of [0.15, 1.1, 2.05]) c.push([run(X(ax), Z(zz + s * 0.6), X(bx), Z(zz + s * 0.9), yy + h, yy + h + 0.06, 0.05), BLUE_DARK]);
       for (let j = 0; j <= 20; j++) { const t = j / 20, px = X(ax + (bx - ax) * t), pz = Z(zz + s * (0.6 + 0.3 * t)); c.push([box(px - 0.015, px + 0.015, yy + 0.15, yy + 2.1, pz - 0.015, pz + 0.015), BLUE_DARK]); }
@@ -603,7 +604,7 @@ const corridor: Spec = {
       const x = a + (bb - a) * (0.3 + hash(z, 3.3) * 0.4), y = gh(x, z);
       if (SOLIDS.at(x, z, 1.0)) continue;
       // trees (a short stem, the crown reaching low) where the photographs show crowns over the shrubs, else shrubs
-      if (hash(z, 5.7) < 0.45) compactTree(leaf, wood, CO, x, z, y, 2.8 + hash(z, 6) * 1.6, Math.min(bb - a + 1, 2.0 + hash(z, 7) * 1.4), z);
+      if (hash(z, 5.7) < 0.45) compactTree(leaf, wood, CO, x, z, y, 2.8 + hash(z, 6) * 1.6, Math.min(bb - a + 1, 2.0 + hash(z, 7) * 1.4), Math.round(-z * 3));
       else shrub(leaf, CO, x, z, y, 0.8 + hash(z, 8) * 0.8, i, ['#4e7a32', '#5b8438', '#3f6b2b', '#6a8a3e']);
     }
     for (let i = 0; i < 160; i++) { const z = PLANT.z0 + hash(i, 6.6) * (PLANT.z1 - PLANT.z0), [a, bb] = sep(z); if (Number.isNaN(a) || bb - a < 1) continue; const x = a + hash(1.1, i) * (bb - a); if (SOLIDS.at(x, z, 0.5)) continue; tuft(b, x, z, 0.3 + hash(i, 2) * 0.35, ['#7d8a44', '#8d9450', '#6b7a3a'][i % 3], i + 7000); }

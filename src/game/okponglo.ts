@@ -285,7 +285,7 @@ export function compactTree(leaf: Part[], wood: Part[], O: P2, x: number, z: num
   for (let i = 0; i < n; i++) {
     const t = i / n, a = r(20 + i) * 6.28, d = (0.15 + r(30 + i) * 0.3) * w;
     const cy = y + stem + 0.25 + (h - stem - 0.4) * (0.25 + r(40 + i) * 0.6), rad = (0.24 + r(50 + i) * 0.16) * w * (1 - t * 0.25);
-    leaf.push([new THREE.IcosahedronGeometry(rad, 1).scale(1.1, 0.85, 1.1).translate(X + Math.cos(a) * d, cy, Z + Math.sin(a) * d), greens[(i + (seed | 0)) % greens.length]]);
+    leaf.push([new THREE.IcosahedronGeometry(rad, 1).scale(1.1, 0.85, 1.1).translate(X + Math.cos(a) * d, cy, Z + Math.sin(a) * d), greens[(((i + (seed | 0)) % greens.length) + greens.length) % greens.length]]);
   }
   // a skirt of foliage low round the stem
   leaf.push([new THREE.IcosahedronGeometry(w * 0.3, 1).scale(1.3, 0.55, 1.3).translate(X, y + stem + 0.35, Z), '#3a6428']);
@@ -296,7 +296,7 @@ export function shrub(leaf: Part[], O: P2, x: number, z: number, y: number, h: n
   const X = x - O[0], Z = z - O[1], n = 2 + ((hash(seed, 1) * 2) | 0);
   for (let i = 0; i < n; i++) {
     const a = hash(seed, i + 3) * 6.28, d = h * 0.3 * hash(i, seed), rad = h * (0.42 + hash(seed + i, 7) * 0.2);
-    leaf.push([new THREE.IcosahedronGeometry(rad, i === 0 ? 1 : 0).scale(1.2, 0.85, 1.2).translate(X + Math.cos(a) * d, y + rad * 0.8, Z + Math.sin(a) * d), cols[(i + (seed | 0)) % cols.length]]);
+    leaf.push([new THREE.IcosahedronGeometry(rad, i === 0 ? 1 : 0).scale(1.2, 0.85, 1.2).translate(X + Math.cos(a) * d, y + rad * 0.8, Z + Math.sin(a) * d), cols[(((i + (seed | 0)) % cols.length) + cols.length) % cols.length]]);
   }
 }
 /** a boundary wall along a line: body, cap and base; its colours; a solid all along (`skip` leaves gates open) */
