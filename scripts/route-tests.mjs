@@ -959,6 +959,79 @@ try {
     if (!(lb.parkingFill(930, 1350) < 0.2) || lb.parkingFill(0, 0) !== undefined) fail('La Bawaleshie: the stadium car-park fill is wrong');
   }
 
+  // ---------- Okponglo to the UG Stadium (the owner's 21-pair Okponglo brief) ----------
+  {
+    const ok = await server.ssrLoadModule('/src/game/okplan.ts');
+    const lb = await server.ssrLoadModule('/src/game/lbplan.ts');
+    const okm = await server.ssrLoadModule('/src/game/okponglo.ts');
+    const rel = await server.ssrLoadModule('/src/game/relief.ts');
+    const names = okm.okpongloSite.frames().map((f) => f.name);
+    for (const n of ['Okponglo corridor', 'First Eye Plaza', '3D Sign Shop', 'Sign shop rear block', 'Okponglo south frontage', 'Leasafric Ghana', 'Pro Vision', 'Diamed', 'Blue house beside Diamed', 'Leasafric to Diamed compounds']) if (!names.includes(n)) fail(`Okponglo: the ${n} model is missing`);
+    // one building per photographed property: each outline is found once and built by this work, not the neighbourhood
+    for (const [k, box] of Object.entries(ok.OK_OUTLINES)) {
+      const found = BUILDINGS.filter((b) => Math.abs(b.minX - box[0]) < 1.5 && Math.abs(b.maxX - box[1]) < 1.5 && Math.abs(b.minZ - box[2]) < 1.5 && Math.abs(b.maxZ - box[3]) < 1.5);
+      if (found.length !== 1) { fail(`Okponglo: the outline for ${k} is found ${found.length} times`); continue; }
+      if (!okm.okpongloSite.replaces(found[0])) fail(`Okponglo: the outline for ${k} is not built by the Okponglo model`);
+    }
+    const edgeDist = (x, z) => {
+      let best = Infinity;
+      for (const road of cm.ROADS) {
+        if (road.cls === 4) continue;
+        const h = lb.halfOf(road), pts = road.nodes.map((n) => [cm.NODE_XZ[n * 2], cm.NODE_XZ[n * 2 + 1]]);
+        for (let i = 0; i < pts.length - 1; i++) {
+          const [ax, az] = pts[i], [bx, bz] = pts[i + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+          const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+          best = Math.min(best, Math.hypot(ax + dx * t - x, az + dz * t - z) - h);
+        }
+      }
+      return best;
+    };
+    // the median: compact trees with a few larger crowns, all inside the kerbs; the open stretch only shrubs and saplings
+    const plants = okm.medianPlan(), trees = plants.filter((p) => p.kind === 'tree' || p.kind === 'big');
+    if (trees.length < 15) fail(`Okponglo: only ${trees.length} median trees`);
+    if (trees.filter((p) => p.kind === 'big').length > trees.length * 0.2) fail('Okponglo: too many large median crowns');
+    for (const p of plants) {
+      const a = lb.xWest(p.z) + lb.W_HALF, o = lb.xEast(p.z) - lb.E_HALF;
+      if (p.x - p.w / 2 < a + 0.1 || p.x + p.w / 2 > o - 0.1) { fail(`Okponglo: the median plant at z ${p.z.toFixed(1)} hangs over a carriageway`); break; }
+      if (p.kind === 'tree' && p.h > 4.6) { fail(`Okponglo: a compact median tree ${p.h.toFixed(1)} m tall`); break; }
+    }
+    const open = ok.MEDIAN_RUNS.find((r) => r.kind === 'open');
+    if (plants.some((p) => p.z > open.z0 && p.z < open.z1 && (p.kind === 'tree' || p.kind === 'big'))) fail('Okponglo: a tree in the open stretch');
+    for (const [z, kind] of ok.MEDIAN_BOARDS) { const a = lb.xWest(z) + lb.W_HALF, o = lb.xEast(z) - lb.E_HALF; if (!(o - a > 2)) fail(`Okponglo: no median for the ${kind} board at z ${z}`); }
+    // the stadium side's raised banks: up at the top, the road and the path beside it at road level
+    for (const [name, bk] of Object.entries(ok.BANKS)) {
+      const z = (bk.z0 + bk.z1) / 2, f = ok.bankFace(bk, z), kerb = f + bk.face;
+      if (rel.groundHeight(f - 3, z) < bk.h - 0.05) fail(`Okponglo: the ${name} bank is ${rel.groundHeight(f - 3, z).toFixed(2)} m, not raised`);
+      if (Math.abs(rel.groundHeight(kerb + 1, z)) > 0.02 || Math.abs(rel.groundHeight(kerb - 1.0, z)) > 0.02) fail(`Okponglo: the ${name} bank lifts the road or the path`);
+    }
+    // the walls along the frontages and McDan Drive stand off the roads
+    for (const [z0, z1, off] of [[ok.GREENWALL.z0, ok.GREENWALL.z1, ok.GREENWALL.off], [ok.LEASAFRIC.z0, ok.LEASAFRIC.z1, ok.LEASAFRIC.wallOff], [ok.PROVISION.z0, ok.PROVISION.z1, ok.PROVISION.wallOff], [ok.DIAMED.z0, ok.DIAMED.z1, ok.DIAMED.wallOff]]) {
+      for (let z = z0; z <= z1; z += 2) { const x = lb.xEast(z) + lb.E_HALF + off; if (edgeDist(x, z) < 1.5) { fail(`Okponglo: the frontage wall at z ${z.toFixed(0)} is on a road`); break; } if (buildingAt(x, z)) { fail(`Okponglo: the frontage wall at z ${z.toFixed(0)} runs through an outline`); break; } }
+    }
+    for (let z = ok.PROVISION.z1; z <= ok.DIAMED.z1; z += 2) { if (z > ok.DIAMED.gate[0] && z < ok.DIAMED.gate[1]) continue; const x = ok.mcdanX(z) - 3.1 - ok.DIAMED.mcdanOff; if (edgeDist(x, z) < 1.5) { fail(`Okponglo: the McDan Drive wall at z ${z.toFixed(0)} is on a road`); break; } }
+    // the divider between Diamed and its neighbour leaves the mapped drive open
+    for (let x = lb.xEast(ok.DIAMED.split) + lb.E_HALF + ok.DIAMED.wallOff; x < ok.mcdanX(ok.DIAMED.split) - 3.1 - ok.DIAMED.mcdanOff; x += 1) if (!(x > ok.DIAMED.splitGap[0] && x < ok.DIAMED.splitGap[1]) && edgeDist(x, ok.DIAMED.split) < 0.3) { fail(`Okponglo: the plots' divider at x ${x.toFixed(0)} crosses a road`); break; }
+    // Pair 21's structures stand on the raised verge, off the road
+    for (const [what, q] of [['cream', ok.P21.cream], ['blue', ok.P21.blue]]) { const z = (q.z0 + q.z1) / 2, x = ok.bankFace(ok.BANKS.south, z) - q.back; if (edgeDist(x, z) < 2 || rel.groundHeight(x, z) < 0.5) fail(`Okponglo: the ${what} structure is not on the raised verge`); }
+    // the larger neighbour, the plaza's kiosks and the mast keep off the roads
+    const nb = ok.SIGNSHOP.neighbour;
+    for (const [x, z] of [[nb[0], nb[2]], [nb[1], nb[2]], [nb[0], nb[3]], [nb[1], nb[3]], [ok.SIGNSHOP.mast[0], ok.SIGNSHOP.mast[1]]]) if (edgeDist(x, z) < 0.5) fail(`Okponglo: ${x},${z} reaches a road`);
+    // the rides along the N4 and La-Bawaleshi Road keep clear of the frontages
+    for (const [a, b2] of [[[925, 900], [1050, 1600]], [[1050, 1600], [925, 900]], [[1000, 1225], [1400, 1185]]]) {
+      const p = cm.findPath(a, b2, 'cycle');
+      if (!p) { fail('Okponglo: no ride along the N4 or La-Bawaleshi Road'); continue; }
+      const line = p.nodes.map((n) => cm.nodeXZ(n));
+      for (const [z0, z1, off] of [[ok.GREENWALL.z0, ok.GREENWALL.z1, ok.GREENWALL.off], [ok.LEASAFRIC.z0, ok.DIAMED.z1, ok.LEASAFRIC.wallOff]]) for (let z = z0; z <= z1; z += 4) {
+        const x = lb.xEast(z) + lb.E_HALF + off;
+        for (let i = 0; i < line.length - 1; i++) {
+          const [ax, az] = line[i], [bx, bz] = line[i + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+          const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+          if (Math.hypot(ax + dx * t - x, az + dz * t - z) < 2.6) { fail(`Okponglo: a ride passes through the wall at z ${z.toFixed(0)}`); break; }
+        }
+      }
+    }
+  }
+
   // ---------- the Limbo ruin and the slabs by Annie Jiagge Road (the owner's Limbo brief) ----------
   {
     const lm = await server.ssrLoadModule('/src/game/limbo.ts');

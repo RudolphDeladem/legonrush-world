@@ -3480,3 +3480,44 @@ steps. Its pavilions, the links and the covered walks are also modelled.
 - the formal garden between the two roads east of the cross road: a paved grid of lawn panels, a second square, and
   flowering trees;
 - the long single-storey ranges either side of it.
+
+## Okponglo to the UG Stadium: the owner's correction brief (Pairs 1-21, A01-A05, M01-M04)
+
+The evidence, the registration, the comparison images and the open questions are in `docs/okponglo/evidence-audit.md`.
+The code is in `okponglo.ts`, the numbers in `okplan.ts`, the stadium-side banks in `relief.ts` (`bankZone`), and the
+cameras `ok*` in `okviews.ts`. It builds over the Legon Road and La Bawaleshie work above (labawaleshie.ts), which keeps
+the median's kerbed ground, the verges, the junction and the neighbourhood's other buildings.
+
+**The median.**
+- Compact trees on short stems with foliage reaching low, crowns of different sizes and a few larger ones, uneven gaps,
+  north of the junction (Pairs 1, 2, 4).
+- The open stretch south of it: low shrubs and saplings between the KFC and visa boards (Pairs 13, 14).
+- Soil patches and worn paths; the blue pylon, the A-frames and the INSTANT ADMISSION pylon.
+
+**The stadium side.**
+- North of the junction: a raised bank behind a low rough stone face, dense varied shrubs over it (Pair 3).
+- Opposite Leasafric: the raised verge with the same face, the cream structure with its curved ends and grey inset
+  panel, the blue structure, the signboards and the street light (Pair 21).
+
+**North of La-Bawaleshi Road.**
+- First Eye Plaza: ground shops behind grilles, the gallery set back behind orange columns and a railing, the top floor's
+  discrete windows, the orange tiled central feature with blue insets and FIRST EYE PLAZA on it; the forecourt's slabs,
+  kiosks and cabinet (Pairs 5, 6).
+- The low red-brown roofed structure behind its grille and gate (Pair 7).
+- ALPHA LED: the display stack, the dark screen, the coloured letters, the recessed green entrance up its steps, the low
+  yellow wing (Pair 9).
+
+**South of La-Bawaleshi Road.**
+- The corner shop with 3D SIGN SHOP in coloured relief letters on its dark fascia, 3D SIGNS on its face to the fenced
+  gravel forecourt, the taller block behind it, the larger neighbour set back (Pairs 8, 10, 11).
+- The long green wall round the planted plot, the empty frame, the lattice mast (Pairs 12, 13).
+- Leasafric's red-and-white office under its green roof, LEASAFRIC GHANA, the panel wall, the black gate and the pylon
+  (Pairs 15, 16).
+- Pro Vision's stone-faced front and green gabled building, the cream wall and security fence, the gold gate and the
+  board (Pair 17).
+- Diamed's green gabled house, the FIBROID and REHABILITATION banner, the decorative wall on McDan Drive; the blue
+  neighbour's rounded balcony canopy, high blue wall and black gate (Pairs 18-20).
+
+*Assumed*: every height, setback and unmapped span; the median plants' places; the mast's spot from four views'
+bearings. *Would settle it*: a measured section of the stadium-side banks; the plots' boundaries; a clearer crop of the
+forecourt sign of Pair 8.

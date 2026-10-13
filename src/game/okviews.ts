@@ -1,0 +1,37 @@
+// Comparison cameras for the owner's Okponglo to UG Stadium correction brief (Pairs 1-21, the aerials A01-A05;
+// preview views ok* in tools/preview/halls.html). Heights are above the ground. Placed from the aerials' arrows and
+// matched by eye to the street photographs, not surveyed camera positions.
+export interface OkView { name: string; eye: [number, number, number]; look: [number, number, number]; fov: number; note: string }
+export const OK_VIEWS: OkView[] = [
+  { name: 'okP01', eye: [974, 2.5, 1168], look: [990, 3, 1110], fov: 60, note: 'Pair 1: the median group north of the junction from the southbound carriageway, the plaza beyond (A02 arrow 1)' },
+  { name: 'okP02', eye: [979, 2.5, 1192], look: [1012, 5, 1150], fov: 60, note: 'Pair 2: the median toward First Eye Plaza and the mast (A02 arrow 2)' },
+  { name: 'okP03', eye: [962, 2.5, 1075], look: [935, 2, 1060], fov: 60, note: 'Pair 3: the raised stadium-side bank, its stone retaining edge and vegetation (A02 arrow 3)' },
+  { name: 'okP04', eye: [968, 2.5, 1140], look: [985, 2, 1230], fov: 60, note: 'Pair 4: south along the southbound carriageway toward the junction (A02 arrow 4)' },
+  { name: 'okP05', eye: [988, 2.5, 1148], look: [1015, 6, 1147], fov: 65, note: 'Pair 5: First Eye Plaza front (A02 arrow 5)' },
+  { name: 'okP06', eye: [992, 2.5, 1100], look: [1020, 4, 1135], fov: 60, note: 'Pair 6: the plaza corner and its kiosks from the north-west (A02 arrow 6)' },
+  { name: 'okP07', eye: [999, 2.5, 1180], look: [1030, 3, 1182], fov: 60, note: 'Pair 7: the low red-brown roof and the grille boundary south of the plaza (A02 arrow 7)' },
+  { name: 'okP08', eye: [1022, 2.5, 1232], look: [1050, 3, 1262], fov: 60, note: 'Pair 8: the fenced gravel forecourt, the signed workshop and its larger neighbour (A03 arrow 8)' },
+  { name: 'okP09', eye: [1035, 2.5, 1230], look: [1032, 4, 1200], fov: 60, note: 'Pair 9: the ALPHA LED shop across La-Bawaleshi Road (A03 arrow 9)' },
+  { name: 'okP10', eye: [995, 2.5, 1262], look: [1040, 5, 1250], fov: 55, note: 'Pair 10: the 3D SIGN SHOP across the N4 at the junction (A03 arrow 10)' },
+  { name: 'okP11', eye: [1010, 2.5, 1252], look: [1037, 5, 1248], fov: 60, note: 'Pair 11: the 3D SIGN SHOP fascia close (A03 arrow 11)' },
+  { name: 'okP12', eye: [1012, 2.5, 1240], look: [1045, 3, 1300], fov: 60, note: 'Pair 12: the long green wall beyond the sign shop (A04 arrow 12; the game reference is mirrored)' },
+  { name: 'okP13', eye: [1020, 2.5, 1290], look: [1040, 3, 1380], fov: 60, note: 'Pair 13: the open edge, the empty frame and the low wall (A04 arrow 13)' },
+  { name: 'okP14', eye: [1004, 2.5, 1316], look: [1018, 3, 1390], fov: 60, note: 'Pair 14: the median shrubs and the KFC and visa boards (A04 arrow 14)' },
+  { name: 'okP15', eye: [1017, 2.5, 1369], look: [1060, 4, 1362], fov: 60, note: 'Pair 15: the Leasafric frontage and entrance (A04 arrow 15)' },
+  { name: 'okP16', eye: [1037, 2.5, 1394], look: [1068, 4, 1368], fov: 60, note: 'Pair 16: the Leasafric side, its wall graphics (A04 arrow 16)' },
+  { name: 'okP17', eye: [1036.5, 2.5, 1384], look: [1060, 3, 1402], fov: 62, note: 'Pair 17: the Pro Vision property, its gate and board (A04 arrow 17)' },
+  { name: 'okP18', eye: [1028, 2.5, 1440], look: [1080, 4, 1436], fov: 60, note: 'Pair 18: Diamed (green) and its blue neighbour from the N4 (A05 arrow 18)' },
+  { name: 'okP19', eye: [1122, 2.5, 1446], look: [1100, 3, 1430], fov: 62, note: 'Pair 19: Diamed from McDan Drive (A05 arrow 19)' },
+  { name: 'okP20', eye: [1124, 2.5, 1470], look: [1106, 4, 1455], fov: 62, note: 'Pair 20: the blue neighbour and its curved balcony from McDan Drive (A05 arrow 20)' },
+  { name: 'okP21', eye: [1012, 2.5, 1392], look: [996, 3, 1340], fov: 60, note: 'Pair 21: the stadium-side roadside structures opposite Leasafric (A01 arrow 21)' },
+  { name: 'okTopN', eye: [1010, 230, 1170], look: [1010, 0, 1169.9], fov: 50, note: 'overhead north of the junction: the median, the bank, the plaza (A02)' },
+  { name: 'okTopS', eye: [1060, 260, 1380], look: [1060, 0, 1379.9], fov: 50, note: 'overhead south of the junction: the sign shop, the wall, Leasafric, Pro Vision, Diamed and its neighbour (A03-A05)' },
+  { name: 'okTopJ', eye: [1040, 120, 1245], look: [1040, 0, 1244.9], fov: 50, note: 'overhead at the La-Bawaleshi junction (A03)' },
+  { name: 'okClosePlaza', eye: [1000, 7, 1147], look: [1010, 12, 1147.4], fov: 40, note: 'close: FIRST EYE PLAZA on the orange feature, its tiles and blue insets' },
+  { name: 'okCloseSign', eye: [1018, 3, 1250], look: [1031, 3.8, 1249], fov: 45, note: 'close: the 3D SIGN SHOP relief letters on the dark fascia' },
+  { name: 'okCloseLease', eye: [1030, 4, 1366], look: [1059, 7, 1364], fov: 40, note: 'close: LEASAFRIC GHANA, the front advertisement, the wall panels' },
+  { name: 'okCloseProVision', eye: [1040, 2.0, 1401.5], look: [1046, 2.4, 1398.4], fov: 50, note: 'close: the Pro Vision board, the gold gate, the flowerbed' },
+  { name: 'okCloseDiamed', eye: [1044, 3, 1433], look: [1060, 2.5, 1431], fov: 55, note: 'close: the FIBROID and REHABILITATION banner, the DIAMED board and gable sign' },
+  { name: 'okCloseCanopy', eye: [1119, 4, 1463], look: [1105, 6.5, 1456], fov: 50, note: 'close: the blue house\'s rounded balcony canopy, its column and railing' },
+  { name: 'okCloseP21', eye: [1010, 2.2, 1374], look: [1001, 2, 1364], fov: 60, note: 'close: the cream structure with its curved ends and grey panel, the blue structure, the stone face' },
+];

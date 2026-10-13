@@ -23,6 +23,7 @@ import { KQ } from './kuffour';
 import { EN } from './entrance';
 import { CUT, CUT_Z, alongCut, cutDepth, cutDrop, deckAt, inBowl, inTrench, onBowlSlope, wallE, wallW } from './cutplan';
 import { GH } from './greathallplan';
+import { BANKS, bankFace, bankTop, type Bank } from './okplan';
 
 interface Hollow {
   /** hollow: sunk `depth` below the ground; terrace: raised `depth` above it */
@@ -35,6 +36,8 @@ interface Hollow {
   top?: (x: number, z: number) => number;
   /** a west edge that follows a line (x at z) instead of x0; x0 is then its westmost */
   west?: (z: number) => number;
+  /** an east edge that follows a line (x at z) instead of x1; x1 is then its eastmost */
+  east?: (z: number) => number;
   /** the ground grid's cell over this zone (default 1 m, 2 m over the big ones): finer where a wall stands on its edge */
   cell?: number;
 }
@@ -129,7 +132,21 @@ function ghZones(): Zone[] {
   ];
 }
 
+/** the raised ground on the stadium side of the N4 (the owner's Okponglo brief, okplan.ts BANKS: Pairs 3 and 21): the top
+ *  from the stone face behind the roadside path back toward the stadium, climbing a little, easing down at its ends and
+ *  at its back; the face itself a short slope under the modelled stone */
+function bankZone(b: Bank): Zone {
+  const zs: number[] = [];
+  for (let z = b.z0; z <= b.z1; z += 2) zs.push(z);
+  const face = (z: number) => bankFace(b, z);
+  return {
+    kind: 'terrace', x0: Math.min(...zs.map(face)) - b.back, x1: Math.max(...zs.map(face)), z0: b.z0, z1: b.z1, depth: 0,
+    west: (z) => face(z) - b.back, east: face, top: (x, z) => bankTop(b, x, z), w: b.fall, e: 0.35, n: b.ends, s: b.ends, cell: 1,
+  };
+}
+
 const ZONES: Zone[] = [
+  bankZone(BANKS.north), bankZone(BANKS.south),
   // The Institute of African Studies (the owner's main entrance brief, pairs 20-24): the building and its upper apron
   // stand on a terrace above the avenue; before the south front a middle terrace, each behind a stone-faced retaining
   // wall; steps up the middle; the west side drops to the brick parking at a low stone wall
@@ -419,13 +436,14 @@ function zoneHeight(x: number, z: number) {
     if (x < bx.x0 || x > bx.x1 || z < bx.z0 || z > bx.z1) continue;
     if (q.kind !== 'hill') {
       // how far up (or down) the slope, 0 on the floor, 1 at its foot: the steeper of the two directions wins
-      const x0 = q.west ? q.west(Math.min(q.z1, Math.max(q.z0, z))) : q.x0;
-      const tx = x < x0 ? (x0 - x) / q.w : x > q.x1 ? (x - q.x1) / q.e : 0;
+      const zc = Math.min(q.z1, Math.max(q.z0, z));
+      const x0 = q.west ? q.west(zc) : q.x0, x1 = q.east ? q.east(zc) : q.x1;
+      const tx = x < x0 ? (x0 - x) / q.w : x > x1 ? (x - x1) / q.e : 0;
       const tz = z < q.z0 ? (q.z0 - z) / q.n : z > q.z1 ? (z - q.z1) / q.s : 0;
       const t = Math.min(1, Math.max(tx, tz));
       // eased at the top and the foot of the slope: no sharp edge for a road or the ground mesh to cut across
       const e = 1 - t * t * (3 - 2 * t);
-      const depth = q.top ? q.top(Math.min(q.x1, Math.max(x0, x)), Math.min(q.z1, Math.max(q.z0, z))) : q.depth;
+      const depth = q.top ? q.top(Math.min(x1, Math.max(x0, x)), zc) : q.depth;
       if (q.kind === 'hollow') low = Math.min(low, -depth * e);
       else high = Math.max(high, depth * e);
     } else {

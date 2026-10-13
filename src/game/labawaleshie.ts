@@ -27,11 +27,13 @@ import { createSite, render, type Kit, type Spec, type Style } from './blocks';
 import { box, canvas, merge, speckle, type Part } from './modelkit';
 import { concrete } from './concrete';
 import { SOLIDS } from './solids';
+import { groundHeight as gh } from './relief';
 import { Bag, fanPalm, hash, tuft, vnoise, wallSolids } from './enkit';
 import { broadleaf } from './nsiaroad';
 import { drapeAt, groundCover } from './kuffourgarden';
 import { groundShade, weathering } from './shading';
 import { medianGrass, pavers, rod, run, strip, wires, type V3 } from './upsa';
+import { inOkKeep, okOwns } from './okplan';
 import {
   CABINET, COMPOUND, E_HALF, HOOD, ISLANDS, JUNCTION, MASSES, MAST, MEDIAN, ROADSIDE, SCRUB, VERGE_W, W_HALF,
   halfOf, inCompound, inHood, offEdge, pickOf, xEast, xWest, type Mass, type Pick,
@@ -296,7 +298,8 @@ function inner(ring: P2[]): P2 {
 }
 
 // the outlines this site builds: the neighbourhood's and the compound's
-const RINGS = BUILDINGS.filter((b) => { const cx = (b.minX + b.maxX) / 2, cz = (b.minZ + b.maxZ) / 2; return inHood(cx, cz) || inCompound(cx, cz); })
+// (the outlines the Okponglo brief rebuilds, okponglo.ts, are left to it)
+const RINGS = BUILDINGS.filter((b) => { const cx = (b.minX + b.maxX) / 2, cz = (b.minZ + b.maxZ) / 2; return (inHood(cx, cz) || inCompound(cx, cz)) && !okOwns(b); })
   .map((b) => { const r: P2[] = []; for (let i = 0; i < b.pts.length; i += 2) r.push([b.pts[i], b.pts[i + 1]]); return { b, ring: r }; });
 const MASS_RING = (m: Mass): P2[] => [[m.r[0], m.r[2]], [m.r[1], m.r[2]], [m.r[1], m.r[3]], [m.r[0], m.r[3]]];
 const FACE: Record<Mass['shopFace'], P2> = { z0: [0, -1], z1: [0, 1], x0: [-1, 0], x1: [1, 0] };
@@ -339,7 +342,8 @@ const hood: Spec = {
       return n > 0.62 ? [0.42 + m * 0.06, 0.47 + m * 0.05, 0.27] : n > 0.4 ? [0.6 + m * 0.06, 0.43 + m * 0.05, 0.3] : [0.56 + m * 0.05, 0.5 + m * 0.04, 0.42];
     }), groundCover()));
     // ---- mature trees and palms in the gaps; tall narrow trees by the 15-16 frontage (Pair 16) ----
-    const taken = (x: number, z: number, r: number) => !!buildingNear(x, z, r) || MASSES.some((m) => x > m.r[0] - r && x < m.r[1] + r && z > m.r[2] - r && z < m.r[3] + r);
+    // (and the frontages and compounds the Okponglo brief models and plants itself)
+    const taken = (x: number, z: number, r: number) => !!buildingNear(x, z, r) || MASSES.some((m) => x > m.r[0] - r && x < m.r[1] + r && z > m.r[2] - r && z < m.r[3] + r) || inOkKeep(x, z, r);
     let trees = 0;
     for (let i = 0; i < 900 && trees < 95; i++) {
       const x = 1000 + hash(i, 1.7) * (HOOD.x1 - 1000), z = HOOD.z0 + hash(2.3, i) * (HOOD.z1 - HOOD.z0);
@@ -432,7 +436,7 @@ function buildPick(W: Walls, c: Part[], ring: P2[], p: Pick, seed: number) {
 
 /** a lattice mast: three tapering legs braced in bays, antenna panels and a dish near the top (a communications mast),
  *  or bare (the slender verge mast) */
-function lattice(c: Part[], px: number, pz: number, h: number, antennas: boolean) {
+export function lattice(c: Part[], px: number, pz: number, h: number, antennas: boolean) {
   const steel = '#9aa0a4', legs = 3, r = (y: number) => 1.6 - (1.25 * y) / h;
   const P = (y: number, i: number): V3 => [px + r(y) * Math.cos((i / legs) * Math.PI * 2), y, pz + r(y) * Math.sin((i / legs) * Math.PI * 2)];
   const bays = Math.round(h / 3);
@@ -461,7 +465,7 @@ const corridor: Spec = {
   extras: (k: Kit) => {
     const b = new Bag(CO), c: Part[] = [], edge: Part[] = [], A = (x: number, z: number): P2 => [x - CO[0], z - CO[1]];
 
-    // ---------- the median: kerbed patchy grass and red earth, young planted trees ----------
+    // ---------- the median: kerbed patchy grass and red earth ----------
     {
       const runs: [number, number, number][][] = [];
       let cur: [number, number, number][] = [];
@@ -473,14 +477,8 @@ const corridor: Spec = {
       }
       if (cur.length > 1) runs.push(cur);
       for (const r of runs) strip(k, r.map(([z, a]) => A(a, z)), r.map(([z, , o]) => A(o, z)), 0.16, medianGrass(), edge, '#cfcbc2', [0.2, 0.2]);
-      for (const r of runs) for (let z = r[0][0] + 6; z < r[r.length - 1][0] - 4; z += MEDIAN.tree) {
-        const a = xWest(z) + W_HALF, o = xEast(z) - E_HALF, w = o - a;
-        if (w < 3) continue;
-        const x = a + w * (0.4 + hash(z, 3) * 0.2);
-        broadleaf(k, b.leaf, x, z, { h: 3.8 + hash(z, 5) * 1.6, spread: 3.6 + hash(z, 6) * 1.6, seed: z, origin: CO, round: true });
-        // a shrub or two between the trees
-        for (let j = 1; j < 3; j++) { const zz = z + j * (MEDIAN.tree / 3), xx = a + w * (0.3 + hash(zz, 2) * 0.4); b.leaf.push([new THREE.IcosahedronGeometry(0.55 + hash(zz, 4) * 0.4, 0).scale(1.3, 0.9, 1.3).translate(xx - CO[0], 0.5, zz - CO[1]), '#4e7a32']); }
-      }
+      // (its planting: compact trees, shrubs and the open stretch's boards, okponglo.ts, the Okponglo brief's Pairs 1, 2,
+      // 4, 13, 14)
     }
 
     // ---------- the scrub west of the N4 north of the junction (Pair 3) ----------
@@ -501,21 +499,8 @@ const corridor: Spec = {
         if (d > SCRUB.path[0] && d < SCRUB.path[1] + (vnoise(z * 0.2, 1) - 0.5)) return [0.62 + m * 0.05, 0.42 + m * 0.04, 0.29];
         return d < SCRUB.path[0] ? [0.5 + m * 0.05, 0.52, 0.32] : [0.33 + m * 0.07, 0.36 + m * 0.06, 0.2];
       }), groundCover()));
-      let n = 0;
-      for (let i = 0; i < 14000 && n < 4200; i++) {
-        const z = SCRUB.z0 + hash(i, 0.31) * (SCRUB.z1 - SCRUB.z0), d = SCRUB.path[1] + 0.6 + Math.pow(hash(0.77, i), 1.4) * SCRUB.depth, x = kerb(z) - d;
-        if (Number.isNaN(x) || inPond(x, z) || !clear(x, z, 0.8, true) || buildingNear(x, z, 1.5)) continue;
-        n++;
-        const r = hash(i, 5.1);
-        // bushes of mixed height (dense near the road), tall weeds, now and then a small tree
-        const near = d < 14 ? 1 : 0.6;
-        if (r < 0.5 * near) {
-          const rad = 0.45 + hash(i, 6) * 0.7, tall = 1.2 + hash(i, 7) * 1.6;
-          b.leaf.push([new THREE.IcosahedronGeometry(rad, 1).scale(1, tall, 1).translate(x - CO[0], rad * tall * 0.85, z - CO[1]), ['#3f6a2a', '#4d7a31', '#5b7f36', '#36602a', '#66803a', '#557331'][i % 6]]);
-          if (hash(i, 12) < 0.5) b.leaf.push([new THREE.IcosahedronGeometry(rad * 0.7, 1).scale(1.2, tall * 0.8, 1.2).translate(x - CO[0] + 0.5, rad * tall * 0.6, z - CO[1] + 0.3), ['#46702d', '#5b7f36'][i % 2]]);
-        } else if (r < 0.985) tuft(b, x, z, 0.9 + hash(i, 9) * 1.5, ['#7d8a44', '#8d9450', '#6b7a3a', '#a39a5a', '#5f7a35'][i % 5], i + 7000);
-        else broadleaf(k, b.leaf, x, z, { h: 4 + hash(i, 10) * 3, spread: 3.5 + hash(i, 11) * 3, seed: i, origin: CO, round: true });
-      }
+      // (its planting over the raised bank behind the stone face: okponglo.ts, the Okponglo brief's Pair 3)
+      void inPond;
     }
 
     // ---------- the stadium-side verge (Pairs 8, 14): the red brick path, rough ground, the steel fence ----------
@@ -608,7 +593,10 @@ const corridor: Spec = {
       const [x, zz] = offEdge(z, side, off);
       if (Number.isNaN(x) || !clear(x, zz, 0.6)) continue;
       const [px, pz] = A(x, zz), face = side === 'W' ? 1 : -1;
-      if (kind === 'mast') { lattice(c, px, pz, 26, false); for (const sx of [-1, 1]) for (const sz of [-1, 1]) SOLIDS.add(x + sx * 1.1, zz + sz * 1.1, 0.25); continue; }
+      // (on the raised stadium-side verge, the Okponglo brief's Pair 21: everything stands on the ground there)
+      const c0 = c.length, yg = gh(x, zz);
+      const lift = () => { if (yg) for (let q = c0; q < c.length; q++) c[q][0].translate(0, yg, 0); };
+      if (kind === 'mast') { lattice(c, px, pz, 26, false); lift(); for (const sx of [-1, 1]) for (const sz of [-1, 1]) SOLIDS.add(x + sx * 1.1, zz + sz * 1.1, 0.25); continue; }
       if (kind === 'frame') {
         // an empty steel frame: two red-brown uprights, the grid of a missing panel (Pair 14)
         const col = '#7a3a2c', w = 5.2, y0 = 5, y1 = 12;
@@ -617,6 +605,7 @@ const corridor: Spec = {
         for (let dz = -w / 2; dz <= w / 2 + 0.01; dz += w / 3) c.push([box(px - 0.06, px + 0.06, y0, y1, pz + dz - 0.05, pz + dz + 0.05), col]);
         c.push([rod([px, y0, pz - w / 2], [px, y1, pz + w / 2], 0.06), col], [rod([px, y0, pz + w / 2], [px, y1, pz - w / 2], 0.06), col]);
         SOLIDS.add(x, zz - w / 2, 0.3); SOLIDS.add(x, zz + w / 2, 0.3);
+        lift();
         continue;
       }
       // a panel on a single steel post: wide (panel) or tall and narrow (tall), its face a plain colour field
@@ -628,6 +617,7 @@ const corridor: Spec = {
       c.push([box(px + face * 0.15, px + face * 0.2, y0 + h * 0.55, y0 + h - 0.2, pz - w / 2 + 0.2, pz + w / 2 - 0.2), cols[(i0 + 2) % cols.length]]);
       c.push([box(px + face * 0.15, px + face * 0.21, y0 + h * 0.3, y0 + h * 0.4, pz - w / 2 + 0.6, pz + w / 4), '#f4f1e8']);
       SOLIDS.add(x, zz, 0.3);
+      lift();
     }
 
     const m = new THREE.Mesh(merge(c), concrete(0.3)); m.castShadow = true; m.receiveShadow = true; k.meshes.push(m);

@@ -56,15 +56,12 @@ export const inCompound = (x: number, z: number) => x > COMPOUND.x0 && x < COMPO
 /** a footprint picked out by its box (the mapped outline's bounds, rounded) */
 export type Box = [number, number, number, number];
 export interface Pick { box: Box; name: string; storeys: number; wall: string; roof: 'flat' | 'metal'; roofColor?: string; accent?: string; note: string }
-/** footprints the photographs identify (osm ids for reference) */
+/** footprints the photographs identify (osm ids for reference). (The Okponglo brief, okponglo.ts, rebuilds the cream
+ *  block with the orange accents as First Eye Plaza, the retail corner as the 3D sign shop and the block behind it, the
+ *  outline the map calls Diamed as Pro Vision, and the commercial block of the earlier Pair 15: their picks are gone.) */
 export const PICKS: Pick[] = [
   { box: [993, 1031, 1017, 1031], name: 'gra', storeys: 4, wall: '#e6d3aa', roof: 'flat', note: 'osm:way/758602538 by the Ghana Revenue Authority: the compact beige institutional block with the tall dark grey face toward the road, few openings (Pairs 1, 2)' },
-  { box: [1010, 1033, 1128, 1167], name: 'creamorange', storeys: 3, wall: '#efe5cc', roof: 'flat', accent: '#e07a2c', note: 'osm:way/1518873623: the cream three-storey commercial block with orange vertical accents and dark window bands (Pairs 2, 4)' },
   { box: [1042, 1053, 1169, 1181], name: 'beigeback', storeys: 3, wall: '#dccaa2', roof: 'flat', note: 'osm:way/1518873624: the taller beige mass behind the low yellow frontage (Pair 11)' },
-  { box: [1031, 1044, 1244, 1255], name: 'corner1', storeys: 2, wall: '#eddcb6', roof: 'flat', accent: '#e07a2c', note: 'osm:way/1289415410: the retail corner south-east of the junction, two levels, upper windows, shop bays with signs, the orange lower wall (Pairs 12, 19)' },
-  { box: [1034, 1044, 1256, 1275], name: 'corner2', storeys: 2, wall: '#eddcb6', roof: 'flat', accent: '#e07a2c', note: 'osm:way/758602539: the corner block\'s southern half (Pair 12)' },
-  { box: [1065, 1099, 1390, 1416], name: 'diamed', storeys: 2, wall: '#f1f0ea', roof: 'flat', accent: '#3a78b8', note: 'osm:way/675704403, the Diamed Diagnostical and Treatment Center\'s outline (a place in the map): two storeys, white with a blue band (inferred)' },
-  { box: [1085, 1113, 1485, 1519], name: 'strip15', storeys: 2, wall: '#e9dcc0', roof: 'flat', accent: '#b9302b', note: 'osm:way/675704404: the commercial block at the shared 15-16 view, its forecourt full of cars (Pair 15)' },
   { box: [1091, 1106, 1530, 1543], name: 'greengable', storeys: 1, wall: '#7fae5c', roof: 'metal', roofColor: '#3f6e3e', note: 'osm:way/1289415412: the individually shaped green gable-front structure (Pair 16)' },
   { box: [1092, 1111, 1550, 1576], name: 'redtrim', storeys: 1, wall: '#f2eee5', roof: 'metal', roofColor: '#a8443a', accent: '#b9302b', note: 'osm:way/675703101: the pale low building with red trim (Pair 16)' },
 ];
@@ -72,15 +69,14 @@ export const pickOf = (b: { minX: number; maxX: number; minZ: number; maxZ: numb
   PICKS.find((p) => Math.abs(b.minX - p.box[0]) < 1.5 && Math.abs(b.maxX - p.box[1]) < 1.5 && Math.abs(b.minZ - p.box[2]) < 1.5 && Math.abs(b.maxZ - p.box[3]) < 1.5);
 
 /** frontages the photographs and the satellite crop show where the map has no outline: x0, x1, z0, z1, storeys, wall,
- *  roof, accent; each one a guess at its extent (Pairs 11, 17-19, Additional Reference 3) */
+ *  roof, accent; each one a guess at its extent (Pairs 11, 17-19, Additional Reference 3). (The Okponglo brief builds the
+ *  low yellow frontage as the ALPHA LED shop, and in place of the two frontages along La Bawaleshie Road's south side
+ *  the larger neighbour set back behind the open forecourt the aerial A03 shows: okplan.ts.) */
 export interface Mass { r: Box; storeys: number; wall: string; roof: 'flat' | 'metal'; roofColor?: string; accent?: string; shopFace: 'z0' | 'z1' | 'x0' | 'x1'; display?: boolean; note: string }
 export const MASSES: Mass[] = [
-  { r: [1023, 1041, 1196, 1206.5], storeys: 1, wall: '#e9c84a', roof: 'flat', shopFace: 'z1', display: true, note: 'the low yellow frontage with its dark display face on the north side of La Bawaleshie Road (Pairs 11, 17)' },
   { r: [1043.5, 1051, 1198, 1207], storeys: 1, wall: '#d7d2c4', roof: 'metal', roofColor: '#8f969a', shopFace: 'z1', note: 'small metal-roofed shop (Pair 17)' },
   { r: [1052.5, 1061.5, 1197.5, 1206.5], storeys: 1, wall: '#c8dbe6', roof: 'metal', roofColor: '#8a5a3c', shopFace: 'z1', note: 'small metal-roofed shop (Pair 17)' },
   { r: [1070, 1086, 1195, 1205.5], storeys: 2, wall: '#ecdcb4', roof: 'flat', accent: '#3a78b8', shopFace: 'z1', note: 'cream two-level shop block with a gallery (Pair 18)' },
-  { r: [1053, 1068, 1225.5, 1237], storeys: 2, wall: '#7fb2d6', roof: 'flat', shopFace: 'z0', note: 'the blue frontage beside the corner block (Pair 19)' },
-  { r: [1070, 1084.5, 1225.5, 1238], storeys: 2, wall: '#efe0bd', roof: 'flat', accent: '#e07a2c', shopFace: 'z0', note: 'cream commercial block with upper windows and ground shop signs (Pairs 18, 19)' },
 ];
 
 /** the lattice communications mast behind the beige block (Pairs 1, 2; spot inferred): x, z, height */
@@ -92,7 +88,7 @@ export const MAST: [number, number, number] = [1040, 1037, 42];
 export type Side = 'W' | 'E';
 export const ROADSIDE: [number, Side, number, 'panel' | 'tall' | 'frame' | 'mast'][] = [
   [1045, 'E', 9, 'tall'], [1296, 'W', 8, 'panel'], [1350, 'W', 10, 'frame'], [1362, 'W', 17, 'mast'], [1395, 'W', 8, 'panel'],
-  [1452, 'W', 9, 'frame'], [1478, 'E', 8, 'tall'], [1282, 'E', 7, 'panel'],
+  [1452, 'W', 9, 'frame'], [1478, 'E', 8, 'tall'],
 ];
 /** a point `off` metres out from a carriageway's outer edge at z, pushed farther out past any footway it would stand on */
 export const offEdge = (z: number, side: Side, off: number): [number, number] => {

@@ -1,4 +1,5 @@
-// Raised letters for the block-modelled buildings (nightmarket.ts: SUPERMART; enclave.ts: INNOVATION ENCLAVE and UG):
+// Raised letters for the block-modelled buildings (nightmarket.ts: SUPERMART; enclave.ts: INNOVATION ENCLAVE and UG;
+// okponglo.ts: FIRST EYE PLAZA, ALPHA LED, 3D SIGN SHOP, LEASAFRIC GHANA, DIAMED):
 // each letter a few straight strokes, boxes standing out from a wall.
 import * as THREE from 'three';
 import type { Kit } from './blocks';
@@ -42,6 +43,8 @@ const GLYPHS: Record<string, Stroke[]> = {
   '.': [[0.45, 0.05, 0.55, 0.05]],
   '-': [[0.2, 0.7, 0.8, 0.7]],
   G: [...arc(0.55, 0.95, 0.45, 25 * D, 180 * D, 6), [0.1, 0.95, 0.1, 0.45], ...arc(0.55, 0.45, 0.45, 180 * D, 360 * D, 6), [1, 0.45, 1, 0.7], [1, 0.7, 0.6, 0.7]],
+  Z: [[0, 1.4, 1, 1.4], [1, 1.4, 0, 0], [0, 0, 1, 0]],
+  '3': [...arc(0.45, 1.05, 0.35, 150 * D, -90 * D, 7), ...arc(0.45, 0.35, 0.35, 90 * D, -150 * D, 7)],
 };
 /**
  * Raised letters standing out from a wall: centred on (x, y, z), letters h high and `depth` deep, the face of the
