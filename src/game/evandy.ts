@@ -923,6 +923,14 @@ const junctions: Spec = {
       parapet(q, L2);
       fk.plain.push(...q);
     });
+    // the corner where the two planes meet (the owner's notes on batch 148: no gap down it): the wedge between the two
+    // skins filled from the ground to the parapet's top, and over it a small wall slab joining the two rails
+    { const n = (a: P2, b: P2): P2 => { const L = Math.hypot(b[0] - a[0], b[1] - a[1]); return [-(b[1] - a[1]) / L, (b[0] - a[0]) / L]; };
+      const d = (a: P2, b: P2): P2 => { const L = Math.hypot(b[0] - a[0], b[1] - a[1]); return [(b[0] - a[0]) / L, (b[1] - a[1]) / L]; };
+      const n1 = n(JA, JV), n2 = n(JV, JT), d1 = d(JA, JV), d2 = d(JV, JT), T = 0.8, at = (s1: number, k1: number, s2: number, k2: number): P2 => [JV[0] + d1[0] * s1 + n1[0] * k1 + d2[0] * s2 + n2[0] * k2, JV[1] + d1[1] * s1 + n1[1] * k1 + d2[1] * s2 + n2[1] * k2];
+      p.push([prism([JV, at(0, T, 0, 0), at(0, 0, 0, T)], 0, ct + 1.0), W]);
+      p.push([prism([at(-0.45, 0, 0, 0), at(-0.45, T, 0, 0), at(0, T, 0, 0), at(0, 0, 0, T), at(0, 0, 0.45, T), at(0, 0, 0.45, 0)], ct + 1.0, ct + 1.65), W]);
+      p.push([prism([at(-0.5, -0.02, 0, 0), at(-0.5, T + 0.03, 0, 0), at(0, T + 0.03, 0, 0), at(0, 0, 0, T + 0.03), at(0, 0, 0.5, T + 0.03), at(0, 0, 0.5, -0.02)], ct + 1.65, ct + 1.72), '#e2d9c5']); }
     { const out = (a: P2, b: P2, r: number) => { const L = Math.hypot(b[0] - a[0], b[1] - a[1]), nx = -(b[1] - a[1]) / L, nz = (b[0] - a[0]) / L; wallSolids(a[0] + nx * 0.4, a[1] + nz * 0.4, b[0] + nx * 0.4, b[1] + nz * 0.4, r); };
       out([xA(JW[1]), JW[1]], JV, 0.5); out(JV, JT, 0.5); out(JA, [xA(JW[0]), JW[0]], 0.4);
       wallSolids(xA(JW[0]) - 0.44, JW[0], xA(JW[1]) - 0.44, JW[1], 0.15);
