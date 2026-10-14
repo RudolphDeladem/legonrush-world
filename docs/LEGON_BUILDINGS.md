@@ -3753,3 +3753,13 @@ evidence are in `docs/upsa-campus/evidence-ledger.md` (batch 129).
 
 *Not changed.* KOKA's outline: the aerial's lean is ambiguous. The small house by the tower court: it would land on its
 road loop.
+
+## UPSA ground, planting and facades from the DroneStories frames (the owner)
+
+The ledger is in `docs/upsa-campus/evidence-ledger.md` (batch 130) and the comparison in `sheet-ground-facades.jpg`.
+
+- **The campus's ground.** Painted from the owner's aerial (`upsagreen.ts`): concrete and asphalt forecourts, red earth
+  round the works east of the Administration, lawn only where the aerial is green, as in frames 166-203.
+- **The quadrangle.** Lawn under shade trees round its walks and pond (frames 206-211).
+- **Justice Aryeetey Building.** Low rust-brown hipped roofs (frames 132, 137).
+- **The Opoku Ampomah drum.** Its dark glass band runs round the whole drum (frames 167-176).

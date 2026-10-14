@@ -426,15 +426,17 @@ const JA_FACE: Style = {
 const JO: [number, number] = [2412.3, -1118.6];
 const jx = (x: number) => x - JO[0], jz = (z: number) => z - JO[1];
 const [cA, cB] = JA.courts;
+// (its wings carry low rust-brown hipped roofs round the two courtyards: the DroneStories frames 132 and 137, the owner's
+// Apple aerial)
 const justice: Spec = {
-  name: 'Justice Aryeetey Building', axis: [1, 0], origin: JO, storey: JA.storey, style: JA_FACE, roofColor: '#d9d8d3', fascia: '#ecebe6', pitch: 0,
+  name: 'Justice Aryeetey Building', axis: [1, 0], origin: JO, storey: JA.storey, style: JA_FACE, roofColor: '#8f5a45', fascia: '#ecebe6', pitch: 0.22,
   replaces: [[2398, -1120]],
   blocks: [
-    { x0: jx(JA.x0), x1: jx(cA[0]), z0: jz(JA.z0), z1: jz(JA.z1), floors: JA.floors, roof: 'flat' },
-    { x0: jx(cA[1]), x1: jx(JA.x1), z0: jz(JA.z0), z1: jz(JA.z1), floors: JA.floors, roof: 'flat' },
-    { x0: jx(cA[0]), x1: jx(cA[1]), z0: jz(JA.z0), z1: jz(cB[2]), floors: JA.floors, roof: 'flat' },
-    { x0: jx(cA[0]), x1: jx(cA[1]), z0: jz(cB[3]), z1: jz(cA[2]), floors: JA.floors, roof: 'flat' },
-    { x0: jx(cA[0]), x1: jx(cA[1]), z0: jz(cA[3]), z1: jz(JA.z1), floors: JA.floors, roof: 'flat' },
+    { x0: jx(JA.x0), x1: jx(cA[0]), z0: jz(JA.z0), z1: jz(JA.z1), floors: JA.floors, roof: 'hip' },
+    { x0: jx(cA[1]), x1: jx(JA.x1), z0: jz(JA.z0), z1: jz(JA.z1), floors: JA.floors, roof: 'hip' },
+    { x0: jx(cA[0]), x1: jx(cA[1]), z0: jz(JA.z0), z1: jz(cB[2]), floors: JA.floors, roof: 'hip' },
+    { x0: jx(cA[0]), x1: jx(cA[1]), z0: jz(cB[3]), z1: jz(cA[2]), floors: JA.floors, roof: 'hip' },
+    { x0: jx(cA[0]), x1: jx(cA[1]), z0: jz(cA[3]), z1: jz(JA.z1), floors: JA.floors, roof: 'hip' },
   ],
   keep: [],
   extras: (k: Kit) => {
@@ -508,6 +510,30 @@ const admin: Spec = {
     const bot: V3[] = [], tp: V3[] = [];
     for (let i = 0; i <= n; i++) { const [x0, z0] = at(A(i), 21.9), [x1, z1] = at(A(i), 23.1); bot.push([x0, ADMIN.band0, z0]); tp.push([x1, ADMIN.band1, z1]); }
     glass.push(ribbon(bot, tp));
+    // the same dark glass band runs on round the rest of the drum, along its outline (the DroneStories frames 167-176), with
+    // a gap where the outline steps in at the east entrance
+    {
+      const D = L(ADMIN.drum), m = 140, reach = (a: number) => {
+        const dx = Math.cos(a), dz = Math.sin(a);
+        let best = 0;
+        for (let i = 0; i < D.length; i++) {
+          const [ax, az] = D[i], [bx, bz] = D[(i + 1) % D.length], ex = bx - ax, ez = bz - az, den = dx * ez - dz * ex;
+          if (Math.abs(den) < 1e-9) continue;
+          const t = (ax * ez - az * ex) / den, u = (ax * dz - az * dx) / den;
+          if (t > 0 && u >= 0 && u <= 1) best = Math.max(best, t);
+        }
+        return best;
+      };
+      const [ox, oz] = at(0, 0), b2: V3[] = [], t2: V3[] = [];
+      const flush = () => { if (b2.length > 1) glass.push(ribbon(b2.splice(0), t2.splice(0))); else { b2.length = 0; t2.length = 0; } };
+      for (let i = 0; i <= m; i++) {
+        const a = ADMIN.a1 + ((ADMIN.a0 + Math.PI * 2 - ADMIN.a1) * i) / m, [dx, dz] = at(a, 1), ux = dx - ox, uz = dz - oz;
+        const r = reach(Math.atan2(uz, ux));
+        if (r < 18) { flush(); continue; }
+        b2.push([ox + ux * (r + 0.06), ADMIN.band0, oz + uz * (r + 0.06)]); t2.push([ox + ux * (r + 0.06), ADMIN.band1, oz + uz * (r + 0.06)]);
+      }
+      flush();
+    }
     tiles.push(prism(ring(ADMIN.r - 0.6, 22.2), ADMIN.band0 - 0.75, ADMIN.band0));
     tiles.push(prism(ring(ADMIN.r - 0.6, 23.4), ADMIN.band1, ADMIN.top));
     const [mx, mz] = at(Math.PI, 22.25);

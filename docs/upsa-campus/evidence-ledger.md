@@ -137,3 +137,35 @@ Every outline was checked again on the aerial, enlarged with a 10 m grid (`sheet
 
 Route lengths identical, access unchanged. The route tests, the build and the smoke ride pass.
 
+## Batch 130: the ground, the planting and two facades (the owner: "fix the facade, the environment, the ground... use
+the reference snapshots"; the DroneStories frames, Pack 1)
+
+**The campus's ground.**
+- *Finding.* Frames 166-203 show grey asphalt and concrete forecourts and car parks round kerbed planted islands, bare
+  red earth round the works east of the Administration, and lawn only in patches. The game was lawn almost everywhere.
+- *Correction.* The ground is painted from the aerial's cover grid (`upsagreen.ts` `campusColor`):
+  - pale cover as concrete;
+  - dry cover as asphalt;
+  - red-orange soil as earth;
+  - dark ground as worn earth;
+  - green left as lawn.
+
+  The patch edges are loosened by smooth noise. The overlay keeps off the buildings, the car-park bays, the roads and
+  the sports surfaces.
+
+**The quadrangle.**
+- Frames 206-211 show it under broad shade trees round its walks and pond, thicker than the aerial's crowns.
+- It stays lawn (no paving over it), with trees in most 7 m blocks of lawn.
+- The trees keep clear of the walks, the pond, the letters, the benches, the lamps and the car-park bays.
+
+**Justice Aryeetey Building.** Frames 132 and 137, and the aerial, show low rust-brown hipped roofs over its wings round
+the two courtyards. It had flat roofs.
+
+**Opoku Ampomah Building.** Frames 167-176 show its dark glass band running round the drum, not only on its west front.
+The band now follows the drum's outline round the rest, with a gap where the outline steps in at the east entrance.
+
+**Not added.**
+- The blue tent canopies in the car parks (frames 166-173). They are temporary, and the newer aerial shows almost none.
+
+Route lengths identical; the route tests, the build and the smoke ride pass. Comparison: `sheet-ground-facades.jpg`.
+

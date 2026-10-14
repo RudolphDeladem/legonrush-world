@@ -14,7 +14,11 @@ import { coverAt } from './ghlplan';
 import { coverOverlay, crownTiles, hash2, vnoise2, type Crown, type P2, type RGBA } from './scrubkit';
 import { segIndex, type Seg5 } from './seggrid';
 import { BLOCK_SITES } from './sites';
-import { UPSA_LAND } from './upsawestplan';
+import { COURTS_NW, COURT_TOWER, TURF, UPSA_LAND } from './upsawestplan';
+import { BENCHES, FOUNTAIN, LAMPS, LOVE_SIGN } from './upsalandmarksplan';
+
+/** the models' sports surfaces, drawn by upsawest.ts */
+const SPORT: [number, number, number, number][] = [[TURF.turf[0] - 3, TURF.turf[1] + 3, TURF.turf[2] - 3, TURF.turf[3] + 3], COURTS_NW.outer, COURT_TOWER.outer];
 
 const cover = (x: number, z: number) => coverAt(UPSA_COVER, x, z);
 /** the aerial's extent, and the campus's west wall (x 2136 along the strip the aerial covers) */
@@ -67,6 +71,30 @@ function westColor(x: number, z: number): RGBA | null {
   return [r0 + t + f, g0 + t + f, b0 + t * 0.7 + f, a0 * fade];
 }
 
+// ---------- the campus's ground ----------
+/** the central quadrangle (its lawns, walks and pond under trees) */
+const QUAD_BOX: [number, number, number, number] = [2280, 2352, -1132, -1074];
+/** the campus's ground by the aerial (the DroneStories frames 166-203: grey asphalt and concrete forecourts and car parks
+ *  round kerbed planted islands, bare red earth round the works east of the Administration, lawn only in patches): pale
+ *  cover as concrete, dry cover as asphalt, red-orange soil as earth, dark ground as worn earth; the green left as lawn */
+const PAVE: Record<number, [number, number, number, number]> = {
+  3: [138, 136, 130, 0.97], 5: [178, 174, 164, 0.97], 4: [168, 104, 70, 0.95], 6: [120, 96, 72, 0.9],
+};
+function campusColor(x: number, z: number): RGBA | null {
+  if (x < WALL_X + 1 || !inPoly(UPSA_LAND, x, z)) return null;
+  // (the quadrangle stays lawn under its trees, its walks drawn as paths: frames 206-211)
+  if (x > QUAD_BOX[0] && x < QUAD_BOX[1] && z > QUAD_BOX[2] && z < QUAD_BOX[3]) return null;
+  // (sampled through a few metres of smooth noise, two samples a little apart: the 2 m grid never shows)
+  const jx = (vnoise2(x * 0.22, z * 0.22) - 0.5) * 4 + (vnoise2(x * 0.7 + 5, z * 0.7) - 0.5) * 1.2, jz = (vnoise2(x * 0.22 + 37, z * 0.22 - 11) - 0.5) * 4 + (vnoise2(x * 0.7, z * 0.7 + 9) - 0.5) * 1.2;
+  const c = cover(x + jx, z + jz)[0], c2 = cover(x + jx + 1.1, z + jz - 0.9)[0];
+  const k = PAVE[c] ? c : PAVE[c2] ? c2 : 0;
+  if (!k) return null;
+  const [r0, g0, b0, a0] = PAVE[k], t = (vnoise2(x * 0.15 + 3, z * 0.15) - 0.5) * 14, f = (hash2(Math.floor(x * 2), Math.floor(z * 2)) - 0.5) * 8;
+  // the edges soften where the cover changes
+  const a = PAVE[c] && PAVE[c2] ? a0 : a0 * 0.6;
+  return [r0 + t + f, g0 + t + f, b0 + t * 0.8 + f, a];
+}
+
 // ---------- the plants ----------
 const DENSE = ['#2f4a24', '#365229', '#3d5a2c', '#2c4520', '#41602f', '#4a6633', '#38552a'];
 const SHADE = ['#3d5f2e', '#466a33', '#3a5a2b', '#4f7238', '#41632f'];
@@ -106,7 +134,8 @@ function westCrowns(out: Crown[]) {
   }
 }
 
-/** shade trees on the campus where the aerial shows crowns */
+/** shade trees on the campus where the aerial shows crowns (the quadrangle more thickly: frames 206-211 show it under
+ *  trees round its walks and pond) */
 function campusCrowns(out: Crown[]) {
   const B = 6;
   for (let bx = WALL_X + 2; bx < BOX[1]; bx += B) for (let bz = BOX[2]; bz < BOX[3]; bz += B) {
@@ -117,12 +146,31 @@ function campusCrowns(out: Crown[]) {
       const x = bx + 1 + i * 2, z = bz + 1 + j * 2;
       if (cover(x, z)[0] === 1) { nd++; mx += x; mz += z; }
     }
-    if (nd < 4) continue;
+    const inQuad = cx > QUAD_BOX[0] && cx < QUAD_BOX[1] && cz > QUAD_BOX[2] && cz < QUAD_BOX[3];
+    if (nd < (inQuad ? 2 : 4)) continue;
     const h = (k: number) => hash2(cx * 0.37 + k, cz * 0.61 - k * 1.9);
     mx = mx / nd + (h(1) - 0.5) * 1.5; mz = mz / nd + (h(2) - 0.5) * 1.5;
     const r = 2.6 + (nd - 4) * 0.3 + h(3) * 1.0;
     if (!inPoly(UPSA_LAND, mx, mz) || !free(mx, mz, r)) continue;
     out.push({ x: mx, z: mz, r, h: r * (1.15 + h(4) * 0.25), base: 2.2 + h(5) * 1.0, trunk: 0.22 + h(6) * 0.08, color: pick(SHADE, h(7)), seed: h(8), solid: true });
+  }
+}
+
+/** the quadrangle's trees (the DroneStories frames 206-211: its lawns under broad shade trees round the walks and the pond,
+ *  thicker than the aerial's crowns show): one in most 7 m blocks of lawn, clear of the walks, the pond and the letters */
+function quadCrowns(out: Crown[]) {
+  const B = 7, [x0, x1, z0, z1] = QUAD_BOX;
+  for (let bx = x0; bx < x1; bx += B) for (let bz = z0; bz < z1; bz += B) {
+    const h = (k: number) => hash2(bx * 0.29 + k, bz * 0.43 - k * 2.1);
+    if (h(0) > 0.7) continue;
+    const x = bx + B / 2 + (h(1) - 0.5) * 3, z = bz + B / 2 + (h(2) - 0.5) * 3, r = 2.4 + h(3) * 1.4;
+    // (the court's own keep-clear area covers the quadrangle: here only the walks, the buildings, the pond, the letters, the
+    // benches and the lamps are kept clear)
+    if (out.some((c) => Math.hypot(c.x - x, c.z - z) < c.r + r * 0.6) || roadGap(x, z, 12) < 1.6 || buildingAt(x, z, r * 0.7 + 1.2)) continue;
+    if ([[0, 0], [r, 0], [-r, 0], [0, r], [0, -r]].some(([dx, dz]) => inParking(x + dx, z + dz))) continue;
+    if (Math.hypot(x - FOUNTAIN.x, z - FOUNTAIN.z) < FOUNTAIN.pebbles + 2 || Math.hypot(x - LOVE_SIGN.x, z - LOVE_SIGN.z) < 4) continue;
+    if ([...BENCHES, ...LAMPS].some(([bx2, bz2]) => Math.hypot(x - bx2, z - bz2) < 1.4)) continue;
+    out.push({ x, z, r, h: r * (1.1 + h(4) * 0.3), base: 2.0 + h(5) * 0.8, trunk: 0.2 + h(6) * 0.08, color: pick(SHADE, h(7)), seed: h(8), solid: true });
   }
 }
 
@@ -138,10 +186,23 @@ export function buildUpsaGreen() {
     rings.push(r);
   }
   const overlays = coverOverlay({ box: WEST, mpp: 1, cell: 2, tile: 120, color: westColor, clearLines: LINES, clearRings: rings, cellIn: (x, z) => x < WALL_X + 1 && cover(x, z)[0] > 0 });
+  // the campus: kept off the buildings, the car-park bays (drawn already) and the sports surfaces
+  const campusBox: [number, number, number, number] = [WALL_X, BOX[1], BOX[2], -894];
+  const cRings: P2[][] = [];
+  for (const b of BUILDINGS) {
+    if (b.maxX < campusBox[0] || b.minX > campusBox[1] || b.maxZ < campusBox[2] || b.minZ > campusBox[3]) continue;
+    const r: P2[] = [];
+    for (let i = 0; i < b.pts.length; i += 2) r.push([b.pts[i], b.pts[i + 1]]);
+    cRings.push(r);
+  }
+  for (const a of PARKING) { const r: P2[] = []; for (let i = 0; i < a.pts.length; i += 2) r.push([a.pts[i], a.pts[i + 1]]); cRings.push(r); }
+  for (const [x0, x1, z0, z1] of SPORT) cRings.push([[x0, z0], [x1, z0], [x1, z1], [x0, z1]]);
+  overlays.push(...coverOverlay({ box: campusBox, mpp: 0.5, cell: 2, tile: 120, color: campusColor, clearLines: LINES, clearRings: cRings, cellIn: (x, z) => inPoly(UPSA_LAND, x, z) }));
   for (const m of overlays) { m.userData.noRelief = true; group.add(m); }
   const crowns: Crown[] = [];
   westCrowns(crowns);
   campusCrowns(crowns);
+  quadCrowns(crowns);
   group.add(...crownTiles(crowns, 100, 75));
   group.userData.cullMeshes = overlays;
   group.userData.crowns = crowns.length;
