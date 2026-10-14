@@ -42,7 +42,17 @@ export const COURT_TOWER = { outer: [2145.9, 2186, -974.8, -952] as R4, court: [
 /** the Professional Christian Union Building: the long block behind the Astro Turf's north goal (IMG_9677j 20-46 s, the
  *  sign; aerial: its roof, cut by the picture's top edge). South face from the aerial; the depth is an estimate kept clear
  *  of the mapped road 17 m north. The blue glass bay at its east end (IMG_9677j 26, 46 s). */
-export const PCU = { x0: 2228.5, x1: 2288.4, z0: -1260, z1: -1247.5, bay: 9, storey: 3.8, floors: 3 };
+export const PCU = { x0: 2228.5, x1: 2288.4, z0: -1260, z1: -1247.5, bay: 9, storey: 3.6, floors: 4, gallery: 1.7, columns: 5.2 };
+/** the ground round the PCU building and the Astro Turf's east side (the owner's PCU brief photos: the herringbone paver
+ *  path along the pitch's east fence to the building's east end, its kerb, the dry grass verge between the kerb and the
+ *  fence; the paved forecourt along the colonnade with its linear grated drain; the aerial: the pale strip east of the
+ *  pitch). Not network roads: the ride network is unchanged. */
+export const PCU_GROUND = {
+  path: [2278.6, 2284.0, -1246.0, -1136.0] as R4,
+  forecourt: [2226.0, 2290.0, -1247.3, -1238.6] as R4,
+  verge: [2276.5, 2278.4] as [number, number],
+  drain: [2229.0, 2279.0, -1247.2, -1246.8] as R4,
+};
 
 /** the six-storey block north of the hard courts (the "Western Union" pin; IMG_9677j 18 s: six storeys, a white frame with
  *  curved fins round blue windows, Pack 1's U-01): its footprint from the aerial roof less the lean of a 20 m block */

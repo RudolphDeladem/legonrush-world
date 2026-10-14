@@ -15,9 +15,10 @@
 import * as THREE from 'three';
 import { createSite, render, type Kit, type Spec, type Style } from './blocks';
 import { canvas, type Part } from './modelkit';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { hash, wallSolids, waterMat } from './enkit';
 import { SOLIDS } from './solids';
-import { COURTS_NW, COURT_TOWER, FIELD, FOUNTAIN, GREY, PCU, SLATE, STAND, TURF, WU } from './upsawestplan';
+import { COURTS_NW, COURT_TOWER, FIELD, FOUNTAIN, GREY, PCU, PCU_GROUND, SLATE, STAND, TURF, WU } from './upsawestplan';
 
 type R4 = [number, number, number, number];
 const O: [number, number] = [2215, -1180];
@@ -211,15 +212,23 @@ const FIN_FACE: Style = {
     }
   },
 };
-/** the PCU building's upper floor: blue windows in white */
-const PCU_FACE: Style = BLUE_FACE;
-/** its top storey: the dark grey band of glazing under the name (IMG_9677j 46 s) */
-const PCU_BAND: Style = {
-  bay: 3.8, up: [], ground: [],
-  draw: (g) => { for (const y0 of [0, 256]) { g.fillStyle = '#f2f2ef'; g.fillRect(0, y0, 256, 256); g.fillStyle = '#3b4148'; g.fillRect(0, y0 + 60, 256, 120); g.fillStyle = '#555c64'; g.fillRect(0, y0 + 60, 256, 6); } },
+/** the PCU building's walls: off-white small square tiles (the owner's PCU photos), its windows blue-tinted in white frames */
+const PCU_FACE: Style = {
+  bay: 3.6, up: [[70, 80, 116, 110]], ground: [[70, 256 + 80, 116, 110]],
+  draw: (g) => {
+    for (const y0 of [0, 256]) {
+      g.fillStyle = '#f1f1ee'; g.fillRect(0, y0, 256, 256);
+      g.strokeStyle = 'rgba(160,162,160,0.55)'; g.lineWidth = 1;
+      for (let t = 0; t <= 256; t += 10) { g.beginPath(); g.moveTo(t, y0); g.lineTo(t, y0 + 256); g.stroke(); g.beginPath(); g.moveTo(0, y0 + t); g.lineTo(256, y0 + t); g.stroke(); }
+      g.fillStyle = '#dcdcd8'; g.fillRect(66, y0 + 76, 124, 118);
+      const gl = g.createLinearGradient(0, y0 + 80, 0, y0 + 190);
+      gl.addColorStop(0, '#7aa8d8'); gl.addColorStop(1, '#2c5d9a');
+      g.fillStyle = gl; g.fillRect(70, y0 + 80, 116, 110);
+    }
+  },
 };
 /** its ground floor behind the colonnade: dark glazing, doors */
-const PCU_GROUND: Style = {
+const PCU_GROUND_FLOOR: Style = {
   bay: 3.8, up: [[20, 30, 216, 210]], ground: [[20, 256 + 30, 216, 210]],
   draw: (g) => { render(g, '#eeeeeb'); for (const y0 of [0, 256]) { g.fillStyle = '#28323d'; g.fillRect(20, y0 + 30, 216, 210); g.fillStyle = '#c9ccce'; g.fillRect(126, y0 + 30, 4, 210); } },
 };
@@ -296,33 +305,115 @@ const courtsSpec: Spec = {
   },
 };
 
-/** the Professional Christian Union Building: a long white block, the colonnade along the south face, the glass bay */
+/** the Professional Christian Union Building (the owner's PCU brief: its photos and the clips IMG_9677j 20-46 s): a long
+ *  low mass in off-white small tiles; an open colonnade on the ground floor along the south face, white square columns on
+ *  the building line and single dark navy columns raking outward in front of them, carrying the galleries; three
+ *  cantilevered gallery levels with railings, the top one behind charcoal slatted screening; the name along the top edge;
+ *  the blue reflective glass end volume at the east, standing a little higher, a cross on its white side */
 const PO: [number, number] = [(PCU.x0 + PCU.x1) / 2, (PCU.z0 + PCU.z1) / 2];
 const pl = (x: number) => x - PO[0], pm = (z: number) => z - PO[1];
 const pcuSpec: Spec = {
   name: 'Professional Christian Union Building', axis: [1, 0], origin: PO, storey: PCU.storey, style: PCU_FACE, roofColor: '#d9d8d3', fascia: '#eeeeea', pitch: 0,
-  blocks: [{ x0: pl(PCU.x0), x1: pl(PCU.x1 - PCU.bay), z0: pm(PCU.z0), z1: pm(PCU.z1), floors: PCU.floors, roof: 'flat', floorStyle: { 0: PCU_GROUND, 2: PCU_BAND } }],
+  blocks: [{ x0: pl(PCU.x0), x1: pl(PCU.x1 - PCU.bay), z0: pm(PCU.z0), z1: pm(PCU.z1), floors: PCU.floors, roof: 'flat', floorStyle: { 0: PCU_GROUND_FLOOR } }],
   keep: [[pl(PCU.x0), pl(PCU.x1), pm(PCU.z0), pm(PCU.z1) + 2.6]],
   extras: (k: Kit) => {
-    const top = PCU.floors * PCU.storey + 0.5, zf = pm(PCU.z1), xb = pl(PCU.x1 - PCU.bay), xe = pl(PCU.x1);
-    // the blue glass bay at the east end, full height, a white frame round it
-    const blue = new THREE.Mesh(new THREE.BoxGeometry(xe - xb, top + 1.2, PCU.z1 - PCU.z0).translate((xb + xe) / 2, (top + 1.2) / 2, 0), new THREE.MeshStandardMaterial({ color: '#2d63b5', roughness: 0.15, metalness: 0.45 }));
+    const S = PCU.storey, top = PCU.floors * S + 0.5, zf = pm(PCU.z1), xa = pl(PCU.x0), xb = pl(PCU.x1 - PCU.bay), xe = pl(PCU.x1), G = PCU.gallery;
+    const bx2 = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0).translate((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+    // the blue reflective glass end volume, a little higher than the main mass, its mullions and floor lines; the white
+    // frame at its corners; a cross on its white east side (the brief's approach photo)
+    const blue = new THREE.Mesh(new THREE.BoxGeometry(xe - xb, top + 1.6, PCU.z1 - PCU.z0).translate((xb + xe) / 2, (top + 1.6) / 2, 0), new THREE.MeshStandardMaterial({ color: '#2d63b5', roughness: 0.12, metalness: 0.5 }));
     blue.castShadow = blue.receiveShadow = true;
     k.meshes.push(blue);
-    // its mullions and floor lines on the south face
-    for (let x = xb + 1.5; x < xe - 0.5; x += 1.5) k.plain.push([new THREE.BoxGeometry(0.08, top + 1.0, 0.06).translate(x, (top + 1.2) / 2, zf + 0.03), '#9fb6d4']);
-    for (let y = PCU.storey; y < top; y += PCU.storey) k.plain.push([new THREE.BoxGeometry(xe - xb, 0.12, 0.06).translate((xb + xe) / 2, y, zf + 0.03), '#9fb6d4']);
-    k.plain.push([new THREE.BoxGeometry(0.5, top + 1.4, 0.5).translate(xb, (top + 1.4) / 2, zf), '#f2f2ee']);
-    k.plain.push([new THREE.BoxGeometry(0.5, top + 1.4, 0.5).translate(xe, (top + 1.4) / 2, zf), '#f2f2ee']);
-    // the canopy over the colonnade at the first floor, and the raking navy columns in pairs under it
-    const yc = PCU.storey;
-    k.plain.push([new THREE.BoxGeometry(xb - pl(PCU.x0), 0.35, 2.4).translate((pl(PCU.x0) + xb) / 2, yc + 0.17, zf + 1.2), '#f2f2ee']);
-    for (let x = pl(PCU.x0) + 3.5; x < xb - 2; x += 6.2) {
-      for (const s of [-1, 1]) k.plain.push([rod(new THREE.Vector3(x + s * 1.1, 0, zf + 2.1), new THREE.Vector3(x + s * 0.25, yc, zf + 1.9), 0.32), NAVY]);
-      SOLIDS.add(PO[0] + x - 1.1, PO[1] + zf + 2.1, 0.25); SOLIDS.add(PO[0] + x + 1.1, PO[1] + zf + 2.1, 0.25);
+    for (let x = xb + 1.5; x < xe - 0.5; x += 1.5) k.plain.push([bx2(x - 0.04, x + 0.04, 0.4, top + 1.4, zf, zf + 0.06), '#9fb6d4']);
+    for (let y = S; y < top + 1; y += S) k.plain.push([bx2(xb, xe, y - 0.06, y + 0.06, zf, zf + 0.06), '#9fb6d4']);
+    for (const x of [xb, xe]) k.plain.push([bx2(x - 0.3, x + 0.3, 0, top + 1.8, zf - 0.3, zf + 0.3), '#f2f2ee']);
+    k.plain.push([bx2(xe, xe + 0.12, top - 3.5, top + 0.5, -0.25, 0.25), '#2a3f78'], [bx2(xe, xe + 0.12, top - 2.2, top - 1.8, -1.2, 1.2), '#2a3f78']);
+    // the galleries: a slab cantilevered out at each upper floor with its railing, the top one behind charcoal slats
+    for (let f = 1; f < PCU.floors; f++) {
+      const y = f * S;
+      k.plain.push([bx2(xa, xb, y - 0.28, y, zf, zf + G), '#f2f2ee']);
+      k.plain.push([bx2(xa, xb, y + 0.95, y + 1.0, zf + G - 0.08, zf + G - 0.02), '#d7d9db']);
+      for (let x = xa + 0.6; x < xb; x += 1.2) k.plain.push([bx2(x - 0.02, x + 0.02, y, y + 1.0, zf + G - 0.07, zf + G - 0.03), '#c9cbcd']);
+      // the galleries' shade on the wall behind: a dark band over each floor's lower part
+      k.plain.push([bx2(xa + 0.1, xb - 0.1, y, y + 0.9, zf + 0.02, zf + 0.05), '#b9bcbe']);
     }
-    // the name along the top storey (IMG_9677j 20-46 s; the Annual Report 2024 photograph)
-    k.signs.push({ text: 'PROFESSIONAL CHRISTIAN UNION BUILDING', x: (pl(PCU.x0) + xb) / 2, y: top - 0.2, z: zf + 0.08, ry: 0, w: 30, colors: ['#f2f2ef', '#1f3f8a'] });
+    const yt = (PCU.floors - 1) * S;
+    k.plain.push([bx2(xa, xb, yt + 0.1, top - 0.6, zf + G - 0.12, zf + G), '#3a3f45']);
+    for (let x = xa + 0.3; x < xb; x += 0.55) k.plain.push([bx2(x - 0.05, x + 0.05, yt + 0.1, top - 0.6, zf + G, zf + G + 0.05), '#555b62']);
+    k.plain.push([bx2(xa, xb, top - 0.6, top + 0.9, zf - 0.05, zf + G), '#f4f4f1']);
+    // the colonnade: white square columns on the building line, single dark navy columns raking outward in front of them
+    for (let x = xa + 2.5; x < xb - 1; x += PCU.columns) {
+      k.plain.push([bx2(x - 0.22, x + 0.22, 0, S - 0.28, zf + 0.15, zf + 0.59), '#f4f4f1']);
+      const foot = new THREE.Vector3(x - 0.9, 0, zf + G + 0.9), head = new THREE.Vector3(x + 0.5, S - 0.28, zf + G - 0.25);
+      k.plain.push([rod(foot, head, 0.34), NAVY]);
+      SOLIDS.add(PO[0] + x + 0.22 - 0.22, PO[1] + zf + 0.37, 0.3);
+      SOLIDS.add(PO[0] + x - 0.9, PO[1] + zf + G + 0.9, 0.25);
+    }
+    // the name along the top edge of the long south face (the clips; the brief's photos)
+    k.signs.push({ text: 'PROFESSIONAL CHRISTIAN UNION BUILDING', x: (xa + xb) / 2, y: top + 0.15, z: zf + G + 0.03, ry: 0, w: 30, colors: ['#f4f4f1', '#1f3f8a'] });
+  },
+};
+
+/** the ground round the PCU building and the Astro Turf's east side: herringbone pavers, the kerb, the verge, the drain */
+function paverTexture() {
+  const t = canvas(256, 256, (g) => {
+    g.fillStyle = '#6f6860'; g.fillRect(0, 0, 256, 256);
+    // herringbone: 16 x 32 px bricks (0.125 x 0.25 m at 2 m a tile), alternately along and across
+    const cols = ['#8d857a', '#857c71', '#968d81', '#7f776d', '#8a8378'];
+    for (let i = -16; i < 32; i++) for (let j = -16; j < 32; j++) {
+      const x = i * 16 + j * 16, y = j * 16 - i * 16;
+      const c = cols[(((i * 7 + j * 13) % 5) + 5) % 5];
+      g.fillStyle = c; g.fillRect(x + 1, y + 1, 30, 14);
+      g.fillStyle = cols[(((i * 11 + j * 3) % 5) + 5) % 5]; g.fillRect(x + 1, y + 17, 14, 30);
+    }
+    for (let k = 0; k < 400; k++) { g.fillStyle = hash(k, 2) < 0.5 ? 'rgba(40,36,32,0.12)' : 'rgba(220,210,195,0.1)'; g.fillRect(hash(k, 1) * 256, hash(3, k) * 256, 3, 3); }
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8;
+  return t;
+}
+const pg = PCU_GROUND;
+const pcuGroundSpec: Spec = {
+  name: 'PCU forecourt and the Astro Turf east path', axis: [1, 0], origin: O, storey: 3, style: BLUE_FACE, roofColor: '#d8d8d3', fascia: '#eeeeea', pitch: 0,
+  blocks: [],
+  keep: [[L(pg.verge[0]), L(pg.path[1]), M(pg.path[2]), M(pg.path[3])], [L(pg.forecourt[0]), L(pg.forecourt[1]), M(pg.forecourt[2]), M(pg.forecourt[3])]],
+  extras: (k: Kit) => {
+    const tex = paverTexture();
+    const pave = (r: R4) => {
+      const [x0, x1, z0, z1] = r, g = new THREE.PlaneGeometry(x1 - x0, z1 - z0).rotateX(-Math.PI / 2).translate(L((x0 + x1) / 2), 0.07, M((z0 + z1) / 2));
+      const uv = g.attributes.uv as THREE.BufferAttribute;
+      for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * (x1 - x0) / 2, uv.getY(i) * (z1 - z0) / 2);
+      const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ map: tex, roughness: 0.9, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 }));
+      m.receiveShadow = true; m.userData.noCollide = true; k.meshes.push(m);
+    };
+    pave(pg.path);
+    pave(pg.forecourt);
+    const parts: Part[] = [];
+    // the raised concrete kerb between the path and the verge, and along the forecourt's edge at the fence
+    parts.push([bx(pg.path[0] - 0.18, pg.path[0], 0, 0.16, pg.forecourt[3], pg.path[3]), '#c7c4bd']);
+    parts.push([bx(pg.forecourt[0], pg.verge[0], 0, 0.16, pg.forecourt[3], pg.forecourt[3] + 0.18), '#c7c4bd']);
+    // the long grated drain along the colonnade
+    const [d0, d1, dz0, dz1] = pg.drain;
+    parts.push([bx(d0, d1, 0.06, 0.085, dz0, dz1), '#3c3f42']);
+    for (let x = d0 + 0.25; x < d1; x += 0.5) parts.push([bx(x - 0.03, x + 0.03, 0.085, 0.095, dz0, dz1), '#6f7378']);
+    k.plain.push(...parts);
+    // the verge: rough dry grass in clumps between the fence and the kerb (the brief's photos): each clump a few slim
+    // leaning blades
+    const cols = ['#6f6a32', '#5d6a2e', '#7a7038', '#4f6129'], blades: Part[] = [];
+    for (let z = pg.path[2] + 6; z < pg.path[3]; z += 0.45) for (let i = 0; i < 3; i++) {
+      const x = pg.verge[0] + 0.2 + hash(z, i) * (pg.verge[1] - pg.verge[0] - 0.4), zz = z + (hash(i, z) - 0.5) * 0.4, h = 0.25 + hash(z * 3, i) * 0.35;
+      for (let j = 0; j < 5; j++) {
+        const a = j * 1.7 + hash(z, j) * 2, lean = 0.25 + hash(j, z) * 0.3;
+        blades.push([new THREE.ConeGeometry(0.03, h, 3, 1, true).translate(0, h / 2, 0).rotateZ(Math.cos(a) * lean).rotateX(Math.sin(a) * lean).translate(L(x), 0, M(zz)), cols[(i + j + Math.floor(z * 3)) % 4]]);
+      }
+    }
+    // (foliage: never stops the bike)
+    // (a mesh a shade: one plain colour each)
+    for (const c of cols) {
+      const own = blades.filter((p) => p[1] === c).map((p) => p[0]);
+      if (!own.length) continue;
+      const vm = new THREE.Mesh(mergeGeometries(own.map((g) => { const n = g.toNonIndexed(); n.deleteAttribute('uv'); return n; }))!, new THREE.MeshLambertMaterial({ color: c, side: THREE.DoubleSide }));
+      vm.userData.noCollide = true; k.meshes.push(vm);
+    }
   },
 };
 
@@ -357,4 +448,4 @@ const fountainSpec: Spec = {
   },
 };
 
-export const upsaWestSite = createSite('upsa-west', [turfSpec, courtsSpec, pcuSpec, wuSpec, greySpec, slateSpec, fountainSpec]);
+export const upsaWestSite = createSite('upsa-west', [turfSpec, courtsSpec, pcuSpec, pcuGroundSpec, wuSpec, greySpec, slateSpec, fountainSpec]);
