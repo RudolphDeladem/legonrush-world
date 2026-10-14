@@ -8,7 +8,7 @@
 //   block with its plant, the taller signed east end with external stair flights and balconies, the freestanding
 //   NOGUCHI ADVANCED RESEARCH LABORATORIES sign in its kerbed island, block-paved parking with white bays;
 // - 04 the small red courtyard building round its open green centre; 21 the red shed in the lawn; 17/18 the two
-//   gridded fields of low dark panel rows (function inferred);
+//   solar panel fields (the owner confirmed them) in low dark rows;
 // - WAGMC: the two-storey white U under red-brown hipped roofs with dark fascias, tall glass at the inner corners and
 //   slots at the wing ends, the thick white portal round the dark entrance, the pale platform, the salmon forecourt and
 //   its bollards, the kerbed groundcover plots, the circular planted island, the asphalt drive and parking, the open
@@ -147,7 +147,7 @@ const noguchi: Spec = {
       for (const x of [x0 + 6, x1 - 0.4]) for (const z of [z0 + 0.3, z1 - 0.3]) { k.plain.push([box(x - 0.15, x + 0.15, 0, 3.2, z - 0.15, z + 0.15), '#e7e2d6']); nSolid(x, z, 0.25); } }
     // 04's open centre
     nPlane(k, rect(RED04.court), 0.04, lawnMat(), 4);
-    // 17 / 18: low repeated rows of dark panels on light frames, pale aisles between (inferred: ground-mounted arrays)
+    // 17 / 18: the solar fields (the owner): low repeated rows of dark panels on light frames, pale aisles between
     for (const { r, rows } of ARRAYS) {
       const [x0, x1, z0, z1] = r, pitch = (z1 - z0) / rows, d = Math.min(3.6, pitch - 1.4);
       for (let i = 0; i < rows; i++) {
@@ -238,8 +238,12 @@ const wagmc: Spec = {
     // the portal: a thick white frame round the dark glazed entrance; the pale platform and steps; the salmon forecourt
     { const [x0, x1, z0, z1] = WAG.portal, h = wagTop + 1.2;
       k.plain.push([box(x0, x1, 0, h, z0, z0 + 1.2), '#f6f6f4'], [box(x0, x1, 0, h, z1 - 1.2, z1), '#f6f6f4'], [box(x0, x1, h - 1.4, h, z0, z1), '#f6f6f4']);
-      curtain(k, [[x0 - 0.1, z0 + 1.2], [x0 - 0.1, z1 - 1.2]], 0.3, h - 1.4);
-      k.plain.push([box(x0 + 0.4, x0 + 0.5, 0.45, 3.2, -1.6, 1.6), '#2b2d30']);
+      curtain(k, [[x0 + 0.06, z0 + 1.2], [x0 + 0.06, z1 - 1.2]], 0.3, h - 1.4);
+      k.plain.push([box(x0 + 0.12, x0 + 0.2, 0.45, 3.2, -1.6, 1.6), '#2b2d30']);
+      // the lettering on the portal's top band, facing the court (the owner's photo, 2026-10-15)
+      k.signs.push({ text: 'WAGMC GENOMIC MEDICINE BUILDING', x: x1 + 0.03, y: h - 0.5, z: -0.4, ry: Math.PI / 2, w: 9.6, colors: ['#f6f6f4', '#2b3140'] });
+      k.signs.push({ text: 'WEST AFRICAN GENETIC MEDICINE CENTRE (WAGMC)', x: x1 + 0.03, y: h - 1.05, z: -0.4, ry: Math.PI / 2, w: 8.4, colors: ['#f6f6f4', '#2b3140'] });
+      k.plain.push([new THREE.CylinderGeometry(0.42, 0.42, 0.04, 20).rotateZ(Math.PI / 2).translate(x1 + 0.03, h - 0.75, 5.0), '#2b3140'], [new THREE.CylinderGeometry(0.34, 0.34, 0.05, 20).rotateZ(Math.PI / 2).translate(x1 + 0.04, h - 0.75, 5.0), '#f6f6f4']);
       const [p0, p1, q0, q1] = WAG.platform;
       k.plain.push([box(x1, p1, 0, 0.45, q0, q1), '#dcd8cf'], [box(p1, p1 + 0.4, 0, 0.3, q0, q1), '#d4d0c7'], [box(p1 + 0.4, p1 + 0.8, 0, 0.15, q0, q1), '#d4d0c7']);
       wPlane(k, rect(WAG.forecourt), 0.08, salmonMat(), 2);

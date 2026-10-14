@@ -61,8 +61,7 @@ export const LAB = {
 export const LAB_OUTLINE: P2[] = [[125.5, -143], [201, -143], [201, -118], [142, -118], [142, -86], [125.5, -86]];
 /** 04 the small red courtyard building: a ring round its open green centre (never filled) */
 export const RED04 = { outer: [-6, 39.5, -144, -115] as R4, court: [7, 27, -135, -124] as R4 };
-/** 17 / 18 the two gridded fields of repeated dark panels in rows with pale aisles (resemble ground-mounted panel
- *  arrays; the function is inferred, not verified) */
+/** 17 / 18 the two solar panel fields (the owner confirmed them): repeated dark panels in rows with pale aisles */
 export const ARRAYS: { r: R4; rows: number }[] = [
   { r: [160, 221, 66, 116], rows: 9 }, { r: [224, 253, 66, 116], rows: 9 }, { r: [213, 243, 120, 153], rows: 6 }, { r: [110, 157, 121, 196], rows: 13 },
 ];

@@ -132,8 +132,8 @@ export function lotSpots(l: Lot): [number, number, number][] {
   return out;
 }
 
-/** the security posts at the lot's two entrances (E28, E40: "UGMC SECURITY POST NORTH 1/2"; which is which is not
- *  established): the mapped small outlines */
+/** the security posts at the north lot's two entrances (E28, E40: "UGMC SECURITY POST NORTH 1/2"; the owner: North 1
+ *  is the one on the side facing WAGMC, the east one; North 2 the other, to the north-west): North 2, North 1 */
 export const POSTS: P2[] = [[-155.5, -110.5], [-17, -109.5]];
 /** the wayfinding totems (E14 at 03's lawn by the roundabout, E18/E19 on the grass island south of 04) */
 export const TOTEMS: P2[] = [[14, 7], [30, -8]];

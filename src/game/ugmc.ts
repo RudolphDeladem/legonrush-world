@@ -309,11 +309,11 @@ const ugmc: Spec = {
         k.plain.push([new THREE.BoxGeometry(1.4, 0.06, 2.6).rotateY(rot).translate(x, 0.06, z), '#9a9ea0'], [new THREE.BoxGeometry(0.5, 0.45, 1.8).rotateY(rot).translate(x, 0.28, z), '#f4f4f2']); }
       k.plain.push([strip([[-113, -60], [-97, -14]], 0.05, 0.08, 0.3), '#c9a77c'], [strip([[-140, -50], [-96, -40]], 0.05, 0.08, 0.3), '#c9a77c']); }
     // the security posts: light booths with a flat oversailing roof on round columns, glazed sides (E28, E40)
-    for (const [x, z] of POSTS) {
+    for (const [i, [x, z]] of POSTS.entries()) {
       k.plain.push([box(x - 3, x + 3, 0, 3.0, z - 2.2, z + 2.2), '#f2f2f0'], [box(x - 4.2, x + 4.2, 3.0, 3.6, z - 3.4, z + 3.4), '#f7f7f5']);
       k.glass.push(box(x - 3.02, x + 3.02, 0.9, 2.5, z - 1.6, z + 1.6));
       for (const [dx, dz] of [[-3.8, -3], [3.8, -3], [-3.8, 3], [3.8, 3]]) k.plain.push([new THREE.CylinderGeometry(0.15, 0.15, 3, 10).translate(x + dx, 1.5, z + dz), '#e9ebec']);
-      k.signs.push({ text: 'UGMC SECURITY POST', x, y: 3.3, z: z - 3.42, ry: Math.PI, w: 4.6, colors: ['#3b4650', '#ffffff'] });
+      k.signs.push({ text: `UGMC SECURITY POST NORTH ${i === 1 ? 1 : 2}`, x, y: 3.3, z: z - 3.42, ry: Math.PI, w: 6, colors: ['#3b4650', '#ffffff'] });
     }
     // the wayfinding totems: tall slim grey panels on pale bases with coloured shapes at the foot (E14, E18, E19)
     for (const [x, z] of TOTEMS) {
