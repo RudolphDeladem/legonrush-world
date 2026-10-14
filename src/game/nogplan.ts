@@ -69,7 +69,7 @@ export const RING = { outer: 44, outerV: [-43, 44] as P2, band: 14, floors: 2, s
  *  west end, the taller signed east end with stairs and balconies, the pale flat service block behind, the west arm */
 export const LAB = {
   front: [125.5, 182, -143, -129] as R4, end: [182, 201, -143, -118] as R4, service: [142, 182, -129, -118] as R4, arm: [125.5, 142, -129, -86] as R4,
-  storey: 4.2, endFloors: 3,
+  storey: 4.2, endFloors: 4,
   /** (the owner's correction brief, S08-S20 on M1) the entrance portal on the west face at its north end, facing the
    *  approach and the sign island: its frame's v span and how far it stands out (to u 121.5) */
   portal: [-141.5, -127.5] as P2, portalOut: 121.5,
@@ -77,7 +77,9 @@ export const LAB = {
   bays: { v0: -126, n: 12, w: 3.25, pier: 2.25 },
   /** the signed tower north of the north-west corner (the white roof on M1; S09, S10, S15, S19): four storeys, the sign
    *  on its west face, the stacked landings on its north face with the ground stair; the low block beside it */
-  tower: [120, 131, -167, -155] as R4, towerFloors: 4, low: [131, 138, -165, -153] as R4,
+  // (the owner's tower brief, 2026-10-14: T01 at this site is the tall slim open-sided tower of their Picture 2, not a
+  // broad signed block; B02 beside it the one-floor flat-roofed neighbour; the signed broad face is the east end block)
+  tower: [121, 126, -166.2, -159.5] as R4, towerH: 20, low: [127, 139, -166, -152.5] as R4,
   /** the two kerbed lawns before the portal with the pale walk between them to the doors (M1), the monument on the
    *  north lawn's east end (S20) */
   lawns: [[84, 112, -141.6, -133.2], [85, 113, -130, -122.4]] as R4[], walk: [80, 116.2, -133.2, -130] as R4,

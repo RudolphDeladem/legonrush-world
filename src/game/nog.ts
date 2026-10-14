@@ -211,7 +211,7 @@ const noguchi: Spec = {
 //   joined to the ground by a stair, three small windows; the low block beside it (provisional);
 // - before the portal (S20, M1): two kerbed lawns with the pale walk between them, the framed monument with its rough
 //   face and raised letters, shrubs in a soil bed, a yellow flower band, short black bollard lights.
-const LS = LAB.storey, labTop = 0.4 + 2 * LS + 0.4, endTop = 0.4 + LAB.endFloors * LS + 0.4, towTop = 0.4 + LAB.towerFloors * LS + 0.4;
+const LS = LAB.storey, labTop = 0.4 + 2 * LS + 0.4, endTop = 0.4 + LAB.endFloors * LS + 0.4, towTop = LAB.towerH, lowTop = 0.4 + LS + 0.4;
 /** a blank pale render (the piers, the tower, the end walls) */
 const LAB_PALE: Style = { bay: 4, up: [], ground: [], draw: (g) => { g.fillStyle = '#efefec'; g.fillRect(0, 0, 256, 512); speckle(g, 0, 0, 256, 512, 700, ['#e9e9e6', '#f5f5f2']); g.fillStyle = '#8c8a85'; g.fillRect(0, 496, 256, 16); } };
 /** the dark grey louvres behind the fins (horizontal slats) */
@@ -237,12 +237,12 @@ const lab: Spec = {
     { x0: LAB.front[0], x1: LAB.arm[1], z0: LAB.front[2], z1: LAB.arm[3], floors: 2, roof: 'none', faces: { x0: LAB_PALE, z0: LAB_LOUVRE, x1: LAB_LOUVRE, z1: LAB_PALE } },
     { x0: LAB.arm[1], x1: LAB.front[1], z0: LAB.front[2], z1: LAB.front[3], floors: 2, roof: 'none', faces: { z0: LAB_LOUVRE, z1: LAB_LOUVRE, x0: LAB_PALE, x1: LAB_PALE } },
     { x0: LAB.service[0], x1: LAB.service[1], z0: LAB.service[2], z1: LAB.service[3], floors: 2, roof: 'flat', faces: { z1: LAB_LOUVRE, x1: LAB_PALE, x0: LAB_PALE, z0: LAB_PALE } },
-    { x0: LAB.end[0], x1: LAB.end[1], z0: LAB.end[2], z1: LAB.end[3], floors: LAB.endFloors, roof: 'flat', faces: { z0: LAB_LOUVRE, z1: LAB_LOUVRE, x0: LAB_PALE, x1: LAB_LOUVRE } },
-    // the signed tower and the low block beside it
-    { x0: TU0, x1: TU1, z0: TV0, z1: TV1, floors: LAB.towerFloors, roof: 'flat', faces: { x0: LAB_PALE, x1: LAB_PALE, z0: LAB_PALE, z1: LAB_PALE } },
+    // B01 the broad signed end block (the owner's tower brief: the signed face belongs here, Pictures 1, 3, 4)
+    { x0: LAB.end[0], x1: LAB.end[1], z0: LAB.end[2], z1: LAB.end[3], floors: LAB.endFloors, roof: 'flat', faces: { z0: LAB_PALE, z1: LAB_PALE, x0: LAB_PALE, x1: LAB_PALE } },
+    // B02 the one-floor neighbour beside the tower (Pictures 4, 7): flat roof, parapet, blank pale walls
     { x0: LAB.low[0], x1: LAB.low[1], z0: LAB.low[2], z1: LAB.low[3], floors: 1, roof: 'flat', faces: { x0: LAB_PALE, x1: LAB_PALE, z0: LAB_PALE, z1: LAB_PALE } },
   ],
-  keep: [[LAB.portalOut - 1, LAB.front[0], LAB.portal[0] - 1, LAB.portal[1] + 1], [TU0 - 2, LAB.low[1] + 1, TV0 - 5, TV1 + 1]],
+  keep: [[LAB.portalOut - 1, LAB.front[0], LAB.portal[0] - 1, LAB.portal[1] + 1], [TU0 - 2, LAB.low[1] + 1, TV0 - 2, LAB.low[3] + 1]],
   extras: (k) => {
     const p: Part[] = [], u0 = LAB.front[0], ov = 1.2;
     // ---- the hipped roof over the L: the west arm hipped at both ends, the north arm hipped at its east end and dying
@@ -274,20 +274,29 @@ const lab: Spec = {
     // the dark upper bay over the portal, from the corner to the blank pier, with vertical slats at its north end
     p.push([box(u0 - 0.03, u0, ph + 0.2, labTop - 0.3, LAB.front[2] + 0.3, pv1 + 0.5), '#2b2e31']);
     for (let v = LAB.front[2] + 0.5; v < LAB.front[2] + 3.4; v += 0.3) p.push([box(u0 - 0.2, u0, ph + 0.3, labTop - 0.4, v - 0.03, v + 0.03), '#5d6064']);
-    // the portal: legs (thick side returns), header, the canopy strips stepping back, the inner columns, the doors
-    p.push([box(po, u0, 0, ph, pv0, pv0 + 1.0), '#f2f2ef'], [box(po, u0, 0, ph, pv1 - 1.0, pv1), '#f2f2ef'], [box(po, u0, ph - 1.1, ph, pv0, pv1), '#f2f2ef']);
-    p.push([box(po + 0.6, u0, ph, ph + 0.22, pv0 + 0.4, pv1 - 0.4), '#c9cbcc'], [box(po + 1.6, u0, ph + 0.22, ph + 0.42, pv0 + 0.8, pv1 - 0.8), '#b9bcbe'], [box(po + 0.3, u0, ph - 1.3, ph - 1.1, pv0 + 1, pv1 - 1), '#e2e2df']);
-    for (const v of [pv0 + 3.2, pv0 + 6.5, pv0 + 9.8]) { p.push([box(po + 1.4, po + 1.9, 0, ph - 1.1, v - 0.25, v + 0.25), '#a9adb0']); nSolid(po + 1.65, v, 0.35); }
-    for (const v of [pv0 + 0.5, pv1 - 0.5]) { const [ax, az] = NG.world(po + 0.2, v), [bx, bz] = NG.world(u0, v); wallSolids(ax, az, bx, bz, 0.55); }
+    // E01 the portal (the owner's tower brief, Picture 6): a white frame along the face, its beam on discrete square
+    // posts with open bays between (the corner post, three posts, the wider end leg, the pier at the wall with the
+    // darker panel between them); a second frame behind, higher; dark roof infill between the frames and back to the
+    // wall at two levels; a small raised light curved connector and a dark one; top returns only, no side walls; the
+    // recessed glazing and doors behind, the dark tiled floor
+    const F2 = po + 2.2;
+    p.push([box(po, po + 0.8, ph - 1.1, ph, pv0, pv1), '#f2f2ef']);
+    for (const v of [pv0 + 0.3, pv0 + 3.6, pv0 + 6.9, pv0 + 10.2]) { p.push([box(po + 0.1, po + 0.7, 0, ph - 1.1, v - 0.3, v + 0.3), '#f2f2ef']); nSolid(po + 0.4, v, 0.4); }
+    p.push([box(po, po + 0.9, 0, ph - 1.1, pv1 - 0.9, pv1), '#f2f2ef'], [box(u0 - 1.2, u0, 0, ph + 0.6, pv1 - 0.9, pv1), '#f2f2ef'], [box(po + 0.9, u0 - 1.2, ph - 2.1, ph - 0.9, pv1 - 0.75, pv1 - 0.15), '#8d9195']);
+    for (const [a, b] of [[po + 0.45, pv1 - 0.45], [u0 - 0.6, pv1 - 0.45]] as P2[]) nSolid(a, b, 0.5);
+    for (const v of [pv0, pv1 - 0.4]) p.push([box(po, u0, ph - 0.8, ph, v, v + 0.4), '#f2f2ef']);
+    p.push([box(F2, F2 + 0.6, ph - 0.6, ph + 0.55, pv0 + 1.8, pv1 + 0.2), '#ecedea'], [box(F2, F2 + 0.6, 0, ph - 0.6, pv1 + 0.2 - 0.6, pv1 + 0.2), '#ecedea']);
+    p.push([box(po + 0.8, F2, ph - 0.25, ph - 0.12, pv0 + 0.4, pv1 - 0.4), '#3d4144'], [box(F2 + 0.6, u0, ph + 0.3, ph + 0.42, pv0 + 0.4, pv1 - 0.4), '#3a3e41']);
+    p.push([box(po + 0.8, u0, ph - 0.4, ph - 0.25, pv0 + 0.4, pv1 - 0.4), '#d6d7d4']);
+    for (const [v0c, v1c, col] of [[pv0 + 0.6, pv0 + 6.2, '#d9dbdc'], [pv0 + 6.8, pv1 - 1.4, '#45494c']] as [number, number, string][]) {
+      const L = v1c - v0c, g = new THREE.CylinderGeometry(0.85, 0.85, L, 14, 1, false, -Math.PI / 2, Math.PI).rotateX(Math.PI / 2).translate(F2 + 1.8, ph + 0.42, (v0c + v1c) / 2);
+      p.push([g, col]);
+    }
     curtain(k, [[u0 - 0.06, pv0 + 1.0], [u0 - 0.06, pv1 - 1.0]], 0.15, ph - 1.2);
     for (const [a, b] of [[pv0 + 4.0, pv0 + 5.7], [pv0 + 7.3, pv0 + 9.0]]) p.push([box(u0 - 0.12, u0 - 0.06, 0.12, 2.5, a, b), '#25282a'], [box(u0 - 0.14, u0 - 0.1, 0.12, 2.5, (a + b) / 2 - 0.03, (a + b) / 2 + 0.03), '#9aa0a4']);
-    nPlane(k, rect([po, u0, pv0 + 1.0, pv1 - 1.0]), 0.07, darkTileMat(), 1);
-    // the plant on the canopy's roof (S11)
-    for (const v of [pv0 + 2.5, pv1 - 3]) p.push([box(po + 2.6, po + 3.6, ph + 0.42, ph + 1.1, v - 0.6, v + 0.6), '#c3c6c8']);
+    nPlane(k, rect([po, u0, pv0 + 0.4, pv1 - 0.4]), 0.07, darkTileMat(), 1);
     // ---- fins on the north face, the inner faces and the east block ----
     fins(p, true, LAB.front[2], -1, u0, LAB.end[0], labTop - 0.3);
-    fins(p, true, LAB.end[2], -1, LAB.end[0], LAB.end[1], endTop - 0.2);
-    fins(p, false, LAB.end[1], 1, LAB.end[2], LAB.end[3], endTop - 0.2);
     fins(p, false, LAB.arm[1], 1, LAB.service[3], LAB.arm[3], labTop - 0.3);
     fins(p, true, LAB.service[3], 1, LAB.arm[1], LAB.end[1], labTop - 0.3);
     // the south end of the west arm: two small windows a floor (provisional)
@@ -297,34 +306,46 @@ const lab: Spec = {
     for (let i = 0; i < 7; i++) p.push([box(146 + i * 5, 148.4 + i * 5, labTop + 0.15, labTop + 1.4, -126, -123.6), '#cfd2d4']);
     p.push([box(LAB.end[0], LAB.end[1], endTop, endTop + 0.6, LAB.end[2], LAB.end[2] + 0.3), '#e8e8e6'], [box(LAB.end[0], LAB.end[1], endTop, endTop + 0.6, LAB.end[3] - 0.3, LAB.end[3]), '#e8e8e6']);
     for (const u of [186, 191, 196]) p.push([box(u - 1.6, u + 1.6, endTop, endTop + 1.5, -133, -128), '#c5c8ca']);
-    // ---- the signed tower ----
-    p.push([box(TU0, TU1, towTop, towTop + 0.7, TV0, TV0 + 0.25), '#ececE9'], [box(TU0, TU1, towTop, towTop + 0.7, TV1 - 0.25, TV1), '#ececE9'], [box(TU0, TU0 + 0.25, towTop, towTop + 0.7, TV0, TV1), '#ececE9'], [box(TU1 - 0.25, TU1, towTop, towTop + 0.7, TV0, TV1), '#ececE9']);
-    // the raised letters on the west face, NOGUCHI over ADVANCED RESEARCH LABORATORIES, left aligned (S19)
-    letters(k, 'NOGUCHI', TU0 - 0.01, towTop - 2.4, TV0 + 0.8 + 3.4, -Math.PI / 2, 0.95, 0.09, '#d4d8db', { gap: 0.45, stroke: 0.22 });
-    letters(k, 'ADVANCED RESEARCH LABORATORIES', TU0 - 0.01, towTop - 3.35, TV0 + 0.8 + 4.75, -Math.PI / 2, 0.36, 0.06, '#c9ced1', { wide: 0.9, gap: 0.35, stroke: 0.22 });
-    // three small windows low on the west face (S15)
-    for (const v of [TV1 - 3.2, TV1 - 2.3, TV1 - 1.4]) { p.push([box(TU0 - 0.05, TU0, 7.0, 7.9, v - 0.33, v + 0.33), '#8d9195']); k.glass.push(box(TU0 - 0.07, TU0 - 0.05, 7.08, 7.82, v - 0.26, v + 0.26)); }
-    // the stacked landings on the north face: slab, a return wall at the east end, dense bar rails, doors behind
-    const lv0 = TV0 - 1.8;
-    for (let fl = 1; fl < LAB.towerFloors; fl++) {
-      const y = 0.4 + fl * LS, la = TU0 + 0.3, lb = TU1 - 0.6;
-      p.push([box(la - (fl === 1 ? 0 : 0), lb, y - 0.22, y, lv0, TV0), '#ebebe8'], [box(lb, TU1, y - 0.22, y + LS - 0.22, lv0, TV0), '#efefec']);
-      for (let u = la + 0.06; u < lb; u += 0.13) p.push([box(u - 0.013, u + 0.013, y, y + 1.05, lv0 + 0.02, lv0 + 0.05), '#2b2d30']);
-      for (let v = lv0 + 0.1; v < TV0; v += 0.13) p.push([box(la, la + 0.03, y, y + 1.05, v - 0.013, v + 0.013), '#2b2d30']);
-      p.push([box(la, lb, y + 1.03, y + 1.08, lv0, lv0 + 0.06), '#2b2d30'], [box(la, la + 0.06, y + 1.03, y + 1.08, lv0, TV0), '#2b2d30']);
-      for (const u of [TU0 + 2.2, TU0 + 6.2]) p.push([box(u - 0.5, u + 0.5, y, y + 2.3, TV0 - 0.04, TV0), '#2e3033']);
-    }
-    // the ground stair: one flight along the landings' edge from the east up to the first landing's west end, its
-    // stringer wall, the rail on its open side
-    { const y1 = 0.4 + LS, sa = TU0 + 3.0, sb = TU1 + 3.2, n2 = 24, sv0 = lv0 - 1.2;
-      p.push([box(TU0 + 0.3, sa, y1 - 0.22, y1, sv0, lv0), '#ebebe8']);
-      for (let i = 0; i < n2; i++) { const ua = sb - ((sb - sa) * (i + 1)) / n2, ub = sb - ((sb - sa) * i) / n2, y = (y1 * (i + 1)) / n2; p.push([box(ua, ub, y - 0.2, y, sv0, lv0), '#e5e5e2']); }
-      p.push([box(sa, sb, 0, 0.5, sv0, sv0 + 0.12), '#e5e5e2']);
-      const L = Math.hypot(sb - sa, y1); p.push([new THREE.BoxGeometry(L, 0.05, 0.05).rotateZ(-Math.atan2(y1, sb - sa)).translate((sa + sb) / 2, y1 / 2 + 1.0, sv0 + 0.03), '#2b2d30']);
-      for (let i = 0; i <= 8; i++) { const u = sb - ((sb - sa) * i) / 8, y = (y1 * i) / 8; p.push([box(u - 0.02, u + 0.02, y, y + 1.0, sv0 + 0.01, sv0 + 0.05), '#2b2d30']); }
-      for (let u = sa; u < sb; u += 0.8) nSolid(u, (sv0 + lv0) / 2, 0.7); }
-    // the low block's door
-    p.push([box(LAB.low[0] + 2, LAB.low[0] + 3.2, 0.1, 2.4, LAB.low[2] - 0.05, LAB.low[2]), '#2e3033']);
+    // ---- B01: the signed broad end block (Picture 3): parapet, raised NOGUCHI over ADVANCED RESEARCH LABORATORIES
+    // on its north face, the three small windows low at its west side, railed landings at its east edge ----
+    { const [e0, e1, ev0] = LAB.end, zf = ev0 - 0.01;
+      letters(k, 'NOGUCHI', 189.5, endTop - 2.4, zf, Math.PI, 1.1, 0.09, '#d4d8db', { gap: 0.45, stroke: 0.22 });
+      letters(k, 'ADVANCED RESEARCH LABORATORIES', 191.5, endTop - 3.5, zf, Math.PI, 0.42, 0.06, '#c9ced1', { wide: 0.9, gap: 0.35, stroke: 0.22 });
+      for (const u of [184, 185.1, 186.2]) { p.push([box(u - 0.4, u + 0.4, 9.6, 10.6, ev0 - 0.05, ev0), '#8d9195']); k.glass.push(box(u - 0.32, u + 0.32, 9.68, 10.52, ev0 - 0.07, ev0 - 0.05)); }
+      for (let fl = 1; fl < LAB.endFloors; fl++) {
+        const y = 0.4 + fl * LS, va = ev0 + 0.4, vb = ev0 + 3.6;
+        p.push([box(e1, e1 + 1.6, y - 0.22, y, va, vb), '#ebebe8'], [box(e1 + 0.02, e1 + 0.05, y, y + 2.3, va + 0.8, va + 1.8), '#2e3033']);
+        for (let v = va + 0.06; v < vb; v += 0.13) p.push([box(e1 + 1.55, e1 + 1.58, y, y + 1.05, v - 0.013, v + 0.013), '#2b2d30']);
+        p.push([box(e1 + 1.53, e1 + 1.6, y + 1.03, y + 1.08, va, vb), '#2b2d30']);
+      }
+      p.push([box(e0, e1, endTop, endTop + 0.6, ev0, ev0 + 0.3), '#e8e8e6'], [box(e1 - 0.3, e1, endTop, endTop + 0.6, ev0, LAB.end[3]), '#e8e8e6'], [box(e0, e0 + 0.3, endTop, endTop + 0.6, ev0, LAB.end[3]), '#e8e8e6']); }
+    // ---- T01: the tall slim tower (Picture 2): the blank pale blade on its west face with its top sloping up to the
+    // north, the thin blade at the north edge, the open bay between them with four dark landing slabs projecting,
+    // bar rails on their open edges, the lit panels behind; a dark base under the bay; the mast ----
+    { const bladeTop = (v: number) => towTop - 1.2 + ((TV1 - v) / (TV1 - TV0)) * 2.2, vb = TV0 + 3.0, back = TU0 + 3.6;
+      const sh = new THREE.Shape([new THREE.Vector2(vb, 0), new THREE.Vector2(TV1, 0), new THREE.Vector2(TV1, bladeTop(TV1)), new THREE.Vector2(vb, bladeTop(vb))]);
+      p.push([new THREE.ExtrudeGeometry(sh, { depth: 0.6, bevelEnabled: false }).rotateY(-Math.PI / 2).translate(TU0 + 0.6, 0, 0), '#efefec']);
+      p.push([box(TU0 + 0.6, TU1, 0, towTop - 1.5, vb, TV1), '#ebebe8'], [box(back, TU1, 0, towTop - 1.5, TV0, vb), '#ebebe8']);
+      p.push([box(TU0, TU0 + 1.3, 0, towTop - 0.4, TV0 - 0.4, TV0), '#efefec'], [box(TU0, TU0 + 1.3, towTop - 0.4, towTop + 0.4, TV0 - 0.4, TV0 - 0.1), '#efefec']);
+      for (let y = 4.2; y < towTop - 2; y += 4.2) p.push([box(TU0 - 0.01, TU0 + 0.01, y - 0.02, y + 0.02, vb + 0.1, TV1 - 0.1), '#d9d9d5']);
+      p.push([box(TU0, back, 0, 4.0, TV0, vb), '#4a4c4f']);
+      for (let i = 1; i <= 4; i++) {
+        const y = i * 3.9 + 0.2, a = TU0 - 0.5, b0 = TV0 - 0.9;
+        p.push([box(a, back, y - 0.35, y, b0, vb), '#3c3d3f']);
+        for (let u = a + 0.08; u < back - 0.2; u += 0.13) p.push([box(u - 0.012, u + 0.012, y, y + 1.05, b0 + 0.02, b0 + 0.05), '#2b2d30']);
+        for (let v = b0 + 0.08; v < vb; v += 0.13) p.push([box(a + 0.02, a + 0.05, y, y + 1.05, v - 0.012, v + 0.012), '#2b2d30']);
+        p.push([box(a, back, y + 1.03, y + 1.08, b0, b0 + 0.06), '#2b2d30'], [box(a, a + 0.06, y + 1.03, y + 1.08, b0, vb), '#2b2d30']);
+        if (i < 4) p.push([box(back - 0.05, back, y, y + 2.6, TV0 + 0.6, vb - 0.6), '#e9c98a']);
+      }
+      p.push([box(TU0 + 0.6, TU1, towTop - 1.5, towTop - 1.2, TV0, TV1), '#dcdcd8']);
+      p.push([new THREE.CylinderGeometry(0.04, 0.06, 4, 6).translate(TU0 + 2.5, towTop + 1.5, TV1 - 1.5), '#8a8d90']);
+      p.push([box(TU1 - 0.05, TU1, 0.1, 2.4, TV1 - 2.2, TV1 - 1.2), '#2e3033']); }
+    // ---- B02: parapet, the plant enclosure of pale panels and the units on the roof (Picture 7), a downpipe ----
+    { const [l0, l1, m0, m1] = LAB.low;
+      for (const [a, b, c, d] of [[l0, l1, m0, m0 + 0.25], [l0, l1, m1 - 0.25, m1], [l0, l0 + 0.25, m0, m1], [l1 - 0.25, l1, m0, m1]]) p.push([box(a, b, lowTop, lowTop + 0.7, c, d), '#ecece8']);
+      p.push([box(l0 + 2, l1 - 3, lowTop, lowTop + 1.6, m0 + 3, m0 + 3.15), '#e2e3e0'], [box(l0 + 2, l0 + 2.15, lowTop, lowTop + 1.6, m0 + 3, m1 - 3), '#e2e3e0']);
+      for (const [u, v] of [[l1 - 2, m0 + 2], [l0 + 4, m1 - 2]] as P2[]) p.push([box(u - 0.6, u + 0.6, lowTop, lowTop + 0.9, v - 0.5, v + 0.5), '#d1d3d4']);
+      p.push([box(l0 - 0.12, l0, 0, lowTop, m1 - 1.2, m1 - 1.05), '#cfd0cc'], [box(l0 - 0.05, l0, 0.1, 2.4, m0 + 2, m0 + 3.1), '#2e3033']); }
     k.plain.push(...p);
     // ---- before the portal: the walk, the two kerbed lawns, the flower band, the monument, bollards ----
     { const [w0, w1, wv0, wv1] = LAB.walk;
@@ -357,7 +378,7 @@ const lab: Spec = {
     // the block-paved parking with white bays (S15); the loop's kerbside strips in asphalt
     for (const l of NOG_LOTS) { if (l.name.startsWith('noguchi-loop')) { nPlane(k, l.ring, 0.04, asphaltMat(), 6); continue; } nPlane(k, l.ring, 0.05, paverMat(), 3); bays(k, l.rows, l.across); }
     // the solid walls of the tower, the low block and the portal frame's outer corners (the tower is not on the map)
-    for (const [a, b, c, d] of [LAB.tower, LAB.low]) { const W = (u: number, v: number) => NG.world(u, v); wallSolids(...W(a, c), ...W(b, c), 0.3); wallSolids(...W(b, c), ...W(b, d), 0.3); wallSolids(...W(b, d), ...W(a, d), 0.3); wallSolids(...W(a, d), ...W(a, c), 0.3); }
+    for (const [a, b, c, d] of [[TU0 - 0.5, TU1, TV0 - 0.9, TV1] as R4, LAB.low]) { const W = (u: number, v: number) => NG.world(u, v); wallSolids(...W(a, c), ...W(b, c), 0.3); wallSolids(...W(b, c), ...W(b, d), 0.3); wallSolids(...W(b, d), ...W(a, d), 0.3); wallSolids(...W(a, d), ...W(a, c), 0.3); }
     mergeMeshes(k);
   },
 };
