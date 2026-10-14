@@ -10,6 +10,7 @@
 import * as THREE from 'three';
 import { TRIM, WHITE, box, canvas, tri2 } from './modelkit';
 import { concreteTexture } from './textures';
+import { ENG_BAYS, ENG_FORECOURT, ENG_SIDE_ROAD } from './engplan';
 import { PL, createSite, render, slab, tanks, window_, type Kit, type Spec, type Style } from './blocks';
 import { rubble } from './concrete';
 import { groundHeight } from './relief';
@@ -176,16 +177,27 @@ function jetFence(k: Kit, x0: number, x1: number, z0: number, z1: number, h = 2.
 /** the paving round the school: the same concrete as the car park (the owner, on the satellite picture: "the car park and
  *  all pavement around the school are the same color as the pavement on the car park"; world.ts draws car parks in
  *  this colour and texture, 5 m a repeat in world space) */
-let PAVE_MAT: THREE.MeshStandardMaterial | null = null;
-function carParkPaving(k: Kit, x0: number, x1: number, z0: number, z1: number, y = 0.05) {
+let PAVE_MAT: THREE.MeshStandardMaterial | null = null, ROAD_MAT: THREE.MeshStandardMaterial | null = null;
+/** a paved rectangle (model frame) laid over the ground in 2 m cells, so that on the hollow's slopes it follows them
+ *  (the model stands rigid on the floor: Kit.ground) */
+function carParkPaving(k: Kit, x0: number, x1: number, z0: number, z1: number, y = 0.05, road = false) {
   PAVE_MAT ??= new THREE.MeshStandardMaterial({ color: '#b9bbbf', map: concreteTexture(), roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
-  const g = new THREE.PlaneGeometry(x1 - x0, z1 - z0).rotateX(-Math.PI / 2).translate((x0 + x1) / 2, y, (z0 + z1) / 2);
+  ROAD_MAT ??= new THREE.MeshStandardMaterial({ color: '#7f8287', map: concreteTexture(), roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
+  const nx = Math.max(1, Math.ceil((x1 - x0) / 2)), nz = Math.max(1, Math.ceil((z1 - z0) / 2));
+  const g = new THREE.PlaneGeometry(x1 - x0, z1 - z0, nx, nz).rotateX(-Math.PI / 2).translate((x0 + x1) / 2, 0, (z0 + z1) / 2);
   const pos = g.attributes.position as THREE.BufferAttribute, uv = g.attributes.uv as THREE.BufferAttribute;
-  const [ox, oz] = ORIGIN;
-  for (let i = 0; i < uv.count; i++) uv.setXY(i, (pos.getX(i) + ox) / 5, (pos.getZ(i) + oz) / 5);
-  const m = new THREE.Mesh(g, PAVE_MAT);
+  const [ox, oz] = ORIGIN, lift = k.ground(0, 0);
+  for (let i = 0; i < pos.count; i++) {
+    const wx = pos.getX(i) + ox, wz = pos.getZ(i) + oz;
+    pos.setY(i, groundHeight(wx, wz) - lift + y);
+    uv.setXY(i, wx / 5, wz / 5);
+  }
+  g.computeVertexNormals();
+  const m = new THREE.Mesh(g, road ? ROAD_MAT : PAVE_MAT);
   m.receiveShadow = true; m.userData.noCollide = true; k.meshes.push(m);
 }
+/** world rectangle to model frame */
+const rel = ([x0, x1, z0, z1]: [number, number, number, number]): [number, number, number, number] => [x0 - ORIGIN[0], x1 - ORIGIN[0], z0 - ORIGIN[1], z1 - ORIGIN[1]];
 const ORIGIN: [number, number] = [453, -415];
 
 // model frame: map axes, origin at (453, -415); z grows to the south
@@ -207,7 +219,9 @@ const engineering: Spec = {
     { x0: 6.6, x1: 12.4, z0: -11, z1: 5, floors: F, roof: 'flat', faces: { x0: ENG_LATTICE } },
   ],
   // the paved forecourt and the jet's compound stay clear of generated trees and tufts
-  keep: [[-13, 33, 25.5, 40], [-12.5, -9.3, 5, 28.7], [16, 30, 13, 27]],
+  // and (the owner's close satellite, batch 134) the lawns, the car park and the ground east of the front block, where the
+  // trees stand as the picture shows them (engground.ts)
+  keep: [[-77, 37, 25.5, 42.8], [-12.5, -9.3, 5, 28.7], [16, 30, 13, 27], [-106, -28, 42.8, 69], [-106, -77, -29, 43], [-22, 54, 42.8, 69], [9, 37, -10, 34], [-77, -12, -31, 34]],
   extras: (k) => {
     const top = k.wallTop(F);
     // the towers rise a little above the eaves with parapets, black tanks on top; on the top floor of each front an
@@ -248,13 +262,12 @@ const engineering: Spec = {
     jetFence(k, ax0, ax1, az0, az1);
     aeroplane(k, (ax0 + ax1) / 2, (az0 + az1) / 2, 0.85, -Math.PI / 2);
     // the bank up to the main road south of the forecourt (owner's third reference PDF, page 67, from the ground floor):
-    // faced in pitched rubble stone, paving along its foot (the car park's colour, the owner), the lawn and shrubs on
-    // top; either side of the access
-    // road down from the main road
+    // pitched rubble stone at its foot, either side of the access road; only a narrow strip, as the owner's close
+    // satellite shows the lawns green up to the forecourt's kerb (batch 134)
     { const lift = k.ground(0, 0), rub = rubble(), g = new THREE.BufferGeometry(), pos: number[] = [], uv: number[] = [], idx: number[] = [];
       const xs: number[] = [], zs: number[] = [];
       for (let x = 376; x <= 500.01; x += 2) xs.push(x);
-      for (let z = -372.2; z <= -360.01; z += 1.2) zs.push(z);
+      for (let z = -375; z <= -372.19; z += 1.4) zs.push(z);
       for (const z of zs) for (const x of xs) { pos.push(x - 453, groundHeight(x, z) - lift + 0.03, z + 415); uv.push(x / 2.5, (z + groundHeight(x, z) * 2) / 2.5); }
       for (let j = 0; j < zs.length - 1; j++) for (let i = 0; i < xs.length - 1; i++) {
         if (xs[i] > 421 && xs[i] < 432) continue;
@@ -262,14 +275,28 @@ const engineering: Spec = {
         idx.push(a, c, b, b, c, d);
       }
       g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); g.setAttribute('color', new THREE.Float32BufferAttribute(new Array(pos.length).fill(1), 3)); g.setIndex(idx); g.computeVertexNormals();
-      const m = new THREE.Mesh(g, rub); m.receiveShadow = true; k.meshes.push(m);
-      for (const [a0, a1] of [[376, 421], [432, 500]]) k.plain.push([box(a0 - 453, a1 - 453, groundHeight(440, -373.5) - lift - 0.02, groundHeight(440, -373.5) - lift + 0.05, -374.5 + 415, -372.2 + 415), '#b9bbbf']); }
+      const m = new THREE.Mesh(g, rub); m.receiveShadow = true; k.meshes.push(m); }
     // the forecourt and the paving round the front block and the jet's compound, in the car park's concrete (the owner's
-    // satellite picture: grey all along the front, between the car park and the front block, and before the compound)
-    carParkPaving(k, -13, 33, 28.7, 40);
-    carParkPaving(k, 9.5, 33, 25.5, 28.7);
-    carParkPaving(k, -12.5, -9.3, 5, 28.7);
-    k.plain.push([box(33, 33.2, 0, 0.14, 25.5, 40), '#c4c0b6']);
+    // satellite pictures: one apron from the car park's south edge to the lawns' kerb, the access road ending in it;
+    // grey between the car park and the front block and before the compound)
+    { const [fx0, fx1, fz0, fz1] = rel(ENG_FORECOURT);
+      carParkPaving(k, fx0, fx1, fz0, fz1);
+      carParkPaving(k, -13, fx1, 28.7, fz0);
+      carParkPaving(k, 9.5, fx1, 25.5, 28.7);
+      carParkPaving(k, -12.5, -9.3, 5, 28.7);
+      const [sx0, sx1, sz0, sz1] = rel(ENG_SIDE_ROAD);
+      carParkPaving(k, sx0, sx1, sz0, sz1, 0.06, true); }
+    // the car park's bays (the close satellite): white lines across rows 5 m deep, every 2.6 m, and the planted island
+    // with its kerb down the middle line of trees
+    { const line = (x0: number, x1: number, z0: number, z1: number) => k.plain.push([box(x0 - ORIGIN[0], x1 - ORIGIN[0], 0.06, 0.08, z0 - ORIGIN[1], z1 - ORIGIN[1]), '#eeeeea']);
+      const B = ENG_BAYS;
+      for (const [a, b] of B.rows) {
+        for (let z = B.z[0]; z <= B.z[1] + 0.01; z += 2.6) line(a, b, z - 0.05, z + 0.05);
+      }
+      for (let x = B.south.x[0]; x <= B.south.x[1] + 0.01; x += 2.6) line(x - 0.05, x + 0.05, B.south.z[0], B.south.z[1]);
+      const [i0, i1] = B.island;
+      k.plain.push([box(i0 - ORIGIN[0], i1 - ORIGIN[0], 0, 0.16, B.z[0] - ORIGIN[1], B.z[1] - ORIGIN[1]), '#c9c6bd']);
+      k.plain.push([box(i0 + 0.12 - ORIGIN[0], i1 - 0.12 - ORIGIN[0], 0.16, 0.18, B.z[0] + 0.12 - ORIGIN[1], B.z[1] - 0.12 - ORIGIN[1]), '#5f7f3a']); }
   },
 };
 

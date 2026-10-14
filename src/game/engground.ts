@@ -12,7 +12,7 @@ import { BUILDINGS, ROADS, NODE_XZ } from './campusmap';
 import { groundHeight } from './relief';
 import { coverOverlay, crownTiles, hash2, vnoise2, type Crown, type P2 } from './scrubkit';
 import { concreteTexture } from './textures';
-import { ENG_GROUND, ENG_TRACK, ENG_TRACK_HALF, ENG_TRACK_INDEX, roadNear, trackZ } from './engplan';
+import { ENG_GROUND, ENG_TREES, ENG_TRACK, ENG_TRACK_HALF, ENG_TRACK_INDEX, roadNear, sat, trackZ } from './engplan';
 
 const LOW = ['#5d7f3a', '#6b8a42', '#55763a', '#728d48'];
 const BUSH = ['#4f7a35', '#5d8a3c', '#46702f', '#6b8f45', '#557f37'];
@@ -92,6 +92,18 @@ export function buildEngineeringGrounds() {
     const seed = hash2(px * 5, pz), r = 1.4 + seed * 1.3;
     if (roadGap(px, pz) < r * 0.6 + 1 || nearBld(px, pz, 2)) continue;
     crowns.push({ x: px, z: pz, r, h: 1.4 + seed * 1.8, base: 0, trunk: 0, color: FOREST[((seed * 7) | 0) % 5], seed });
+  }
+
+  // the trees round the school where the owner's close satellite shows them (the car park's line and edges, the groups by
+  // the front block, the belt along the east lawn, the lawns' trees), and the row of low shrubs along the lawns' north
+  // kerb
+  for (const [px, py, r] of ENG_TREES) {
+    const [x, z] = sat(px, py), seed = hash2(x, z);
+    crowns.push({ x, z, r, h: r * 1.1 + 0.6, base: Math.min(3.2, r * 0.6 + 0.8), trunk: Math.max(0.16, r * 0.07), color: BUSH[(seed * 5) | 0], seed, solid: true });
+  }
+  for (const [a, b] of [[351, 422], [434, 487]] as P2[]) for (let x = a; x < b; x += 1.8) {
+    const seed = hash2(x, 3.3);
+    crowns.push({ x: x + (seed - 0.5) * 0.6, z: -371.4 + (hash2(7, x) - 0.5) * 0.4, r: 0.55 + seed * 0.25, h: 0.6 + seed * 0.3, base: 0, trunk: 0, color: LOW[(seed * 4) | 0], seed });
   }
 
   const group = new THREE.Group();

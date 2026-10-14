@@ -23,7 +23,7 @@ import { NSIA } from './nsia';
 import { KQ } from './kuffour';
 import { offAsphalt } from './science';
 import { ownsEdges } from './ipsplan';
-import { parkingFill } from './lbplan';
+import { parkingFill, parkingSpots } from './lbplan';
 import { inLfKeep } from './lfplan';
 import { inEcKeep } from './ecgplan';
 import { inTcLocal } from './tennisplan';
@@ -1270,6 +1270,12 @@ function parkCars(cells: Cells, car: Model, pts: Float32Array, rand: () => numbe
   for (let i = 0; i < n; i++) { cx += pts[i * 2]; cz += pts[i * 2 + 1]; }
   const busy = 0.65 + rand() * 0.25, fill = parkingFill(cx / n, cz / n) ?? busy;
   let count = 0;
+  // (where the owner's pictures show the cars, they stand there)
+  const spots = parkingSpots(cx / n, cz / n);
+  if (spots) {
+    for (const [x, z, yaw] of spots) cells.p(x, z).add(car, yawM(x, 0, z, yaw + (rand() < 0.5 ? Math.PI : 0)), [CAR_COLORS[(rand() * CAR_COLORS.length) | 0]], 0.92 + rand() * 0.12);
+    return spots.length;
+  }
   // rows of 5 m bays facing each other across 6 m aisles
   for (let w = w0 + 3; w < w1 - 2.5 && count < 220; w += 8) {
     const facing = (Math.round((w - w0) / 8) % 2) ? 1 : -1;
