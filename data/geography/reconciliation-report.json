@@ -382,7 +382,20 @@
    "ml:d2d5f0f0-bc7d-4ec9-aa07-7e641de9921b",
    "osm:way/626139046",
    "osm:way/394252218",
-   "osm:way/1009392428"
+   "osm:way/1009392428",
+   "ml:3977943e-d87d-4340-9303-f3f1dca0d4ee",
+   "ml:4f112143-0a67-40a9-9eba-878c71509f65",
+   "ml:711a32bb-d146-48df-bb01-c57f8560b81e",
+   "ml:ac72a77e-a6d0-46f6-8dec-7544d4a7e918",
+   "ml:d78cc9cf-cb29-4f35-8064-e24da1ab8ff6",
+   "ml:dfc09bbc-02ba-47d3-a3bc-23783c34b01a",
+   "osm:way/1009392442",
+   "osm:way/376764146",
+   "osm:way/376764153",
+   "osm:way/376764161",
+   "osm:way/376767252",
+   "osm:way/376764419",
+   "osm:way/376764149"
   ]
  },
  "areas": {
@@ -411,8 +424,8 @@
    "ha": 1.5
   },
   "parking": {
-   "count": 134,
-   "ha": 12.2
+   "count": 135,
+   "ha": 12.4
   },
   "track": {
    "count": 3,
