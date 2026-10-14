@@ -65,8 +65,8 @@ Comparison sheet: `sheet.jpg`. Labels: [VERIFIED] [DECISION] [ASSUMPTION] [INCOM
   - a swept fin with the Ghana flag;
   - dark green over tan camouflage, a pale belly and a pale nose tip;
   - yellow jack stands under the wings (photos 7, 9).
-- [VERIFIED] The nose points east. In the front photo (1) the nose points right, which is east. This was already
-  the owner's batch-80 correction.
+- [DECISION] The jet faces the way the building faces: south, nose toward the compound's gate. The owner, 2026-10-14:
+  "the jet and the building face same direction". Before this it pointed east (the batch-80 correction).
 - [ASSUMPTION] The jet is drawn at 0.85 of its real size: 9.3 m long, 9.2 m over the tip tanks. The real MB-339 is
   10.97 m long and 10.86 m over its tip tanks, and the mapped compound is only about 11 × 11 m. A measured compound
   size would let it go to full size.

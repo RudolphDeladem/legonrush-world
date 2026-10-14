@@ -82,11 +82,11 @@ const latticeMat = () => (LATTICE_MAT ??= new THREE.MeshStandardMaterial({ rough
 const STOREY = 3.4, F = 4, BLACK = '#202124';
 
 /** the Aermacchi MB-339 on its pad (the owner's SES brief: the School's report names the type; the photos at its fence
- *  and from the front lawn): a slim trainer, nose east (+x, the front photo), tandem bubble canopy, low wings with a
+ *  and from the front lawn): a slim trainer, nose forward, tandem bubble canopy, low wings with a
  *  slight sweep and tip tanks, a swept fin with the Ghana flag; dark green over tan/gold camouflage, a pale belly and a
- *  pale nose tip; yellow jack stands under the wings. Built full size (10.97 m long, 10.86 m over the tip tanks) and
+ *  pale nose tip; yellow jack stands under the wings. Built nose along +x, turned by `yaw`; full size (10.97 m long, 10.86 m over the tip tanks) and
  *  scaled to `s` so that it stands clear inside the mapped compound. */
-function aeroplane(k: Kit, cx: number, cz: number, s: number) {
+function aeroplane(k: Kit, cx: number, cz: number, s: number, yaw = 0) {
   const TAN = '#b8963f', GREEN = '#34462c', BELLY = '#b9c1c4', YEL = '#e2b51a';
   const parts: [THREE.BufferGeometry, string][] = [];
   const add = (g: THREE.BufferGeometry, c: string) => parts.push([g, c]);
@@ -135,7 +135,7 @@ function aeroplane(k: Kit, cx: number, cz: number, s: number) {
       add(leg.translate((top.x + foot.x) / 2, (top.y + foot.y) / 2, (top.z + foot.z) / 2), YEL);
     }
   }
-  for (const [g, c] of parts) k.plain.push([g.scale(s, s, s).translate(cx, 0.15, cz), c]);
+  for (const [g, c] of parts) k.plain.push([g.rotateY(yaw).scale(s, s, s).translate(cx, 0.15, cz), c]);
 }
 
 /** the jet's compound fence on a low concrete kerb (the photos at its fence): chain-link on galvanised posts with their
@@ -245,11 +245,12 @@ const engineering: Spec = {
     for (const x of [xm - 2, xm, xm + 2]) k.plain.push([box(x - 0.06, x + 0.06, 0.3, 3.0, z0, z0 + 0.08), '#2a2826']);
     k.plain.push([box(xm - 2, xm + 2, 2.94, 3.06, z0, z0 + 0.08), '#2a2826']);
     // the Aermacchi MB-339 on its pad in the compound east of the front block: the pad and the fence on the mapped
-    // outline of the compound (osm, the outline the bike stops at), the jet nose east inside it
+    // outline of the compound (osm, the outline the bike stops at); the jet faces the way the building faces, south,
+    // nose toward the compound's gate (the owner, 2026-10-14: "the jet and the building face same direction")
     const ax0 = 17.5, ax1 = 28.5, az0 = 14.3, az1 = 25.5;
     k.plain.push([box(ax0, ax1, 0, 0.15, az0, az1), '#d3d0c8']);
     jetFence(k, ax0, ax1, az0, az1);
-    aeroplane(k, (ax0 + ax1) / 2 + 0.1, (az0 + az1) / 2, 0.85);
+    aeroplane(k, (ax0 + ax1) / 2, (az0 + az1) / 2, 0.85, -Math.PI / 2);
     // the bank up to the main road south of the forecourt (owner's third reference PDF, page 67, from the ground floor):
     // faced in pitched rubble stone, brick paving along its foot, the lawn and shrubs on top; either side of the access
     // road down from the main road

@@ -3801,6 +3801,6 @@ Evidence and ids are in `docs/engineering-ses/evidence-ledger.md` (batch 132). T
 - **Entrance:** a maroon gable porch with a pale soffit, the sign SCHOOL OF ENGINEERING SCIENCES, a tiled landing
   and steps, red-brown herringbone pavers.
 - **Jet:** an Aermacchi MB-339 in green and tan with tip tanks, the Ghana flag on its fin and yellow stands under the
-  wings, nose east. The fence is chain-link with a green welded-mesh gate on the front.
+  wings. It faces south, the way the building faces (the owner), nose toward its gate. The fence is chain-link with a green welded-mesh gate on the front.
 - **Car park:** about a fifth full, as in the satellite.
 - **Bush:** a dense, instanced bush belt behind the school and along Annie Jiagge Road.
