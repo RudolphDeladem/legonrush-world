@@ -42,3 +42,11 @@ Checks: typecheck, route tests, challenge lens unchanged, no non-finite vertices
 | Tropiks: the narrow right window as large as the others | Three windows 2.2 m by 1.5 m | VERIFIED (owner) |
 | Tropiks: wall, small gate, wall, car entrance | Wall from the west boundary to the block's corner; east: small gate under a lintel, 0.9 m of wall, then the open car entrance on the lane | VERIFIED (owner) |
 | Which building is the "administration building" | The satellite (brief M2) labels the porch house/Tropiks "Administration block"; it keeps its glass windows | VERIFIED |
+
+## Owner's notes (batch 146)
+
+| Note | Done | Label |
+| --- | --- | --- |
+| Green and violet: the connector's corner points outward | West face A (west block) to V (1.5 m out at 40%) to T (the tower): a convex corner; one volume behind it | VERIFIED (owner, R05); offset ASSUMPTION |
+| Yellow: the curved balconies shared by the two walls | Balconies round the south-west corner, three quarters outside, openings and grilled windows on both walls | VERIFIED (owner, R05) |
+| Blue and black: the open entrance and the gate at its base | Opening two storeys high (6.5 m) on the north plane; closed dark bar gate 2.2 m at its base; the way through behind | VERIFIED (owner, R05) |
