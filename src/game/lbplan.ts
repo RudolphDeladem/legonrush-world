@@ -5,6 +5,8 @@
 // from them and the owner's annotated aerial (Additional References 1 and 3), not measured.
 import { NODE_XZ, ROADS } from './campusmap';
 import { ENG_CARS, sat } from './engplan';
+import { ugmcSpots } from './ugmcplan';
+import { nogSpots } from './nogplan';
 
 type Line = [number, number][];
 const pts = (nodes: number[]): Line => nodes.map((n) => [NODE_XZ[n * 2], NODE_XZ[n * 2 + 1]]);
@@ -133,9 +135,9 @@ export const ENG_PARK = { x0: 376, x1: 441, z0: -446, z1: -381, fill: 0.22 };
 export const parkingFill = (cx: number, cz: number) =>
   [STADIUM_PARKS, ENG_PARK].find((p) => cx > p.x0 && cx < p.x1 && cz > p.z0 && cz < p.z1)?.fill;
 /** car parks whose cars stand where the owner's pictures show them (x, z, yaw): the School of Engineering Sciences' nine
- *  cars from the owner's close satellite picture (engplan.ts), across the bays */
+ *  cars from the owner's close satellite picture (engplan.ts), across the bays; the UGMC lots' bays (ugmcplan.ts) */
 export const parkingSpots = (cx: number, cz: number): [number, number, number][] | undefined =>
-  cx > ENG_PARK.x0 && cx < ENG_PARK.x1 && cz > ENG_PARK.z0 && cz < ENG_PARK.z1 ? ENG_CARS.map((c) => { const [x, z] = sat(c[0], c[1]); return [x, z, Math.PI / 2]; }) : undefined;
+  cx > ENG_PARK.x0 && cx < ENG_PARK.x1 && cz > ENG_PARK.z0 && cz < ENG_PARK.z1 ? ENG_CARS.map((c) => { const [x, z] = sat(c[0], c[1]); return [x, z, Math.PI / 2]; }) : ugmcSpots(cx, cz) ?? nogSpots(cx, cz);
 
 /** where this work draws the ground beside the roads itself (the generic verge-and-drain strips stay out): the median,
  *  the scrub and the stadium-side verge, the neighbourhood's frontage */

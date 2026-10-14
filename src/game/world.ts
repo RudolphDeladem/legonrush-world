@@ -22,6 +22,11 @@ import { EARTH_ROADS } from './ghlplan';
 import { buildScrubLands } from './ghlandscape';
 import { buildUpsaGreen } from './upsagreen';
 import { buildEngineeringGrounds } from './engground';
+import { buildUgmcGrounds } from './ugmcground';
+import { buildNogGrounds } from './nog';
+import { NOG_TREES } from './nogtrees';
+import { NG, NOG_FINISH } from './nogplan';
+import { ugLocal } from './ugmcplan';
 import { ownsEdges } from './ipsplan';
 import { collisionRoots } from './meshcollide';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, roadClearance, ROAD_WIDTH } from './life';
@@ -473,7 +478,7 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
 
   // every building: cream walls with window bays, a plinth, and terracotta tile roofs
   // (buildings modelled from photos are built by halls.ts and the block-model sites instead)
-  const buildings = buildBuildings(BUILDINGS.filter((b) => !isDiasporaHall(b) && !BLOCK_SITES.some((s) => s.replaces(b))), (b) => greatHallPrecinct(b) ?? upsaStyle(b) ?? newPentStyle(b) ?? behindPentStyle(b) ?? whitePaint(b));
+  const buildings = buildBuildings(BUILDINGS.filter((b) => !isDiasporaHall(b) && !BLOCK_SITES.some((s) => s.replaces(b))), (b) => greatHallPrecinct(b) ?? medStyle(b) ?? upsaStyle(b) ?? newPentStyle(b) ?? behindPentStyle(b) ?? whitePaint(b));
   group.add(buildings);
   yield 'step';
   const halls = buildDiasporaHalls();
@@ -489,6 +494,10 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
   group.add(buildUpsaGreen());
   // the bush, the forest, the brown track and the sidewalks round the School of Engineering Sciences (engground.ts)
   group.add(buildEngineeringGrounds());
+  // the UGMC precinct's planting and the woodland round it (ugmcground.ts)
+  group.add(buildUgmcGrounds());
+  // round Noguchi and WAGMC: the court's trees, the plots, the satellite's mature trees (nog.ts)
+  group.add(buildNogGrounds(NOG_TREES));
   yield 'step';
 
   // trees, kerbs, lamps, stops, signs, cars, kiosks and people (see life.ts)
@@ -519,6 +528,19 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
 function greatHallPrecinct(b: { minX: number; maxX: number; minZ: number; maxZ: number }) {
   const cx = (b.minX + b.maxX) / 2, cz = (b.minZ + b.maxZ) / 2;
   return cx > -1130 && cx < -540 && cz > -30 && cz < 300 ? { wall: '#f7f6f2', louvres: true } : undefined;
+}
+
+/** round the medical precinct (the owner's UGMC and Noguchi + WAGMC briefs): the small buildings round Noguchi take the
+ *  roof colours the satellite shows (nogplan.ts NOG_FINISH); the peripheral blocks of the UGMC precinct are white with
+ *  light flat roofs, not generic red pitched roofs (the UGMC brief) */
+function medStyle(b: Building) {
+  const cx = (b.minX + b.maxX) / 2, cz = (b.minZ + b.maxZ) / 2;
+  if (cx < -250 || cx > 800 || cz < 1500 || cz > 2700) return undefined;
+  const f = NOG_FINISH.find(({ at: [u, v] }) => { const [x, z] = NG.world(u, v); return x >= b.minX && x <= b.maxX && z >= b.minZ && z <= b.maxZ && inRingF(b.pts, x, z); });
+  if (f) return { wall: f.wall ?? '#ece7dc', roof: f.roof, flat: !!f.flat, storeys: f.storeys };
+  const [u, v] = ugLocal(cx, cz);
+  if (u > -300 && u < 130 && v > -140 && v < 215) return { wall: '#f2f2f0', roof: '#c9ccce', flat: true };
+  return undefined;
 }
 
 /** the UPSA campus's blocks (the owner's UPSA packs, docs/upsa-campus/): white walls, blue-glazed windows, flat roofs behind a
