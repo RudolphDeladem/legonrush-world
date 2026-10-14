@@ -27,3 +27,18 @@ Checks: typecheck, route tests, challenge lens unchanged, no non-finite vertices
 | Picture 3: no gap between the west block and the connector; the frontage is one connected block | Link volume from the west block's south face to front-w; the connector's face runs across it | VERIFIED (owner) |
 | Pictures 3/4: the structure as R05 | West block 5 storeys (4 curved balconies counted on R05), connector 4 storeys + roof terrace, tower 5 storeys + cap and tank (4 balconies counted); the connector's opening schedule read from R05 | Counts VERIFIED (R05); heights of the connector against the frontage DECISION |
 | Picture 5: polytank on the pink-roof block's roof, the entrance at the marked bay | Two black tanks on a stand above the middle section; door, canopy and steps at its ground | VERIFIED (owner, R04) |
+
+## Owner's marked notes (batch 144)
+
+| Note | Done | Label |
+| --- | --- | --- |
+| Blue: the west block's balconies belong at its edges (dark green) | Curved stack at the south-west corner; small stacked balconies at the north-west corner; slots and small windows between | VERIFIED (owner, R05) |
+| White and brown: an open entrance the size of a gate | A 1.8 m way through the south link to the inner court, gate frame, one leaf swung back | VERIFIED (owner); leaf ASSUMPTION |
+| Yellow: the perforated panels close to the corner | Panels against the cut corner on the tower's west face and on the cut face | VERIFIED (owner, R05) |
+| Light green: the tower's balconies are cubes | Box balconies: slab, solid parapet, thin rail, roof slab over the top one | VERIFIED (R05) |
+| Orange and purple: the tower's faces turn like a hexagon's corners | The tower's south-west corner cut at 45 degrees, 2.5 m | VERIFIED shape (satellite); size ASSUMPTION |
+| Black: the middle section angled | The south link's west face runs on the angle from the west block to front-w's corner | VERIFIED (satellite) |
+| Blue (map): the section between the west block and the wing to the north angled | North link from the west block to inner-w's south-west corner, its west face on the angle | VERIFIED (satellite); facade ASSUMPTION (R05's narrow far-left face) |
+| Tropiks: the narrow right window as large as the others | Three windows 2.2 m by 1.5 m | VERIFIED (owner) |
+| Tropiks: wall, small gate, wall, car entrance | Wall from the west boundary to the block's corner; east: small gate under a lintel, 0.9 m of wall, then the open car entrance on the lane | VERIFIED (owner) |
+| Which building is the "administration building" | The satellite (brief M2) labels the porch house/Tropiks "Administration block"; it keeps its glass windows | VERIFIED |

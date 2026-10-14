@@ -16,7 +16,7 @@
 import * as THREE from 'three';
 import { createSite, render, slab, window_, type Kit, type Spec, type Style } from './blocks';
 import { box, canvas, speckle, tri2, type Part } from './modelkit';
-import { SOLIDS } from './solids';
+import { PASSAGES, SOLIDS } from './solids';
 import { wallSolids } from './enkit';
 import { BUILDINGS, ROADS, NODE_XZ } from './campusmap';
 import { coverOverlay, crownTiles, hash2, vnoise2, type Crown } from './scrubkit';
@@ -246,15 +246,13 @@ function curvedStack(k: Kit, at: number, out: number, zc: number, w: number, d: 
   }
   if (groundGrille) { k.plain.push([box(Math.min(at, at + out * 0.04), Math.max(at, at + out * 0.04), 0.9, 2.6, zc - w / 2, zc + w / 2), '#3b3833']); for (let z = zc - w / 2 + 0.1; z < zc + w / 2; z += 0.15) k.plain.push([box(Math.min(at, at + out * 0.08), Math.max(at, at + out * 0.08), 0.9, 2.6, z - 0.015, z + 0.015), '#6b625a']); }
 }
-/** front-w's west end (pair 5, R05; the owner's notes on it: the frontage is one connected block, no gap between the
- *  west block and the connector): the connector runs from the west block's south face (the link, across what was a
- *  gap) to the tower, four storeys under a roof terrace; the screened tower south of it is a storey taller, five
- *  storeys under its cap and tank; the hipped roof starts behind them */
-const SVC = 7.5, LINK = 7.0;
-/** the link's north edge in front-w's model frame: a little inside the west block, so the two volumes meet */
-const linkV = (f: ReturnType<typeof fit>, zWest: number) => Math.min(...[f.x0, f.x0 + LINK].map((u) => (zWest - f.c[1] - u * f.axis[1]) / f.axis[0])) - 0.4;
+/** front-w's west end (pair 5, R05, and the owner's notes on it): the connector, four storeys under a roof terrace,
+ *  and the screened tower south of it, a storey taller under its cap and tank, its south-west corner cut on the angle
+ *  (the satellite and the owner's purple arrows: the faces turn like the corners of a hexagon); the hipped roof starts
+ *  behind them. The link north of the connector, to the west block, is the junctions' (below). */
+const SVC = 7.5, CH = 2.5;
 /** a skin T deep standing out of a face along z at x = at (out -1: west), from v0 to v1 and 0 to y1, with the openings
- *  cut out of it (each a dark recess behind, with a two-bar rail at its sill when railed) */
+ *  cut out of it (each a recess behind, with a two-bar rail at its sill when railed; 'open': a way through, no back) */
 function skinZ(p: Part[], at: number, out: number, v0: number, v1: number, y1: number, T: number, holes: [number, number, number, number, boolean, string?][]) {
   const vs = [...new Set([v0, v1, ...holes.flatMap(([a, b]) => [a, b])])].sort((m, n) => m - n);
   const ys = [...new Set([0, y1, ...holes.flatMap(([, , c, d]) => [c, d])])].sort((m, n) => m - n);
@@ -264,7 +262,7 @@ function skinZ(p: Part[], at: number, out: number, v0: number, v1: number, y1: n
     if (!holes.some(([a, b, c, d]) => vm > a && vm < b && ym > c && ym < d)) p.push([box(xa, xb, ys[j - 1], ys[j], vs[i - 1], vs[i]), '#efe6d2']);
   }
   for (const [a, b, c, d, rail, back] of holes) {
-    p.push([box(Math.min(at, at + out * 0.02), Math.max(at, at + out * 0.02), c, d, a, b), back ?? '#35322e']);
+    if (back !== 'open') p.push([box(Math.min(at, at + out * 0.02), Math.max(at, at + out * 0.02), c, d, a, b), back ?? '#35322e']);
     // the shade on the soffit of the void
     p.push([box(Math.min(at, at + out * T), Math.max(at, at + out * T), d - 0.03, d, a, b), '#bdb5a6']);
     if (rail) {
@@ -274,40 +272,71 @@ function skinZ(p: Part[], at: number, out: number, v0: number, v1: number, y1: n
     }
   }
 }
-function frontWestEnd(k: Kit, f: ReturnType<typeof fit>, vl: number, vSeen: number) {
-  const x0 = f.x0, zm = f.z0 + (f.z1 - f.z0) * 0.5, T = 0.8, p: Part[] = [], fy = (fl: number) => 0.4 + fl * ST;
-  // the connector's west face (R05, read left to right, north to south, as a fraction s of the face from the west
-  // block to the tower): the ground storey solid, the metal gate at its north end; the first floor a small dark window
-  // at the north, then two broad voids between rectangular piers; above, at the north, the stair's narrow openings a
-  // half storey up and a column of narrow bays, and one wide bay a floor at the south; all bays with thin rails
-  const ct = fy(4), S = (s: number) => vSeen + (zm - vSeen) * s;
+/** builds details on a face from a to b (the spec's frame; the outside on the right going from a to b) in the face's
+ *  own frame: the face is the plane x = 0, outward -x, running along z from 0 to L */
+function onFace(k: Kit, a: P2, b: P2, build: (fk: Kit, L: number) => void) {
+  const L = Math.hypot(b[0] - a[0], b[1] - a[1]), dx = (b[0] - a[0]) / L, dz = (b[1] - a[1]) / L;
+  const M = new THREE.Matrix4().set(dz, 0, dx, a[0], 0, 1, 0, 0, -dx, 0, dz, a[1], 0, 0, 0, 1);
+  const fk = { ...k, plain: [] as Part[], glass: [] as THREE.BufferGeometry[], meshes: [] as THREE.Mesh[] } as Kit;
+  build(fk, L);
+  for (const [g] of fk.plain) g.applyMatrix4(M);
+  for (const g of fk.glass) g.applyMatrix4(M);
+  for (const m of fk.meshes) m.geometry.applyMatrix4(M);
+  k.plain.push(...fk.plain); k.glass.push(...fk.glass); k.meshes.push(...fk.meshes);
+}
+/** a stack of box balconies standing out of a face along z at x = at (out -1: west), R05's tower: a slab, a solid
+ *  parapet on three sides with a thin rail on it, the dark opening behind, a roof slab over the top one */
+function boxStack(p: Part[], at: number, out: number, zc: number, w: number, d: number, floors: number) {
+  const X = (a: number, b: number) => [Math.min(at + out * a, at + out * b), Math.max(at + out * a, at + out * b)] as const;
+  for (let fl = 1; fl < floors; fl++) {
+    const y = 0.4 + fl * ST, [s0, s1] = X(0, d), [f0, f1] = X(d - 0.12, d);
+    p.push([box(s0, s1, y - 0.2, y, zc - w / 2, zc + w / 2), '#efe9dc'], [box(f0, f1, y, y + 1.0, zc - w / 2, zc + w / 2), '#f2ede2']);
+    for (const z of [zc - w / 2, zc + w / 2 - 0.12]) p.push([box(s0, s1, y, y + 1.0, z, z + 0.12), '#f2ede2']);
+    p.push([box(...X(0, 0.03), y, y + 2.3, zc - w / 2 + 0.2, zc + w / 2 - 0.2), '#3b3833']);
+    const [r0, r1] = X(d - 0.08, d - 0.04);
+    p.push([box(r0, r1, y + 1.28, y + 1.32, zc - w / 2 + 0.1, zc + w / 2 - 0.1), '#7a756c']);
+    for (let z = zc - w / 2 + 0.2; z < zc + w / 2 - 0.1; z += 0.3) p.push([box(r0, r1, y + 1.0, y + 1.3, z - 0.012, z + 0.012), '#7a756c']);
+    // the side walls of the box up to the next slab
+    for (const z of [zc - w / 2, zc + w / 2 - 0.1]) p.push([box(s0, s1, y + 1.0, y + ST - 0.2, z, z + 0.1), '#ece6d8']);
+  }
+  const yt = 0.4 + floors * ST, [s0, s1] = X(0, d + 0.1);
+  p.push([box(s0, s1, yt - 0.25, yt, zc - w / 2 - 0.05, zc + w / 2 + 0.05), '#efe9dc']);
+}
+function frontWestEnd(k: Kit, f: ReturnType<typeof fit>) {
+  const x0 = f.x0, z1 = f.z1, zm = f.z0 + (f.z1 - f.z0) * 0.5, T = 0.8, p: Part[] = [], fy = (fl: number) => 0.4 + fl * ST;
+  // the connector's west face (R05, the right part of the connector, north to south as a fraction s): the ground storey
+  // solid; the first floor two broad voids between rectangular piers; above, a narrow bay and one wide bay a floor
+  const ct = fy(4), S = (s: number) => f.z0 + (zm - f.z0) * s;
   // (the voids show the shaded back walls of the open floors, light; the narrow bays the dark rooms behind)
   const VOID = '#a59c8c', BAY = '#4e4943';
   const holes: [number, number, number, number, boolean, string?][] = [
-    [S(0.04), S(0.16), fy(1) + 0.9, fy(1) + 1.9, false],
-    [S(0.25), S(0.5), fy(1) + 0.15, fy(1) + 2.7, false, VOID], [S(0.55), S(0.97), fy(1) + 0.15, fy(1) + 2.7, false, VOID],
+    [S(0.08), S(0.45), fy(1) + 0.15, fy(1) + 2.7, false, VOID], [S(0.52), S(0.96), fy(1) + 0.15, fy(1) + 2.7, false, VOID],
   ];
-  for (const fl of [2, 3]) holes.push([S(0.03), S(0.17), fy(fl) + 1.5, fy(fl) + ST - 0.25, true, BAY], [S(0.25), S(0.4), fy(fl) + 0.9, fy(fl) + 2.35, true, BAY], [S(0.55), S(0.86), fy(fl) + 0.9, fy(fl) + 2.45, true, VOID]);
-  skinZ(p, x0, -1, vl, zm, ct, T, holes);
-  wallSolids(...wpt(f, x0 - T / 2, vSeen), ...wpt(f, x0 - T / 2, zm), T / 2 + 0.1);
-  for (const s of [0.25, 0.5, 0.97]) SOLIDS.add(...wpt(f, x0 - 0.2, S(s)), 0.3);
-  // the gate in its frame at the north end of the ground storey
-  p.push([box(x0 - T - 0.04, x0 - T, 0.05, 2.3, S(0.0), S(0.2)), '#cfc7a8']);
-  for (let v = S(0.0) + 0.1; v < S(0.2); v += 0.12) p.push([box(x0 - T - 0.08, x0 - T - 0.05, 1.2, 2.3, v - 0.012, v + 0.012), '#9f9a86']);
+  for (const fl of [2, 3]) holes.push([S(0.08), S(0.3), fy(fl) + 0.9, fy(fl) + 2.35, true, BAY], [S(0.45), S(0.9), fy(fl) + 0.9, fy(fl) + 2.45, true, VOID]);
+  skinZ(p, x0, -1, f.z0, zm, ct, T, holes);
+  wallSolids(...wpt(f, x0 - T / 2, f.z0), ...wpt(f, x0 - T / 2, zm), T / 2 + 0.1);
   // the roof terrace: the parapet and its rail
-  p.push([box(x0 - T, x0, ct, ct + 1.0, vl, zm), '#efe6d2']);
-  for (let z = vSeen + 0.3; z < zm; z += 0.6) p.push([box(x0 - T + 0.1, x0 - T + 0.13, ct + 1.0, ct + 1.6, z - 0.015, z + 0.015), RAIL]);
-  p.push([box(x0 - T + 0.1, x0 - T + 0.13, ct + 1.58, ct + 1.62, vSeen, zm), RAIL]);
-  // the tower (R05: five storeys, four balconies stacked at its north side, the perforated panels on its two faces in
-  // three sizes, a large one over the top two floors, a mid one, a low one, white wall between), the cap and the tank
-  const tt = fy(5) + 0.6;
-  for (const [y0, y1] of [[fy(3.3), fy(4.45)], [fy(2.25), fy(2.75)], [fy(1.25), fy(1.7)]] as [number, number][]) {
-    perfPanel(k, false, x0, -1, zm + (f.z1 - zm) * 0.62, 1.4, y0, y1);
-    for (const u of [x0 + 1.6, x0 + 4.6]) perfPanel(k, true, f.z1, 1, u, 1.5, y0 + 0.1, y1);
-  }
-  curvedStack(k, x0, -1, zm + 1.3, 2.0, 1.1, 5, false);
-  p.push([box(x0 - 0.1, x0 + SVC, tt - 0.6, tt, zm, f.z1 + 0.1), '#e9e2d3']);
-  p.push([new THREE.CylinderGeometry(0.9, 0.9, 1.9, 16).translate(x0 + 2.5, tt + 0.95, (zm + f.z1) / 2), '#1c1d20']);
+  p.push([box(x0 - T, x0, ct, ct + 1.0, f.z0, zm), '#efe6d2']);
+  for (let z = f.z0 + 0.3; z < zm; z += 0.6) p.push([box(x0 - T + 0.1, x0 - T + 0.13, ct + 1.0, ct + 1.6, z - 0.015, z + 0.015), RAIL]);
+  p.push([box(x0 - T + 0.1, x0 - T + 0.13, ct + 1.58, ct + 1.62, f.z0, zm), RAIL]);
+  // the tower: five storeys, its corner cut; on its west face the stacked box balconies (the owner's light-green arrow:
+  // cubes, not half-rounds) and, close to the corner, the perforated panels; on the cut face the second column of
+  // panels close to the same corner (the owner's yellow arrows); three sizes a column, a large one over the top two
+  // floors, a mid one, a low one, white wall between; the cap and the tank
+  const tt = fy(5) + 0.6, poly: P2[] = [[x0, zm], [x0 + SVC, zm], [x0 + SVC, z1], [x0 + CH, z1], [x0, z1 - CH]];
+  p.push([prism(poly, 0, tt - 0.6), '#efe6d2']);
+  const edge: P2[] = [[x0, zm], [x0, z1 - CH], [x0 + CH, z1], [x0 + SVC, z1]];
+  for (let fl = 1; fl < 5; fl++) p.push([strip(edge, fy(fl) - 0.06, fy(fl) + 0.06, 0.03), '#e2d9c5']);
+  p.push([prism([[x0 - 0.12, zm], [x0 + SVC, zm], [x0 + SVC, z1 + 0.12], [x0 + CH + 0.05, z1 + 0.12], [x0 - 0.12, z1 - CH - 0.05]], tt - 0.6, tt), '#e9e2d3']);
+  p.push([new THREE.CylinderGeometry(0.9, 0.9, 1.9, 16).translate(x0 + 3.2, tt + 0.95, (zm + z1) / 2), '#1c1d20']);
+  boxStack(p, x0, -1, zm + 1.05, 1.8, 1.0, 5);
+  const PAN: [number, number][] = [[fy(3.3), fy(4.45)], [fy(2.25), fy(2.75)], [fy(1.25), fy(1.7)]];
+  for (const [y0, y1] of PAN) perfPanel(k, false, x0, -1, z1 - CH - 0.6, 0.9, y0, y1);
+  onFace(k, [x0, z1 - CH], [x0 + CH, z1], (fk) => { for (const [y0, y1] of PAN) perfPanel(fk, false, 0, -1, 0.85, 1.1, y0 + 0.1, y1); });
+  for (let i = 1; i < edge.length; i++) wallSolids(...wpt(f, ...edge[i - 1]), ...wpt(f, ...edge[i]), 0.3);
+  // (the cut corner is open ground: the wing's mapped outline still covers it)
+  { const c = [wpt(f, x0, z1 - CH), wpt(f, x0 + CH, z1), wpt(f, x0, z1)], xs = c.map((q) => q[0]), zs = c.map((q) => q[1]);
+    PASSAGES.push([Math.min(...xs) - 0.4, Math.max(...xs), Math.min(...zs), Math.max(...zs) + 0.4]); }
   k.plain.push(...p);
 }
 /** a model-frame point of a wing to world */
@@ -318,21 +347,18 @@ function wingSpec(w: Wing): Spec {
   const endS = w.ends === 'balcony' ? END : styleOf(w.ends, ochre);
   const faces = { z1: styleOf(w.south, ochre), z0: styleOf(w.north, ochre), x0: w.ends === 'balcony' ? BLANK_C : endS, x1: endS };
   const zm = f.z0 + (f.z1 - f.z0) * 0.5;
-  // (front-w: the link reaches the west block's south face; vSeen: where the west block's face meets the link's)
-  const west = WINGS.find((x) => x.id === 'west-end')!.quad, zWest = Math.max(...west.map((q) => q[1]));
-  const vl = svc ? linkV(f, zWest) : 0, vSeen = svc ? (zWest - f.c[1] - f.x0 * f.axis[1]) / f.axis[0] : 0;
+  // (R05: the west block's south face, between its west face and the link, is blank)
+  if (w.ends === 'balcony') faces.z1 = BLANK_C;
   return {
     name: `Evandy wing ${w.id}`, axis: f.axis, origin: f.c, storey: ST, style: PLAIN, roofColor: w.roof, fascia: '#efe7d6', pitch: 0.42,
     replaces: [f.c],
     blocks: svc ? [
       { x0: f.x0 + SVC, x1: f.x1, z0: f.z0, z1: f.z1, floors: w.floors, faces },
-      { x0: f.x0, x1: f.x0 + LINK, z0: vl, z1: f.z0, floors: 4, roof: 'flat', faces: { x0: BLANK_C, z0: BLANK_C, z1: BLANK_C, x1: BLANK_C } },
       { x0: f.x0, x1: f.x0 + SVC, z0: f.z0, z1: zm, floors: 4, roof: 'flat', faces: { x0: BLANK_C, z0: BLANK_C, z1: BLANK_C, x1: BLANK_C } },
-      { x0: f.x0, x1: f.x0 + SVC, z0: zm, z1: f.z1, floors: 5, roof: 'flat', faces: { x0: BLANK_C, z0: BLANK_C, z1: BLANK_C, x1: BLANK_C } },
     ] : [{ x0: f.x0, x1: f.x1, z0: f.z0, z1: f.z1, floors: w.floors, faces }],
     keep: [],
     extras: (k) => {
-      if (svc) frontWestEnd(k, f, vl, vSeen);
+      if (svc) frontWestEnd(k, f);
       if (w.south === 'balcony') balconies(k, svc ? f.x0 + SVC : f.x0, f.x1, f.z1, 1, w.floors, !!w.gables, ochre);
       // the recessed slot in the window column of the second bay from the wing's outer end (front-e: east; others: west)
       if (w.slot) { const n = Math.max(1, Math.round((f.x1 - f.x0) / 7.8)), b = (f.x1 - f.x0) / n, u = w.slot === 'x1' ? f.x1 - b + b * 0.13 : f.x0 + b + b * 0.13; slot(k, u, f.z1, 1, w.floors, ochre); }
@@ -341,16 +367,16 @@ function wingSpec(w: Wing): Spec {
       // (the owner's eight-pair brief, pair 5: the west block's stack of curved light balconies on its west face, the
       // wide grilled window under it, a small front gable over it)
       if (w.ends === 'balcony') {
-        // (R05, the left mass, read north to south: the narrow north return with its small stacked balconies; on the
-        // west face a tall slot and two small square windows a floor; the recessed bay of curved balconies, one a floor
-        // from the first, the wide grilled window under them; blank wall to the south corner; the small front gable
-        // over the north part)
-        const at = f.x0, Z = (s: number) => f.z0 + (f.z1 - f.z0) * s, zc = Z(0.56), p: Part[] = [];
+        // (R05 and the owner's notes, the left mass read north to south: the small stacked balconies at the north-west
+        // corner; on the west face a tall slot, two small square windows and a second tall slot a floor; the curved
+        // balconies at the south-west corner, one a floor from the first, the wide grilled window under them (the owner:
+        // the balconies stand at the block's edges, not in the middle of the face); the south face blank)
+        const at = f.x0, Z = (s: number) => f.z0 + (f.z1 - f.z0) * s, zc = f.z1 - 1.7, p: Part[] = [];
         curvedStack(k, at, -1, zc, 3.0, 1.4, w.floors, true);
         for (let fl = 0; fl < w.floors; fl++) {
           const y = 0.4 + fl * ST;
-          p.push([box(at - 0.04, at, y + 0.7, y + 2.5, Z(0.08), Z(0.08) + 0.45), '#3b3833']);
-          for (const s of [0.2, 0.29]) p.push([box(at - 0.04, at, y + 1.6, y + 2.05, Z(s), Z(s) + 0.42), '#3b3833']);
+          for (const s of [0.18, 0.55]) p.push([box(at - 0.04, at, y + 0.7, y + 2.5, Z(s), Z(s) + 0.45), '#3b3833']);
+          for (const s of [0.3, 0.4]) p.push([box(at - 0.04, at, y + 1.6, y + 2.05, Z(s), Z(s) + 0.42), '#3b3833']);
           if (fl) {
             p.push([box(at - 0.05, at + 1.3, y - 0.15, y, f.z0 - 0.9, f.z0), '#efe9dc']);
             for (let x = at; x < at + 1.3; x += 0.13) p.push([box(x - 0.012, x + 0.012, y, y + 0.95, f.z0 - 0.88, f.z0 - 0.85), RAIL]);
@@ -364,7 +390,7 @@ function wingSpec(w: Wing): Spec {
         k.roof.quad([f.x0 + 3, t - 0.05, gc + hw + 0.3], [f.x0 - 0.9, t - 0.05, gc + hw + 0.3], [f.x0 - 0.9, t + gh + 0.2, gc], [f.x0 + 3, t + gh + 0.2, gc]);
       }
       // downpipes at the ends of the long faces
-      for (const x of [f.x0 + 0.4, f.x1 - 0.4]) for (const z of [f.z0 - 0.12, f.z1 + 0.12]) k.plain.push([new THREE.CylinderGeometry(0.06, 0.06, top(w.floors), 6).translate(x, top(w.floors) / 2, z), '#e4dccb']);
+      for (const x of svc ? [f.x1 - 0.4] : [f.x0 + 0.4, f.x1 - 0.4]) for (const z of [f.z0 - 0.12, f.z1 + 0.12]) k.plain.push([new THREE.CylinderGeometry(0.06, 0.06, top(w.floors), 6).translate(x, top(w.floors) / 2, z), '#e4dccb']);
       mergeMeshes(k);
     },
   };
@@ -640,6 +666,16 @@ const site: Spec = {
     fence(SITE.westMouth[1], SITE.gate[0]);
     // the boundary walls on the other sides: west along the road, north, east
     const wallRun = (a: P2, b: P2) => { parts.push([strip([a, b], 0, 2.2, 0.13), '#ece6d8'], [strip([a, b], 2.2, 2.32, 0.18), '#dcd3c0']); wallSolids(a[0], a[1], b[0], b[1], 0.3); };
+    // (the owner's notes on batch 143, marked on the Tropiks view: the wall along the road west of the administration
+    // block up to its corner; east of it a small gate under a lintel of wall, a short wall, then the car entrance to
+    // the lane)
+    { const zf = SITE.zFence, bx0 = AO[0] + ADMIN.x0, bx1 = AO[0] + ADMIN.x1, bz = AO[1] + ADMIN.z1, g0 = bx1 + 0.05, g1 = g0 + 1.2, w1 = g1 + 0.9;
+      wallRun([SITE.x0, zf], [bx0, zf]); wallRun([bx0, zf], [bx0, bz]);
+      wallRun([g0, bz], [g0, zf]); wallRun([g1, zf], [w1, zf]);
+      parts.push([box(g0, g1, 2.2, 2.6, zf - 0.13, zf + 0.13), '#ece6d8'], [box(g0 - 0.05, g1 + 0.05, 2.6, 2.7, zf - 0.18, zf + 0.18), '#dcd3c0']);
+      for (let x = g0 + 0.1; x < g1; x += 0.12) parts.push([box(x - 0.018, x + 0.018, 0.05, 2.15, zf - 0.02, zf + 0.02), '#5a4a3a']);
+      for (const y of [0.1, 1.0, 2.1]) parts.push([box(g0, g1, y - 0.03, y + 0.03, zf - 0.03, zf + 0.03), '#5a4a3a']);
+      wallSolids(g0, zf, g1, zf, 0.3); }
     wallRun([SITE.x0, SITE.zFence], [SITE.x0, SITE.z0]); wallRun([SITE.x0, SITE.z0], [SITE.x1, SITE.z0]); wallRun([SITE.x1, SITE.z0], [SITE.x1, -1216]);
     // east of the gate: the curved pale entrance wall to the commercial block (R18)
     { const pts: P2[] = Array.from({ length: 7 }, (_, i) => { const t = (i / 6) * Math.PI / 2; return [SITE.gate[1] + 0.5 + Math.sin(t) * 1.0, SITE.zFence - (1 - Math.cos(t)) * 2.6] as P2; });
@@ -765,7 +801,8 @@ const admin: Spec = {
     // (the low space under the upper flight: closed to the bike)
     for (let z = zl0; z < zb2; z += 0.7) SOLIDS.add(...W(x1 + 0.55, z), 0.55);
     // ---- the south face: the Tropiks frontage (R02, R03) ----
-    winX(z1, 1, -2.6, 2.2, 4.5, 1.5, true); winX(z1, 1, 2.2, 2.6, 4.5, 1.5, true); winX(z1, 1, 4.65, 0.9, 4.5, 1.5, true);
+    // (the owner's notes on batch 143: the three upper windows the same size)
+    for (const xc of [-3.35, 0, 3.35]) winX(z1, 1, xc, 2.2, 4.5, 1.5, true);
     p.push([box(x0 - 0.3, x1 + 0.3, 2.85, 3.15, z1, z1 + 0.95), '#7a2630'], [box(x0 - 0.3, x1 + 0.3, 2.7, 2.85, z1 + 0.85, z1 + 0.95), '#6a1f28']);
     p.push([box(-2.0, 1.3, 3.3, 4.25, z1 + 0.02, z1 + 0.08), '#f7f7f5']);
     k.signs.push({ text: 'TROPIKS', x: -0.35, y: 3.98, z: z1 + 0.09, ry: 0, w: 2.6, colors: ['#f7f7f5', '#2b2f86'] });
@@ -799,8 +836,90 @@ const admin: Spec = {
   },
 };
 
+// ---------- the west junctions ----------
+// The satellite (the owner's M2 and the marked crop, notes on batch 143): along the west end the wings are one block.
+// Between the west block's south face and front-w's north-west corner a link whose west face runs on the angle (the
+// owner's black arrows; R05's left part of the connector): at the ground a gate-sized open way through to the inner
+// court (the owner's white mark, the brown gate), the small dark window over it, the stair's openings a half storey up
+// and a narrow bay a floor, four storeys under the roof terrace. Between the west block's north face and inner-w's
+// south-west corner a second link, its west face also on the angle (the owner's blue arrows; R05's narrow far-left
+// face): small stacked balconies, slots, five storeys under a flat roof. Their court faces carry a louvred window a
+// floor. World frame.
+/** the model frame's origin (the parts are drawn in world terms and moved to it) */
+const JO: P2 = [553, -1245];
+const JA: P2 = [551.04, -1238.6], JB: P2 = [552.8, -1234.9], JCZ = -1235.8, JX = 559.7;
+/** the way through the south link: its north and south sides */
+const JW = [-1238.35, -1236.55] as const;
+const JE: P2 = [549.8, -1248.6], JF: P2 = [553.4, -1255.1];
+function louvreWin(p: Part[], u: number, y: number, w: number, h: number) {
+  p.push([box(-0.08, 0, y - 0.1, y + h + 0.1, u - w / 2 - 0.1, u + w / 2 + 0.1), '#e6dfd0'], [box(-0.1, -0.08, y, y + h, u - w / 2, u + w / 2), '#8e9398']);
+  for (let yy = y + 0.08; yy < y + h; yy += 0.11) p.push([box(-0.12, -0.1, yy - 0.02, yy + 0.02, u - w / 2, u + w / 2), '#5f646a']);
+}
+const junctions: Spec = {
+  name: 'Evandy west junctions', axis: [1, 0], origin: JO, storey: ST, style: PLAIN, roofColor: '#c4633a', fascia: '#efe7d6', pitch: 0.42,
+  replaces: [],
+  blocks: [],
+  // (model frame; the second: the approach to the way through, kept clear of hedges)
+  keep: [[548 - JO[0], 561 - JO[0], -1256 - JO[1], -1234 - JO[1]], [538 - JO[0], 552 - JO[0], -1239.2 - JO[1], -1235.6 - JO[1]]],
+  extras: (k) => {
+    const p: Part[] = [], W = '#efe6d2', fy = (fl: number) => 0.4 + fl * ST, ct = fy(4);
+    // the south link: above the way through, the whole outline; at the ground, the part south of the way
+    const xOn = (z: number) => JA[0] + ((JB[0] - JA[0]) * (z - JA[1])) / (JB[1] - JA[1]);
+    const south: P2[] = [[xOn(JW[1]), JW[1]], JB, [JX, JCZ], [JX, JW[1]]];
+    p.push([prism([[xOn(-1238.9), -1238.9], JB, [JX, JCZ], [JX, -1238.9]], 2.6, ct), W], [prism(south, 0, 2.6), W]);
+    p.push([box(xOn(JW[0]) + 0.1, JX, 2.55, 2.6, JW[0], JW[1]), '#d6cfc0']);
+    // the gate leaf swung back against the way's south side
+    p.push([box(xOn(JW[1]) + 0.9, xOn(JW[1]) + 2.5, 0.05, 2.2, JW[1] - 0.06, JW[1] - 0.02), '#cfc7a8']);
+    for (let x = xOn(JW[1]) + 0.95; x < xOn(JW[1]) + 2.5; x += 0.13) p.push([box(x - 0.012, x + 0.012, 1.1, 2.2, JW[1] - 0.1, JW[1] - 0.06), '#9f9a86']);
+    // its west face: along the face (t from JA), the way at t0..t1
+    const L = Math.hypot(JB[0] - JA[0], JB[1] - JA[1]), tOf = (z: number) => ((z - JA[1]) / (JB[1] - JA[1])) * L, t0 = tOf(JW[0]), t1 = tOf(JW[1]);
+    onFace(k, JA, JB, (fk) => {
+      const q: Part[] = [], BAY = '#4e4943';
+      const holes: [number, number, number, number, boolean, string?][] = [[t0, t1, 0, 2.4, false, 'open'], [t0 + 0.4, t1 - 0.4, fy(1) + 0.9, fy(1) + 1.9, false]];
+      for (const fl of [2, 3]) holes.push([t0 + 0.1, t1 - 0.3, fy(fl) + 1.5, fy(fl) + ST - 0.25, true, BAY], [t1 + 0.3, L - 0.3, fy(fl) + 0.9, fy(fl) + 2.35, true, BAY]);
+      skinZ(q, 0, -1, 0, L, ct, 0.8, holes);
+      // the gate's frame round the way
+      q.push([box(-0.85, -0.75, 0, 2.5, t0, t0 + 0.1), '#9f9a86'], [box(-0.85, -0.75, 0, 2.5, t1 - 0.1, t1), '#9f9a86'], [box(-0.85, -0.75, 2.4, 2.5, t0, t1), '#9f9a86']);
+      q.push([box(-0.8, 0, ct, ct + 1.0, 0, L), W]);
+      for (let z = 0.3; z < L; z += 0.6) q.push([box(-0.7, -0.67, ct + 1.0, ct + 1.6, z - 0.015, z + 0.015), RAIL]);
+      q.push([box(-0.7, -0.67, ct + 1.58, ct + 1.62, 0, L), RAIL]);
+      fk.plain.push(...q);
+    });
+    { const o = (z: number): P2 => [xOn(z) - 0.4, z]; wallSolids(...o(JW[1]), ...o(JB[1]), 0.5); wallSolids(JX, JCZ, JX, JW[1], 0.3); wallSolids(JX, JW[0], JX, -1238.9, 0.3); }
+    // its court face: a louvred window a floor over the way out
+    onFace(k, [JX, JCZ], [JX, -1238.9], (fk) => { const q: Part[] = []; for (let fl = 1; fl < 4; fl++) louvreWin(q, 1.6, fy(fl) + 1.0, 0.9, 1.3); fk.plain.push(...q); });
+    // the north link: five storeys under a flat roof with a parapet
+    const t5 = fy(5), xN = (z: number) => JF[0] + ((JE[0] - JF[0]) * (z - JF[1])) / (JE[1] - JF[1]);
+    p.push([prism([[xN(-1255.4), -1255.4], [xN(-1248.3), -1248.3], [559.8, -1248.3], [559.8, -1253.8]], 0, t5 + 0.9), W]);
+    p.push([strip([[xN(-1255.4), -1255.4], [xN(-1248.3), -1248.3]], t5 + 0.75, t5 + 0.9, 0.08), '#e2d9c5']);
+    onFace(k, JF, JE, (fk, L2) => {
+      const q: Part[] = [];
+      for (let fl = 0; fl < 5; fl++) {
+        const y = fy(fl);
+        q.push([box(-0.04, 0, y + 0.7, y + 2.5, 1.4, 1.85), '#3b3833'], [box(-0.04, 0, y + 1.6, y + 2.05, 2.8, 3.2), '#3b3833']);
+        if (fl) {
+          // the small stacked balconies near the west block
+          const a = L2 - 2.6, b = L2 - 1.2;
+          q.push([box(-0.9, 0, y - 0.15, y, a, b), '#efe9dc'], [box(-0.03, 0, y, y + 2.2, a + 0.2, b - 0.2), '#3b3833']);
+          for (let z = a + 0.05; z < b; z += 0.13) q.push([box(-0.88, -0.85, y, y + 0.95, z - 0.012, z + 0.012), RAIL]);
+          q.push([box(-0.9, -0.83, y + 0.93, y + 0.97, a, b), RAIL]);
+        } else q.push([box(-0.04, 0, 0.9, 2.3, L2 - 2.6, L2 - 1.2), '#3b3833']);
+        for (const z of [L2 - 2.62, L2 - 1.18]) if (fl) q.push([box(-0.9, 0, y, y + 0.95, z - 0.02, z + 0.02), RAIL]);
+      }
+      fk.plain.push(...q);
+    });
+    { const o = (z: number): P2 => [xN(z) - 0.3, z]; wallSolids(...o(-1255.1), ...o(-1248.6), 0.4); wallSolids(559.8, -1248.6, 559.8, -1253.5, 0.3); }
+    onFace(k, [559.8, -1248.6], [559.8, -1253.5], (fk) => { const q: Part[] = []; for (let fl = 0; fl < 5; fl++) louvreWin(q, 2.4, fy(fl) + 1.0, 0.9, 1.3); fk.plain.push(...q); });
+    k.plain.push(...p);
+    for (const [g] of k.plain) g.translate(-JO[0], 0, -JO[1]);
+    for (const g of k.glass) g.translate(-JO[0], 0, -JO[1]);
+    for (const m of k.meshes) m.geometry.translate(-JO[0], 0, -JO[1]);
+    mergeMeshes(k);
+  },
+};
+
 /** Evandy Hostel and its environs */
-export const evandySite = mergedSite(createSite('evandy', [...WINGS.map(wingSpec), entrance, ring, shops, admin, site]));
+export const evandySite = mergedSite(createSite('evandy', [...WINGS.map(wingSpec), junctions, entrance, ring, shops, admin, site]));
 
 // ---------- planting and the ground round the compound ----------
 const SHRUB = ['#4d7032', '#5c7f36', '#3f6428', '#6a8f3f'];
