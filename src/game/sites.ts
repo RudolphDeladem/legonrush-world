@@ -9,6 +9,7 @@ import { domeHouse } from './dome';
 import { engineeringSite } from './engineering';
 import { ugmcSite } from './ugmc';
 import { nogSite } from './nog';
+import { evandySite } from './evandy';
 import { greatHalls } from './greathalls';
 import { hostels } from './hostels';
 import { nightMarket } from './nightmarket';
@@ -82,4 +83,4 @@ import { tennisSite } from './tennis';
 import { paleSite } from './ghlandscape';
 import { upsaWestSite } from './upsawest';
 
-export const BLOCK_SITES = [hostels, banking, vikingsLaw, engineeringSite, domeHouse, pentagon, commonwealth, volta, greatHalls, athletics, annexes, ccSite, balmeSite, parks, nightMarket, valco, westLegon, publicHealth, ugbs, stadiumSite, residences, mathStat, isserCs, enclave, basicSchool, nBlockGcb, chaletSite, waccbipSite, balmeWest, pharmacySite, labsSite, isserAnnexSite, earthScienceSite, physicsSite, liciadSite, hotspotSite, churchSite, socSciSite, biologySite, marketSite, greenhouseSite, gradSite, mastSite, behindBalmeSite, voltaFrontSite, newPentSite, kufuorSite, fuelSite, nsiaSite, kuffourSite, scienceSite, balmeFrontSite, gateSite, iasSite, jqbSite, southSite, upsaSite, legonCutSite, geographySite, roadsideSite, ipsSite, upsaHostelSite, tenPairsSite, agricSite, greatHallSite, hodasiSite, agPrecinctSite, upsaCampusSite, laBawaleshieSite, limboSite, fireStationSite, boatengSite, ipsOppositeSite, upsaLandmarksSite, baniPresecSite, okpongloSite, legonFirstSite, ecgSite, tennisSite, paleSite, upsaWestSite, ugmcSite, nogSite];
+export const BLOCK_SITES = [hostels, banking, vikingsLaw, engineeringSite, domeHouse, pentagon, commonwealth, volta, greatHalls, athletics, annexes, ccSite, balmeSite, parks, nightMarket, valco, westLegon, publicHealth, ugbs, stadiumSite, residences, mathStat, isserCs, enclave, basicSchool, nBlockGcb, chaletSite, waccbipSite, balmeWest, pharmacySite, labsSite, isserAnnexSite, earthScienceSite, physicsSite, liciadSite, hotspotSite, churchSite, socSciSite, biologySite, marketSite, greenhouseSite, gradSite, mastSite, behindBalmeSite, voltaFrontSite, newPentSite, kufuorSite, fuelSite, nsiaSite, kuffourSite, scienceSite, balmeFrontSite, gateSite, iasSite, jqbSite, southSite, upsaSite, legonCutSite, geographySite, roadsideSite, ipsSite, upsaHostelSite, tenPairsSite, agricSite, greatHallSite, hodasiSite, agPrecinctSite, upsaCampusSite, laBawaleshieSite, limboSite, fireStationSite, boatengSite, ipsOppositeSite, upsaLandmarksSite, baniPresecSite, okpongloSite, legonFirstSite, ecgSite, tennisSite, paleSite, upsaWestSite, ugmcSite, nogSite, evandySite];

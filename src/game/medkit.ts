@@ -134,3 +134,41 @@ export function mergeMeshes(k: Kit) {
     k.meshes.push(mesh);
   }
 }
+
+/** a site whose separately framed models (Evandy's wings, each on its own axis) are merged after building: every mesh
+ *  that shares a material (and its shadow and collision flags) across the models becomes one mesh in world space, so
+ *  that ten wings draw like one model */
+export function mergedSite<T extends { buildSteps: () => Generator<string | void, THREE.Group> }>(site: T): T {
+  return {
+    ...site,
+    build() { const it = this.buildSteps(); let r = it.next(); while (!r.done) r = it.next(); return r.value; },
+    *buildSteps() {
+      const group: THREE.Group = yield* site.buildSteps();
+      group.updateMatrixWorld(true);
+      const buckets = new Map<string, { mat: THREE.Material; cast: boolean; noCollide: boolean; geos: THREE.BufferGeometry[]; meshes: THREE.Mesh[] }>();
+      group.traverse((o) => {
+        const m = o as THREE.Mesh;
+        if (!m.isMesh || (m as unknown as THREE.InstancedMesh).isInstancedMesh || Array.isArray(m.material) || (m.material as THREE.Material).type === 'MeshBasicMaterial') return;
+        const g = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry.clone();
+        g.applyMatrix4(m.matrixWorld);
+        const attrs = Object.keys(g.attributes).sort().join(',');
+        const key = `${(m.material as THREE.Material).uuid}|${m.castShadow}|${!!m.userData.noCollide}|${attrs}`;
+        const b = buckets.get(key) ?? buckets.set(key, { mat: m.material as THREE.Material, cast: m.castShadow, noCollide: !!m.userData.noCollide, geos: [], meshes: [] }).get(key)!;
+        b.geos.push(g); b.meshes.push(m);
+      });
+      const cull: THREE.Mesh[] = [];
+      for (const b of buckets.values()) {
+        if (b.meshes.length < 2) { cull.push(...b.meshes); continue; }
+        const merged = mergeGeometries(b.geos);
+        if (!merged) { cull.push(...b.meshes); continue; }
+        for (const m of b.meshes) m.removeFromParent();
+        const mesh = new THREE.Mesh(merged, b.mat);
+        mesh.castShadow = b.cast; mesh.receiveShadow = true; mesh.userData.noCollide = b.noCollide;
+        group.add(mesh); cull.push(mesh);
+      }
+      group.traverse((o) => { if ((o as THREE.Mesh).isMesh && !cull.includes(o as THREE.Mesh)) cull.push(o as THREE.Mesh); });
+      group.userData.cullMeshes = cull;
+      return group;
+    },
+  };
+}

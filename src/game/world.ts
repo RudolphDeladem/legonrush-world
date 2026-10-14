@@ -24,6 +24,7 @@ import { buildUpsaGreen } from './upsagreen';
 import { buildEngineeringGrounds } from './engground';
 import { buildUgmcGrounds } from './ugmcground';
 import { buildNogGrounds } from './nog';
+import { buildEvandyGrounds } from './evandy';
 import { NOG_TREES } from './nogtrees';
 import { NG, NOG_FINISH } from './nogplan';
 import { ugLocal } from './ugmcplan';
@@ -498,6 +499,8 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
   group.add(buildUgmcGrounds());
   // round Noguchi and WAGMC: the court's trees, the plots, the satellite's mature trees (nog.ts)
   group.add(buildNogGrounds(NOG_TREES));
+  // Evandy Hostel's islands, shrubs, court tree, and the scrub and sandy field east of it (evandy.ts)
+  group.add(buildEvandyGrounds());
   yield 'step';
 
   // trees, kerbs, lamps, stops, signs, cars, kiosks and people (see life.ts)
