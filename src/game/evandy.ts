@@ -675,9 +675,20 @@ const site: Spec = {
     // block up to its corner; east of it a small gate under a lintel of wall, a short wall, then the car entrance to
     // the lane)
     { const zf = SITE.zFence, bx0 = AO[0] + ADMIN.x0, bx1 = AO[0] + ADMIN.x1, bz = AO[1] + ADMIN.z1, g0 = bx1 + 0.05, g1 = g0 + 1.2, w1 = g1 + 0.9;
-      wallRun([SITE.x0, zf], [bx0, zf]); wallRun([bx0, zf], [bx0, bz]);
-      wallRun([g0, bz], [g0, zf]); wallRun([g1, zf], [w1, zf]);
-      parts.push([box(g0, g1, 2.2, 2.6, zf - 0.13, zf + 0.13), '#ece6d8'], [box(g0 - 0.05, g1 + 0.05, 2.6, 2.7, zf - 0.18, zf + 0.18), '#dcd3c0']);
+      // (the owner's notes on batch 146: west of the block not a full wall but a railing fence, their picture: a low
+      // cream wall, square pillars with caps, bronze bars with spear tops between two rails; east of the block the
+      // small gate beside the block's corner, the short wall on its other side)
+      const rail = (a: P2, b: P2) => {
+        const L = Math.hypot(b[0] - a[0], b[1] - a[1]), ux = (b[0] - a[0]) / L, uz = (b[1] - a[1]) / L, n = Math.max(1, Math.round(L / 2.9));
+        parts.push([strip([a, b], 0, 0.9, 0.14), '#ebe3d1'], [strip([a, b], 0.9, 0.97, 0.18), '#ddd3bd']);
+        for (let i = 0; i <= n; i++) { const x = a[0] + (ux * L * i) / n, z = a[1] + (uz * L * i) / n; parts.push([box(x - 0.24, x + 0.24, 0, 2.2, z - 0.24, z + 0.24), '#ebe3d1'], [box(x - 0.3, x + 0.3, 2.2, 2.32, z - 0.3, z + 0.3), '#ddd3bd']); }
+        for (let t = 0.3; t < L - 0.2; t += 0.13) { const x = a[0] + ux * t, z = a[1] + uz * t; parts.push([box(x - 0.016, x + 0.016, 0.97, 1.95, z - 0.016, z + 0.016), '#8a7a58'], [new THREE.ConeGeometry(0.03, 0.12, 4).translate(x, 2.01, z), '#8a7a58']); }
+        for (const y of [1.15, 1.8]) parts.push([strip([a, b], y - 0.025, y + 0.025, 0.03), '#8a7a58']);
+        wallSolids(a[0], a[1], b[0], b[1], 0.3);
+      };
+      rail([SITE.x0, zf], [bx0, zf]); rail([bx0, zf], [bx0, bz]);
+      wallRun([g1, zf], [w1, zf]);
+      parts.push([box(g0, g0 + 0.12, 0, 2.6, zf - 0.13, zf + 0.13), '#ece6d8'], [box(g0, g1, 2.2, 2.6, zf - 0.13, zf + 0.13), '#ece6d8'], [box(g0 - 0.05, g1 + 0.05, 2.6, 2.7, zf - 0.18, zf + 0.18), '#dcd3c0']);
       for (let x = g0 + 0.1; x < g1; x += 0.12) parts.push([box(x - 0.018, x + 0.018, 0.05, 2.15, zf - 0.02, zf + 0.02), '#5a4a3a']);
       for (const y of [0.1, 1.0, 2.1]) parts.push([box(g0, g1, y - 0.03, y + 0.03, zf - 0.03, zf + 0.03), '#5a4a3a']);
       wallSolids(g0, zf, g1, zf, 0.3); }
