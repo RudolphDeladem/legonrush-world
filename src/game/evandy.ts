@@ -674,7 +674,7 @@ const site: Spec = {
     // (the owner's notes on batch 143, marked on the Tropiks view: the wall along the road west of the administration
     // block up to its corner; east of it a small gate under a lintel of wall, a short wall, then the car entrance to
     // the lane)
-    { const zf = SITE.zFence, bx0 = AO[0] + ADMIN.x0, bx1 = AO[0] + ADMIN.x1, bz = AO[1] + ADMIN.z1, g0 = bx1 + 0.05, g1 = g0 + 1.2, w1 = g1 + 0.9;
+    { const zf = SITE.zFence, bx0 = AO[0] + ADMIN.x0, bx1 = AO[0] + ADMIN.x1, bz = AO[1] + ADMIN.z1, g0 = bx1 + 0.05;
       // (the owner's notes on batch 146: west of the block not a full wall but a railing fence, their picture: a low
       // cream wall, square pillars with caps, bronze bars with spear tops between two rails; east of the block the
       // small gate beside the block's corner, the short wall on its other side)
@@ -687,11 +687,14 @@ const site: Spec = {
         wallSolids(a[0], a[1], b[0], b[1], 0.3);
       };
       rail([SITE.x0, zf], [bx0, zf]); rail([bx0, zf], [bx0, bz]);
-      wallRun([g1, zf], [w1, zf]);
-      parts.push([box(g0, g0 + 0.12, 0, 2.6, zf - 0.13, zf + 0.13), '#ece6d8'], [box(g0, g1, 2.2, 2.6, zf - 0.13, zf + 0.13), '#ece6d8'], [box(g0 - 0.05, g1 + 0.05, 2.6, 2.7, zf - 0.18, zf + 0.18), '#dcd3c0']);
-      for (let x = g0 + 0.1; x < g1; x += 0.12) parts.push([box(x - 0.018, x + 0.018, 0.05, 2.15, zf - 0.02, zf + 0.02), '#5a4a3a']);
-      for (const y of [0.1, 1.0, 2.1]) parts.push([box(g0, g1, y - 0.03, y + 0.03, zf - 0.03, zf + 0.03), '#5a4a3a']);
-      wallSolids(g0, zf, g1, zf, 0.3); }
+      // (the owner's notes on batch 147: the short wall back to the block's corner stays, the wall runs on along the
+      // road, and the brown gate stands beyond it, at the car entrance's side)
+      const q0 = g0 + 0.9, q1 = q0 + 1.2;
+      wallRun([g0, bz], [g0, zf]); wallRun([g0, zf], [q0, zf]);
+      parts.push([box(q1 - 0.12, q1 + 0.12, 0, 2.6, zf - 0.13, zf + 0.13), '#ece6d8'], [box(q0, q1, 2.2, 2.6, zf - 0.13, zf + 0.13), '#ece6d8'], [box(q0 - 0.05, q1 + 0.05, 2.6, 2.7, zf - 0.18, zf + 0.18), '#dcd3c0']);
+      for (let x = q0 + 0.1; x < q1 - 0.1; x += 0.12) parts.push([box(x - 0.018, x + 0.018, 0.05, 2.15, zf - 0.02, zf + 0.02), '#5a4a3a']);
+      for (const y of [0.1, 1.0, 2.1]) parts.push([box(q0, q1 - 0.1, y - 0.03, y + 0.03, zf - 0.03, zf + 0.03), '#5a4a3a']);
+      wallSolids(q0, zf, q1, zf, 0.3); SOLIDS.add(q1, zf, 0.25); }
     wallRun([SITE.x0, SITE.zFence], [SITE.x0, SITE.z0]); wallRun([SITE.x0, SITE.z0], [SITE.x1, SITE.z0]); wallRun([SITE.x1, SITE.z0], [SITE.x1, -1216]);
     // east of the gate: the curved pale entrance wall to the commercial block (R18)
     { const pts: P2[] = Array.from({ length: 7 }, (_, i) => { const t = (i / 6) * Math.PI / 2; return [SITE.gate[1] + 0.5 + Math.sin(t) * 1.0, SITE.zFence - (1 - Math.cos(t)) * 2.6] as P2; });
