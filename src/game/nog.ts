@@ -307,13 +307,13 @@ const lab: Spec = {
     // recessed glazing and doors behind, the dark tiled floor
     const F2 = po + 2.7;
     // (the owner's entrance-support brief: the supports stand in the canopy's two side rows running from the front to
-    // the wall, four positions a side (S1 the outer frame's corner upright, S2-S4 slender blades thin across the
-    // passage and long in its direction), the passage between them clear to the doors; the canopy 25% deeper, 4 m to
+    // the wall, four positions a side (S1 the outer frame's corner upright, S2-S4 slender blades, their broad faces
+    // to the front as the owner turned them, 0.6 m across, 0.22 m deep), the passage between them clear to the doors; the canopy 25% deeper, 4 m to
     // 5 m, its rear at the wall kept)
     p.push([box(po, po + 0.8, ph - 1.1, ph, pv0, pv1), '#f2f2ef']);
     p.push([box(po + 0.1, po + 0.75, 0, ph - 1.1, pv0, pv0 + 0.6), '#f2f2ef'], [box(po, po + 0.9, 0, ph - 1.1, pv1 - 0.9, pv1), '#f2f2ef']);
     nSolid(po + 0.42, pv0 + 0.3, 0.45); nSolid(po + 0.45, pv1 - 0.45, 0.55);
-    for (const v of [pv0 + 0.3, pv1 - 0.3]) for (const u of [po + 1.95, po + 3.15, po + 4.35]) { p.push([box(u - 0.3, u + 0.3, 0, ph - 0.8, v - 0.11, v + 0.11), '#efefec']); nSolid(u, v, 0.3); }
+    for (const v of [pv0 + 0.3, pv1 - 0.3]) for (const u of [po + 1.95, po + 3.15, po + 4.35]) { p.push([box(u - 0.11, u + 0.11, 0, ph - 0.8, v - 0.3, v + 0.3), '#efefec']); nSolid(u, v, 0.3); }
     for (const v of [pv0, pv1 - 0.6]) p.push([box(po, u0, ph - 0.8, ph, v, v + 0.6), '#f2f2ef']);
     p.push([box(F2, F2 + 0.6, ph - 0.6, ph + 0.55, pv0 + 0.6, pv1 - 0.6), '#ecedea']);
     p.push([box(po + 0.8, F2, ph - 0.25, ph - 0.12, pv0 + 0.6, pv1 - 0.6), '#3d4144'], [box(F2 + 0.6, u0, ph + 0.3, ph + 0.42, pv0 + 0.6, pv1 - 0.6), '#3a3e41']);

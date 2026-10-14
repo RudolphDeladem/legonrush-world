@@ -7,7 +7,7 @@ Comparison: `entrance-sheet.jpg`.
 - D_old = 4.0 m (portal front u 121.5 to the wall u 125.5); D_new = 5.0 m (front u 120.5), rear at the wall kept.
 - The three intermediate front posts (v -137.9, -134.6, -131.3) and the second frame's end leg removed.
 - Side rows (v -141.2 and -127.8), four positions each: S1 the outer frame's corner upright (u 120.6-121.4); S2-S4
-  slender blades 0.22 m across the passage, 0.6 m along it, at u 122.45, 123.65, 124.85; clear gaps about 0.6 m.
+  slender blades at u 122.45, 123.65, 124.85, turned by the owner (batch 156): 0.6 m across, 0.22 m deep, broad faces to the front.
 - Side top beams run the full depth over the rows; the roof layers (front beam, dark infill, second frame, curved
   connectors) kept, moved with the deeper front.
 - Clear passage between the rows: 12.8 m wide to the doors. Road: the traced drive past the portal was moved 0.8 m
