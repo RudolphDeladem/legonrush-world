@@ -102,3 +102,26 @@ Labels: [VERIFIED] [DECISION] [ASSUMPTION] [INCOMPLETE].
 - [INCOMPLETE] The internal wings' storey counts.
 - [ASSUMPTION] The small mapped outline 735 behind the commercial block keeps a generic finish.
 - The scaffolding in V3 is left out, as a temporary condition.
+
+## Batch 139: the owner's corrections (annotated pictures, 2026-10-15)
+
+Comparison: `sheet-corrections.jpg`. Each item was re-read from the photographs at full size.
+
+- **Balcony bays** (R03, the owner's blue and yellow circles): each bay is a pair of balconies.
+  - A central dividing wall and two side walls run from the ground to the eaves, as deep as the balconies.
+  - On the ground floor these walls frame two windows.
+  - Each balcony has a slab, a solid lower wall and a dark patterned railing on it, and an arch over it on the top
+    floor.
+- **The recessed slot** (R18, the purple arrows): a full-height pale glass-block strip set back between two ochre fins.
+  There is one in each frontage wing, in the second bay from its outer end.
+- **The pediment** (R08, R03): EVANDY runs letter by letter along the white semicircular band, with UG and HALL at the
+  band's two feet. Inside the band is the shaded half-round recess. The pediment is a pentagon on the column capitals.
+- **The gatehouse** (R11, P05, P06): a louvred window on each of its three walls besides the door's.
+- **The commercial block** (R06, R13, R11, P05):
+  - only four round columns, two pairs at the centre, in front of the gallery and the shopfronts on the walkway's edge;
+  - the arch between the pairs under the front gable;
+  - a board between the pairs on the gallery front, its pink script read as "Waffle";
+  - one gabled main roof with a boarded soffit and the shallow-arched fascia;
+  - blank walls at the ends and at the back, with no windows.
+- Checks: route lengths identical, route tests, build, smoke ride; collision sweep unchanged (only the islands and a
+  bench).
