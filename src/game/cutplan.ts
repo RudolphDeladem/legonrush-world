@@ -109,3 +109,28 @@ export const inCutBand = (x: number, z: number, pad = 0) =>
   || !!deckAt(x, z);
 /** heading (unit x, z) along the cutting rather than across it */
 export const alongCut = (hx: number, hz: number) => Math.abs(hx * CUT.axis[0] + hz * CUT.axis[1]) > 0.92;
+
+/** the footways along the bridges' outer edges (the mapped footpaths over the decks; the owner's Street View, Sep 2024,
+ *  from the north bridge's west end): grey block paving raised on a kerb between the outer parapet and an inner pipe
+ *  railing along the road, white bollards across the north bridge's footway at its west end. The outer edge, the side
+ *  the footway lies toward (+1: south of the edge), its width. */
+export const DECK_WALKS: { outer: [number, number][]; inward: 1 | -1; w: number; bollardsAt?: number }[] = [
+  { outer: [[758.5, 94.6], [767.5, 94.8], [782.8, 92.6], [792.6, 91.2]], inward: 1, w: 3.0, bollardsAt: 759.4 },
+  { outer: [[767.5, 162.9], [778.7, 160.3], [794.0, 156.6], [800.0, 154.8]], inward: -1, w: 3.0 },
+];
+/** the outer edge's z at x on a footway (NaN off its run) */
+export function walkEdgeZ(wk: (typeof DECK_WALKS)[number], x: number) {
+  const p = wk.outer;
+  for (let i = 1; i < p.length; i++) if (x >= p[i - 1][0] && x <= p[i][0]) return p[i - 1][1] + ((p[i][1] - p[i - 1][1]) * (x - p[i - 1][0])) / (p[i][0] - p[i - 1][0]);
+  return NaN;
+}
+/** on a bridge footway (the campus path is not drawn there: science.ts offAsphalt; legoncut.ts paves it) */
+export function onDeckWalk(x: number, z: number) {
+  for (const wk of DECK_WALKS) {
+    const e = walkEdgeZ(wk, x);
+    if (Number.isNaN(e)) continue;
+    const d = (z - e) * wk.inward;
+    if (d > -0.5 && d < wk.w + 0.6) return true;
+  }
+  return false;
+}

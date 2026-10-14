@@ -17,7 +17,7 @@ import { createSite, type Spec, type Style } from './blocks';
 import { box, merge, type Part } from './modelkit';
 import { concrete } from './concrete';
 import { SOLIDS } from './solids';
-import { CUT, CUT_Z, DECKS, cutDepth, cutDrop, deckAt, inBowl, laneE, laneW, onBowlSlope, serviceE, serviceW, wallE, wallW } from './cutplan';
+import { CUT, CUT_Z, DECKS, DECK_WALKS, cutDepth, cutDrop, deckAt, inBowl, laneE, laneW, onBowlSlope, serviceE, serviceW, walkEdgeZ, wallE, wallW } from './cutplan';
 
 const O: [number, number] = [777, 0];
 const L = (x: number, z: number): [number, number] => [x - O[0], z - O[1]];
@@ -216,7 +216,7 @@ const spec: Spec = {
       const top = new THREE.ShapeGeometry(shape).rotateX(-Math.PI / 2).translate(0, d.h - 0.04, 0);
       const bottom = new THREE.ShapeGeometry(shape).rotateX(Math.PI / 2).translate(0, d.h - CUT.deck, 0);
       // (the top is the road's asphalt between its parapets, as the photographs show it; the footway draws its paving over it)
-      c.push([top, '#57554f'], [bottom, '#6f6c66']);
+      c.push([top, '#5b5c5f'], [bottom, '#6f6c66']);
       for (let i = 0; i < d.pts.length; i++) {
         const [ax, az] = d.pts[i], [bx, bz] = d.pts[(i + 1) % d.pts.length];
         const A = L(ax, az), B = L(bx, bz);
@@ -284,6 +284,52 @@ const spec: Spec = {
         c.push([run(a1[0], a1[1], b1[0], b1[1], -0.05, 0.16, 0.14), '#cfcac0']);
       }
     }
+    // ---- the bridges' footways (the owner's Street View from the north bridge's west end): grey block paving on a kerb
+    // between the outer parapet and a second, inner pipe railing along the road; white bollards across the north
+    // bridge's footway where it begins ----
+    for (const wk of DECK_WALKS) {
+      const x0 = wk.outer[0][0] + 0.6, x1 = wk.outer[wk.outer.length - 1][0] - 0.4, o0 = 0.35, o1 = wk.w;
+      const at = (x: number, off: number) => L(x, walkEdgeZ(wk, x) + wk.inward * off);
+      for (let x = x0; x < x1 - 1e-6; x += 1) {
+        const xb = Math.min(x1, x + 1), a0 = at(x, o0), a1 = at(x, o1), b0 = at(xb, o0), b1 = at(xb, o1);
+        paving.quad([[a0[0], 0.16, a0[1]], [a1[0], 0.16, a1[1]], [b1[0], 0.16, b1[1]], [b0[0], 0.16, b0[1]]], 4);
+        // the kerb face toward the road
+        c.push([run(a1[0], a1[1], b1[0], b1[1], -0.05, 0.17, 0.16), '#cfcac0']);
+      }
+      // the inner railing on the kerb: posts every 2 m, a top rail and three rails below it
+      const r0 = (wk.bollardsAt ?? x0) + 1.2, n = Math.max(1, Math.round((x1 - r0) / 2));
+      for (let j = 0; j <= n; j++) {
+        const x = r0 + ((x1 - r0) * j) / n, [px, pz] = at(x, o1 - 0.12);
+        c.push([box(px - 0.04, px + 0.04, 0.16, 1.2, pz - 0.04, pz + 0.04), '#9aa0a5']);
+        const wz = walkEdgeZ(wk, x) + wk.inward * (o1 - 0.12);
+        SOLIDS.add(x, wz, 0.25);
+        if (j < n) { const xn = r0 + ((x1 - r0) * (j + 0.5)) / n; SOLIDS.add(xn, walkEdgeZ(wk, xn) + wk.inward * (o1 - 0.12), 0.25); }
+      }
+      { const A = at(r0, o1 - 0.12), B = at(x1, o1 - 0.12);
+        for (const y of [1.15, 0.85, 0.6, 0.35]) c.push([run(A[0], A[1], B[0], B[1], y - 0.03, y + 0.03, 0.05), '#9aa0a5']); }
+      // the bollards: white posts across the footway's mouth
+      if (wk.bollardsAt !== undefined) for (const off of [0.9, 1.75, 2.6]) {
+        const [px, pz] = at(wk.bollardsAt, off);
+        c.push([new THREE.CylinderGeometry(0.11, 0.11, 0.95, 10).translate(px, 0.16 + 0.475, pz), '#eeeeea'], [new THREE.CylinderGeometry(0.115, 0.115, 0.08, 10).translate(px, 0.9, pz), '#2b2b2b']);
+        SOLIDS.add(wk.bollardsAt, walkEdgeZ(wk, wk.bollardsAt) + wk.inward * off, 0.15);
+      }
+    }
+    // ---- the parapet along the top of the bowl's slope, from the west wall's parapet at one bridge to the other's (the
+    // owner's Street View: the wall runs on along the island's edge; nothing to stop anyone walking off the top before) ----
+    { const top = (z: number) => { const w = wallW(z); for (let x = w - 12; x <= w; x += 0.05) if (cutDrop(x, z) > 0.03) return x; return w; };
+      const pts: [number, number][] = [];
+      let first = -1, last = -1;
+      for (let z = R.z0; z <= R.z1; z += 0.5) if (onBowlSlope(wallW(z) - 0.6, z) && cutDrop(wallW(z) - 0.6, z) > 0.05) { if (first < 0) first = z; last = z; }
+      if (first > 0) {
+        pts.push([wallW(first - 0.5) - 0.15, first - 0.5]);
+        for (let z = first; z <= last + 1e-6; z += 0.5) pts.push([top(z) - 0.3, z]);
+        pts.push([wallW(last + 0.5) - 0.15, last + 0.5]);
+        for (let i = 1; i < pts.length; i++) {
+          const A = L(pts[i - 1][0], pts[i - 1][1]), B = L(pts[i][0], pts[i][1]);
+          c.push([run(A[0], A[1], B[0], B[1], -0.1, 0.95, 0.3), '#cfc8ba'], [run(A[0], A[1], B[0], B[1], 0.95, 1.05, 0.38), '#bdb6a8']);
+          SOLIDS.add(pts[i][0], pts[i][1], 0.25);
+        }
+      } }
     k.meshes.push(walls.mesh(panels()), grass.mesh(medianGrass()), stones.mesh(pitching()), paving.mesh(blockPaving()));
     const m = new THREE.Mesh(merge(c), concrete(0.6)); m.castShadow = true; m.receiveShadow = true; k.meshes.push(m);
   },

@@ -16,6 +16,7 @@ import { FS_PAVED } from './fsplan';
 import { GH_PAVED } from './greathallplan';
 import { onEarthTrack } from './ghlplan';
 import { inEngForecourt, onEngTrack } from './engplan';
+import { onDeckWalk } from './cutplan';
 
 export const SC = {
   /** pair 1: the asphalt between the lane and the one-floor building's front (x from, z from, to) and the stack of open
@@ -70,7 +71,7 @@ export const SC_VIEWS: { name: string; eye: [number, number, number]; look: [num
 
 /** a mapped road drawn as earth or brick here, not asphalt */
 // (and the worn earth tracks behind the Great Hall and round the tennis complex: ghlplan.ts, ghlandscape.ts paints them)
-export const offAsphalt = (x: number, z: number, pad = 0) => [...SC.earth, ...SC.brick, EN.earthBox, ...PAVED_BOXES, ...FS_PAVED, ...GH_PAVED].some(([x0, x1, z0, z1]) => x > x0 - pad && x < x1 + pad && z > z0 - pad && z < z1 + pad) || inWestStrip(x, z) || (pad === 0 && inEngForecourt(x, z)) || (pad === 0 && (onEarthTrack(x, z) || onEngTrack(x, z)));
+export const offAsphalt = (x: number, z: number, pad = 0) => [...SC.earth, ...SC.brick, EN.earthBox, ...PAVED_BOXES, ...FS_PAVED, ...GH_PAVED].some(([x0, x1, z0, z1]) => x > x0 - pad && x < x1 + pad && z > z0 - pad && z < z1 + pad) || inWestStrip(x, z) || (pad === 0 && (inEngForecourt(x, z) || onDeckWalk(x, z))) || (pad === 0 && (onEarthTrack(x, z) || onEngTrack(x, z)));
 /** on the earth tracks (the free ride rolls slower and rougher there) */
 export const onEarth = (x: number, z: number) => [...SC.earth, EN.earthBox].some(([x0, x1, z0, z1]) => x > x0 && x < x1 && z > z0 && z < z1) || inWestStrip(x, z) || onEarthTrack(x, z);
 
