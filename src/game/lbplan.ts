@@ -126,8 +126,11 @@ export const SCRUB = { z0: 880, z1: 1186, path: [1.2, 2.6] as [number, number], 
 export const VERGE_W = { z0: 1262, z1: 1630, path: [1.6, 3.4] as [number, number] };
 /** the stadium car parks: paved and marked, mostly empty (the aerial, Pair 8), not a field of cars */
 export const STADIUM_PARKS = { x0: 838, x1: 1012, z0: 1228, z1: 1505, fill: 0.1 };
+/** the School of Engineering Sciences' car park (the owner's SES brief, its satellite picture): marked bays down the lot
+ *  with about fifteen cars in some seventy bays, not a full lot */
+export const ENG_PARK = { x0: 376, x1: 441, z0: -446, z1: -381, fill: 0.22 };
 export const parkingFill = (cx: number, cz: number) =>
-  cx > STADIUM_PARKS.x0 && cx < STADIUM_PARKS.x1 && cz > STADIUM_PARKS.z0 && cz < STADIUM_PARKS.z1 ? STADIUM_PARKS.fill : undefined;
+  [STADIUM_PARKS, ENG_PARK].find((p) => cx > p.x0 && cx < p.x1 && cz > p.z0 && cz < p.z1)?.fill;
 
 /** where this work draws the ground beside the roads itself (the generic verge-and-drain strips stay out): the median,
  *  the scrub and the stadium-side verge, the neighbourhood's frontage */
