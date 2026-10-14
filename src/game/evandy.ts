@@ -687,14 +687,17 @@ const site: Spec = {
         wallSolids(a[0], a[1], b[0], b[1], 0.3);
       };
       rail([SITE.x0, zf], [bx0, zf]); rail([bx0, zf], [bx0, bz]);
-      // (the owner's notes on batch 147: the short wall back to the block's corner stays, the wall runs on along the
-      // road, and the brown gate stands beyond it, at the car entrance's side)
-      const q0 = g0 + 0.9, q1 = q0 + 1.2;
-      wallRun([g0, bz], [g0, zf]); wallRun([g0, zf], [q0, zf]);
-      parts.push([box(q1 - 0.12, q1 + 0.12, 0, 2.6, zf - 0.13, zf + 0.13), '#ece6d8'], [box(q0, q1, 2.2, 2.6, zf - 0.13, zf + 0.13), '#ece6d8'], [box(q0 - 0.05, q1 + 0.05, 2.6, 2.7, zf - 0.18, zf + 0.18), '#dcd3c0']);
-      for (let x = q0 + 0.1; x < q1 - 0.1; x += 0.12) parts.push([box(x - 0.018, x + 0.018, 0.05, 2.15, zf - 0.02, zf + 0.02), '#5a4a3a']);
-      for (const y of [0.1, 1.0, 2.1]) parts.push([box(q0, q1 - 0.1, y - 0.03, y + 0.03, zf - 0.03, zf + 0.03), '#5a4a3a']);
-      wallSolids(q0, zf, q1, zf, 0.3); SOLIDS.add(q1, zf, 0.25); }
+      // (the owner's notes on batches 147-149: the brown gate stands in the slot between the block's corner and the
+      // road wall, facing the forecourt; the road wall runs on unbroken to its end pier, then the car entrance)
+      const q1 = g0 + 2.1;
+      wallRun([g0, zf], [q1, zf]);
+      parts.push([box(q1 - 0.24, q1 + 0.24, 0, 2.7, zf - 0.24, zf + 0.24), '#ece6d8'], [box(q1 - 0.3, q1 + 0.3, 2.7, 2.8, zf - 0.3, zf + 0.3), '#dcd3c0']);
+      // the gate: posts at the block's corner and at the wall, a lintel over, the brown bar leaves between
+      const za = bz + 0.05, zb = zf - 0.15;
+      parts.push([box(g0 - 0.15, g0 + 0.15, 0, 2.6, zb - 0.1, zf + 0.15), '#ece6d8'], [box(g0 - 0.15, g0 + 0.15, 2.2, 2.6, za, zb), '#ece6d8'], [box(g0 - 0.2, g0 + 0.2, 2.6, 2.7, za - 0.05, zf + 0.2), '#dcd3c0']);
+      for (let z = za + 0.08; z < zb - 0.05; z += 0.12) parts.push([box(g0 - 0.02, g0 + 0.02, 0.05, 2.15, z - 0.018, z + 0.018), '#5a4a3a']);
+      for (const y of [0.1, 1.0, 2.1]) parts.push([box(g0 - 0.03, g0 + 0.03, y - 0.03, y + 0.03, za, zb), '#5a4a3a']);
+      wallSolids(g0, za, g0, zf, 0.3); }
     wallRun([SITE.x0, SITE.zFence], [SITE.x0, SITE.z0]); wallRun([SITE.x0, SITE.z0], [SITE.x1, SITE.z0]); wallRun([SITE.x1, SITE.z0], [SITE.x1, -1216]);
     // east of the gate: the curved pale entrance wall to the commercial block (R18)
     { const pts: P2[] = Array.from({ length: 7 }, (_, i) => { const t = (i / 6) * Math.PI / 2; return [SITE.gate[1] + 0.5 + Math.sin(t) * 1.0, SITE.zFence - (1 - Math.cos(t)) * 2.6] as P2; });
