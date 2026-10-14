@@ -133,3 +133,39 @@ behind the building are low ... after the foot path is thick forest ... up to EV
 - [ASSUMPTION] West of the brief's wider satellite picture (north of z −666) there is no image evidence for the
   forest; its extent there rests on the owner's word.
 - Checks: route lengths identical (lens), route tests, build, smoke ride; the preview loads in about 27 s.
+
+## Batch 134: the owner's revised satellite comparison (`refs/owner-satellite-3.webp`, `refs/owner-comparison-3.webp`)
+
+The owner: "match the building footprints, parking layout, central access path, two lawn plots, surrounding roads, and
+vegetation to the real satellite image ... update the existing game geometry, not simply redesign the scene or invent
+new structures". Comparison: `sheet-layout.jpg`.
+
+- [VERIFIED] **Registration.** The close picture (left half, 1000 × 772 px) is the brief's satellite enlarged by
+  x 1.384 / y 1.296. It was matched on ground features only: the car park's north-west corner, the shed, the access
+  road's mouth and the lawns' outer corners. That gives game x = 344.5 + ((px + 406) / 1.384 − 330) / 4.157 and
+  z = −340 + ((py + 394) / 1.296 − 845) / 4.157 (`engplan.ts` `sat`). The roofs lean in the picture, so they were not
+  used.
+- [VERIFIED] **Building footprints and surrounding roads.** Already on the map; unchanged. The access road's mapped
+  centre line is about 2.5 m west of the picture's. It is left in place: routes and ids are kept, and the gap is
+  within the picture's accuracy.
+- [VERIFIED] **The forecourt.** One concrete apron runs from the car park's south edge to the lawns' kerb at z −375.
+  The mapped service road along it, and the access road's end, are no longer drawn as asphalt there (`science.ts`
+  `offAsphalt` → `inEngForecourt`). The routes are unchanged.
+- [VERIFIED] **The lawns.** The two lawn plots are green up to the kerb. The rubble facing of the bank is cut to a
+  2.8 m strip at the kerb (the picture's dark band), with a row of low shrubs along the lawns' top.
+- [VERIFIED] **The parking layout:**
+  - three rows of 2.6 m bays, 5 m deep, down the lot: along the west edge and either side of a planted island with
+    trees;
+  - a short row south of the west wing;
+  - nine cars where the picture shows them, standing across the bays (`lbplan.ts` `parkingSpots`).
+- [VERIFIED] **The side road** from the road west of the car park into the lot's north-west corner (14 m the map lacks)
+  is a paved strip only, not a new route.
+- [VERIFIED] **Vegetation.** 28 trees where the picture shows them:
+  - the island's line, the car park's edges;
+  - the groups beside and east of the front block;
+  - the belt along the east lawn's east side;
+  - the lawns' trees.
+  
+  The generic trees and props are kept off the lawns, the car park and the ground east of the front block (the
+  site's keep zones).
+- Checks: route lengths identical, route tests, build, smoke ride.

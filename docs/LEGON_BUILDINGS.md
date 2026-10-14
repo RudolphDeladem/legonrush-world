@@ -3816,3 +3816,14 @@ The comparison is `docs/engineering-ses/sheet-ground.jpg`.
 - **The track behind the school:** brown earth.
 - **Behind the building:** low bush up to the track.
 - **Beyond the track:** thick forest north to Evandy's latitude.
+
+## School of Engineering Sciences: layout from the revised satellite comparison (the owner)
+
+The comparison is `docs/engineering-ses/sheet-layout.jpg`.
+
+- **Unchanged:** the building footprints and roads already matched the satellite.
+- **Forecourt:** one concrete apron down to the lawns' kerb.
+- **Lawns:** green up to the kerb, with a thin stone strip and low shrubs along their top.
+- **Car park:** bays in three rows with a planted island of trees, and cars where the satellite shows them.
+- **Side road:** the side road into the car park's north-west corner.
+- **Trees:** placed where the satellite shows them.
