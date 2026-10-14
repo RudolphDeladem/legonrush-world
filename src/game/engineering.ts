@@ -8,100 +8,188 @@
 // with SCHOOL OF ENGINEERING in blue capitals on its band. East of the front block a military
 // training aeroplane stands on a pad inside a metal mesh fence. The car park is on the west.
 import * as THREE from 'three';
-import { PAVE, TRIM, WHITE, box, tri2 } from './modelkit';
+import { TRIM, WHITE, box, canvas, tri2 } from './modelkit';
 import { PL, createSite, render, slab, tanks, window_, type Kit, type Spec, type Style } from './blocks';
 import { rubble } from './concrete';
 import { groundHeight } from './relief';
 
 // ---------- facades ----------
-/** the blocks: white render with panel lines, a pair of dark windows in white frames per bay */
-const ENG_WIN: Style = {
-  bay: 3.6,
-  up: [[40, 70, 76, 96], [140, 70, 76, 96]],
-  ground: [[40, 70, 76, 110], [140, 70, 76, 110]],
+// (the owner's SES brief, 2026-10-14: front photos, the entrance photo, the photos at the jet's fence) dark charcoal
+// window frames, not white; the front block in three bays between pilasters, one wide four-pane window a bay and storey;
+// the wings' long faces alternating a window and a breeze-block panel; the wings' ends a breeze-block panel a bay
+const FRAME = '#2e2a27';
+/** a pale breeze-block screen: square openings in a cream grid inside a plain frame */
+export function breeze(g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, cell = 14) {
+  g.fillStyle = 'rgba(120,110,95,0.35)'; g.fillRect(x - 4, y - 4, w + 8, h + 8);
+  g.fillStyle = '#efe9dc'; g.fillRect(x - 2, y - 2, w + 4, h + 4);
+  g.fillStyle = '#e2dac9'; g.fillRect(x, y, w, h);
+  const nx = Math.max(1, Math.floor(w / cell)), ny = Math.max(1, Math.floor(h / cell)), cw = w / nx, ch = h / ny;
+  for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+    const px = x + i * cw + cw * 0.18, py = y + j * ch + ch * 0.18;
+    g.fillStyle = '#6f6253'; g.fillRect(px, py, cw * 0.64, ch * 0.64);
+    g.fillStyle = 'rgba(255,250,240,0.55)'; g.fillRect(px, py, cw * 0.64, 2);
+  }
+}
+/** the front block: pilasters at the bay edges, a floor band, one wide dark-framed window a bay */
+const ENG_FRONT: Style = {
+  bay: 6.3,
+  up: [[70, 78, 116, 92]],
+  ground: [[70, 78, 116, 92]],
   draw: (g) => {
-    render(g, '#f8f8f5');
-    g.fillStyle = 'rgba(150,150,140,0.35)';
-    g.fillRect(0, 0, 3, 512); g.fillRect(126, 0, 3, 512);
-    for (const y0 of [0, 256]) for (const x of [40, 140]) window_(g, [x, y0 + 70, 76, y0 ? 110 : 96], '#f2f2ee', 2, 0.35);
+    render(g, '#f7f5ef');
+    for (const x of [0, 240]) { g.fillStyle = '#fcfbf7'; g.fillRect(x, 0, 16, 512); g.fillStyle = 'rgba(150,145,132,0.45)'; g.fillRect(x === 0 ? 16 : 238, 0, 2, 512); }
+    for (const y0 of [0, 256]) window_(g, [70, y0 + 78, 116, 92], FRAME, 4, 0);
+    slab(g, 230, 26);
+    g.fillStyle = 'rgba(110,100,85,0.18)'; g.fillRect(0, 490, 256, 22);
+  },
+};
+/** the wings' long faces: a window, then a breeze-block panel */
+const ENG_WIN: Style = {
+  bay: 4.4,
+  up: [[22, 80, 92, 92]],
+  ground: [[22, 80, 92, 92]],
+  draw: (g) => {
+    render(g, '#f7f5ef');
+    for (const y0 of [0, 256]) { window_(g, [22, y0 + 80, 92, 92], FRAME, 3, 0); breeze(g, 142, y0 + 34, 94, 178); }
     slab(g, 230, 26);
   },
 };
-/** the stair towers: a lattice breeze-block screen (small square openings in a white grid) */
+/** the wings' ends: one breeze-block panel a bay */
+const ENG_SCREEN: Style = {
+  bay: 5.6,
+  up: [],
+  ground: [],
+  draw: (g) => {
+    render(g, '#f7f5ef');
+    for (const y0 of [0, 256]) breeze(g, 72, y0 + 34, 112, 178);
+    slab(g, 230, 26);
+  },
+};
+/** the stair towers: breeze-block screens across their faces */
 const ENG_LATTICE: Style = {
   bay: 2.4,
   up: [],
   ground: [],
   draw: (g) => {
-    render(g, '#f4f4f0');
-    for (const y0 of [0, 256]) {
-      g.fillStyle = '#d9d9d2'; g.fillRect(16, y0 + 18, 224, 214);
-      for (let y = y0 + 22; y < y0 + 228; y += 18) for (let x = 20; x < 236; x += 18) {
-        g.fillStyle = '#5d6166'; g.fillRect(x, y, 12, 12);
-        g.fillStyle = 'rgba(255,255,255,0.5)'; g.fillRect(x, y, 12, 2);
-      }
-    }
+    render(g, '#f6f4ee');
+    for (const y0 of [0, 256]) breeze(g, 18, y0 + 20, 220, 206, 18);
     slab(g, 232, 24);
   },
 };
+let LATTICE_MAT: THREE.MeshStandardMaterial | null = null;
+const latticeMat = () => (LATTICE_MAT ??= new THREE.MeshStandardMaterial({ roughness: 0.9, side: THREE.DoubleSide, map: canvas(128, 128, (g) => { g.fillStyle = '#e2dac9'; g.fillRect(0, 0, 128, 128); breeze(g, 0, 0, 128, 128, 16); }) }));
 
 const STOREY = 3.4, F = 4, BLACK = '#202124';
 
-/** the jet trainer on its pad (owner's third reference PDF, page 66: the game had it facing the wrong way): a slim
- *  fuselage camouflaged sand, brown and green over a pale blue-grey belly, nose toward +x (east), a bubble canopy, the
- *  jet pipe at the tail, straight wings, the Ghana roundel on the rear fuselage and the tricolour flash on the fin */
-function aeroplane(k: Kit, cx: number, cz: number) {
-  const SAND = '#b49a6a', BROWN = '#7a5a3a', G = '#4f6a3a', BELLY = '#9fb0b8';
-  const y = 1.55;
-  // the fuselage: thickest at the cockpit, tapering to the jet pipe, the camouflage above, the pale belly below
-  k.plain.push([new THREE.CylinderGeometry(0.6, 0.42, 6.6, 14).rotateZ(-Math.PI / 2).translate(cx - 0.3, y, cz), SAND]);
-  // the camouflage patches over the top, the pale belly underneath
-  for (const [x, z, sx, sz, col] of [[1.4, 0.15, 1.3, 0.5, BROWN], [-0.8, -0.2, 1.2, 0.55, G], [-2.4, 0.2, 0.9, 0.45, BROWN]] as [number, number, number, number, string][]) k.plain.push([new THREE.SphereGeometry(1, 12, 6).scale(sx, 0.35, sz).translate(cx + x, y + 0.36, cz + z), col]);
-  k.plain.push([new THREE.SphereGeometry(1, 14, 6).scale(3.0, 0.3, 0.5).translate(cx - 0.2, y - 0.33, cz), BELLY]);
-  k.plain.push([new THREE.ConeGeometry(0.6, 1.6, 14).rotateZ(-Math.PI / 2).translate(cx + 3.8, y, cz), SAND]);
-  k.plain.push([new THREE.CircleGeometry(0.36, 12).rotateY(-Math.PI / 2).translate(cx - 3.62, y, cz), '#1b1b1b']);
-  k.plain.push([new THREE.SphereGeometry(0.55, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2).scale(1.9, 0.75, 0.85).translate(cx + 1.7, y + 0.38, cz), '#2c3a44']);
-  // the straight wings with tip tanks, the tailplane and the fin with its flash
-  k.plain.push([box(cx - 0.6, cx + 1.1, y - 0.35, y - 0.25, cz - 5, cz + 5), SAND], [box(cx - 0.4, cx + 0.6, y - 0.34, y - 0.24, cz - 3.6, cz - 1.4), G], [box(cx - 0.3, cx + 0.8, y - 0.34, y - 0.24, cz + 1.6, cz + 3.8), BROWN]);
-  for (const s of [-1, 1]) k.plain.push([new THREE.CapsuleGeometry(0.2, 1.3, 4, 10).rotateZ(Math.PI / 2).translate(cx + 0.3, y - 0.28, cz + s * 5.05), SAND]);
-  k.plain.push([box(cx - 3.6, cx - 2.6, y + 0.08, y + 0.16, cz - 1.8, cz + 1.8), SAND]);
-  k.plain.push([tri2([cx - 3.7, y + 0.2, cz], [cx - 2.2, y + 0.4, cz], [cx - 3.75, y + 1.7, cz]), G]);
-  for (const [h, col] of [[1.25, '#c8261e'], [1.0, '#f2c400'], [0.75, '#1f7a3a']] as [number, string][]) for (const s of [-1, 1]) k.plain.push([box(cx - 3.68, cx - 3.3, y + h, y + h + 0.2, cz + s * 0.03 - 0.01, cz + s * 0.03 + 0.01), col]);
-  // the roundel on each side of the rear fuselage: red, yellow and green rings
-  for (const s of [-1, 1]) for (const [r, col, d] of [[0.34, '#c8261e', 0.0], [0.24, '#f2c400', 0.005], [0.14, '#1f7a3a', 0.01]] as [number, string, number][]) {
-    k.plain.push([new THREE.CircleGeometry(r, 16).rotateY(s > 0 ? 0 : Math.PI).translate(cx - 2.2, y + 0.05, cz + s * (0.5 + d)), col]);
+/** the Aermacchi MB-339 on its pad (the owner's SES brief: the School's report names the type; the photos at its fence
+ *  and from the front lawn): a slim trainer, nose east (+x, the front photo), tandem bubble canopy, low wings with a
+ *  slight sweep and tip tanks, a swept fin with the Ghana flag; dark green over tan/gold camouflage, a pale belly and a
+ *  pale nose tip; yellow jack stands under the wings. Built full size (10.97 m long, 10.86 m over the tip tanks) and
+ *  scaled to `s` so that it stands clear inside the mapped compound. */
+function aeroplane(k: Kit, cx: number, cz: number, s: number) {
+  const TAN = '#b8963f', GREEN = '#34462c', BELLY = '#b9c1c4', YEL = '#e2b51a';
+  const parts: [THREE.BufferGeometry, string][] = [];
+  const add = (g: THREE.BufferGeometry, c: string) => parts.push([g, c]);
+  const Y = 1.75;
+  // the fuselage: the body, the tapered tail cone, the nose cone with its pale tip
+  add(new THREE.CylinderGeometry(0.62, 0.62, 4.0, 16).rotateZ(Math.PI / 2).scale(1, 1.12, 1).translate(0.5, Y, 0), TAN);
+  add(new THREE.CylinderGeometry(0.62, 0.34, 3.5, 16).rotateZ(Math.PI / 2).scale(1, 1.12, 1).translate(-3.25, Y + 0.05, 0), TAN);
+  add(new THREE.ConeGeometry(0.62, 3.0, 16).rotateZ(-Math.PI / 2).scale(1, 1.12, 1).translate(4.0, Y - 0.06, 0), GREEN);
+  add(new THREE.SphereGeometry(0.14, 10, 8).translate(5.48, Y - 0.06, 0), '#d5e0e8');
+  add(new THREE.CircleGeometry(0.3, 12).rotateY(-Math.PI / 2).translate(-5.01, Y + 0.05, 0), '#161616');
+  // the camouflage: dark green patches over the top and sides, the pale belly underneath
+  for (const [x, y, z, sx, sy, sz] of [[1.6, 0.2, 0.15, 1.2, 0.5, 0.6], [-0.8, 0.22, -0.12, 1.4, 0.48, 0.62], [-2.9, 0.18, 0.1, 1.1, 0.4, 0.5], [-0.2, 0.0, 0.3, 0.9, 0.5, 0.4], [-1.9, 0.05, -0.3, 1.0, 0.45, 0.38]]) add(new THREE.SphereGeometry(1, 14, 8).scale(sx, sy, sz).translate(x, Y + y, z), GREEN);
+  add(new THREE.SphereGeometry(1, 16, 8).scale(3.6, 0.32, 0.52).translate(0, Y - 0.42, 0), BELLY);
+  // the tandem canopy, its frame and the side intakes
+  add(new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2).scale(1.7, 0.62, 0.5).translate(1.6, Y + 0.5, 0), '#2a3842');
+  add(box(1.35, 1.45, Y + 0.5, Y + 1.12, -0.48, 0.48), '#2b2b2b');
+  for (const z of [-1, 1]) add(box(-0.2, 1.0, Y - 0.15, Y + 0.25, z * 0.62 - 0.12, z * 0.62 + 0.12), '#2f3a2a');
+  // the wings: low, a slight sweep, thin; tip tanks
+  const wing = new THREE.Shape([[0.9, -0.5], [0.05, -5.05], [-1.3, -5.05], [-1.6, -0.5], [-1.6, 0.5], [-1.3, 5.05], [0.05, 5.05], [0.9, 0.5]].map(([x, z]) => new THREE.Vector2(x, z)));
+  add(new THREE.ExtrudeGeometry(wing, { depth: 0.12, bevelEnabled: false }).rotateX(Math.PI / 2).translate(0, Y - 0.38, 0), TAN);
+  for (const [x0, x1, z0, z1] of [[-1.1, -0.1, 1.6, 3.6], [-1.3, -0.3, -3.8, -2.2]]) add(box(x0, x1, Y - 0.37, Y - 0.25, z0, z1), GREEN);
+  for (const z of [-1, 1]) {
+    add(new THREE.CapsuleGeometry(0.3, 1.7, 4, 12).rotateZ(Math.PI / 2).translate(-0.55, Y - 0.32, z * 5.2), TAN);
+    add(new THREE.SphereGeometry(0.31, 10, 6).scale(0.9, 0.5, 0.6).translate(-0.3, Y - 0.12, z * 5.2), GREEN);
   }
-  // the undercarriage
-  for (const [x, z] of [[0.0, -1.5], [0.0, 1.5], [3.0, 0]] as [number, number][]) {
-    k.plain.push([box(cx + x - 0.05, cx + x + 0.05, 0.3, y - 0.3, cz + z - 0.05, cz + z + 0.05), '#3a3a3a']);
-    k.plain.push([new THREE.CylinderGeometry(0.3, 0.3, 0.18, 12).rotateX(Math.PI / 2).translate(cx + x, 0.3, cz + z), '#141414']);
+  // the tailplane, the swept fin and its Ghana flag (red, gold, green bands with the black star)
+  const tail = new THREE.Shape([[-4.1, -0.3], [-4.75, -2.05], [-5.25, -2.05], [-5.2, -0.3], [-5.2, 0.3], [-5.25, 2.05], [-4.75, 2.05], [-4.1, 0.3]].map(([x, z]) => new THREE.Vector2(x, z)));
+  add(new THREE.ExtrudeGeometry(tail, { depth: 0.08, bevelEnabled: false }).rotateX(Math.PI / 2).translate(0, Y + 0.25, 0), TAN);
+  const fin = new THREE.Shape([[-3.3, 0], [-4.65, 1.55], [-5.3, 1.55], [-5.05, 0]].map(([x, y]) => new THREE.Vector2(x, y)));
+  add(new THREE.ExtrudeGeometry(fin, { depth: 0.1, bevelEnabled: false }).translate(0, Y + 0.45, -0.05), GREEN);
+  for (const z of [-0.056, 0.056]) {
+    for (const [i, c] of [[0, '#c8261e'], [1, '#f2c400'], [2, '#1f7a3a']] as [number, string][]) add(box(-4.85, -4.3, Y + 1.6 - i * 0.14, Y + 1.74 - i * 0.14, z - 0.004, z + 0.004), c);
+    add(box(-4.6, -4.54, Y + 1.43, Y + 1.49, z - 0.006, z + 0.006), '#111111');
+  }
+  // the undercarriage on the pad, and the yellow jack stands under the wings
+  for (const [x, z] of [[3.6, 0], [-0.6, -1.25], [-0.6, 1.25]] as [number, number][]) {
+    add(box(x - 0.05, x + 0.05, 0.3, Y - 0.4, z - 0.05, z + 0.05), '#3a3a3a');
+    add(new THREE.CylinderGeometry(0.3, 0.3, 0.2, 12).rotateX(Math.PI / 2).translate(x, 0.3, z), '#141414');
+  }
+  for (const z of [-3.3, 3.3]) {
+    const top = new THREE.Vector3(-0.5, Y - 0.4, z);
+    for (let i = 0; i < 3; i++) {
+      const a = (i / 3) * Math.PI * 2, foot = new THREE.Vector3(-0.5 + Math.cos(a) * 0.55, 0, z + Math.sin(a) * 0.55), d = top.clone().sub(foot);
+      const leg = new THREE.CylinderGeometry(0.035, 0.035, d.length(), 6);
+      leg.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.clone().normalize()));
+      add(leg.translate((top.x + foot.x) / 2, (top.y + foot.y) / 2, (top.z + foot.z) / 2), YEL);
+    }
+  }
+  for (const [g, c] of parts) k.plain.push([g.scale(s, s, s).translate(cx, 0.15, cz), c]);
+}
+
+/** the jet's compound fence on a low concrete kerb (the photos at its fence): chain-link on galvanised posts with their
+ *  tops cranked outward, and along the front (south, toward the forecourt) green welded-mesh panels with a double gate */
+function jetFence(k: Kit, x0: number, x1: number, z0: number, z1: number, h = 2.0) {
+  const POST = '#9a9fa4', LINK = '#7d8388', GREENF = '#2f5d3a', KERB = '#cfccc4';
+  const side = (ax: number, az: number, bx: number, bz: number, welded: boolean) => {
+    const len = Math.hypot(bx - ax, bz - az), n = Math.max(1, Math.round(len / 2.5)), ux = (bx - ax) / len, uz = (bz - az) / len;
+    const at = (t: number): [number, number] => [ax + ux * t, az + uz * t];
+    const bar = (t0: number, t1: number, y0: number, y1: number, r: number, c: string) => {
+      const [p0x, p0z] = at(t0), [p1x, p1z] = at(t1);
+      k.plain.push([box(Math.min(p0x, p1x) - r, Math.max(p0x, p1x) + r, y0, y1, Math.min(p0z, p1z) - r, Math.max(p0z, p1z) + r), c]);
+    };
+    for (let i = 0; i <= n; i++) bar((len * i) / n, (len * i) / n, 0, h + 0.1, 0.05, welded ? GREENF : POST);
+    const gate = welded ? [len / 2 - 1.3, len / 2 + 1.3] : null;
+    for (const y of [0.5, h]) bar(0, len, y - 0.025, y + 0.025, 0.02, welded ? GREENF : POST);
+    // the mesh: welded panels in narrow upright openings, the chain-link finer both ways
+    const step = welded ? 0.2 : 0.12;
+    for (let t = step; t < len; t += step) bar(t, t, 0.45, h, 0.008, welded ? GREENF : LINK);
+    for (let y = 0.45 + (welded ? 0.5 : 0.12); y < h; y += welded ? 0.5 : 0.12) bar(0, len, y - 0.007, y + 0.007, 0.007, welded ? GREENF : LINK);
+    if (gate) {
+      // the gate's frame, its meeting stiles and the latch
+      for (const t of [gate[0], len / 2, gate[1]]) bar(t, t, 0.45, h + 0.05, 0.035, GREENF);
+      bar(gate[0], gate[1], h - 0.03, h + 0.03, 0.03, GREENF);
+      const [lx, lz] = at(len / 2 + 0.12);
+      k.plain.push([box(lx - 0.06, lx + 0.06, 1.05, 1.25, lz - 0.06, lz + 0.06), '#c9ccd0']);
+    }
+    // the kerb the fence stands on
+    bar(0, len, 0, 0.45, 0.12, KERB);
+  };
+  side(x0, z0, x1, z0, false); side(x0, z0, x0, z1, false); side(x1, z0, x1, z1, false); side(x0, z1, x1, z1, true);
+  for (const [x, z, dx, dz] of [[x0, z0, -1, -1], [x1, z0, 1, -1], [x0, z1, -1, 1], [x1, z1, 1, 1]]) {
+    k.plain.push([new THREE.BoxGeometry(0.06, 0.6, 0.06).rotateZ(-dx * 0.6).rotateX(dz * 0.6).translate(x + dx * 0.15, h + 0.35, z + dz * 0.15), POST]);
   }
 }
 
-/** a metal mesh fence round a rectangle: posts and two rails, with the mesh as thin dark bars */
-function meshFence(k: Kit, x0: number, x1: number, z0: number, z1: number, h = 1.8) {
-  const POST = '#8c9196', MESH = '#5d6267';
-  const side = (ax: number, az: number, bx: number, bz: number) => {
-    const len = Math.hypot(bx - ax, bz - az), n = Math.max(1, Math.round(len / 2.5));
-    for (let i = 0; i <= n; i++) {
-      const x = ax + ((bx - ax) * i) / n, z = az + ((bz - az) * i) / n;
-      k.plain.push([box(x - 0.05, x + 0.05, 0, h + 0.1, z - 0.05, z + 0.05), POST]);
-    }
-    const along = bx !== ax;
-    for (const y of [0.15, h]) k.plain.push([along ? box(ax, bx, y - 0.03, y + 0.03, az - 0.02, az + 0.02) : box(ax - 0.02, ax + 0.02, y - 0.03, y + 0.03, az, bz), POST]);
-    // the mesh: vertical wires every 0.25 m and horizontal wires every 0.3 m (openings between them)
-    for (let t = 0.25; t < len; t += 0.25) {
-      const x = ax + ((bx - ax) * t) / len, z = az + ((bz - az) * t) / len;
-      k.plain.push([box(x - 0.012, x + 0.012, 0.15, h, z - 0.012, z + 0.012), MESH]);
-    }
-    for (let y = 0.45; y < h; y += 0.3) k.plain.push([along ? box(ax, bx, y - 0.012, y + 0.012, az - 0.012, az + 0.012) : box(ax - 0.012, ax + 0.012, y - 0.012, y + 0.012, az, bz), MESH]);
-  };
-  side(x0, z0, x1, z0); side(x0, z1, x1, z1); side(x0, z0, x0, z1); side(x1, z0, x1, z1);
-  // the low white wall the fence stands on, and the posts' tops cranked outward (owner's photo)
-  for (const [a0, a1, b0, b1] of [[x0, x1, z0 - 0.12, z0 + 0.12], [x0, x1, z1 - 0.12, z1 + 0.12], [x0 - 0.12, x0 + 0.12, z0, z1], [x1 - 0.12, x1 + 0.12, z0, z1]]) k.plain.push([box(a0, a1, 0, 0.45, b0, b1), '#ecebe6']);
-  for (const [x, z, dx, dz] of [[x0, z0, -1, -1], [x1, z0, 1, -1], [x0, z1, -1, 1], [x1, z1, 1, 1], [(x0 + x1) / 2, z0, 0, -1], [(x0 + x1) / 2, z1, 0, 1]]) {
-    k.plain.push([new THREE.BoxGeometry(0.06, 0.6, 0.06).rotateZ(-dx * 0.6).rotateX(dz * 0.6).translate(x + dx * 0.15, h + 0.35, z + dz * 0.15), POST]);
+/** red-brown concrete pavers laid in herringbone (the entrance photo) */
+let BRICK: THREE.Texture | null = null;
+const brickTexture = () => (BRICK ??= canvas(256, 256, (g) => {
+  g.fillStyle = '#6b4b3e'; g.fillRect(0, 0, 256, 256);
+  const cols = ['#946553', '#8a5d4c', '#9c6d59', '#835847', '#a07562'];
+  for (let i = -16; i < 32; i++) for (let j = -16; j < 32; j++) {
+    const x = i * 16 + j * 16, y = j * 16 - i * 16;
+    g.fillStyle = cols[(((i * 7 + j * 13) % 5) + 5) % 5]; g.fillRect(x + 1, y + 1, 30, 14);
+    g.fillStyle = cols[(((i * 11 + j * 3) % 5) + 5) % 5]; g.fillRect(x + 1, y + 17, 14, 30);
   }
+  for (let n = 0; n < 500; n++) { g.fillStyle = n % 2 ? 'rgba(40,30,25,0.14)' : 'rgba(230,215,200,0.1)'; g.fillRect((n * 97) % 256, (n * 57 + (n >> 3) * 13) % 256, 3, 3); }
+}));
+function brickPaving(k: Kit, x0: number, x1: number, z0: number, z1: number, y = 0.05) {
+  const g = new THREE.PlaneGeometry(x1 - x0, z1 - z0).rotateX(-Math.PI / 2).translate((x0 + x1) / 2, y, (z0 + z1) / 2);
+  const uv = g.attributes.uv as THREE.BufferAttribute;
+  for (let i = 0; i < uv.count; i++) uv.setXY(i, (uv.getX(i) * (x1 - x0)) / 2, (uv.getY(i) * (z1 - z0)) / 2);
+  const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ map: brickTexture(), roughness: 0.92, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 }));
+  m.receiveShadow = true; m.userData.noCollide = true; k.meshes.push(m);
 }
 
 // model frame: map axes, origin at (453, -415); z grows to the south
@@ -110,10 +198,11 @@ const engineering: Spec = {
   axis: [1, 0], origin: [453, -415], storey: STOREY, style: ENG_WIN, roofColor: '#c46f3c', fascia: BLACK, pitch: 0.5,
   replaces: [[476, -395]],
   blocks: [
-    // front block (the entrance), west, east and back blocks
-    { x0: -9.3, x1: 9.5, z0: 5, z1: 28.7, floors: F },
-    { x0: -38.6, x1: -21.2, z0: -34, z1: 5, floors: F },
-    { x0: 20.3, x1: 38.3, z0: -34, z1: 8, floors: F },
+    // front block (the entrance; pilastered bays), west, east and back blocks (window and screen bays; the wings' ends
+    // screened)
+    { x0: -9.3, x1: 9.5, z0: 5, z1: 28.7, floors: F, faces: { z1: ENG_FRONT, x0: ENG_FRONT, x1: ENG_FRONT } },
+    { x0: -38.6, x1: -21.2, z0: -34, z1: 5, floors: F, faces: { z1: ENG_SCREEN, z0: ENG_SCREEN } },
+    { x0: 20.3, x1: 38.3, z0: -34, z1: 8, floors: F, faces: { z1: ENG_SCREEN, z0: ENG_SCREEN } },
     { x0: -12.8, x1: 12.4, z0: -36.4, z1: -11, floors: F },
     // stair towers and links between the blocks, round the light well
     { x0: -21.2, x1: -9.3, z0: -8, z1: 8, floors: F, roof: 'flat', faces: { z1: ENG_LATTICE, z0: ENG_LATTICE } },
@@ -121,41 +210,46 @@ const engineering: Spec = {
     { x0: -12.8, x1: -8, z0: -11, z1: 5, floors: F, roof: 'flat', faces: { x1: ENG_LATTICE } },
     { x0: 6.6, x1: 12.4, z0: -11, z1: 5, floors: F, roof: 'flat', faces: { x0: ENG_LATTICE } },
   ],
-  keep: [[-6, 6, 28.7, 38], [21, 39, 10, 23.5]],
+  // the paved forecourt and the jet's compound stay clear of generated trees and tufts
+  keep: [[-14, 30, 25.5, 38], [16, 30, 13, 27]],
   extras: (k) => {
     const top = k.wallTop(F);
-    // the towers rise a little above the eaves with parapets, arched windows down their fronts, black tanks on top
+    // the towers rise a little above the eaves with parapets, black tanks on top; on the top floor of each front an
+    // arched breeze-block screen in a white frame (the front photos)
     for (const [x0, x1] of [[-21.2, -9.3], [9.5, 20.3]] as [number, number][]) {
       k.plain.push([box(x0, x1, top, top + 1.6, -8, 8), WHITE]);
       k.plain.push([box(x0 - 0.1, x1 + 0.1, top + 1.6, top + 1.8, -8.1, 8.1), TRIM]);
-      const xm = (x0 + x1) / 2;
-      for (let f = 1; f < F; f++) {
-        const y = PL + f * STOREY + 0.5;
-        k.glass.push(box(xm - 0.7, xm + 0.7, y, y + 2.0, 8, 8.04));
-      }
-      k.plain.push([new THREE.CircleGeometry(0.7, 12, 0, Math.PI).translate(xm, PL + (F - 1) * STOREY + 2.5, 8.05), '#2b3a48']);
+      const xm = (x0 + x1) / 2, yb = PL + (F - 1) * STOREY, r = 1.25, yc = yb + 1.85;
+      for (const x of [xm - r, xm + r]) k.plain.push([box(x - 0.13, x + 0.13, yb + 0.15, yc, 8, 8.16), TRIM]);
+      k.plain.push([new THREE.TorusGeometry(r, 0.13, 6, 18, Math.PI).scale(1, 1, 0.6).translate(xm, yc, 8.08), TRIM]);
+      const disc = new THREE.Mesh(new THREE.CircleGeometry(r - 0.08, 18, 0, Math.PI).translate(xm, yc, 8.04), latticeMat());
+      disc.userData.noCollide = true; k.meshes.push(disc);
       tanks(k, [[xm - 2, -2], [xm + 2, -2], [xm, 3]], top + 1.6, 0.85);
     }
-    // the entrance porch (photos, render): white columns, a hipped tile roof, the band with the school's name
-    const z0 = 28.7, z1 = 35.1, x0 = -5.2, x1 = 4.6, ph = 3.6;
-    for (const x of [x0 + 0.3, x1 - 0.3]) for (const z of [z1 - 0.3, (z0 + z1) / 2]) k.plain.push([box(x - 0.25, x + 0.25, 0.3, ph, z - 0.25, z + 0.25), WHITE]);
-    k.plain.push([box(x0, x1, ph, ph + 0.7, z0, z1), WHITE]);
-    k.plain.push([box(x0 - 0.05, x1 + 0.05, ph + 0.55, ph + 0.7, z0, z1 + 0.05), BLACK]);
-    const eave = ph + 0.7, rise = 1.6, X0 = x0 - 0.6, X1 = x1 + 0.6, Z1 = z1 + 0.6, xm = (x0 + x1) / 2;
-    k.roof.quad([X0, eave, Z1], [X1, eave, Z1], [xm + 1, eave + rise, z0], [xm - 1, eave + rise, z0]);
-    k.roof.quad([X0, eave, z0], [X0, eave, Z1], [xm - 1, eave + rise, z0], [xm - 1, eave + rise, z0]);
-    k.roof.quad([X1, eave, Z1], [X1, eave, z0], [xm + 1, eave + rise, z0], [xm + 1, eave + rise, z0]);
-    k.signs.push({ text: 'SCHOOL OF ENGINEERING', x: xm, y: ph + 0.3, z: z1 + 0.01, ry: 0, w: 6.4, colors: ['#ffffff', '#1f4fa8'] });
-    // floor, steps and glass doors into the front block
-    k.plain.push([box(x0, x1, 0, 0.3, z0, z1), '#b9805a']);
-    for (let i = 0; i < 2; i++) k.plain.push([box(x0 + 1 + i * 0.3, x1 - 1 - i * 0.3, 0, 0.2 - i * 0.1, z1, z1 + 0.5 + i * 0.4), PAVE]);
+    // the entrance porch (the entrance photo): square white columns, a low gable roof in maroon sheet with a pale boarded
+    // soffit, the white beam with SCHOOL OF ENGINEERING SCIENCES in blue capitals, a tiled landing up two steps
+    const z0 = 28.7, z1 = 35.1, x0 = -5.2, x1 = 4.6, ph = 3.6, xm = (x0 + x1) / 2;
+    for (const x of [x0 + 0.3, x1 - 0.3]) for (const z of [z1 - 0.3, (z0 + z1) / 2]) k.plain.push([box(x - 0.25, x + 0.25, 0.3, ph + 0.6, z - 0.25, z + 0.25), WHITE]);
+    k.plain.push([box(x0, x1, ph, ph + 0.6, z1 - 0.45, z1), WHITE]);
+    for (const x of [x0, x1 - 0.3]) k.plain.push([box(x, x + 0.3, ph, ph + 0.6, z0, z1), WHITE]);
+    const eave = ph + 0.6, hw = (x1 - x0) / 2 + 0.55, rise = 1.25, Z1 = z1 + 0.55, L = Math.hypot(hw, rise), ang = Math.atan2(rise, hw), D = Z1 - z0;
+    for (const sd of [-1, 1]) {
+      k.plain.push([new THREE.BoxGeometry(L, 0.12, D).rotateZ(-sd * ang).translate(xm + (sd * hw) / 2, eave + rise / 2 + 0.08, z0 + D / 2), '#7e2a26']);
+      k.plain.push([new THREE.BoxGeometry(L, 0.04, D - 0.1).rotateZ(-sd * ang).translate(xm + (sd * hw) / 2, eave + rise / 2 - 0.02, z0 + D / 2 - 0.05), '#ece6da']);
+    }
+    k.signs.push({ text: 'SCHOOL OF ENGINEERING SCIENCES', x: xm, y: ph + 0.3, z: z1 + 0.01, ry: 0, w: 7.4, colors: ['#ffffff', '#1f3f8a'] });
+    // the tiled landing, the steps down to the pavers, and the dark doors into the front block
+    k.plain.push([box(x0, x1, 0, 0.3, z0, z1), '#d6ad86']);
+    for (let i = 0; i < 2; i++) k.plain.push([box(x0 + 0.6 + i * 0.3, x1 - 0.6 - i * 0.3, 0, 0.2 - i * 0.1, z1, z1 + 0.45 + i * 0.4), '#d0a882']);
     k.glass.push(box(xm - 2, xm + 2, 0.3, 3.0, z0, z0 + 0.05));
-    for (const x of [xm - 2, xm, xm + 2]) k.plain.push([box(x - 0.05, x + 0.05, 0.3, 3.0, z0, z0 + 0.08), '#3a3d42']);
-    // the aeroplane on its pad inside the mesh fence, east of the front block (layout photo, green)
-    const ax0 = 23.2, ax1 = 37, az0 = 12.2, az1 = 21.4;
-    k.plain.push([box(ax0, ax1, 0, 0.15, az0, az1), '#c9c6bd']);
-    meshFence(k, ax0, ax1, az0, az1);
-    aeroplane(k, (ax0 + ax1) / 2 + 0.4, (az0 + az1) / 2);
+    for (const x of [xm - 2, xm, xm + 2]) k.plain.push([box(x - 0.06, x + 0.06, 0.3, 3.0, z0, z0 + 0.08), '#2a2826']);
+    k.plain.push([box(xm - 2, xm + 2, 2.94, 3.06, z0, z0 + 0.08), '#2a2826']);
+    // the Aermacchi MB-339 on its pad in the compound east of the front block: the pad and the fence on the mapped
+    // outline of the compound (osm, the outline the bike stops at), the jet nose east inside it
+    const ax0 = 17.5, ax1 = 28.5, az0 = 14.3, az1 = 25.5;
+    k.plain.push([box(ax0, ax1, 0, 0.15, az0, az1), '#d3d0c8']);
+    jetFence(k, ax0, ax1, az0, az1);
+    aeroplane(k, (ax0 + ax1) / 2 + 0.1, (az0 + az1) / 2, 0.85);
     // the bank up to the main road south of the forecourt (owner's third reference PDF, page 67, from the ground floor):
     // faced in pitched rubble stone, brick paving along its foot, the lawn and shrubs on top; either side of the access
     // road down from the main road
@@ -172,8 +266,11 @@ const engineering: Spec = {
       g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); g.setAttribute('color', new THREE.Float32BufferAttribute(new Array(pos.length).fill(1), 3)); g.setIndex(idx); g.computeVertexNormals();
       const m = new THREE.Mesh(g, rub); m.receiveShadow = true; k.meshes.push(m);
       for (const [a0, a1] of [[376, 421], [432, 500]]) k.plain.push([box(a0 - 453, a1 - 453, groundHeight(440, -373.5) - lift - 0.02, groundHeight(440, -373.5) - lift + 0.05, -374.5 + 415, -372.2 + 415), '#a5563f']); }
-    // the forecourt in front of the porch
-    k.plain.push([box(-14, 14, 0, 0.04, 28.7, 38), PAVE]);
+    // the forecourt: red-brown herringbone pavers before the porch (the entrance photo), a light concrete apron along the
+    // jet's compound with a kerb where it meets the grass
+    brickPaving(k, -14, 14, 28.7, 38);
+    k.plain.push([box(14, 30, 0, 0.04, 25.5, 38), '#bfbab0']);
+    k.plain.push([box(30, 30.2, 0, 0.14, 25.5, 38), '#c4c0b6']);
   },
 };
 
