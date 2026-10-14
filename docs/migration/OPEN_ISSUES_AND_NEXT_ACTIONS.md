@@ -62,6 +62,12 @@ two larger blocks west of the confirmed outline); Ewuntoma Medical Centre and th
 the six-storey block and the four-storey group; the stand's roof. Batch 128 added the bush west of the wall and the campus's shade trees from the aerial . Next: paved
 walks and drains along the Astro Turf and between the blocks (the owner's photos).
 
+## 0e. Update 2026-10-14 (batch 131, UPSA PCU brief; working branch only)
+
+Not on `main`: the PCU brief and the project-memory handover ask for no push to `main` or deploy without approval.
+Waiting on the owner: approval to publish; photos for KOKA's north section, the block on the earthworks east of the
+Central Administration and the blue rectangle east of KOKA (`docs/upsa-campus/pcu-brief/questions.jpg`).
+
 ## 1. Awaiting the owner (decisions, as of 2026-10-11)
 
 | # | Question | Why it matters |

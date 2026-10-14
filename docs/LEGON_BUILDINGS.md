@@ -3763,3 +3763,26 @@ The ledger is in `docs/upsa-campus/evidence-ledger.md` (batch 130) and the compa
 - **The quadrangle.** Lawn under shade trees round its walks and pond (frames 206-211).
 - **Justice Aryeetey Building.** Low rust-brown hipped roofs (frames 132, 137).
 - **The Opoku Ampomah drum.** Its dark glass band runs round the whole drum (frames 167-176).
+
+## UPSA: the PCU brief, the generic structures and the car parks (the owner)
+
+Evidence and ids are in `docs/upsa-campus/evidence-ledger.md` (batch 131); the comparison is
+`docs/upsa-campus/pcu-brief/sheet-pcu.jpg`.
+
+- The block circled REMOVE (osm:way/1009392442) and 13 more outlines with no building under them in the aerial are
+  excluded. A car park is added between the Astro Turf and KOKA.
+- The green slab across the view was the chase camera inside a tree crown. Foliage near the camera is no longer drawn
+  (`shading.ts` `nearCut`).
+- The PCU Building is rebuilt from the photos:
+  - tiles;
+  - a ground-floor colonnade with white columns and raking navy columns;
+  - three gallery levels, the top one slatted;
+  - the name along the top edge;
+  - the blue glass end with its cross.
+
+  Round it: the herringbone paver path along the pitch's east fence, the kerb, the dry grass verge, the forecourt with
+  its drain.
+- Open, with game views sent to the owner: KOKA's north section, the block on the earthworks east of the
+  Administration, the blue rectangle east of KOKA.
+- On the working branch only; not on `main` until the owner approves.
+

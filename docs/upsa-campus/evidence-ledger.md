@@ -169,3 +169,68 @@ The band now follows the drum's outline round the rest, with a gap where the out
 
 Route lengths identical; the route tests, the build and the smoke ride pass. Comparison: `sheet-ground-facades.jpg`.
 
+## Batch 131: the PCU brief, the generic structures, the car parks (working branch only)
+
+**Sources.**
+- The owner's `LEGONRUSH_PCU_Building_Ground_and_Environment_Correction_Brief.docx` (its game screenshot with REMOVE
+  circled, its photos and contact sheet; in `docs/handover/uploads/`).
+- `LEGONRUSH_Project_Memory_Handover.docx`.
+- A clean capture of the same Apple aerial, without labels (`refs/aerial-apple-hybrid-clean.jpg`). It is registered on
+  the earlier one by correlation (0.95): new px = old px x 0.798 + (-121, +117). It reaches about 60 m further north.
+- `IMG_9677.MOV` and `IMG_9677j.MOV` came again. They are byte-identical to the copies already kept.
+
+Both documents ask for no push to `main` and no deploy without approval, so this batch stays on the working branch.
+
+**The structure circled REMOVE.**
+- *Finding.* osm:way/1009392442: a mapped outline drawn as a generic two-storey block on the paved path and the verge at
+  the Astro Turf's north-east corner, in front of the PCU's east end. The aerial shows no building there; the owner's
+  photos show the path running straight to the PCU entrance.
+- *Correction.* Excluded.
+
+**The other generic structures.** Every generic building inside the campus was cropped on the clean aerial with its
+outline (26 of them).
+- *Excluded* (no building under them):
+  - 12 outlines on car parks, paving, lawn and the red earthworks:
+    - ml:3977943e, ml:4f112143, ml:711a32bb, ml:ac72a77e, ml:d78cc9cf, ml:dfc09bbc;
+    - osm:way/1009392442, 376764146, 376764153, 376764161, 376767252, 376764419;
+  - osm:way/376764149, on the paving east of the PCU's glass end.
+
+  The reason for each is in `corrections.json`.
+- *Kept* (real roofs): the four-storey group, the small house, the blue-roofed block beside the stand, Justice
+  Aryeetey's north stair towers, KOKA's east annex.
+- *Asked* (`pcu-brief/questions.jpg`): KOKA's north section (13, 3038, 3039), the block on the earthworks east of the
+  Central Administration (116), and the blue rectangle east of KOKA (1896).
+
+**The car parks.**
+- *Finding.* The paving between the Astro Turf's east path and KOKA's west face, inside the mapped road loop, is a car
+  park full of parked cars in the aerial.
+- *Correction.* Added as a parking area (`corrections.json` addAreas `owner:upsa-car-park-west-of-koka`), so the game
+  draws its bays and cars. The other car parks were mapped already, and the ground between them is painted from the
+  aerial (batch 130).
+
+**The green slab across the view.**
+- *Cause.* The chase camera passing through a tree crown. The crowns' foliage begins 2-3 m up, and from inside, the
+  near-clipped crown filled the screen.
+- *Fix.* Foliage within 2.2-3.0 m of the camera is not drawn (`shading.ts` `nearCut`, on the instanced crowns, the
+  model foliage and the street trees). Shadows keep the whole crown.
+
+**The PCU Building** (the brief's photos; IMG_9677j 20-46 s).
+- *Walls.* Off-white small square tiles. The long south face has an open ground-floor colonnade: white square columns on
+  the building line, single dark navy columns raking out in front of them under the first gallery.
+- *Galleries.* Three cantilevered levels with railings, the top one behind charcoal slatted screening.
+- *Name.* Along the top edge.
+- *End volume.* The blue reflective glass at the east end, a little higher than the main mass, with a cross on its white
+  side.
+- *Estimates.* Floors: the ground floor plus three gallery levels (photo). The depth (12.5 m) and the rear face, which
+  no photo shows, are left plain.
+
+**Its ground.**
+- The herringbone paver path along the Astro Turf's east fence to the PCU's east end: the aerial's pale strip and the
+  photos. It is not a network road; routes are unchanged.
+- The raised concrete kerb, and the dry grass verge between the kerb and the fence.
+- The paved forecourt along the colonnade with its long grated drain.
+- The floodlight masts already stood on the verge.
+
+Checks: route lengths identical; access unchanged; the route tests, the build and the smoke ride pass. Comparison:
+`pcu-brief/sheet-pcu.jpg`; top view `pcu-brief/top-after.jpg`.
+
