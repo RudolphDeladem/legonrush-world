@@ -56,6 +56,8 @@ export const BOTTOM: { w: R4; e: R4; gap: [number, number] } = { w: [534.5, 552.
 export const COURT: R4 = [549.5, 570.5, -1586.5, -1551.5];
 export const LAWN: R4 = [547.2, 571.3, -1629.8, -1598.0];
 /** the portico before the west link (R11) */
+/** the compound's boundary (the owner's blue line): the front wall's ends north and south, the east side */
+export const BOUND = { z0: -1692, z1: -1515, x1: 607 };
 export const PORTICO = { x: 528.3, z: -1591.9, half: 2.4, depth: 2.6, h: 6.9 };
 
 const segsNear = (() => {
@@ -353,17 +355,34 @@ const groundsSpec: Spec = {
     for (const [x, z] of [[556, -1601], [562, -1627.5]] as P2[]) for (let j = 0; j < 3; j++) b.leaf.push([new THREE.IcosahedronGeometry(0.55, 1).scale(1.2, 0.8, 1.2).translate(x + j * 0.7 - b.O[0], 0.5, z - b.O[1]), '#3f6a2a']);
     // ---- the frontage on road 10: walk, verge with palms, purple bed, the wall with its posts, panels and wire ----
     const zA = -1686, zB = -1530, gates: P2[] = [[-1596.5, -1589.5], [-1684, -1678]];
-    for (let z = zA; z < zB; z += 2.6) {
+    // (the owner's notes: the boundary runs round the whole compound, not only the front: the front wall carries on to
+    // the north and south corners, a plain wall with posts and the coiled wire on the other three sides)
+    const wA = BOUND.z0, wB = BOUND.z1;
+    for (let z = wA; z < wB; z += 2.6) {
       const z1 = Math.min(zB, z + 2.6), x = roadX((z + z1) / 2) + 10.2;
       if (gates.some(([a, c]) => z1 > a && z < c)) continue;
       w.B(x - 0.12, x + 0.12, 0, 0.9, z, z1, '#f1f0eb');
       w.B(x - 0.24, x + 0.24, 0, 2.3, z - 0.24, z + 0.24, '#f1f0eb');
       wallSolids(x, z, x, z1, 0.2);
     }
-    k.meshes.push(...frontPanels(roadX, zA, zB, gates, w.O));
+    k.meshes.push(...frontPanels(roadX, wA, wB, gates, w.O));
     // the coiled wire over the wall: rings along it
     const wireG: THREE.BufferGeometry[] = [];
-    for (let z = zA; z < zB; z += 0.45) { if (gates.some(([a, c]) => z > a && z < c)) continue; const x = roadX(z) + 10.2; wireG.push(new THREE.TorusGeometry(0.32, 0.012, 4, 14).rotateY(Math.PI / 2 + (hash(z, 3) - 0.5) * 0.3).translate(x - w.O[0], 2.45, z - w.O[1])); }
+    for (let z = wA; z < wB; z += 0.45) { if (gates.some(([a, c]) => z > a && z < c)) continue; const x = roadX(z) + 10.2; wireG.push(new THREE.TorusGeometry(0.32, 0.012, 4, 14).rotateY(Math.PI / 2 + (hash(z, 3) - 0.5) * 0.3).translate(x - w.O[0], 2.45, z - w.O[1])); }
+    // the north, east and south walls: plain white wall 1.9 m high, square posts every 2.6 m, the wire along the top
+    { const nX = roadX(wA) + 10.2, sX = roadX(wB) + 10.2, ex = BOUND.x1;
+      const run = (ax: number, az: number, bx: number, bz: number) => {
+        const L = Math.hypot(bx - ax, bz - az), n = Math.max(1, Math.round(L / 2.6)), ux = (bx - ax) / L, uz = (bz - az) / L;
+        for (let i = 0; i < n; i++) {
+          const x0 = ax + ux * (L * i) / n, z0 = az + uz * (L * i) / n, x1 = ax + ux * (L * (i + 1)) / n, z1 = az + uz * (L * (i + 1)) / n;
+          w.B(Math.min(x0, x1) - (uz ? 0.11 : 0), Math.max(x0, x1) + (uz ? 0.11 : 0), 0, 1.9, Math.min(z0, z1) - (ux ? 0.11 : 0), Math.max(z0, z1) + (ux ? 0.11 : 0), '#efede6');
+          w.B(x1 - 0.22, x1 + 0.22, 0, 2.15, z1 - 0.22, z1 + 0.22, '#f1f0eb');
+        }
+        w.B(ax - 0.22, ax + 0.22, 0, 2.15, az - 0.22, az + 0.22, '#f1f0eb');
+        for (let t = 0.2; t < L; t += 0.45) wireG.push(new THREE.TorusGeometry(0.3, 0.012, 4, 14).rotateY(Math.atan2(-uz, ux) + Math.PI / 2 + (hash(t, ax) - 0.5) * 0.3).translate(ax + ux * t - w.O[0], 2.3, az + uz * t - w.O[1]));
+        wallSolids(ax, az, bx, bz, 0.2);
+      };
+      run(nX, wA, ex, wA); run(ex, wA, ex, wB); run(ex, wB, sX, wB); }
     const wm = new THREE.Mesh(mergeGeo(wireG), new THREE.MeshStandardMaterial({ color: '#b7bcc0', metalness: 0.6, roughness: 0.4 })); wm.userData.noCollide = true; k.meshes.push(wm);
     // the herringbone tan walk, the verge with palms (white-painted bases), the purple groundcover bed by the wall
     k.meshes.push(new THREE.Mesh(drapeAt(b.O, 505, 513, zA, zB, 0.25, 0.04, (x, z) => {

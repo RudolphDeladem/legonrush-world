@@ -15,3 +15,9 @@ Registration: M1 and M2 both north up; wings 01 (osm 2456 outline, x 525-547, z 
 | bottom blocks 08/09 | R19 | galleries, projecting piers with hipped caps flanking the perforated stair bay, canopy, tank in the gap | VERIFIED |
 | court 06 | V2-01, R02, R14 | blue court, white lines, two blue hoop frames, chain-link on posts with angled tops, opening on the west | VERIFIED |
 | frontage | R06, R11, R17, R23 | herringbone walk, palms with white bases, purple bed, white wall and posts, brown geometric panels, coiled wire, two openings | VERIFIED |
+
+## Boundary (batch 145)
+
+| Item | Source | Modelled | Label |
+|---|---|---|---|
+| the compound's boundary | the owner's blue line on the batch 144 aerial | front wall extended to z -1692 and -1515; plain wall with posts and wire on the north (z -1692), east (x 607) and south (z -1515) sides | VERIFIED line; wall design of the three plain sides and exact corners ASSUMPTION |
