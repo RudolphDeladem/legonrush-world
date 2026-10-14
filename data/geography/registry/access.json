@@ -44,7 +44,8 @@
   "owner-food-science": "Owner's photos of the Department of Nutrition and Food Science (front, to the Larway Oraca Building, and side).",
   "owner-isser-annex": "Owner's marked aerial of the ISSER Annex and the ground west of it to Botanical Gardens Road, registered to the annex's outlines at 0.25 m/px, and owner's photos of the ISSER Annex (from the air, and from the road on the east); the entrances marked blue, the walk from the engineering school marked with a blue arrow.",
   "owner-earth-science": "Owner's marked aerial of the Department of Earth Science (storey building yellow, one-floor ranges violet, the entrance blue), registered at 0.25 m/px, and photos of its front and back.",
-  "owner-nblock-front": "The owner's marked aerial of the ground round the front of the N Block (eleven numbered views) and a street photo of each view: Plant Biology's entrance terrace (views 9 to 11), the Centre for Biodiversity Conservation Research (view 2)."
+  "owner-nblock-front": "The owner's marked aerial of the ground round the front of the N Block (eleven numbered views) and a street photo of each view: Plant Biology's entrance terrace (views 9 to 11), the Centre for Biodiversity Conservation Research (view 2).",
+  "owner-wagmc": "the owner's marked WAGMC ride screenshot (2026-10-14) and docs/noguchi-wagmc/refs/owner-wagmc-entrance.png"
  },
  "campusGates": [
   {
@@ -2298,6 +2299,33 @@
    "evidence": "OSM (via Overture): the drive osm:way/958917244 leaves the campus road at the middle of the block's west front, between the car parks osm:way/1009392413 and /1009392414. The door's exact position is inferred (the middle of that front).",
    "refs": [
     "docs/upsa-hostel-to-school/evidence-audit.md"
+   ]
+  },
+  {
+   "place": "West African Genetic Medicine Centre - WAGMC",
+   "footprint": "ml:bb10dd81-3cd6-40d5-99d0-f8fac678746a",
+   "entrance": {
+    "at": [
+     261.3,
+     1906.0
+    ]
+   },
+   "type": "public entrance",
+   "arrival": {
+    "way": "owner:wagmc-forecourt",
+    "near": [
+     275.2,
+     1898.9
+    ]
+   },
+   "status": "verified",
+   "confidence": "high",
+   "cite": "owner-wagmc",
+   "approach": "From the road through the gap in WAGMC's front wall, down the parking's east aisle, round the island to the salmon forecourt, then up the platform to the portal.",
+   "evidence": "Owner (2026-10-14, marked ride screenshot): the destination marker stood at the road gate; the entrance is the white portal with the WAGMC lettering across the forecourt, where the ride must stop and face.",
+   "refs": [
+    "owner's WAGMC ride screenshot",
+    "owner-wagmc-entrance.png"
    ]
   }
  ],

@@ -163,6 +163,18 @@ const noguchi: Spec = {
     // the court: lawn, the straight pale paths (a rectangle round the pavilion and the cross to the doors)
     nPlane(k, rect(ringI), 0.04, lawnMat(), 4);
     k.plain.push([strip([[-20, -19], [21, -19], [21, 20], [-20, 20], [-20, -19]], 0.05, 0.09, 0.8), '#d9d3c4'], [strip([[1, -29], [1, -9]], 0.05, 0.09, 0.8), '#d9d3c4'], [strip([[1, 6], [1, 29]], 0.05, 0.09, 0.8), '#d9d3c4'], [strip([[-29, -1.5], [-6, -1.5]], 0.05, 0.09, 0.8), '#d9d3c4'], [strip([[8, -1.5], [29, -1.5]], 0.05, 0.09, 0.8), '#d9d3c4']);
+    // doors (the owner: the main entrance under the covered link, and doors on the court's faces, where the paths
+    // meet them and between): a dark timber pair in a pale frame, a step, a small hood
+    { const door = (u: number, v: number, face: 'n' | 's' | 'e' | 'w', w: number) => {
+        const d = face === 'n' || face === 'w' ? -1 : 1, along = face === 'n' || face === 's';
+        const B = (a0: number, a1: number, y0: number, y1: number, o0: number, o1: number, c: string) => k.plain.push([along ? box(u + a0, u + a1, y0, y1, Math.min(v + d * o0, v + d * o1), Math.max(v + d * o0, v + d * o1)) : box(Math.min(u + d * o0, u + d * o1), Math.max(u + d * o0, u + d * o1), y0, y1, v + a0, v + a1), c]);
+        B(-w / 2 - 0.15, w / 2 + 0.15, 0.4, 2.85, 0, 0.05, '#efe9dc'); B(-w / 2, w / 2, 0.4, 2.7, 0.05, 0.08, '#5a3b28'); B(-0.03, 0.03, 0.4, 2.7, 0.08, 0.1, '#3a2618');
+        B(-w / 2 - 0.3, w / 2 + 0.3, 0, 0.4, 0, 0.7, '#cfc8b8'); B(-w / 2 - 0.35, w / 2 + 0.35, 2.95, 3.1, 0, 0.9, '#4f4a46');
+      };
+      door(RING.outer, -8.35, 'e', 2.4);
+      const [i0, i1, j0, j1] = ringI;
+      for (const u of [-15, 1, 16]) { door(u, j0, 's', 1.2); door(u, j1, 'n', 1.2); }
+      for (const v of [-15, -1.5, 15]) { door(i0, v, 'e', 1.2); door(i1, v, 'w', 1.2); } }
     // the covered entry link east to the curved loop
     { const [x0, x1, z0, z1] = RING.link;
       k.plain.push([box(x0, x1, 3.2, 3.5, z0, z1), '#e7e2d6'], [box(x0, x1, 3.45, 3.6, z0 - 0.1, z1 + 0.1), '#4f4a46']);
@@ -293,17 +305,21 @@ const lab: Spec = {
     // darker panel between them); a second frame behind, higher; dark roof infill between the frames and back to the
     // wall at two levels; a small raised light curved connector and a dark one; top returns only, no side walls; the
     // recessed glazing and doors behind, the dark tiled floor
-    const F2 = po + 2.2;
+    const F2 = po + 2.7;
+    // (the owner's entrance-support brief: the supports stand in the canopy's two side rows running from the front to
+    // the wall, four positions a side (S1 the outer frame's corner upright, S2-S4 slender blades thin across the
+    // passage and long in its direction), the passage between them clear to the doors; the canopy 25% deeper, 4 m to
+    // 5 m, its rear at the wall kept)
     p.push([box(po, po + 0.8, ph - 1.1, ph, pv0, pv1), '#f2f2ef']);
-    for (const v of [pv0 + 0.3, pv0 + 3.6, pv0 + 6.9, pv0 + 10.2]) { p.push([box(po + 0.1, po + 0.7, 0, ph - 1.1, v - 0.3, v + 0.3), '#f2f2ef']); nSolid(po + 0.4, v, 0.4); }
-    p.push([box(po, po + 0.9, 0, ph - 1.1, pv1 - 0.9, pv1), '#f2f2ef'], [box(u0 - 1.2, u0, 0, ph + 0.6, pv1 - 0.9, pv1), '#f2f2ef'], [box(po + 0.9, u0 - 1.2, ph - 2.1, ph - 0.9, pv1 - 0.75, pv1 - 0.15), '#8d9195']);
-    for (const [a, b] of [[po + 0.45, pv1 - 0.45], [u0 - 0.6, pv1 - 0.45]] as P2[]) nSolid(a, b, 0.5);
-    for (const v of [pv0, pv1 - 0.4]) p.push([box(po, u0, ph - 0.8, ph, v, v + 0.4), '#f2f2ef']);
-    p.push([box(F2, F2 + 0.6, ph - 0.6, ph + 0.55, pv0 + 1.8, pv1 + 0.2), '#ecedea'], [box(F2, F2 + 0.6, 0, ph - 0.6, pv1 + 0.2 - 0.6, pv1 + 0.2), '#ecedea']);
-    p.push([box(po + 0.8, F2, ph - 0.25, ph - 0.12, pv0 + 0.4, pv1 - 0.4), '#3d4144'], [box(F2 + 0.6, u0, ph + 0.3, ph + 0.42, pv0 + 0.4, pv1 - 0.4), '#3a3e41']);
-    p.push([box(po + 0.8, u0, ph - 0.4, ph - 0.25, pv0 + 0.4, pv1 - 0.4), '#d6d7d4']);
-    for (const [v0c, v1c, col] of [[pv0 + 0.6, pv0 + 6.2, '#d9dbdc'], [pv0 + 6.8, pv1 - 1.4, '#45494c']] as [number, number, string][]) {
-      const L = v1c - v0c, g = new THREE.CylinderGeometry(0.85, 0.85, L, 14, 1, false, -Math.PI / 2, Math.PI).rotateX(Math.PI / 2).translate(F2 + 1.8, ph + 0.42, (v0c + v1c) / 2);
+    p.push([box(po + 0.1, po + 0.75, 0, ph - 1.1, pv0, pv0 + 0.6), '#f2f2ef'], [box(po, po + 0.9, 0, ph - 1.1, pv1 - 0.9, pv1), '#f2f2ef']);
+    nSolid(po + 0.42, pv0 + 0.3, 0.45); nSolid(po + 0.45, pv1 - 0.45, 0.55);
+    for (const v of [pv0 + 0.3, pv1 - 0.3]) for (const u of [po + 1.95, po + 3.15, po + 4.35]) { p.push([box(u - 0.3, u + 0.3, 0, ph - 0.8, v - 0.11, v + 0.11), '#efefec']); nSolid(u, v, 0.3); }
+    for (const v of [pv0, pv1 - 0.6]) p.push([box(po, u0, ph - 0.8, ph, v, v + 0.6), '#f2f2ef']);
+    p.push([box(F2, F2 + 0.6, ph - 0.6, ph + 0.55, pv0 + 0.6, pv1 - 0.6), '#ecedea']);
+    p.push([box(po + 0.8, F2, ph - 0.25, ph - 0.12, pv0 + 0.6, pv1 - 0.6), '#3d4144'], [box(F2 + 0.6, u0, ph + 0.3, ph + 0.42, pv0 + 0.6, pv1 - 0.6), '#3a3e41']);
+    p.push([box(po + 0.8, u0, ph - 0.4, ph - 0.25, pv0 + 0.6, pv1 - 0.6), '#d6d7d4']);
+    for (const [v0c, v1c, col] of [[pv0 + 0.8, pv0 + 6.2, '#d9dbdc'], [pv0 + 6.8, pv1 - 1.4, '#45494c']] as [number, number, string][]) {
+      const L = v1c - v0c, g = new THREE.CylinderGeometry(0.75, 0.75, L, 14, 1, false, -Math.PI / 2, Math.PI).rotateX(Math.PI / 2).translate(F2 + 1.5, ph + 0.42, (v0c + v1c) / 2);
       p.push([g, col]);
     }
     curtain(k, [[u0 - 0.06, pv0 + 1.0], [u0 - 0.06, pv1 - 1.0]], 0.15, ph - 1.2);
@@ -385,7 +401,7 @@ const lab: Spec = {
       nSolid(sx, sz, 1.6);
       for (const [u, v] of [[114, -134], [114, -129.4], [100, -134], [100, -129.4], [88, -134], [88, -129.4]] as P2[]) { bollard(k, u, v); nSolid(u, v, 0.15); }
       // the zebra crossing over the drive from the walk to the portal (S11)
-      for (let v = LAB.walk[2] + 0.25; v < LAB.walk[3]; v += 0.9) k.plain.push([box(116.4, 121.2, 0.06, 0.075, v, v + 0.45), '#f1f1ec']); }
+      for (let v = LAB.walk[2] + 0.25; v < LAB.walk[3]; v += 0.9) k.plain.push([box(115.6, 120.3, 0.06, 0.075, v, v + 0.45), '#f1f1ec']); }
     // the block-paved parking with white bays (S15); the loop's kerbside strips in asphalt
     for (const l of NOG_LOTS) { if (l.name.startsWith('noguchi-loop')) { nPlane(k, l.ring, 0.04, asphaltMat(), 6); continue; } nPlane(k, l.ring, 0.05, paverMat(), 3); bays(k, l.rows, l.across); }
     // the solid walls of the tower, the low block and the portal frame's outer corners (the tower is not on the map)
@@ -444,7 +460,7 @@ const wagmc: Spec = {
       const [p0, p1, q0, q1] = WAG.platform;
       k.plain.push([box(x1, p1, 0, 0.45, q0, q1), '#dcd8cf'], [box(p1, p1 + 0.4, 0, 0.3, q0, q1), '#d4d0c7'], [box(p1 + 0.4, p1 + 0.8, 0, 0.15, q0, q1), '#d4d0c7']);
       wPlane(k, rect(WAG.forecourt), 0.08, salmonMat(), 2);
-      for (let z = WAG.forecourt[2] + 0.5; z <= WAG.forecourt[3] - 0.5; z += 1.4) { k.plain.push([new THREE.CylinderGeometry(0.09, 0.09, 0.7, 8).translate(WAG.forecourt[1] - 0.3, 0.35, z), '#2a2c2f']); wSolid(WAG.forecourt[1] - 0.3, z, 0.12); } }
+      for (let z = WAG.forecourt[2] + 0.5; z <= WAG.forecourt[3] - 0.5; z += 1.4) { if (Math.abs(z) < 1.6) continue; k.plain.push([new THREE.CylinderGeometry(0.09, 0.09, 0.7, 8).translate(WAG.forecourt[1] - 0.3, 0.35, z), '#2a2c2f']); wSolid(WAG.forecourt[1] - 0.3, z, 0.12); } }
     // the kerbed groundcover plots (their planting: ground)
     for (const r of WAG.plots) { k.plain.push([box(r[0], r[1], 0, 0.18, r[2], r[3]), '#e2dfd7']); wPlane(k, rect([r[0] + 0.25, r[1] - 0.25, r[2] + 0.25, r[3] - 0.25]), 0.2, lawnMat(), 3); }
     // tall glass at the inner corners and slender slots at the wing ends

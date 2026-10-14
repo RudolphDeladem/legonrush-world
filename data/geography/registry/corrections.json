@@ -11222,16 +11222,16 @@
           1797.2
         ],
         [
-          499,
-          1792.9
+          498.2,
+          1793.1
         ],
         [
-          496.6,
-          1783.2
+          495.8,
+          1783.4
         ],
         [
-          494.6,
-          1775
+          493.8,
+          1775.2
         ],
         [
           495.3,
@@ -11239,6 +11239,46 @@
         ]
       ],
       "reason": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m): the drive round the sign island and past the portal, on the asphalt the satellite shows (S11, S20)."
+    },
+    {
+      "id": "owner:wagmc-forecourt",
+      "highway": "service",
+      "pts": [
+        [
+          282.1,
+          1842.1
+        ],
+        [
+          286.4,
+          1850.5
+        ],
+        [
+          289.2,
+          1858.1
+        ],
+        [
+          292.4,
+          1874.4
+        ],
+        [
+          291.4,
+          1882.2
+        ],
+        [
+          281.8,
+          1887.7
+        ],
+        [
+          278.7,
+          1894.9
+        ],
+        [
+          275.2,
+          1898.9
+        ]
+      ],
+      "reason": "The owner: a ride to WAGMC stops at the building's entrance, not at the gate on the road; the drive in through the road gap, down the parking's east aisle and round the island to the forecourt before the portal.",
+      "open": "end"
     },
     {
       "id": "owner:wagmc-corridor-track",

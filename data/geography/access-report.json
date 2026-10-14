@@ -1,19 +1,19 @@
 {
  "destinations": 437,
  "byMethod": {
-  "curated": 95,
+  "curated": 96,
   "osm-entrance": 0,
   "gate": 1,
   "path-access": 2,
   "drive-access": 18,
   "area-entry": 8,
   "frontage": 205,
-  "point": 108
+  "point": 107
  },
  "byConfidence": {
-  "high": 88,
+  "high": 89,
   "low": 209,
-  "medium": 140
+  "medium": 139
  },
  "campusGates": 5,
  "problems": [],
@@ -361,11 +361,11 @@
   }
  ],
  "byStatus": {
-  "verified": 87,
+  "verified": 88,
   "inferred": 200,
   "partial": 8,
   "unverified": 9,
-  "mapped": 133
+  "mapped": 132
  },
  "curated": [
   {
@@ -1032,6 +1032,13 @@
    "arrivalOn": "service",
    "arrivalDistance": 19.9,
    "facing": 241
+  },
+  {
+   "place": "West African Genetic Medicine Centre - WAGMC",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 0,
+   "facing": 245
   }
  ],
  "furthestArrivals": [

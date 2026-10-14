@@ -72,7 +72,7 @@ export const LAB = {
   storey: 4.2, endFloors: 4,
   /** (the owner's correction brief, S08-S20 on M1) the entrance portal on the west face at its north end, facing the
    *  approach and the sign island: its frame's v span and how far it stands out (to u 121.5) */
-  portal: [-141.5, -127.5] as P2, portalOut: 121.5,
+  portal: [-141.5, -127.5] as P2, portalOut: 120.5,
   /** the west face's bays south of the portal and the wide blank pier: 12 of 3.25 m, a pier 2.25 m and a slot 1 m */
   bays: { v0: -126, n: 12, w: 3.25, pier: 2.25 },
   /** the signed tower north of the north-west corner (the white roof on M1; S09, S10, S15, S19): four storeys, the sign
@@ -82,7 +82,7 @@ export const LAB = {
   tower: [121, 126, -166.2, -159.5] as R4, towerH: 20, low: [127, 139, -166, -152.5] as R4,
   /** the two kerbed lawns before the portal with the pale walk between them to the doors (M1), the monument on the
    *  north lawn's east end (S20) */
-  lawns: [[84, 112, -141.6, -133.2], [85, 113, -130, -122.4]] as R4[], walk: [80, 116.2, -133.2, -130] as R4,
+  lawns: [[84, 112, -141.6, -133.2], [85, 113, -130, -122.4]] as R4[], walk: [80, 115.4, -133.2, -130] as R4,
   island: [84, 113, -143.5, -121] as R4, sign: [107, -137.2] as P2,
 };
 export const LAB_OUTLINE: P2[] = [[125.5, -143], [201, -143], [201, -118], [142, -118], [142, -86], [125.5, -86]];
@@ -124,7 +124,10 @@ export const NOG_ROADS = {
   loop: [[499.5, 1899.3], [509.4, 1897.8], [520.8, 1895.5], [530.4, 1895.5], [534.2, 1900.1], [535.0, 1909.6], [533.0, 1917.3], [524.6, 1920.3], [513.2, 1924.2], [508.4, 1926.4], [501.7, 1929.5], [492.2, 1932.6], [480.7, 1933.7], [473.1, 1930.7], [469.6, 1924.9], [469.2, 1917.3], [471.1, 1908.5], [476.9, 1904.3], [486.4, 1902.4], [496.0, 1900.1], [499.5, 1899.3]] as P2[],
   south: [[508.4, 1926.4], [509.4, 1930.4], [541.2, 2024.7]] as P2[],
   /** S11/S20 on M1: the drive past the portal runs about 3 m west of the mapped line (which ran through the portal frame) */
-  portalDrive: [[468.7, 1807.8], [498.6, 1797.2], [499.0, 1792.9], [496.6, 1783.2], [494.6, 1775.0], [495.3, 1771]] as P2[],
+  portalDrive: [[468.7, 1807.8], [498.6, 1797.2], [498.2, 1793.1], [495.8, 1783.4], [493.8, 1775.2], [495.3, 1771]] as P2[],
+  /** the owner (notes on the WAGMC ride): rides to WAGMC stop at its entrance, not at the road gate: the drive in at the
+   *  road gap, down the east aisle of the parking, round the island to the forecourt before the portal (WAGMC frame) */
+  wagForecourt: [[15, -47.5], [15, -38], [14, -30], [9.5, -14], [5, -7.5], [-6, -7], [-12, -2], [-17, 0]] as P2[],
   /** S18: the second red-earth track of the corridor west of WAGMC, beside the mapped one across the tree belt */
   corridor: [[196.8, 1891.9], [239.6, 1965.8], [253.3, 1992.2], [327.7, 2099.7]] as P2[],
   /** S02/S18: the red earth strip down WAGMC's east side, outside the boundary (the mapped service road ran 6-15 m west
