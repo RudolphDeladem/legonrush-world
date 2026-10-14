@@ -104,14 +104,14 @@
   "fromSupplement": 414
  },
  "buildings": {
-  "total": 3144,
-  "onCampus": 1759,
+  "total": 3140,
+  "onCampus": 1755,
   "bySource": {
    "osm": 1604,
    "osm-via-overture": 930,
    "osm-via-overture-upsa": 303,
-   "microsoft-ml-buildings": 162,
-   "google-open-buildings": 145
+   "microsoft-ml-buildings": 160,
+   "google-open-buildings": 143
   },
   "osmOnCampusChecked": 1468,
   "osmValidatedByGoogleOpenBuildings": 1328,
@@ -119,18 +119,18 @@
   "medianCentroidOffsetToGoogleM": {
    "x": 0.6,
    "z": 0.4,
-   "n": 1206
+   "n": 1205
   },
-  "mlAdded": 291,
+  "mlAdded": 287,
   "mlRejected": {
    "offCampus": 2058,
    "small": 1450,
    "lowConfidence": 58,
-   "overlapsOsm": 4
+   "overlapsOsm": 8
   },
   "mlUpsa": 16,
   "byCategory": {
-   "unknown": 2640,
+   "unknown": 2636,
    "housing": 291,
    "academic": 103,
    "residence": 75,
@@ -141,7 +141,7 @@
    "health": 2
   },
   "byConfidence": {
-   "medium": 1816,
+   "medium": 1812,
    "high": 1328
   },
   "osmNotSeenBySatellite": [
@@ -395,7 +395,22 @@
    "osm:way/376764161",
    "osm:way/376767252",
    "osm:way/376764419",
-   "osm:way/376764149"
+   "osm:way/376764149",
+   "ml:9c325e91-0170-430e-b5ec-3137f4a74e89",
+   "ml:e286a3e1-aa02-4804-aee0-085029791d46",
+   "ml:e597cad4-e28d-486e-bdf8-c2ac2a6eb33c",
+   "ml:38acf373-56d5-45fd-9881-205c6a95e451",
+   "ml:b175b03a-e7b9-424f-918a-a04baebbcd1d",
+   "ml:29306972-28b9-437c-9659-90ffc1c1516d",
+   "ml:029f9121-b36f-4fcb-bc09-498e237a7317",
+   "ml:286f3913-29d3-4e8c-8cd6-93b0543ae579",
+   "ml:7ff4d657-c785-4c0a-a3c3-5835fe61ce8f",
+   "ml:8aeb18d1-83d2-4f65-a1f5-c7114073cb36",
+   "ml:abc66d48-de80-4156-8695-b6917f04cb0f",
+   "ml:cce2ca95-db84-4278-97ec-5aeae0b331f3",
+   "ml:e0e0194a-5105-47b2-9cfd-606c10db506a",
+   "ml:366bf68f-c90a-4c21-aaec-1757e17a4577",
+   "ml:5b4e137d-917e-461e-aa56-7fa7484c9036"
   ]
  },
  "areas": {
@@ -424,8 +439,8 @@
    "ha": 1.5
   },
   "parking": {
-   "count": 135,
-   "ha": 12.4
+   "count": 142,
+   "ha": 14
   },
   "track": {
    "count": 3,
@@ -2833,7 +2848,7 @@
    "ha": 78,
    "shareOutsideCampus": 0,
    "places": 18,
-   "buildings": 115,
+   "buildings": 112,
    "anchorsMissing": []
   },
   {
@@ -2843,7 +2858,7 @@
    "ha": 64,
    "shareOutsideCampus": 0.02,
    "places": 1,
-   "buildings": 98,
+   "buildings": 97,
    "anchorsMissing": []
   },
   {
