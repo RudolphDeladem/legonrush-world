@@ -10371,6 +10371,52 @@
         ]
       ],
       "reason": "the owner's Noguchi + WAGMC brief (docs/noguchi-wagmc/): Apple satellite M1/M2 registered at 2.617 / 2.242 px/m: parking with marked bays (wagmc-north); the game map had no area there."
+    },
+    {
+      "id": "owner:evandy-parking-1",
+      "class": "parking",
+      "ring": [
+        [
+          506,
+          -1209
+        ],
+        [
+          596,
+          -1209
+        ],
+        [
+          596,
+          -1203.2
+        ],
+        [
+          506,
+          -1203.2
+        ]
+      ],
+      "reason": "The owner's Evandy brief (docs/evandy/): cars parked along the fence in the paved frontage (P01, R14) and before the commercial block (R13); the game map had no area there."
+    },
+    {
+      "id": "owner:evandy-parking-2",
+      "class": "parking",
+      "ring": [
+        [
+          622,
+          -1205.4
+        ],
+        [
+          646,
+          -1205.4
+        ],
+        [
+          646,
+          -1199.8
+        ],
+        [
+          622,
+          -1199.8
+        ]
+      ],
+      "reason": "The owner's Evandy brief (docs/evandy/): cars parked along the fence in the paved frontage (P01, R14) and before the commercial block (R13); the game map had no area there."
     }
   ],
   "addWays": [

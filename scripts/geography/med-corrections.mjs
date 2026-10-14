@@ -1,4 +1,4 @@
-// The medical precinct's corrections (UGMC: ugmcplan.ts; Noguchi / WAGMC: nogplan.ts) as JSON on stdout, so that the
+// The medical precinct's and Evandy's corrections (ugmcplan.ts, nogplan.ts, evandyplan.ts) as JSON on stdout, so that the
 // map's collision rings match the models; med-corrections.py merges them into corrections.json:
 // node scripts/geography/med-corrections.mjs | python3 scripts/geography/med-corrections.py
 import { createServer } from 'vite';
@@ -39,5 +39,8 @@ try {
     ...['ml:029f9121-b36f-4fcb-bc09-498e237a7317', 'ml:286f3913-29d3-4e8c-8cd6-93b0543ae579', 'ml:7ff4d657-c785-4c0a-a3c3-5835fe61ce8f', 'ml:8aeb18d1-83d2-4f65-a1f5-c7114073cb36', 'ml:abc66d48-de80-4156-8695-b6917f04cb0f', 'ml:cce2ca95-db84-4278-97ec-5aeae0b331f3', 'ml:e0e0194a-5105-47b2-9cfd-606c10db506a', 'ml:366bf68f-c90a-4c21-aaec-1757e17a4577', 'ml:5b4e137d-917e-461e-aa56-7fa7484c9036'].map((id) => [id, 'Detected "buildings" inside the gridded panel fields behind Noguchi (the brief: "do not extrude panel fields into buildings"); the fields are modelled as low panel rows (nog.ts).']),
   ]) out.exclude.push({ id, reason });
   for (const [F, lots] of [[N.NG, N.NOG_LOTS], [N.WG, N.WAG_LOTS]]) for (const l of lots) out.addAreas.push({ id: `owner:${l.name}`, class: 'parking', ring: nw(F, l.ring), reason: `${NSRC}: parking with marked bays (${l.name}); the game map had no area there.` });
+  // Evandy Hostel (evandyplan.ts): the frontage parking along the fence and before the commercial block
+  const E = await server.ssrLoadModule('/src/game/evandyplan.ts');
+  E.PARKS.forEach((ring, i) => out.addAreas.push({ id: `owner:evandy-parking-${i + 1}`, class: 'parking', ring: ring.map(([x, z]) => [r1(x), r1(z)]), reason: "The owner's Evandy brief (docs/evandy/): cars parked along the fence in the paved frontage (P01, R14) and before the commercial block (R13); the game map had no area there." }));
   process.stdout.write(JSON.stringify(out));
 } finally { await server.close(); }
