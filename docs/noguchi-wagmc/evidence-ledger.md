@@ -29,7 +29,9 @@ Code: `src/game/nogplan.ts`, `src/game/nog.ts`, `src/game/nogtrees.ts`, and `wor
   - the slim paired lamps.
 - [VERIFIED] The white boundary wall with the gate structure beside the approach.
 - [ASSUMPTION] The wall's openings where the mapped service road crosses it.
-- [DECISION] No physical WAGMC lettering: its position and design are not established. The map label stays.
+- [VERIFIED] The lettering on the portal's top band, from the owner's photo (`refs/owner-wagmc-entrance.png`): the
+  round logo, then WAGMC GENOMIC MEDICINE BUILDING over WEST AFRICAN GENETIC MEDICINE CENTRE (WAGMC). The full-height
+  dark glazing fills the frame, with the doors at its foot (`wagmc-entrance-game.jpg`).
 - Map: the fragment `ml:bb10dd81…` is reshaped to the U, and a second roof fragment is excluded.
 
 ## Noguchi
@@ -50,9 +52,8 @@ Code: `src/game/nogplan.ts`, `src/game/nog.ts`, `src/game/nogtrees.ts`, and `wor
 - [ASSUMPTION] 03 is two storeys of 3.5 m; no side elevations were supplied.
 - [VERIFIED] 04, the small red courtyard building, is a ring round its open green centre. Its east end is pulled 1.5 m
   out of the service road.
-- [VERIFIED] 17/18, the gridded fields, are low rows of dark panels on light frames with pale aisles. Nine detected
-  "buildings" inside them are excluded.
-- [ASSUMPTION] That 17/18 are ground-mounted panel arrays is inferred.
+- [VERIFIED] 17/18 are solar panel fields (the owner): low rows of dark panels on light frames with pale aisles. Nine
+  detected "buildings" inside them are excluded.
 - [VERIFIED] 21, the red shed in the lawn, is added. 05-16, 19, 20, 23, 24 and the mixed-roof compound 08 keep their
   mapped outlines with the roof colours M1/M2 show (`NOG_FINISH`). All are low and provisional.
 - [VERIFIED] 1,183 mature trees are read from M2's dark green canopy, kept off the roads, buildings, arrays,
@@ -62,3 +63,4 @@ Code: `src/game/nogplan.ts`, `src/game/nog.ts`, `src/game/nogtrees.ts`, and `wor
 - [INCOMPLETE] The narrow stair tower in N01/N04 is not placed: its footprint is not matched.
 - [INCOMPLETE] The exact heights of every satellite-only building.
 - [INCOMPLETE] The WAGMC forecourt's paving product.
+- [INCOMPLETE] Storey counts the owner may confirm: the laboratory's long wing (2) and tall end (4), and the old ring (2).

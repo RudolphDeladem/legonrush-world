@@ -51,7 +51,9 @@ Labels: [VERIFIED] [DECISION] [ASSUMPTION] [INCOMPLETE].
 - **Woodland:** the woodland outside the precinct to the west and north.
 
 ## Unresolved
-- [INCOMPLETE] Exact storey counts, roof equipment layouts and the materials of the gridded roof features.
-- [INCOMPLETE] 06's use.
-- [INCOMPLETE] Which security post is North 1 and which is North 2.
+- [INCOMPLETE] Exact storey counts (01: 4, 02: 4, 03: 3, 04: 3, 05: 4 with 6-storey ends, 06: 2, all read from the
+  photographs), roof equipment layouts and the materials of the gridded roof features.
+- [DECISION] 06 stays as modelled; its use is not needed for the model (the owner).
+- [VERIFIED] The security posts (the owner): North 1 is the east post, on the side facing WAGMC; North 2 is the other,
+  to the north-west. Each is signed UGMC SECURITY POST NORTH 1 or 2.
 - [ASSUMPTION] 09's bay rows are drawn at even spacing. M1 is soft there.
