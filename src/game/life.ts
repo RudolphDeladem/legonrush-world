@@ -8,7 +8,7 @@
 // holds the lamp and kiosk glows and is only drawn after dark. Cells past the fog
 // are skipped each frame, so a ride only pays for the few cells around the rider.
 import * as THREE from 'three';
-import { groundShade } from './shading';
+import { groundShade, nearCut } from './shading';
 import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { AREAS, BUILDINGS, NODE_XZ, PLACES, ROADS, buildingAt, buildingNear, nodeDegree, placeByName, type Place } from './campusmap';
 import { HALLS, HALL_PLACE } from '../data/campus';
@@ -349,7 +349,7 @@ function treeGeometry(s: Species) {
   treeGeoCache.set(s, g);
   return g;
 }
-const treeInstMat = groundShade(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85 }), 1.6, 0.4, 'tree');
+const treeInstMat = nearCut(groundShade(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85 }), 1.6, 0.4, 'tree'));
 /** Adds route-side trees: a mix of species, as instanced meshes marked shared. */
 export function addRouteTrees(group: THREE.Group, spots: THREE.Matrix4[], rand: () => number) {
   const by: Record<Species, THREE.Matrix4[]> = { neem: [], mahogany: [], flame: [], palm: [], woodland: [] };

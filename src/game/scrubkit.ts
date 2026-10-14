@@ -8,7 +8,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { groundHeight } from './relief';
-import { groundShade } from './shading';
+import { groundShade, nearCut } from './shading';
 import { SOLIDS } from './solids';
 
 export type P2 = [number, number];
@@ -191,7 +191,7 @@ const geos = () => {
     TRUNK.setAttribute('color', new THREE.BufferAttribute(c, 3));
     TRUNK.deleteAttribute('uv');
   }
-  LEAF_MAT ??= groundShade(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9 }), 1.2, 0.35, 'scrub');
+  LEAF_MAT ??= nearCut(groundShade(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9 }), 1.2, 0.35, 'scrub'));
   BARK_MAT ??= new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95 });
   return { near: NEAR, far: FAR, trunk: TRUNK!, leaf: LEAF_MAT, bark: BARK_MAT };
 };

@@ -10,6 +10,7 @@ import { hipRoof } from './waccbip';
 import { SOLIDS } from './solids';
 import { concrete } from './concrete';
 import { groundHeight } from './relief';
+import { nearCut } from './shading';
 
 export type R4 = [number, number, number, number];
 export const gh = groundHeight;
@@ -53,7 +54,7 @@ export const waterMat = () => (mats.water ??= new THREE.MeshStandardMaterial({ c
 /** spray of a jet */
 export const sprayMat = () => (mats.spray ??= new THREE.MeshStandardMaterial({ color: '#eef4f6', roughness: 0.3, transparent: true, opacity: 0.55, depthWrite: false }));
 /** the trees' and shrubs' foliage (vertex colours) */
-export const leafMat = () => (mats.leaf ??= new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9, side: THREE.DoubleSide }));
+export const leafMat = () => (mats.leaf ??= nearCut(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9, side: THREE.DoubleSide })));
 
 /** planes merged keeping their texture coordinates */
 export const mergeUV = (gs: THREE.BufferGeometry[]) => mergeGeometries(gs.map((g) => (g.index ? g.toNonIndexed() : g)));

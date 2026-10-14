@@ -21,6 +21,22 @@ export function groundShade<T extends THREE.Material>(mat: T, reach = 1.4, stren
   return mat;
 }
 
+/** foliage closer to the camera than `near` metres is not drawn: a chase or free camera passing through a crown otherwise
+ *  fills the screen with one huge dark-green face (the owner's PCU brief: the diagonal green slab across the view). A
+ *  short dithered band softens the edge. Shadows are drawn by their own pass and keep the whole crown. */
+export function nearCut<T extends THREE.Material>(mat: T, near = 2.2): T {
+  const prev = mat.onBeforeCompile;
+  mat.onBeforeCompile = (sh, r) => {
+    prev?.call(mat, sh, r);
+    sh.fragmentShader = sh.fragmentShader.replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>
+{ float ncD = length(vViewPosition), ncN = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+  if (ncD < ${near.toFixed(2)} + ncN * 0.8) discard; }`);
+  };
+  const prevKey = mat.customProgramCacheKey.bind(mat);
+  mat.customProgramCacheKey = () => `${prevKey()}|nc${near}`;
+  return mat;
+}
+
 function macroCanvas(size: number, draw: (g: CanvasRenderingContext2D, s: number) => void) {
   const c = document.createElement('canvas');
   c.width = c.height = size;
