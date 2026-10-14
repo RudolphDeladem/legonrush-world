@@ -172,6 +172,16 @@ export function nogEarthDist(x: number, z: number) {
   return best;
 }
 
+/** the owner's notes on the tower brief's renders (2026-10-14): the zone behind the laboratories they circled in red (its
+ *  buildings' centres, from the render's camera, hull with a margin; world): every building one storey, with doors */
+export const NOG_BACK: P2[] = [[510, 1866], [727, 1676], [785, 1664], [1142, 1646], [1200, 1901], [1212, 2014], [1201, 2124], [1104, 2344], [1062, 2428], [859, 2494], [693, 2461], [552, 2028]];
+/** round the back and sides of WAGMC (the owner: the similar small buildings there take doors too; not UGMC): WAGMC's
+ *  frame, u and v */
+export const WAG_SIDES: R4 = [-150, 45, -70, 100];
+/** the two small buildings on the laboratory's north lot the owner circled: built like the one-floor neighbour B02
+ *  (nog.ts), Noguchi frame */
+export const LOW_LIKE: R4[] = [[183.4, 195.2, -160.1, -153.7], [227.6, 236.4, -143.5, -129.3]];
+
 /** generic finishes for the surrounding small buildings (the brief's register 05-24, roof colours from M1/M2): a point
  *  inside each mapped outline, in Noguchi's frame */
 export const NOG_FINISH: { at: P2; roof: string; wall?: string; flat?: boolean; storeys?: number }[] = [
@@ -180,15 +190,12 @@ export const NOG_FINISH: { at: P2; roof: string; wall?: string; flat?: boolean; 
   { at: [12, -61], roof: '#7c7f83', storeys: 2 },                   // 07 grey rectangle
   { at: [-22, 70], roof: '#8a8079', storeys: 1 },                   // 09 small hip below the ring
   { at: [20, 83], roof: '#7e8285', storeys: 1 },                    // 10 grey long roof
-  { at: [110, -86], roof: '#d8d5cb', storeys: 2, flat: true },      // 11 pale compact block
   { at: [115, -48], roof: '#a9c4a0', storeys: 1 },                  // 12 pale green roof
   { at: [168, -55], roof: '#c27a43', storeys: 1 },                  // 13 orange roof
   { at: [200, -60], roof: '#9a9c9c', storeys: 1 },                  // 13 nearby units
   { at: [190, -50], roof: '#9a9c9c', storeys: 1 },
   { at: [146, -6], roof: '#76716c', storeys: 1 },                   // 14 grey hip by the loop
-  { at: [189, -157], roof: '#d6d7d4', storeys: 1, flat: true },     // 15 entry-side unit
   { at: [235, -108], roof: '#3e4144', storeys: 1 },                 // 16 slim dark roof
-  { at: [232, -137], roof: '#55585b', storeys: 1 },
   { at: [-18, 137], roof: '#b0442f', storeys: 1 },                  // 19 lower red roof
   { at: [114, 116], roof: '#b5452f', storeys: 1 },                  // 20 narrow red shed
   { at: [155, 96], roof: '#b5452f', storeys: 1 },                   // 24 shed beside the upper field

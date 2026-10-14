@@ -310,7 +310,42 @@ function slopes(rb: Batch, outer: V[], inner: V[], eave: number, top: number, c:
  *  roof behind a parapet instead of the hipped roof; storeys: the height in storeys instead of the footprint's guess */
 export type BuildingStyle = (b: Building) => { wall?: string; roof?: string; louvres?: boolean; blue?: boolean; gallery?: boolean; flat?: boolean; storeys?: number;
   /** the base band's colour and height (a painted red or wine base, instead of the grey plinth) */
-  plinth?: string; plinthH?: number } | undefined;
+  plinth?: string; plinthH?: number;
+  /** a door on the longest wall (two on a long one): a plain wall patch over the ground-floor window there, a light
+   *  frame, a dark timber leaf and a step (the owner: the small buildings round Noguchi and WAGMC had only windows) */
+  doors?: boolean } | undefined;
+
+const inRingV = (r: V[], x: number, z: number) => { let o = false; for (let i = 0, j = r.length - 1; i < r.length; j = i++) if ((r[i][1] > z) !== (r[j][1] > z) && x < ((r[j][0] - r[i][0]) * (z - r[i][1])) / (r[j][1] - r[i][1]) + r[i][0]) o = !o; return o; };
+const DOOR_LEAF = new THREE.Color('#5a3b28');
+/** the doors of a building (BuildingStyle.doors) on its longest wall, in the wall batch, plain texture (the trim band) */
+function doorsOn(wb: Batch, ring: V[], bayW: number, ph: number, wallC: THREE.Color, trimC: THREE.Color, plinthC: THREE.Color) {
+  // (the longest wall and the one opposite it when it is nearly as long: a door front and back)
+  const len = ring.map((p, i) => Math.hypot(ring[(i + 1) % ring.length][0] - p[0], ring[(i + 1) % ring.length][1] - p[1]));
+  const order = len.map((l, i) => [l, i]).sort((a, b) => b[0] - a[0]);
+  for (const [l, i] of order.slice(0, 2)) if (l > 3 && l >= order[0][0] * 0.7) doorWall(wb, ring, i, l, bayW, ph, wallC, trimC, plinthC);
+}
+function doorWall(wb: Batch, ring: V[], bi: number, best: number, bayW: number, ph: number, wallC: THREE.Color, trimC: THREE.Color, plinthC: THREE.Color) {
+  const [ax, az] = ring[bi], [bx, bz] = ring[(bi + 1) % ring.length], L = best, dx = (bx - ax) / L, dz = (bz - az) / L;
+  let nx = -dz, nz = dx;
+  if (inRingV(ring, (ax + bx) / 2 + nx * 0.3, (az + bz) / 2 + nz * 0.3)) { nx = -nx; nz = -nz; }
+  const bays = Math.max(1, Math.round(L / bayW)), bw = L / bays;
+  const at = bays >= 5 ? [Math.floor(bays / 4), bays - 1 - Math.floor(bays / 4)] : [Math.floor(bays / 2)];
+  const panel = (t0: number, t1: number, y0: number, y1: number, off: number, c: THREE.Color) => {
+    const P = (t: number, y: number) => wb.vert(ax + dx * t + nx * off, y, az + dz * t + nz * off, t / 3, y > y0 ? TRIM_V : 0.005, c);
+    wb.quad(P(t0, y0), P(t1, y0), P(t1, y1), P(t0, y1));
+  };
+  for (const k of at) {
+    const c = (k + 0.5) * bw;
+    panel(c - bw / 2 + 0.06, c + bw / 2 - 0.06, ph, ph + STOREY * 0.93, 0.012, wallC);
+    panel(c - 0.72, c + 0.72, ph, ph + 2.45, 0.022, trimC);
+    panel(c - 0.55, c + 0.55, ph, ph + 2.3, 0.032, DOOR_LEAF);
+    panel(c - 0.03, c + 0.03, ph, ph + 2.3, 0.036, trimC.clone().multiplyScalar(0.7));
+    // the step: its front and its top
+    panel(c - 0.8, c + 0.8, 0, ph, 0.6, plinthC);
+    const T = (t: number, o: number) => wb.vert(ax + dx * t + nx * o, ph, az + dz * t + nz * o, t / 3, 0.005, plinthC);
+    wb.quad(T(c - 0.8, 0.6), T(c + 0.8, 0.6), T(c + 0.8, 0.02), T(c - 0.8, 0.02));
+  }
+}
 
 export function buildBuildings(buildings: Building[], styleOf?: BuildingStyle) {
   const group = new THREE.Group();
@@ -351,6 +386,7 @@ export function buildBuildings(buildings: Building[], styleOf?: BuildingStyle) {
 
     const eave = h - OVERHANG * PITCH;
     for (const ring of [outer, ...holes]) ringWalls(wb, ring, h, bay, storeys, wallC, plinthC, ph);
+    if (st?.doors) doorsOn(wb, outer, bay, ph, wallC, trimC, plinthC);
 
     const box = orientedBox(outer);
     const bw = box.u1 - box.u0, bdp = box.w1 - box.w0;

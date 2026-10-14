@@ -6,7 +6,7 @@ import { AREAS, BUILDINGS, NODE_XZ, ROADS, buildingAt, mapBounds, type Building,
 import { UPSA_FINISH, UPSA_LAND } from './upsawestplan';
 import type { Track } from './track';
 import { asphaltTexture, billboardTexture, concreteTexture, grassMacroTexture, grassTexture, labelTexture, pitchTexture } from './textures';
-import { buildBuildings } from './facades';
+import { buildBuildings, type BuildingStyle } from './facades';
 import { buildDiasporaHalls, isDiasporaHall } from './halls';
 import { BLOCK_SITES } from './sites';
 import { ROUTE_SOLIDS } from './solids';
@@ -26,7 +26,7 @@ import { buildUgmcGrounds } from './ugmcground';
 import { buildNogGrounds } from './nog';
 import { buildEvandyGrounds } from './evandy';
 import { NOG_TREES } from './nogtrees';
-import { NG, NOG_FINISH } from './nogplan';
+import { NG, NOG_BACK, NOG_FINISH, WAG_SIDES, WG } from './nogplan';
 import { ugLocal } from './ugmcplan';
 import { ownsEdges } from './ipsplan';
 import { collisionRoots } from './meshcollide';
@@ -479,7 +479,7 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
 
   // every building: cream walls with window bays, a plinth, and terracotta tile roofs
   // (buildings modelled from photos are built by halls.ts and the block-model sites instead)
-  const buildings = buildBuildings(BUILDINGS.filter((b) => !isDiasporaHall(b) && !BLOCK_SITES.some((s) => s.replaces(b))), (b) => greatHallPrecinct(b) ?? gateLow(b) ?? lowZones(b) ?? medStyle(b) ?? upsaStyle(b) ?? newPentStyle(b) ?? behindPentStyle(b) ?? whitePaint(b));
+  const buildings = buildBuildings(BUILDINGS.filter((b) => !isDiasporaHall(b) && !BLOCK_SITES.some((s) => s.replaces(b))), (b) => nogDoors(b, greatHallPrecinct(b) ?? gateLow(b) ?? lowZones(b) ?? medStyle(b) ?? upsaStyle(b) ?? newPentStyle(b) ?? behindPentStyle(b) ?? whitePaint(b)));
   group.add(buildings);
   yield 'step';
   const halls = buildDiasporaHalls();
@@ -560,6 +560,17 @@ function medStyle(b: Building) {
   const [u, v] = ugLocal(cx, cz);
   if (u > -300 && u < 130 && v > -140 && v < 215) return { wall: '#f2f2f0', roof: '#c9ccce', flat: true };
   return undefined;
+}
+
+/** the owner's notes on the Noguchi renders: behind the laboratories (their red zone, NOG_BACK) every building one storey
+ *  with doors; round the back and sides of WAGMC (WAG_SIDES, never UGMC's precinct) doors too */
+function nogDoors(b: Building, st: ReturnType<BuildingStyle>) {
+  const cx = (b.minX + b.maxX) / 2, cz = (b.minZ + b.maxZ) / 2;
+  if (cx < 150 || cx > 1250 || cz < 1600 || cz > 2550) return st;
+  if (inPoly(NOG_BACK, cx, cz)) return { ...st, storeys: 1, doors: true };
+  const [wu, wv] = WG.local(cx, cz), [gu, gv] = ugLocal(cx, cz);
+  if (wu > WAG_SIDES[0] && wu < WAG_SIDES[1] && wv > WAG_SIDES[2] && wv < WAG_SIDES[3] && !(gu > -300 && gu < 130 && gv > -140 && gv < 215)) return { ...st, doors: true };
+  return st;
 }
 
 /** the UPSA campus's blocks (the owner's UPSA packs, docs/upsa-campus/): white walls, blue-glazed windows, flat roofs behind a

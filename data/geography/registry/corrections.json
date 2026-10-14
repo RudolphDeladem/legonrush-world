@@ -582,6 +582,10 @@
       "reason": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m): the drive past the laboratories' portal ran through the portal frame; replaced by owner:noguchi-portal-drive, 3 m west, where the satellite and S11/S20 show the asphalt."
     },
     {
+      "id": "ml:3e2d976d-2a5f-4a75-8e2a-d95d956bdbe0",
+      "reason": "The owner (notes on the Noguchi tower brief's render, yellow circle): there is no building south of the laboratories' sign island; deleted."
+    },
+    {
       "id": "ml:56ac8af2-55a6-4373-84f0-ab8959185ae3",
       "reason": "The owner's second corrections, A14-A17: a detected block standing on Onyaa Road (the owner: \"On road\"); the registered satellite A17 shows the road there and no roof, so it is dropped rather than moved."
     },
@@ -5662,6 +5666,54 @@
         ]
       ],
       "reason": "The mapped outline sat across the roof patches the satellite shows (S02's red outline); it now follows its own roof."
+    },
+    {
+      "id": "ml:dd0f8849-b5a8-43dc-9d00-96d84e3a3ea0",
+      "place": "a small one-floor block on the Noguchi laboratories' north lot",
+      "source": "the owner's notes on the Noguchi tower brief's render (blue circle)",
+      "ring": [
+        [
+          552.6,
+          1741.2
+        ],
+        [
+          564,
+          1738.1
+        ],
+        [
+          565.7,
+          1744.3
+        ],
+        [
+          554.3,
+          1747.4
+        ]
+      ],
+      "reason": "Built like the one-floor neighbour beside the tower (nog.ts lowLike); the ring is its rectangle."
+    },
+    {
+      "id": "ml:301b0b7b-8a7e-4baa-86e2-0aada6c26359",
+      "place": "a small one-floor block on the Noguchi laboratories' north lot",
+      "source": "the owner's notes on the Noguchi tower brief's render (blue circle)",
+      "ring": [
+        [
+          599.6,
+          1745.8
+        ],
+        [
+          608.1,
+          1743.5
+        ],
+        [
+          611.8,
+          1757.2
+        ],
+        [
+          603.3,
+          1759.5
+        ]
+      ],
+      "reason": "Built like the one-floor neighbour beside the tower (nog.ts lowLike); the ring is its rectangle."
     },
     {
       "id": "osm:way/665125655",

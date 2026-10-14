@@ -25,7 +25,7 @@ import { hipRoof } from './waccbip';
 import { coverOverlay, crownTiles, hash2, vnoise2, type Crown } from './scrubkit';
 import { onSealed } from './ghlplan';
 import { SILVER, asphaltMat, curtain, facing, lawnMat, plane, prism, rect, strip, type P2, type R4, mergeMeshes } from './medkit';
-import { ARRAYS, CLUSTER_EXTRA, LAB, NG, NOG_CLUSTER, NOG_EARTH, NOG_LOTS, NOG_ROADS, RED04, RING, SHED21, WAG, WAG_BOUND, WAG_LOTS, WG, nogEarthDist, type LineRow } from './nogplan';
+import { ARRAYS, CLUSTER_EXTRA, LAB, LOW_LIKE, NG, NOG_CLUSTER, NOG_EARTH, NOG_LOTS, NOG_ROADS, RED04, RING, SHED21, WAG, WAG_BOUND, WAG_LOTS, WG, nogEarthDist, type LineRow } from './nogplan';
 import { ugLocal } from './ugmcplan';
 
 // ---------- facades ----------
@@ -122,7 +122,7 @@ const ringO: R4 = [-RING.outer, RING.outer, RING.outerV[0], RING.outerV[1]], rin
 const noguchi: Spec = {
   name: 'Noguchi Memorial Institute for Medical Research',
   axis: NG.axis, origin: NG.origin, storey: RS, style: OLD_WALL, roofColor: '#4f4a46', fascia: '#3b3633', pitch: 0.42,
-  replaces: [NG.world(0, -36), NG.world(1, -1), NG.world(-1, -130), NG.world(160, -136), NG.world(189, -110)],
+  replaces: [NG.world(0, -36), NG.world(1, -1), NG.world(-1, -130), NG.world(160, -136), NG.world(189, -110), ...LOW_LIKE.map(([a, b, c, d]) => NG.world((a + b) / 2, (c + d) / 2))],
   blocks: [
     // the ring's four bands (the roof over them is one continuous hipped band: extras)
     { x0: ringO[0], x1: ringO[1], z0: ringO[2], z1: ringI[2], floors: RING.floors, roof: 'none' },
@@ -178,6 +178,9 @@ const noguchi: Spec = {
       const [inK, outK] = Math.abs(area(inner)) < Math.abs(area(outer)) ? [inner, outer] : [outer, inner];
       nPlane(k, inK, 0.03, lawnMat(), 4);
       k.plain.push([strip(inK, 0, 0.15, 0.12), '#dcd8ce'], [strip(outK.slice(0, -1).filter((_, i) => i !== 0), 0, 0.12, 0.1), '#dcd8ce']); }
+    // (the owner: the small buildings round WAGMC take doors) a door on each of the cluster's added roofs' long side
+    for (const { r: [a, b, c, d] } of CLUSTER_EXTRA) { const long = b - a > d - c, m = long ? (a + b) / 2 : (c + d) / 2;
+      k.plain.push(long ? [box(m - 0.55, m + 0.55, 0.4, 2.6, d, d + 0.05), '#5a3b28'] : [box(b, b + 0.05, 0.4, 2.6, m - 0.55, m + 0.55), '#5a3b28'], long ? [box(m - 0.7, m + 0.7, 2.6, 2.75, d, d + 0.06), '#efe9dc'] : [box(b, b + 0.06, 2.6, 2.75, m - 0.7, m + 0.7), '#efe9dc']); }
     for (const { r: [a, b, c, d] } of CLUSTER_EXTRA) { const W = (u: number, v: number) => NG.world(u, v); wallSolids(...W(a, c), ...W(b, c), 0.3); wallSolids(...W(b, c), ...W(b, d), 0.3); wallSolids(...W(b, d), ...W(a, d), 0.3); wallSolids(...W(a, d), ...W(a, c), 0.3); }
     // 04's open centre
     nPlane(k, rect(RED04.court), 0.04, lawnMat(), 4);
@@ -227,6 +230,16 @@ function fins(p: Part[], alongX: boolean, at: number, out: number, a0: number, a
   }
 }
 const [TU0, TU1, TV0, TV1] = LAB.tower;
+/** the details of a one-floor flat-roofed block like B02 (Pictures 4, 7) over r (Noguchi frame): the parapet, the
+ *  enclosure of pale panels and units on the roof, a downpipe and a door on its west face */
+function lowLike(p: Part[], [l0, l1, m0, m1]: R4) {
+  const top = 0.4 + LAB.storey + 0.4;
+  for (const [a, b, c, d] of [[l0, l1, m0, m0 + 0.25], [l0, l1, m1 - 0.25, m1], [l0, l0 + 0.25, m0, m1], [l1 - 0.25, l1, m0, m1]]) p.push([box(a, b, top, top + 0.7, c, d), '#ecece8']);
+  const sw = Math.min(l1 - l0, m1 - m0) > 9;
+  if (sw) p.push([box(l0 + 2, l1 - 3, top, top + 1.6, m0 + 3, m0 + 3.15), '#e2e3e0'], [box(l0 + 2, l0 + 2.15, top, top + 1.6, m0 + 3, m1 - 3), '#e2e3e0']);
+  for (const [u, v] of [[l1 - 2, m0 + 1.5], [l0 + 3, m1 - 1.5]] as P2[]) p.push([box(u - 0.6, u + 0.6, top, top + 0.9, v - 0.5, v + 0.5), '#d1d3d4']);
+  p.push([box(l0 - 0.12, l0, 0, top, m1 - 1.2, m1 - 1.05), '#cfd0cc'], [box(l0 - 0.12, l0 - 0.05, 0.4, 2.6, m0 + 1.8, m0 + 3.2), '#e4e4e0'], [box(l0 - 0.08, l0, 0.4, 2.5, m0 + 1.9, m0 + 3.1), '#2e3033']);
+}
 const lab: Spec = {
   name: 'Noguchi Advanced Research Laboratories',
   axis: NG.axis, origin: NG.origin, storey: LS, style: LAB_PALE, roofColor: '#4d4a47', fascia: '#2f2d2b', pitch: 0.33,
@@ -239,8 +252,9 @@ const lab: Spec = {
     { x0: LAB.service[0], x1: LAB.service[1], z0: LAB.service[2], z1: LAB.service[3], floors: 2, roof: 'flat', faces: { z1: LAB_LOUVRE, x1: LAB_PALE, x0: LAB_PALE, z0: LAB_PALE } },
     // B01 the broad signed end block (the owner's tower brief: the signed face belongs here, Pictures 1, 3, 4)
     { x0: LAB.end[0], x1: LAB.end[1], z0: LAB.end[2], z1: LAB.end[3], floors: LAB.endFloors, roof: 'flat', faces: { z0: LAB_PALE, z1: LAB_PALE, x0: LAB_PALE, x1: LAB_PALE } },
-    // B02 the one-floor neighbour beside the tower (Pictures 4, 7): flat roof, parapet, blank pale walls
-    { x0: LAB.low[0], x1: LAB.low[1], z0: LAB.low[2], z1: LAB.low[3], floors: 1, roof: 'flat', faces: { x0: LAB_PALE, x1: LAB_PALE, z0: LAB_PALE, z1: LAB_PALE } },
+    // B02 the one-floor neighbour beside the tower (Pictures 4, 7): flat roof, parapet, blank pale walls; and the two
+    // small buildings on the north lot the owner circled, built the same
+    ...[LAB.low, ...LOW_LIKE].map((r) => ({ x0: r[0], x1: r[1], z0: r[2], z1: r[3], floors: 1, roof: 'flat' as const, faces: { x0: LAB_PALE, x1: LAB_PALE, z0: LAB_PALE, z1: LAB_PALE } })),
   ],
   keep: [[LAB.portalOut - 1, LAB.front[0], LAB.portal[0] - 1, LAB.portal[1] + 1], [TU0 - 2, LAB.low[1] + 1, TV0 - 2, LAB.low[3] + 1]],
   extras: (k) => {
@@ -340,12 +354,9 @@ const lab: Spec = {
       p.push([box(TU0 + 0.6, TU1, towTop - 1.5, towTop - 1.2, TV0, TV1), '#dcdcd8']);
       p.push([new THREE.CylinderGeometry(0.04, 0.06, 4, 6).translate(TU0 + 2.5, towTop + 1.5, TV1 - 1.5), '#8a8d90']);
       p.push([box(TU1 - 0.05, TU1, 0.1, 2.4, TV1 - 2.2, TV1 - 1.2), '#2e3033']); }
-    // ---- B02: parapet, the plant enclosure of pale panels and the units on the roof (Picture 7), a downpipe ----
-    { const [l0, l1, m0, m1] = LAB.low;
-      for (const [a, b, c, d] of [[l0, l1, m0, m0 + 0.25], [l0, l1, m1 - 0.25, m1], [l0, l0 + 0.25, m0, m1], [l1 - 0.25, l1, m0, m1]]) p.push([box(a, b, lowTop, lowTop + 0.7, c, d), '#ecece8']);
-      p.push([box(l0 + 2, l1 - 3, lowTop, lowTop + 1.6, m0 + 3, m0 + 3.15), '#e2e3e0'], [box(l0 + 2, l0 + 2.15, lowTop, lowTop + 1.6, m0 + 3, m1 - 3), '#e2e3e0']);
-      for (const [u, v] of [[l1 - 2, m0 + 2], [l0 + 4, m1 - 2]] as P2[]) p.push([box(u - 0.6, u + 0.6, lowTop, lowTop + 0.9, v - 0.5, v + 0.5), '#d1d3d4']);
-      p.push([box(l0 - 0.12, l0, 0, lowTop, m1 - 1.2, m1 - 1.05), '#cfd0cc'], [box(l0 - 0.05, l0, 0.1, 2.4, m0 + 2, m0 + 3.1), '#2e3033']); }
+    // ---- B02 and the two small buildings on the north lot built like it (the owner's notes): parapet, the plant
+    // enclosure of pale panels and the units on the roof (Picture 7), blank pale walls, a downpipe, a door ----
+    for (const r of [LAB.low, ...LOW_LIKE]) lowLike(p, r);
     k.plain.push(...p);
     // ---- before the portal: the walk, the two kerbed lawns, the flower band, the monument, bollards ----
     { const [w0, w1, wv0, wv1] = LAB.walk;
@@ -378,7 +389,7 @@ const lab: Spec = {
     // the block-paved parking with white bays (S15); the loop's kerbside strips in asphalt
     for (const l of NOG_LOTS) { if (l.name.startsWith('noguchi-loop')) { nPlane(k, l.ring, 0.04, asphaltMat(), 6); continue; } nPlane(k, l.ring, 0.05, paverMat(), 3); bays(k, l.rows, l.across); }
     // the solid walls of the tower, the low block and the portal frame's outer corners (the tower is not on the map)
-    for (const [a, b, c, d] of [[TU0 - 0.5, TU1, TV0 - 0.9, TV1] as R4, LAB.low]) { const W = (u: number, v: number) => NG.world(u, v); wallSolids(...W(a, c), ...W(b, c), 0.3); wallSolids(...W(b, c), ...W(b, d), 0.3); wallSolids(...W(b, d), ...W(a, d), 0.3); wallSolids(...W(a, d), ...W(a, c), 0.3); }
+    for (const [a, b, c, d] of [[TU0 - 0.5, TU1, TV0 - 0.9, TV1] as R4, LAB.low, ...LOW_LIKE]) { const W = (u: number, v: number) => NG.world(u, v); wallSolids(...W(a, c), ...W(b, c), 0.3); wallSolids(...W(b, c), ...W(b, d), 0.3); wallSolids(...W(b, d), ...W(a, d), 0.3); wallSolids(...W(a, d), ...W(a, c), 0.3); }
     mergeMeshes(k);
   },
 };
