@@ -3804,3 +3804,15 @@ Evidence and ids are in `docs/engineering-ses/evidence-ledger.md` (batch 132). T
   wings. It faces south, the way the building faces (the owner), nose toward its gate. The fence is chain-link with a green welded-mesh gate on the front.
 - **Car park:** about a fifth full, as in the satellite.
 - **Bush:** a dense, instanced bush belt behind the school and along Annie Jiagge Road.
+
+## School of Engineering Sciences: ground and forest (the owner, on the satellite picture)
+
+The comparison is `docs/engineering-ses/sheet-ground.jpg`.
+
+- **Paving:** every pavement round the school is the car park's grey concrete.
+- **Sidewalks:**
+  - round the lawns and along the access road;
+  - along the road west of the car park and along Annie Jiagge Road beside the school.
+- **The track behind the school:** brown earth.
+- **Behind the building:** low bush up to the track.
+- **Beyond the track:** thick forest north to Evandy's latitude.

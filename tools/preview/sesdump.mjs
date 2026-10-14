@@ -1,10 +1,10 @@
-// the roads, outlines and areas round the School of Engineering Sciences, for registering an aerial: node .preview/sesdump.mjs out.json
+// the roads, outlines and areas in a box, for registering an aerial: node .preview/sesdump.mjs out.json [x0,x1,z0,z1]
 import { createServer } from 'vite';
 import { writeFileSync } from 'node:fs';
 const server = await createServer({ server: { middlewareMode: true }, appType: 'custom', logLevel: 'error' });
 try {
   const M = await server.ssrLoadModule('/src/game/campusmap.ts');
-  const [X0, X1, Z0, Z1] = [330, 580, -560, -300];
+  const [X0, X1, Z0, Z1] = (process.argv[3] ?? "330,580,-560,-300").split(",").map(Number);
   const inb = (x, z) => x > X0 && x < X1 && z > Z0 && z < Z1;
   const roads = M.ROADS.map((r) => ({ name: r.name, cls: r.cls, pts: r.nodes.map((i) => M.nodeXZ(i)) })).filter((r) => r.pts.some(([x, z]) => inb(x, z)));
   const blds = M.BUILDINGS.map((b, i) => ({ i, name: b.name, pts: Array.from(b.pts) })).filter((b) => inb(b.pts[0], b.pts[1]));

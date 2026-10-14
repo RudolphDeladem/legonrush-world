@@ -98,3 +98,38 @@ Comparison sheet: `sheet.jpg`. Labels: [VERIFIED] [DECISION] [ASSUMPTION] [INCOM
 - Unchanged: route lengths (lens), building ids and the geography files.
 - Passing: the type check, the route tests, the build and the smoke ride.
 - Views: front, porch, jet fence (two angles), raised, side passage from the car park, top, and rear bush.
+
+## Batch 133: the owner's notes on the satellite picture (`refs/owner-satellite-2.webp`)
+
+The owner, 2026-10-14: "add side walk appropriate ... the car park and all pavement around the school are the same
+color as the pavement on the car park ... the thin road that passes behind the school is brown ... the bushes right
+behind the building are low ... after the foot path is thick forest ... up to EVANDY". Comparison:
+`sheet-ground.jpg`. Code: `src/game/engplan.ts` (numbers), `src/game/engground.ts` (the build).
+
+- [DECISION] **Paving.** All paving round the school uses the car park's concrete (world.ts: `#b9bbbf`, the concrete
+  texture at 5 m): the forecourt, the strip between the car park and the front block, the apron before the jet's
+  compound, and the strip at the bank's foot. The herringbone brick of batch 132 is gone.
+- [VERIFIED] **Sidewalks** where the satellite shows the pale strips round the lawns:
+  - the north side of the road south of the lawns;
+  - both sides of the access road down to the forecourt;
+  - the east side of the road west of the car park;
+  - the west side of Annie Jiagge Road beside the school.
+  
+  They are 1.5–1.7 m wide, 0.12 m above the grass with a kerb face toward the road, and gapped where another road
+  comes in. They are not solid.
+- [DECISION] **The track behind the school** (the mapped footpath from the road west of the car park to Annie Jiagge
+  Road) is drawn as brown earth. Its pale path surface is not drawn (`science.ts` `offAsphalt` → `onEngTrack`). The
+  route network is unchanged.
+- [DECISION] **The bush between the building and the track is low**: 0.7–1.5 m, with no trees. The 4.5 m service
+  strip is kept.
+- [DECISION] **Thick forest from the track north to Evandy Hostel's latitude** (z −1250), from x 160 to Annie Jiagge
+  Road, with ragged far edges:
+  - canopy crowns on solid trunks in staggered, jittered rows; about one in four is a big tree;
+  - dense undergrowth for 20 m along the track, thinner through the rest;
+  - the forest floor painted dark under the canopy;
+  - kept clear of every road, footpath and outline.
+  
+  About 12,000 instanced crowns in all, per 100 m tile, with a single-blob version past 75 m.
+- [ASSUMPTION] West of the brief's wider satellite picture (north of z −666) there is no image evidence for the
+  forest; its extent there rests on the owner's word.
+- Checks: route lengths identical (lens), route tests, build, smoke ride; the preview loads in about 27 s.
