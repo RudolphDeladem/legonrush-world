@@ -568,6 +568,10 @@
     {
       "id": "osm:way/1184497719",
       "reason": "The owner (Evandy correction, the circled picture): the small red-roofed hut drawn against the commercial block's north-west corner does not exist; deleted."
+    },
+    {
+      "id": "ml:c4d6268e-fa99-4886-9242-72ece4361f46",
+      "reason": "The owner's James Topp Nelson Yankah Hall brief: the lower courtyard (06) is the open basketball court; this detected outline filled it with a building (\"no solid slab occupies the court\"); jtny.ts models the court."
     }
   ],
   "heights": [

@@ -127,7 +127,8 @@ export const PJ_BOARDS: [number, number, number][] = [[1025.9, -1166.5, -1.9], [
  *  over the low wall (Pair 19; pale in Pair 18's distance). The four Bani Hostel blocks farther west (osm:way/1186044050,
  *  1186044051, 1184497715, 1184497716) are in no pair: they keep the generic model (their heights unverified) */
 export const BANI_CREAM = { id: 'osm:way/1334286313', pt: [930, -1240] as [number, number], floors: 5 };
-export const BANI_PEACH = { id: 'osm:way/1334286314', pt: [885, -1240] as [number, number], floors: 4 };
+// (the owner's Bani brief: both right-hand blocks are the plain white family, ground plus four upper tiers)
+export const BANI_PEACH = { id: 'osm:way/1334286314', pt: [885, -1240] as [number, number], floors: 5 };
 /** the side road opposite PRESEC (the map's road at z -1196 from the avenue west into Bani): its dusty mouth, the low
  *  grey block wall along its north side with the small boards on posts (Pair 19), the shaded gathering ground under the
  *  trees at the mouth's north corner (Pairs 16-18), the two small sheds on its south side (R4: they replace a

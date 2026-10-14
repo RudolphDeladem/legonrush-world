@@ -711,9 +711,22 @@ function acUnits(k: Kit, faces: { x0: number; x1: number; z: number; out: number
   }
   finishParts(k, c, 0.2);
 }
+/** the plain white blocks (the owner's Bani brief, targets 5 and 6; R08, R11, R15, R16 and the video): white walls on a
+ *  cream-beige base, narrow window stacks (on the long faces a pair of narrow windows beside a square opening per bay,
+ *  barred windows on the ground floor), ground plus four upper tiers, low dark-red hipped roofs */
+const BANI_WHITE: Style = {
+  bay: 3.6, up: [[34, 70, 40, 100], [92, 70, 40, 100], [160, 60, 70, 90]], ground: [[34, 256 + 70, 52, 110], [150, 256 + 70, 52, 110]],
+  draw: (g) => {
+    render(g, '#f4f4f0');
+    for (const x of [34, 92]) winDark(g, x, 70, 40, 100, '#f4f4f0');
+    g.fillStyle = '#4a3a30'; g.fillRect(160, 60, 70, 90); g.fillStyle = 'rgba(0,0,0,0.25)'; g.fillRect(160, 60, 70, 10);
+    g.fillStyle = '#e0cfa8'; g.fillRect(0, 256 + 150, 256, 106);
+    for (const x of [34, 150]) { winDark(g, x, 256 + 70, 52, 110, '#f4f4f0'); g.fillStyle = '#2b2d2f'; for (let k = x + 6; k < x + 52; k += 9) g.fillRect(k, 256 + 70, 3, 110); }
+  },
+};
 const CR = BANI_CREAM, CRO = CR.pt;
 const cream: Spec = {
-  name: 'Bani block (cream, dark red hip roof)', axis: [1, 0], origin: CRO, storey: 3.1, style: CREAM, roofColor: '#7f2a22', fascia: '#efe8d6', pitch: 0.5,
+  name: 'Bani block (white, dark red hip roof)', axis: [1, 0], origin: CRO, storey: 3.1, style: BANI_WHITE, roofColor: '#6e2a24', fascia: '#efe8d6', pitch: 0.32,
   replaces: [CR.pt],
   blocks: [
     { x0: 908 - CRO[0], x1: 941 - CRO[0], z0: -1249.6 - CRO[1], z1: -1231.5 - CRO[1], floors: CR.floors },
@@ -724,7 +737,7 @@ const cream: Spec = {
 };
 const PE = BANI_PEACH, PEO = PE.pt;
 const peachBlock: Spec = {
-  name: 'Bani block (peach and pale, weathered tiled hip roof)', axis: [1, 0], origin: PEO, storey: 3.1, style: PEACH, roofColor: '#94503a', fascia: '#efe2cc', pitch: 0.55,
+  name: 'Bani block (white, dark red hip roof; straight)', axis: [1, 0], origin: PEO, storey: 3.1, style: BANI_WHITE, roofColor: '#6e2a24', fascia: '#efe8d6', pitch: 0.32,
   replaces: [PE.pt],
   blocks: [{ x0: 876.2 - PEO[0], x1: 894.2 - PEO[0], z0: -1263.9 - PEO[1], z1: -1231.7 - PEO[1], floors: PE.floors }],
   keep: [],

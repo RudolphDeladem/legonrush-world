@@ -5,7 +5,7 @@ Before working on this repository, read the handover documents in this order:
 1. `docs/migration/NEW_ACCOUNT_START_HERE.md`: entry point, orientation and the owner's rules.
 2. `docs/migration/PROJECT_MASTER_HANDOVER.md`: identity, state, history, architecture, how the owner works.
 3. `docs/handover/HANDOVER.md` and `docs/handover/TASKS.md`: the first account's handover and every completed batch
-   (140 so far).
+   (141 so far).
 4. `docs/LEGON_BUILDINGS.md`: building details and the owner's decisions per batch (read the latest sections first).
 
 Then, as the task needs:
