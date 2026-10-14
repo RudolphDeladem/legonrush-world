@@ -562,6 +562,26 @@
       "reason": "Detected \"buildings\" inside the gridded panel fields behind Noguchi (the brief: \"do not extrude panel fields into buildings\"); the fields are modelled as low panel rows (nog.ts)."
     },
     {
+      "id": "osm:way/111440943",
+      "reason": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m): the mapped figure of eight round the road is one paved loop on the satellite (S04), replaced by owner:noguchi-loop."
+    },
+    {
+      "id": "osm:way/1239491144",
+      "reason": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m): the mapped figure of eight round the road is one paved loop on the satellite (S04), replaced by owner:noguchi-loop."
+    },
+    {
+      "id": "osm:way/111440926",
+      "reason": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m): the road down from the north ends at the loop's top on the satellite and does not cross its lawn; replaced by owner:noguchi-road-north, the loop and the earth track south (owner:noguchi-loop-south)."
+    },
+    {
+      "id": "osm:way/690531803",
+      "reason": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m): the mapped service road down WAGMC's east side ran 6-15 m west of the red earth strip the satellite shows outside the boundary, through the compound's grass and parking; replaced by owner:wagmc-east-strip, the drive in (owner:wagmc-drive-in, owner:wagmc-drive-se) and the earth track into the cluster (owner:wagmc-cluster-track)."
+    },
+    {
+      "id": "osm:way/958782150",
+      "reason": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m): the drive past the laboratories' portal ran through the portal frame; replaced by owner:noguchi-portal-drive, 3 m west, where the satellite and S11/S20 show the asphalt."
+    },
+    {
       "id": "ml:56ac8af2-55a6-4373-84f0-ab8959185ae3",
       "reason": "The owner's second corrections, A14-A17: a detected block standing on Onyaa Road (the owner: \"On road\"); the registered satellite A17 shows the road there and no roof, so it is dropped rather than moved."
     },
@@ -5524,6 +5544,126 @@
       "reason": "Its mapped east end reached into the service road beside it; the ring follows the red roof on the satellite, 1.5 m shorter, clear of the road (its enclosed centre stays open in the model)."
     },
     {
+      "id": "osm:way/1180697052",
+      "place": "the red-roofed cluster south of WAGMC: the red T, north part",
+      "source": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m)",
+      "ring": [
+        [
+          294.9,
+          1938.3
+        ],
+        [
+          311.8,
+          1933.7
+        ],
+        [
+          316.6,
+          1959.5
+        ],
+        [
+          300.1,
+          1963.1
+        ]
+      ],
+      "reason": "The mapped outline sat across the roof patches the satellite shows (S02's red outline); it now follows its own roof."
+    },
+    {
+      "id": "osm:way/565376793",
+      "place": "the red-roofed cluster south of WAGMC: the red T, south part",
+      "source": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m)",
+      "ring": [
+        [
+          303,
+          1963.1
+        ],
+        [
+          319.3,
+          1960.3
+        ],
+        [
+          323.6,
+          1984.2
+        ],
+        [
+          307.8,
+          1985.6
+        ]
+      ],
+      "reason": "The mapped outline sat across the roof patches the satellite shows (S02's red outline); it now follows its own roof."
+    },
+    {
+      "id": "ml:644aecfb-ad42-4bae-958c-6537eb9a8619",
+      "place": "the red-roofed cluster south of WAGMC: the weathered grey roof",
+      "source": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m)",
+      "ring": [
+        [
+          311.8,
+          1933.7
+        ],
+        [
+          325.9,
+          1931.8
+        ],
+        [
+          329.8,
+          1957.4
+        ],
+        [
+          316.6,
+          1959.5
+        ]
+      ],
+      "reason": "The mapped outline sat across the roof patches the satellite shows (S02's red outline); it now follows its own roof."
+    },
+    {
+      "id": "osm:way/1180697051",
+      "place": "the red-roofed cluster south of WAGMC: the pink pair",
+      "source": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m)",
+      "ring": [
+        [
+          328.8,
+          1943.1
+        ],
+        [
+          339.8,
+          1941.2
+        ],
+        [
+          344.1,
+          1959.3
+        ],
+        [
+          332.6,
+          1961.7
+        ]
+      ],
+      "reason": "The mapped outline sat across the roof patches the satellite shows (S02's red outline); it now follows its own roof."
+    },
+    {
+      "id": "osm:way/1114966058",
+      "place": "the red-roofed cluster south of WAGMC: the small teal roof",
+      "source": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m)",
+      "ring": [
+        [
+          286.8,
+          1958.8
+        ],
+        [
+          293,
+          1957.9
+        ],
+        [
+          294.6,
+          1971.3
+        ],
+        [
+          288.2,
+          1972.2
+        ]
+      ],
+      "reason": "The mapped outline sat across the roof patches the satellite shows (S02's red outline); it now follows its own roof."
+    },
+    {
       "id": "osm:way/665125655",
       "place": "the small block west of E.A. Boateng Road by the School of Performing Arts",
       "source": "the owner's second corrections, A15-A17: Apple satellite A17 registered on the School of Performing Arts' roof and E.A. Boateng Road",
@@ -10248,6 +10388,29 @@
       "reason": "The owner's UPSA aerials (docs/upsa-campus/; the clean capture of 2026-10-14) and the owner's instruction to show the car parks as they are: rows of parked cars on the paving inside the road loop between the Astro Turf's east path and KOKA's west face. Measured on the registered aerial, kept 0.8 m clear of the loop's mapped edges."
     },
     {
+      "id": "owner:evandy-parking-2",
+      "class": "parking",
+      "ring": [
+        [
+          622,
+          -1205.4
+        ],
+        [
+          646,
+          -1205.4
+        ],
+        [
+          646,
+          -1199.8
+        ],
+        [
+          622,
+          -1199.8
+        ]
+      ],
+      "reason": "The owner's Evandy brief (docs/evandy/): cars parked along the fence in the paved frontage (P01, R14) and before the commercial block (R13); the game map had no area there."
+    },
+    {
       "id": "owner:ugmc-07",
       "class": "parking",
       "ring": [
@@ -10321,8 +10484,8 @@
       "class": "parking",
       "ring": [
         [
-          464.2,
-          1756.7
+          508.2,
+          1744.9
         ],
         [
           601.4,
@@ -10333,11 +10496,80 @@
           1732.5
         ],
         [
+          511.5,
+          1757.5
+        ]
+      ],
+      "reason": "the owner's Noguchi + WAGMC brief (docs/noguchi-wagmc/): Apple satellite M1/M2 registered at 2.617 / 2.242 px/m: parking with marked bays (noguchi-lab-north); the game map had no area there."
+    },
+    {
+      "id": "owner:noguchi-lab-northwest",
+      "class": "parking",
+      "ring": [
+        [
+          464.2,
+          1756.7
+        ],
+        [
+          486.9,
+          1750.6
+        ],
+        [
+          490.3,
+          1763.2
+        ],
+        [
           467.6,
           1769.3
         ]
       ],
-      "reason": "the owner's Noguchi + WAGMC brief (docs/noguchi-wagmc/): Apple satellite M1/M2 registered at 2.617 / 2.242 px/m: parking with marked bays (noguchi-lab-north); the game map had no area there."
+      "reason": "the owner's Noguchi + WAGMC brief (docs/noguchi-wagmc/): Apple satellite M1/M2 registered at 2.617 / 2.242 px/m: parking with marked bays (noguchi-lab-northwest); the game map had no area there."
+    },
+    {
+      "id": "owner:noguchi-loop-s",
+      "class": "parking",
+      "ring": [
+        [
+          478.4,
+          1937.1
+        ],
+        [
+          497.7,
+          1931.9
+        ],
+        [
+          498.8,
+          1935.9
+        ],
+        [
+          479.4,
+          1941
+        ]
+      ],
+      "reason": "the owner's Noguchi + WAGMC brief (docs/noguchi-wagmc/): Apple satellite M1/M2 registered at 2.617 / 2.242 px/m: parking with marked bays (noguchi-loop-s); the game map had no area there."
+    },
+    {
+      "id": "owner:noguchi-loop-n",
+      "class": "parking",
+      "ring": [
+        [
+          474.6,
+          1899.9
+        ],
+        [
+          494.9,
+          1894.4
+        ],
+        [
+          495.9,
+          1898
+        ],
+        [
+          475.6,
+          1903.5
+        ]
+      ],
+      "reason": "the owner's Noguchi + WAGMC brief (docs/noguchi-wagmc/): Apple satellite M1/M2 registered at 2.617 / 2.242 px/m: parking with marked bays (noguchi-loop-n); the game map had no area there."
     },
     {
       "id": "owner:noguchi-lab-east",
@@ -10363,57 +10595,80 @@
       "reason": "the owner's Noguchi + WAGMC brief (docs/noguchi-wagmc/): Apple satellite M1/M2 registered at 2.617 / 2.242 px/m: parking with marked bays (noguchi-lab-east); the game map had no area there."
     },
     {
+      "id": "owner:wagmc-north",
+      "class": "parking",
+      "ring": [
+        [
+          263.5,
+          1862.8
+        ],
+        [
+          297.8,
+          1845.3
+        ],
+        [
+          304.5,
+          1870.5
+        ],
+        [
+          275.1,
+          1885.5
+        ]
+      ],
+      "reason": "the owner's Noguchi + WAGMC brief (docs/noguchi-wagmc/): Apple satellite M1/M2 registered at 2.617 / 2.242 px/m: parking with marked bays (wagmc-north); the game map had no area there."
+    },
+    {
       "id": "owner:wagmc-south",
       "class": "parking",
       "ring": [
         [
-          281.9,
-          1910
-        ],
-        [
           293.5,
-          1904.1
+          1901.9
         ],
         [
-          298.1,
-          1913.1
+          301.5,
+          1897.8
         ],
         [
-          286.5,
-          1919
+          310.2,
+          1914.8
+        ],
+        [
+          302.1,
+          1918.8
         ]
       ],
       "reason": "the owner's Noguchi + WAGMC brief (docs/noguchi-wagmc/): Apple satellite M1/M2 registered at 2.617 / 2.242 px/m: parking with marked bays (wagmc-south); the game map had no area there."
     },
     {
-      "id": "owner:wagmc-north",
+      "id": "owner:wagmc-se",
       "class": "parking",
       "ring": [
         [
-          269.5,
-          1863.6
+          247.3,
+          1947.9
         ],
         [
-          287.3,
-          1854.5
+          307,
+          1917.5
         ],
         [
-          296.4,
-          1872.4
+          309.7,
+          1922.6
         ],
         [
-          278.6,
-          1881.4
+          250,
+          1953
         ]
       ],
-      "reason": "the owner's Noguchi + WAGMC brief (docs/noguchi-wagmc/): Apple satellite M1/M2 registered at 2.617 / 2.242 px/m: parking with marked bays (wagmc-north); the game map had no area there."
+      "reason": "the owner's Noguchi + WAGMC brief (docs/noguchi-wagmc/): Apple satellite M1/M2 registered at 2.617 / 2.242 px/m: parking with marked bays (wagmc-se); the game map had no area there."
     },
     {
       "id": "owner:evandy-parking-1",
       "class": "parking",
       "ring": [
         [
-          506,
+          537,
           -1209
         ],
         [
@@ -10425,31 +10680,8 @@
           -1203.2
         ],
         [
-          506,
+          537,
           -1203.2
-        ]
-      ],
-      "reason": "The owner's Evandy brief (docs/evandy/): cars parked along the fence in the paved frontage (P01, R14) and before the commercial block (R13); the game map had no area there."
-    },
-    {
-      "id": "owner:evandy-parking-2",
-      "class": "parking",
-      "ring": [
-        [
-          622,
-          -1205.4
-        ],
-        [
-          646,
-          -1205.4
-        ],
-        [
-          646,
-          -1199.8
-        ],
-        [
-          622,
-          -1199.8
         ]
       ],
       "reason": "The owner's Evandy brief (docs/evandy/): cars parked along the fence in the paved frontage (P01, R14) and before the commercial block (R13); the game map had no area there."
@@ -10686,6 +10918,299 @@
       ],
       "open": "end",
       "reason": "Owner's marked aerial of the ISSER Annex and the ground west of it to Botanical Gardens Road, registered to the annex's outlines at 0.25 m/px: the way people walk from the engineering school along the road and up through the car park to the annex's porch (the owner's blue arrow)."
+    },
+    {
+      "id": "owner:noguchi-road-north",
+      "highway": "residential",
+      "pts": [
+        [
+          448.4,
+          1748.4
+        ],
+        [
+          460.2,
+          1782.8
+        ],
+        [
+          466.6,
+          1801.6
+        ],
+        [
+          468.7,
+          1807.8
+        ],
+        [
+          475.4,
+          1827.3
+        ],
+        [
+          499.5,
+          1899.3
+        ]
+      ],
+      "reason": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m): the mapped road down from the north, ending at the loop's top where the satellite shows it entering.",
+      "open": "end"
+    },
+    {
+      "id": "owner:noguchi-loop",
+      "highway": "service",
+      "pts": [
+        [
+          499.5,
+          1899.3
+        ],
+        [
+          509.4,
+          1897.8
+        ],
+        [
+          520.8,
+          1895.5
+        ],
+        [
+          530.4,
+          1895.5
+        ],
+        [
+          534.2,
+          1900.1
+        ],
+        [
+          535,
+          1909.6
+        ],
+        [
+          533,
+          1917.3
+        ],
+        [
+          524.6,
+          1920.3
+        ],
+        [
+          513.2,
+          1924.2
+        ],
+        [
+          508.4,
+          1926.4
+        ],
+        [
+          501.7,
+          1929.5
+        ],
+        [
+          492.2,
+          1932.6
+        ],
+        [
+          480.7,
+          1933.7
+        ],
+        [
+          473.1,
+          1930.7
+        ],
+        [
+          469.6,
+          1924.9
+        ],
+        [
+          469.2,
+          1917.3
+        ],
+        [
+          471.1,
+          1908.5
+        ],
+        [
+          476.9,
+          1904.3
+        ],
+        [
+          486.4,
+          1902.4
+        ],
+        [
+          496,
+          1900.1
+        ],
+        [
+          499.5,
+          1899.3
+        ]
+      ],
+      "reason": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m): the paved loop round the tree island and the kerbed lawn (S04)."
+    },
+    {
+      "id": "owner:noguchi-loop-south",
+      "highway": "track",
+      "pts": [
+        [
+          508.4,
+          1926.4
+        ],
+        [
+          509.4,
+          1930.4
+        ],
+        [
+          541.2,
+          2024.7
+        ]
+      ],
+      "reason": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m): the mapped way's line south of the loop, unpaved on the satellite.",
+      "open": "end"
+    },
+    {
+      "id": "owner:wagmc-east-strip",
+      "highway": "track",
+      "pts": [
+        [
+          292.5,
+          1836
+        ],
+        [
+          302.2,
+          1845.4
+        ],
+        [
+          314.5,
+          1877.2
+        ],
+        [
+          323.5,
+          1903
+        ],
+        [
+          330.5,
+          1923
+        ],
+        [
+          328.9,
+          1947.5
+        ]
+      ],
+      "reason": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m): the red earth strip outside WAGMC's east boundary, from the main road to the red-roofed cluster (S02's right-hand blue arrow, S18).",
+      "open": "end"
+    },
+    {
+      "id": "owner:wagmc-drive-in",
+      "highway": "service",
+      "pts": [
+        [
+          323.5,
+          1903
+        ],
+        [
+          308.4,
+          1907.6
+        ]
+      ],
+      "reason": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m): the drive in from the strip to the south-east parking strip (the mapped road's link)."
+    },
+    {
+      "id": "owner:wagmc-drive-se",
+      "highway": "service",
+      "pts": [
+        [
+          308.4,
+          1907.6
+        ],
+        [
+          303.4,
+          1918.2
+        ],
+        [
+          295.6,
+          1924.1
+        ],
+        [
+          285.8,
+          1926.2
+        ],
+        [
+          277.5,
+          1933
+        ]
+      ],
+      "reason": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m): the mapped road's line along the south-east strip to the south-west gap.",
+      "open": "end"
+    },
+    {
+      "id": "owner:wagmc-cluster-track",
+      "highway": "track",
+      "pts": [
+        [
+          277.5,
+          1933
+        ],
+        [
+          275.7,
+          1955.4
+        ],
+        [
+          278.1,
+          1981.4
+        ]
+      ],
+      "reason": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m): the mapped road's line beyond the south-west gap into the cluster, red earth on the satellite (S02's lower blue arrows).",
+      "open": "end"
+    },
+    {
+      "id": "owner:noguchi-portal-drive",
+      "highway": "service",
+      "pts": [
+        [
+          468.7,
+          1807.8
+        ],
+        [
+          498.6,
+          1797.2
+        ],
+        [
+          499,
+          1792.9
+        ],
+        [
+          496.6,
+          1783.2
+        ],
+        [
+          494.6,
+          1775
+        ],
+        [
+          495.3,
+          1771
+        ]
+      ],
+      "reason": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m): the drive round the sign island and past the portal, on the asphalt the satellite shows (S11, S20)."
+    },
+    {
+      "id": "owner:wagmc-corridor-track",
+      "highway": "track",
+      "pts": [
+        [
+          196.8,
+          1891.9
+        ],
+        [
+          239.6,
+          1965.8
+        ],
+        [
+          253.3,
+          1992.2
+        ],
+        [
+          327.7,
+          2099.7
+        ]
+      ],
+      "reason": "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m): the second red-earth track of the corridor west of WAGMC, across the tree belt from the mapped one (S18's two blue arrows).",
+      "open": "end"
     }
   ]
 }

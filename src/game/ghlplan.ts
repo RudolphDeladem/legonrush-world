@@ -10,6 +10,7 @@
 // coordinates through the aerials' registration (the script's header); they are a work boundary, not a surveyed edge.
 import { NODE_XZ, ROADS, BUILDINGS } from './campusmap';
 import { GH_COVER, TC_COVER, type CoverGrid } from './landcover';
+import { nogEarthDist } from './nogplan';
 
 export type P2 = [number, number];
 export type Box = [number, number, number, number];
@@ -74,13 +75,15 @@ export { GH_COVER, TC_COVER };
 /** the tennis complex's surroundings, where the dirt road along the north of the belt (Picture 12) and the end of the
  *  dirt road from the north-west are earth too */
 export const TC_EARTH: Box[] = [[-760, -600, -205, -45], [-760, -660, -45, 5]];
-const inEarthArea = (x: number, z: number) => inGhl(x, z) || TC_EARTH.some(([a, b, c, d]) => x > a && x < b && z > c && z < d);
+/** (and Noguchi and WAGMC's red-earth tracks, nogplan.ts NOG_EARTH: the owner's correction brief, S02/S17/S18) */
+const nearNogEarth = (x: number, z: number, r: number) => x > 170 && x < 560 && z > 1820 && z < 2220 && nogEarthDist(x, z) < r;
+const inEarthArea = (x: number, z: number) => inGhl(x, z) || TC_EARTH.some(([a, b, c, d]) => x > a && x < b && z > c && z < d) || nearNogEarth(x, z, 6);
 /** a mapped track or service road (classes 3 and 4) that the aerials show as earth where it crosses the area: every
  *  path and track there, and the service roads there (the dirt road from the tennis complex's corner west to the grey
  *  patch, the curve south to the pale rectangle): none is sealed in the aerials */
-export const EARTH_ROADS: number[] = ROADS.flatMap((r, i) => (r.cls >= 3 && r.nodes.some((n) => inEarthArea(NODE_XZ[n * 2], NODE_XZ[n * 2 + 1])) ? [i] : []));
+export const EARTH_ROADS: number[] = ROADS.flatMap((r, i) => (r.cls >= 3 && (r.nodes.some((n) => inGhl(NODE_XZ[n * 2], NODE_XZ[n * 2 + 1]) || TC_EARTH.some(([a, b, c, d]) => NODE_XZ[n * 2] > a && NODE_XZ[n * 2] < b && NODE_XZ[n * 2 + 1] > c && NODE_XZ[n * 2 + 1] < d)) || r.nodes.every((n) => nearNogEarth(NODE_XZ[n * 2], NODE_XZ[n * 2 + 1], 1.5))) ? [i] : []));
 /** half width of an earth track as drawn: the worn footpaths narrow, the service tracks a vehicle's width */
-export const earthHalf = (ri: number) => (ROADS[ri].cls === 4 ? 0.9 : ROADS[ri].surface === 'trail' ? 1.3 : 1.9);
+export const earthHalf = (ri: number) => (ROADS[ri].cls === 4 ? 0.9 : ROADS[ri].nodes.every((n) => nearNogEarth(NODE_XZ[n * 2], NODE_XZ[n * 2 + 1], 1.5)) ? 2.1 : ROADS[ri].surface === 'trail' ? 1.3 : 1.9);
 const SG = 24;
 /** the earth tracks' segments, and the other roads' near the area (where a track meets a sealed road, the sealed road
  *  keeps its surface right through the junction) */
@@ -100,7 +103,7 @@ ROADS.forEach((r, ri) => {
   for (let k = 0; k < r.nodes.length - 1; k++) {
     const ax = NODE_XZ[r.nodes[k] * 2], az = NODE_XZ[r.nodes[k] * 2 + 1], bx = NODE_XZ[r.nodes[k + 1] * 2], bz = NODE_XZ[r.nodes[k + 1] * 2 + 1];
     if (earthSet.has(ri)) { segs.push([ax, az, bx, bz, earthHalf(ri)]); file(sgrid, segs.length - 1, ax, az, bx, bz); continue; }
-    if (Math.max(ax, bx) < GHL_BOX[0] - 20 || Math.min(ax, bx) > GHL_BOX[1] + 20 || Math.max(az, bz) < GHL_BOX[2] - 20 || Math.min(az, bz) > GHL_BOX[3] + 20) continue;
+    if ((Math.max(ax, bx) < GHL_BOX[0] - 20 || Math.min(ax, bx) > GHL_BOX[1] + 20 || Math.max(az, bz) < GHL_BOX[2] - 20 || Math.min(az, bz) > GHL_BOX[3] + 20) && !(nearNogEarth(ax, az, 40) || nearNogEarth(bx, bz, 40))) continue;
     sealed.push([ax, az, bx, bz, DRAWN_HALF[r.cls]]); file(xgrid, sealed.length - 1, ax, az, bx, bz);
   }
 });

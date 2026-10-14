@@ -1164,6 +1164,14 @@
    "building": "osm:way/1417035955"
   },
   {
+   "way": "osm:way/959678445",
+   "building": "ml:644aecfb-ad42-4bae-958c-6537eb9a8619"
+  },
+  {
+   "way": "owner:wagmc-east-strip",
+   "building": "osm:way/1180697051"
+  },
+  {
    "way": "osm:way/1540994850",
    "building": "osm:way/278303069",
    "buildingName": "Akuafo Hall Annex B"

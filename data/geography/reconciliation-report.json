@@ -83,19 +83,19 @@
    "added": 106,
    "extended": 1
   },
-  "junctions": 1276,
+  "junctions": 1278,
   "roundabouts": 18,
-  "count": 1665,
+  "count": 1674,
   "kmByClass": {
-   "service": 74.5,
-   "residential": 68.4,
+   "service": 74.8,
+   "residential": 68.5,
    "path": 25.9,
    "tertiary": 15.7,
    "unclassified": 13.1,
    "footway": 12.9,
    "secondary": 9.2,
    "trunk": 8.4,
-   "track": 3.8,
+   "track": 4.3,
    "trunk_link": 1.4,
    "tertiary_link": 0.4,
    "steps": 0.1,
@@ -114,12 +114,12 @@
    "google-open-buildings": 143
   },
   "osmOnCampusChecked": 1468,
-  "osmValidatedByGoogleOpenBuildings": 1328,
-  "validatedShare": 0.905,
+  "osmValidatedByGoogleOpenBuildings": 1327,
+  "validatedShare": 0.904,
   "medianCentroidOffsetToGoogleM": {
    "x": 0.6,
    "z": 0.4,
-   "n": 1205
+   "n": 1204
   },
   "mlAdded": 287,
   "mlRejected": {
@@ -141,8 +141,8 @@
    "health": 2
   },
   "byConfidence": {
-   "medium": 1812,
-   "high": 1328
+   "medium": 1813,
+   "high": 1327
   },
   "osmNotSeenBySatellite": [
    {
@@ -411,6 +411,11 @@
    "ml:e0e0194a-5105-47b2-9cfd-606c10db506a",
    "ml:366bf68f-c90a-4c21-aaec-1757e17a4577",
    "ml:5b4e137d-917e-461e-aa56-7fa7484c9036",
+   "osm:way/111440943",
+   "osm:way/1239491144",
+   "osm:way/111440926",
+   "osm:way/690531803",
+   "osm:way/958782150",
    "ml:56ac8af2-55a6-4373-84f0-ab8959185ae3",
    "osm:way/1184497719",
    "ml:c4d6268e-fa99-4886-9242-72ece4361f46"
@@ -442,8 +447,8 @@
    "ha": 1.5
   },
   "parking": {
-   "count": 144,
-   "ha": 14.1
+   "count": 148,
+   "ha": 14
   },
   "track": {
    "count": 3,

@@ -20,9 +20,12 @@ import { box, canvas, speckle, type Part } from './modelkit';
 import { SOLIDS } from './solids';
 import { wallSolids } from './enkit';
 import { BUILDINGS, ROADS, NODE_XZ } from './campusmap';
-import { crownTiles, hash2, vnoise2, type Crown } from './scrubkit';
+import { letters } from './letters';
+import { hipRoof } from './waccbip';
+import { coverOverlay, crownTiles, hash2, vnoise2, type Crown } from './scrubkit';
+import { onSealed } from './ghlplan';
 import { SILVER, asphaltMat, curtain, facing, lawnMat, plane, prism, rect, strip, type P2, type R4, mergeMeshes } from './medkit';
-import { ARRAYS, LAB, NG, NOG_LOTS, RED04, RING, SHED21, WAG, WAG_LOTS, WG } from './nogplan';
+import { ARRAYS, CLUSTER_EXTRA, LAB, NG, NOG_CLUSTER, NOG_EARTH, NOG_LOTS, NOG_ROADS, RED04, RING, SHED21, WAG, WAG_BOUND, WAG_LOTS, WG, nogEarthDist, type LineRow } from './nogplan';
 import { ugLocal } from './ugmcplan';
 
 // ---------- facades ----------
@@ -73,6 +76,16 @@ const panelMat = () => (PANELS ??= new THREE.MeshStandardMaterial({ roughness: 0
 }) }));
 let SALMON: THREE.MeshStandardMaterial | null = null;
 /** the muted salmon forecourt (W18: its paving product unresolved) */
+let DTILE: THREE.MeshStandardMaterial | null = null, PSLAB: THREE.MeshStandardMaterial | null = null, FLOWER: THREE.MeshStandardMaterial | null = null;
+/** the dark tiled entry floor under the canopy (S11) */
+const darkTileMat = () => (DTILE ??= new THREE.MeshStandardMaterial({ roughness: 0.7, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4, map: canvas(64, 64, (g) => { g.fillStyle = '#4d5155'; g.fillRect(0, 0, 64, 64); g.fillStyle = '#3f4347'; for (let i = 0; i < 64; i += 16) { g.fillRect(i, 0, 1, 64); g.fillRect(0, i, 64, 1); } }) }));
+/** the pale pedestrian paving (S20) */
+const paleSlabMat = () => (PSLAB ??= new THREE.MeshStandardMaterial({ roughness: 0.9, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4, map: canvas(64, 64, (g) => { g.fillStyle = '#d3d0c7'; g.fillRect(0, 0, 64, 64); speckle(g, 0, 0, 64, 64, 300, ['#cbc8bf', '#dbd8cf']); g.fillStyle = 'rgba(120,115,105,0.4)'; for (let i = 0; i < 64; i += 21) { g.fillRect(i, 0, 1, 64); g.fillRect(0, i, 64, 1); } }) }));
+/** the yellow flowering groundcover band (S20) */
+const flowerMat = () => (FLOWER ??= new THREE.MeshStandardMaterial({ roughness: 1, polygonOffset: true, polygonOffsetFactor: -5, polygonOffsetUnits: -5, map: canvas(64, 64, (g) => { g.fillStyle = '#5b7a2c'; g.fillRect(0, 0, 64, 64); speckle(g, 0, 0, 64, 64, 900, ['#e2c22a', '#f0d540', '#cfae1f', '#6d8a32']); }) }));
+let PALE: THREE.MeshStandardMaterial | null = null, BASE_LAWN: THREE.MeshStandardMaterial | null = null;
+/** pale concrete paving slabs (S20, S02: the walks and the strip along WAGMC's west wall) */
+const paleMat = () => (PALE ??= new THREE.MeshStandardMaterial({ roughness: 0.92, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4, map: canvas(64, 64, (g) => { g.fillStyle = '#c9c5bb'; g.fillRect(0, 0, 64, 64); speckle(g, 0, 0, 64, 64, 300, ['#c2beb4', '#d0ccc2']); g.fillStyle = 'rgba(120,115,105,0.45)'; for (let i = 0; i < 64; i += 32) { g.fillRect(i, 0, 1, 64); g.fillRect(0, i, 64, 1); } }) }));
 const salmonMat = () => (SALMON ??= new THREE.MeshStandardMaterial({ roughness: 0.92, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4, map: canvas(64, 64, (g) => { g.fillStyle = '#c99482'; g.fillRect(0, 0, 64, 64); speckle(g, 0, 0, 64, 64, 400, ['#c08a78', '#d19e8c', '#bb8573']); }) }));
 
 const nPlane = (k: Kit, pts: P2[], y: number, mat: THREE.Material, tile = 0) => plane(k, pts, y, mat, tile, NG.world);
@@ -96,6 +109,13 @@ function bays(k: Kit, rows: { v: P2; u: P2 }[], across = false) {
   k.plain.push(...lines);
 }
 
+/** white bay lines along a row of bays given by its centre line (LineRow): a line every 2.6 m across the row, 5 m long,
+ *  tilted for an angled row */
+function lineBays(k: Kit, r: LineRow) {
+  const L = Math.hypot(r.b[0] - r.a[0], r.b[1] - r.a[1]), du = (r.b[0] - r.a[0]) / L, dv = (r.b[1] - r.a[1]) / L, ry = Math.atan2(dv, du) * -1 + (r.tilt ?? 0);
+  for (let t = 0; t <= L + 0.01; t += 2.6) k.plain.push([new THREE.BoxGeometry(0.14, 0.03, 5).rotateY(ry).translate(r.a[0] + du * t, 0.1, r.a[1] + dv * t), '#f2f2ee']);
+}
+
 // ---------- Noguchi: the ring, the pavilion, 04, the fields, the shed ----------
 const RS = RING.storey, ringTop = 0.4 + RING.floors * RS + 0.4;
 const ringO: R4 = [-RING.outer, RING.outer, RING.outerV[0], RING.outerV[1]], ringI: R4 = [ringO[0] + RING.band, ringO[1] - RING.band, ringO[2] + RING.band, ringO[3] - RING.band];
@@ -116,11 +136,13 @@ const noguchi: Spec = {
     { x0: RED04.outer[0], x1: RED04.outer[1], z0: RED04.court[3], z1: RED04.outer[3], floors: 1, roofColor: '#a2412f', pitch: 0.45, faces: { z0: PLAIN_SMALL, z1: PLAIN_SMALL, x0: PLAIN_SMALL, x1: PLAIN_SMALL } },
     { x0: RED04.outer[0], x1: RED04.court[0], z0: RED04.court[2], z1: RED04.court[3], floors: 1, roofColor: '#a2412f', pitch: 0.45, faces: { z0: PLAIN_SMALL, z1: PLAIN_SMALL, x0: PLAIN_SMALL, x1: PLAIN_SMALL } },
     { x0: RED04.court[1], x1: RED04.outer[1], z0: RED04.court[2], z1: RED04.court[3], floors: 1, roofColor: '#a2412f', pitch: 0.45, faces: { z0: PLAIN_SMALL, z1: PLAIN_SMALL, x0: PLAIN_SMALL, x1: PLAIN_SMALL } },
+    // the cluster's roofs without a mapped outline (CLUSTER_EXTRA)
+    ...CLUSTER_EXTRA.map(({ r, roof }) => ({ x0: r[0], x1: r[1], z0: r[2], z1: r[3], floors: 1, roofColor: roof, pitch: 0.4, faces: { z0: PLAIN_SMALL, z1: PLAIN_SMALL, x0: PLAIN_SMALL, x1: PLAIN_SMALL } })),
     // 21 the red shed
     { x0: SHED21[0], x1: SHED21[1], z0: SHED21[2], z1: SHED21[3], floors: 1, roofColor: '#b5452f', pitch: 0.4, faces: { z0: PLAIN_SMALL, z1: PLAIN_SMALL, x0: PLAIN_SMALL, x1: PLAIN_SMALL } },
   ],
   keep: [[ringI[0], ringI[1], ringI[2], ringI[3]], [RING.link[0], RING.link[1], RING.link[2], RING.link[3]], [RED04.court[0], RED04.court[1], RED04.court[2], RED04.court[3]],
-    ...ARRAYS.map(({ r }) => r), [LAB.island[0], LAB.island[1], LAB.island[2], LAB.island[3]], ...NOG_LOTS.map((l) => { const us = l.ring.map((p) => p[0]), vs = l.ring.map((p) => p[1]); return [Math.min(...us), Math.max(...us), Math.min(...vs), Math.max(...vs)] as R4; })],
+    ...ARRAYS.map(({ r }) => r), [LAB.island[0], LAB.island[1], LAB.island[2], LAB.island[3]], [LAB.tower[0] - 6, LAB.low[1] + 1, LAB.tower[2] - 5, LAB.tower[3] + 1], ...NOG_LOTS.map((l) => { const us = l.ring.map((p) => p[0]), vs = l.ring.map((p) => p[1]); return [Math.min(...us), Math.max(...us), Math.min(...vs), Math.max(...vs)] as R4; })],
   extras: (k) => {
     // the ring's roof: outer slopes up from the outer eaves, inner slopes up from the court's eaves, to a ridge round
     // the middle of the band, hips at the corners
@@ -145,6 +167,18 @@ const noguchi: Spec = {
     { const [x0, x1, z0, z1] = RING.link;
       k.plain.push([box(x0, x1, 3.2, 3.5, z0, z1), '#e7e2d6'], [box(x0, x1, 3.45, 3.6, z0 - 0.1, z1 + 0.1), '#4f4a46']);
       for (const x of [x0 + 6, x1 - 0.4]) for (const z of [z0 + 0.3, z1 - 0.3]) { k.plain.push([box(x - 0.15, x + 0.15, 0, 3.2, z - 0.15, z + 0.15), '#e7e2d6']); nSolid(x, z, 0.25); } }
+    // the loop beside the ring (the owner's correction brief, S03/S04): pale kerbs along both edges of its paving, the
+    // inner island lawn (its trees: buildNogGrounds), the kerbed lawn in its east half
+    { const L = NOG_ROADS.loop.map(([x, z]) => NG.local(x, z)), off = (d: number) => L.map((p, i) => {
+        const a = L[(i + L.length - 2) % (L.length - 1)], b = L[(i + 1) % (L.length - 1)], dx = b[0] - a[0], dz = b[1] - a[1], l = Math.hypot(dx, dz) || 1;
+        return [p[0] - (dz / l) * d, p[1] + (dx / l) * d] as P2; });
+      const inner = off(-2.3), outer = off(2.3);
+      // (the ring's points run clockwise in the world: the left of travel is outward; pick by area)
+      const area = (r: P2[]) => r.reduce((s, p, i) => s + p[0] * r[(i + 1) % r.length][1] - r[(i + 1) % r.length][0] * p[1], 0);
+      const [inK, outK] = Math.abs(area(inner)) < Math.abs(area(outer)) ? [inner, outer] : [outer, inner];
+      nPlane(k, inK, 0.03, lawnMat(), 4);
+      k.plain.push([strip(inK, 0, 0.15, 0.12), '#dcd8ce'], [strip(outK.slice(0, -1).filter((_, i) => i !== 0), 0, 0.12, 0.1), '#dcd8ce']); }
+    for (const { r: [a, b, c, d] } of CLUSTER_EXTRA) { const W = (u: number, v: number) => NG.world(u, v); wallSolids(...W(a, c), ...W(b, c), 0.3); wallSolids(...W(b, c), ...W(b, d), 0.3); wallSolids(...W(b, d), ...W(a, d), 0.3); wallSolids(...W(a, d), ...W(a, c), 0.3); }
     // 04's open centre
     nPlane(k, rect(RED04.court), 0.04, lawnMat(), 4);
     // 17 / 18: the solar fields (the owner): low repeated rows of dark panels on light frames, pale aisles between
@@ -164,55 +198,166 @@ const noguchi: Spec = {
 };
 
 // ---------- Noguchi: the Advanced Research Laboratories ----------
-const LS = LAB.storey, labTop = 0.4 + 2 * LS + 0.4, endTop = 0.4 + LAB.endFloors * LS + 0.4;
+// (the owner's correction brief, S07-S20, registered on M1; docs/noguchi-wagmc/correction-ledger.md)
+// - the west face (S08, S10, S20): the portal at its north end, the wide dark upper bay over it, a wide blank pier, then
+//   12 bays of a broad pale pier standing out of the wall and a narrow recessed slot with a framed window a floor and a
+//   small grey shelf under each; the hipped dark roof over the L with its overhang and dark fascia;
+// - the portal (S08, S11, S20): a thick pale frame standing 4 m out, its side returns, three grey inner columns between
+//   the doors, the shallow canopy strips stepping back to the wall, the dark recessed glazing, the dark entry floor;
+// - the north and inner faces (S08 left, S15, S19): narrow white fins over dark louvres;
+// - the flat white rear volumes (S09, S12): the service block with its plant, the taller east block with fins;
+// - the signed tower north of the north-west corner (S09, S10, S15, S19): pale and blank, the raised NOGUCHI and
+//   ADVANCED RESEARCH LABORATORIES letters on its west face, three stacked landings with bar rails on its north face
+//   joined to the ground by a stair, three small windows; the low block beside it (provisional);
+// - before the portal (S20, M1): two kerbed lawns with the pale walk between them, the framed monument with its rough
+//   face and raised letters, shrubs in a soil bed, a yellow flower band, short black bollard lights.
+const LS = LAB.storey, labTop = 0.4 + 2 * LS + 0.4, endTop = 0.4 + LAB.endFloors * LS + 0.4, towTop = 0.4 + LAB.towerFloors * LS + 0.4;
+/** a blank pale render (the piers, the tower, the end walls) */
+const LAB_PALE: Style = { bay: 4, up: [], ground: [], draw: (g) => { g.fillStyle = '#efefec'; g.fillRect(0, 0, 256, 512); speckle(g, 0, 0, 256, 512, 700, ['#e9e9e6', '#f5f5f2']); g.fillStyle = '#8c8a85'; g.fillRect(0, 496, 256, 16); } };
+/** the dark grey louvres behind the fins (horizontal slats) */
+const LAB_LOUVRE: Style = { bay: 4, up: [], ground: [], draw: (g) => { g.fillStyle = '#3d4043'; g.fillRect(0, 0, 256, 512); for (let y = 4; y < 496; y += 11) { g.fillStyle = '#62676b'; g.fillRect(0, y, 256, 4); } g.fillStyle = '#8c8a85'; g.fillRect(0, 496, 256, 16); } };
+let ROUGH: THREE.MeshStandardMaterial | null = null;
+/** the monument's rough inset face (S20) */
+const roughMat = () => (ROUGH ??= new THREE.MeshStandardMaterial({ roughness: 1, map: canvas(128, 64, (g) => { g.fillStyle = '#d9d7d0'; g.fillRect(0, 0, 128, 64); speckle(g, 0, 0, 128, 64, 1400, ['#c9c7bf', '#e6e4dd', '#bdbab2', '#d0cec6']); }) }));
+/** fins along a face: boxes `w` wide standing `d` out of the face at `at` (alongX: the face runs along x at z = at) */
+function fins(p: Part[], alongX: boolean, at: number, out: number, a0: number, a1: number, y1: number, step = 1.6, w = 0.35, d = 0.45) {
+  for (let a = a0 + step / 2; a < a1; a += step) {
+    const [o0, o1] = [Math.min(at, at + out * d), Math.max(at, at + out * d)];
+    p.push([alongX ? box(a - w / 2, a + w / 2, 0.3, y1, o0, o1) : box(o0, o1, 0.3, y1, a - w / 2, a + w / 2), '#f3f3f0']);
+  }
+}
+const [TU0, TU1, TV0, TV1] = LAB.tower;
 const lab: Spec = {
   name: 'Noguchi Advanced Research Laboratories',
-  axis: NG.axis, origin: NG.origin, storey: LS, style: LAB_PIERS, roofColor: '#5b524b', fascia: '#3d3732', pitch: 0.33,
+  axis: NG.axis, origin: NG.origin, storey: LS, style: LAB_PALE, roofColor: '#4d4a47', fascia: '#2f2d2b', pitch: 0.33,
+  // (the lots' map areas are drawn here, not as the map's generic parking)
+  covers: NOG_LOTS.map((l) => NG.world(l.ring.reduce((a, p) => a + p[0], 0) / l.ring.length, l.ring.reduce((a, p) => a + p[1], 0) / l.ring.length)),
   blocks: [
-    { x0: LAB.frame[1], x1: LAB.front[1], z0: LAB.front[2], z1: LAB.front[3], floors: 2 },
-    { x0: LAB.front[0], x1: LAB.frame[1], z0: LAB.front[2] + 2.2, z1: LAB.front[3], floors: 2, roof: 'flat' },
-    { x0: LAB.arm[0], x1: LAB.arm[1], z0: LAB.arm[2], z1: LAB.arm[3], floors: 2 },
-    { x0: LAB.service[0], x1: LAB.service[1], z0: LAB.service[2], z1: LAB.service[3], floors: 2, roof: 'flat', faces: { z1: LAB_END, x1: LAB_END } },
-    { x0: LAB.end[0], x1: LAB.end[1], z0: LAB.end[2], z1: LAB.end[3], floors: LAB.endFloors, roof: 'flat', faces: { z0: LAB_END, z1: LAB_END, x0: LAB_END, x1: LAB_END } },
+    // the L under its hipped roof (built in extras): the west arm whole, the north arm east of it
+    { x0: LAB.front[0], x1: LAB.arm[1], z0: LAB.front[2], z1: LAB.arm[3], floors: 2, roof: 'none', faces: { x0: LAB_PALE, z0: LAB_LOUVRE, x1: LAB_LOUVRE, z1: LAB_PALE } },
+    { x0: LAB.arm[1], x1: LAB.front[1], z0: LAB.front[2], z1: LAB.front[3], floors: 2, roof: 'none', faces: { z0: LAB_LOUVRE, z1: LAB_LOUVRE, x0: LAB_PALE, x1: LAB_PALE } },
+    { x0: LAB.service[0], x1: LAB.service[1], z0: LAB.service[2], z1: LAB.service[3], floors: 2, roof: 'flat', faces: { z1: LAB_LOUVRE, x1: LAB_PALE, x0: LAB_PALE, z0: LAB_PALE } },
+    { x0: LAB.end[0], x1: LAB.end[1], z0: LAB.end[2], z1: LAB.end[3], floors: LAB.endFloors, roof: 'flat', faces: { z0: LAB_LOUVRE, z1: LAB_LOUVRE, x0: LAB_PALE, x1: LAB_LOUVRE } },
+    // the signed tower and the low block beside it
+    { x0: TU0, x1: TU1, z0: TV0, z1: TV1, floors: LAB.towerFloors, roof: 'flat', faces: { x0: LAB_PALE, x1: LAB_PALE, z0: LAB_PALE, z1: LAB_PALE } },
+    { x0: LAB.low[0], x1: LAB.low[1], z0: LAB.low[2], z1: LAB.low[3], floors: 1, roof: 'flat', faces: { x0: LAB_PALE, x1: LAB_PALE, z0: LAB_PALE, z1: LAB_PALE } },
   ],
-  keep: [],
+  keep: [[LAB.portalOut - 1, LAB.front[0], LAB.portal[0] - 1, LAB.portal[1] + 1], [TU0 - 2, LAB.low[1] + 1, TV0 - 5, TV1 + 1]],
   extras: (k) => {
-    // the white entrance frame round the recessed dark lobby (N02, N03)
-    { const [x0, x1] = LAB.frame, z = LAB.front[2], h = 6.4;
-      k.plain.push([box(x0 - 1, x0, 0, h, z - 0.4, z + 2.2), '#f6f6f4'], [box(x1, x1 + 1, 0, h, z - 0.4, z + 2.2), '#f6f6f4'], [box(x0 - 1, x1 + 1, h - 1.2, h, z - 0.4, z + 2.2), '#f6f6f4']);
-      curtain(k, [[x0, z + 2.1], [x1, z + 2.1]], 0.3, h - 1.2);
-      k.plain.push([box(x0, x1, 0, 0.25, z - 0.4, z + 2.2), '#d8d6d0']); }
-    // the flat service roof and its plant, the end's parapet
-    k.plain.push([box(LAB.service[0], LAB.service[1], labTop, labTop + 0.15, LAB.service[2], LAB.service[3]), '#d9d8d2'], [box(LAB.end[0], LAB.end[1], endTop, endTop + 0.6, LAB.end[2], LAB.end[2] + 0.3), '#e8e8e6']);
-    for (let i = 0; i < 7; i++) k.plain.push([box(146 + i * 5, 148.4 + i * 5, labTop + 0.15, labTop + 1.4, -126, -123.6), '#cfd2d4']);
-    // the signed east end: NOGUCHI over ADVANCED RESEARCH LABORATORIES (N05-N07)
-    { const x = LAB.end[1] + 0.06, zc = (LAB.end[2] + LAB.end[3]) / 2;
-      k.signs.push({ text: 'NOGUCHI', x, y: endTop - 3.0, z: zc - 1, ry: Math.PI / 2, w: 9, colors: ['#f2f2f0', '#4d7f9c'] });
-      k.signs.push({ text: 'ADVANCED RESEARCH LABORATORIES', x, y: endTop - 4.6, z: zc - 1, ry: Math.PI / 2, w: 10.5, colors: ['#f2f2f0', '#4d7f9c'] }); }
-    // the external stair flights, landings and balconies with dark railings on the end's south face (N06)
-    { const z = LAB.end[3], x0 = LAB.end[0] + 2, x1 = LAB.end[1] - 2;
-      for (let f = 1; f < LAB.endFloors; f++) {
-        const y = 0.4 + f * LS;
-        // the slab, then a railing of dark posts and two thin rails (open, not a solid band)
-        k.plain.push([box(x0, x1, y - 0.25, y, z, z + 2.2), '#e9e9e7']);
-        for (const yy of [y + 1.0, y + 0.5]) k.plain.push([box(x0, x1, yy - 0.025, yy + 0.025, z + 2.17, z + 2.23), '#2a2c2f'], [box(x0 - 0.03, x0 + 0.03, yy - 0.025, yy + 0.025, z, z + 2.2), '#2a2c2f'], [box(x1 - 0.03, x1 + 0.03, yy - 0.025, yy + 0.025, z, z + 2.2), '#2a2c2f']);
-        for (let x = x0; x <= x1 + 0.01; x += 1.2) k.plain.push([box(x - 0.03, x + 0.03, y, y + 1.0, z + 2.17, z + 2.23), '#2a2c2f']);
+    const p: Part[] = [], u0 = LAB.front[0], ov = 1.2;
+    // ---- the hipped roof over the L: the west arm hipped at both ends, the north arm hipped at its east end and dying
+    // into the west arm's roof at its west end; dark fascias round the eaves ----
+    k.roof.c = new THREE.Color('#4d4a47');
+    hipRoof(k, (x, z) => [x, z], u0 - ov, LAB.arm[1] + ov, LAB.front[2] - ov, LAB.arm[3] + ov, labTop, 0.33, 'z', [{ gw: 0, tri: false }, { gw: 0, tri: false }], p, '#2f2d2b');
+    hipRoof(k, (x, z) => [x, z], (u0 + LAB.arm[1]) / 2, LAB.end[0], LAB.front[2] - ov, LAB.front[3] + 0.3, labTop, 0.33, 'x', [{ gw: 99, tri: false }, { gw: 99, tri: false }], p, '#2f2d2b');
+    for (const [a, b] of [[[u0 - ov, LAB.front[2] - ov], [LAB.end[0], LAB.front[2] - ov]], [[u0 - ov, LAB.front[2] - ov], [u0 - ov, LAB.arm[3] + ov]], [[u0 - ov, LAB.arm[3] + ov], [LAB.arm[1] + ov, LAB.arm[3] + ov]], [[LAB.arm[1] + ov, LAB.arm[3] + ov], [LAB.arm[1] + ov, LAB.service[3]]]] as [P2, P2][]) p.push([strip([a, b], labTop - 0.4, labTop + 0.02, 0.08), '#2f2d2b']);
+    // ---- the west face ----
+    const [pv0, pv1] = LAB.portal, po = LAB.portalOut, ph = 6.0;
+    // the bays: a pier standing 0.45 out, then the slot: a framed window a floor, the dark spandrel, a grey shelf under each
+    const { v0, n, w, pier } = LAB.bays;
+    for (let i = 0; i < n; i++) {
+      const a = v0 + i * w;
+      p.push([box(u0 - 0.45, u0, 0, labTop - 0.1, a, a + pier), '#f1f1ee']);
+      const s0 = a + pier, s1 = a + w;
+      p.push([box(u0 - 0.04, u0, 0.3, labTop - 0.5, s0, s1), '#3e4245']);
+      for (let fl = 0; fl < 2; fl++) {
+        const y = 0.4 + fl * LS;
+        p.push([box(u0 - 0.08, u0 - 0.04, y + 0.9, y + 3.4, s0 + 0.08, s1 - 0.08), '#8d9195']);
+        k.glass.push(box(u0 - 0.1, u0 - 0.08, y + 1.0, y + 3.3, s0 + 0.16, s1 - 0.16));
+        p.push([box(u0 - 0.12, u0 - 0.08, y + 2.1, y + 2.16, s0 + 0.16, s1 - 0.16), '#8d9195']);
+        p.push([box(u0 - 0.65, u0, y + 0.72, y + 0.86, s0 - 0.05, s1 + 0.05), '#6f7377']);
       }
-      for (let i = 0; i < 12; i++) k.plain.push([box(x0 - 4.5 + i * 0.35, x0 - 4.15 + i * 0.35, 0, 0.4 + i * 0.35, z + 0.2, z + 1.6), '#e2e2e0']);
-      for (let i = 0; i <= 4; i++) k.plain.push([box(x0 - 4.5 + i * 1.1 - 0.03, x0 - 4.5 + i * 1.1 + 0.03, 0.4 + i * 0.38, 1.4 + i * 0.38, z + 1.57, z + 1.63), '#2a2c2f']);
-      for (const [x, zz] of [[x0, z + 2.2], [x1, z + 2.2]] as P2[]) nSolid(x, zz, 0.4); }
-    // the freestanding sign in its kerbed island: lawn, light kerb, small shrubs (ground), bollard lights (N02)
-    { const [x0, x1, z0, z1] = LAB.island;
-      k.plain.push([box(x0, x1, 0, 0.2, z0, z1), '#f0efea']);
-      nPlane(k, rect([x0 + 0.3, x1 - 0.3, z0 + 0.3, z1 - 0.3]), 0.22, lawnMat(), 4);
-      const [sx, sz] = LAB.sign, ry = facing(-0.95, -0.3);
-      k.plain.push([new THREE.BoxGeometry(5.4, 2.6, 0.8).rotateY(ry).translate(sx, 1.5, sz), '#e7e5de'], [new THREE.BoxGeometry(5.6, 0.3, 1).rotateY(ry).translate(sx, 0.35, sz), '#d8d6cf']);
-      const dx = Math.sin(ry), dz = Math.cos(ry);
-      ['NOGUCHI', 'ADVANCED', 'RESEARCH', 'LABORATORIES'].forEach((t, i) => k.signs.push({ text: t, x: sx + dx * 0.42 - Math.cos(ry) * 0.9, y: 2.4 - i * 0.48, z: sz + dz * 0.42 + Math.sin(ry) * 0.9, ry, w: 0.45 * t.length * 0.62, colors: ['#e7e5de', '#9c998f'] }));
+    }
+    p.push([box(u0 - 0.45, u0, 0, labTop - 0.1, v0 + n * w, LAB.arm[3]), '#f1f1ee']);
+    // the wide blank pier between the portal and the bays stands out as the others do
+    p.push([box(u0 - 0.45, u0, 0, labTop - 0.1, pv1 + 0.5, v0), '#f1f1ee']);
+    // the dark upper bay over the portal, from the corner to the blank pier, with vertical slats at its north end
+    p.push([box(u0 - 0.03, u0, ph + 0.2, labTop - 0.3, LAB.front[2] + 0.3, pv1 + 0.5), '#2b2e31']);
+    for (let v = LAB.front[2] + 0.5; v < LAB.front[2] + 3.4; v += 0.3) p.push([box(u0 - 0.2, u0, ph + 0.3, labTop - 0.4, v - 0.03, v + 0.03), '#5d6064']);
+    // the portal: legs (thick side returns), header, the canopy strips stepping back, the inner columns, the doors
+    p.push([box(po, u0, 0, ph, pv0, pv0 + 1.0), '#f2f2ef'], [box(po, u0, 0, ph, pv1 - 1.0, pv1), '#f2f2ef'], [box(po, u0, ph - 1.1, ph, pv0, pv1), '#f2f2ef']);
+    p.push([box(po + 0.6, u0, ph, ph + 0.22, pv0 + 0.4, pv1 - 0.4), '#c9cbcc'], [box(po + 1.6, u0, ph + 0.22, ph + 0.42, pv0 + 0.8, pv1 - 0.8), '#b9bcbe'], [box(po + 0.3, u0, ph - 1.3, ph - 1.1, pv0 + 1, pv1 - 1), '#e2e2df']);
+    for (const v of [pv0 + 3.2, pv0 + 6.5, pv0 + 9.8]) { p.push([box(po + 1.4, po + 1.9, 0, ph - 1.1, v - 0.25, v + 0.25), '#a9adb0']); nSolid(po + 1.65, v, 0.35); }
+    for (const v of [pv0 + 0.5, pv1 - 0.5]) { const [ax, az] = NG.world(po + 0.2, v), [bx, bz] = NG.world(u0, v); wallSolids(ax, az, bx, bz, 0.55); }
+    curtain(k, [[u0 - 0.06, pv0 + 1.0], [u0 - 0.06, pv1 - 1.0]], 0.15, ph - 1.2);
+    for (const [a, b] of [[pv0 + 4.0, pv0 + 5.7], [pv0 + 7.3, pv0 + 9.0]]) p.push([box(u0 - 0.12, u0 - 0.06, 0.12, 2.5, a, b), '#25282a'], [box(u0 - 0.14, u0 - 0.1, 0.12, 2.5, (a + b) / 2 - 0.03, (a + b) / 2 + 0.03), '#9aa0a4']);
+    nPlane(k, rect([po, u0, pv0 + 1.0, pv1 - 1.0]), 0.07, darkTileMat(), 1);
+    // the plant on the canopy's roof (S11)
+    for (const v of [pv0 + 2.5, pv1 - 3]) p.push([box(po + 2.6, po + 3.6, ph + 0.42, ph + 1.1, v - 0.6, v + 0.6), '#c3c6c8']);
+    // ---- fins on the north face, the inner faces and the east block ----
+    fins(p, true, LAB.front[2], -1, u0, LAB.end[0], labTop - 0.3);
+    fins(p, true, LAB.end[2], -1, LAB.end[0], LAB.end[1], endTop - 0.2);
+    fins(p, false, LAB.end[1], 1, LAB.end[2], LAB.end[3], endTop - 0.2);
+    fins(p, false, LAB.arm[1], 1, LAB.service[3], LAB.arm[3], labTop - 0.3);
+    fins(p, true, LAB.service[3], 1, LAB.arm[1], LAB.end[1], labTop - 0.3);
+    // the south end of the west arm: two small windows a floor (provisional)
+    for (let fl = 0; fl < 2; fl++) for (const u of [130, 137]) { p.push([box(u - 0.6, u + 0.6, 0.4 + fl * LS + 1.6, 0.4 + fl * LS + 2.8, LAB.arm[3], LAB.arm[3] + 0.06), '#8d9195']); k.glass.push(box(u - 0.5, u + 0.5, 0.4 + fl * LS + 1.7, 0.4 + fl * LS + 2.7, LAB.arm[3] + 0.06, LAB.arm[3] + 0.08)); }
+    // the flat roofs: the service block's plant, the east block's parapet and plant
+    p.push([box(LAB.service[0], LAB.service[1], labTop, labTop + 0.15, LAB.service[2], LAB.service[3]), '#d9d8d2']);
+    for (let i = 0; i < 7; i++) p.push([box(146 + i * 5, 148.4 + i * 5, labTop + 0.15, labTop + 1.4, -126, -123.6), '#cfd2d4']);
+    p.push([box(LAB.end[0], LAB.end[1], endTop, endTop + 0.6, LAB.end[2], LAB.end[2] + 0.3), '#e8e8e6'], [box(LAB.end[0], LAB.end[1], endTop, endTop + 0.6, LAB.end[3] - 0.3, LAB.end[3]), '#e8e8e6']);
+    for (const u of [186, 191, 196]) p.push([box(u - 1.6, u + 1.6, endTop, endTop + 1.5, -133, -128), '#c5c8ca']);
+    // ---- the signed tower ----
+    p.push([box(TU0, TU1, towTop, towTop + 0.7, TV0, TV0 + 0.25), '#ececE9'], [box(TU0, TU1, towTop, towTop + 0.7, TV1 - 0.25, TV1), '#ececE9'], [box(TU0, TU0 + 0.25, towTop, towTop + 0.7, TV0, TV1), '#ececE9'], [box(TU1 - 0.25, TU1, towTop, towTop + 0.7, TV0, TV1), '#ececE9']);
+    // the raised letters on the west face, NOGUCHI over ADVANCED RESEARCH LABORATORIES, left aligned (S19)
+    letters(k, 'NOGUCHI', TU0 - 0.01, towTop - 2.4, TV0 + 0.8 + 3.4, -Math.PI / 2, 0.95, 0.09, '#d4d8db', { gap: 0.45, stroke: 0.22 });
+    letters(k, 'ADVANCED RESEARCH LABORATORIES', TU0 - 0.01, towTop - 3.35, TV0 + 0.8 + 4.75, -Math.PI / 2, 0.36, 0.06, '#c9ced1', { wide: 0.9, gap: 0.35, stroke: 0.22 });
+    // three small windows low on the west face (S15)
+    for (const v of [TV1 - 3.2, TV1 - 2.3, TV1 - 1.4]) { p.push([box(TU0 - 0.05, TU0, 7.0, 7.9, v - 0.33, v + 0.33), '#8d9195']); k.glass.push(box(TU0 - 0.07, TU0 - 0.05, 7.08, 7.82, v - 0.26, v + 0.26)); }
+    // the stacked landings on the north face: slab, a return wall at the east end, dense bar rails, doors behind
+    const lv0 = TV0 - 1.8;
+    for (let fl = 1; fl < LAB.towerFloors; fl++) {
+      const y = 0.4 + fl * LS, la = TU0 + 0.3, lb = TU1 - 0.6;
+      p.push([box(la - (fl === 1 ? 0 : 0), lb, y - 0.22, y, lv0, TV0), '#ebebe8'], [box(lb, TU1, y - 0.22, y + LS - 0.22, lv0, TV0), '#efefec']);
+      for (let u = la + 0.06; u < lb; u += 0.13) p.push([box(u - 0.013, u + 0.013, y, y + 1.05, lv0 + 0.02, lv0 + 0.05), '#2b2d30']);
+      for (let v = lv0 + 0.1; v < TV0; v += 0.13) p.push([box(la, la + 0.03, y, y + 1.05, v - 0.013, v + 0.013), '#2b2d30']);
+      p.push([box(la, lb, y + 1.03, y + 1.08, lv0, lv0 + 0.06), '#2b2d30'], [box(la, la + 0.06, y + 1.03, y + 1.08, lv0, TV0), '#2b2d30']);
+      for (const u of [TU0 + 2.2, TU0 + 6.2]) p.push([box(u - 0.5, u + 0.5, y, y + 2.3, TV0 - 0.04, TV0), '#2e3033']);
+    }
+    // the ground stair: one flight along the landings' edge from the east up to the first landing's west end, its
+    // stringer wall, the rail on its open side
+    { const y1 = 0.4 + LS, sa = TU0 + 3.0, sb = TU1 + 3.2, n2 = 24, sv0 = lv0 - 1.2;
+      p.push([box(TU0 + 0.3, sa, y1 - 0.22, y1, sv0, lv0), '#ebebe8']);
+      for (let i = 0; i < n2; i++) { const ua = sb - ((sb - sa) * (i + 1)) / n2, ub = sb - ((sb - sa) * i) / n2, y = (y1 * (i + 1)) / n2; p.push([box(ua, ub, y - 0.2, y, sv0, lv0), '#e5e5e2']); }
+      p.push([box(sa, sb, 0, 0.5, sv0, sv0 + 0.12), '#e5e5e2']);
+      const L = Math.hypot(sb - sa, y1); p.push([new THREE.BoxGeometry(L, 0.05, 0.05).rotateZ(-Math.atan2(y1, sb - sa)).translate((sa + sb) / 2, y1 / 2 + 1.0, sv0 + 0.03), '#2b2d30']);
+      for (let i = 0; i <= 8; i++) { const u = sb - ((sb - sa) * i) / 8, y = (y1 * i) / 8; p.push([box(u - 0.02, u + 0.02, y, y + 1.0, sv0 + 0.01, sv0 + 0.05), '#2b2d30']); }
+      for (let u = sa; u < sb; u += 0.8) nSolid(u, (sv0 + lv0) / 2, 0.7); }
+    // the low block's door
+    p.push([box(LAB.low[0] + 2, LAB.low[0] + 3.2, 0.1, 2.4, LAB.low[2] - 0.05, LAB.low[2]), '#2e3033']);
+    k.plain.push(...p);
+    // ---- before the portal: the walk, the two kerbed lawns, the flower band, the monument, bollards ----
+    { const [w0, w1, wv0, wv1] = LAB.walk;
+      nPlane(k, rect([w0, w1, wv0, wv1]), 0.05, paleSlabMat(), 2);
+      for (const [a0, a1, b0, b1] of LAB.lawns) {
+        const r = (b1 - b0) / 2, c = (b0 + b1) / 2, ring: P2[] = [];
+        for (let i = 0; i <= 10; i++) { const t = -Math.PI / 2 + (i / 10) * Math.PI; ring.push([a1 - r + Math.cos(t) * r, c + Math.sin(t) * r]); }
+        for (let i = 0; i <= 10; i++) { const t = Math.PI / 2 + (i / 10) * Math.PI; ring.push([a0 + r + Math.cos(t) * r, c + Math.sin(t) * r]); }
+        k.plain.push([prism(ring, 0, 0.18), '#eeede8']);
+        const inner = ring.map(([u, v]) => [(a0 + a1) / 2 + (u - (a0 + a1) / 2) * ((a1 - a0 - 0.5) / (a1 - a0)), c + (v - c) * ((b1 - b0 - 0.5) / (b1 - b0))] as P2);
+        nPlane(k, inner, 0.2, lawnMat(), 4);
+        for (let u = a0 + r; u < a1 - r; u += 2.2) for (const v of [b0 + 1.2, b1 - 1.2]) nSolid(u, v, 1.0);
+        nSolid(a0 + r, c, r * 0.9); nSolid(a1 - r, c, r * 0.9);
+      }
+      // the yellow flower band along the north lawn's walk side (S20)
+      const [a0, a1, , b1] = LAB.lawns[0];
+      nPlane(k, rect([a0 + 4, a1 - 8, b1 - 1.6, b1 - 0.5]), 0.22, flowerMat(), 2);
+      // the monument: a framed pale block, the rough inset face, the raised stacked letters (S20)
+      const [sx, sz] = LAB.sign, ry = -Math.PI / 2 + 0.25, dx = Math.sin(ry), dz = Math.cos(ry), tx = Math.cos(ry), tz = -Math.sin(ry);
+      k.plain.push([new THREE.BoxGeometry(5.4, 2.8, 0.9).rotateY(ry).translate(sx, 1.6, sz), '#e9e8e3'], [new THREE.BoxGeometry(5.6, 0.25, 1.0).rotateY(ry).translate(sx, 0.32, sz), '#d6d5cf']);
+      const face = new THREE.Mesh(new THREE.PlaneGeometry(4.6, 2.1).rotateY(ry).translate(sx + dx * 0.41, 1.68, sz + dz * 0.41), roughMat()); face.receiveShadow = true; k.meshes.push(face);
+      ['NOGUCHI', 'ADVANCED', 'RESEARCH', 'LABORATORIES'].forEach((t, i) => {
+        const hw = (t.length * 1.25 - 0.35) * (0.34 / 1.4) / 2, off = -2.05 + hw;
+        letters(k, t, sx + dx * 0.43 + tx * off, 2.45 - i * 0.46, sz + dz * 0.43 + tz * off, ry, 0.34, 0.05, '#a9a7a0', { wide: 0.9, gap: 0.35, stroke: 0.2 });
+      });
       nSolid(sx, sz, 1.6);
-      for (let x = x0 + 2; x < x1; x += 6) { bollard(k, x, z0 + 0.8); bollard(k, x, z1 - 0.8); } }
-    // the block-paved parking with white bays (N06)
-    for (const l of NOG_LOTS) { nPlane(k, l.ring, 0.05, paverMat(), 3); bays(k, l.rows, l.across); }
+      for (const [u, v] of [[114, -134], [114, -129.4], [100, -134], [100, -129.4], [88, -134], [88, -129.4]] as P2[]) { bollard(k, u, v); nSolid(u, v, 0.15); }
+      // the zebra crossing over the drive from the walk to the portal (S11)
+      for (let v = LAB.walk[2] + 0.25; v < LAB.walk[3]; v += 0.9) k.plain.push([box(116.4, 121.2, 0.06, 0.075, v, v + 0.45), '#f1f1ec']); }
+    // the block-paved parking with white bays (S15); the loop's kerbside strips in asphalt
+    for (const l of NOG_LOTS) { if (l.name.startsWith('noguchi-loop')) { nPlane(k, l.ring, 0.04, asphaltMat(), 6); continue; } nPlane(k, l.ring, 0.05, paverMat(), 3); bays(k, l.rows, l.across); }
+    // the solid walls of the tower, the low block and the portal frame's outer corners (the tower is not on the map)
+    for (const [a, b, c, d] of [LAB.tower, LAB.low]) { const W = (u: number, v: number) => NG.world(u, v); wallSolids(...W(a, c), ...W(b, c), 0.3); wallSolids(...W(b, c), ...W(b, d), 0.3); wallSolids(...W(b, d), ...W(a, d), 0.3); wallSolids(...W(a, d), ...W(a, c), 0.3); }
     mergeMeshes(k);
   },
 };
@@ -222,6 +367,7 @@ const WS = WAG.storey, wagTop = 0.4 + WAG.floors * WS + 0.4;
 const wagmc: Spec = {
   name: 'West African Genetic Medicine Centre',
   axis: WG.axis, origin: WG.origin, storey: WS, style: WAG_WIN, roofColor: '#7a3328', fascia: '#262626', pitch: 0.45,
+  covers: WAG_LOTS.map((l) => WG.world(l.ring.reduce((a, p) => a + p[0], 0) / l.ring.length, l.ring.reduce((a, p) => a + p[1], 0) / l.ring.length)),
   replaces: [WG.world(-40, -18), WG.world(-45, 27)],
   blocks: [
     { x0: WAG.north[0], x1: WAG.north[1], z0: WAG.north[2], z1: WAG.north[3], floors: 2 },
@@ -230,10 +376,29 @@ const wagmc: Spec = {
     { x0: WAG.rear[0], x1: WAG.rear[1], z0: WAG.rear[2], z1: WAG.rear[3], floors: 2 },
     { x0: WAG.service[0], x1: WAG.service[1], z0: WAG.service[2], z1: WAG.service[3], floors: 1, roof: 'flat', faces: { z0: PLAIN_SMALL, z1: PLAIN_SMALL, x0: PLAIN_SMALL, x1: PLAIN_SMALL } },
   ],
-  keep: [[WAG.wall[0], WAG.wall[1], WAG.wall[2], WAG.wall[3]]],
+  keep: [[WAG.wall[0], WAG.east[0][0], WAG.wall[2], WAG.wall[3]]],
   extras: (k) => {
-    // the ground of the compound: asphalt drive and yards, the grass strip along the north wall
-    wPlane(k, rect(WAG.wall), 0.04, asphaltMat(), 6);
+    // the ground of the compound (the owner's correction brief, S02/S18): lawn over it all, the elongated parking on the
+    // court side and the strip along the south-east wing in asphalt, the pale paving along the west wall; the bays; the
+    // kerbed planted strip down the upper parking with its rounded end; the grass east of the parking in its kerb
+    const bound: P2[] = [[WAG.wall[0], WAG.wall[2]], ...WAG.east, [WAG.wall[0], WAG.wall[3]]];
+    // (the base lawn sits behind the asphalt: its own copy with a smaller depth offset)
+    BASE_LAWN ??= Object.assign(lawnMat().clone(), { polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
+    wPlane(k, bound, 0.02, BASE_LAWN, 4);
+    for (const p of [WAG.park, WAG.seStrip]) wPlane(k, p, 0.045, asphaltMat(), 6);
+    wPlane(k, WAG.westPave, 0.05, paleMat(), 2);
+    // the planted strip: a kerb round a rounded-ended strip along the aisles' slant, lawn inside
+    { const { a, b, w } = WAG.midStrip, L = Math.hypot(b[0] - a[0], b[1] - a[1]), du = (b[0] - a[0]) / L, dv = (b[1] - a[1]) / L, r = w / 2;
+      const P = (t: number, s: number): P2 => [a[0] + du * t - dv * s, a[1] + dv * t + du * s];
+      const ring: P2[] = [P(0, -r), P(L - r, -r)];
+      for (let i = 1; i < 10; i++) { const q = (i / 10) * Math.PI; ring.push(P(L - r + Math.sin(q) * r, -Math.cos(q) * r)); }
+      ring.push(P(L - r, r), P(0, r));
+      k.plain.push([prism(ring, 0, 0.16), '#dedbd2']);
+      const inner: P2[] = [P(0.25, -r + 0.25), P(L - r, -r + 0.25), ...Array.from({ length: 9 }, (_, i) => { const q = ((i + 1) / 10) * Math.PI; return P(L - r + Math.sin(q) * (r - 0.25), -Math.cos(q) * (r - 0.25)); }), P(L - r, r - 0.25), P(0.25, r - 0.25)];
+      wPlane(k, inner, 0.17, lawnMat(), 3);
+      for (let t = 1; t < L - 0.5; t += 1.5) wSolid(...P(t, 0), r * 0.85); }
+    k.plain.push([strip([...WAG.eastGrass, WAG.eastGrass[0]], 0, 0.14, 0.1), '#dedbd2']);
+    for (const l of WAG_LOTS) { bays(k, l.rows, l.across); for (const r of l.lines ?? []) lineBays(k, r); }
     wPlane(k, rect(WAG.lawn), 0.06, lawnMat(), 4);
     // the portal: a thick white frame round the dark glazed entrance; the pale platform and steps; the salmon forecourt
     { const [x0, x1, z0, z1] = WAG.portal, h = wagTop + 1.2;
@@ -266,8 +431,10 @@ const wagmc: Spec = {
     // the white boundary wall with its openings, the gate structure beside the approach
     { const [x0, x1, z0, z1] = WAG.wall, h = 2.2, runs: [P2, P2][] = [];
       const g = WAG.gaps;
-      runs.push([[x0, z0], [g.north[0], z0]], [[g.north[1], z0], [x1, z0]], [[x1, z0], [x1, g.east[0]]], [[x1, g.east[1]], [x1, z1]], [[x0, z0], [x0, z1]]);
-      const south = [x0, ...g.south.flat(), x1];
+      // (the east side on the angle, WAG.east, with the gap where the drive comes in from the strip)
+      const E = WAG.east, ex = (v: number): P2 => { const i = v < E[1][1] ? 0 : 1; const [a, b] = [E[i], E[i + 1]]; return [a[0] + ((b[0] - a[0]) * (v - a[1])) / (b[1] - a[1]), v]; };
+      runs.push([[x0, z0], [g.north[0], z0]], [[g.north[1], z0], E[0]], [E[0], E[1]], [E[1], ex(g.east[0])], [ex(g.east[1]), E[2]], [[x0, z0], [x0, z1]]);
+      const south = [x0, ...g.south.flat(), E[2][0]];
       for (let i = 0; i < south.length; i += 2) runs.push([[south[i], z1], [south[i + 1], z1]]);
       for (const [a, b] of runs) {
         if (Math.hypot(b[0] - a[0], b[1] - a[1]) < 0.5) continue;
@@ -298,10 +465,14 @@ export function buildNogGrounds(trees: [number, number, number][]) {
   const addN = (u: number, v: number, c: Omit<Crown, 'x' | 'z'>) => { const [x, z] = NG.world(u, v); crowns.push({ x, z, ...c }); };
   const addW = (u: number, v: number, c: Omit<Crown, 'x' | 'z'>) => { const [x, z] = WG.world(u, v); crowns.push({ x, z, ...c }); };
   for (const [u, v] of [[-14, -13], [12, -14], [-13, 13], [13, 14]] as P2[]) addN(u, v, { r: 4.2, h: 4, base: 2.4, trunk: 0.3, color: TREE[(u + v) & 3], seed: hash2(u, v), solid: true });
-  for (let u = LAB.island[0] + 2; u < LAB.island[1] - 4; u += 1.6) for (const v of [-138.5, -134.5, -129, -125.5]) { const s = hash2(u, v); addN(u + s, v, { r: 0.45 + s * 0.2, h: 0.6, base: 0.22, trunk: 0, color: GROUND[(s * 3) | 0], seed: s }); }
+  // the shrubs in the soil bed round the monument and along the lawns' edges (S20), compact, the lawns' middles open
+  { const [sx, sz] = LAB.sign; for (let i = 0; i < 22; i++) { const s = hash2(i, 7), a = (i / 22) * Math.PI * 2, r = 3.0 + s * 1.6; addN(sx + Math.cos(a) * r * 0.9, sz + Math.sin(a) * r * 0.55, { r: 0.35 + s * 0.15, h: 0.65, base: 0.2, trunk: 0, color: GROUND[(s * 3) | 0], seed: s }); } }
+  for (const [a0, a1, b0, b1] of LAB.lawns) for (let u = a0 + 4; u < a1 - 4; u += 2.4) { const s = hash2(u, b0); addN(u, b0 + 1.1, { r: 0.4, h: 0.6, base: 0.2, trunk: 0, color: GROUND[(s * 3) | 0], seed: s }); if (b0 > -135) addN(u + 1.2, b1 - 1.1, { r: 0.4, h: 0.6, base: 0.2, trunk: 0, color: GROUND[(s * 3) | 0], seed: s }); }
   for (const r of WAG.plots) for (let u = r[0] + 0.8; u < r[1] - 0.5; u += 1.1) for (let v = r[2] + 0.7; v < r[3] - 0.5; v += 1.1) { const s = hash2(u * 3, v); addW(u, v, { r: 0.5, h: 0.35, base: 0.2, trunk: 0, color: GROUND[(s * 3) | 0], seed: s }); }
   addW(WAG.tree[0], WAG.tree[1], { r: 2.6, h: 3.2, base: 2.2, trunk: 0.2, color: TREE[1], seed: 0.3, solid: true });
   for (let a = 0; a < Math.PI * 2; a += 0.5) for (const r of [1.4, 3]) { const s = hash2(a, r); addW(WAG.island.c[0] + Math.cos(a) * r, WAG.island.c[1] + Math.sin(a) * r, { r: 0.7, h: 0.5, base: 0.16, trunk: 0, color: GROUND[(s * 3) | 0], seed: s }); }
+  // the loop's island (S04): the tree clump in its west half, the one big tree over its middle
+  for (const [x, z, r] of [[484.5, 1913.5, 4.2], [491.5, 1919, 3.8], [486, 1925, 3.4], [496, 1910.5, 3.2], [509, 1911, 5.2]] as [number, number, number][]) { const s = hash2(x, z); crowns.push({ x, z, r, h: r * 1.1 + 1, base: 2.2 + s, trunk: 0.32, color: TREE[(s * 4) | 0], seed: s, solid: true }); }
   // the mature trees (from the satellite's crowns), kept off roads and buildings
   const [cx, cz] = NG.world(80, 0);
   const segs: [number, number, number, number, number][] = [];
@@ -322,6 +493,27 @@ export function buildNogGrounds(trees: [number, number, number][]) {
   }
   const group = new THREE.Group();
   group.name = 'noguchi-grounds';
+  // the red earth (the owner's correction brief, S02/S17/S18): the tracks themselves, compacted and a little paler down
+  // the middle; the corridor west of WAGMC red soil either side of its two tracks with the tree belt between them left
+  // green; the strip down WAGMC's east side; the cluster's mixed ground in patches; ragged edges, no kerbs
+  { const inPoly = (p: P2[], x: number, z: number) => { let c = false; for (let i = 0, j = p.length - 1; i < p.length; j = i++) if ((p[i][1] > z) !== (p[j][1] > z) && x < ((p[j][0] - p[i][0]) * (z - p[i][1])) / (p[j][1] - p[i][1]) + p[i][0]) c = !c; return c; };
+    const sd = (x: number, z: number, l: P2[]) => { let b = Infinity; for (let i = 1; i < l.length; i++) b = Math.min(b, segDist(x, z, l[i - 1][0], l[i - 1][1], l[i][0], l[i][1])); return b; };
+    const [west, east] = [NOG_EARTH[0], NOG_EARTH[1]];
+    const nb = BUILDINGS.filter((b) => b.maxX > 170 && b.minX < 560 && b.maxZ > 1820 && b.minZ < 2220), wb = WAG_BOUND();
+    const color = (x: number, z: number): [number, number, number, number] | null => {
+      if (onSealed(x, z, 0.4) || inPoly(wb, x, z) || nb.some((b) => x > b.minX - 0.5 && x < b.maxX + 0.5 && z > b.minZ - 0.5 && z < b.maxZ + 0.5)) return null;
+      const n = vnoise2(x / 7, z / 7), m = vnoise2(x / 2.3 + 11, z / 2.3), d = nogEarthDist(x, z), t = hash2(Math.floor(x * 2), Math.floor(z * 2)) * 0.06;
+      if (d < 2.1 + (m - 0.5) * 0.8) return d < 0.7 ? [168 - t * 200, 102 - t * 120, 66 - t * 80, 0.95] : [150 - t * 200, 84 - t * 120, 52 - t * 80, 0.95];
+      // the corridor: soil out to about 9 m from the tracks, the belt between them (and a little either side) green
+      const dw = sd(x, z, west), de = sd(x, z, east);
+      if (Math.min(dw, de) < 7 + n * 5 && !(dw < 11.5 && de < 11.5 && Math.abs(dw - de) < 4 + m * 2)) return n > 0.32 ? [158 - t * 200, 90 - t * 120, 58 - t * 80, 0.82 + m * 0.15] : [120, 104, 62, 0.5];
+      // the strip down the compound's east side and the cluster: soil in patches among the scrub
+      if (sd(x, z, NOG_EARTH[2]) < 4 + n * 3 || (inPoly(NOG_CLUSTER, x, z) && n > 0.45)) return [160 - t * 200, 94 - t * 120, 60 - t * 80, 0.7 + m * 0.25];
+      return null;
+    };
+    const soil = coverOverlay({ box: [176, 372, 1830, 2212], mpp: 0.5, cell: 2, tile: 98, color, cellIn: (x, z) => nogEarthDist(x, z) < 22 || inPoly(NOG_CLUSTER, x, z) });
+    for (const m of soil) m.userData.noRelief = true;
+    group.add(...soil); }
   group.userData.noRelief = true;
   group.add(...crownTiles(crowns, 100, 75));
   group.userData.crowns = crowns.length;

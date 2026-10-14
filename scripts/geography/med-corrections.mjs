@@ -5,7 +5,7 @@ import { createServer } from 'vite';
 const server = await createServer({ server: { middlewareMode: true }, appType: 'custom', logLevel: 'error' });
 try {
   const U = await server.ssrLoadModule('/src/game/ugmcplan.ts');
-  const out = { reshape: [], exclude: [], addAreas: [] };
+  const out = { reshape: [], exclude: [], addAreas: [], addWays: [] };
   const r1 = (v) => Math.round(v * 10) / 10;
   const world = (ring) => ring.map(([u, v]) => U.ugWorld(u, v).map(r1));
   const SRC = "the owner's UGMC brief (docs/ugmc/): Google satellite M1 registered at 2.55 px/m, traced on the precinct's grid";
@@ -38,6 +38,23 @@ try {
     ['ml:29306972-28b9-437c-9659-90ffc1c1516d', 'A detected fragment of the WAGMC roof: the building is modelled whole (nog.ts).'],
     ...['ml:029f9121-b36f-4fcb-bc09-498e237a7317', 'ml:286f3913-29d3-4e8c-8cd6-93b0543ae579', 'ml:7ff4d657-c785-4c0a-a3c3-5835fe61ce8f', 'ml:8aeb18d1-83d2-4f65-a1f5-c7114073cb36', 'ml:abc66d48-de80-4156-8695-b6917f04cb0f', 'ml:cce2ca95-db84-4278-97ec-5aeae0b331f3', 'ml:e0e0194a-5105-47b2-9cfd-606c10db506a', 'ml:366bf68f-c90a-4c21-aaec-1757e17a4577', 'ml:5b4e137d-917e-461e-aa56-7fa7484c9036'].map((id) => [id, 'Detected "buildings" inside the gridded panel fields behind Noguchi (the brief: "do not extrude panel fields into buildings"); the fields are modelled as low panel rows (nog.ts).']),
   ]) out.exclude.push({ id, reason });
+  // the loop beside the old ring and the earth tracks (the owner's correction brief, 2026-10-14)
+  const CSRC = "the owner's Noguchi + WAGMC correction brief (S03/S04, S17/S18; docs/noguchi-wagmc/correction-ledger.md), traced on Apple satellite M1 (2.617 px/m)";
+  for (const id of ['osm:way/111440943', 'osm:way/1239491144']) out.exclude.push({ id, reason: `${CSRC}: the mapped figure of eight round the road is one paved loop on the satellite (S04), replaced by owner:noguchi-loop.` });
+  out.exclude.push({ id: 'osm:way/111440926', reason: `${CSRC}: the road down from the north ends at the loop's top on the satellite and does not cross its lawn; replaced by owner:noguchi-road-north, the loop and the earth track south (owner:noguchi-loop-south).` });
+  const way = (id, highway, pts, reason, open) => out.addWays.push({ id, highway, pts: pts.map(([x, z]) => [r1(x), r1(z)]), reason, ...(open && { open }) });
+  way('owner:noguchi-road-north', 'residential', N.NOG_ROADS.north, `${CSRC}: the mapped road down from the north, ending at the loop's top where the satellite shows it entering.`, 'end');
+  way('owner:noguchi-loop', 'service', N.NOG_ROADS.loop, `${CSRC}: the paved loop round the tree island and the kerbed lawn (S04).`);
+  way('owner:noguchi-loop-south', 'track', N.NOG_ROADS.south, `${CSRC}: the mapped way's line south of the loop, unpaved on the satellite.`, 'end');
+  out.exclude.push({ id: 'osm:way/690531803', reason: `${CSRC}: the mapped service road down WAGMC's east side ran 6-15 m west of the red earth strip the satellite shows outside the boundary, through the compound's grass and parking; replaced by owner:wagmc-east-strip, the drive in (owner:wagmc-drive-in, owner:wagmc-drive-se) and the earth track into the cluster (owner:wagmc-cluster-track).` });
+  way('owner:wagmc-east-strip', 'track', N.NOG_ROADS.strip, `${CSRC}: the red earth strip outside WAGMC's east boundary, from the main road to the red-roofed cluster (S02's right-hand blue arrow, S18).`, 'end');
+  way('owner:wagmc-drive-in', 'service', N.NOG_ROADS.driveIn, `${CSRC}: the drive in from the strip to the south-east parking strip (the mapped road's link).`);
+  way('owner:wagmc-drive-se', 'service', N.NOG_ROADS.driveSE, `${CSRC}: the mapped road's line along the south-east strip to the south-west gap.`, 'end');
+  way('owner:wagmc-cluster-track', 'track', N.NOG_ROADS.cluster, `${CSRC}: the mapped road's line beyond the south-west gap into the cluster, red earth on the satellite (S02's lower blue arrows).`, 'end');
+  out.exclude.push({ id: 'osm:way/958782150', reason: `${CSRC}: the drive past the laboratories' portal ran through the portal frame; replaced by owner:noguchi-portal-drive, 3 m west, where the satellite and S11/S20 show the asphalt.` });
+  way('owner:noguchi-portal-drive', 'service', N.NOG_ROADS.portalDrive, `${CSRC}: the drive round the sign island and past the portal, on the asphalt the satellite shows (S11, S20).`);
+  for (const [id, place, ring] of N.CLUSTER_RINGS) out.reshape.push({ id, place: `the red-roofed cluster south of WAGMC: ${place}`, source: CSRC, ring: ring.map(([x, z]) => [r1(x), r1(z)]), reason: 'The mapped outline sat across the roof patches the satellite shows (S02\'s red outline); it now follows its own roof.' });
+  way('owner:wagmc-corridor-track', 'track', N.NOG_ROADS.corridor, `${CSRC}: the second red-earth track of the corridor west of WAGMC, across the tree belt from the mapped one (S18's two blue arrows).`, 'end');
   for (const [F, lots] of [[N.NG, N.NOG_LOTS], [N.WG, N.WAG_LOTS]]) for (const l of lots) out.addAreas.push({ id: `owner:${l.name}`, class: 'parking', ring: nw(F, l.ring), reason: `${NSRC}: parking with marked bays (${l.name}); the game map had no area there.` });
   // Evandy Hostel (evandyplan.ts): the frontage parking along the fence and before the commercial block
   const E = await server.ssrLoadModule('/src/game/evandyplan.ts');
