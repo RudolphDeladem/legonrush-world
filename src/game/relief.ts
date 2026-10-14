@@ -170,7 +170,56 @@ function lfZones(): Zone[] {
   ];
 }
 
+/** the rise along Annie Jiagge Road (the owner's 20-picture corrections, Pictures 19-20: the road behind the Jones-Quartey
+ *  Building climbs from the Engineering junction toward the Law School, the blue arrow; tops out in a rounded, near-level
+ *  crest by International House, the gap between the arrows; then runs down from there past the unfinished foundation and
+ *  the Jones-Quartey Building to Danquah Avenue, the green arrow). The ground's height along z, the same across the
+ *  precinct between the residential road west of Limbo and La Road (easing to the flat campus outside it). The heights
+ *  are not measured: the crest's rise is an estimate that keeps the grades gentle (about 3% up, 1.3% down). */
+export const AJ = { zUp: -328, zCrest0: -235, zCrest1: -165, zDown: 105, rise: 3.5, x0: 420, x1: 640, w: 25, e: 35 };
+export function ajProfile(z: number) {
+  const s = (t: number) => { const u = Math.min(1, Math.max(0, t)); return u * u * (3 - 2 * u); };
+  if (z <= AJ.zUp || z >= AJ.zDown) return 0;
+  if (z < AJ.zCrest0) return AJ.rise * s((z - AJ.zUp) / (AJ.zCrest0 - AJ.zUp));
+  if (z <= AJ.zCrest1) return AJ.rise;
+  return AJ.rise * (1 - s((z - AJ.zCrest1) / (AJ.zDown - AJ.zCrest1)));
+}
+
+/** the Jones-Quartey Building's ground (the owner's second corrections, A01-A09): the building's floor level (its lowest
+ *  floor, the bookshop's, set where the south front meets the rise); the grass bank along its west wall about a storey
+ *  above that floor, falling to it at the south-west corner, where the bookshop's floor shows over its lower paved
+ *  approach from the road on the west (A07, A08); a lower bank on the north; the south lawn falling from west to east
+ *  along the front (A06); the raised lawn between Annie Jiagge Road and the building, which the red-earth path climbs
+ *  (A01, A02). The rises are estimates read from the photographs, not measured. */
+export const JQB_GROUND = { box: [505, 600, -96, 30] as [number, number, number, number], bank: 2.2, mound: 1.3 };
+const ss = (t: number) => { const u = Math.min(1, Math.max(0, t)); return u * u * (3 - 2 * u); };
+export const jqbFloor = () => ajProfile(-34.4);
+/** the road along the west of the building and round its south-west, as x at z (the mound and the banks stop short of it) */
+const jqbWestRoad = (z: number) => (z > -10 ? 511 : z > -14 ? 511 + (-10 - z) : z > -19 ? 515 + ((-14 - z) * 7) / 5 : z > -28 ? 522 + ((-19 - z) * 6) / 9 : 528);
+function jqbTarget(x: number, z: number) {
+  const aj = ajProfile(z), F = jqbFloor(), D = JQB_GROUND.bank;
+  let v = 0;
+  // the west bank: full north of z -48, gone at the corner (z -36) and short of the road along the north (its edge at
+  // z -86); across, from the wall over 7.5 m toward the road on the west (on the north the ground is the rise's own,
+  // nearly a metre above the floor already)
+  if (x < 543.6 && z < -30) v = Math.max(v, (F - aj + D * (1 - ss((z + 48) / 12)) * ss((z + 86) / 6)) * (1 - ss((543.6 - x) / 7.5)));
+  // the south lawn: above the floor at its west end, down to it at the stair on the east, easing out southward
+  if (z > -34.4 && x > 530) v = Math.max(v, (F - aj + 0.95 * (1 - ss((x - 548) / 40))) * (1 - ss((z + 8) / 14)) * ss((x - 530) / 4));
+  // the raised lawn the red-earth path climbs: up from Annie Jiagge Road and the road on the south, falling into the
+  // south lawn on the east
+  if (z > -34 && z < 16) v = Math.max(v, (JQB_GROUND.mound * ss((12 - z) / 10) + Math.max(0, F - aj) * ss((-z - 8) / 20)) * ss((x - jqbWestRoad(z) - 3) / 11) * (1 - ss((x - 556) / 22)));
+  let h = aj + Math.max(0, v);
+  // the bookshop's lower paved approach before the west bay (x 541-562.5, to z -26) and on west to the road: at the
+  // floor, with a short bank up to the lawn on its south and east
+  const pit = (1 - ss((z + 26) / 3.5)) * (1 - ss((x - 562.5) / 2.5)) * (z > -34.6 ? 1 : 0) * (x > jqbWestRoad(z) - 1 ? 1 : 0);
+  if (pit > 0) h = h + (F - h) * pit;
+  return h;
+}
+
 const ZONES: Zone[] = [
+  // (first, so that the smaller zones in it are nested inside its box)
+  { kind: 'terrace', x0: AJ.x0, x1: AJ.x1, z0: AJ.zUp, z1: AJ.zDown, depth: 0, top: (_x, z) => ajProfile(z), w: AJ.w, e: AJ.e, n: 0.3, s: 0.3, cell: 2 },
+  { kind: 'terrace', x0: JQB_GROUND.box[0], x1: JQB_GROUND.box[1], z0: JQB_GROUND.box[2], z1: JQB_GROUND.box[3], depth: 0, top: jqbTarget, w: 0.3, e: 0.3, n: 0.3, s: 0.3, cell: 1 },
   bankZone(BANKS.north), bankZone(BANKS.south), ...lfZones(),
   // The Institute of African Studies (the owner's main entrance brief, pairs 20-24): the building and its upper apron
   // stand on a terrace above the avenue; before the south front a middle terrace, each behind a stone-faced retaining
@@ -487,7 +536,12 @@ function zoneHeight(x: number, z: number) {
 /** a flat pad for a building standing lower than the ground round it (or higher): the ground is `h` over the rectangle
  *  and eases back to the zones' ground over `bank` metres (a short bank is a retaining edge, modelled where it stands) */
 interface Pad { x0: number; x1: number; z0: number; z1: number; h: number; bank: number }
-const PADS: Pad[] = [NSIA.lowPad];
+const PADS: Pad[] = [
+  NSIA.lowPad,
+  // the School of Law and its court on the rise along Annie Jiagge Road (the owner's 20-picture corrections): level
+  // under the building, its podium and steps, easing back into the slope round it
+  { x0: 412, x1: 484, z0: -268, z1: -206, h: 3.35, bank: 7 },
+];
 const PAD_BOXES = PADS.map((p) => ({ x0: p.x0 - p.bank, x1: p.x1 + p.bank, z0: p.z0 - p.bank, z1: p.z1 + p.bank }));
 const PATH_BOXES = PATHS.map(pathBox);
 /** a road's cut at x, z: how much it decides the ground there (1 on the road, easing to 0 at the bank's foot) and its height */

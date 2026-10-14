@@ -1037,7 +1037,7 @@ try {
     const lm = await server.ssrLoadModule('/src/game/limbo.ts');
     const lb = await server.ssrLoadModule('/src/game/lbplan.ts');
     const { BLOCK_SITES } = await server.ssrLoadModule('/src/game/sites.ts');
-    if (lm.limboSite.frames().length !== 2) fail('Limbo: expected the ruin and the strip models');
+    if (lm.limboSite.frames().length !== 3) fail('Limbo: expected the ruin, the strip and foundation A');
     // the four outlines are foundations, built by the model, not the campus template
     if (lm.SLABS.length !== 4) fail(`Limbo: found ${lm.SLABS.length} of the 4 foundation outlines`);
     for (const s of lm.SLABS) if (!BLOCK_SITES.some((st) => st.replaces(s.b))) fail(`Limbo: the outline at ${s.at} still uses the generic template`);
@@ -1057,7 +1057,8 @@ try {
       return best;
     };
     const trees = lm.limboTrees();
-    if (trees.length < 60) fail(`Limbo: only ${trees.length} trees round the ruin and the strip`);
+    // (the owner's 20-picture corrections: mostly short shrubs round the ruin, a minority of taller trees)
+    if (trees.length < 30) fail(`Limbo: only ${trees.length} trees round the ruin and the strip`);
     for (const t of trees) if (edge(t.x, t.z) < 1) fail(`Limbo: the tree at ${t.x.toFixed(1)},${t.z.toFixed(1)} stands on a road`);
     for (const [a, b2] of [[[510, 10], [510, -165]], [[510, -165], [510, 10]]]) {
       const p = cm.findPath(a, b2, 'cycle');

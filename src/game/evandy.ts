@@ -30,13 +30,16 @@ const top = (floors: number) => 0.4 + floors * ST + 0.4;
 
 // ---------- facades ----------
 const wall = (g: CanvasRenderingContext2D, base = CREAM) => { render(g, base); speckle(g, 0, 0, 256, 512, 900, ['#e9dfca', '#f3ebd9', '#e5dac3']); };
-/** a narrow louvred window: dark glass with thin horizontal slats in a pale frame */
+/** a louvre window (the owner: every Evandy window is grey louvre blades, not glass): a pale frame, grey horizontal
+ *  blades with thin shadow lines between them, a mullion where it is wide */
 const louvred = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) => {
   g.fillStyle = 'rgba(90,75,55,0.35)'; g.fillRect(x - 5, y - 5, w + 10, h + 10);
   g.fillStyle = '#f6efe0'; g.fillRect(x - 3, y - 3, w + 6, h + 6);
-  g.fillStyle = '#2b3036'; g.fillRect(x, y, w, h);
-  g.fillStyle = 'rgba(190,200,205,0.35)'; for (let t = y + 3; t < y + h; t += 7) g.fillRect(x + 1, t, w - 2, 2);
-  g.fillStyle = '#f6efe0'; g.fillRect(x + w / 2 - 1, y, 2, h);
+  g.fillStyle = '#5d6266'; g.fillRect(x, y, w, h);
+  for (let t = y + 1; t < y + h - 2; t += 7) { g.fillStyle = '#9aa0a4'; g.fillRect(x + 1, t, w - 2, 4); g.fillStyle = '#c4c8ca'; g.fillRect(x + 1, t, w - 2, 1); }
+  g.fillStyle = '#f6efe0';
+  const n = Math.max(1, Math.round(w / 34));
+  for (let i = 1; i < n; i++) g.fillRect(x + (w * i) / n - 1, y, 3, h);
 };
 const pilaster = (g: CanvasRenderingContext2D, ochre: boolean) => { g.fillStyle = ochre ? OCHRE : CREAM_D; g.fillRect(0, 0, 13, 512); g.fillStyle = 'rgba(80,60,30,0.25)'; g.fillRect(13, 0, 2, 512); };
 /** the balcony module: pilaster, a narrow window, the deep recess (room glazing behind) the geometry fronts */
@@ -47,7 +50,7 @@ const front = (ochre: boolean): Style => ({
     for (const y0 of [0, 256]) louvred(g, 26, y0 + 60, 30, 120);
     // upper: the recess, dark shade with doors and windows behind
     g.fillStyle = '#6f675a'; g.fillRect(74, 14, 168, 226); g.fillStyle = '#4a443b'; g.fillRect(74, 14, 168, 40);
-    window_(g, [96, 60, 70, 130], '#efe6d2', 2, 0.3); window_(g, [176, 70, 52, 110], '#efe6d2', 1, 0.3);
+    louvred(g, 96, 60, 70, 130); louvred(g, 176, 70, 52, 110);
     // ground: under each balcony pair, two windows either side of the central dividing wall (R03: the fins run to the
     // ground)
     louvred(g, 86, 256 + 70, 62, 120); louvred(g, 172, 256 + 70, 62, 120);
@@ -62,7 +65,7 @@ const GALLERY: Style = {
     wall(g);
     for (const y0 of [0, 256]) {
       g.fillStyle = '#5c554a'; g.fillRect(18, y0 + 24, 220, 200); g.fillStyle = '#3e3932'; g.fillRect(18, y0 + 24, 220, 30);
-      g.fillStyle = '#d9cfba'; g.fillRect(70, y0 + 70, 46, 150); g.fillStyle = '#2f343a'; g.fillRect(150, y0 + 90, 60, 70);
+      g.fillStyle = '#d9cfba'; g.fillRect(70, y0 + 70, 46, 150); louvred(g, 150, y0 + 90, 60, 70);
       g.fillStyle = '#efe6d2'; g.fillRect(18, y0 + 150, 220, 10); g.fillRect(18, y0 + 186, 220, 6); g.fillRect(18, y0 + 214, 220, 10);
       g.fillStyle = '#efe6d2'; g.fillRect(0, y0, 18, 256); g.fillRect(238, y0, 18, 256);
     }
@@ -84,7 +87,7 @@ const VENT: Style = {
 /** the wings' plain ends and plain elevations: cream, regular windows */
 const PLAIN: Style = {
   bay: 3.4, up: [[86, 70, 84, 110]], ground: [[86, 70, 84, 110]],
-  draw: (g) => { wall(g); for (const y0 of [0, 256]) window_(g, [86, y0 + 70, 84, 110], '#f6efe0', 2, 0.3); g.fillStyle = 'rgba(160,110,80,0.35)'; g.fillRect(0, 0, 8, 512); slab(g, 236, 20); },
+  draw: (g) => { wall(g); for (const y0 of [0, 256]) louvred(g, 86, y0 + 70, 84, 110); g.fillStyle = 'rgba(160,110,80,0.35)'; g.fillRect(0, 0, 8, 512); slab(g, 236, 20); },
 };
 const END: Style = {
   bay: 3, up: [[110, 80, 36, 100]], ground: [[110, 80, 36, 100]],
@@ -135,7 +138,12 @@ function balconies(k: Kit, x0: number, x1: number, z: number, out: 1 | -1, floor
   for (let i = 0; i < n; i++) {
     const a0 = x0 + i * b + b * 0.29, a1 = x0 + i * b + b * 0.95, am = (a0 + a1) / 2, zf = z + out * d, zm = Math.min(z, zf), zM = Math.max(z, zf);
     // the side walls and the central dividing wall, ground to eaves
-    for (const [ax, w] of [[a0, 0.14], [a1, 0.14], [am, 0.13]] as [number, number][]) parts.push([box(ax - w, ax + w, 0, tf, zm, zM), CREAM_D]);
+    for (const [ax, w] of [[a0, 0.14], [a1, 0.14]] as [number, number][]) parts.push([box(ax - w, ax + w, 0, tf, zm, zM), CREAM_D]);
+    // the central wall: upright above the first floor; on the ground floor between the two windows it is slanted (the
+    // owner's circled R03): a wedge whose two faces run out from the wall to an edge at the balconies' front line
+    const g1 = 0.4 + ST;
+    parts.push([box(am - 0.13, am + 0.13, g1 - 0.18, tf, zm, zM), CREAM_D]);
+    parts.push([prism([[am - 0.36, z], [am + 0.36, z], [am + 0.05, zf], [am - 0.05, zf]], 0, g1 - 0.18), CREAM_D]);
     for (const [h0, h1] of [[a0 + 0.14, am - 0.13], [am + 0.13, a1 - 0.14]] as P2[]) {
       for (let f = 1; f < floors; f++) {
         const y = 0.4 + f * ST;
@@ -219,11 +227,11 @@ const entrance: Spec = {
     parts.push([box(-3.2, 3.2, 3.6, t, z - 0.9, z - 0.7), CREAM]);
     for (let f = 1; f < 4; f++) {
       const y = 0.4 + f * ST + 0.4, h = ST - 1.0;
-      k.glass.push(box(-2.3, 2.3, y, y + h, z - 0.68, z - 0.62));
+      // (the owner: grey louvre blades, not glass, in the gold frames)
+      parts.push([box(-2.3, 2.3, y, y + h, z - 0.72, z - 0.68), '#4f5458']);
+      for (let yy = y + 0.06; yy < y + h - 0.04; yy += 0.11) parts.push([new THREE.BoxGeometry(4.6, 0.08, 0.012).rotateX(-0.5).translate(0, yy, z - 0.64), '#a2a7ab']);
       for (let x = -2.3; x <= 2.31; x += 0.92) parts.push([box(x - 0.05, x + 0.05, y, y + h, z - 0.66, z - 0.56), GOLD]);
       for (const yy of [y, y + h / 2, y + h]) parts.push([box(-2.35, 2.35, yy - 0.05, yy + 0.05, z - 0.66, z - 0.56), GOLD]);
-      // the outward-opening awning panes across the middle row
-      for (let x = -1.84; x <= 1.85; x += 0.92) { const pane = new THREE.BoxGeometry(0.86, h / 2 - 0.1, 0.04).translate(0, -(h / 2 - 0.1) / 2, 0).rotateX(-0.45).translate(x, y + h, z - 0.55); k.glass.push(pane); parts.push([box(x - 0.43, x + 0.43, y + h - 0.04, y + h, z - 0.6, z - 0.52), GOLD]); }
     }
     // the recessed ground entry: dark doors, the MAIN BLOCK sign, the shallow steps and the planters
     parts.push([box(-2.4, 2.4, 0, 0.4, z - 2.5, z), '#d9cdb5'], [box(-2.4, 2.4, 0, 0.2, z, z + 0.6), '#d9cdb5'], [box(-2.4, 2.4, 0, 0.1, z + 0.6, z + 1.2), '#d9cdb5']);

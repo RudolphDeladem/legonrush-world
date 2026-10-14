@@ -560,6 +560,14 @@
     {
       "id": "ml:5b4e137d-917e-461e-aa56-7fa7484c9036",
       "reason": "Detected \"buildings\" inside the gridded panel fields behind Noguchi (the brief: \"do not extrude panel fields into buildings\"); the fields are modelled as low panel rows (nog.ts)."
+    },
+    {
+      "id": "ml:56ac8af2-55a6-4373-84f0-ab8959185ae3",
+      "reason": "The owner's second corrections, A14-A17: a detected block standing on Onyaa Road (the owner: \"On road\"); the registered satellite A17 shows the road there and no roof, so it is dropped rather than moved."
+    },
+    {
+      "id": "osm:way/1184497719",
+      "reason": "The owner (Evandy correction, the circled picture): the small red-roofed hut drawn against the commercial block's north-west corner does not exist; deleted."
     }
   ],
   "heights": [
@@ -5510,6 +5518,30 @@
         ]
       ],
       "reason": "Its mapped east end reached into the service road beside it; the ring follows the red roof on the satellite, 1.5 m shorter, clear of the road (its enclosed centre stays open in the model)."
+    },
+    {
+      "id": "osm:way/665125655",
+      "place": "the small block west of E.A. Boateng Road by the School of Performing Arts",
+      "source": "the owner's second corrections, A15-A17: Apple satellite A17 registered on the School of Performing Arts' roof and E.A. Boateng Road",
+      "ring": [
+        [
+          491.6,
+          227.4
+        ],
+        [
+          497.9,
+          227.4
+        ],
+        [
+          498,
+          237.7
+        ],
+        [
+          491.7,
+          237.7
+        ]
+      ],
+      "reason": "Its mapped east wall stood on the road's edge (the owner: \"On road\"); the registered satellite puts the small red roof about 5.5 m further west, clear of the road and its footway."
     }
   ],
   "addAreas": [

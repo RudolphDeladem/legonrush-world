@@ -104,6 +104,23 @@ function shrubs(b: Bag, r: [number, number, number, number], n: number, seed: nu
   }
 }
 
+/** dense low scrub (the owner's second corrections, A18/A19): layered irregular shrub masses 0.6-1.8 m, taller grass
+ *  between them, a small tree now and then, with gaps; visual only (the bike pushes through) */
+function denseScrub(k: Kit, b: Bag, r: [number, number, number, number], n: number, seed: number, skip: (x: number, z: number) => boolean = () => false) {
+  for (let i = 0; i < n; i++) {
+    const x = r[0] + hash(i, seed) * (r[1] - r[0]), z = r[2] + hash(seed, i * 1.3) * (r[3] - r[2]);
+    if (roadGap(x, z) < 1.8 || inBuilding(x, z, 1) || skip(x, z)) continue;
+    const clump = vnoise(x * 0.09 + seed, z * 0.09);
+    if (clump < 0.35) continue;
+    const q = hash(i * 3.1, seed);
+    if (q < 0.42) tuft(b, x, z, 0.8 + hash(i, 4) * 0.9, ['#8f8f45', '#6f8a35', '#9a9150', '#7d8a44'][i % 4]);
+    else if (q < 0.985) {
+      const s = 0.45 + hash(i, 7.7) * 0.75, up = 0.75 + hash(i, 8.1) * 0.6, col = ['#4f7a2c', '#5f8a33', '#476f27', '#6a7f36', '#3f6a2a'][i % 5];
+      b.leaf.push([new THREE.IcosahedronGeometry(s, 1).scale(1.35, up, 1.2).translate(x - b.O[0], s * up * 0.7, z - b.O[1]), col]);
+    } else broadleaf(k, b.leaf, x, z, { h: 3.5 + hash(i, 9) * 2.5, spread: 3.5 + hash(i, 10) * 2, seed: x + z, origin: b.O, sparse: true });
+  }
+}
+
 const adMats: THREE.MeshStandardMaterial[] = [];
 /** advertising artwork: colour fields, a portrait shape, blocks of type (no words, no phone numbers: not copied) */
 function adMat(i: number) {
@@ -190,15 +207,18 @@ const corridor: Spec = {
   blocks: [],
   onGround: true,
   // no generated lawn trees, palms or props on the open parcels and the frontage (only the photographed ones)
-  keep: [[SCRUB_W[0] - CO[0], SCRUB_W[1] - CO[0], SCRUB_W[2] - CO[1], SCRUB_W[3] - CO[1] + 30], [SCRUB_E[0] - CO[0], SCRUB_E[1] - CO[0], SCRUB_E[2] - CO[1], SCRUB_E[3] - CO[1]], [870 - CO[0], 960 - CO[0], -880 - CO[1], -700 - CO[1]]],
+  keep: [[SCRUB_W[0] - CO[0], SCRUB_W[1] - CO[0], SCRUB_W[2] - CO[1], SCRUB_W[3] - CO[1] + 30], [SCRUB_E[0] - CO[0], SCRUB_E[1] - CO[0], SCRUB_E[2] - CO[1], SCRUB_E[3] - CO[1]], [870 - CO[0], 1000 - CO[0], -885 - CO[1], -700 - CO[1]]],
   extras: (k: Kit) => {
     const b = new Bag(CO), c: Part[] = [];
     const nearShell = (x: number, z: number) => x < 816 && z > -652;
     // ---- the ground: scrub and red soil either side of the avenue (R2), the station kept as the station model has it ----
     k.meshes.push(ground(CO, SCRUB_W, scrubCol, (x, z) => nearShell(x, z) || inPoly(SHELL_FRONT, x, z)));
     k.meshes.push(ground(CO, SCRUB_E, scrubCol, (x, z) => x > SHELL_FRAME.block[0] - 1 && x < SHELL_FRAME.block[1] + 1 && z > SHELL_FRAME.block[2] - 1 && z < SHELL_FRAME.block[3] + 1));
-    k.meshes.push(ground(CO, [880, 950, -880, -700], scrubCol));
+    k.meshes.push(ground(CO, [880, 1000, -885, -700], scrubCol));
     shrubs(b, SCRUB_W, 520, 11, nearShell); shrubs(b, SCRUB_E, 260, 23); shrubs(b, [880, 950, -880, -700], 160, 37);
+    // (the owner's second corrections, A18/A19: east of the avenue south of the IPS Road junction the ground is dense low
+    // scrub, not an empty lawn)
+    denseScrub(k, b, [935, 1000, -885, -700], 2600, 53);
     for (const [x, z, h] of [[790, -700, 5], [826, -760, 4.5], [770, -735, 6], [840, -672, 4], [960, -660, 5.5], [990, -610, 6]] as [number, number, number][]) {
       if (roadGap(x, z) > 3 && !inBuilding(x, z, 2)) broadleaf(k, b.leaf, x, z, { h, spread: h * 0.9, sparse: true, seed: x + z, origin: CO });
     }
@@ -466,40 +486,71 @@ const presec: Spec = {
       const [mx, mz] = L((ax + bx) / 2, (az + bz) / 2);
       const fy = Math.atan2(nx, nz);
       k.meshes.push(place(textPanel(9.6, 1.6, [{ t: 'PRESBYTERIAN BOYS', s: 0.4, c: BLUE, b: true }, { t: 'SECONDARY SCHOOL', s: 0.4, c: BLUE, b: true }], null), mx + nx * 0.16, 1.45, mz + nz * 0.16, fy));
-      if (s < 0) {
-        // the blue stepped plinth before the north wing, its small urn on top
-        const px = mx + nx * 2.4, pz = mz + nz * 2.4;
-        [[2.8, 0], [2.1, 0.4], [1.4, 0.8]].forEach(([w, y]) => c.push([new THREE.BoxGeometry(w, 0.4, w).rotateY(fy).translate(px, y + 0.2, pz), '#2456b0']));
-        c.push([new THREE.CylinderGeometry(0.22, 0.3, 0.6, 12).translate(px, 1.5, pz), '#d9c27a'], [new THREE.SphereGeometry(0.28, 12, 8).translate(px, 1.95, pz), '#d9c27a']);
-        SOLIDS.add(px + PO[0], pz + PO[1], 1.5);
-      }
     }
     for (const [line, s] of [[WALL_N, -1], [WALL_S, 1]] as [[number, number][], number][]) {
       const pts = [wingEnd(s), ...line];
       for (let i = 0; i < pts.length - 1; i++) wall(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1]);
     }
     // ---- the stone-faced raised verges along the entry road and before the north wall, the paved walks ----
-    const stone = (ax: number, az: number, bx: number, bz: number) => {
+    const stone = (ax: number, az: number, bx: number, bz: number, h = 0.75) => {
       const [px, pz] = L(ax, az), [qx, qz] = L(bx, bz);
-      c.push([run(px, pz, qx, qz, 0, 0.75, 0.45), '#8d877c'], [run(px, pz, qx, qz, 0.75, 0.82, 0.55), '#b4ada0']);
+      c.push([run(px, pz, qx, qz, 0, h, 0.45), '#8d877c'], [run(px, pz, qx, qz, h, h + 0.07, 0.55), '#b4ada0']);
       const n = Math.ceil(Math.hypot(qx - px, qz - pz) / 0.55);
-      for (let i = 0; i < n; i++) { const t = (i + 0.5) / n, x = px + (qx - px) * t, z = pz + (qz - pz) * t; c.push([box(x - 0.24, x + 0.24, 0.05 + (i % 3) * 0.22, 0.27 + (i % 3) * 0.22, z - 0.24, z + 0.24), ['#7d776c', '#a39b8e', '#938b7f'][i % 3]]); }
+      for (let i = 0; i < n; i++) { const t = (i + 0.5) / n, x = px + (qx - px) * t, z = pz + (qz - pz) * t; c.push([box(x - 0.24, x + 0.24, 0.05 + (i % 4) * (h / 4), 0.05 + (i % 4) * (h / 4) + 0.22, z - 0.24, z + 0.24), ['#7d776c', '#a39b8e', '#938b7f', '#b1a99c'][i % 4]]); }
       wallSolids(ax, az, bx, bz, 0.3);
     };
-    const pave = (pts: [number, number][]) => {
-      const g = new THREE.ShapeGeometry(new THREE.Shape(pts.map(([x, z]) => new THREE.Vector2(x - PO[0], -(z - PO[1]))))).rotateX(-Math.PI / 2).translate(0, 0.045, 0);
+    const shape = (pts: [number, number][], y: number, mat: THREE.Material) => {
+      const g = new THREE.ShapeGeometry(new THREE.Shape(pts.map(([x, z]) => new THREE.Vector2(x - PO[0], -(z - PO[1]))))).rotateX(-Math.PI / 2).translate(0, y, 0);
+      const p = g.attributes.position, uv = g.attributes.uv as THREE.BufferAttribute; for (let i = 0; i < p.count; i++) uv.setXY(i, p.getX(i) / 2, p.getZ(i) / 2);
+      const m = new THREE.Mesh(g, mat); m.receiveShadow = true; k.meshes.push(m);
+    };
+    const pave = (pts: [number, number][]) => shape(pts, 0.045, pavers('grey'));
+    // (the owner's second corrections, A10/A11: at the mouth of the entry road the kerbs and the walks turn in curves onto
+    // the avenue, the road's white edge line with them, not square paved triangles; on the north (left) corner the broad
+    // raised terrace faced in grey rubble stone carries the blue stepped plinth and its urn before the wing wall)
+    const arc = (ca: number, cw: number, r: number, t0: number, t1: number, n = 10): [number, number][] => Array.from({ length: n + 1 }, (_, i) => { const t = t0 + ((t1 - t0) * i) / n; return gp(ca + Math.cos(t) * r, cw + Math.sin(t) * r); });
+    const KERB = 2.55, WALK = 4.7, CA = -11, MOUTH = -16.4;
+    for (const s of [-1, 1]) {
+      const cw = s * (KERB + 5);
+      // the walk: along the entry road, then round the corner onto the avenue's footway
+      const inner = [gp(-1, s * KERB), ...arc(CA, cw, 5, s < 0 ? Math.PI / 2 : -Math.PI / 2, Math.PI)];
+      const outer = [gp(-1, s * WALK), ...arc(CA, cw, 5 - (WALK - KERB), s < 0 ? Math.PI / 2 : -Math.PI / 2, Math.PI)];
+      pave([...inner, ...outer.reverse()]);
+      // the asphalt filling the flared mouth between the road and the curved kerb
+      const fill = [gp(CA, s * KERB), gp(MOUTH, s * KERB), ...arc(CA, cw, 5, Math.PI, s < 0 ? Math.PI / 2 : 1.5 * Math.PI).slice(0, 1), ...arc(CA, cw, 5, Math.PI, s < 0 ? Math.PI / 2 : 1.5 * Math.PI)];
+      shape(fill, 0.035, new THREE.MeshStandardMaterial({ color: '#4a4b4d', roughness: 0.95 }));
+      // the kerb along the walk's road edge and its white edge line on the road
+      const kerb = [gp(-1, s * KERB), ...arc(CA, cw, 5, s < 0 ? Math.PI / 2 : -Math.PI / 2, Math.PI)];
+      for (let i = 0; i < kerb.length - 1; i++) {
+        const [px, pz] = L(...kerb[i]), [qx, qz] = L(...kerb[i + 1]);
+        c.push([run(px, pz, qx, qz, 0, 0.14, 0.18), '#cfc9bc']);
+        c.push([run(px, pz, qx, qz, 0.036, 0.05, 0.12, s * 0.35), '#f2f2ee']);
+      }
+    }
+    // the north corner's raised terrace: stone faces along the walk, round the corner and along the avenue; paved on top
+    {
+      const TH = 0.9, front = [gp(-1.2, -(WALK + 0.2)), ...arc(CA, -(KERB + 5), 5 - (WALK - KERB) - 0.2, Math.PI / 2, Math.PI, 8)];
+      const avenue = gp(MOUTH + 2.6, -17.0);
+      const top: [number, number][] = [...front, avenue, gp(-8.6, -17.0), gp(-1.2, -8.2)];
+      for (let i = 0; i < front.length - 1; i++) stone(front[i][0], front[i][1], front[i + 1][0], front[i + 1][1], TH);
+      stone(front[front.length - 1][0], front[front.length - 1][1], avenue[0], avenue[1], TH);
+      const g = new THREE.ShapeGeometry(new THREE.Shape(top.map(([x, z]) => new THREE.Vector2(x - PO[0], -(z - PO[1]))))).rotateX(-Math.PI / 2).translate(0, TH + 0.06, 0);
       const p = g.attributes.position, uv = g.attributes.uv as THREE.BufferAttribute; for (let i = 0; i < p.count; i++) uv.setXY(i, p.getX(i) / 2, p.getZ(i) / 2);
       const m = new THREE.Mesh(g, pavers('grey')); m.receiveShadow = true; k.meshes.push(m);
-    };
-    for (const s of [-1, 1]) {
-      const [ax, az] = gp(-15, s * 5.0), [bx, bz] = gp(-2.2, s * 5.0);
-      stone(ax, az, bx, bz);
-      pave([gp(-16, s * 2.5), gp(-1, s * 2.5), gp(-1, s * 4.7), gp(-16, s * 4.7)]);
-      // the painted posts along the walk's edge (grey with orange bands)
-      for (let a = -14.5; a < -3; a += 1.8) {
-        const [x, z] = L(...gp(a, s * 2.75));
-        c.push([new THREE.CylinderGeometry(0.09, 0.1, 0.95, 8).translate(x, 0.475, z), '#6d6f72']);
-        for (const y of [0.55, 0.78]) c.push([new THREE.CylinderGeometry(0.1, 0.1, 0.09, 8).translate(x, y, z), '#e0692a']);
+      // its body under the paving (the sides hidden behind the stone and the wall)
+      const body = new THREE.ExtrudeGeometry(new THREE.Shape(top.map(([x, z]) => new THREE.Vector2(x - PO[0], -(z - PO[1])))), { depth: TH, bevelEnabled: false }).rotateX(-Math.PI / 2);
+      c.push([body, '#8d877c']);
+      // the blue stepped plinth and the urn, on the terrace before the wing wall
+      const [px, pz] = L(...gp(-10.4, -12.2)), fy = Math.atan2(GU[0], GU[1]) + Math.PI * 0.75;
+      [[3.0, 0], [2.3, 0.4], [1.6, 0.8], [0.9, 1.2]].forEach(([w, y]) => c.push([new THREE.BoxGeometry(w, 0.4, w).rotateY(fy).translate(px, TH + y + 0.2, pz), '#2456b0']));
+      c.push([new THREE.CylinderGeometry(0.18, 0.26, 0.55, 12).translate(px, TH + 1.88, pz), '#d9c27a'], [new THREE.CylinderGeometry(0.42, 0.2, 0.45, 14).translate(px, TH + 2.36, pz), '#d9c27a']);
+      SOLIDS.add(px + PO[0], pz + PO[1], 1.6);
+      // the red-and-white banded bollards along the corner's kerb (A11)
+      for (const t of [0.15, 0.4, 0.65, 0.9]) {
+        const th = Math.PI / 2 + (Math.PI / 2) * t, [bx, bz] = L(...gp(CA + Math.cos(th) * 4.6, -(KERB + 5) + Math.sin(th) * 4.6));
+        c.push([new THREE.CylinderGeometry(0.1, 0.11, 0.95, 8).translate(bx, 0.475, bz), '#6d6f72']);
+        for (const y of [0.55, 0.78]) c.push([new THREE.CylinderGeometry(0.11, 0.11, 0.09, 8).translate(bx, y, bz), '#d8322a']);
+        SOLIDS.add(bx + PO[0], bz + PO[1], 0.15);
       }
     }
     // before the north boundary wall: the walk at road level and the stone edge of the raised verge (Pair 14)
@@ -571,6 +622,21 @@ const baniSide: Spec = {
     {
       const [x0, x1, z0, z1] = GATHER;
       for (const [x, z, h] of [[965, -1209, 7.5], [977, -1206, 8.5], [971, -1213, 6.5]] as [number, number, number][]) broadleaf(k, b.leaf, x, z, { h, spread: h * 1.1, seed: x * 2 + z, origin: BO });
+      // (the owner's 20-picture corrections, Pictures 8-9: from the corner the trees run on north along the verge toward the
+      // billboard as one continuous, varied cluster: crowns of different heights overlapping, some low and spreading down
+      // near the ground, young trees and undergrowth among them, dusty bare ground under them; gaps where the photograph
+      // shows the road edge open)
+      const cluster: [number, number, number, number][] = [[982.5, -1216, 6, 7.5], [975, -1219.5, 8, 9], [968.5, -1222, 5, 6.5], [981, -1226, 7, 8], [973, -1230, 9, 10],
+        [985.5, -1235, 4.5, 5.5], [977, -1238.5, 6.5, 8], [969.5, -1236, 5.5, 7], [983, -1245, 7.5, 8.5], [975.5, -1247.5, 5, 6.5]];
+      for (const [x, z, h, sp] of cluster) if (roadGap(x, z) > 2.2 && !inBuilding(x, z, 1.5)) broadleaf(k, b.leaf, x, z, { h, spread: sp, seed: x * 3 + z, origin: BO, lean: (hash(x, z) - 0.5) * 0.5 });
+      for (let i = 0; i < 70; i++) {
+        const x = 964 + hash(i, 41) * 26, z = -1250 + hash(42, i) * 40;
+        if (roadGap(x, z) < 1.6 || inBuilding(x, z, 1)) continue;
+        if (hash(i, 43) < 0.5) {
+          const s = 0.5 + hash(i, 44) * 0.9;
+          b.leaf.push([new THREE.IcosahedronGeometry(s, 1).scale(1.3, 0.85, 1.2).translate(x - BO[0], s * 0.55, z - BO[1]), ['#4f7a2c', '#5f8a33', '#476f27', '#3f6a2a'][i % 4]]);
+        } else tuft(b, x, z, 0.5 + hash(i, 45) * 0.7, ['#8f8f45', '#9a9150', '#7d8a44'][i % 3]);
+      }
       for (const [x, z, yw] of [[967, -1204.5, 0.1], [974, -1210.5, 1.4], [980.5, -1210, 0.2]] as [number, number, number][]) {
         const [px, pz] = L(x, z);
         for (const q of [box(-1.1, 1.1, 0.42, 0.48, -0.22, 0.22), box(-1.0, -0.9, 0, 0.42, -0.2, 0.2), box(0.9, 1.0, 0, 0.42, -0.2, 0.2)]) c.push([q.rotateY(yw).translate(px, 0, pz), '#6b4f35']);

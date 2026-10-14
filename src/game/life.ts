@@ -311,6 +311,12 @@ export const TREES = {
     [canopy(2.7, 0, 3.4, 0, 0.82, 12, 6), 0], [canopy(2.0, 1.3, 2.1, 0.7, 0.78, 8, 7), 0],
     [canopy(1.9, -1.2, 2.2, -0.8, 0.78, 8, 8), 0], [canopy(1.8, 0.3, 5.0, -0.4, 0.8, 8, 9), 0], [canopy(1.5, -0.6, 1.6, 1.2, 0.75, 6, 10), 0],
   ], true),
+  /** bush clump (the owner's 20-picture corrections, Picture 18): leafy masses from the ground up, no trunk, about a
+   *  flame tree's height */
+  bush: () => model([
+    [canopy(2.0, 0, 1.7, 0, 0.9, 10, 11), 0], [canopy(1.6, 1.2, 1.2, 0.6, 0.85, 8, 12), 0],
+    [canopy(1.5, -1.1, 1.25, -0.7, 0.85, 8, 13), 0], [canopy(1.3, 0.2, 2.7, -0.3, 0.85, 7, 14), 0],
+  ], true),
   /** royal palm: tall smooth grey trunk, green crownshaft, drooping fronds */
   palm: () => model([
     [cyl(0.19, 0.27, 8.6, 6), '#a39886'],
@@ -325,7 +331,15 @@ const LEAF: Record<Species, string[][]> = {
   flame: [['#d8431c', '#4f7f2a'], ['#e0582a', '#56862e'], ['#c93a1a', '#4a7a29'], ['#4f7f2a', '#4a7a29']],
   palm: [['#4f8a2f'], ['#5a9435'], ['#467d2a']],
   woodland: [['#2f5e22', '#3a6b28'], ['#34652a', '#2b5420'], ['#3d6f2b', '#305f24']],
+  bush: [['#3f6a2a'], ['#4d7a31'], ['#36602a']],
 };
+/** where the street and route trees are something else (the owner's 20-picture corrections, Pictures 17-18): in front of
+ *  foundation A by Annie Jiagge Road and along Limbo's east side the clumps are bushes, not trees on trunks */
+export function localSpecies(x: number, z: number): Species | undefined {
+  if (x > 511 && x < 553 && z > -182 && z < -55) return 'bush';
+  if (x > 484 && x < 509.5 && z > -112 && z < 12) return 'bush';
+  return undefined;
+}
 
 /** Instanced trees for the ridden route layer: one draw call per species. */
 const treeGeoCache = new Map<Species, THREE.BufferGeometry>();
@@ -352,9 +366,9 @@ function treeGeometry(s: Species) {
 const treeInstMat = nearCut(groundShade(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85 }), 1.6, 0.4, 'tree'));
 /** Adds route-side trees: a mix of species, as instanced meshes marked shared. */
 export function addRouteTrees(group: THREE.Group, spots: THREE.Matrix4[], rand: () => number) {
-  const by: Record<Species, THREE.Matrix4[]> = { neem: [], mahogany: [], flame: [], palm: [], woodland: [] };
+  const by: Record<Species, THREE.Matrix4[]> = { neem: [], mahogany: [], flame: [], palm: [], woodland: [], bush: [] };
   const kinds: Species[] = ['neem', 'mahogany', 'flame', 'palm', 'palm', 'neem'];
-  for (const m of spots) by[kinds[(rand() * kinds.length) | 0]].push(m);
+  for (const m of spots) { const k = kinds[(rand() * kinds.length) | 0]; by[localSpecies(m.elements[12], m.elements[14]) ?? k].push(m); }
   for (const s of Object.keys(by) as Species[]) {
     const list = by[s];
     if (!list.length) continue;
@@ -717,6 +731,7 @@ export function buildCampusLife() {
     // round the Commonwealth west tennis complex the belt's broadleaf trees, not palms or orange-flowering flame trees (the
     // owner's tennis brief, Pictures 10 and 11; a hash, not the shared random sequence, so nothing else moves)
     else if ((sp === 'palm' || sp === 'flame') && inTcLocal(x, z)) sp = hash(x, z) < 0.6 ? 'mahogany' : 'neem';
+    sp = localSpecies(x, z) ?? sp;
     const leaf = pick(rand, LEAF[sp]).map(C);
     cells.p(x, z).add(T[sp], yawM(x, 0, z, rand() * 6.28, sc), leaf, 0.9 + rand() * 0.18);
     SOLIDS.add(x, z, 0.35 * sc);

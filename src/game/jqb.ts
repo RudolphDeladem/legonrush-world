@@ -26,6 +26,7 @@ import { drapeAt, groundCover } from './kuffourgarden';
 import { letters } from './letters';
 import { rectsOf } from './rectilinear';
 import { SOLIDS } from './solids';
+import { jqbFloor } from './relief';
 import type { Part } from './modelkit';
 
 const PLAIN: Style = { bay: 4, up: [], ground: [], draw: (g) => render(g, WALL) };
@@ -38,7 +39,7 @@ const jqbSpec: Spec = {
   blocks: [],
   keep: [[536 - JO[0], 600 - JO[0], -90 - JO[1], -10 - JO[1]]],
   extras: (k: Kit) => {
-    const b = new Bag(JO), J = EN.jqb, y = gh(568.5, -58) - 0.05, H = y + J.floors * J.fh + 0.2;
+    const b = new Bag(JO), J = EN.jqb, y = jqbFloor() - 0.05, H = y + J.floors * J.fh + 0.2;
     const X0 = J.x0, X1 = J.x1, Z0 = J.z0, ZS = J.z1;
     const W2 = '#f4f3ee', DARK = '#26292b';
     // ---- the body: its walls set back where the colonnade, the recessed bays and the fins stand ----
@@ -150,7 +151,7 @@ const jqbSpec: Spec = {
     k.meshes.push(new THREE.Mesh(drapeAt(JO, X1 + 0.05, X1 + 2.3, Z0, ZS + 1, 0.4, 0.04, (x, z) => { const n = vnoise(x, z * 0.5); return [0.33 + n * 0.08, 0.48 + n * 0.06, 0.2]; }), groundCover()));
     b.c.push([b.B(X1 + 2.3, X1 + 2.5, y - 0.1, y + 0.15, Z0, ZS + 1), '#cfc9bc']);
     // ---- the car park's low end held below the road on the north by a low concrete edge (relief.ts; pair 30) ----
-    b.c.push([b.B(596.0, 617.5, gh(606, -84) - 0.3, 0.35, -85.95, -85.55), '#bdb7aa'], [b.B(596.0, 617.5, 0.35, 0.41, -86.0, -85.5), '#cfc9bc']);
+    { const rt = gh(606, -87.5); b.c.push([b.B(596.0, 617.5, gh(606, -84) - 0.3, rt + 0.35, -85.95, -85.55), '#bdb7aa'], [b.B(596.0, 617.5, rt + 0.35, rt + 0.41, -86.0, -85.5), '#cfc9bc']); }
     wallSolids(596.0, -85.75, 617.5, -85.75, 0.25);
     // ---- the red-earth approach and the long-grass lawn south of the building (pairs 30, 31) ----
     const E = EN.earth;
@@ -172,6 +173,34 @@ const jqbSpec: Spec = {
       if (d < E.half + 1.4 && m > 0.45) return [0.56, 0.42, 0.26];
       // elsewhere the lawn itself shows (no patch with an edge)
       return null;
+    }), groundCover()));
+    // the red-earth footpath on west across the raised lawn to Annie Jiagge Road (the owner's second corrections, A02:
+    // the mapped path was drawn as pale concrete, A01), long untrimmed grass at its edges
+    const W = EN.earthWest;
+    const dWest = (x: number, z: number) => {
+      let best = Infinity;
+      for (let i = 0; i < W.pts.length - 1; i++) {
+        const [ax, az] = W.pts[i], [bx, bz] = W.pts[i + 1], vx = bx - ax, vz = bz - az, t = Math.max(0, Math.min(1, ((x - ax) * vx + (z - az) * vz) / (vx * vx + vz * vz)));
+        best = Math.min(best, Math.hypot(x - ax - vx * t, z - az - vz * t));
+      }
+      return best;
+    };
+    k.meshes.push(new THREE.Mesh(drapeAt(JO, 516.2, 537, 29, 48, 0.4, 0.05, (x, z) => {
+      const n = vnoise(x * 0.4, z * 0.4), m = hash(Math.floor(x * 2), Math.floor(z * 2)), d = dWest(x, z) - (n - 0.5) * 1.2;
+      if (d < W.half) { const v = 0.04 * (m - 0.5); return [0.66 + v, 0.36 + v, 0.22 + v]; }
+      return null;
+    }), groundCover()));
+    for (let i = 0; i < 140; i++) {
+      const x = 512 + hash(i, 61) * 28, z = 26 + hash(i, 63) * 24, d = dWest(x, z);
+      if (d < W.half + 0.3 || d > W.half + 3.5) continue;
+      tuft(b, x, z, 0.6 + hash(i, 67) * 0.9, ['#8a9450', '#7d8a44', '#9a9a58', '#6b7a3a'][i % 4]);
+    }
+    // the bookshop's lower paved approach before the west bay, out to the road on the west (A07, A08; relief.ts makes
+    // its ground): grey concrete pavers, a low kerb along its south edge where the lawn rises
+    k.meshes.push(new THREE.Mesh(drapeAt(JO, 528, 562.4, -34.3, -26.4, 0.4, 0.04, (x, z) => {
+      if (x < 529 + (z + 34) * 0.1) return null;
+      const t = hash(Math.floor(x / 0.4), Math.floor(z / 0.2)) * 0.05, n = vnoise(x * 0.3, z * 0.3) * 0.05;
+      return [0.66 - t - n, 0.64 - t - n, 0.6 - t - n];
     }), groundCover()));
     for (let i = 0; i < 260; i++) {
       const x = 536 + hash(i, 31) * 64, z = -27 + hash(i, 37) * 66;

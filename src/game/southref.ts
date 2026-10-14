@@ -178,9 +178,15 @@ const dramaSpec: Spec = {
     const ST: R4 = [586.0, 611.0, 156.6, 167.5];
     // (the owner's 30-pair brief, pair 7, the raised view from the south-east: a low dark rear range under a flat roof
     // with a thin pale edge, AC units on its face, not a tall hipped stage house)
-    const SH = 5.0;
-    b.c.push([b.B(ST[0], ST[1], y - 0.3, y + SH, ST[2], ST[2] + 1.2), BLACK]);
-    for (const x of [ST[0], ST[1] - 0.5]) b.c.push([b.B(x, x + 0.5, y - 0.3, y + SH, ST[2], ST[3]), BLACK]);
+    // (the owner's 20-picture corrections, Picture 1: painted white outside, black only inside: each wall is a white outer
+    // skin with the black on its inner face, the wall ends toward the court white)
+    const SH = 5.0, SKIN = 0.14, OUT = '#f2f0ea';
+    b.c.push([b.B(ST[0], ST[1], y - 0.3, y + SH, ST[2], ST[2] + SKIN), OUT], [b.B(ST[0] + 0.5, ST[1] - 0.5, y - 0.3, y + SH, ST[2] + SKIN, ST[2] + 1.2), BLACK]);
+    for (const [x, s] of [[ST[0], 1], [ST[1], -1]] as [number, number][]) {
+      const xo = x + s * SKIN, xi = x + s * 0.5;
+      b.c.push([b.B(Math.min(x, xo), Math.max(x, xo), y - 0.3, y + SH, ST[2], ST[3]), OUT], [b.B(Math.min(xo, xi), Math.max(xo, xi), y - 0.3, y + SH, ST[2] + SKIN, ST[3] - 0.08), BLACK]);
+      b.c.push([b.B(Math.min(xo, xi), Math.max(xo, xi), y - 0.3, y + SH, ST[3] - 0.08, ST[3]), OUT]);
+    }
     for (const x of [589.2, 607.4]) b.c.push([b.B(x - 0.45, x + 0.45, y + 2.6, y + 3.2, ST[2] + 1.2, ST[2] + 1.55), '#e4e4df'], [b.B(x - 0.3, x + 0.3, y + 2.7, y + 3.1, ST[2] + 1.55, ST[2] + 1.56), '#55595c']);
     // the stage floor raised, its lip and the steps down to the court
     b.c.push([b.B(ST[0] + 0.5, ST[1] - 0.5, y - 0.2, y + 0.75, ST[2] + 1.2, ST[3] + 1.0), '#a8724a']);
@@ -190,9 +196,12 @@ const dramaSpec: Spec = {
     b.c.push([b.B(592, 596, y + 0.75, y + 3.6, ST[2] + 1.25, ST[2] + 1.35), '#e8d27a'], [b.B(597, 600, y + 0.75, y + 3.2, ST[2] + 1.25, ST[2] + 1.35), '#d9d1bf']);
     b.door.push(b.plane(true, ST[2] + 1.36, 1, 602.5, 1.2, y + 0.75, y + 2.9));
     // the roof over the stage: flat, a deep overhang toward the court, its dark deck behind a thin pale edge, a pale soffit
-    b.c.push([b.B(ST[0] - 0.6, ST[1] + 0.6, y + SH, y + SH + 0.35, ST[2] - 0.6, ST[3] + 1.6), '#3a3734']);
-    b.c.push([b.B(ST[0] - 0.65, ST[1] + 0.65, y + SH + 0.2, y + SH + 0.42, ST[3] + 1.5, ST[3] + 1.65), '#d9d4c9']);
-    b.c.push([b.B(ST[0] - 0.6, ST[1] + 0.6, y + SH - 0.06, y + SH, ST[2] - 0.6, ST[3] + 1.6), SOFF]);
+    // (Picture 1: the roof's edges white all round like the walls, its underside over the stage black)
+    b.c.push([b.B(ST[0] - 0.6, ST[1] + 0.6, y + SH, y + SH + 0.35, ST[2] - 0.6, ST[3] + 1.6), '#c4c0b7']);
+    b.c.push([b.B(ST[0] - 0.65, ST[1] + 0.65, y + SH + 0.2, y + SH + 0.42, ST[3] + 1.5, ST[3] + 1.65), OUT]);
+    b.c.push([b.B(ST[0] - 0.65, ST[1] + 0.65, y + SH - 0.02, y + SH + 0.42, ST[2] - 0.65, ST[2] - 0.55), OUT]);
+    for (const x of [ST[0] - 0.65, ST[1] + 0.55]) b.c.push([b.B(x, x + 0.1, y + SH - 0.02, y + SH + 0.42, ST[2] - 0.65, ST[3] + 1.65), OUT]);
+    b.c.push([b.B(ST[0] - 0.6, ST[1] + 0.6, y + SH - 0.06, y + SH, ST[2] - 0.6, ST[2]), OUT], [b.B(ST[0] - 0.6, ST[1] + 0.6, y + SH - 0.06, y + SH, ST[2], ST[3] + 1.6), BLACK]);
     // the black water tank on its stand behind the west end
     b.c.push([new THREE.CylinderGeometry(0.85, 0.85, 1.6, 14).translate(583.6 - DO[0], y + 3.2, 159.2 - DO[1]), '#1c1d1f']);
     for (const [dx, dz] of [[-0.6, -0.6], [0.6, -0.6], [-0.6, 0.6], [0.6, 0.6]]) b.c.push([b.B(583.6 + dx - 0.06, 583.6 + dx + 0.06, y, y + 2.4, 159.2 + dz - 0.06, 159.2 + dz + 0.06), '#5a5a58']);

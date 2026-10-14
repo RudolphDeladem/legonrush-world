@@ -463,15 +463,16 @@ const danceSpec: Spec = {
     openings(b, { ...F.x1, a0: ZT, a1: P0 - 0.4 }, 'WAW', y);
     openings(b, { ...F.x1, a0: P1 + 0.4, a1: Z1 }, 'WDW', y);
     openings(b, F.z1, 'W-', y); openings(b, F.x0, 'W-WW-WW-W', y);
-    // the taller two-storey gable-ended block at the north end: its gable toward the road with the round high vent,
-    // the glazed notice boards on its front
-    const e2 = y + 6.6, half = (ZT - Z0) / 2;
+    // the gable-ended block at the north end: its gable toward the road with the round high vent, the glazed notice
+    // boards on its front (the owner's 20-picture corrections, Pictures 2-3: one storey, like every building along the
+    // gate's stretches, not two; its eaves a little above the range's under the steeper gable roof)
+    const e2 = y + 3.7, half = (ZT - Z0) / 2;
     b.c.push([b.B(X0 - 0.2, X1 + 0.2, y - 0.3, e2, Z0, ZT), '#f3f0e8'], [b.B(X0 - 0.24, X1 + 0.24, y - 0.3, y + 0.9, Z0 - 0.04, ZT + 0.04), '#8c3a2a']);
     hipRoof(k, M, X0 - 0.9, X1 + 1.3, Z0 - 0.6, ZT + 0.6, e2 - 0.3, 0.5, 'x', [{ gw: 99, tri: false }, { gw: 99, tri: false }], b.c, '#4a3328');
     for (const [x, out] of [[X1 + 0.2, 1], [X0 - 0.2, -1]] as [number, number][]) gableTri(b, false, x, out, Z0, ZT, e2, (0.5 * (half + 0.6)) / half * 0.97, '#f3f0e8');
     b.c.push([new THREE.CylinderGeometry(0.55, 0.55, 0.12, 20).rotateZ(Math.PI / 2).translate(X1 + 0.24 - DO[0], e2 + 1.0, (Z0 + ZT) / 2 - DO[1]), '#1e2124']);
     b.c.push([new THREE.TorusGeometry(0.6, 0.07, 6, 20).rotateY(Math.PI / 2).translate(X1 + 0.28 - DO[0], e2 + 1.0, (Z0 + ZT) / 2 - DO[1]), '#e9e5dc']);
-    for (let f = 0; f < 2; f++) for (const z of [Z0 + 1.6, ZT - 1.6]) b.win.push(b.plane(false, X1 + 0.22, 1, z, 1.3, y + 1.0 + f * 3.3, y + 2.3 + f * 3.3));
+    for (const z of [Z0 + 1.6, ZT - 1.6]) b.win.push(b.plane(false, X1 + 0.22, 1, z, 1.3, y + 1.0, y + 2.3));
     for (const z of [Z0 + 3.3, Z0 + 4.8]) board(b, k, noticeTex(), X1 + 0.23, y + 1.55, z, 1.3, 0.98, Math.PI / 2);
     b.c.push([b.B(X1 + 0.2, X1 + 0.28, y + 0.95, y + 2.15, Z0 + 2.5, Z0 + 5.6), '#2b2d2f']);
     openings(b, facesOf([X0 - 0.2, X1 + 0.2, Z0, ZT]).z0, 'W-W', y);
@@ -503,37 +504,15 @@ const danceSpec: Spec = {
 const FRAME = footprint(547.4, 599.3, -144.5, -96.4);
 const FO: [number, number] = [578, -120];
 const frameSpec: Spec = {
-  name: 'Unfinished frame north of the Jones-Quartey Building', axis: [1, 0], origin: FO, storey: 3.4, style: PLAIN, roofColor: '#9a968e', fascia: '#9a968e', pitch: 0.1,
+  name: 'Carport north of the Jones-Quartey Building', axis: [1, 0], origin: FO, storey: 3.4, style: PLAIN, roofColor: '#9a968e', fascia: '#9a968e', pitch: 0.1,
   replaces: FRAME ? [centre(FRAME)] : [],
   onGround: true,
   blocks: [],
   keep: [[545 - FO[0], 625 - FO[0], -146 - FO[1], -44 - FO[1]]],
   extras: (k: Kit) => {
-    const b = new Bag(FO), CON = '#9d998f', CON2 = '#8e8a80', levels = 4, fh = 3.4;
-    if (FRAME) {
-      const y = Math.min(gh(560, -100), gh(595, -100), gh(560, -140), gh(595, -140));
-      // exposed columns on a grid, slabs with bare edges at each level, beams round the bays; open air between, no
-      // walls, glazing or roof: the top level is columns with bars standing out of them
-      for (const r of rectsOf(ringOf(FRAME))) {
-        const [x0, x1, z0, z1] = r, nx = Math.max(1, Math.round((x1 - x0) / 6)), nz = Math.max(1, Math.round((z1 - z0) / 6));
-        for (let i = 0; i <= nx; i++) for (let j = 0; j <= nz; j++) {
-          const x = Math.min(x1 - 0.25, Math.max(x0 + 0.25, x0 + ((x1 - x0) * i) / nx)), z = Math.min(z1 - 0.25, Math.max(z0 + 0.25, z0 + ((z1 - z0) * j) / nz));
-          b.c.push([b.B(x - 0.22, x + 0.22, y - 0.3, y + levels * fh + 1.0, z - 0.22, z + 0.22), (i + j) % 3 ? CON : CON2]);
-          for (const d of [-0.12, 0.12]) b.c.push([b.B(x + d - 0.015, x + d + 0.015, y + levels * fh + 1.0, y + levels * fh + 1.7, z - 0.015, z + 0.015), '#6b4a36']);
-          if (i === 0 || j === 0 || i === nx || j === nz) SOLIDS.add(x, z, 0.35);
-        }
-        for (let l = 1; l <= levels; l++) {
-          const yy = y + l * fh;
-          b.c.push([b.B(x0, x1, yy - 0.2, yy, z0, z1), l % 2 ? CON : '#a4a096']);
-          for (let i = 0; i <= nx; i++) { const x = x0 + ((x1 - x0) * i) / nx; b.c.push([b.B(Math.max(x0, x - 0.18), Math.min(x1, x + 0.18), yy - 0.6, yy - 0.2, z0, z1), CON2]); }
-          for (let j = 0; j <= nz; j++) { const z = z0 + ((z1 - z0) * j) / nz; b.c.push([b.B(x0, x1, yy - 0.6, yy - 0.2, Math.max(z0, z - 0.18), Math.min(z1, z + 0.18)), CON2]); }
-        }
-        b.c.push([b.B(x0, x1, y - 0.3, y + 0.1, z0, z1), '#a7a399']);
-      }
-      // a stair core of blockwork rising through the frame, unrendered
-      b.c.push([b.B(586.0, 591.0, y - 0.3, y + levels * fh + 0.6, -112.8, -106.8), '#8b8478']);
-      wallSolids(586, -112.8, 591, -112.8); wallSolids(586, -106.8, 591, -106.8);
-    }
+    const b = new Bag(FO);
+    // (the owner's 20-picture corrections, Pictures 16-17: what stands on this outline is a low foundation, not a four-level
+    // frame: the slabs are drawn with the rest of foundation A in limbo.ts; the outline stays replaced here)
     // the light carport on the parking court's east side: thin posts along the edge, a shallow sheet roof over the bays
     const cz0 = -80.5, cz1 = -51.5, px = 616.4, cy = gh(613, -66);
     for (let z = cz0; z <= cz1 + 0.01; z += (cz1 - cz0) / 5) {

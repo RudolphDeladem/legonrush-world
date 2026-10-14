@@ -312,30 +312,58 @@ const pavilionSpec: Spec = {
 };
 
 // ---------- the white building above the roadside bank (pair 26) ----------
+// (the owner's second corrections, A03/A04, the building seen from the Jones-Quartey Building's side: two white levels
+// under a warm terracotta hipped roof, not a grey-brown gable; its north face in two bays, a large rectangular opening
+// with blue frames on each floor in the east bay, a pair of round-arched openings on each floor in the west bay with a
+// pier between them, each bay in a white surround; on its west the lower one-storey colonnade of square white pillars
+// under a flat slab; a small tiled hood on the east end. The tree hides the colonnade's further bays: they repeat the
+// near ones (provisional).)
 const WO: [number, number] = [611, 65.5];
 const whiteSpec: Spec = {
-  name: 'College of Education building above the bank', axis: [1, 0], origin: WO, storey: 3.3, style: PLAIN, roofColor: '#6d5a50', fascia: '#2f2a28', pitch: 0.55,
+  name: 'College of Education building above the bank', axis: [1, 0], origin: WO, storey: 3.3, style: PLAIN, roofColor: '#b5583a', fascia: '#3a2a22', pitch: 0.5,
   replaces: [[611.1, 65.4]],
   onGround: true,
   blocks: [],
   keep: [[598 - WO[0], 626 - WO[0], 52 - WO[1], 80 - WO[1]]],
   extras: (k: Kit) => {
-    const b = new Bag(WO), [x0, x1, z0, z1] = EN.whiteHouse, y = gh(611, 65), e = y + 6.6, pitch = 0.55, ov = 0.6;
-    // the main block, its ridge along z, its gable to the south (toward the road); the lower west part behind the
-    // recessed side veranda, its roof offset lower
+    const b = new Bag(WO), [x0, x1, z0, z1] = EN.whiteHouse, y = gh(611, 65), e = y + 6.6, pitch = 0.5, ov = 0.7;
     const MB: R4 = [x0 + 3.2, x1, z0, z1], VB: R4 = [x0, x0 + 3.2, z0 + 2, z1 - 3.5];
     b.c.push([b.B(MB[0], MB[1], y - 0.6, e, MB[2], MB[3]), WALL]);
-    b.c.push([b.B(VB[0], VB[1], y - 0.6, y + 0.3, VB[2], VB[3]), '#d8d2c6']);
-    b.c.push([b.B(VB[0] + 1.6, VB[1], y, e - 0.6, VB[2], VB[3]), WALL]);
-    // the side veranda: a balcony slab and parapet on the upper floor, posts, recessed openings behind
-    b.c.push([b.B(VB[0], VB[0] + 1.6, y + 3.1, y + 3.3, VB[2], VB[3]), '#efece4'], [b.B(VB[0], VB[0] + 0.15, y + 3.3, y + 4.3, VB[2], VB[3]), '#f4f2ec']);
-    for (let z = VB[2] + 0.2; z <= VB[3]; z += (VB[3] - VB[2] - 0.4) / 4) { b.c.push([b.B(VB[0] + 0.05, VB[0] + 0.35, y, e - 0.6, z - 0.15, z + 0.15), '#f4f2ec']); SOLIDS.add(VB[0] + 0.2, z, 0.25); }
-    for (let z = VB[2] + 1.6; z < VB[3] - 1; z += 3) for (const yy of [y, y + 3.3]) b.door.push(b.plane(false, VB[0] + 1.58, -1, z, 1.1, yy, yy + 2.3));
-    k.roof.c = new THREE.Color('#6d5a50');
-    hipRoof(k, (x, z) => [x - WO[0], z - WO[1]], MB[0] - ov, MB[1] + ov, MB[2] - ov, MB[3] + ov, e - ov * pitch * 0.5, pitch, 'z', [{ gw: 0, tri: false }, { gw: 99, tri: false }], b.c, '#2f2a28');
-    gableTri(b, true, MB[3], 1, MB[0] - ov, MB[1] + ov, e - ov * pitch * 0.5, pitch);
-    hipRoof(k, (x, z) => [x - WO[0], z - WO[1]], VB[0] - 0.5, VB[1] + 0.2, VB[2] - 0.5, VB[3] + 0.5, e - 0.8, 0.35, 'z', [{ gw: 0, tri: false }, { gw: 0, tri: false }], b.c, '#2f2a28');
-    // the gable end: sparse tall narrow openings, the sign board high on the right
+    // the colonnade on the west: one storey, square white pillars, a flat slab with a thin edge, the wall behind
+    const ch = y + 3.2;
+    b.c.push([b.B(VB[0], VB[1], y - 0.6, y + 0.15, VB[2], VB[3]), '#d8d2c6']);
+    b.c.push([b.B(VB[0] + 1.8, VB[1], y, ch, VB[2], VB[3]), WALL]);
+    b.c.push([b.B(VB[0] - 0.25, VB[1], ch, ch + 0.32, VB[2] - 0.25, VB[3] + 0.25), '#f1efe9'], [b.B(VB[0] - 0.25, VB[1], ch - 0.04, ch, VB[2] - 0.25, VB[3] + 0.25), SOFF]);
+    for (let z = VB[2] + 0.2; z <= VB[3] - 0.1; z += (VB[3] - VB[2] - 0.4) / 3) { b.c.push([b.B(VB[0] - 0.05, VB[0] + 0.45, y, ch, z - 0.25, z + 0.25), '#f4f2ec']); SOLIDS.add(VB[0] + 0.2, z, 0.3); }
+    for (let z = VB[2] + 1.6; z < VB[3] - 1; z += 3) b.door.push(b.plane(false, VB[0] + 1.78, -1, z, 1.1, y, y + 2.3));
+    k.roof.c = new THREE.Color('#b5583a');
+    hipRoof(k, (x, z) => [x - WO[0], z - WO[1]], MB[0] - ov, MB[1] + ov, MB[2] - ov, MB[3] + ov, e - ov * pitch * 0.5, pitch, 'z', [{ gw: 0, tri: false }, { gw: 0, tri: false }], b.c, '#3a2a22');
+    // ---- the north face (A04) ----
+    const NZ = MB[2] - 0.02, mid = (MB[0] + MB[1]) / 2, BLUE = '#2d5592', FRAME = '#f6f5f1';
+    const at = (x: number, yy: number, w: number, h: number, arch: boolean) => {
+      const sh = new THREE.Shape();
+      sh.moveTo(-w / 2, 0); sh.lineTo(w / 2, 0);
+      if (arch) { sh.lineTo(w / 2, h - w / 2); sh.absarc(0, h - w / 2, w / 2, 0, Math.PI, false); } else { sh.lineTo(w / 2, h); sh.lineTo(-w / 2, h); }
+      sh.lineTo(-w / 2, 0);
+      b.c.push([new THREE.ShapeGeometry(sh, 10).rotateY(Math.PI).translate(x - WO[0], yy, NZ - 0.135 - WO[1]), BLUE]);
+    };
+    for (const f of [0, 1]) {
+      const yy = y + f * 3.3;
+      // the surrounds standing a little forward of the wall, one per bay, the pier between the arches
+      b.c.push([b.B(MB[0] + 0.6, mid - 0.4, yy + 0.35, yy + 3.0, NZ - 0.12, NZ), FRAME], [b.B(mid + 0.4, MB[1] - 0.8, yy + 0.35, yy + 3.0, NZ - 0.12, NZ), FRAME]);
+      // the west bay: the pair of arches
+      for (const dx of [-1.05, 1.05]) at((MB[0] + 0.6 + mid - 0.4) / 2 + dx, yy + 0.6, 1.3, 2.2, true);
+      // the east bay: one large rectangle in blue frames, a mullion and a transom
+      const ex = (mid + 0.4 + MB[1] - 0.8) / 2;
+      at(ex, yy + 0.65, 3.4, 2.0, false);
+      b.c.push([b.B(ex - 0.05, ex + 0.05, yy + 0.65, yy + 2.65, NZ - 0.17, NZ - 0.13), '#4a6ea8'], [b.B(ex - 1.7, ex + 1.7, yy + 1.85, yy + 1.92, NZ - 0.17, NZ - 0.13), '#4a6ea8']);
+    }
+    b.c.push([b.B(MB[0], MB[1], y + 3.15, y + 3.3, NZ - 0.18, NZ), '#efece5']);
+    // ---- the east end: the small tiled hood over its door ----
+    const EX = MB[1] + 0.02, hz = (MB[2] + MB[3]) / 2 - 2;
+    b.door.push(b.plane(false, EX, 1, hz, 1.2, y, y + 2.3));
+    b.c.push([new THREE.BoxGeometry(1.4, 0.08, 2.2).rotateZ(-0.35).translate(EX + 0.6 - WO[0], y + 2.75, hz - WO[1]), '#b5583a']);
+    // the south gable end of pair 26 is now the hipped end: its sparse tall narrow openings, the sign board high on the right
     const S = facesOf(MB).z1;
     for (const [a, yy, h] of [[MB[0] + 2.6, y + 0.6, 2.2], [MB[0] + 2.6, y + 3.8, 1.8], [MB[1] - 4.4, y + 3.9, 1.0], [MB[0] + 6.5, y + 0.4, 2.3]] as [number, number, number][]) b.win.push(b.plane(true, S.at + 0.03, 1, a, 0.8, yy, yy + h));
     b.c.push([b.B(MB[1] - 6.6, MB[1] - 1.2, y + 3.4, y + 5.6, S.at, S.at + 0.08), '#f7f7f4']);
@@ -352,7 +380,13 @@ const whiteSpec: Spec = {
       const x = 599 + hash(i, 21) * 28, z = z1 + 1 + hash(i, 23) * 24, h = 0.5 + hash(i, 25) * 0.7;
       tuft(b, x, z, h, ['#7d8a44', '#6b7a3a', '#8a9450'][i % 3]);
     }
-    for (const [x, z, s] of [[606, 78.5, 1.2], [624, 76, 1.5], [600.5, 60, 1.1]] as [number, number, number][]) b.leaf.push([new THREE.IcosahedronGeometry(s, 1).scale(1.3, 0.9, 1.1).translate(x - WO[0], gh(x, z) + s * 0.6, z - WO[1]), '#3f6a2c']);
+    // tall untrimmed grass on the north side (A04's foreground) and the big broadleaf tree at the north-west
+    for (let i = 0; i < 120; i++) {
+      const x = 598 + hash(i, 71) * 28, z = 40 + hash(i, 73) * 15, h = 0.7 + hash(i, 75) * 0.8;
+      tuft(b, x, z, h, ['#9a9a58', '#8a9450', '#a3a060'][i % 3]);
+    }
+    broadleaf(k, b.leaf, 600.5, 52.5, { h: 9, spread: 13, seed: 7, origin: WO });
+    for (const [x, z, s] of [[606, 78.5, 1.2], [624, 76, 1.5]] as [number, number, number][]) b.leaf.push([new THREE.IcosahedronGeometry(s, 1).scale(1.3, 0.9, 1.1).translate(x - WO[0], gh(x, z) + s * 0.6, z - WO[1]), '#3f6a2c']);
     b.finish(k);
   },
 };

@@ -479,7 +479,7 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
 
   // every building: cream walls with window bays, a plinth, and terracotta tile roofs
   // (buildings modelled from photos are built by halls.ts and the block-model sites instead)
-  const buildings = buildBuildings(BUILDINGS.filter((b) => !isDiasporaHall(b) && !BLOCK_SITES.some((s) => s.replaces(b))), (b) => greatHallPrecinct(b) ?? medStyle(b) ?? upsaStyle(b) ?? newPentStyle(b) ?? behindPentStyle(b) ?? whitePaint(b));
+  const buildings = buildBuildings(BUILDINGS.filter((b) => !isDiasporaHall(b) && !BLOCK_SITES.some((s) => s.replaces(b))), (b) => greatHallPrecinct(b) ?? gateLow(b) ?? lowZones(b) ?? medStyle(b) ?? upsaStyle(b) ?? newPentStyle(b) ?? behindPentStyle(b) ?? whitePaint(b));
   group.add(buildings);
   yield 'step';
   const halls = buildDiasporaHalls();
@@ -531,6 +531,22 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
 function greatHallPrecinct(b: { minX: number; maxX: number; minZ: number; maxZ: number }) {
   const cx = (b.minX + b.maxX) / 2, cz = (b.minZ + b.maxZ) / 2;
   return cx > -1130 && cx < -540 && cz > -30 && cz < 300 ? { wall: '#f7f6f2', louvres: true } : undefined;
+}
+
+/** along the main gate's stretches either side of La Road south and north of the gate (the owner's 20-picture
+ *  corrections, Pictures 2-3): every building one storey, white over a wine base band, like the gate's own wings */
+function gateLow(b: { minX: number; maxX: number; minZ: number; maxZ: number }) {
+  const cx = (b.minX + b.maxX) / 2, cz = (b.minZ + b.maxZ) / 2;
+  return cx > 630 && cx < 700 && cz > 40 && cz < 280 ? { wall: '#f4f2ec', storeys: 1, plinth: '#8c3a2a', plinthH: 0.9 } : undefined;
+}
+
+/** the low-building zones the owner marked (the 20-picture corrections, Pictures 13-15: round the fire station, inside
+ *  the blue outline on the satellite; the second corrections, A12-A17: round the School of Performing Arts and the Child
+ *  Study Centre): every building there one storey with timber shutters and louvres, not glass, white over a wine base */
+const LOW_ZONES: [number, number, number, number][] = [[382, 760, 325, 630], [380, 640, 140, 330]];
+function lowZones(b: { minX: number; maxX: number; minZ: number; maxZ: number }) {
+  const cx = (b.minX + b.maxX) / 2, cz = (b.minZ + b.maxZ) / 2;
+  return LOW_ZONES.some(([x0, x1, z0, z1]) => cx > x0 && cx < x1 && cz > z0 && cz < z1) ? { wall: '#f4f2ec', storeys: 1, louvres: true, plinth: '#8c3a2a', plinthH: 0.9 } : undefined;
 }
 
 /** round the medical precinct (the owner's UGMC and Noguchi + WAGMC briefs): the small buildings round Noguchi take the

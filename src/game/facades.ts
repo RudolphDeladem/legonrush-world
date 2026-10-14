@@ -17,7 +17,7 @@ type V = [number, number];
 const PITCH = 0.42; // tan of about 23 degrees
 const COS_PITCH = Math.cos(Math.atan(PITCH));
 const OVERHANG = 0.55;
-const PLINTH = 0.5;
+const PLINTH = 0.5, PLINTH_H = PLINTH;
 const STOREY = 3.4;
 const CELL = 500;
 /** v range of the plain slab band at the foot of the facade texture, used for trim */
@@ -214,7 +214,7 @@ function seeded(seed: number) {
 const tint = (hex: string, rand: () => number, amt = 0.035) => new THREE.Color(hex).offsetHSL((rand() - 0.5) * 0.01, 0, (rand() - 0.5) * amt * 2);
 
 /** Walls (window bays), plinth, fascia and soffit of one ring, into the wall batch. */
-function ringWalls(wb: Batch, ring: V[], h: number, bay: number, storeys: number, wallC: THREE.Color, plinthC: THREE.Color) {
+function ringWalls(wb: Batch, ring: V[], h: number, bay: number, storeys: number, wallC: THREE.Color, plinthC: THREE.Color, PLINTH = PLINTH_H) {
   const n = ring.length;
   const base = offset(ring, -0.05); // the plinth stands a little proud of the render
   for (let i = 0; i < n; i++) {
@@ -308,7 +308,9 @@ function slopes(rb: Batch, outer: V[], inner: V[], eave: number, top: number, c:
 /** wall and roof colours; louvres: timber louvred windows (the halls); blue: UPSA's blue-glazed windows; gallery: open
  *  galleries with railings and doors (UPSA's four-storey group); flat: a flat
  *  roof behind a parapet instead of the hipped roof; storeys: the height in storeys instead of the footprint's guess */
-export type BuildingStyle = (b: Building) => { wall?: string; roof?: string; louvres?: boolean; blue?: boolean; gallery?: boolean; flat?: boolean; storeys?: number } | undefined;
+export type BuildingStyle = (b: Building) => { wall?: string; roof?: string; louvres?: boolean; blue?: boolean; gallery?: boolean; flat?: boolean; storeys?: number;
+  /** the base band's colour and height (a painted red or wine base, instead of the grey plinth) */
+  plinth?: string; plinthH?: number } | undefined;
 
 export function buildBuildings(buildings: Building[], styleOf?: BuildingStyle) {
   const group = new THREE.Group();
@@ -332,6 +334,8 @@ export function buildBuildings(buildings: Building[], styleOf?: BuildingStyle) {
     const wallC = tint(st?.wall ?? WALL_COLORS[(r3 * WALL_COLORS.length) | 0], rand);
     const roofC = tint(st?.roof ?? ROOF_COLORS[(r4 * ROOF_COLORS.length) | 0], rand, 0.05);
     const plinthC = tint(PLINTH_COLORS[(rand() * PLINTH_COLORS.length) | 0], rand);
+    if (st?.plinth) plinthC.set(st.plinth);
+    const ph = st?.plinthH ?? PLINTH;
     const trimC = trimBase.clone().multiplyScalar(0.97 + rand() * 0.03);
     const soffitC = soffitBase.clone().multiplyScalar(0.95 + rand() * 0.05);
 
@@ -346,7 +350,7 @@ export function buildBuildings(buildings: Building[], styleOf?: BuildingStyle) {
     const w0 = wb.pos.length, r0 = rb.pos.length;
 
     const eave = h - OVERHANG * PITCH;
-    for (const ring of [outer, ...holes]) ringWalls(wb, ring, h, bay, storeys, wallC, plinthC);
+    for (const ring of [outer, ...holes]) ringWalls(wb, ring, h, bay, storeys, wallC, plinthC, ph);
 
     const box = orientedBox(outer);
     const bw = box.u1 - box.u0, bdp = box.w1 - box.w0;

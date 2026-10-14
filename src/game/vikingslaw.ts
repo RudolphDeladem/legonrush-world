@@ -13,6 +13,8 @@
 import * as THREE from 'three';
 import { PAVE, WHITE, box } from './modelkit';
 import { PL, createSite, render, slab, window_, type Kit, type Spec, type Style } from './blocks';
+import { Bag } from './enkit';
+import { broadleaf } from './nsiaroad';
 
 // ---------- Vikings Hostel ----------
 const TERRACOTTA = '#b5573a';
@@ -85,40 +87,63 @@ const vikings: Spec = {
 };
 
 // ---------- School of Law ----------
-const PEACH = '#e8c6a6';
+// (the owner's 20-picture corrections, Pictures 4-7: light cream-tan panel cladding with its joint grid; the long block's
+// openings differ floor by floor (Picture 5): the ground floor recessed behind piers with dark doors and openings, the
+// first floor a row of small square openings, two to a bay, the second floor a squarish gridded window to a bay, the top
+// floor a wider, lower gridded window to a bay with the air-conditioning units)
+const PEACH = '#e9ceb0';
 const panels = (g: CanvasRenderingContext2D, y0: number) => {
-  g.fillStyle = 'rgba(150,110,80,0.28)';
-  for (let x = 0; x < 256; x += 64) g.fillRect(x, y0, 2, 256);
-  for (let y = 0; y < 256; y += 64) g.fillRect(0, y0 + y, 256, 2);
+  g.fillStyle = 'rgba(150,110,80,0.3)';
+  for (let x = 0; x < 256; x += 128) g.fillRect(x, y0, 2, 256);
+  for (let y = 0; y < 256; y += 86) g.fillRect(0, y0 + y, 256, 2);
 };
-/** the long block: peach panelled render, a gridded window per bay; tall glazing on the ground floor */
+/** a gridded window: rows x cols panes in a dark frame */
+const grid = (g: CanvasRenderingContext2D, r: [number, number, number, number], rows: number, cols: number) => {
+  window_(g, r, '#4b3d32', cols, 0);
+  g.fillStyle = '#4b3d32';
+  for (let i = 1; i < rows; i++) g.fillRect(r[0], r[1] + (r[3] * i) / rows - 2, r[2], 4);
+};
+/** the ground floor behind its piers: dark doors and openings in the shade of the recess (the base style) */
 const LAW_WIN: Style = {
   bay: 3.4,
-  up: [[74, 56, 108, 120]],
-  ground: [[54, 30, 148, 196]],
+  up: [[42, 60, 172, 96]],
+  ground: [[34, 256 + 36, 188, 214]],
   draw: (g) => {
     render(g, PEACH);
     g.fillStyle = PEACH; g.fillRect(0, 0, 256, 512);
     panels(g, 0); panels(g, 256);
-    window_(g, [74, 56, 108, 120], '#4b3d32', 3, 0.33);
-    g.fillStyle = '#4b3d32'; g.fillRect(74, 56 + 80, 108, 4);
-    window_(g, [54, 256 + 30, 148, 196], '#3a3530', 3, 0.7);
+    grid(g, [42, 60, 172, 96], 2, 3);
+    // the recess: shaded wall between the piers, a dark door or opening in it
+    g.fillStyle = '#b89c80'; g.fillRect(22, 256 + 22, 212, 234);
+    g.fillStyle = '#2a2622'; g.fillRect(70, 256 + 60, 116, 196);
+    g.fillStyle = '#4b3d32'; for (const x of [70, 126, 182]) g.fillRect(x, 256 + 60, 4, 196);
   },
 };
-/** the long block's first floor (owner photo): a row of small square windows */
+/** the second floor: a squarish gridded window to a bay */
+const LAW_MID: Style = {
+  bay: 3.4,
+  up: [[74, 48, 108, 112]],
+  ground: [[74, 256 + 48, 108, 112]],
+  draw: (g) => {
+    render(g, PEACH);
+    g.fillStyle = PEACH; g.fillRect(0, 0, 256, 512);
+    panels(g, 0); panels(g, 256);
+    grid(g, [74, 48, 108, 112], 3, 3); grid(g, [74, 256 + 48, 108, 112], 3, 3);
+  },
+};
+/** the first floor (owner photo): a row of small square openings, two to a bay */
 const LAW_SQ: Style = {
   bay: 3.4,
-  up: [[104, 96, 48, 48]],
-  ground: [[104, 256 + 96, 48, 48]],
+  up: [[50, 112, 36, 36], [170, 112, 36, 36]],
+  ground: [[50, 256 + 112, 36, 36], [170, 256 + 112, 36, 36]],
   draw: (g) => {
     render(g, PEACH);
     g.fillStyle = PEACH; g.fillRect(0, 0, 256, 512);
     panels(g, 0); panels(g, 256);
-    window_(g, [104, 96, 48, 48], '#4b3d32', 1, 0);
-    window_(g, [104, 256 + 96, 48, 48], '#4b3d32', 1, 0);
+    for (const x of [50, 170]) { window_(g, [x, 112, 36, 36], '#4b3d32', 1, 0); window_(g, [x, 256 + 112, 36, 36], '#4b3d32', 1, 0); }
   },
 };
-/** the south block: peach render, smaller windows */
+/** the south block: cream-tan panels, smaller windows */
 const LAW_LOW: Style = {
   bay: 3.2,
   up: [[86, 70, 84, 96]],
@@ -132,6 +157,20 @@ const LAW_LOW: Style = {
   },
 };
 
+/** the south block's face toward the court (Pictures 5, 6): the upper floor blank panelling, windows on the ground
+ *  floor only */
+const LAW_LOW_E: Style = {
+  bay: 3.2,
+  up: [],
+  ground: [[86, 256 + 70, 84, 110]],
+  draw: (g) => {
+    render(g, PEACH);
+    g.fillStyle = PEACH; g.fillRect(0, 0, 256, 512);
+    panels(g, 0); panels(g, 256);
+    window_(g, [86, 256 + 70, 84, 110], '#4b3d32', 2, 0.3);
+  },
+};
+
 /** an open cylinder wall (side only) round the rotunda's centre */
 const ring = (r: number, y0: number, y1: number, cx: number, cz: number) => new THREE.CylinderGeometry(r, r, y1 - y0, 56, 1, true).translate(cx, (y0 + y1) / 2, cz);
 
@@ -140,52 +179,69 @@ const law: Spec = {
   axis: [1, 0.009], origin: [447, -250], storey: 3.5, style: LAW_WIN, roofColor: '#b4553a', fascia: '#3b302a', pitch: 0.25,
   replaces: [[432, -223]],
   blocks: [
-    { x0: -20.5, x1: 33.4, z0: -14.8, z1: -0.7, floors: 4, floorStyle: { 1: LAW_SQ } },
-    { x0: -23.8, x1: -5.8, z0: 14.8, z1: 38.8, floors: 2, faces: { x0: LAW_LOW, x1: LAW_LOW, z0: LAW_LOW, z1: LAW_LOW }, roofColor: '#b9573b', pitch: 0.45 },
+    { x0: -20.5, x1: 33.4, z0: -14.8, z1: -0.7, floors: 4, floorStyle: { 1: LAW_SQ, 2: LAW_MID } },
+    { x0: -23.8, x1: -5.8, z0: 14.8, z1: 38.8, floors: 2, faces: { x0: LAW_LOW, x1: LAW_LOW_E, z0: LAW_LOW, z1: LAW_LOW }, roofColor: '#b9573b', pitch: 0.45 },
   ],
   keep: [[-36, 34, -1, 17], [-6, 39, -1, 39]],
   extras: (k) => {
-    // the round entrance building (owner photos): centre and radius from Google's footprint and the layout photo
-    const cx = -19.2, cz = 0.75, r = 13.2, floor = 0.72;
-    k.glass.push(ring(r - 0.15, floor, 5.0, cx, cz));
-    for (let a = 0; a < 360; a += 12) {
-      const t = (a * Math.PI) / 180;
-      k.plain.push([new THREE.BoxGeometry(0.45, 5.0 - floor, 0.45).translate(cx + Math.cos(t) * r, (floor + 5.0) / 2, cz + Math.sin(t) * r), WHITE]);
+    // the round entrance building (owner photos): centre and radius from Google's footprint and the layout photo (Picture 7
+    // of the 20-picture corrections agrees). Its face (Pictures 5, 6): tall glazing in light gold-toned frames set back
+    // behind square white piers, the doors in the middle; a solid white band with the crest and LAW; a continuous ribbon
+    // of dark blue glazing; a deep white band on top. Only the part toward the court shows; the rest is inside the blocks.
+    const cx = -19.2, cz = 0.75, r = 13.2, floor = 0.9, g1 = 5.0, b1 = 6.9, g2 = 8.3, top = 10.0;
+    const GOLD = '#c9b07a', BAND = '#efede7';
+    k.glass.push(ring(r - 0.7, floor, g1, cx, cz));
+    for (let a = 0; a < 360; a += 4) {
+      const t = (a * Math.PI) / 180, rr = r - 0.66;
+      // the gold-toned frame: a mullion every 4 degrees (about 0.9 m), a transom at two-thirds of the height
+      k.plain.push([new THREE.BoxGeometry(0.07, g1 - floor, 0.07).translate(cx + Math.cos(t) * rr, (floor + g1) / 2, cz + Math.sin(t) * rr), GOLD]);
     }
-    k.plain.push([ring(r + 0.05, 5.0, 6.6, cx, cz), '#eceae4']);
-    k.glass.push(ring(r - 0.1, 6.6, 7.9, cx, cz));
-    for (let a = 0; a < 360; a += 7.5) {
+    k.plain.push([ring(r - 0.64, floor + (g1 - floor) * 0.66, floor + (g1 - floor) * 0.66 + 0.1, cx, cz), GOLD], [ring(r - 0.64, g1 - 0.12, g1, cx, cz), GOLD]);
+    // the soffit of the recess under the band
+    k.plain.push([new THREE.RingGeometry(r - 0.7, r + 0.05, 64).rotateX(Math.PI / 2).translate(cx, g1, cz), '#e2ddd2']);
+    for (let a = 0; a < 360; a += 15) {
       const t = (a * Math.PI) / 180;
-      k.plain.push([new THREE.BoxGeometry(0.12, 1.3, 0.12).translate(cx + Math.cos(t) * (r - 0.05), 7.25, cz + Math.sin(t) * (r - 0.05)), '#e8e6e0']);
+      k.plain.push([new THREE.BoxGeometry(0.75, g1 - floor, 0.75).rotateY(-t).translate(cx + Math.cos(t) * (r - 0.3), (floor + g1) / 2, cz + Math.sin(t) * (r - 0.3)), WHITE]);
     }
-    k.plain.push([ring(r + 0.1, 7.9, 9.3, cx, cz), '#efeee9']);
-    k.plain.push([new THREE.CircleGeometry(r, 48).rotateX(-Math.PI / 2).translate(cx, 9.0, cz), '#bdb6aa']);
-    k.plain.push([new THREE.BoxGeometry(4, 0.6, 4).translate(cx + 2, 9.3, cz - 2), '#3b4652']);
+    k.plain.push([ring(r + 0.05, g1, b1, cx, cz), BAND]);
+    k.plain.push([ring(r - 0.12, b1, g2, cx, cz), '#1d3355']);
+    for (let a = 0; a < 360; a += 5) {
+      const t = (a * Math.PI) / 180;
+      k.plain.push([new THREE.BoxGeometry(0.12, g2 - b1, 0.12).translate(cx + Math.cos(t) * (r - 0.02), (b1 + g2) / 2, cz + Math.sin(t) * (r - 0.02)), '#e8e6e0']);
+    }
+    k.plain.push([ring(r + 0.25, g2, top, cx, cz), BAND], [ring(r + 0.3, g2 - 0.08, g2, cx, cz), '#d9d6ce']);
+    k.plain.push([new THREE.CircleGeometry(r + 0.2, 48).rotateX(-Math.PI / 2).translate(cx, top - 0.3, cz), '#bdb6aa']);
+    k.plain.push([new THREE.BoxGeometry(4, 0.6, 4).translate(cx + 2, top - 0.2, cz - 2), '#3b4652']);
     // the doors and the LAW crest face the courtyard
     const dx = 0.893, dz = 0.45, ry = Math.atan2(dx, dz);
     const at = (rr: number, y: number) => [cx + dx * rr, y, cz + dz * rr] as const;
-    for (const s of [-1, 1]) {
-      const [x, y, z] = at(r + 0.02, 2.9);
-      k.plain.push([new THREE.BoxGeometry(0.12, 4.2, 0.18).rotateY(ry).translate(x + s * dz * 1.3, y, z - s * dx * 1.3), '#2b2f36']);
-    }
     {
-      const [x, , z] = at(r + 0.02, 0);
-      k.plain.push([new THREE.BoxGeometry(2.4, 0.12, 0.2).rotateY(ry).translate(x, 3.1, z), '#2b2f36']);
+      // the doors between the two piers either side of the axis: dark leaves in the gold frame
+      const [x, , z] = at(r - 0.62, 0);
+      k.plain.push([new THREE.BoxGeometry(2.6, 2.6, 0.08).rotateY(ry).translate(x, floor + 1.3, z), '#20262e']);
+      k.plain.push([new THREE.BoxGeometry(0.08, 2.6, 0.1).rotateY(ry).translate(x, floor + 1.3, z), GOLD]);
       const [sx, , sz] = at(r + 0.12, 0);
-      k.signs.push({ text: 'LAW', x: sx, y: 5.55, z: sz, ry, w: 1.3, colors: ['#eceae4', '#7a5a2a'] });
-      k.plain.push([new THREE.BoxGeometry(0.55, 0.65, 0.08).rotateY(ry).translate(sx, 6.15, sz), '#1f3a7a'], [new THREE.BoxGeometry(0.4, 0.15, 0.1).rotateY(ry).translate(sx, 6.3, sz), '#c9a227']);
+      k.signs.push({ text: 'LAW', x: sx, y: 5.6, z: sz, ry, w: 1.3, colors: ['#eceae4', '#7a5a2a'] });
+      k.plain.push([new THREE.BoxGeometry(0.55, 0.65, 0.08).rotateY(ry).translate(sx, 6.3, sz), '#1f3a7a'], [new THREE.BoxGeometry(0.4, 0.15, 0.1).rotateY(ry).translate(sx, 6.45, sz), '#c9a227']);
     }
-    // the raised podium with wide steps down to the courtyard, along the long block and round the rotunda
-    const stone = '#cfc3ad';
-    k.plain.push([new THREE.CylinderGeometry(r + 2.4, r + 2.4, floor, 48).translate(cx, floor / 2, cz), stone]);
-    k.plain.push([box(-8, 33.4, 0, floor, -0.7, 3.3), stone]);
-    for (let i = 1; i <= 3; i++) {
-      const h = floor * (1 - i / 4);
-      k.plain.push([new THREE.CylinderGeometry(r + 2.4 + i * 0.4, r + 2.4 + i * 0.4, h, 48).translate(cx, h / 2, cz), stone]);
-      k.plain.push([box(-8, 33.4, 0, h, 3.3, 3.3 + i * 0.4), stone]);
+    // the plain white block between the drum and the south block (Picture 6, left of the drum): a flat-topped mass
+    // below the drum's top band
+    k.plain.push([box(-10.6, -5.8, 0, 7.6, 13.4, 16.4), '#f1efe9'], [box(-10.7, -5.7, 7.6, 7.85, 13.3, 16.5), '#e3e0d8']);
+    // the broad shallow steps (Picture 5: five risers up to the landing) along the long block and round the drum
+    const stone = '#cfc3ad', N = 5, tread = 0.5;
+    k.plain.push([new THREE.CylinderGeometry(r + 1.6, r + 1.6, floor, 64).translate(cx, floor / 2, cz), stone]);
+    k.plain.push([box(-8, 33.4, 0, floor, -0.7, 2.6), stone]);
+    for (let i = 1; i <= N; i++) {
+      const h = floor * (1 - i / (N + 1));
+      k.plain.push([new THREE.CylinderGeometry(r + 1.6 + i * tread, r + 1.6 + i * tread, h, 64).translate(cx, h / 2, cz), stone]);
+      k.plain.push([box(-8, 33.4, 0, h, 2.6, 2.6 + i * tread), stone]);
     }
     // the paved courtyard, open to the road on the east
     k.plain.push([box(-5.8, 39, 0, 0.04, 3.3, 38.8), PAVE]);
+    // the dense tree crowns at the court's east side and south of it (Picture 7), clear of the steps and the approach
+    const tb = new Bag([447, -250]);
+    for (const [x, z, h, sp] of [[474, -243, 9, 12], [452, -216, 10, 14], [466, -219, 9.5, 13], [461, -207, 9, 12], [474, -212, 8.5, 10]] as [number, number, number, number][]) broadleaf(k, tb.leaf, x, z, { h, spread: sp, seed: x * 2 + z, origin: [447, -250] });
+    tb.finish(k);
     // AC units on the long block's front (owner photos)
     for (const [x, f] of [[-2, 1], [6, 1], [14, 2], [22, 1], [29, 2], [3, 3], [18, 3], [26, 3]] as [number, number][]) {
       const y = PL + f * 3.5 + 0.6;

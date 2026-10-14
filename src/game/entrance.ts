@@ -44,6 +44,9 @@ export const EN = {
   earthBox: [536, 600, -28, 40] as [number, number, number, number],
   /** the red-earth approach from the south lawn to the JQB (centre line, half width) */
   earth: { pts: [[592, 30], [584, 14], [574, 0], [566, -12]] as [number, number][], half: 3.5 },
+  /** the mapped footpath from Annie Jiagge Road up across the raised lawn to the JQB, drawn as red earth, not concrete
+   *  (the owner's second corrections, A01/A02): its stretch west of earthBox (centre line, half width) */
+  earthWest: { pts: [[509.5, 44.4], [532, 35], [537, 32.8]] as [number, number][], half: 1.7 },
   /** the asphalt parking between the JQB's east front and La Road */
   parking: [596.0, 622.0, -84.0, -22.0] as [number, number, number, number],
   /** the Finance Directorate and Student Accounts Office: two low detached wings (x0, x1, z0, z1) */

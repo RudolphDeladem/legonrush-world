@@ -42,5 +42,10 @@ try {
   // Evandy Hostel (evandyplan.ts): the frontage parking along the fence and before the commercial block
   const E = await server.ssrLoadModule('/src/game/evandyplan.ts');
   E.PARKS.forEach((ring, i) => out.addAreas.push({ id: `owner:evandy-parking-${i + 1}`, class: 'parking', ring: ring.map(([x, z]) => [r1(x), r1(z)]), reason: "The owner's Evandy brief (docs/evandy/): cars parked along the fence in the paved frontage (P01, R14) and before the commercial block (R13); the game map had no area there." }));
+  // the owner's second corrections (JQB, PRESEC, low buildings; docs/campus-corrections-2/): A14-A17, the small detected
+  // block standing on Onyaa Road south of the School of Performing Arts, with no roof under it on the satellite (A17)
+  out.exclude.push({ id: 'ml:56ac8af2-55a6-4373-84f0-ab8959185ae3', reason: "The owner's second corrections, A14-A17: a detected block standing on Onyaa Road (the owner: \"On road\"); the registered satellite A17 shows the road there and no roof, so it is dropped rather than moved." });
+  out.reshape.push({ id: 'osm:way/665125655', place: 'the small block west of E.A. Boateng Road by the School of Performing Arts', source: "the owner's second corrections, A15-A17: Apple satellite A17 registered on the School of Performing Arts' roof and E.A. Boateng Road", ring: [[491.6, 227.4], [497.9, 227.4], [498.0, 237.7], [491.7, 237.7]], reason: 'Its mapped east wall stood on the road\'s edge (the owner: "On road"); the registered satellite puts the small red roof about 5.5 m further west, clear of the road and its footway.' });
+  out.exclude.push({ id: 'osm:way/1184497719', reason: "The owner (Evandy correction, the circled picture): the small red-roofed hut drawn against the commercial block's north-west corner does not exist; deleted." });
   process.stdout.write(JSON.stringify(out));
 } finally { await server.close(); }

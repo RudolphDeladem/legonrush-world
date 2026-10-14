@@ -113,7 +113,9 @@ export const SIG_PJ = [
 /** PRESEC's gate where its entry road (the map's road from (1023, -1174)) crosses the school boundary (osm:way/339022268):
  *  the pale span with PRESEC on it on red piers; the splayed wing walls with the school's name; the blue stepped plinth
  *  before the north wing; the white boundary wall along the avenue; the stone-faced raised verges and the walks */
-export const GATE = { x: 1040, z: -1170.6, dir: [0.98, 0.196] as [number, number], open: 8.6, h: 5.2 };
+// (the owner's second corrections, A10/A11: the gate taller and wider than first built, its clear opening over the
+// entry road and both walks; the proportions are read from the Street View, not measured)
+export const GATE = { x: 1040, z: -1170.6, dir: [0.98, 0.196] as [number, number], open: 12.2, h: 6.3 };
 export const WING = 12;
 export const WALL_N: Line = [[1033.4, -1186.4], [1046, -1235], [1059, -1286]];
 export const WALL_S: Line = [[1029.6, -1156.4], [1029, -1127], [1023, -1128], [1005, -1076]];

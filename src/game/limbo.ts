@@ -22,6 +22,7 @@ import { broadleaf } from './nsiaroad';
 import { drapeAt, groundCover } from './kuffourgarden';
 import { rod } from './upsa';
 import { halfOf } from './lbplan';
+import { SOLIDS } from './solids';
 
 type P2 = [number, number];
 const PLAIN: Style = { bay: 4, up: [], ground: [], draw: (g) => render(g, '#f1efe9') };
@@ -37,6 +38,17 @@ export const SLAB_PTS: { at: P2; h: number; strip: boolean }[] = [
   { at: [534, -153], h: 0.4, strip: true },
   { at: [534, -120], h: 0.4, strip: true },
 ];
+/** foundation A (the owner's 20-picture corrections, Pictures 16-17, the blue outline): the unfinished site south of
+ *  International House, between it and the Jones-Quartey Building. The satellite shows one low C of bare slabs: the north
+ *  range (the outline the game built as a finished three-storey block, osm 1462's), the east range with its grid of low
+ *  walls and the south range (the L outline the game built as a four-level frame), the court between them overgrown; the
+ *  two small slabs west of it by the road are the strip's (above). The ground the work draws, and points inside the
+ *  outlines. */
+export const FOUND_A = { x0: 544.5, x1: 606, z0: -168, z1: -90 };
+const A_PTS: P2[] = [[575, -154], [590, -132]];
+/** the east range's grid of low wall stubs (the satellite's cells): its extent and the cell size */
+const A_GRID = { x0: 580.5, x1: 594.5, z0: -144, z1: -114, cell: 3.6 };
+
 /** the court inside the ring, and the wing that splits it */
 const COURT = { x0: 404, x1: 465, z0: -74.5, z1: -39.5 };
 const WING = { x0: 409, x1: 436.4, z0: -61, z1: -50 };
@@ -53,6 +65,8 @@ const ringOf = (b: Building): P2[] => { const r: P2[] = []; for (let i = 0; i < 
 const holds = (b: Building, [x, z]: P2) => x >= b.minX && x <= b.maxX && z >= b.minZ && z <= b.maxZ && inRing(ringOf(b), x, z);
 /** the foundations' outlines as the map has them */
 export const SLABS = SLAB_PTS.flatMap((s) => { const b = BUILDINGS.find((o) => holds(o, s.at)); return b ? [{ ...s, b, ring: ringOf(b) }] : []; });
+export const SLABS_A = A_PTS.flatMap((at) => { const b = BUILDINGS.find((o) => holds(o, at)); return b ? [{ at, h: 0.7, strip: false, b, ring: ringOf(b) }] : []; });
+const onSlabA = (x: number, z: number) => SLABS_A.some((s) => x >= s.b.minX && x <= s.b.maxX && z >= s.b.minZ && z <= s.b.maxZ && inRing(s.ring, x, z));
 const onSlab = (x: number, z: number, strip?: boolean) => SLABS.some((s) => (strip === undefined || s.strip === strip) && x >= s.b.minX && x <= s.b.maxX && z >= s.b.minZ && z <= s.b.maxZ && inRing(s.ring, x, z));
 const slabDist = (x: number, z: number) => {
   let best = Infinity;
@@ -111,10 +125,12 @@ export function limboTrees(): Tree[] {
   const ok = (x: number, z: number, slab: number) => clearance(x, z, true) > 2.2 && slabDist(x, z) > slab && !buildingNear(x, z, 2);
   for (let gx = LIMBO.x0 + 2; gx < LIMBO.x1; gx += 6.5) for (let gz = LIMBO.z0 + 2; gz < LIMBO.z1; gz += 6.5) {
     const x = gx + (hash(gx, gz) - 0.5) * 4.5, z = gz + (hash(gz, gx) - 0.5) * 4.5, zone = zoneOf(x, z), r = hash(x * 0.7, z * 1.3);
-    const p = { belt: 0.85, beltThin: 0.3, courtGreen: 0.75, courtSoil: 0.08, south: 0, open: 0 }[zone];
+    // (the owner's 20-picture corrections, Pictures 17-18: round the ruin the growth is mostly short shrubs, only a minority
+    // of it taller trees; the belts are the undergrowth below, with a tree here and there)
+    const p = { belt: 0.2, beltThin: 0.1, courtGreen: 0.3, courtSoil: 0.05, south: 0, open: 0 }[zone];
     if (r > p || !ok(x, z, zone === 'courtGreen' || zone === 'courtSoil' ? 1.2 : 1.6)) continue;
     const court = zone === 'courtGreen' || zone === 'courtSoil';
-    out.push({ x, z, h: court ? 3.5 + hash(x, 3) * 2.5 : 5.5 + hash(x, 4) * 4, spread: court ? 4.5 + hash(z, 5) * 3 : 6.5 + hash(z, 6) * 3.5, round: hash(z, 9) < 0.5 });
+    out.push({ x, z, h: court ? 3.5 + hash(x, 3) * 2.5 : 4.5 + hash(x, 4) * 4, spread: court ? 4.5 + hash(z, 5) * 3 : 5.5 + hash(z, 6) * 3.5, round: hash(z, 9) < 0.5 });
   }
   // the line of scattered trees south of the ruin, by the red earth road (aerial)
   for (const [x, z] of [[396, 3.5], [407, 5], [423, 4], [447, 5.5], [471, 4.5], [495, 3]] as P2[]) if (ok(x, z, 2)) out.push({ x, z, h: 7 + hash(x, 1) * 4, spread: 7 + hash(x, 2) * 3, round: true });
@@ -254,6 +270,17 @@ function bushes(b: Bag, x: number, z: number, i: number, tall: number, size = 1)
   if (hash(i, 12) < 0.5) b.leaf.push([new THREE.IcosahedronGeometry(rad * 0.75, 0).scale(1.2, up * 0.8, 1.2).translate(x - O[0] + 0.6, rad * up * 0.55, z - O[1] - 0.3), ['#5b7f36', '#46702d'][i % 2]]);
 }
 
+/** a big bush clump: several leafy masses from the ground up to `h`, about `w` across, no trunk showing */
+function clump(b: Bag, x: number, z: number, h: number, w: number, i: number) {
+  const O = b.O, cols = ['#3f6a2a', '#4d7a31', '#36602a', '#557331', '#2f5526', '#46702d'];
+  for (let q = 0; q < 5; q++) {
+    const a = hash(i, q * 3.1) * Math.PI * 2, d = q ? w * 0.28 * (0.6 + hash(q, i) * 0.6) : 0, r = (q ? 0.32 : 0.42) * w * (0.85 + hash(i + q, 2) * 0.3);
+    const cy = q ? h * (0.3 + hash(q, i * 1.7) * 0.25) : h * 0.5, sy = (q ? h * 0.36 : h * 0.5) / r;
+    b.leaf.push([new THREE.IcosahedronGeometry(r, 1).scale(1, sy, 1).translate(x + Math.cos(a) * d - O[0], cy, z + Math.sin(a) * d - O[1]), cols[(i + q) % 6]]);
+  }
+  SOLIDS.add(x, z, w * 0.18);
+}
+
 // ======================================================================================================
 // Limbo
 // ======================================================================================================
@@ -290,13 +317,13 @@ const limbo: Spec = {
     // ---- the trees and the undergrowth ----
     for (const [i, t] of limboTrees().entries()) if (t.x < LIMBO.x1 + 1) broadleaf(k, b.leaf, t.x, t.z, { h: t.h, spread: t.spread, seed: i * 2.3 + 1, origin: LO, round: t.round });
     let n = 0;
-    for (let i = 0; i < 16000 && n < 3600; i++) {
+    for (let i = 0; i < 20000 && n < 4600; i++) {
       const x = LIMBO.x0 + hash(i, 0.37) * (LIMBO.x1 - LIMBO.x0), z = LIMBO.z0 + hash(0.53, i) * (LIMBO.z1 - LIMBO.z0), zone = zoneOf(x, z);
       if (clearance(x, z, true) < 0.8 || slabDist(x, z) < 0.3 || buildingNear(x, z, 0.5)) continue;
       const r = hash(i, 5.1);
       if (zone === 'belt' || zone === 'courtGreen') {
         n++;
-        if (r < 0.55) bushes(b, x, z, i, zone === 'courtGreen' ? 1.4 : 2.6, zone === 'belt' ? 1.4 : 1);
+        if (r < 0.7) bushes(b, x, z, i, zone === 'courtGreen' ? 1.0 : hash(i, 13) < 0.15 ? 1.6 : 0.6, zone === 'belt' ? 0.95 : 0.9);
         else tuft(b, x, z, 0.8 + hash(i, 9) * 1.2, ['#7d8a44', '#6b7a3a', '#5f7a35', '#8d9450'][i % 4], i + 300);
       } else if (zone === 'beltThin' || zone === 'courtSoil') {
         if (r > 0.45) continue;
@@ -317,7 +344,7 @@ const limbo: Spec = {
         for (const sg of [-1, 1]) {
           const x = ax + (bx - ax) * t + nx * sg * 0.9, z = az + (bz - az) * t + nz * sg * 0.9, zone = zoneOf(x, z);
           if (onSlab(x, z) || clearance(x, z, true) < 1 || (zone !== 'belt' && zone !== 'courtGreen' && hash(x, z) > 0.25)) continue;
-          bushes(b, x, z, (x * 13 + z * 7) | 0, 1.2);
+          bushes(b, x, z, (x * 13 + z * 7) | 0, 0.7);
         }
       }
     }
@@ -349,7 +376,9 @@ const strip: Spec = {
       if (d < 2.5 + (vnoise(x * 0.4, z * 0.4) - 0.5) * 3 && vnoise(x * 0.3 + 9, z * 0.3) > 0.5) return [0.56 + m, 0.38 + m * 0.6, 0.26];
       return n > 0.72 ? [0.4 + m, 0.45 + m, 0.24] : [0.26 + m, 0.33 + m, 0.16];
     }), groundCover()));
-    for (const [i, t] of limboTrees().entries()) if (t.x > STRIP.x0 - 1) broadleaf(k, b.leaf, t.x, t.z, { h: t.h, spread: t.spread, seed: i * 2.3 + 1, origin: SO, round: t.round });
+    // (the owner's 20-picture corrections, Picture 18's red circle: the clumps in front of the foundation keep about their
+    // height but are bushes, dense to the ground, not trees on trunks)
+    for (const [i, t] of limboTrees().entries()) if (t.x > STRIP.x0 - 1) clump(b, t.x, t.z, t.h * 0.7, t.spread * 0.75, i);
     // ---- the thick bushes, tall grass and creepers over the slabs' edges ----
     for (let i = 0; i < 4000; i++) {
       const x = STRIP.x0 + hash(i, 0.61) * (STRIP.x1 - STRIP.x0), z = STRIP.z0 + hash(0.29, i) * (STRIP.z1 - STRIP.z0);
@@ -364,4 +393,48 @@ const strip: Spec = {
   },
 };
 
-export const limboSite = createSite('limbo', [limbo, strip]);
+// ======================================================================================================
+// foundation A, south of International House
+// ======================================================================================================
+const AO: P2 = [575, -129];
+const foundationA: Spec = {
+  name: 'Foundation south of International House', axis: [1, 0], origin: AO, storey: 3, style: PLAIN, roofColor: '#9aa0a3', fascia: '#6d5a4a', pitch: 0.2,
+  // (the south range's outline is already replaced by the carport's spec, tenpairs.ts)
+  replaces: SLABS_A.slice(0, 1).map((s) => s.at),
+  blocks: [],
+  onGround: true,
+  keep: [[FOUND_A.x0 - AO[0], FOUND_A.x1 - AO[0], FOUND_A.z0 - AO[1], FOUND_A.z1 - AO[1]]],
+  extras: (k: Kit) => {
+    const b = new Bag(AO), c: Part[] = [];
+    const ext: [number, number, number, number] = [546, 601, -164, -95];
+    const top = new THREE.MeshStandardMaterial({ roughness: 0.96, map: topTexture(...ext, 512, 640) });
+    for (const [i, s] of SLABS_A.entries()) { k.meshes.push(slabMesh(s.ring, s.h, AO, ext, top)); ruin(c, b, s.ring, s.h, 131 + i * 41, false); }
+    // the east range's cells: low broken wall stubs on a grid, a course or three of blockwork
+    const G = A_GRID, h = SLABS_A[1]?.h ?? 0.7;
+    if (SLABS_A[1]) {
+      for (let z = G.z0; z <= G.z1 + 0.01; z += G.cell) { const hh = 0.2 + hash(z, 3) * 0.4; c.push([new THREE.BoxGeometry(G.x1 - G.x0, hh, 0.2).translate((G.x0 + G.x1) / 2 - AO[0], h + hh / 2, z - AO[1]), '#8f8a80']); }
+      for (const x of [G.x0, (G.x0 + G.x1) / 2, G.x1]) { const hh = 0.25 + hash(x, 5) * 0.35; c.push([new THREE.BoxGeometry(0.2, hh, G.z1 - G.z0).translate(x - AO[0], h + hh / 2, (G.z0 + G.z1) / 2 - AO[1]), '#8a857b']); }
+    }
+    // ---- the ground: the overgrown court and the bushy margins, worn soil at the edges ----
+    k.meshes.push(new THREE.Mesh(drapeAt(AO, FOUND_A.x0, FOUND_A.x1, FOUND_A.z0, FOUND_A.z1, 1.0, 0.03, (x, z) => {
+      if (clearance(x, z, true) < 0.25 || onSlabA(x, z) || (buildingNear(x, z) && !onSlabA(x, z))) return null;
+      const m = vnoise(x * 1.1, z * 1.1) * 0.06, n = vnoise(x * 0.18, z * 0.18);
+      if (n > 0.74) return [0.55 + m, 0.38 + m * 0.6, 0.26];
+      return n > 0.5 ? [0.4 + m, 0.45 + m, 0.24] : [0.27 + m, 0.35 + m, 0.17];
+    }), groundCover()));
+    // ---- mostly low bushes and tall grass, a few small trees in the court (Picture 17: the court dense green) ----
+    const aSlabDist = (x: number, z: number) => { let best = Infinity; for (const s of SLABS_A) { if (inRing(s.ring, x, z)) return -1; for (let i = 0, j = s.ring.length - 1; i < s.ring.length; j = i++) { const [ax, az] = s.ring[j], [bx, bz] = s.ring[i], dx = bx - ax, dz = bz - az, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz || 1))); best = Math.min(best, Math.hypot(ax + dx * t - x, az + dz * t - z)); } } return best; };
+    for (const [x, z, hh, w] of [[566, -136, 5.5, 6], [572, -125, 4.5, 5], [561, -122, 6, 6.5], [574, -138, 4, 4.5]] as [number, number, number, number][]) if (aSlabDist(x, z) > 1.5 && !buildingNear(x, z, 1)) broadleaf(k, b.leaf, x, z, { h: hh, spread: w, seed: x + z * 3, origin: AO, round: true });
+    for (let i = 0; i < 5000; i++) {
+      const x = FOUND_A.x0 + hash(i, 0.71) * (FOUND_A.x1 - FOUND_A.x0), z = FOUND_A.z0 + hash(0.37, i) * (FOUND_A.z1 - FOUND_A.z0), sd = aSlabDist(x, z);
+      if (clearance(x, z, true) < 0.9 || sd < 0.5 || buildingNear(x, z, 0.4)) continue;
+      const r = hash(i, 6.1), court = x > 552 && x < 580 && z > -144 && z < -113;
+      if (r < (court ? 0.4 : 0.22)) bushes(b, x, z, i, court ? 1.8 : 1.3, court ? 1.2 : 1);
+      else if (r < 0.75) tuft(b, x, z, 0.7 + hash(i, 9) * 1.2, ['#7d8a44', '#6b7a3a', '#5f7a35', '#8d9450'][i % 4], i + 1700);
+    }
+    const m = new THREE.Mesh(merge(c), concrete(0.6)); m.castShadow = true; m.receiveShadow = true; k.meshes.push(m);
+    b.finish(k, 0.3);
+  },
+};
+
+export const limboSite = createSite('limbo', [limbo, strip, foundationA]);
