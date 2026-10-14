@@ -144,6 +144,30 @@ function flatPlane(k: Kit, pts: P2[], y: number, mat: THREE.Material, tile: numb
 const oval = (c: P2, a: number, b: number, n = 24): P2[] => Array.from({ length: n }, (_, i) => { const t = (i / n) * Math.PI * 2; return [c[0] + Math.cos(t) * a, c[1] + Math.sin(t) * b]; });
 
 // ---------- a wing ----------
+/** the tapered ground-floor divider's side profile (provisional, tuned on R1): width across the facade, the depth under
+ *  the balcony slab, the depth of the low return, the height of the return, the slab's underside */
+const FIN = { w: 0.5, top: 1.1, low: 0.3, ret: 0.55, under: 0.4 + ST - 0.18 };
+/** the fin as an extruded side profile: out from the wall face at z (out: the face's outward sign) */
+function taperedFin(xc: number, z: number, out: number, f: typeof FIN) {
+  const sh = new THREE.Shape([new THREE.Vector2(0, 0), new THREE.Vector2(f.low, 0), new THREE.Vector2(f.low, f.ret), new THREE.Vector2(f.top, f.under), new THREE.Vector2(0, f.under)]);
+  const g = new THREE.ExtrudeGeometry(sh, { depth: f.w, bevelEnabled: false });
+  // shape x (outward) to world z, the extrusion across the facade
+  return out > 0 ? g.rotateY(-Math.PI / 2).translate(xc + f.w / 2, 0, z) : g.rotateY(Math.PI / 2).translate(xc - f.w / 2, 0, z);
+}
+/** a recessed ground-floor window between x a and b on the face at z: the reveal standing out round it, the dark frame,
+ *  glass, a mullion and a transom, the security bars in front */
+function groundWindow(p: Part[], k: Kit, a: number, b: number, z: number, out: number) {
+  const y0 = 1.2, y1 = 3.05, R = 0.2, Z = (d0: number, d1: number) => [Math.min(z + out * d0, z + out * d1), Math.max(z + out * d0, z + out * d1)] as const;
+  const [r0, r1] = Z(0, R);
+  p.push([box(a - 0.12, a, y0 - 0.12, y1 + 0.1, r0, r1), CREAM_D], [box(b, b + 0.12, y0 - 0.12, y1 + 0.1, r0, r1), CREAM_D], [box(a - 0.12, b + 0.12, y1, y1 + 0.1, r0, r1), CREAM_D], [box(a - 0.12, b + 0.12, y0 - 0.12, y0, ...Z(0, R + 0.05)), '#e6dcc6']);
+  const [f0, f1] = Z(0.01, 0.06);
+  p.push([box(a, b, y0, y1, ...Z(0.0, 0.01)), '#26282a']);
+  for (const [xa, xb, ya, yb] of [[a, b, y0, y0 + 0.06], [a, b, y1 - 0.06, y1], [a, a + 0.06, y0, y1], [b - 0.06, b, y0, y1], [(a + b) / 2 - 0.03, (a + b) / 2 + 0.03, y0, y1], [a, b, y0 + (y1 - y0) * 0.68 - 0.03, y0 + (y1 - y0) * 0.68 + 0.03]]) p.push([box(xa, xb, ya, yb, f0, f1), '#2e2c2a']);
+  k.glass.push(box(a + 0.06, b - 0.06, y0 + 0.06, y1 - 0.06, ...Z(0.02, 0.03)));
+  const [s0, s1] = Z(0.1, 0.13);
+  for (let x = a + 0.1; x < b - 0.05; x += 0.12) p.push([box(x - 0.012, x + 0.012, y0, y1, s0, s1), '#1f1f1f']);
+  for (const y of [y0 + 0.4, y0 + (y1 - y0) / 2, y1 - 0.35]) p.push([box(a, b, y - 0.015, y + 0.015, s0, s1), '#1f1f1f']);
+}
 /** the balcony bays on a long face (R03, R08, P03): each bay a PAIR of recessed balconies divided by a central wall;
  *  that wall and the two side walls run from the ground to the eaves, standing out as deep as the balconies, so that
  *  on the ground floor they frame two windows; each balcony a slab with a solid lower wall and a dark patterned railing
@@ -158,7 +182,15 @@ function balconies(k: Kit, x0: number, x1: number, z: number, out: 1 | -1, floor
     // owner's circled R03): a wedge whose two faces run out from the wall to an edge at the balconies' front line
     const g1 = 0.4 + ST;
     parts.push([box(am - 0.13, am + 0.13, g1 - 0.18, tf, zm, zM), CREAM_D]);
-    parts.push([prism([[am - 0.36, z], [am + 0.36, z], [am + 0.05, zf], [am - 0.05, zf]], 0, g1 - 0.18), CREAM_D]);
+    if (ochre) {
+      // the main block frontage (the owner's tapered-partition brief, R1): the ground-floor divider is a fin whose side
+      // profile tapers: as deep as the balconies under the slab, sloping back to a low narrow return at the foot of the
+      // wall; constant width across the facade
+      parts.push([taperedFin(am, z, out, FIN), CREAM_D]);
+      // the two ground-floor windows either side of it: recessed in a reveal, dark frames, mullion and transom, security
+      // bars (not louvres) over the facade texture's openings
+      for (const [f0, f1] of [[0.336, 0.578], [0.672, 0.914]] as P2[]) groundWindow(parts, k, x0 + i * b + b * f0, x0 + i * b + b * f1, z, out);
+    } else parts.push([prism([[am - 0.36, z], [am + 0.36, z], [am + 0.05, zf], [am - 0.05, zf]], 0, g1 - 0.18), CREAM_D]);
     for (const [h0, h1] of [[a0 + 0.14, am - 0.13], [am + 0.13, a1 - 0.14]] as P2[]) {
       for (let f = 1; f < floors; f++) {
         const y = 0.4 + f * ST;
