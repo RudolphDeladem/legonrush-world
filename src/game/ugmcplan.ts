@@ -33,9 +33,11 @@ export const CORE_ARC = coreArc(16);
  *  the roundabout (M1; A09-A11, E14, E25, E39) */
 export const OPD = {
   north: [12, 57.5, 15, 30] as R4, west: [-8, 7, 32, 82.5] as R4, east: [45, 57.5, 30, 82.5] as R4, south: [7, 45, 71, 82.5] as R4,
-  court: [7, 45, 30, 71] as R4, floors: 3, bow: { a: [-8, 32] as P2, b: [12, 15] as P2, bulge: 2 },
+  court: [7, 45, 30, 71] as R4, floors: 3, bow: { a: [-8, 32] as P2, b: [12, 15] as P2, bulge: -2.5 },
 };
-/** the bow: the chord from a to b bulging `bulge` m away from the court */
+/** the bow: the chord from a to b bulging `bulge` m away from the court (toward the roundabout); a negative bulge
+ *  recesses the middle into the building. The UGMC audit (UGMC-001; E14, E25, E32, E39): the Outpatients glass is
+ *  concave, its middle set back from the line between its ends, so the bulge is negative. */
 export const bowPts = (a: P2, b: P2, bulge: number, n = 12): P2[] => {
   const mx = (a[0] + b[0]) / 2, mz = (a[1] + b[1]) / 2, dx = b[0] - a[0], dz = b[1] - a[1], l = Math.hypot(dx, dz);
   const nx = dz / l, nz = -dx / l; // outward (away from the court, toward the roundabout)
@@ -66,6 +68,15 @@ export const PT = {
   north: [-92, -36, 92, 104] as R4, west: [-92, -80, 104, 157] as R4, spine: [-71, -60, 104, 157] as R4, south: [-80, -36, 145, 157] as R4,
   towerN: [-48, -36, 104, 117] as R4, towerS: [-48, -36, 132, 145] as R4, mid: [-60, -48, 117, 132] as R4, floors: 4, towerFloors: 6,
   entrance: [-36, -33.6, 117, 132] as R4,
+  /** the entrance (the UGMC audit, UGMC-005 to 009 and 013; E16, E24, E41): the low panelled portal against the north
+   *  end mass, its closed part (front screen with square openings) and its open part (the drive-in shelter on two slender
+   *  round columns, the "5 Patient Tower" sign on its fascia); the dark glazed base and the glazed bay of the block
+   *  behind; the mast stands on the south end mass (left of the entrance seen from the drive) */
+  portal: { u0: -44, u1: -35, v0: 117, vOpen: 124.5, v1: 129.5, h: 5.8, cols: [[-37.2, 127.6], [-42, 127.6]] as P2[] },
+  glassBase: [-48, -44, 124.5, 132] as R4, bay: [121.5, 127.5] as P2, strip: 2.2,
+  /** the curved shrub bed with its white pebble border in front of the portal's closed part, the small flowering tree */
+  bed: [[-35, 107.5], [-35, 124.2], [-33.3, 124.2], [-31.4, 121.6], [-29.8, 117], [-30.2, 111], [-32, 107.5]] as P2[],
+  tree: [-32.2, 114] as P2, bench: [-33.6, 140] as P2,
 };
 
 /** 06 the long low-roofed building west of 05 (M1-M3; use unresolved) */
@@ -140,6 +151,12 @@ export const TOTEMS: P2[] = [[14, 7], [30, -8]];
 /** the flagpoles on the loop's lawn before 01 and 03 (E32, E38) */
 export const FLAGS: P2[] = [[-30, 12], [-26, 12], [-22, 12], [-18, 12], [-14, 12]];
 
+/** the perimeter fence round the UGMC community (the owner: "there is a fence around the UGMC community"; the drone
+ *  frames A37/A38 show it just inside the main road with the two security posts at its gates, E21 beyond the east lot).
+ *  [DECISION] its line: inside the main road, outside the east ring road (short of the red earth strip), round Building 7,
+ *  along the south road, round the west car park (09) and back up outside the west road; a gap wherever a road crosses */
+export const FENCE: P2[] = [[-200, -126], [116, -126], [116.5, -17], [127, 113], [123, 170], [118, 212], [110, 217], [110, 227], [-14, 227], [-14, 177], [-186, 177], [-186, 90], [-273, 90], [-273, 9], [-192, 9], [-200, -126]];
+
 /** the outlines the precinct's models stand on (site frame), for the map's collision rings (corrections.json
  *  reshape) and the props' keep-outs */
 export const OUTLINES: Record<string, P2[]> = {
@@ -147,7 +164,9 @@ export const OUTLINES: Record<string, P2[]> = {
   wc: [[-90, -70], [-22, -70], [-22, -52], [-27, -52], [-27, -26], [-22, -26], [-22, -6], [-90, -6]],
   opd: [...OPD_BOW, [57.5, 15], [57.5, 82.5], [-8, 82.5]],
   sim: [[22, -62], [60, -62], [60, -18], [22, -18]],
-  pt: [[-92, 92], [-36, 92], [-36, 157], [-92, 157]],
+  // the recess between the end masses stays open to the portal's shelter and the doors (the portal's closed part and
+  // the dark glazed base are walls)
+  pt: [[-92, 92], [-36, 92], [-36, 117], [-35, 117], [-35, 124.5], [-44, 124.5], [-44, 132], [-36, 132], [-36, 157], [-92, 157]],
   long: [[LONG[0], LONG[2]], [LONG[1], LONG[2]], [LONG[1], LONG[3]], [LONG[0], LONG[3]]],
 };
 
