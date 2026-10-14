@@ -3786,3 +3786,21 @@ Evidence and ids are in `docs/upsa-campus/evidence-ledger.md` (batch 131); the c
   Administration, the blue rectangle east of KOKA.
 - On the working branch only; not on `main` until the owner approves.
 
+
+## School of Engineering Sciences: the correction brief (the owner)
+
+Evidence and ids are in `docs/engineering-ses/evidence-ledger.md` (batch 132). The comparison is
+`docs/engineering-ses/sheet.jpg`.
+
+- **Placement:** the building is unchanged; the satellite confirms it. The jet's pad and fence move onto the
+  compound's mapped outline (1026), which ends an invisible wall beside the old pad.
+- **Facade:**
+  - dark-framed four-pane windows, one per pilastered bay on the front block;
+  - window and breeze-block bays on the wings' long faces, breeze-block screens on the wings' ends;
+  - cream breeze-block towers with an arched screen at the top of each front.
+- **Entrance:** a maroon gable porch with a pale soffit, the sign SCHOOL OF ENGINEERING SCIENCES, a tiled landing
+  and steps, red-brown herringbone pavers.
+- **Jet:** an Aermacchi MB-339 in green and tan with tip tanks, the Ghana flag on its fin and yellow stands under the
+  wings, nose east. The fence is chain-link with a green welded-mesh gate on the front.
+- **Car park:** about a fifth full, as in the satellite.
+- **Bush:** a dense, instanced bush belt behind the school and along Annie Jiagge Road.
