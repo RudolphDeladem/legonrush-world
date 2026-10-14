@@ -32,24 +32,29 @@ const top = (floors: number) => 0.4 + floors * ST + 0.4;
 const wall = (g: CanvasRenderingContext2D, base = CREAM) => { render(g, base); speckle(g, 0, 0, 256, 512, 900, ['#e9dfca', '#f3ebd9', '#e5dac3']); };
 /** a louvre window (the owner: every Evandy window is grey louvre blades, not glass): a pale frame, grey horizontal
  *  blades with thin shadow lines between them, a mullion where it is wide */
-const louvred = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) => {
+const louvred = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, surround = '#f6efe0') => {
   g.fillStyle = 'rgba(90,75,55,0.35)'; g.fillRect(x - 5, y - 5, w + 10, h + 10);
-  g.fillStyle = '#f6efe0'; g.fillRect(x - 3, y - 3, w + 6, h + 6);
+  g.fillStyle = surround; g.fillRect(x - (surround === '#f6efe0' ? 3 : 7), y - (surround === '#f6efe0' ? 3 : 7), w + (surround === '#f6efe0' ? 6 : 14), h + (surround === '#f6efe0' ? 6 : 14));
   g.fillStyle = '#5d6266'; g.fillRect(x, y, w, h);
   for (let t = y + 1; t < y + h - 2; t += 7) { g.fillStyle = '#9aa0a4'; g.fillRect(x + 1, t, w - 2, 4); g.fillStyle = '#c4c8ca'; g.fillRect(x + 1, t, w - 2, 1); }
   g.fillStyle = '#f6efe0';
   const n = Math.max(1, Math.round(w / 34));
   for (let i = 1; i < n; i++) g.fillRect(x + (w * i) / n - 1, y, 3, h);
 };
-const pilaster = (g: CanvasRenderingContext2D, ochre: boolean) => { g.fillStyle = ochre ? OCHRE : CREAM_D; g.fillRect(0, 0, 13, 512); g.fillStyle = 'rgba(80,60,30,0.25)'; g.fillRect(13, 0, 2, 512); };
+// (the owner's eight-pair brief: the frontage pair's strips yellow (R06); the inner and upper wings' strips a taupe
+// brown (R07))
+const TAUPE = '#c39d8a', YREC = '#dcb75e';
+const pilaster = (g: CanvasRenderingContext2D, ochre: boolean) => { g.fillStyle = ochre ? OCHRE : TAUPE; g.fillRect(0, 0, 13, 512); g.fillStyle = 'rgba(80,60,30,0.25)'; g.fillRect(13, 0, 2, 512); };
 /** the balcony module: pilaster, a narrow window, the deep recess (room glazing behind) the geometry fronts */
 const front = (ochre: boolean): Style => ({
   bay: 7.8, up: [[26, 60, 30, 120], [96, 50, 120, 150]], ground: [[26, 60, 30, 120], [96, 60, 130, 120]],
   draw: (g) => {
     wall(g); pilaster(g, ochre);
-    for (const y0 of [0, 256]) louvred(g, 26, y0 + 60, 30, 120);
-    // upper: the recess, dark shade with doors and windows behind
-    g.fillStyle = '#6f675a'; g.fillRect(74, 14, 168, 226); g.fillStyle = '#4a443b'; g.fillRect(74, 14, 168, 40);
+    // the window beside the balconies: framed in yellow on the frontage pair (R06), in tan on the inner wings (R07)
+    for (const y0 of [0, 256]) louvred(g, 26, y0 + 60, 30, 120, ochre ? '#e2bd55' : '#d8bfa8');
+    // upper: the recess, its back wall painted yellow on the frontage pair (R06), shaded cream elsewhere, doors and
+    // windows behind
+    g.fillStyle = ochre ? YREC : '#8f8574'; g.fillRect(74, 14, 168, 226); g.fillStyle = ochre ? '#b9973f' : '#6a6255'; g.fillRect(74, 14, 168, 40);
     louvred(g, 96, 60, 70, 130); louvred(g, 176, 70, 52, 110);
     // ground: under each balcony pair, two windows either side of the central dividing wall (R03: the fins run to the
     // ground)
@@ -100,15 +105,25 @@ let DISC: THREE.MeshStandardMaterial | null = null;
 /** the signature paving: large grey-beige discs about 0.9 m across, slightly irregular, in reddish-tan joint (6 m a
  *  tile) */
 const discMat = () => (DISC ??= new THREE.MeshStandardMaterial({ roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2, map: canvas(256, 256, (g) => {
-  g.fillStyle = '#8c5f4b'; g.fillRect(0, 0, 256, 256); speckle(g, 0, 0, 256, 256, 1600, ['#835846', '#976a55', '#7d5443']);
+  // (the owner's eight-pair brief: the discs weathered grey-beige in a dull earthy joint, not bright orange and white)
+  g.fillStyle = '#86705f'; g.fillRect(0, 0, 256, 256); speckle(g, 0, 0, 256, 256, 1600, ['#7d685a', '#8f7a68', '#766253']);
   let s = 7; const r = () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
   for (let j = -1; j < 8; j++) for (let i = -1; i < 7; i++) {
     const x = i * 42.7 + (j % 2) * 21.3 + (r() - 0.5) * 4, y = j * 37 + (r() - 0.5) * 4, rr = 18.5 + r() * 2, t = 128 + ((r() * 28) | 0);
     for (const [dx, dy] of [[0, 0], [256, 0], [-256, 0], [0, 256], [0, -256]]) {
-      g.fillStyle = `rgb(${t},${t - 4},${t - 12})`; g.beginPath(); g.ellipse(x + dx, y + dy, rr, rr * 0.96, r() * 3, 0, Math.PI * 2); g.fill();
-      g.fillStyle = 'rgba(255,255,255,0.08)'; g.beginPath(); g.arc(x + dx - 4, y + dy - 4, rr * 0.5, 0, Math.PI * 2); g.fill();
+      const tt = t + 6;
+      g.fillStyle = `rgb(${tt},${tt - 5},${tt - 13})`; g.beginPath(); g.ellipse(x + dx, y + dy, rr, rr * 0.96, r() * 3, 0, Math.PI * 2); g.fill();
+      g.fillStyle = 'rgba(60,50,40,0.12)'; g.beginPath(); g.arc(x + dx + 3, y + dy + 3, rr * 0.7, 0, Math.PI * 2); g.fill();
     }
   }
+}) }));
+let DARKH: THREE.MeshStandardMaterial | null = null;
+const darkMat = () => (DARKH ??= new THREE.MeshStandardMaterial({ roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3, map: canvas(128, 128, (g) => {
+  g.fillStyle = '#56585a'; g.fillRect(0, 0, 128, 128); speckle(g, 0, 0, 128, 128, 3000, ['#4d4f51', '#606264', '#5a5b5c']);
+}) }));
+let HARD: THREE.MeshStandardMaterial | null = null;
+const hardMat = () => (HARD ??= new THREE.MeshStandardMaterial({ roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3, map: canvas(128, 128, (g) => {
+  g.fillStyle = '#8c8880'; g.fillRect(0, 0, 128, 128); speckle(g, 0, 0, 128, 128, 3000, ['#827e76', '#96928a', '#7a766f', '#9c968c']);
 }) }));
 let GRAVEL: THREE.MeshStandardMaterial | null = null;
 const gravelMat = () => (GRAVEL ??= new THREE.MeshStandardMaterial({ roughness: 1, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3, map: canvas(128, 128, (g) => {
@@ -149,6 +164,15 @@ function balconies(k: Kit, x0: number, x1: number, z: number, out: 1 | -1, floor
         const y = 0.4 + f * ST;
         parts.push([box(h0, h1, y - 0.18, y, zm, zM), CREAM]);
         // the solid lower wall, then the railing on it: rails, uprights and a run of crossed bars
+        if (ochre) {
+          // the frontage pair (the owner's eight-pair brief, R06): a thick light solid parapet to rail height, a short
+          // dark rail standing on its middle only
+          parts.push([box(h0, h1, y, y + 0.95, zf - out * 0.1 - 0.1, zf - out * 0.1 + 0.1), '#f4efe4']);
+          const r0 = h0 + (h1 - h0) * 0.22, r1 = h1 - (h1 - h0) * 0.22;
+          parts.push([box(r0, r1, y + 1.27, y + 1.3, zf - out * 0.1 - 0.02, zf - out * 0.1 + 0.02), RAIL]);
+          for (let x = r0; x <= r1 + 0.01; x += 0.16) parts.push([box(x - 0.012, x + 0.012, y + 0.95, y + 1.28, zf - out * 0.1 - 0.012, zf - out * 0.1 + 0.012), RAIL]);
+          continue;
+        }
         parts.push([box(h0, h1, y, y + 0.42, zf - out * 0.07 - 0.07, zf - out * 0.07 + 0.07), CREAM]);
         parts.push([box(h0, h1, y + 1.0, y + 1.04, zf - 0.03, zf + 0.03), RAIL], [box(h0, h1, y + 0.44, y + 0.47, zf - 0.03, zf + 0.03), RAIL]);
         for (let x = h0 + 0.2; x < h1 - 0.1; x += 0.42) {
@@ -191,22 +215,108 @@ function slot(k: Kit, u: number, z: number, out: 1 | -1, floors: number, ochre: 
   const uv = g.attributes.uv as THREE.BufferAttribute; for (let i = 0; i < uv.count; i++) uv.setY(i, uv.getY(i) * (tf - 0.6) / 8);
   const m = new THREE.Mesh(g, slotMat()); m.receiveShadow = true; m.userData.noCollide = true; k.meshes.push(m);
 }
+/** a blank cream face (the service volumes build their own openings in geometry) */
+const BLANK_C: Style = { bay: 6, up: [], ground: [], draw: (g) => { wall(g); slab(g, 236, 20); } };
+let PERF: THREE.MeshStandardMaterial | null = null;
+/** terracotta perforated blocks (R05): a frame of blocks with a dark hole in each, 4 x 8 to a texture */
+const perfMat = () => (PERF ??= new THREE.MeshStandardMaterial({ roughness: 0.9, map: (() => { const t = canvas(128, 256, (g) => {
+  g.fillStyle = '#b4583a'; g.fillRect(0, 0, 128, 256);
+  for (let j = 0; j < 8; j++) for (let i = 0; i < 4; i++) { g.fillStyle = '#4a2318'; g.fillRect(i * 32 + 7, j * 32 + 7, 18, 18); g.fillStyle = 'rgba(255,220,190,0.18)'; g.fillRect(i * 32 + 2, j * 32 + 2, 28, 3); }
+}); t.wrapS = t.wrapT = THREE.RepeatWrapping; return t; })() }));
+/** a perforated panel on a face: centre (u along x or z), its plane, size; repeats one block grid every 0.25 m */
+function perfPanel(k: Kit, alongX: boolean, at: number, out: number, a: number, w: number, y0: number, y1: number) {
+  const g = new THREE.PlaneGeometry(w, y1 - y0);
+  const uv = g.attributes.uv as THREE.BufferAttribute; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * w, uv.getY(i) * (y1 - y0) / 2);
+  if (alongX) { if (out < 0) g.rotateY(Math.PI); g.translate(a, (y0 + y1) / 2, at + out * 0.06); } else { g.rotateY(out > 0 ? Math.PI / 2 : -Math.PI / 2); g.translate(at + out * 0.06, (y0 + y1) / 2, a); }
+  const m = new THREE.Mesh(g, perfMat()); m.receiveShadow = true; m.userData.noCollide = true; k.meshes.push(m);
+  // the white frame round it
+  k.plain.push(alongX ? [box(a - w / 2 - 0.12, a + w / 2 + 0.12, y0 - 0.12, y1 + 0.12, Math.min(at, at + out * 0.05), Math.max(at, at + out * 0.05)), '#f2ece0'] : [box(Math.min(at, at + out * 0.05), Math.max(at, at + out * 0.05), y0 - 0.12, y1 + 0.12, a - w / 2 - 0.12, a + w / 2 + 0.12), '#f2ece0']);
+}
+/** a stack of curved balconies standing out of a face along z at x = at (out -1: west): a light solid half-round
+ *  parapet on each slab, a thin rail on it, the dark opening behind (R05) */
+function curvedStack(k: Kit, at: number, out: number, zc: number, w: number, d: number, floors: number, groundGrille: boolean) {
+  for (let fl = 1; fl < floors; fl++) {
+    const y = 0.4 + fl * ST;
+    const slabG = new THREE.CylinderGeometry(w / 2, w / 2, 0.18, 20, 1, false, 0, Math.PI).scale(d / (w / 2), 1, 1).rotateY(out < 0 ? Math.PI : 0).translate(at, y - 0.09, zc);
+    k.plain.push([slabG, '#efe9dc']);
+    const wallG = new THREE.CylinderGeometry(w / 2, w / 2, 0.95, 20, 1, true, 0, Math.PI).scale(d / (w / 2), 1, 1).rotateY(out < 0 ? Math.PI : 0).translate(at, y + 0.475, zc);
+    const m = new THREE.Mesh(wallG, new THREE.MeshStandardMaterial({ color: '#f4efe4', roughness: 0.9, side: THREE.DoubleSide })); m.castShadow = true; k.meshes.push(m);
+    k.plain.push([box(Math.min(at, at + out * 0.03), Math.max(at, at + out * 0.03), y, y + 2.3, zc - w / 2 + 0.3, zc + w / 2 - 0.3), '#3b3833']);
+    k.plain.push([box(Math.min(at, at + out * (d - 0.1)), Math.max(at, at + out * (d - 0.1)), y + 1.12, y + 1.15, zc - 0.5, zc + 0.5), RAIL]);
+  }
+  if (groundGrille) { k.plain.push([box(Math.min(at, at + out * 0.04), Math.max(at, at + out * 0.04), 0.9, 2.6, zc - w / 2, zc + w / 2), '#3b3833']); for (let z = zc - w / 2 + 0.1; z < zc + w / 2; z += 0.15) k.plain.push([box(Math.min(at, at + out * 0.08), Math.max(at, at + out * 0.08), 0.9, 2.6, z - 0.015, z + 0.015), '#6b625a']); }
+}
+/** front-w's west end (pair 5, R05): the lower connector with its roof terrace (north) and the screened stair tower
+ *  with its tank (south), each its own volume, flat-roofed; the hipped roof starts behind them */
+const SVC = 7.5;
+function frontWestEnd(k: Kit, f: ReturnType<typeof fit>) {
+  const x0 = f.x0, zm = f.z0 + (f.z1 - f.z0) * 0.5, T = 0.45, p: Part[] = [], W = '#efe6d2';
+  // the connector's west face: open ground bays between piers with a metal gate in one; two upper floors of open
+  // rectangular bays with thin rails; the roof terrace parapet and its rail
+  const c0 = f.z0, c1 = zm, bays = 2, bw = (c1 - c0) / bays;
+  p.push([box(x0 + 1.8, x0 + 1.85, 0, 0.4 + ST, c0, c1), '#35322e']);
+  for (let i = 0; i <= bays; i++) { const z = c0 + i * bw; p.push([box(x0 - T, x0 + 0.1, 0, 0.4 + ST, z - 0.25, z + 0.25), W]); SOLIDS.add(...wpt(f, x0 - 0.2, z), 0.3); }
+  p.push([box(x0 - T, x0 + 0.1, 0.4 + ST - 0.5, 0.4 + ST, c0, c1), W]);
+  for (let z = c0 + 0.35; z < c0 + bw - 0.3; z += 0.12) p.push([box(x0 - 0.3, x0 - 0.27, 0.05, 2.3, z - 0.012, z + 0.012), '#9f9a86']);
+  for (let fl = 1; fl < 3; fl++) {
+    const y = 0.4 + fl * ST;
+    for (let i = 0; i < bays; i++) {
+      const a = c0 + i * bw, b = a + bw;
+      p.push([box(x0 - T, x0, y, y + 1.0, a, b), W], [box(x0 - T, x0, y + 2.5, y + ST, a, b), W], [box(x0 - T, x0, y + 1.0, y + 2.5, a, a + 0.5), W], [box(x0 - T, x0, y + 1.0, y + 2.5, b - 0.5, b), W]);
+      p.push([box(x0 - 0.02, x0, y + 1.0, y + 2.5, a + 0.5, b - 0.5), '#3b3833']);
+      for (const yy of [y + 1.25, y + 1.5]) p.push([box(x0 - T + 0.05, x0 - T + 0.08, yy - 0.015, yy + 0.015, a + 0.5, b - 0.5), RAIL]);
+    }
+  }
+  const ct = 0.4 + 3 * ST;
+  p.push([box(x0 - T, x0, ct, ct + 1.0, c0, c1), W]);
+  for (let z = c0 + 0.3; z < c1; z += 0.6) p.push([box(x0 - T + 0.1, x0 - T + 0.13, ct + 1.0, ct + 1.6, z - 0.015, z + 0.015), RAIL]);
+  p.push([box(x0 - T + 0.1, x0 - T + 0.13, ct + 1.58, ct + 1.62, c0, c1), RAIL]);
+  // the tower: its screens on the west and south faces in panels of different sizes with white strips between, the
+  // stacked curved balconies on its north side, the cap and the tank
+  const tt = 0.4 + 4 * ST + 0.6;
+  for (const [y0, y1] of [[0.4 + 3 * ST - 1.0, tt - 0.6], [0.4 + 2 * ST - 0.2, 0.4 + 2 * ST + 1.2], [0.4 + ST + 0.3, 0.4 + ST + 1.6]] as [number, number][]) {
+    perfPanel(k, false, x0, -1, zm + (f.z1 - zm) * 0.62, 1.4, y0, y1);
+    for (const u of [x0 + 1.6, x0 + 4.6]) perfPanel(k, true, f.z1, 1, u, 1.5, y0 + 0.1, y1);
+  }
+  curvedStack(k, x0, -1, zm + 1.3, 2.0, 1.1, 4, false);
+  p.push([box(x0 - 0.1, x0 + SVC, tt - 0.6, tt, zm, f.z1 + 0.1), '#e9e2d3']);
+  p.push([new THREE.CylinderGeometry(0.9, 0.9, 1.9, 16).translate(x0 + 2.5, tt + 0.95, (zm + f.z1) / 2), '#1c1d20']);
+  k.plain.push(...p);
+}
+/** a model-frame point of a wing to world */
+const wpt = (f: ReturnType<typeof fit>, u: number, v: number): [number, number] => [f.c[0] + u * f.axis[0] - v * f.axis[1], f.c[1] + u * f.axis[1] + v * f.axis[0]];
+
 function wingSpec(w: Wing): Spec {
-  const f = fit(w.quad), ochre = !!w.ochre;
-  const faces = { z1: styleOf(w.south, ochre), z0: styleOf(w.north, ochre), x0: styleOf(w.ends, ochre), x1: styleOf(w.ends, ochre) };
+  const f = fit(w.quad), ochre = !!w.ochre, svc = w.id === 'front-w';
+  const endS = w.ends === 'balcony' ? END : styleOf(w.ends, ochre);
+  const faces = { z1: styleOf(w.south, ochre), z0: styleOf(w.north, ochre), x0: endS, x1: endS };
+  const zm = f.z0 + (f.z1 - f.z0) * 0.5;
   return {
     name: `Evandy wing ${w.id}`, axis: f.axis, origin: f.c, storey: ST, style: PLAIN, roofColor: w.roof, fascia: '#efe7d6', pitch: 0.42,
     replaces: [f.c],
-    blocks: [{ x0: f.x0, x1: f.x1, z0: f.z0, z1: f.z1, floors: w.floors, faces }],
+    blocks: svc ? [
+      { x0: f.x0 + SVC, x1: f.x1, z0: f.z0, z1: f.z1, floors: w.floors, faces },
+      { x0: f.x0, x1: f.x0 + SVC, z0: f.z0, z1: zm, floors: 3, roof: 'flat', faces: { x0: BLANK_C, z0: BLANK_C, z1: BLANK_C, x1: BLANK_C } },
+      { x0: f.x0, x1: f.x0 + SVC, z0: zm, z1: f.z1, floors: w.floors, roof: 'flat', faces: { x0: BLANK_C, z0: BLANK_C, z1: BLANK_C, x1: BLANK_C } },
+    ] : [{ x0: f.x0, x1: f.x1, z0: f.z0, z1: f.z1, floors: w.floors, faces }],
     keep: [],
     extras: (k) => {
-      if (w.south === 'balcony') balconies(k, f.x0, f.x1, f.z1, 1, w.floors, !!w.gables, ochre);
+      if (svc) frontWestEnd(k, f);
+      if (w.south === 'balcony') balconies(k, svc ? f.x0 + SVC : f.x0, f.x1, f.z1, 1, w.floors, !!w.gables, ochre);
       // the recessed slot in the window column of the second bay from the wing's outer end (front-e: east; others: west)
       if (w.slot) { const n = Math.max(1, Math.round((f.x1 - f.x0) / 7.8)), b = (f.x1 - f.x0) / n, u = w.slot === 'x1' ? f.x1 - b + b * 0.13 : f.x0 + b + b * 0.13; slot(k, u, f.z1, 1, w.floors, ochre); }
       if (w.north === 'balcony') balconies(k, f.x0, f.x1, f.z0, -1, w.floors, !!w.gables, ochre);
       // the stacked small balconies on a balcony end (the west stair end, R04)
-      if (w.ends === 'balcony') for (let fl = 1; fl < w.floors; fl++) { const y = 0.4 + fl * ST, zm = (f.z0 + f.z1) / 2;
-        k.plain.push([box(f.x0 - 1.2, f.x0, y - 0.18, y, zm - 2, zm + 2), CREAM], [box(f.x0 - 1.25, f.x0 - 1.15, y, y + 1.0, zm - 2, zm + 2), RAIL], [box(f.x0 - 1.2, f.x0, y + 0.95, y + 1.0, zm - 2.05, zm - 1.95), RAIL], [box(f.x0 - 1.2, f.x0, y + 0.95, y + 1.0, zm + 1.95, zm + 2.05), RAIL]); }
+      // (the owner's eight-pair brief, pair 5: the west block's stack of curved light balconies on its west face, the
+      // wide grilled window under it, a small front gable over it)
+      if (w.ends === 'balcony') {
+        const zc = f.z0 + (f.z1 - f.z0) * 0.6;
+        curvedStack(k, f.x0, -1, zc, 3.0, 1.4, w.floors, true);
+        const t = top(w.floors), hw = 2.2, gh = 1.8;
+        k.plain.push([tri2([f.x0 - 0.3, t, zc + hw], [f.x0 - 0.3, t, zc - hw], [f.x0 - 0.3, t + gh, zc]), CREAM], [tri2([f.x0 - 0.3, t, zc - hw], [f.x0 - 0.3, t, zc + hw], [f.x0 - 0.3, t + gh, zc]), CREAM]);
+        k.roof.quad([f.x0 - 0.9, t - 0.05, zc - hw - 0.3], [f.x0 + 3, t - 0.05, zc - hw - 0.3], [f.x0 + 3, t + gh + 0.2, zc], [f.x0 - 0.9, t + gh + 0.2, zc]);
+        k.roof.quad([f.x0 + 3, t - 0.05, zc + hw + 0.3], [f.x0 - 0.9, t - 0.05, zc + hw + 0.3], [f.x0 - 0.9, t + gh + 0.2, zc], [f.x0 + 3, t + gh + 0.2, zc]);
+      }
       // downpipes at the ends of the long faces
       for (const x of [f.x0 + 0.4, f.x1 - 0.4]) for (const z of [f.z0 - 0.12, f.z1 + 0.12]) k.plain.push([new THREE.CylinderGeometry(0.06, 0.06, top(w.floors), 6).translate(x, top(w.floors) / 2, z), '#e4dccb']);
       mergeMeshes(k);
@@ -227,11 +337,13 @@ const entrance: Spec = {
     parts.push([box(-3.2, 3.2, 3.6, t, z - 0.9, z - 0.7), CREAM]);
     for (let f = 1; f < 4; f++) {
       const y = 0.4 + f * ST + 0.4, h = ST - 1.0;
-      // (the owner: grey louvre blades, not glass, in the gold frames)
-      parts.push([box(-2.3, 2.3, y, y + h, z - 0.72, z - 0.68), '#4f5458']);
-      for (let yy = y + 0.06; yy < y + h - 0.04; yy += 0.11) parts.push([new THREE.BoxGeometry(4.6, 0.08, 0.012).rotateX(-0.5).translate(0, yy, z - 0.64), '#a2a7ab']);
-      for (let x = -2.3; x <= 2.31; x += 0.92) parts.push([box(x - 0.05, x + 0.05, y, y + h, z - 0.66, z - 0.56), GOLD]);
-      for (const yy of [y, y + h / 2, y + h]) parts.push([box(-2.35, 2.35, yy - 0.05, yy + 0.05, z - 0.66, z - 0.56), GOLD]);
+      // (the owner's eight-pair brief, R06: the central bay's dark glazing bands with their tilting panes, between the
+      // yellow framing; not louvres like the rooms)
+      k.glass.push(box(-2.3, 2.3, y, y + h, z - 0.72, z - 0.66));
+      for (let x = -2.3; x <= 2.31; x += 0.575) parts.push([box(x - 0.035, x + 0.035, y, y + h, z - 0.66, z - 0.58), '#38332d']);
+      for (const yy of [y, y + h * 0.45, y + h]) parts.push([box(-2.35, 2.35, yy - 0.04, yy + 0.04, z - 0.66, z - 0.58), '#38332d']);
+      // the tilting panes along the band's middle row, open outward
+      for (let x = -2.0; x <= 2.01; x += 1.15) { const pane = new THREE.BoxGeometry(0.5, h * 0.3, 0.03).translate(0, -h * 0.15, 0).rotateX(-0.5).translate(x, y + h * 0.75, z - 0.56); k.glass.push(pane); }
     }
     // the recessed ground entry: dark doors, the MAIN BLOCK sign, the shallow steps and the planters
     parts.push([box(-2.4, 2.4, 0, 0.4, z - 2.5, z), '#d9cdb5'], [box(-2.4, 2.4, 0, 0.2, z, z + 0.6), '#d9cdb5'], [box(-2.4, 2.4, 0, 0.1, z + 0.6, z + 1.2), '#d9cdb5']);
@@ -276,6 +388,49 @@ const entrance: Spec = {
 };
 
 // ---------- the pink-roof ring ----------
+/** the ring's south face behind its skin (the owner's eight-pair brief, pair 4): plain wall, the skin builds the depth */
+const RING_BLANK: Style = { bay: 6, up: [], ground: [], draw: (g) => { g.fillStyle = '#ebe8df'; g.fillRect(0, 0, 256, 512); } };
+/** the ring's south face (pair 4, R04, read left to right from the west end; 0.0305 m to a pixel, from the storey
+ *  height): a 0.4 m skin of white wall standing in front of the wall plane, so that the openings and the yellow strips
+ *  are real recesses. S solid, O a wide opening (upper floors: a recessed opening over a solid parapet, an inner grille
+ *  window behind; ground floor: a large grilled window), P the pier pairing two openings, Y a yellow recessed strip, C
+ *  the white service strip with two small square vents a floor and a pipe, E the end section of small windows and a
+ *  wider grilled one. R04 covers the west 28.5 m; the rest of the face (unseen) repeats it mirrored (provisional). */
+const RING_FACE: [string, number][] = [['S', 3.05], ['O', 3.05], ['Y', 1.2], ['O', 2.9], ['S', 1.37], ['C', 2.3], ['S', 1.37], ['O', 2.9], ['P', 0.45], ['O', 2.75], ['S', 1.07], ['Y', 1.22], ['E', 4.9]];
+function ringSouth(k: Kit, x0: number, x1: number, zf: number) {
+  const prog = [...RING_FACE, ...RING_FACE.slice(0, -1).reverse()], sum = prog.reduce((a, [, w]) => a + w, 0);
+  const pad = x1 - x0 - sum, T = 0.4, tf = top(RING.floors) - 0.4, W = '#f1efe8', Y = '#e6b941', p: Part[] = [];
+  const grille = (a: number, b: number, y0: number, y1: number, z: number) => {
+    p.push([box(a, b, y0, y1, z, z + 0.04), '#3b3a38']);
+    for (let x = a + 0.12; x < b; x += 0.14) p.push([box(x - 0.015, x + 0.015, y0, y1, z + 0.04, z + 0.07), '#6b625a']);
+    for (const y of [y0 + (y1 - y0) * 0.5]) p.push([box(a, b, y - 0.02, y + 0.02, z + 0.04, z + 0.07), '#6b625a']);
+  };
+  let u = x0;
+  for (const [i, [t, w0]] of prog.entries()) {
+    const w = w0 + (i === prog.length - 1 ? pad : 0), a = u, b = u + w; u = b;
+    if (t === 'Y') { p.push([box(a, b, 0.3, tf, zf, zf + 0.03), Y]); continue; }
+    if (t === 'S' || t === 'P' || t === 'C' || t === 'E') {
+      p.push([box(a, b, 0, tf, zf, zf + T), W]);
+      for (let f = 0; f < RING.floors; f++) {
+        const y = 0.4 + f * ST;
+        if (t === 'C') for (const x of [a + 0.35, b - 0.8]) p.push([box(x, x + 0.45, y + 1.6, y + 2.05, zf + T, zf + T + 0.02), '#4a4744']);
+        if (t === 'E') { for (const x of [a + 0.3, a + 1.05]) grille(x, x + 0.55, y + 1.2, y + 2.1, zf + T); grille(a + 2.2, b - 0.5, y + 1.0, y + 2.1, zf + T); }
+      }
+      if (t === 'C') p.push([new THREE.CylinderGeometry(0.06, 0.06, tf, 6).translate((a + b) / 2, tf / 2, zf + T + 0.1), '#e2ded4']);
+      continue;
+    }
+    // O: the skin round the opening, floor by floor
+    for (let f = 0; f < RING.floors; f++) {
+      const y = 0.4 + f * ST, s0 = f ? y + 1.0 : y + 0.9, s1 = f ? y + 2.45 : y + 2.4, yb = f ? y : 0;
+      p.push([box(a, b, yb, s0, zf, zf + T), W], [box(a, b, s1, y + ST, zf, zf + T), W]);
+      grille(a + 0.15, b - 0.15, s0, s1, f ? zf + 0.02 : zf + 0.15);
+      // the reveals' shade at the head of a recessed opening
+      if (f) p.push([box(a, b, s1 - 0.04, s1, zf, zf + T - 0.02), '#cfcac0']);
+    }
+    p.push([box(a, b, 0.4 + RING.floors * ST, tf, zf, zf + T), W]);
+  }
+  k.plain.push(...p);
+}
 const [ro0, ro1, rz0, rz1] = RING.outer, [rc0, rc1, rcz0, rcz1] = RING.court;
 const ring: Spec = {
   name: 'Pink-roof courtyard block by Evandy', axis: [1, 0], origin: [(ro0 + ro1) / 2, (rz0 + rz1) / 2], storey: ST, style: PLAIN, roofColor: RING.roof, fascia: '#efe7d6', pitch: 0.42,
@@ -284,7 +439,7 @@ const ring: Spec = {
     const cx = (ro0 + ro1) / 2, cz = (rz0 + rz1) / 2, L = (x: number) => x - cx, M = (z: number) => z - cz;
     return [
       { x0: L(ro0), x1: L(ro1), z0: M(rz0), z1: M(rcz0), floors: RING.floors },
-      { x0: L(ro0), x1: L(ro1), z0: M(rcz1), z1: M(rz1), floors: RING.floors },
+      { x0: L(ro0), x1: L(ro1), z0: M(rcz1), z1: M(rz1), floors: RING.floors, faces: { z1: RING_BLANK } },
       { x0: L(ro0), x1: L(rc0), z0: M(rcz0), z1: M(rcz1), floors: RING.floors, roof: 'crossZ' as const },
       { x0: L(rc1), x1: L(ro1), z0: M(rcz0), z1: M(rcz1), floors: RING.floors, roof: 'crossZ' as const },
     ];
@@ -293,6 +448,7 @@ const ring: Spec = {
   extras: (k) => {
     const cx = (ro0 + ro1) / 2, cz = (rz0 + rz1) / 2;
     flatPlaneLocal(k, [[rc0 - cx, rcz0 - cz], [rc1 - cx, rcz0 - cz], [rc1 - cx, rcz1 - cz], [rc0 - cx, rcz1 - cz]], 0.05, gravelMat(), cx, cz);
+    ringSouth(k, ro0 - cx, ro1 - cx, rz1 - cz);
     mergeMeshes(k);
   },
 };
@@ -312,7 +468,11 @@ const SHOP: Style = {
   bay: 4, up: [[30, 40, 196, 170]], ground: [[30, 50, 196, 180]],
   draw: (g) => {
     g.fillStyle = '#f1e2b5'; g.fillRect(0, 0, 256, 512);
-    window_(g, [26, 40, 204, 176], '#e9dcc0', 3, 0);
+    // (the owner's eight-pair brief, R08: the upper gallery a deep shaded corridor; the rooms' doors and windows at its
+    // back, not a glass front)
+    g.fillStyle = '#7d7466'; g.fillRect(0, 0, 256, 256); g.fillStyle = '#5c554b'; g.fillRect(0, 0, 256, 60);
+    g.fillStyle = '#3d3027'; g.fillRect(30, 70, 62, 180);
+    window_(g, [120, 100, 100, 90], '#d9cfba', 2, 0);
     g.fillStyle = '#37393c'; g.fillRect(26, 300, 204, 196);
     g.fillStyle = '#b39a5e'; for (let x = 30; x < 228; x += 9) g.fillRect(x, 300, 3, 196);
     for (let y = 312; y < 496; y += 30) { g.fillStyle = 'rgba(179,154,94,0.8)'; for (let x = 30; x < 228; x += 18) { g.fillRect(x, y, 9, 2); g.fillRect(x + 9, y + 15, 9, 2); } }
@@ -355,7 +515,15 @@ const shops: Spec = {
     for (const x of [sf.x0, sf.x1]) parts.push([tri2([x, t, sf.z0], [x, t, zw], [x, t + rise * 0.9, zr]), '#efe6d2'], [tri2([x, t, zw], [x, t, sf.z0], [x, t + rise * 0.9, zr]), '#efe6d2']);
     // the boarded cream soffit under the eaves, the fascia with its row of shallow arches between brackets (R06)
     parts.push([box(X0, X1, t - 0.08, t, zw, Z1), '#e7d7a8'], [box(X0, X1, t - 0.45, t, Z1 - 0.12, Z1), '#f3ece0']);
-    for (let x = sf.x0 + 1.6; x < sf.x1 - 1.0; x += 3.2) { if (Math.abs(x) < 3.2) continue; parts.push([new THREE.TorusGeometry(1.35, 0.1, 4, 12, Math.PI).scale(1, 0.3, 1).translate(x, t - 0.45, z - 0.2), '#f6f1e6'], [box(x - 1.65, x - 1.45, t - 1.0, t, z - 0.5, z + 0.1), '#f6f1e6']); }
+    // (R08: shallow arches under the eave between the gallery's posts: solid white spandrel panels with a segmental
+    // arch cut out of each, the posts carrying them standing on the gallery front)
+    for (let x = sf.x0 + 1.6; x < sf.x1 - 1.0; x += 3.2) {
+      if (Math.abs(x) < 3.2) continue;
+      const sp = new THREE.Shape([new THREE.Vector2(-1.6, 0), new THREE.Vector2(1.6, 0), new THREE.Vector2(1.6, 0.9), new THREE.Vector2(-1.6, 0.9)]);
+      const hole = new THREE.Path(); hole.moveTo(-1.45, 0); hole.lineTo(1.45, 0); hole.absellipse(0, 0, 1.45, 0.55, 0, Math.PI, false); sp.holes.push(hole);
+      parts.push([new THREE.ExtrudeGeometry(sp, { depth: 0.18, bevelEnabled: false, curveSegments: 10 }).translate(x, t - 0.9, z - 0.62), '#f6f1e6']);
+    }
+    for (let x = sf.x0 + 0.0; x < sf.x1 + 0.1; x += 3.2) { if (Math.abs(x) < 3.2) continue; parts.push([box(x - 0.11, x + 0.11, y1 + 0.35, t - 0.9, z - 0.66, z - 0.5), '#f6f1e6']); }
     // the central front gable over the column pairs: its roof slopes, the plain cream gable face with the arch springing
     // from the column pairs
     const gw = 3.1, gh = 2.4, zf = z + 0.5, zb = zr;
@@ -383,17 +551,21 @@ const site: Spec = {
     // the circular-pattern paving over the compound and out to the road before the gate and the shops
     flatPlane(k, [[SITE.x0, SITE.z0], [SITE.x1, SITE.z0], [SITE.x1, SITE.zFence], [SITE.x0, SITE.zFence]], 0.05, discMat(), 6);
     flatPlane(k, [[SITE.gate[0] - 6, SITE.zFence], [647, SITE.zFence], [647, -1199.4], [SITE.gate[0] - 6, -1199.4]], 0.05, discMat(), 6);
-    flatPlane(k, [[SITE.westMouth[0], SITE.zFence], [SITE.westMouth[1], SITE.zFence], [SITE.westMouth[1], -1199.4], [SITE.westMouth[0], -1199.4]], 0.05, discMat(), 6);
+    flatPlane(k, [[SITE.x0, SITE.zFence], [SITE.westMouth[1], SITE.zFence], [SITE.westMouth[1], -1199.4], [SITE.x0, -1199.4]], 0.05, discMat(), 6);
+    // the dark grey hardstand before the administration block's porch and stair (pair 1, R01)
+    flatPlane(k, [[527.3, -1222.5], [540, -1222.5], [540, -1203.2], [527.3, -1203.2]], 0.062, darkMat(), 4);
     // the west yard: grey gravel, red-earth patches along its edges, the green slab and its hoop
     const [gx0, gx1, gz0, gz1] = YARD.box;
     flatPlane(k, [[gx0, gz0], [gx1, gz0], [gx1, gz1], [gx0, gz1]], 0.06, gravelMat(), 3);
-    for (const [c, a, b] of [[[540, -1226], 9, 2.6], [[546, -1270], 4, 6], [[509, -1238], 2.4, 7]] as [P2, number, number][]) flatPlane(k, oval(c, a, b, 18), 0.07, soilMat(), 2);
+    // (the owner's eight-pair brief, pair 4: the yard is open hardstand; only the strip along the west wall keeps its earth)
+    for (const [c, a, b] of [[[509, -1238], 2.4, 7]] as [P2, number, number][]) flatPlane(k, oval(c, a, b, 18), 0.07, soilMat(), 2);
     flatPlane(k, YARD.slab, 0.08, slabMat(), 4);
     { const [hx, hz] = YARD.hoop;
       parts.push([new THREE.CylinderGeometry(0.08, 0.1, 3.05, 8).translate(hx, 1.52, hz - 0.8), '#5b6066'], [box(hx - 0.06, hx + 0.06, 2.9, 3.0, hz - 0.8, hz + 0.1), '#5b6066'], [box(hx - 0.9, hx + 0.9, 2.9, 3.95, hz + 0.1, hz + 0.16), '#f2f2f0'], [new THREE.TorusGeometry(0.23, 0.02, 4, 12).rotateX(Math.PI / 2).translate(hx, 3.05, hz + 0.45), '#d8592c']);
       SOLIDS.add(hx, hz - 0.8, 0.25); }
-    // the tree court's soil round the big tree
-    flatPlane(k, oval(TREES[0].at, 7, 6, 20), 0.07, soilMat(), 2);
+    // the inner court (pair 7): open weathered hardstand, the circular pattern worn through to smoother grey repairs in
+    // patches; no planted island
+    for (const [c, a, b] of [[[600, -1276], 9, 4], [[622, -1272], 7, 3.5], [[585, -1279], 5, 2.6], [[575, -1215], 8, 2.5], [[628, -1210], 6, 2.2]] as [P2, number, number][]) flatPlane(k, oval(c, a, b, 22), 0.065, hardMat(), 3);
     // the oval planting islands in their pale kerbs (shrubs: buildEvandyGrounds)
     for (const { c, a, b } of ISLANDS) { parts.push([prism(oval(c, a, b), 0, 0.3), '#eeeae2']); parts.push([prism(oval(c, a - 0.2, b - 0.2), 0, 0.34), '#5a4535']); SOLIDS.add(c[0], c[1], Math.min(a, b)); for (const s of [-1, 1]) SOLIDS.add(c[0] + s * (a - b) * 0.7, c[1], b); }
     // the fence along the road: low pale wall, square posts with caps, dark vertical bars with pointed tops; the
@@ -407,7 +579,8 @@ const site: Spec = {
       for (const y of [0.85, 1.6]) parts.push([box(xa, xb, y - 0.025, y + 0.025, z - 0.03, z + 0.03), '#4a3a2c']);
       wallSolids(xa, z, xb, z, 0.3);
     };
-    fence(SITE.x0, SITE.westMouth[0]); fence(SITE.westMouth[1], SITE.gate[0]);
+    // (the owner's eight-pair brief, pairs 2-3: no fence before the Tropiks shopfront: it opens onto its forecourt)
+    fence(SITE.westMouth[1], SITE.gate[0]);
     // the boundary walls on the other sides: west along the road, north, east
     const wallRun = (a: P2, b: P2) => { parts.push([strip([a, b], 0, 2.2, 0.13), '#ece6d8'], [strip([a, b], 2.2, 2.32, 0.18), '#dcd3c0']); wallSolids(a[0], a[1], b[0], b[1], 0.3); };
     wallRun([SITE.x0, SITE.zFence], [SITE.x0, SITE.z0]); wallRun([SITE.x0, SITE.z0], [SITE.x1, SITE.z0]); wallRun([SITE.x1, SITE.z0], [SITE.x1, -1216]);
@@ -415,7 +588,7 @@ const site: Spec = {
     { const pts: P2[] = Array.from({ length: 7 }, (_, i) => { const t = (i / 6) * Math.PI / 2; return [SITE.gate[1] + 0.5 + Math.sin(t) * 1.0, SITE.zFence - (1 - Math.cos(t)) * 2.6] as P2; });
       parts.push([strip(pts, 0, 1.6, 0.14), '#f1ede4']); for (const p of pts) SOLIDS.add(p[0], p[1], 0.3); }
     // the gate: square pillars with lamp globes, two leaves of dark vertical bars swung open
-    for (const x of SITE.gate) { parts.push([box(x - 0.35, x + 0.35, 0, 2.4, SITE.zFence - 0.35, SITE.zFence + 0.35), '#efe9dc'], [box(x - 0.42, x + 0.42, 2.4, 2.5, SITE.zFence - 0.42, SITE.zFence + 0.42), '#dcd3c0'], [new THREE.SphereGeometry(0.2, 10, 8).translate(x, 2.75, SITE.zFence), '#3b3631']); SOLIDS.add(x, SITE.zFence, 0.45); }
+    for (const x of SITE.gate) { parts.push([box(x - 0.35, x + 0.35, 0, 2.4, SITE.zFence - 0.35, SITE.zFence + 0.35), '#efe9dc'], [box(x - 0.42, x + 0.42, 2.4, 2.5, SITE.zFence - 0.42, SITE.zFence + 0.42), '#dcd3c0'], [new THREE.CylinderGeometry(0.1, 0.14, 0.18, 8).translate(x, 2.59, SITE.zFence), '#3b3631'], [new THREE.SphereGeometry(0.22, 12, 10).scale(1, 1.25, 1).translate(x, 2.92, SITE.zFence), '#cfc8b4'], [new THREE.ConeGeometry(0.2, 0.18, 8).translate(x, 3.27, SITE.zFence), '#3b3631'], [new THREE.CylinderGeometry(0.03, 0.03, 0.12, 6).translate(x, 3.41, SITE.zFence), '#3b3631']); SOLIDS.add(x, SITE.zFence, 0.45); }
     for (const [x, s] of [[SITE.gate[0] + 0.4, 1], [SITE.gate[1] - 0.4, -1]] as [number, number][]) {
       const L = 4.2, a = -1.25, dx = Math.cos(a) * s, dz = Math.sin(a);
       for (let t = 0.1; t < L; t += 0.13) { const px = x + dx * t, pz = SITE.zFence + dz * t; parts.push([box(px - 0.02, px + 0.02, 0.1, 2.0, pz - 0.02, pz + 0.02), '#5a4a3a']); }
@@ -461,8 +634,114 @@ const site: Spec = {
   },
 };
 
+// ---------- the administration block (the owner's eight-pair brief, pairs 1-3) ----------
+// One building on the south-west corner of the compound (osm outline at x 516.6-527.2, z -1220.2..-1204.9; M1's labels
+// 1, 2 and 3): two storeys in pale yellow under a red tile roof whose ridge runs north-south, hipped at the north,
+// gabled at the south over the road. Its east face (R01, read south to north, left to right): a window on each floor; the porch: four
+// slender yellow columns at the ground under the projecting balcony slab, the white roller shutter between the middle
+// pair, the upper porch's columns and arch under a front gable of its own, the doors behind the light rail; the
+// external stair: a flight climbing north to a landing on the low projecting block, a second flight back up to the
+// balcony. Its south face (R02, R03): the Tropiks frontage: two framed upper windows with grilles in light surrounds, the
+// white sign, the wine band over the shopfront, the display window and the four-leaf glass doors, the tiled step and
+// landing, the boarded soffit under the gable. The west and north faces are unseen (two windows a floor, provisional).
+const AO: P2 = [521.9, -1212.55];
+const ADMIN = { x0: -5.3, x1: 5.3, z0: -7.65, z1: 7.65, e: 6.8, g: 3.3 };
+const admin: Spec = {
+  name: 'Evandy administration block (Tropiks)', axis: [1, 0], origin: AO, storey: 3.3, style: PLAIN, roofColor: '#c25a33', fascia: '#efe7d6', pitch: 0.45,
+  replaces: [[522, -1213]],
+  blocks: [],
+  keep: [[-6, 8, -8.5, 12]],
+  extras: (k) => {
+    const { x0, x1, z0, z1, e, g } = ADMIN, Y = '#ead290', COL = '#e1c45e', p: Part[] = [], W = (x: number, z: number): [number, number] => [x + AO[0], z + AO[1]];
+    p.push([box(x0, x1, 0, e, z0, z1), Y], [box(x0 - 0.03, x1 + 0.03, 0, 0.35, z0 - 0.03, z1 + 0.03), '#d8bf78']);
+    p.push([box(x0 - 0.04, x1 + 0.04, g - 0.12, g, z0 - 0.04, z1 + 0.04), '#e4cb86']);
+    // a framed window on a face along z (east/west, out ±1) or along x (north/south)
+    const winZ = (x: number, out: number, zc: number, w: number, y0: number, h: number, grille: boolean) => {
+      p.push([box(Math.min(x, x + out * 0.08), Math.max(x, x + out * 0.08), y0 - 0.12, y0 + h + 0.12, zc - w / 2 - 0.12, zc + w / 2 + 0.12), '#f6f1e2']);
+      k.glass.push(box(Math.min(x, x + out * 0.09), Math.max(x, x + out * 0.09), y0, y0 + h, zc - w / 2, zc + w / 2));
+      p.push([box(Math.min(x, x + out * 0.1), Math.max(x, x + out * 0.1), y0, y0 + h, zc - 0.03, zc + 0.03), '#f6f1e2']);
+      if (grille) for (let z = zc - w / 2 + 0.15; z < zc + w / 2; z += 0.16) p.push([box(Math.min(x, x + out * 0.11), Math.max(x, x + out * 0.11), y0, y0 + h, z - 0.01, z + 0.01), '#3a3631']);
+    };
+    const winX = (z: number, out: number, xc: number, w: number, y0: number, h: number, grille: boolean) => {
+      const za = Math.min(z, z + out * 0.12), zb = Math.max(z, z + out * 0.12);
+      p.push([box(xc - w / 2 - 0.15, xc + w / 2 + 0.15, y0 - 0.15, y0, za, zb), '#d6bd86'], [box(xc - w / 2 - 0.15, xc + w / 2 + 0.15, y0 + h, y0 + h + 0.15, za, zb), '#d6bd86']);
+      p.push([box(xc - w / 2 - 0.15, xc - w / 2, y0, y0 + h, za, zb), '#d6bd86'], [box(xc + w / 2, xc + w / 2 + 0.15, y0, y0 + h, za, zb), '#d6bd86']);
+      k.glass.push(box(xc - w / 2, xc + w / 2, y0, y0 + h, Math.min(z, z + out * 0.03), Math.max(z, z + out * 0.03)));
+      p.push([box(xc - 0.04, xc + 0.04, y0, y0 + h, Math.min(z, z + out * 0.13), Math.max(z, z + out * 0.13)), '#d6bd86']);
+      if (grille) { for (let x = xc - w / 2 + 0.12; x < xc + w / 2; x += 0.14) p.push([box(x - 0.01, x + 0.01, y0, y0 + h, Math.min(z, z + out * 0.08), Math.max(z, z + out * 0.08)), '#3a3631']); for (let y = y0 + 0.14; y < y0 + h; y += 0.16) p.push([box(xc - w / 2, xc + w / 2, y - 0.01, y + 0.01, Math.min(z, z + out * 0.08), Math.max(z, z + out * 0.08)), '#3a3631']); }
+    };
+    // ---- the east face (R01) ----
+    winZ(x1, 1, 4.6, 1.7, 1.1, 1.2, false); winZ(x1, 1, 4.6, 1.7, 4.3, 1.2, false);
+    const zc = -0.6, xf = x1 + 1.6;
+    // the ground portico: four slender yellow columns, the balcony slab over them, the white roller shutter
+    for (const z of [zc - 2.95, zc - 2.45, zc + 2.45, zc + 2.95]) { p.push([new THREE.CylinderGeometry(0.17, 0.19, g, 14).translate(xf - 0.2, g / 2, z), COL]); SOLIDS.add(...W(xf - 0.2, z), 0.25); }
+    p.push([box(x1, xf + 0.05, g - 0.05, g + 0.25, zc - 3.3, zc + 3.3), '#f2e6b8']);
+    p.push([box(x1 + 0.01, x1 + 0.05, 0, 2.5, zc - 1.35, zc + 1.35), '#f3f3ef']);
+    for (let y = 0.15; y < 2.5; y += 0.18) p.push([box(x1 + 0.05, x1 + 0.07, y, y + 0.02, zc - 1.35, zc + 1.35), '#d6d6d0']);
+    p.push([box(x1, xf + 0.1, 0, 0.12, zc - 3.4, zc + 3.4), '#cfc5b0']);
+    // the upper porch: its columns, the rail along the front and returns, the doors behind, the small window beside
+    for (const z of [zc - 2.45, zc + 2.45, zc + 2.95]) p.push([new THREE.CylinderGeometry(0.16, 0.18, e - g - 0.25, 14).translate(xf - 0.25, g + 0.25 + (e - g - 0.25) / 2, z), COL]);
+    for (const [a, b] of [[[xf, zc - 3.25], [xf, zc + 3.25]], [[x1, zc - 3.25], [xf, zc - 3.25]], [[x1, zc + 3.25], [xf, zc + 3.25]]] as [P2, P2][]) {
+      p.push([strip([a, b], g + 1.2, g + 1.25, 0.05), '#cfd0cc']);
+      const L = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      for (let t = 0; t <= L; t += 0.13) { const x = a[0] + ((b[0] - a[0]) * t) / L, z = a[1] + ((b[1] - a[1]) * t) / L; p.push([box(x - 0.012, x + 0.012, g + 0.25, g + 1.22, z - 0.012, z + 0.012), '#cfd0cc']); }
+    }
+    p.push([box(x1 + 0.01, x1 + 0.05, g + 0.25, g + 2.5, zc - 1.55, zc - 0.6), '#5b3624'], [box(x1 + 0.01, x1 + 0.05, g + 0.25, g + 2.4, zc + 0.85, zc + 1.6), '#e9dfc2']);
+    winZ(x1, 1, zc - 4.4, 0.6, g + 1.1, 0.7, false); winZ(x1, 1, zc - 4.4, 0.6, 1.0, 0.7, false);
+    // the porch's front gable with the arch under it, carried on the upper columns
+    const ga = e - 0.15, gw = 3.4, gp = 0.6;
+    const front = new THREE.Shape([new THREE.Vector2(-gw, ga - 1.5), new THREE.Vector2(gw, ga - 1.5), new THREE.Vector2(gw, ga), new THREE.Vector2(0, ga + gw * gp), new THREE.Vector2(-gw, ga)]);
+    front.holes.push(new THREE.Path().moveTo(-1.6, ga - 1.5).lineTo(1.6, ga - 1.5).absarc(0, ga - 1.5, 1.6, 0, Math.PI, false).lineTo(-1.6, ga - 1.5));
+    p.push([new THREE.ExtrudeGeometry(front, { depth: 0.3, bevelEnabled: false, curveSegments: 14 }).rotateY(Math.PI / 2).translate(xf - 0.3, 0, zc), Y]);
+    k.roof.quad([xf + 0.35, ga, zc - gw - 0.35], [x1 - 2.5, ga, zc - gw - 0.35], [x1 - 2.5, ga + (gw + 0.35) * gp, zc], [xf + 0.35, ga + (gw + 0.35) * gp, zc]);
+    k.roof.quad([x1 - 2.5, ga, zc + gw + 0.35], [xf + 0.35, ga, zc + gw + 0.35], [xf + 0.35, ga + (gw + 0.35) * gp, zc], [x1 - 2.5, ga + (gw + 0.35) * gp, zc]);
+    // the external stair: up north to the landing on the low projecting block, then back south to the balcony
+    const zl0 = z0 + 1.3, hl = 1.9, n1 = 11, n2 = 8, zb2 = zc - 3.3;
+    p.push([box(x1, x1 + 2.1, 0, hl, z0, zl0), Y], [box(x1 + 1.95, x1 + 2.1, hl, hl + 1.0, z0, zl0), Y]);
+    SOLIDS.add(...W(x1 + 1.05, (zl0 + z0) / 2), 0.9);
+    const zs0 = zc - 3.35;
+    for (let i = 0; i < n1; i++) { const za = zs0 + ((zl0 - zs0) * i) / n1, zb = zs0 + ((zl0 - zs0) * (i + 1)) / n1, y = (hl * (i + 1)) / n1; p.push([box(x1 + 1.1, x1 + 2.1, y - 0.18, y, Math.min(za, zb), Math.max(za, zb)), '#f2e6b8']); }
+    p.push([new THREE.BoxGeometry(0.04, 0.04, Math.hypot(zl0 - zs0, hl)).rotateX(-Math.atan2(hl, zl0 - zs0)).translate(x1 + 2.08, hl / 2 + 1.0, (zs0 + zl0) / 2), '#cfd0cc']);
+    for (let i = 0; i < n2; i++) { const za = zl0 + ((zb2 - zl0) * i) / n2, zb = zl0 + ((zb2 - zl0) * (i + 1)) / n2, y = hl + ((g + 0.25 - hl) * (i + 1)) / n2; p.push([box(x1 + 0.05, x1 + 1.05, y - 0.18, y, Math.min(za, zb), Math.max(za, zb)), '#f2e6b8']); }
+    p.push([new THREE.BoxGeometry(0.04, 0.04, Math.hypot(zb2 - zl0, g - hl)).rotateX(-Math.atan2(g - hl, zb2 - zl0)).translate(x1 + 1.07, (hl + g) / 2 + 1.0, (zl0 + zb2) / 2), '#cfd0cc']);
+    for (let z = zl0; z < zs0; z += 0.8) SOLIDS.add(...W(x1 + 1.6, z), 0.5);
+    // ---- the south face: the Tropiks frontage (R02, R03) ----
+    winX(z1, 1, -2.6, 2.2, 4.5, 1.5, true); winX(z1, 1, 2.2, 2.6, 4.5, 1.5, true); winX(z1, 1, 4.65, 0.9, 4.5, 1.5, true);
+    p.push([box(x0 - 0.3, x1 + 0.3, 2.85, 3.15, z1, z1 + 0.95), '#7a2630'], [box(x0 - 0.3, x1 + 0.3, 2.7, 2.85, z1 + 0.85, z1 + 0.95), '#6a1f28']);
+    p.push([box(-2.0, 1.3, 3.3, 4.25, z1 + 0.02, z1 + 0.08), '#f7f7f5']);
+    k.signs.push({ text: 'TROPIKS', x: -0.35, y: 3.98, z: z1 + 0.09, ry: 0, w: 2.6, colors: ['#f7f7f5', '#2b2f86'] });
+    k.signs.push({ text: 'Restaurant | Grill', x: -0.35, y: 3.55, z: z1 + 0.09, ry: 0, w: 2.6, colors: ['#f7f7f5', '#2a2a2a'] });
+    // the shopfront: the display window, the four glass leaves of the doors in dark frames, a white pier at the east
+    k.glass.push(box(-4.9, -1.6, 0.45, 2.65, z1 + 0.01, z1 + 0.05), box(-1.0, 3.7, 0.45, 2.65, z1 + 0.01, z1 + 0.05));
+    for (const x of [-4.9, -3.25, -1.6, -1.0, 0.18, 1.35, 2.52, 3.7]) p.push([box(x - 0.05, x + 0.05, 0.45, 2.65, z1 + 0.02, z1 + 0.07), '#3a3a3a']);
+    for (const y of [0.45, 2.65]) p.push([box(-4.95, 3.75, y - 0.05, y + 0.05, z1 + 0.02, z1 + 0.07), '#3a3a3a']);
+    p.push([box(-1.6, -1.0, 0.35, 2.85, z1, z1 + 0.06), '#f3f1ea'], [box(3.7, x1, 0.35, 2.85, z1, z1 + 0.06), '#f3f1ea']);
+    p.push([box(x0, x1, 0, 0.32, z1, z1 + 1.3), '#cfae7c'], [box(x0, x1, 0, 0.16, z1 + 1.3, z1 + 1.7), '#cfae7c']);
+    // the gable over the road, its boarded soffit and rakes
+    const ov = 0.6, rise = ((x1 - x0) / 2 + ov) * 0.45;
+    p.push([tri2([x0, e, z1], [x1, e, z1], [0, e + ((x1 - x0) / 2) * 0.45, z1]), Y], [tri2([x1, e, z1], [x0, e, z1], [0, e + ((x1 - x0) / 2) * 0.45, z1]), Y]);
+    for (const s of [-1, 1]) {
+      const L = Math.hypot((x1 - x0) / 2 + ov, rise);
+      p.push([new THREE.BoxGeometry(L, 0.06, 0.9).rotateZ(-s * Math.atan2(rise, (x1 - x0) / 2 + ov)).translate(s * ((x1 - x0) / 4 + ov / 2), e + rise / 2 - 0.1, z1 + 0.45), '#b48e5c']);
+      p.push([new THREE.BoxGeometry(L, 0.22, 0.06).rotateZ(-s * Math.atan2(rise, (x1 - x0) / 2 + ov)).translate(s * ((x1 - x0) / 4 + ov / 2), e + rise / 2 - 0.05, z1 + ov + 0.3), '#d9b98a']);
+    }
+    // ---- the unseen west and north faces: two windows a floor (provisional) ----
+    for (const y of [1.1, 4.3]) { winZ(x0, -1, -3, 1.4, y, 1.2, false); winZ(x0, -1, 3, 1.4, y, 1.2, false); winX(z0, -1, -2.4, 1.4, y, 1.2, false); winX(z0, -1, 2.4, 1.4, y, 1.2, false); }
+    // ---- the roof: ridge north-south, hipped at the north, gabled at the south ----
+    const X0 = x0 - ov, X1 = x1 + ov, Zn = z0 - ov, Zs = z1 + ov + 0.3, R = e + rise, hz = Zn + (X1 - X0) / 2;
+    k.roof.c = new THREE.Color('#c25a33');
+    k.roof.quad([X0, e, Zs], [X0, e, Zn], [0, R, hz], [0, R, Zs]);
+    k.roof.quad([X1, e, Zn], [X1, e, Zs], [0, R, Zs], [0, R, hz]);
+    k.roof.quad([X0, e, Zn], [X1, e, Zn], [0, R, hz], [0, R, hz]);
+    p.push([box(X0, X1, e - 0.06, e, Zn, z1), '#e3d2a8']);
+    wallSolids(...W(x0, z0), ...W(x1, z0), 0.25); wallSolids(...W(x0, z1), ...W(x1, z1), 0.25); wallSolids(...W(x0, z0), ...W(x0, z1), 0.25); wallSolids(...W(x1, z0), ...W(x1, z1), 0.25);
+    k.plain.push(...p);
+    mergeMeshes(k);
+  },
+};
+
 /** Evandy Hostel and its environs */
-export const evandySite = mergedSite(createSite('evandy', [...WINGS.map(wingSpec), entrance, ring, shops, site]));
+export const evandySite = mergedSite(createSite('evandy', [...WINGS.map(wingSpec), entrance, ring, shops, admin, site]));
 
 // ---------- planting and the ground round the compound ----------
 const SHRUB = ['#4d7032', '#5c7f36', '#3f6428', '#6a8f3f'];

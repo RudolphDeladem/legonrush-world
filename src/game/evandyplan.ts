@@ -13,12 +13,13 @@ export type R4 = [number, number, number, number];
 export interface Wing {
   id: string; quad: [P2, P2, P2, P2]; floors: number;
   /** the long face toward the south (the frontage, a court) and the one toward the north: balconies, galleries, plain */
-  south: 'balcony' | 'gallery' | 'plain' | 'vent'; north: 'balcony' | 'gallery' | 'plain' | 'vent'; ends: 'end' | 'vent' | 'balcony' | 'gallery';
+  south: 'balcony' | 'gallery' | 'plain' | 'vent' | 'end'; north: 'balcony' | 'gallery' | 'plain' | 'vent' | 'end'; ends: 'end' | 'vent' | 'balcony' | 'gallery';
   roof: string; ochre?: boolean; gables?: boolean;
   /** the end the recessed glass-block slot stands near (R18, P03, P04) */
   slot?: 'x0' | 'x1';
 }
-const ORANGE = '#c4633a', PINK = '#d8998d';
+// (the ring's roof: weathered salmon-orange tiles in the owner's R04, faded pink on the satellite)
+const ORANGE = '#c4633a', PINK = '#cf8466';
 export const WINGS: Wing[] = [
   // 1 the lower frontage pair: the main block's two wings either side of the entrance bay (R03, R08, P01-P04)
   { id: 'front-w', quad: [[552.8, -1234.9], [555, -1222.4], [593.8, -1229.2], [591.6, -1241.6]], floors: 4, south: 'balcony', north: 'gallery', ends: 'end', roof: ORANGE, ochre: true, gables: true, slot: 'x0' },
@@ -33,7 +34,7 @@ export const WINGS: Wing[] = [
   { id: 'upper-n-e', quad: [[608.3, -1321], [607.4, -1306.7], [640.5, -1311.6], [638.4, -1325.5]], floors: 4, south: 'balcony', north: 'plain', ends: 'end', roof: ORANGE },
   // the projecting stair / gallery end at the west of the lower group (R04, V2 11.50 s, 23.50 s): stacked small
   // balconies on its end, red perforated-brick ventilation panels on its sides
-  { id: 'west-end', quad: [[546.7, -1248.6], [546.7, -1238.6], [559.8, -1238.7], [559.7, -1248.7]], floors: 4, south: 'vent', north: 'vent', ends: 'balcony', roof: ORANGE },
+  { id: 'west-end', quad: [[546.7, -1248.6], [546.7, -1238.6], [559.8, -1238.7], [559.7, -1248.7]], floors: 4, south: 'end', north: 'end', ends: 'balcony', roof: ORANGE },
   // the small link block at the east between the frontage and inner pairs
   { id: 'east-link', quad: [[633.1, -1236.8], [641, -1236.8], [641.1, -1248.3], [633.2, -1248.4]], floors: 4, south: 'vent', north: 'vent', ends: 'gallery', roof: ORANGE },
 ];
@@ -67,9 +68,10 @@ export const RED_YARD = [522, 604, -1415, -1332] as R4;
 export const FIELD = { c: [686, -1305] as P2, rx: 23, rz: 17 };
 export const SCRUB = [650, 770, -1350, -1203] as R4;
 /** the parked cars along the fence in the frontage (P01, R14) and before the shops (R13): row centre z, x ranges */
-export const CAR_ROWS: { z: number; x: P2; yaw: number }[] = [{ z: -1205.6, x: [508, 523], yaw: 0 }, { z: -1205.6, x: [539, 594], yaw: 0 }, { z: -1202.6, x: [623.5, 645], yaw: Math.PI }];
+// (the owner's eight-pair brief: no cars before the Tropiks shopfront (pairs 2-3) nor before the arcade (pair 8))
+export const CAR_ROWS: { z: number; x: P2; yaw: number }[] = [{ z: -1205.6, x: [539, 594], yaw: 0 }];
 /** the parking areas (rings) the cars stand in */
-export const PARKS: P2[][] = [[[506, -1209], [596, -1209], [596, -1203.2], [506, -1203.2]], [[622, -1205.4], [646, -1205.4], [646, -1199.8], [622, -1199.8]]];
+export const PARKS: P2[][] = [[[537, -1209], [596, -1209], [596, -1203.2], [537, -1203.2]]];
 export const inPark = (x: number, z: number) => PARKS.some((r) => x > r[0][0] && x < r[1][0] && z > r[0][1] && z < r[2][1]);
 /** the cars (x, z, heading), deterministic */
 export function evandySpots(x: number, z: number): [number, number, number][] | undefined {
