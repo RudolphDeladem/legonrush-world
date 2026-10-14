@@ -85,4 +85,12 @@ export const UPSA_FINISH: { at: [number, number]; roof?: string; hip?: boolean; 
   { at: [2186, -1013], roof: '#c8a27c', storeys: 4, gallery: true },
   { at: [2226, -1050], storeys: 4, gallery: true },
   { at: [2185.3, -936.5], roof: '#9a4a3a', hip: true, storeys: 1, plain: true },
+  // placeholders until the owner's photos come (docs/upsa-campus/pcu-brief/questions-views.jpg; the owner: "just put some
+  // random structure in upsa building style for now"): the strip on KOKA's north side (aerial: a lower roof), the block on
+  // the earthworks east of the Administration (aerial: a blue roof beside it), the light-blue rectangle in KOKA's east yard
+  { at: [2377, -1252], roof: '#9ea7ad', storeys: 2, gallery: true },
+  { at: [2385, -1249], roof: '#9ea7ad', storeys: 2, gallery: true },
+  { at: [2399, -1246], roof: '#9ea7ad', storeys: 2, gallery: true },
+  { at: [2424, -945], roof: '#2f56a8', storeys: 3, gallery: true },
+  { at: [2444.6, -1207.5], roof: '#8fc9dc', storeys: 1 },
 ];

@@ -234,3 +234,13 @@ outline (26 of them).
 Checks: route lengths identical; access unchanged; the route tests, the build and the smoke ride pass. Comparison:
 `pcu-brief/sheet-pcu.jpg`; top view `pcu-brief/top-after.jpg`.
 
+
+### Placeholders for the three uncertain structures (owner, 2026-10-14)
+
+- [DECISION] The owner: "just put some random structure in upsa building style for now". The three places in
+  `pcu-brief/questions-views.jpg` keep their map outlines and take placeholder UPSA finishes (`UPSA_FINISH` in
+  `upsawestplan.ts`). Each one copies a hint from the aerial:
+  1. The strip on KOKA's north side (outlines 13, 3039, 3038) is two-storey gallery blocks with grey flat roofs.
+  2. The block east of the Administration (116) is three-storey galleries with a blue roof, after the blue roof beside it.
+  3. The rectangle in KOKA's east yard (1896) is one storey with a light-blue roof.
+- [ASSUMPTION] All three are placeholders. They will be replaced once the owner's photos arrive.
