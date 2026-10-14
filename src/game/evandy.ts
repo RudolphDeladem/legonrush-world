@@ -246,39 +246,66 @@ function curvedStack(k: Kit, at: number, out: number, zc: number, w: number, d: 
   }
   if (groundGrille) { k.plain.push([box(Math.min(at, at + out * 0.04), Math.max(at, at + out * 0.04), 0.9, 2.6, zc - w / 2, zc + w / 2), '#3b3833']); for (let z = zc - w / 2 + 0.1; z < zc + w / 2; z += 0.15) k.plain.push([box(Math.min(at, at + out * 0.08), Math.max(at, at + out * 0.08), 0.9, 2.6, z - 0.015, z + 0.015), '#6b625a']); }
 }
-/** front-w's west end (pair 5, R05): the lower connector with its roof terrace (north) and the screened stair tower
- *  with its tank (south), each its own volume, flat-roofed; the hipped roof starts behind them */
-const SVC = 7.5;
-function frontWestEnd(k: Kit, f: ReturnType<typeof fit>) {
-  const x0 = f.x0, zm = f.z0 + (f.z1 - f.z0) * 0.5, T = 0.45, p: Part[] = [], W = '#efe6d2';
-  // the connector's west face: open ground bays between piers with a metal gate in one; two upper floors of open
-  // rectangular bays with thin rails; the roof terrace parapet and its rail
-  const c0 = f.z0, c1 = zm, bays = 2, bw = (c1 - c0) / bays;
-  p.push([box(x0 + 1.8, x0 + 1.85, 0, 0.4 + ST, c0, c1), '#35322e']);
-  for (let i = 0; i <= bays; i++) { const z = c0 + i * bw; p.push([box(x0 - T, x0 + 0.1, 0, 0.4 + ST, z - 0.25, z + 0.25), W]); SOLIDS.add(...wpt(f, x0 - 0.2, z), 0.3); }
-  p.push([box(x0 - T, x0 + 0.1, 0.4 + ST - 0.5, 0.4 + ST, c0, c1), W]);
-  for (let z = c0 + 0.35; z < c0 + bw - 0.3; z += 0.12) p.push([box(x0 - 0.3, x0 - 0.27, 0.05, 2.3, z - 0.012, z + 0.012), '#9f9a86']);
-  for (let fl = 1; fl < 3; fl++) {
-    const y = 0.4 + fl * ST;
-    for (let i = 0; i < bays; i++) {
-      const a = c0 + i * bw, b = a + bw;
-      p.push([box(x0 - T, x0, y, y + 1.0, a, b), W], [box(x0 - T, x0, y + 2.5, y + ST, a, b), W], [box(x0 - T, x0, y + 1.0, y + 2.5, a, a + 0.5), W], [box(x0 - T, x0, y + 1.0, y + 2.5, b - 0.5, b), W]);
-      p.push([box(x0 - 0.02, x0, y + 1.0, y + 2.5, a + 0.5, b - 0.5), '#3b3833']);
-      for (const yy of [y + 1.25, y + 1.5]) p.push([box(x0 - T + 0.05, x0 - T + 0.08, yy - 0.015, yy + 0.015, a + 0.5, b - 0.5), RAIL]);
+/** front-w's west end (pair 5, R05; the owner's notes on it: the frontage is one connected block, no gap between the
+ *  west block and the connector): the connector runs from the west block's south face (the link, across what was a
+ *  gap) to the tower, four storeys under a roof terrace; the screened tower south of it is a storey taller, five
+ *  storeys under its cap and tank; the hipped roof starts behind them */
+const SVC = 7.5, LINK = 7.0;
+/** the link's north edge in front-w's model frame: a little inside the west block, so the two volumes meet */
+const linkV = (f: ReturnType<typeof fit>, zWest: number) => Math.min(...[f.x0, f.x0 + LINK].map((u) => (zWest - f.c[1] - u * f.axis[1]) / f.axis[0])) - 0.4;
+/** a skin T deep standing out of a face along z at x = at (out -1: west), from v0 to v1 and 0 to y1, with the openings
+ *  cut out of it (each a dark recess behind, with a two-bar rail at its sill when railed) */
+function skinZ(p: Part[], at: number, out: number, v0: number, v1: number, y1: number, T: number, holes: [number, number, number, number, boolean, string?][]) {
+  const vs = [...new Set([v0, v1, ...holes.flatMap(([a, b]) => [a, b])])].sort((m, n) => m - n);
+  const ys = [...new Set([0, y1, ...holes.flatMap(([, , c, d]) => [c, d])])].sort((m, n) => m - n);
+  const xa = Math.min(at, at + out * T), xb = Math.max(at, at + out * T);
+  for (let i = 1; i < vs.length; i++) for (let j = 1; j < ys.length; j++) {
+    const vm = (vs[i - 1] + vs[i]) / 2, ym = (ys[j - 1] + ys[j]) / 2;
+    if (!holes.some(([a, b, c, d]) => vm > a && vm < b && ym > c && ym < d)) p.push([box(xa, xb, ys[j - 1], ys[j], vs[i - 1], vs[i]), '#efe6d2']);
+  }
+  for (const [a, b, c, d, rail, back] of holes) {
+    p.push([box(Math.min(at, at + out * 0.02), Math.max(at, at + out * 0.02), c, d, a, b), back ?? '#35322e']);
+    // the shade on the soffit of the void
+    p.push([box(Math.min(at, at + out * T), Math.max(at, at + out * T), d - 0.03, d, a, b), '#bdb5a6']);
+    if (rail) {
+      const xa = Math.min(at + out * (T - 0.08), at + out * (T - 0.05)), xb = Math.max(at + out * (T - 0.08), at + out * (T - 0.05));
+      for (const yy of [c + 0.45, c + 0.9]) p.push([box(xa, xb, yy - 0.02, yy + 0.02, a, b), '#6f6a62']);
+      for (let v = a + 0.25; v < b; v += 0.25) p.push([box(xa, xb, c, c + 0.9, v - 0.012, v + 0.012), '#6f6a62']);
     }
   }
-  const ct = 0.4 + 3 * ST;
-  p.push([box(x0 - T, x0, ct, ct + 1.0, c0, c1), W]);
-  for (let z = c0 + 0.3; z < c1; z += 0.6) p.push([box(x0 - T + 0.1, x0 - T + 0.13, ct + 1.0, ct + 1.6, z - 0.015, z + 0.015), RAIL]);
-  p.push([box(x0 - T + 0.1, x0 - T + 0.13, ct + 1.58, ct + 1.62, c0, c1), RAIL]);
-  // the tower: its screens on the west and south faces in panels of different sizes with white strips between, the
-  // stacked curved balconies on its north side, the cap and the tank
-  const tt = 0.4 + 4 * ST + 0.6;
-  for (const [y0, y1] of [[0.4 + 3 * ST - 1.0, tt - 0.6], [0.4 + 2 * ST - 0.2, 0.4 + 2 * ST + 1.2], [0.4 + ST + 0.3, 0.4 + ST + 1.6]] as [number, number][]) {
+}
+function frontWestEnd(k: Kit, f: ReturnType<typeof fit>, vl: number, vSeen: number) {
+  const x0 = f.x0, zm = f.z0 + (f.z1 - f.z0) * 0.5, T = 0.8, p: Part[] = [], fy = (fl: number) => 0.4 + fl * ST;
+  // the connector's west face (R05, read left to right, north to south, as a fraction s of the face from the west
+  // block to the tower): the ground storey solid, the metal gate at its north end; the first floor a small dark window
+  // at the north, then two broad voids between rectangular piers; above, at the north, the stair's narrow openings a
+  // half storey up and a column of narrow bays, and one wide bay a floor at the south; all bays with thin rails
+  const ct = fy(4), S = (s: number) => vSeen + (zm - vSeen) * s;
+  // (the voids show the shaded back walls of the open floors, light; the narrow bays the dark rooms behind)
+  const VOID = '#a59c8c', BAY = '#4e4943';
+  const holes: [number, number, number, number, boolean, string?][] = [
+    [S(0.04), S(0.16), fy(1) + 0.9, fy(1) + 1.9, false],
+    [S(0.25), S(0.5), fy(1) + 0.15, fy(1) + 2.7, false, VOID], [S(0.55), S(0.97), fy(1) + 0.15, fy(1) + 2.7, false, VOID],
+  ];
+  for (const fl of [2, 3]) holes.push([S(0.03), S(0.17), fy(fl) + 1.5, fy(fl) + ST - 0.25, true, BAY], [S(0.25), S(0.4), fy(fl) + 0.9, fy(fl) + 2.35, true, BAY], [S(0.55), S(0.86), fy(fl) + 0.9, fy(fl) + 2.45, true, VOID]);
+  skinZ(p, x0, -1, vl, zm, ct, T, holes);
+  wallSolids(...wpt(f, x0 - T / 2, vSeen), ...wpt(f, x0 - T / 2, zm), T / 2 + 0.1);
+  for (const s of [0.25, 0.5, 0.97]) SOLIDS.add(...wpt(f, x0 - 0.2, S(s)), 0.3);
+  // the gate in its frame at the north end of the ground storey
+  p.push([box(x0 - T - 0.04, x0 - T, 0.05, 2.3, S(0.0), S(0.2)), '#cfc7a8']);
+  for (let v = S(0.0) + 0.1; v < S(0.2); v += 0.12) p.push([box(x0 - T - 0.08, x0 - T - 0.05, 1.2, 2.3, v - 0.012, v + 0.012), '#9f9a86']);
+  // the roof terrace: the parapet and its rail
+  p.push([box(x0 - T, x0, ct, ct + 1.0, vl, zm), '#efe6d2']);
+  for (let z = vSeen + 0.3; z < zm; z += 0.6) p.push([box(x0 - T + 0.1, x0 - T + 0.13, ct + 1.0, ct + 1.6, z - 0.015, z + 0.015), RAIL]);
+  p.push([box(x0 - T + 0.1, x0 - T + 0.13, ct + 1.58, ct + 1.62, vSeen, zm), RAIL]);
+  // the tower (R05: five storeys, four balconies stacked at its north side, the perforated panels on its two faces in
+  // three sizes, a large one over the top two floors, a mid one, a low one, white wall between), the cap and the tank
+  const tt = fy(5) + 0.6;
+  for (const [y0, y1] of [[fy(3.3), fy(4.45)], [fy(2.25), fy(2.75)], [fy(1.25), fy(1.7)]] as [number, number][]) {
     perfPanel(k, false, x0, -1, zm + (f.z1 - zm) * 0.62, 1.4, y0, y1);
     for (const u of [x0 + 1.6, x0 + 4.6]) perfPanel(k, true, f.z1, 1, u, 1.5, y0 + 0.1, y1);
   }
-  curvedStack(k, x0, -1, zm + 1.3, 2.0, 1.1, 4, false);
+  curvedStack(k, x0, -1, zm + 1.3, 2.0, 1.1, 5, false);
   p.push([box(x0 - 0.1, x0 + SVC, tt - 0.6, tt, zm, f.z1 + 0.1), '#e9e2d3']);
   p.push([new THREE.CylinderGeometry(0.9, 0.9, 1.9, 16).translate(x0 + 2.5, tt + 0.95, (zm + f.z1) / 2), '#1c1d20']);
   k.plain.push(...p);
@@ -289,19 +316,23 @@ const wpt = (f: ReturnType<typeof fit>, u: number, v: number): [number, number] 
 function wingSpec(w: Wing): Spec {
   const f = fit(w.quad), ochre = !!w.ochre, svc = w.id === 'front-w';
   const endS = w.ends === 'balcony' ? END : styleOf(w.ends, ochre);
-  const faces = { z1: styleOf(w.south, ochre), z0: styleOf(w.north, ochre), x0: endS, x1: endS };
+  const faces = { z1: styleOf(w.south, ochre), z0: styleOf(w.north, ochre), x0: w.ends === 'balcony' ? BLANK_C : endS, x1: endS };
   const zm = f.z0 + (f.z1 - f.z0) * 0.5;
+  // (front-w: the link reaches the west block's south face; vSeen: where the west block's face meets the link's)
+  const west = WINGS.find((x) => x.id === 'west-end')!.quad, zWest = Math.max(...west.map((q) => q[1]));
+  const vl = svc ? linkV(f, zWest) : 0, vSeen = svc ? (zWest - f.c[1] - f.x0 * f.axis[1]) / f.axis[0] : 0;
   return {
     name: `Evandy wing ${w.id}`, axis: f.axis, origin: f.c, storey: ST, style: PLAIN, roofColor: w.roof, fascia: '#efe7d6', pitch: 0.42,
     replaces: [f.c],
     blocks: svc ? [
       { x0: f.x0 + SVC, x1: f.x1, z0: f.z0, z1: f.z1, floors: w.floors, faces },
-      { x0: f.x0, x1: f.x0 + SVC, z0: f.z0, z1: zm, floors: 3, roof: 'flat', faces: { x0: BLANK_C, z0: BLANK_C, z1: BLANK_C, x1: BLANK_C } },
-      { x0: f.x0, x1: f.x0 + SVC, z0: zm, z1: f.z1, floors: w.floors, roof: 'flat', faces: { x0: BLANK_C, z0: BLANK_C, z1: BLANK_C, x1: BLANK_C } },
+      { x0: f.x0, x1: f.x0 + LINK, z0: vl, z1: f.z0, floors: 4, roof: 'flat', faces: { x0: BLANK_C, z0: BLANK_C, z1: BLANK_C, x1: BLANK_C } },
+      { x0: f.x0, x1: f.x0 + SVC, z0: f.z0, z1: zm, floors: 4, roof: 'flat', faces: { x0: BLANK_C, z0: BLANK_C, z1: BLANK_C, x1: BLANK_C } },
+      { x0: f.x0, x1: f.x0 + SVC, z0: zm, z1: f.z1, floors: 5, roof: 'flat', faces: { x0: BLANK_C, z0: BLANK_C, z1: BLANK_C, x1: BLANK_C } },
     ] : [{ x0: f.x0, x1: f.x1, z0: f.z0, z1: f.z1, floors: w.floors, faces }],
     keep: [],
     extras: (k) => {
-      if (svc) frontWestEnd(k, f);
+      if (svc) frontWestEnd(k, f, vl, vSeen);
       if (w.south === 'balcony') balconies(k, svc ? f.x0 + SVC : f.x0, f.x1, f.z1, 1, w.floors, !!w.gables, ochre);
       // the recessed slot in the window column of the second bay from the wing's outer end (front-e: east; others: west)
       if (w.slot) { const n = Math.max(1, Math.round((f.x1 - f.x0) / 7.8)), b = (f.x1 - f.x0) / n, u = w.slot === 'x1' ? f.x1 - b + b * 0.13 : f.x0 + b + b * 0.13; slot(k, u, f.z1, 1, w.floors, ochre); }
@@ -310,12 +341,27 @@ function wingSpec(w: Wing): Spec {
       // (the owner's eight-pair brief, pair 5: the west block's stack of curved light balconies on its west face, the
       // wide grilled window under it, a small front gable over it)
       if (w.ends === 'balcony') {
-        const zc = f.z0 + (f.z1 - f.z0) * 0.6;
-        curvedStack(k, f.x0, -1, zc, 3.0, 1.4, w.floors, true);
-        const t = top(w.floors), hw = 2.2, gh = 1.8;
-        k.plain.push([tri2([f.x0 - 0.3, t, zc + hw], [f.x0 - 0.3, t, zc - hw], [f.x0 - 0.3, t + gh, zc]), CREAM], [tri2([f.x0 - 0.3, t, zc - hw], [f.x0 - 0.3, t, zc + hw], [f.x0 - 0.3, t + gh, zc]), CREAM]);
-        k.roof.quad([f.x0 - 0.9, t - 0.05, zc - hw - 0.3], [f.x0 + 3, t - 0.05, zc - hw - 0.3], [f.x0 + 3, t + gh + 0.2, zc], [f.x0 - 0.9, t + gh + 0.2, zc]);
-        k.roof.quad([f.x0 + 3, t - 0.05, zc + hw + 0.3], [f.x0 - 0.9, t - 0.05, zc + hw + 0.3], [f.x0 - 0.9, t + gh + 0.2, zc], [f.x0 + 3, t + gh + 0.2, zc]);
+        // (R05, the left mass, read north to south: the narrow north return with its small stacked balconies; on the
+        // west face a tall slot and two small square windows a floor; the recessed bay of curved balconies, one a floor
+        // from the first, the wide grilled window under them; blank wall to the south corner; the small front gable
+        // over the north part)
+        const at = f.x0, Z = (s: number) => f.z0 + (f.z1 - f.z0) * s, zc = Z(0.56), p: Part[] = [];
+        curvedStack(k, at, -1, zc, 3.0, 1.4, w.floors, true);
+        for (let fl = 0; fl < w.floors; fl++) {
+          const y = 0.4 + fl * ST;
+          p.push([box(at - 0.04, at, y + 0.7, y + 2.5, Z(0.08), Z(0.08) + 0.45), '#3b3833']);
+          for (const s of [0.2, 0.29]) p.push([box(at - 0.04, at, y + 1.6, y + 2.05, Z(s), Z(s) + 0.42), '#3b3833']);
+          if (fl) {
+            p.push([box(at - 0.05, at + 1.3, y - 0.15, y, f.z0 - 0.9, f.z0), '#efe9dc']);
+            for (let x = at; x < at + 1.3; x += 0.13) p.push([box(x - 0.012, x + 0.012, y, y + 0.95, f.z0 - 0.88, f.z0 - 0.85), RAIL]);
+            p.push([box(at - 0.05, at + 1.3, y + 0.93, y + 0.97, f.z0 - 0.9, f.z0 - 0.83), RAIL], [box(at + 0.1, at + 1.0, y, y + 2.2, f.z0 - 0.03, f.z0), '#3b3833']);
+          } else p.push([box(at + 0.15, at + 1.15, 0.9, 2.3, f.z0 - 0.03, f.z0), '#3b3833']);
+        }
+        k.plain.push(...p);
+        const t = top(w.floors), gc = Z(0.17), hw = 1.9, gh = 1.6;
+        k.plain.push([tri2([f.x0 - 0.3, t, gc + hw], [f.x0 - 0.3, t, gc - hw], [f.x0 - 0.3, t + gh, gc]), CREAM], [tri2([f.x0 - 0.3, t, gc - hw], [f.x0 - 0.3, t, gc + hw], [f.x0 - 0.3, t + gh, gc]), CREAM]);
+        k.roof.quad([f.x0 - 0.9, t - 0.05, gc - hw - 0.3], [f.x0 + 3, t - 0.05, gc - hw - 0.3], [f.x0 + 3, t + gh + 0.2, gc], [f.x0 - 0.9, t + gh + 0.2, gc]);
+        k.roof.quad([f.x0 + 3, t - 0.05, gc + hw + 0.3], [f.x0 - 0.9, t - 0.05, gc + hw + 0.3], [f.x0 - 0.9, t + gh + 0.2, gc], [f.x0 + 3, t + gh + 0.2, gc]);
       }
       // downpipes at the ends of the long faces
       for (const x of [f.x0 + 0.4, f.x1 - 0.4]) for (const z of [f.z0 - 0.12, f.z1 + 0.12]) k.plain.push([new THREE.CylinderGeometry(0.06, 0.06, top(w.floors), 6).translate(x, top(w.floors) / 2, z), '#e4dccb']);
@@ -414,9 +460,20 @@ function ringSouth(k: Kit, x0: number, x1: number, zf: number) {
       for (let f = 0; f < RING.floors; f++) {
         const y = 0.4 + f * ST;
         if (t === 'C') for (const x of [a + 0.35, b - 0.8]) p.push([box(x, x + 0.45, y + 1.6, y + 2.05, zf + T, zf + T + 0.02), '#4a4744']);
-        if (t === 'E') { for (const x of [a + 0.3, a + 1.05]) grille(x, x + 0.55, y + 1.2, y + 2.1, zf + T); grille(a + 2.2, b - 0.5, y + 1.0, y + 2.1, zf + T); }
+        if (t === 'E' && f) { for (const x of [a + 0.3, a + 1.05]) grille(x, x + 0.55, y + 1.2, y + 2.1, zf + T); grille(a + 2.2, b - 0.5, y + 1.0, y + 2.1, zf + T); }
       }
       if (t === 'C') p.push([new THREE.CylinderGeometry(0.06, 0.06, tf, 6).translate((a + b) / 2, tf / 2, zf + T + 0.1), '#e2ded4']);
+      if (t === 'E') {
+        // (the owner's notes on pair 4: the block's entrance is here, at the ground of the middle section, and its
+        // black polytanks stand on the roof above it)
+        const m = (a + b) / 2;
+        p.push([box(m - 0.85, m + 0.85, 0.3, 2.55, zf + T, zf + T + 0.02), '#2e2a26'], [box(m - 0.05, m + 0.05, 0.3, 2.55, zf + T + 0.02, zf + T + 0.05), '#6b625a']);
+        p.push([box(m - 1.4, m + 1.4, 2.75, 2.9, zf + T, zf + T + 1.2), '#efede6'], [box(m - 1.3, m + 1.3, 0, 0.3, zf + T, zf + T + 1.0), '#d9d4c8'], [box(m - 1.3, m + 1.3, 0, 0.15, zf + T + 1.0, zf + T + 1.4), '#d9d4c8']);
+        for (const x of [a + 0.3, a + 1.05]) grille(x, x + 0.55, 1.6, 2.5, zf + T);
+        const yt = top(RING.floors) + 1.2, zt = zf - 3.0;
+        p.push([box(m - 1.9, m + 1.9, yt - 1.4, yt, zt - 1.0, zt + 1.0), '#d8d3c8']);
+        for (const x of [m - 0.85, m + 0.85]) { p.push([new THREE.CylinderGeometry(0.72, 0.72, 1.6, 18).translate(x, yt + 0.8, zt), '#1c1d20'], [new THREE.CylinderGeometry(0.25, 0.25, 0.15, 12).translate(x, yt + 1.67, zt), '#1c1d20']); }
+      }
       continue;
     }
     // O: the skin round the opening, floor by floor
@@ -567,7 +624,7 @@ const site: Spec = {
     // patches; no planted island
     for (const [c, a, b] of [[[600, -1276], 9, 4], [[622, -1272], 7, 3.5], [[585, -1279], 5, 2.6], [[575, -1215], 8, 2.5], [[628, -1210], 6, 2.2]] as [P2, number, number][]) flatPlane(k, oval(c, a, b, 22), 0.065, hardMat(), 3);
     // the oval planting islands in their pale kerbs (shrubs: buildEvandyGrounds)
-    for (const { c, a, b } of ISLANDS) { parts.push([prism(oval(c, a, b), 0, 0.3), '#eeeae2']); parts.push([prism(oval(c, a - 0.2, b - 0.2), 0, 0.34), '#5a4535']); SOLIDS.add(c[0], c[1], Math.min(a, b)); for (const s of [-1, 1]) SOLIDS.add(c[0] + s * (a - b) * 0.7, c[1], b); }
+    for (const { c, a, b } of ISLANDS) { parts.push([prism(oval(c, a, b), 0, 0.3), '#eeeae2']); parts.push([prism(oval(c, a - 0.2, b - 0.2), 0, 0.34), '#5a4535']); SOLIDS.add(c[0], c[1], Math.min(a, b)); for (const s of [-1, 1]) { SOLIDS.add(c[0] + s * (a - b) * 0.7, c[1], b); SOLIDS.add(c[0] + s * (a - 0.7), c[1], 0.75); } }
     // the fence along the road: low pale wall, square posts with caps, dark vertical bars with pointed tops; the
     // openings at the west lane and the gate
     const fence = (xa: number, xb: number) => {
@@ -668,13 +725,13 @@ const admin: Spec = {
       p.push([box(xc - w / 2 - 0.15, xc - w / 2, y0, y0 + h, za, zb), '#d6bd86'], [box(xc + w / 2, xc + w / 2 + 0.15, y0, y0 + h, za, zb), '#d6bd86']);
       k.glass.push(box(xc - w / 2, xc + w / 2, y0, y0 + h, Math.min(z, z + out * 0.03), Math.max(z, z + out * 0.03)));
       p.push([box(xc - 0.04, xc + 0.04, y0, y0 + h, Math.min(z, z + out * 0.13), Math.max(z, z + out * 0.13)), '#d6bd86']);
-      if (grille) { for (let x = xc - w / 2 + 0.12; x < xc + w / 2; x += 0.14) p.push([box(x - 0.01, x + 0.01, y0, y0 + h, Math.min(z, z + out * 0.08), Math.max(z, z + out * 0.08)), '#3a3631']); for (let y = y0 + 0.14; y < y0 + h; y += 0.16) p.push([box(xc - w / 2, xc + w / 2, y - 0.01, y + 0.01, Math.min(z, z + out * 0.08), Math.max(z, z + out * 0.08)), '#3a3631']); }
+      if (grille) { for (let x = xc - w / 2 + 0.1; x < xc + w / 2; x += 0.22) p.push([box(x - 0.008, x + 0.008, y0, y0 + h, Math.min(z + out * 0.035, z + out * 0.045), Math.max(z + out * 0.035, z + out * 0.045)), '#5a554d']); for (let y = y0 + 0.3; y < y0 + h; y += 0.4) p.push([box(xc - w / 2, xc + w / 2, y - 0.008, y + 0.008, Math.min(z + out * 0.035, z + out * 0.045), Math.max(z + out * 0.035, z + out * 0.045)), '#5a554d']); }
     };
     // ---- the east face (R01) ----
     winZ(x1, 1, 4.6, 1.7, 1.1, 1.2, false); winZ(x1, 1, 4.6, 1.7, 4.3, 1.2, false);
     const zc = -0.6, xf = x1 + 1.6;
     // the ground portico: four slender yellow columns, the balcony slab over them, the white roller shutter
-    for (const z of [zc - 2.95, zc - 2.45, zc + 2.45, zc + 2.95]) { p.push([new THREE.CylinderGeometry(0.17, 0.19, g, 14).translate(xf - 0.2, g / 2, z), COL]); SOLIDS.add(...W(xf - 0.2, z), 0.25); }
+    for (const z of [zc - 2.95, zc - 2.45, zc + 2.45, zc + 2.95]) { p.push([new THREE.CylinderGeometry(0.17, 0.19, g, 14).translate(xf - 0.2, g / 2, z), COL]); SOLIDS.add(...W(xf - 0.2, z), 0.45); }
     p.push([box(x1, xf + 0.05, g - 0.05, g + 0.25, zc - 3.3, zc + 3.3), '#f2e6b8']);
     p.push([box(x1 + 0.01, x1 + 0.05, 0, 2.5, zc - 1.35, zc + 1.35), '#f3f3ef']);
     for (let y = 0.15; y < 2.5; y += 0.18) p.push([box(x1 + 0.05, x1 + 0.07, y, y + 0.02, zc - 1.35, zc + 1.35), '#d6d6d0']);
@@ -705,6 +762,8 @@ const admin: Spec = {
     for (let i = 0; i < n2; i++) { const za = zl0 + ((zb2 - zl0) * i) / n2, zb = zl0 + ((zb2 - zl0) * (i + 1)) / n2, y = hl + ((g + 0.25 - hl) * (i + 1)) / n2; p.push([box(x1 + 0.05, x1 + 1.05, y - 0.18, y, Math.min(za, zb), Math.max(za, zb)), '#f2e6b8']); }
     p.push([new THREE.BoxGeometry(0.04, 0.04, Math.hypot(zb2 - zl0, g - hl)).rotateX(-Math.atan2(g - hl, zb2 - zl0)).translate(x1 + 1.07, (hl + g) / 2 + 1.0, (zl0 + zb2) / 2), '#cfd0cc']);
     for (let z = zl0; z < zs0; z += 0.8) SOLIDS.add(...W(x1 + 1.6, z), 0.5);
+    // (the low space under the upper flight: closed to the bike)
+    for (let z = zl0; z < zb2; z += 0.7) SOLIDS.add(...W(x1 + 0.55, z), 0.55);
     // ---- the south face: the Tropiks frontage (R02, R03) ----
     winX(z1, 1, -2.6, 2.2, 4.5, 1.5, true); winX(z1, 1, 2.2, 2.6, 4.5, 1.5, true); winX(z1, 1, 4.65, 0.9, 4.5, 1.5, true);
     p.push([box(x0 - 0.3, x1 + 0.3, 2.85, 3.15, z1, z1 + 0.95), '#7a2630'], [box(x0 - 0.3, x1 + 0.3, 2.7, 2.85, z1 + 0.85, z1 + 0.95), '#6a1f28']);

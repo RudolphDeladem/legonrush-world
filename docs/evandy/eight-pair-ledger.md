@@ -17,3 +17,13 @@ M1 was registered north-up to the game (the pink ring at map px 105-355 = x 533-
 | — | Parking | Only the front car row and its park kept; no cars before Tropiks or the arcade | VERIFIED (R01, R08) |
 
 Checks: typecheck, route tests, challenge lens unchanged, no non-finite vertices, no stuck spots over x 500-650, z -1330..-1195, build, smoke.
+
+## Owner's notes on the result (batch 143)
+
+| Note | Done | Label |
+| --- | --- | --- |
+| Picture 1: the stair belongs on the right | Already right in 142 (the screenshot was the first render) | VERIFIED (R01) |
+| Picture 2: the Tropiks upper windows are glass | Already glass in 142; the bars made lighter and sparser | VERIFIED (R02) |
+| Picture 3: no gap between the west block and the connector; the frontage is one connected block | Link volume from the west block's south face to front-w; the connector's face runs across it | VERIFIED (owner) |
+| Pictures 3/4: the structure as R05 | West block 5 storeys (4 curved balconies counted on R05), connector 4 storeys + roof terrace, tower 5 storeys + cap and tank (4 balconies counted); the connector's opening schedule read from R05 | Counts VERIFIED (R05); heights of the connector against the frontage DECISION |
+| Picture 5: polytank on the pink-roof block's roof, the entrance at the marked bay | Two black tanks on a stand above the middle section; door, canopy and steps at its ground | VERIFIED (owner, R04) |

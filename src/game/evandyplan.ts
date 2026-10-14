@@ -34,7 +34,7 @@ export const WINGS: Wing[] = [
   { id: 'upper-n-e', quad: [[608.3, -1321], [607.4, -1306.7], [640.5, -1311.6], [638.4, -1325.5]], floors: 4, south: 'balcony', north: 'plain', ends: 'end', roof: ORANGE },
   // the projecting stair / gallery end at the west of the lower group (R04, V2 11.50 s, 23.50 s): stacked small
   // balconies on its end, red perforated-brick ventilation panels on its sides
-  { id: 'west-end', quad: [[546.7, -1248.6], [546.7, -1238.6], [559.8, -1238.7], [559.7, -1248.7]], floors: 4, south: 'end', north: 'end', ends: 'balcony', roof: ORANGE },
+  { id: 'west-end', quad: [[546.7, -1248.6], [546.7, -1238.6], [559.8, -1238.7], [559.7, -1248.7]], floors: 5, south: 'end', north: 'end', ends: 'balcony', roof: ORANGE },
   // the small link block at the east between the frontage and inner pairs
   { id: 'east-link', quad: [[633.1, -1236.8], [641, -1236.8], [641.1, -1248.3], [633.2, -1248.4]], floors: 4, south: 'vent', north: 'vent', ends: 'gallery', roof: ORANGE },
 ];
