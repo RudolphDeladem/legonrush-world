@@ -21,7 +21,7 @@ import { offAsphalt } from './science';
 import { EARTH_ROADS } from './ghlplan';
 import { buildScrubLands } from './ghlandscape';
 import { buildUpsaGreen } from './upsagreen';
-import { buildEngineeringBush } from './engbush';
+import { buildEngineeringGrounds } from './engground';
 import { ownsEdges } from './ipsplan';
 import { collisionRoots } from './meshcollide';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, roadClearance, ROAD_WIDTH } from './life';
@@ -487,8 +487,8 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
   yield 'step';
   // the UPSA campus's shade trees and the bush west of its wall, from the owner's aerial (upsagreen.ts)
   group.add(buildUpsaGreen());
-  // the bush behind the School of Engineering Sciences (engbush.ts)
-  group.add(buildEngineeringBush());
+  // the bush, the forest, the brown track and the sidewalks round the School of Engineering Sciences (engground.ts)
+  group.add(buildEngineeringGrounds());
   yield 'step';
 
   // trees, kerbs, lamps, stops, signs, cars, kiosks and people (see life.ts)
