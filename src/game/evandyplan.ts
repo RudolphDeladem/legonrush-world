@@ -15,12 +15,14 @@ export interface Wing {
   /** the long face toward the south (the frontage, a court) and the one toward the north: balconies, galleries, plain */
   south: 'balcony' | 'gallery' | 'plain' | 'vent'; north: 'balcony' | 'gallery' | 'plain' | 'vent'; ends: 'end' | 'vent' | 'balcony' | 'gallery';
   roof: string; ochre?: boolean; gables?: boolean;
+  /** the end the recessed glass-block slot stands near (R18, P03, P04) */
+  slot?: 'x0' | 'x1';
 }
 const ORANGE = '#c4633a', PINK = '#d8998d';
 export const WINGS: Wing[] = [
   // 1 the lower frontage pair: the main block's two wings either side of the entrance bay (R03, R08, P01-P04)
-  { id: 'front-w', quad: [[552.8, -1234.9], [555, -1222.4], [593.8, -1229.2], [591.6, -1241.6]], floors: 4, south: 'balcony', north: 'gallery', ends: 'end', roof: ORANGE, ochre: true, gables: true },
-  { id: 'front-e', quad: [[603.6, -1241.7], [600.2, -1228.8], [638, -1219.1], [641.3, -1232]], floors: 4, south: 'balcony', north: 'gallery', ends: 'end', roof: ORANGE, ochre: true, gables: true },
+  { id: 'front-w', quad: [[552.8, -1234.9], [555, -1222.4], [593.8, -1229.2], [591.6, -1241.6]], floors: 4, south: 'balcony', north: 'gallery', ends: 'end', roof: ORANGE, ochre: true, gables: true, slot: 'x0' },
+  { id: 'front-e', quad: [[603.6, -1241.7], [600.2, -1228.8], [638, -1219.1], [641.3, -1232]], floors: 4, south: 'balcony', north: 'gallery', ends: 'end', roof: ORANGE, ochre: true, gables: true, slot: 'x1' },
   // 2 the inner pair, behind the frontage pair across the narrow inner courts
   { id: 'inner-w', quad: [[556.2, -1266.3], [553.4, -1255.1], [590.2, -1246.1], [592.9, -1257.3]], floors: 4, south: 'gallery', north: 'balcony', ends: 'end', roof: ORANGE, ochre: true, gables: true },
   { id: 'inner-e', quad: [[599.5, -1259], [601.8, -1245.3], [641.5, -1251.9], [639.2, -1265.5]], floors: 4, south: 'gallery', north: 'balcony', ends: 'end', roof: ORANGE, ochre: true, gables: true },

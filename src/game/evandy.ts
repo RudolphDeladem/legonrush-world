@@ -48,8 +48,9 @@ const front = (ochre: boolean): Style => ({
     // upper: the recess, dark shade with doors and windows behind
     g.fillStyle = '#6f675a'; g.fillRect(74, 14, 168, 226); g.fillStyle = '#4a443b'; g.fillRect(74, 14, 168, 40);
     window_(g, [96, 60, 70, 130], '#efe6d2', 2, 0.3); window_(g, [176, 70, 52, 110], '#efe6d2', 1, 0.3);
-    // ground: a wide louvred window under the balconies
-    louvred(g, 92, 256 + 70, 140, 110);
+    // ground: under each balcony pair, two windows either side of the central dividing wall (R03: the fins run to the
+    // ground)
+    louvred(g, 86, 256 + 70, 62, 120); louvred(g, 172, 256 + 70, 62, 120);
     slab(g, 236, 20);
   },
 });
@@ -89,18 +90,6 @@ const END: Style = {
   bay: 3, up: [[110, 80, 36, 100]], ground: [[110, 80, 36, 100]],
   draw: (g) => { wall(g); for (const y0 of [0, 256]) louvred(g, 110, y0 + 80, 36, 100); slab(g, 236, 20); },
 };
-/** the commercial block: the shopfronts with their grilles below, the gallery's glazing above (set back) */
-const SHOP: Style = {
-  bay: 4, up: [[30, 40, 196, 170]], ground: [[30, 50, 196, 180]],
-  draw: (g) => {
-    g.fillStyle = '#f2e5bf'; g.fillRect(0, 0, 256, 512);
-    window_(g, [30, 40, 196, 170], '#e9dcc0', 3, 0);
-    g.fillStyle = '#37393c'; g.fillRect(30, 306, 196, 180);
-    g.fillStyle = '#b39a5e'; for (let x = 34; x < 226; x += 10) g.fillRect(x, 306, 3, 180);
-    for (let y = 316; y < 486; y += 34) { g.fillStyle = '#b39a5e'; g.fillRect(30, y, 196, 3); }
-    slab(g, 236, 20);
-  },
-};
 const styleOf = (k: Wing['south'] | Wing['ends'], ochre: boolean) => (k === 'balcony' ? (ochre ? FRONT_O : FRONT) : k === 'gallery' ? GALLERY : k === 'vent' ? VENT : k === 'plain' ? PLAIN : END);
 
 // ---------- materials ----------
@@ -137,38 +126,62 @@ function flatPlane(k: Kit, pts: P2[], y: number, mat: THREE.Material, tile: numb
 const oval = (c: P2, a: number, b: number, n = 24): P2[] => Array.from({ length: n }, (_, i) => { const t = (i / n) * Math.PI * 2; return [c[0] + Math.cos(t) * a, c[1] + Math.sin(t) * b]; });
 
 // ---------- a wing ----------
-/** the recessed balcony fronts on a long face: slab, solid lower wall, dark patterned railing, side walls, per
- *  module (the module the facade texture draws: the recess spans 0.29-0.95 of each bay) */
+/** the balcony bays on a long face (R03, R08, P03): each bay a PAIR of recessed balconies divided by a central wall;
+ *  that wall and the two side walls run from the ground to the eaves, standing out as deep as the balconies, so that
+ *  on the ground floor they frame two windows; each balcony a slab with a solid lower wall and a dark patterned railing
+ *  above it; on the top floor an arch over each balcony. The bay is the facade texture's: the recess spans 0.29-0.95. */
 function balconies(k: Kit, x0: number, x1: number, z: number, out: 1 | -1, floors: number, gables: boolean, ochre: boolean) {
-  const len = x1 - x0, n = Math.max(1, Math.round(len / 7.8)), b = len / n, parts: Part[] = [];
+  const len = x1 - x0, n = Math.max(1, Math.round(len / 7.8)), b = len / n, parts: Part[] = [], d = 1.1, tf = 0.4 + floors * ST;
   for (let i = 0; i < n; i++) {
-    const a0 = x0 + i * b + b * 0.29, a1 = x0 + i * b + b * 0.95, d = 1.1;
-    for (let f = 1; f < floors; f++) {
-      const y = 0.4 + f * ST, zf = z + out * d, zm = Math.min(z, zf), zM = Math.max(z, zf);
-      parts.push([box(a0, a1, y - 0.18, y, zm, zM), CREAM]);
-      parts.push([box(a0, a1, y, y + 0.45, zf - 0.07, zf + 0.07), CREAM]);
-      for (const ax of [a0, a1]) parts.push([box(ax - 0.12, ax + 0.12, y - 0.18, y + ST - 0.2, zm, zM), CREAM_D]);
-      // the railing: top rail, bottom rail, and a run of diamond / loop motifs as crossed bars
-      parts.push([box(a0, a1, y + 1.0, y + 1.05, zf - 0.03, zf + 0.03), RAIL], [box(a0, a1, y + 0.47, y + 0.5, zf - 0.03, zf + 0.03), RAIL]);
-      for (let x = a0 + 0.35; x < a1 - 0.2; x += 0.55) {
-        parts.push([box(x - 0.015, x + 0.015, y + 0.5, y + 1.0, zf - 0.02, zf + 0.02), RAIL]);
-        const g = new THREE.BoxGeometry(0.02, 0.36, 0.02).rotateZ(0.7).translate(x + 0.14, y + 0.75, zf), h = new THREE.BoxGeometry(0.02, 0.36, 0.02).rotateZ(-0.7).translate(x + 0.14, y + 0.75, zf);
-        parts.push([g, RAIL], [h, RAIL]);
+    const a0 = x0 + i * b + b * 0.29, a1 = x0 + i * b + b * 0.95, am = (a0 + a1) / 2, zf = z + out * d, zm = Math.min(z, zf), zM = Math.max(z, zf);
+    // the side walls and the central dividing wall, ground to eaves
+    for (const [ax, w] of [[a0, 0.14], [a1, 0.14], [am, 0.13]] as [number, number][]) parts.push([box(ax - w, ax + w, 0, tf, zm, zM), CREAM_D]);
+    for (const [h0, h1] of [[a0 + 0.14, am - 0.13], [am + 0.13, a1 - 0.14]] as P2[]) {
+      for (let f = 1; f < floors; f++) {
+        const y = 0.4 + f * ST;
+        parts.push([box(h0, h1, y - 0.18, y, zm, zM), CREAM]);
+        // the solid lower wall, then the railing on it: rails, uprights and a run of crossed bars
+        parts.push([box(h0, h1, y, y + 0.42, zf - out * 0.07 - 0.07, zf - out * 0.07 + 0.07), CREAM]);
+        parts.push([box(h0, h1, y + 1.0, y + 1.04, zf - 0.03, zf + 0.03), RAIL], [box(h0, h1, y + 0.44, y + 0.47, zf - 0.03, zf + 0.03), RAIL]);
+        for (let x = h0 + 0.2; x < h1 - 0.1; x += 0.42) {
+          parts.push([box(x - 0.015, x + 0.015, y + 0.47, y + 1.0, zf - 0.02, zf + 0.02), RAIL]);
+          parts.push([new THREE.BoxGeometry(0.02, 0.34, 0.02).rotateZ(0.6).translate(x + 0.21, y + 0.74, zf), RAIL], [new THREE.BoxGeometry(0.02, 0.34, 0.02).rotateZ(-0.6).translate(x + 0.21, y + 0.74, zf), RAIL]);
+        }
       }
-      // the arched head of the top floor's recess (the shaded scalloped eave detail)
-      if (f === floors - 1) parts.push([new THREE.TorusGeometry((a1 - a0) / 2 - 0.1, 0.12, 4, 14, Math.PI).translate((a0 + a1) / 2, y + ST - 1.3, z + out * 0.08), CREAM]);
+      // the arch over the top floor's balcony: a solid head with a half-round opening
+      const yt = 0.4 + (floors - 1) * ST, w = h1 - h0, r = w / 2, ya = tf - 0.25 - r;
+      const head = new THREE.Shape([new THREE.Vector2(-w / 2, 0), new THREE.Vector2(-w / 2, tf - 0.2 - ya), new THREE.Vector2(w / 2, tf - 0.2 - ya), new THREE.Vector2(w / 2, 0)]);
+      head.holes.push(new THREE.Path().absarc(0, 0, r - 0.02, 0, Math.PI, false));
+      parts.push([new THREE.ExtrudeGeometry(head, { depth: 0.18, bevelEnabled: false }).translate((h0 + h1) / 2, ya, zf - (out > 0 ? 0.18 : 0)), CREAM]);
+      void yt;
     }
-    // a small gable with an arched recess over every second module, its roof running back into the main slope
+    // a small gable over every second bay, its roof running back into the main slope
     if (gables && i % 2 === 0) {
-      const t = top(floors), w = (a1 - a0) / 2 + 0.3, xm = (a0 + a1) / 2, h = 1.9, zf = z + out * 0.5;
-      parts.push([tri2([xm - w, t, zf], [xm + w, t, zf], [xm, t + h, zf]), CREAM], [tri2([xm + w, t, zf], [xm - w, t, zf], [xm, t + h, zf]), CREAM]);
-      parts.push([new THREE.CircleGeometry(0.7, 12, 0, Math.PI).rotateY(out > 0 ? 0 : Math.PI).translate(xm, t + 0.25, zf + out * 0.02), ochre ? '#cdb37a' : '#d8ccb2']);
+      const t = top(floors), w = (a1 - a0) / 2 + 0.3, xm = am, h = 1.9, zg = z + out * 0.5;
+      parts.push([tri2([xm - w, t, zg], [xm + w, t, zg], [xm, t + h, zg]), CREAM], [tri2([xm + w, t, zg], [xm - w, t, zg], [xm, t + h, zg]), CREAM]);
+      parts.push([new THREE.CircleGeometry(0.7, 12, 0, Math.PI).rotateY(out > 0 ? 0 : Math.PI).translate(xm, t + 0.25, zg + out * 0.02), ochre ? '#cdb37a' : '#d8ccb2']);
       const back = z - out * 3.2;
-      k.roof.quad([xm - w - 0.25, t - 0.05, zf + out * 0.3], [xm - w - 0.25, t - 0.05, back], [xm, t + h + 0.2, back], [xm, t + h + 0.2, zf + out * 0.3]);
-      k.roof.quad([xm + w + 0.25, t - 0.05, back], [xm + w + 0.25, t - 0.05, zf + out * 0.3], [xm, t + h + 0.2, zf + out * 0.3], [xm, t + h + 0.2, back]);
+      k.roof.quad([xm - w - 0.25, t - 0.05, zg + out * 0.3], [xm - w - 0.25, t - 0.05, back], [xm, t + h + 0.2, back], [xm, t + h + 0.2, zg + out * 0.3]);
+      k.roof.quad([xm + w + 0.25, t - 0.05, back], [xm + w + 0.25, t - 0.05, zg + out * 0.3], [xm, t + h + 0.2, zg + out * 0.3], [xm, t + h + 0.2, back]);
     }
   }
   k.plain.push(...parts);
+}
+let SLOT: THREE.MeshStandardMaterial | null = null;
+/** the tall pale strip of the recessed slot: glass blocks in a fine grid (R18, P03, P04) */
+const slotMat = () => (SLOT ??= new THREE.MeshStandardMaterial({ roughness: 0.6, map: canvas(32, 256, (g) => {
+  g.fillStyle = '#e9ecee'; g.fillRect(0, 0, 32, 256);
+  g.fillStyle = 'rgba(150,165,175,0.55)'; for (let y = 0; y < 256; y += 8) g.fillRect(0, y, 32, 1); for (let x = 0; x < 32; x += 8) g.fillRect(x, 0, 1, 256);
+}) }));
+/** the recessed vertical slot (the owner's purple arrows on R18): a full-height pale glass-block strip set back between
+ *  two ochre fins that stand out from the wall face, in the window column of the bay at u (model frame) */
+function slot(k: Kit, u: number, z: number, out: 1 | -1, floors: number, ochre: boolean) {
+  const tf = 0.4 + floors * ST, w = 1.0, dep = 0.45, col = ochre ? OCHRE : CREAM_D;
+  k.plain.push([box(u - w / 2 - 0.3, u - w / 2, 0, tf, Math.min(z, z + out * dep), Math.max(z, z + out * dep)), col], [box(u + w / 2, u + w / 2 + 0.3, 0, tf, Math.min(z, z + out * dep), Math.max(z, z + out * dep)), col]);
+  const g = new THREE.PlaneGeometry(w, tf - 0.6).translate(u, (tf - 0.6) / 2 + 0.6, z + out * 0.03);
+  if (out < 0) g.rotateY(Math.PI).translate(2 * u, 0, 2 * z);
+  const uv = g.attributes.uv as THREE.BufferAttribute; for (let i = 0; i < uv.count; i++) uv.setY(i, uv.getY(i) * (tf - 0.6) / 8);
+  const m = new THREE.Mesh(g, slotMat()); m.receiveShadow = true; m.userData.noCollide = true; k.meshes.push(m);
 }
 function wingSpec(w: Wing): Spec {
   const f = fit(w.quad), ochre = !!w.ochre;
@@ -180,6 +193,8 @@ function wingSpec(w: Wing): Spec {
     keep: [],
     extras: (k) => {
       if (w.south === 'balcony') balconies(k, f.x0, f.x1, f.z1, 1, w.floors, !!w.gables, ochre);
+      // the recessed slot in the window column of the second bay from the wing's outer end (front-e: east; others: west)
+      if (w.slot) { const n = Math.max(1, Math.round((f.x1 - f.x0) / 7.8)), b = (f.x1 - f.x0) / n, u = w.slot === 'x1' ? f.x1 - b + b * 0.13 : f.x0 + b + b * 0.13; slot(k, u, f.z1, 1, w.floors, ochre); }
       if (w.north === 'balcony') balconies(k, f.x0, f.x1, f.z0, -1, w.floors, !!w.gables, ochre);
       // the stacked small balconies on a balcony end (the west stair end, R04)
       if (w.ends === 'balcony') for (let fl = 1; fl < w.floors; fl++) { const y = 0.4 + fl * ST, zm = (f.z0 + f.z1) / 2;
@@ -215,16 +230,34 @@ const entrance: Spec = {
     parts.push([box(-1.6, 1.6, 0.4, 3.0, z - 2.5, z - 2.4), '#2e2a26'], [box(-0.03, 0.03, 0.4, 3.0, z - 2.42, z - 2.36), '#8a7d6a']);
     k.signs.push({ text: 'MAIN BLOCK', x: 0, y: 3.35, z: z - 0.68, ry: 0, w: 2.2, colors: ['#f4f1ea', '#203a78'] });
     for (const x of [-2.1, 2.1]) parts.push([new THREE.CylinderGeometry(0.35, 0.3, 0.5, 12).translate(x, 0.65, z - 0.5), '#b0583a']);
-    // the pediment: a peaked pale gable over the bay, its inner arch, UG EVANDY HALL in blue
-    const pw = 4.1, ph = 3.6, zp = z - 0.3;
-    parts.push([prism([[-pw, zp], [pw, zp], [pw, zp - 0.5], [-pw, zp - 0.5]], t, t + 1.4), CREAM]);
-    const gab = new THREE.Shape([new THREE.Vector2(-pw, 0), new THREE.Vector2(pw, 0), new THREE.Vector2(0, ph)]);
-    parts.push([new THREE.ExtrudeGeometry(gab, { depth: 0.5, bevelEnabled: false }).translate(0, t + 1.4, zp - 0.5), CREAM]);
-    parts.push([new THREE.CircleGeometry(2.3, 20, 0, Math.PI).translate(0, t - 0.2, zp + 0.02), '#e8dcc2'], [new THREE.TorusGeometry(2.3, 0.14, 4, 20, Math.PI).translate(0, t - 0.2, zp + 0.05), '#f5efe2']);
-    parts.push([strip([[-pw - 0.1, zp + 0.05], [0, zp + 0.05]], t + 1.4, t + 1.55, 0.08), '#f5efe2']);
-    k.signs.push({ text: 'EVANDY', x: 0, y: t + 1.55, z: zp + 0.04, ry: 0, w: 4.4, colors: ['#efe6d2', '#1f4fb0'] });
-    k.signs.push({ text: 'UG', x: -2.9, y: t + 0.75, z: zp + 0.04, ry: 0, w: 0.85, colors: ['#efe6d2', '#1f4fb0'] });
-    k.signs.push({ text: 'HALL', x: 2.9, y: t + 0.75, z: zp + 0.04, ry: 0, w: 1.3, colors: ['#efe6d2', '#1f4fb0'] });
+    // the pediment over the column pairs (R08, R03, R18): a pale pentagon (short upright sides, a peak), on it a white
+    // semicircular band carrying EVANDY letter by letter along its curve, UG and HALL at the band's two feet, the
+    // shaded half-round recess inside the band; drawn as one picture on the pediment's face, the solid behind it
+    const pw = 4.1, pu = 1.4, ph = 4.3, zp = z - 0.3;
+    const pent = new THREE.Shape([new THREE.Vector2(-pw, 0), new THREE.Vector2(pw, 0), new THREE.Vector2(pw, pu), new THREE.Vector2(0, ph), new THREE.Vector2(-pw, pu)]);
+    parts.push([new THREE.ExtrudeGeometry(pent, { depth: 0.6, bevelEnabled: false }).translate(0, t, zp - 0.6), CREAM]);
+    parts.push([strip([[-pw - 0.1, zp + 0.06], [pw + 0.1, zp + 0.06]], t - 0.2, t, 0.12), '#f5efe2']);
+    { const W = 1024, H = Math.round((1024 * ph) / (2 * pw)), sx = W / (2 * pw), cx = W / 2, by = H - 2;
+      const tex = canvas(W, H, (g) => {
+        g.clearRect(0, 0, W, H);
+        g.beginPath(); g.moveTo(0, by); g.lineTo(W, by); g.lineTo(W, by - pu * sx); g.lineTo(cx, by - ph * sx); g.lineTo(0, by - pu * sx); g.closePath();
+        g.fillStyle = '#efe6d2'; g.fill(); g.strokeStyle = '#f7f2e6'; g.lineWidth = 10; g.stroke();
+        const R0 = 2.05 * sx, R1 = 2.9 * sx, oy = by - 0.05 * sx;
+        g.beginPath(); g.arc(cx, oy, R1, Math.PI, 0); g.arc(cx, oy, R0, 0, Math.PI, true); g.closePath(); g.fillStyle = '#fbf8f1'; g.fill();
+        g.lineWidth = 4; g.strokeStyle = 'rgba(150,135,110,0.5)'; g.beginPath(); g.arc(cx, oy, R1, Math.PI, 0); g.stroke(); g.beginPath(); g.arc(cx, oy, R0, Math.PI, 0); g.stroke();
+        const gr = g.createLinearGradient(0, oy - R0, 0, oy); gr.addColorStop(0, '#d6c9ad'); gr.addColorStop(1, '#efe6d2');
+        g.beginPath(); g.arc(cx, oy, R0 - 6, Math.PI, 0); g.closePath(); g.fillStyle = gr; g.fill();
+        g.beginPath(); g.arc(cx, oy, 1.55 * sx, Math.PI, 0); g.strokeStyle = '#f6f0e3'; g.lineWidth = 14; g.stroke();
+        g.fillStyle = '#1f4fb0'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = `700 ${Math.round(0.62 * sx)}px Sora, system-ui, sans-serif`;
+        const Rm = (R0 + R1) / 2, letters = 'EVANDY';
+        letters.split('').forEach((ch, i) => { const a = Math.PI * (0.78 - (i * 0.56) / (letters.length - 1)); g.save(); g.translate(cx + Math.cos(a) * Rm, oy - Math.sin(a) * Rm); g.rotate(Math.PI / 2 - a); g.fillText(ch, 0, 0); g.restore(); });
+        g.font = `700 ${Math.round(0.4 * sx)}px Sora, system-ui, sans-serif`;
+        for (const [txt, a] of [['UG', Math.PI * 0.91], ['HALL', Math.PI * 0.095]] as [string, number][]) { g.save(); g.translate(cx + Math.cos(a) * Rm, oy - Math.sin(a) * Rm); g.rotate(Math.PI / 2 - a); g.fillText(txt, 0, 0); g.restore(); }
+      });
+      const face = new THREE.Mesh(new THREE.PlaneGeometry(2 * pw, ph).translate(0, t + ph / 2, zp + 0.02), new THREE.MeshStandardMaterial({ map: tex, transparent: true, alphaTest: 0.5, roughness: 0.85 }));
+      face.userData.noCollide = true; k.meshes.push(face); }
+    // the column capitals under the pediment
+    for (const x of [-3.5, -2.85, 2.85, 3.5]) parts.push([box(x - 0.36, x + 0.36, t - 0.25, t, z - 0.71, z + 0.01), '#f5efe2']);
     k.plain.push(...parts);
     // the bay's outer walls: solid to the bike (it stands between the two mapped wing outlines)
     const [cx, cz] = ENTRY.c, hw = ENTRY.w / 2, hd = ENTRY.d / 2;
@@ -264,28 +297,66 @@ function flatPlaneLocal(k: Kit, pts: P2[], y: number, mat: THREE.Material, ox: n
 
 // ---------- the commercial block ----------
 const sf = fit(SHOPS.quad);
+/** the commercial block's plain sides and back (R11, P05: blank cream walls, no windows) */
+const SHOP_BLANK: Style = { bay: 6, up: [], ground: [], draw: (g) => { g.fillStyle = '#efe6d2'; g.fillRect(0, 0, 256, 512); speckle(g, 0, 0, 256, 512, 700, ['#e9dfca', '#f3ebd9']); g.fillStyle = 'rgba(150,130,100,0.25)'; g.fillRect(0, 300, 256, 2); } };
+/** its front behind the walkway and the gallery: shopfronts with folding grilles below, the gallery's glazing above */
+const SHOP: Style = {
+  bay: 4, up: [[30, 40, 196, 170]], ground: [[30, 50, 196, 180]],
+  draw: (g) => {
+    g.fillStyle = '#f1e2b5'; g.fillRect(0, 0, 256, 512);
+    window_(g, [26, 40, 204, 176], '#e9dcc0', 3, 0);
+    g.fillStyle = '#37393c'; g.fillRect(26, 300, 204, 196);
+    g.fillStyle = '#b39a5e'; for (let x = 30; x < 228; x += 9) g.fillRect(x, 300, 3, 196);
+    for (let y = 312; y < 496; y += 30) { g.fillStyle = 'rgba(179,154,94,0.8)'; for (let x = 30; x < 228; x += 18) { g.fillRect(x, y, 9, 2); g.fillRect(x + 9, y + 15, 9, 2); } }
+    g.fillStyle = '#efe6d2'; g.fillRect(0, 0, 10, 512); g.fillRect(246, 0, 10, 512);
+  },
+};
 const shops: Spec = {
-  name: 'Evandy commercial block', axis: sf.axis, origin: sf.c, storey: 3.3, style: SHOP, roofColor: '#c4633a', fascia: '#efe7d6', pitch: 0.45,
+  name: 'Evandy commercial block', axis: sf.axis, origin: sf.c, storey: 3.3, style: SHOP_BLANK, roofColor: '#c4633a', fascia: '#efe7d6', pitch: 0.45,
   replaces: [sf.c],
-  blocks: [{ x0: sf.x0, x1: sf.x1, z0: sf.z0, z1: sf.z1 - 2.2, floors: 2, faces: { x0: PLAIN, x1: PLAIN, z0: PLAIN } }],
+  // the ground floor set back 2.4 m behind the walkway; the main roof is built here (gable ends, R11, P05)
+  blocks: [{ x0: sf.x0, x1: sf.x1, z0: sf.z0, z1: sf.z1 - 2.4, floors: 2, roof: 'none', faces: { z1: SHOP } }],
   keep: [],
   extras: (k) => {
-    const z = sf.z1, zw = sf.z1 - 2.2, y1 = 0.4 + 3.3, t = 0.4 + 2 * 3.3 + 0.4, parts: Part[] = [];
-    // the raised threshold, the gallery floor, its light gold railing, the round cream columns
-    parts.push([box(sf.x0, sf.x1, 0, 0.35, zw, z), '#cfc2a6'], [box(sf.x0, sf.x1, y1 - 0.25, y1, zw, z), CREAM]);
-    parts.push([box(sf.x0 + 0.3, sf.x1 - 0.3, y1, y1 + 0.35, z - 0.12, z), CREAM], [box(sf.x0 + 0.3, sf.x1 - 0.3, y1 + 1.0, y1 + 1.05, z - 0.08, z - 0.02), GOLD]);
-    for (let x = sf.x0 + 0.6; x < sf.x1 - 0.4; x += 0.9) { parts.push([box(x - 0.02, x + 0.02, y1 + 0.35, y1 + 1.0, z - 0.07, z - 0.03), GOLD]); const r = new THREE.TorusGeometry(0.22, 0.02, 4, 10).translate(x + 0.45, y1 + 0.67, z - 0.05); parts.push([r, GOLD]); }
-    const cols = [-10.6, -6.8, -2.2, -1.2, 1.2, 2.2, 6.8, 10.6].filter((x) => x > sf.x0 && x < sf.x1);
-    for (const x of cols) { parts.push([new THREE.CylinderGeometry(0.2, 0.22, t - 0.4, 12).translate(x, (t - 0.4) / 2, z - 0.3), '#efe2b8']); const [wx, wz] = [sf.c[0] + x * sf.axis[0] - (z - 0.3) * sf.axis[1], sf.c[1] + x * sf.axis[1] + (z - 0.3) * sf.axis[0]]; SOLIDS.add(wx, wz, 0.3); }
-    // the roof carried out over the gallery, and the central gable with its arch
-    k.roof.quad([sf.x1 + 0.8, t, z + 0.8], [sf.x0 - 0.8, t, z + 0.8], [sf.x0 - 0.8, t + 1.0, zw], [sf.x1 + 0.8, t + 1.0, zw]);
-    const gw = 2.6, gh = 2.3;
-    parts.push([tri2([-gw, t, z + 0.8], [gw, t, z + 0.8], [0, t + gh, z + 0.8]), CREAM], [tri2([gw, t, z + 0.8], [-gw, t, z + 0.8], [0, t + gh, z + 0.8]), CREAM]);
-    k.roof.quad([-gw - 0.3, t, z + 1.0], [-gw - 0.3, t, zw - 1], [0, t + gh + 0.2, zw - 1], [0, t + gh + 0.2, z + 1.0]);
-    k.roof.quad([gw + 0.3, t, zw - 1], [gw + 0.3, t, z + 1.0], [0, t + gh + 0.2, z + 1.0], [0, t + gh + 0.2, zw - 1]);
-    parts.push([new THREE.TorusGeometry(1.15, 0.16, 4, 14, Math.PI).translate(0, y1 + 1.6, z - 0.3), CREAM]);
-    // the shop boards (neutral: their text is not legible in the sources)
-    for (const [x, c] of [[-8.5, '#3a3d40'], [-4.4, '#f1ece2'], [4.4, '#2f6e3a'], [8.6, '#e7dfe9']] as [number, string][]) if (x > sf.x0 && x < sf.x1) parts.push([box(x - 1.1, x + 1.1, y1 + 1.3, y1 + 2.2, z - 0.02, z + 0.04), c]);
+    const z = sf.z1, zw = sf.z1 - 2.4, y1 = 0.4 + 3.3, t = 0.4 + 2 * 3.3 + 0.4, parts: Part[] = [];
+    const Z0 = sf.z0 - 0.7, Z1 = z + 0.9, X0 = sf.x0 - 0.5, X1 = sf.x1 + 0.5, zr = (Z0 + Z1) / 2, rise = ((Z1 - Z0) / 2) * 0.45;
+    // the raised walkway with its step, the gallery floor over it (cantilevered: no columns along it, R06, R13)
+    parts.push([box(sf.x0, sf.x1, 0, 0.35, zw, z + 0.2), '#cfc2a6'], [box(sf.x0, sf.x1, 0, 0.18, z + 0.2, z + 0.6), '#cfc2a6']);
+    parts.push([box(sf.x0, sf.x1, y1 - 0.3, y1, zw, z - 0.55), CREAM]);
+    // the gallery's front: a solid white band at the floor, the light gold railing with its looped panels on it
+    parts.push([box(sf.x0 + 0.1, sf.x1 - 0.1, y1 - 0.75, y1 + 0.35, z - 0.75, z - 0.55), '#f6f1e6']);
+    parts.push([box(sf.x0 + 0.1, sf.x1 - 0.1, y1 + 1.05, y1 + 1.1, z - 0.68, z - 0.62), GOLD], [box(sf.x0 + 0.1, sf.x1 - 0.1, y1 + 0.4, y1 + 0.44, z - 0.68, z - 0.62), GOLD]);
+    for (let x = sf.x0 + 0.1; x < sf.x1 - 0.1; x += 1.0) {
+      parts.push([box(x - 0.025, x + 0.025, y1 + 0.35, y1 + 1.1, z - 0.68, z - 0.62), GOLD]);
+      parts.push([new THREE.BoxGeometry(0.02, 0.85, 0.02).rotateZ(0.88).translate(x + 0.5, y1 + 0.75, z - 0.65), GOLD], [new THREE.BoxGeometry(0.02, 0.85, 0.02).rotateZ(-0.88).translate(x + 0.5, y1 + 0.75, z - 0.65), GOLD]);
+      parts.push([new THREE.TorusGeometry(0.13, 0.015, 4, 10).translate(x + 0.5, y1 + 0.75, z - 0.65), GOLD]);
+    }
+    // the four round cream columns: two pairs at the centre, at the front edge of the walkway, in front of the gallery
+    // band and the shopfronts, from the walkway up to the eaves
+    for (const x of [-2.45, -1.75, 1.75, 2.45]) {
+      parts.push([new THREE.CylinderGeometry(0.21, 0.23, t - 0.35, 14).translate(x, 0.35 + (t - 0.35) / 2, z - 0.1), '#f1e3b8'], [box(x - 0.3, x + 0.3, t - 0.25, t, z - 0.4, z + 0.2), '#f6f1e6']);
+      const [wx, wz] = [sf.c[0] + x * sf.axis[0] - (z - 0.1) * sf.axis[1], sf.c[1] + x * sf.axis[1] + (z - 0.1) * sf.axis[0]]; SOLIDS.add(wx, wz, 0.3);
+    }
+    // the board between the column pairs on the gallery front (R13: a white board with a pink script name)
+    k.signs.push({ text: 'Waffle', x: 0, y: y1 + 0.75, z: z - 0.5, ry: 0, w: 2.6, colors: ['#f4f0f2', '#b0336e'] });
+    parts.push([box(-1.42, 1.42, y1 + 0.2, y1 + 1.3, z - 0.56, z - 0.52), '#6f6a6e']);
+    // the main roof: one long gabled roof parallel to the front, carried out over the gallery; gable walls at the ends
+    k.roof.c = new THREE.Color('#c4633a');
+    k.roof.quad([X1, t, Z1], [X0, t, Z1], [X0, t + rise, zr], [X1, t + rise, zr]);
+    k.roof.quad([X0, t, Z0], [X1, t, Z0], [X1, t + rise, zr], [X0, t + rise, zr]);
+    for (const x of [sf.x0, sf.x1]) parts.push([tri2([x, t, sf.z0], [x, t, zw], [x, t + rise * 0.9, zr]), '#efe6d2'], [tri2([x, t, zw], [x, t, sf.z0], [x, t + rise * 0.9, zr]), '#efe6d2']);
+    // the boarded cream soffit under the eaves, the fascia with its row of shallow arches between brackets (R06)
+    parts.push([box(X0, X1, t - 0.08, t, zw, Z1), '#e7d7a8'], [box(X0, X1, t - 0.45, t, Z1 - 0.12, Z1), '#f3ece0']);
+    for (let x = sf.x0 + 1.6; x < sf.x1 - 1.0; x += 3.2) { if (Math.abs(x) < 3.2) continue; parts.push([new THREE.TorusGeometry(1.35, 0.1, 4, 12, Math.PI).scale(1, 0.3, 1).translate(x, t - 0.45, z - 0.2), '#f6f1e6'], [box(x - 1.65, x - 1.45, t - 1.0, t, z - 0.5, z + 0.1), '#f6f1e6']); }
+    // the central front gable over the column pairs: its roof slopes, the plain cream gable face with the arch springing
+    // from the column pairs
+    const gw = 3.1, gh = 2.4, zf = z + 0.5, zb = zr;
+    k.roof.quad([-gw - 0.35, t, zf + 0.2], [-gw - 0.35, t, zb], [0, t + gh + 0.15, zb], [0, t + gh + 0.15, zf + 0.2]);
+    k.roof.quad([gw + 0.35, t, zb], [gw + 0.35, t, zf + 0.2], [0, t + gh + 0.15, zf + 0.2], [0, t + gh + 0.15, zb]);
+    parts.push([tri2([-gw, t, zf], [gw, t, zf], [0, t + gh, zf]), '#efe6d2'], [tri2([gw, t, zf], [-gw, t, zf], [0, t + gh, zf]), '#efe6d2']);
+    const arch = new THREE.Shape([new THREE.Vector2(-gw, 0), new THREE.Vector2(gw, 0), new THREE.Vector2(gw, 2.6), new THREE.Vector2(-gw, 2.6)]);
+    arch.holes.push(new THREE.Path().moveTo(-1.45, 0).lineTo(1.45, 0).lineTo(1.45, 0.9).absarc(0, 0.9, 1.45, 0, Math.PI, false).lineTo(-1.45, 0));
+    parts.push([new THREE.ExtrudeGeometry(arch, { depth: 0.35, bevelEnabled: false }).translate(0, t - 2.6, zf - 0.35), '#f3ece0']);
     k.plain.push(...parts);
     mergeMeshes(k);
   },
@@ -351,7 +422,13 @@ const site: Spec = {
       k.roof.quad([x1 + e, h, z0 - e], [x0 - e, h, z0 - e], [xm - 0.4, rt, zm], [xm + 0.4, rt, zm]);
       k.roof.quad([x0 - e, h, z0 - e], [x0 - e, h, z1 + e], [xm - 0.4, rt, zm], [xm - 0.4, rt, zm]);
       k.roof.quad([x1 + e, h, z1 + e], [x1 + e, h, z0 - e], [xm + 0.4, rt, zm], [xm + 0.4, rt, zm]);
-      parts.push([box(x0 + 0.6, x0 + 1.5, 0.3, 2.3, z0 - 0.04, z0), '#3c3d3a'], [box(x1 - 1.8, x1 - 0.4, 1.0, 2.0, z1, z1 + 0.04), '#2c3034']);
+      // the door on the court side, a louvred window on each of the other three walls (R11, P05, P06), sills under them
+      parts.push([box(x0 + 0.6, x0 + 1.5, 0.3, 2.3, z0 - 0.04, z0), '#3c3d3a']);
+      const win = (a: P2, b: P2) => { const cx = (a[0] + b[0]) / 2, cz = (a[1] + b[1]) / 2, along = a[1] === b[1];
+        parts.push([along ? box(cx - 0.6, cx + 0.6, 1.0, 2.0, cz - 0.04, cz + 0.04) : box(cx - 0.04, cx + 0.04, 1.0, 2.0, cz - 0.6, cz + 0.6), '#2c3034']);
+        for (let y = 1.08; y < 2.0; y += 0.13) parts.push([along ? box(cx - 0.56, cx + 0.56, y, y + 0.03, cz - 0.05, cz + 0.05) : box(cx - 0.05, cx + 0.05, y, y + 0.03, cz - 0.56, cz + 0.56), '#6b6f73']);
+        parts.push([along ? box(cx - 0.7, cx + 0.7, 0.92, 1.0, cz - 0.1, cz + 0.1) : box(cx - 0.1, cx + 0.1, 0.92, 1.0, cz - 0.7, cz + 0.7), '#e3d9c6']); };
+      win([x0 + 2.2, z1], [x1, z1]); win([x0, z0], [x0, z1]); win([x1, z0], [x1, z1]); win([x0 + 1.8, z0], [x1 - 0.2, z0]);
       parts.push([box(x0 - 0.2, x0 + 2.2, 0, 0.3, z0 - 1.6, z0), '#e4e0d6'], [box(x0 - 0.2, x0 + 2.2, 0, 0.15, z0 - 2.1, z0 - 1.6), '#e4e0d6']); }
     // the notice shelter: thin pale frame, weathered curved roof, the board, by the fence
     { const [x0, x1, z0, z1] = SHELTER, h = 2.5;
