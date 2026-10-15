@@ -93,9 +93,9 @@ const PL = 0.45, ST = 3.15, FLOORS = 4;
 const BAND = PL + FLOORS * ST; // 13.05: top of the last storey, then a plain eave band
 const WALL = BAND + 0.45;
 /** eave overhang, ridge height, window bay */
-const OV = 0.9, RIDGE = 18.2, BAY = 3.6;
+const OV = 0.9, RIDGE = 18.2, BAY = 7.2;
 /** entrance pavilion: half width, how far it stands forward, gable eave half width and pitch */
-const PW = 5, PP = 2.2, GW = 5.6, GP = 0.75;
+const PW = 5, PP = 2.2, GW = 5.6, GP = 0.42;
 const GA = WALL + GW * GP; // gable apex
 /** stair towers: half width, how far they stand forward, distance from the middle as a share of the half length */
 const TW = 2.25, TP = 1.2, TX = 0.53;
@@ -170,79 +170,65 @@ export function inDiasporaHall(x: number, z: number, pad = 0) {
 }
 
 // ---------- textures ----------
-/** window glass in a 256 x 256 storey cell (upper floors), and the ground floor's louvred windows */
-const UP_WIN = [40, 32, 118, 122] as const, GROUND_WIN = [40, 34, 176, 176] as const;
-
 /**
- * One window bay (3.6 m) of the facade: the top half is an upper storey (a recessed balcony
- * behind a solid white parapet, a timber-framed window at the back, white piers and a slab
- * band), the bottom half the ground storey (dark timber louvred windows).
+ * One facade module (7.2 m) from the owner's photos of Jean Nelson Aka and Kwapong (2026-10-15): on the upper storeys a
+ * PAIR of recessed balconies (a low solid parapet with two short slots and a slim dark rail, the back wall with a door
+ * and a window), then a plain wall section with two small square windows and short horizontal slots under them; on the
+ * ground storey two dark timber lattice grille windows under the balconies and two small square windows in the wall
+ * section. 256 px across = 7.2 m; each storey 256 px tall = 3.15 m.
  */
+const MOD = 7.2, PXM = 256 / MOD, PYM = 256 / 3.15;
+const mx_ = (m: number) => m * PXM, my_ = (h: number) => 256 - h * PYM;
+/** balconies [x0, x1] in metres within the module; the wall section is the rest */
+const BALC: [number, number][] = [[0.25, 2.75], [2.95, 5.45]];
+const SMALL: [number, number][] = [[5.8, 6.35], [6.55, 7.1]];
+/** lit window rectangles in atlas px (upper storey, ground storey) for the night lights */
+const UP_WIN = [mx_(1.6), my_(2.1), mx_(0.9), mx_(0) + PYM * 1.1] as const, GROUND_WIN = [mx_(0.45), 256 - PYM * 2.6, mx_(2.1), PYM * 2.0] as const;
+
 const facadeAtlas = () =>
   canvas(256, 512, (g) => {
-    // warm cream render (the owner's photos)
-    g.fillStyle = '#f5efe2';
+    // warm cream render
+    g.fillStyle = '#f3ede0';
     g.fillRect(0, 0, 256, 512);
-    speckle(g, 0, 0, 256, 512, 3200, ['#ede6d6', '#faf6ec', '#e8e0cf']);
+    speckle(g, 0, 0, 256, 512, 3200, ['#ebe4d4', '#faf6ec', '#e6dece']);
+    const R = (x0: number, h0: number, x1: number, h1: number, c: string | CanvasGradient, y0 = 0) => { g.fillStyle = c; g.fillRect(mx_(x0), y0 + my_(h1), mx_(x1) - mx_(x0), (h1 - h0) * PYM); };
     // ---- upper storey (y 0..256) ----
-    // the balcony recess between the piers, shaded under the slab above
-    const rec = g.createLinearGradient(0, 0, 0, 232);
-    rec.addColorStop(0, '#6e675d'); rec.addColorStop(0.12, '#a69d90'); rec.addColorStop(1, '#bdb4a6');
-    g.fillStyle = rec;
-    g.fillRect(20, 0, 156, 232);
-    // the wall between balconies: two small square vents (REF-02, REF-15)
-    g.fillStyle = '#26292d';
-    for (const [vx, vy] of [[198, 62], [222, 62], [198, 104], [222, 104]] as [number, number][]) g.fillRect(vx, vy, 16, 16);
-    // the window at the back of the balcony: dark charcoal frame, tinted glass, mullions and a transom
-    const [wx, wy, ww, wh] = UP_WIN;
-    g.fillStyle = '#2b2e33';
-    g.fillRect(wx - 6, wy - 6, ww + 12, wh + 12);
-    const glass = g.createLinearGradient(0, wy, 0, wy + wh);
-    glass.addColorStop(0, '#5d7286'); glass.addColorStop(0.5, '#2e3c4b'); glass.addColorStop(1, '#1d2631');
-    g.fillStyle = glass;
-    g.fillRect(wx, wy, ww, wh);
-    g.fillStyle = 'rgba(255,255,255,0.09)';
-    g.beginPath(); g.moveTo(wx + 20, wy); g.lineTo(wx + 56, wy); g.lineTo(wx + 16, wy + wh); g.lineTo(wx, wy + wh); g.lineTo(wx, wy + 50); g.fill();
-    g.fillStyle = '#2b2e33';
-    for (const x of [wx + ww / 3, wx + (2 * ww) / 3]) g.fillRect(x - 3, wy, 6, wh);
-    g.fillRect(wx, wy + 38, ww, 5);
-    // solid white parapet across the balcony, lit on top, a drip shadow under its coping
-    g.fillStyle = '#f5f2eb';
-    g.fillRect(20, 160, 156, 72);
-    speckle(g, 20, 160, 156, 72, 400, ['#ebe7de', '#ffffff']);
-    g.fillStyle = '#ffffff';
-    g.fillRect(16, 156, 164, 8);
-    g.fillStyle = 'rgba(80,70,60,0.28)';
-    g.fillRect(20, 164, 156, 3);
-    // slab band at the foot of the storey, and a shadow line on the piers' inner edges
-    g.fillStyle = '#f2efe8';
-    g.fillRect(0, 232, 256, 24);
-    g.fillStyle = '#d6cfc2';
-    g.fillRect(0, 232, 256, 2);
-    g.fillStyle = 'rgba(60,50,40,0.18)';
-    g.fillRect(20, 0, 4, 160);
-    g.fillRect(172, 0, 4, 160);
+    for (const [b0, b1] of BALC) {
+      // the recess: back wall in shade, darker under the slab
+      const rec = g.createLinearGradient(0, 0, 0, my_(1.0));
+      rec.addColorStop(0, '#7a7266'); rec.addColorStop(0.15, '#b3aa9b'); rec.addColorStop(1, '#c9c0b0');
+      R(b0, 1.0, b1, 2.85, rec);
+      // a door (blue or brown, as in the photos) and a window at the back
+      R(b0 + 0.25, 1.0, b0 + 1.05, 2.45, b0 < 1 ? '#2d4f86' : '#7a4a32');
+      R(b0 + 1.35, 1.25, b1 - 0.3, 2.2, '#22303d');
+      R(b0 + 1.35, 1.7, b1 - 0.3, 1.74, '#3a3f45');
+      // the solid parapet with two short slots, its slim dark rail on top
+      R(b0, 0, b1, 1.0, '#efe8da');
+      R(b0 + 0.5, 0.55, b0 + 1.0, 0.62, '#3b3a37'); R(b1 - 1.0, 0.55, b1 - 0.5, 0.62, '#3b3a37');
+      R(b0, 1.0, b1, 1.06, '#2a2b2d');
+      // shadow down the recess's sides
+      R(b0, 1.06, b0 + 0.08, 2.85, 'rgba(60,50,40,0.35)'); R(b1 - 0.08, 1.06, b1, 2.85, 'rgba(60,50,40,0.25)');
+    }
+    // the wall section: two small square windows and two short slots under them
+    for (const [w0, w1] of SMALL) {
+      R(w0, 1.55, w1, 2.1, '#2c3035'); R(w0 + 0.04, 1.59, w1 - 0.04, 2.06, '#3a5468');
+      R(w0 + 0.05, 1.0, w1 - 0.05, 1.07, '#4a4844');
+    }
+    // the slab ledge at the foot of the storey
+    R(0, 0, MOD, 0.12, '#e7e0d1'); R(0, 0.12, MOD, 0.14, 'rgba(70,60,50,0.3)');
     // ---- ground storey (y 256..512) ----
-    const [gx, gy, gw, gh] = GROUND_WIN;
-    const y0 = 256;
-    g.fillStyle = '#b3aa9c';
-    g.fillRect(gx - 8, y0 + gy - 8, gw + 16, gh + 16);
-    g.fillStyle = '#6b4a2f';
-    g.fillRect(gx - 3, y0 + gy - 3, gw + 6, gh + 6);
-    g.fillStyle = '#4a3220';
-    g.fillRect(gx, y0 + gy, gw, gh);
-    // louvre slats in two leaves either side of a centre post
-    g.fillStyle = '#7d5a3b';
-    for (let y = y0 + gy + 6; y < y0 + gy + gh - 4; y += 9) { g.fillRect(gx + 4, y, gw / 2 - 8, 3); g.fillRect(gx + gw / 2 + 4, y, gw / 2 - 8, 3); }
-    g.fillStyle = '#6b4a2f';
-    g.fillRect(gx + gw / 2 - 3, y0 + gy, 6, gh);
-    // sill and the slab line at the top of the ground storey
-    g.fillStyle = '#ffffff';
-    g.fillRect(gx - 12, y0 + gy + gh + 6, gw + 24, 8);
-    g.fillStyle = 'rgba(70,60,50,0.3)';
-    g.fillRect(gx - 12, y0 + gy + gh + 14, gw + 24, 3);
-    g.fillStyle = '#f2efe8';
-    g.fillRect(0, y0, 256, 14);
+    const Y = 256;
+    for (const [l0, l1] of [[0.45, 2.55], [3.15, 5.25]] as [number, number][]) {
+      // dark timber lattice grille window
+      R(l0 - 0.08, 0.5, l1 + 0.08, 2.6, '#3d2a1f', Y);
+      R(l0, 0.58, l1, 2.52, '#2a1d16', Y);
+      g.fillStyle = '#5e3f2c';
+      for (let x = l0; x <= l1 + 0.01; x += 0.35) g.fillRect(mx_(x) - 1, Y + my_(2.52), 2.5, (2.52 - 0.58) * PYM);
+      for (let h = 0.58; h <= 2.53; h += 0.32) g.fillRect(mx_(l0), Y + my_(h) - 1, mx_(l1) - mx_(l0), 2.5);
+      R(l0 - 0.12, 0.42, l1 + 0.12, 0.5, '#e7e0d1', Y);
+    }
+    for (const [w0, w1] of SMALL) { R(w0, 1.6, w1, 2.15, '#2c3035', Y); R(w0 + 0.04, 1.64, w1 - 0.04, 2.11, '#3a5468', Y); }
+    R(0, 2.95, MOD, 3.15, '#e7e0d1', Y);
   });
 
 /** Which windows glow after dark: one 32 px cell per bay and storey, the bottom row is the ground storey. */
