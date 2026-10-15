@@ -45,3 +45,10 @@ pavilion. The lot and pavilion land on the game's own outlines.
   tree on the back aisle, the drain across the plot's trail).
 - Stuck scan: the only blocked cells beside roads are the open channel's rims (intended) and the N4's west verge beside
   road 761, from earlier work.
+
+## Follow-up (batch 160, the owner's notes)
+- The display over the portal is now an LED screen (`screen.jpg`). It plays a ten-second aerial loop of the game's own
+  campus: slow sweeps over the Balme Library, Commonwealth Hall, the Great Hall and the Medical Centre. The loop is
+  rendered from the game with `tools/preview/flyover.mjs` (120 frames at 12 fps, 480 × 128), encoded to
+  `public/video/okgate-aerial.webm` and `.mp4`, muted and repeating. A still picture shows until the video plays.
+- The footways along the drive are grey concrete pavement with joints, not tan.

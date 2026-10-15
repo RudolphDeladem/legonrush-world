@@ -29,19 +29,37 @@ const gSolid = (u: number, v: number, r: number) => { const [x, z] = gWorld(u, v
 const gWall = (a: P2, b: P2) => { const [x0, z0] = gWorld(...a), [x1, z1] = gWorld(...b); wallSolids(x0, z0, x1, z1, 0.3); };
 
 /** the fascia's fret grille panel and the display's picture */
-let FRET: THREE.MeshStandardMaterial | null = null, SCREEN: THREE.MeshStandardMaterial | null = null;
+let FRET: THREE.MeshStandardMaterial | null = null;
 const fretMat = () => (FRET ??= new THREE.MeshStandardMaterial({ roughness: 0.8, map: canvas(64, 64, (g) => {
   g.fillStyle = '#e9e7e1'; g.fillRect(0, 0, 64, 64); g.fillStyle = '#3a3330'; g.fillRect(4, 4, 56, 56);
   g.strokeStyle = '#e9e7e1'; g.lineWidth = 3;
   for (const [a, b, c, d] of [[12, 12, 52, 12], [52, 12, 52, 52], [52, 52, 12, 52], [12, 52, 12, 20], [12, 20, 44, 20], [44, 20, 44, 44], [44, 44, 20, 44], [20, 44, 20, 28], [20, 28, 36, 28], [36, 28, 36, 36]]) { g.beginPath(); g.moveTo(a, b); g.lineTo(c, d); g.stroke(); }
 }) }));
-const screenMat = () => (SCREEN ??= new THREE.MeshStandardMaterial({ roughness: 0.4, emissive: new THREE.Color('#5a6a5a'), emissiveIntensity: 0.6, map: canvas(256, 64, (g) => {
-  // a bright picture (its content changes: no words copied)
-  const gr = g.createLinearGradient(0, 0, 256, 64); gr.addColorStop(0, '#6aa84f'); gr.addColorStop(0.45, '#e8c35a'); gr.addColorStop(1, '#4f86c6');
-  g.fillStyle = gr; g.fillRect(0, 0, 256, 64);
-  for (let i = 0; i < 40; i++) { g.fillStyle = ['#d0574d', '#f2f2f2', '#3d7f3a', '#f0a830'][i % 4]; g.fillRect((i * 37) % 250, 8 + ((i * 13) % 44), 10, 6); }
-  g.strokeStyle = '#1b1b1b'; g.lineWidth = 4; g.strokeRect(0, 0, 256, 64);
-}) }));
+/** the display over the portal: an LED screen playing a ten-second aerial loop of the game's own campus (the Balme
+ *  Library, Commonwealth Hall, the Great Hall, the Medical Centre; rendered from the game: public/video/okgate-aerial.*),
+ *  muted and repeating; a still picture until the video plays (the owner: "it is a screen, not just a board") */
+let SCREEN: THREE.MeshBasicMaterial | null = null;
+const screenMat = () => {
+  if (SCREEN) return SCREEN;
+  const still = canvas(256, 68, (g) => {
+    const gr = g.createLinearGradient(0, 0, 256, 68); gr.addColorStop(0, '#5f9a4a'); gr.addColorStop(0.5, '#d9c08a'); gr.addColorStop(1, '#6d9ac4');
+    g.fillStyle = gr; g.fillRect(0, 0, 256, 68);
+    for (let i = 0; i < 30; i++) { g.fillStyle = i % 3 ? '#c0573f' : '#efe9dc'; g.fillRect((i * 37) % 240, 10 + ((i * 17) % 44), 12, 7); }
+  });
+  SCREEN = new THREE.MeshBasicMaterial({ map: still, toneMapped: false });
+  if (typeof document !== 'undefined') {
+    const v = document.createElement('video');
+    v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'auto'; v.crossOrigin = 'anonymous';
+    for (const [f, type] of [['okgate-aerial.webm', 'video/webm'], ['okgate-aerial.mp4', 'video/mp4']]) { const src = document.createElement('source'); src.src = `${import.meta.env.BASE_URL}video/${f}`; src.type = type; v.appendChild(src); }
+    const tex = new THREE.VideoTexture(v); tex.colorSpace = THREE.SRGBColorSpace;
+    const m = SCREEN;
+    v.addEventListener('playing', () => { m.map = tex; m.needsUpdate = true; }, { once: true });
+    // (muted video may start at once; where a browser waits for a first touch, it starts then)
+    const go = () => { v.play().catch(() => undefined); };
+    go(); addEventListener('pointerdown', go, { once: true }); addEventListener('keydown', go, { once: true });
+  }
+  return SCREEN;
+};
 /** a flat panel facing ±U (side: +1 east, -1 west) on the gate's approach face, model frame */
 const facePanel = (k: Kit, mat: THREE.Material, u: number, side: number, v0: number, v1: number, y0: number, y1: number) => {
   const g = new THREE.PlaneGeometry(v1 - v0, y1 - y0).rotateY(side > 0 ? Math.PI / 2 : -Math.PI / 2).translate(u + side * 0.02, (y0 + y1) / 2, (v0 + v1) / 2);
@@ -84,7 +102,9 @@ const gatehouse: Spec = {
     for (const s of [-1, 1]) {
       const u = s > 0 ? U1 : U0;
       for (const v of [-12.4, -10.9, -9.4, 9.0, 10.3]) facePanel(k, fretMat(), u, s, v - 0.55, v + 0.55, W + 0.2, W + 1.1);
-      facePanel(k, screenMat(), u, s, -3.6, 2.6, W + 0.12, B - 0.12);
+      // the screen in its dark frame, the video's shape (3.75 : 1) over the portal
+      p.push([box(Math.min(u - s * 0.06, u + s * 0.01), Math.max(u - s * 0.06, u + s * 0.01), W + 0.06, B - 0.06, -2.62, 1.62), '#1d1f22']);
+      facePanel(k, screenMat(), u, s, -2.5, 1.5, W + 0.12, B - 0.12);
     }
     // ---- the brown tiled hipped roof on broad eaves ----
     k.roof.c = new THREE.Color('#9a4a33');
@@ -125,7 +145,13 @@ const edges: Spec = {
     const nK = (x: number, z: number) => inGate(x) || nearSideRoad(x, z, 0.5);
     for (const s of [-1, 1]) {
       band(c, WALK.x0, WALK.x1, s * (h + 0.02), s * (h + 0.22), 0, 0.14, '#cbc5b6', nK);
-      band(c, WALK.x0, WALK.x1, s * (h + 0.22), s * (h + 0.22 + WALK.w), 0.03, 0.1, '#b98a5e', (x, z) => (s < 0 && inGate(x)) || nearSideRoad(x, z, 0.5));
+      band(c, WALK.x0, WALK.x1, s * (h + 0.22), s * (h + 0.22 + WALK.w), 0.03, 0.1, '#bcb9b1', (x, z) => (s < 0 && inGate(x)) || nearSideRoad(x, z, 0.5));
+    }
+    // the pavement's joints across both footways (grey concrete slabs, S02/S04)
+    for (const s of [-1, 1]) for (let x = WALK.x0; x <= WALK.x1; x += 1.2) {
+      const o = s * (h + 0.22 + WALK.w / 2), z = driveZ(x) + o;
+      if ((s < 0 && inGate(x)) || nearSideRoad(x, z, 0.5)) continue;
+      const [lx, lz] = L(x, z); c.push([box(lx - 0.025, lx + 0.025, 0.1, 0.104, lz - WALK.w / 2, lz + WALK.w / 2), '#9a978f']);
     }
     // (the south footway runs on under the gate's walk bay)
     { const d0 = h + 0.22 + WALK.w, d1 = d0 + WALK.drain, skip = (x: number, z: number) => inGate(x) || nearSideRoad(x, z, 1.5);
