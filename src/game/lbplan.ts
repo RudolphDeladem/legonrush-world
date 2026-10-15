@@ -39,8 +39,9 @@ export const xOn = (line: Line, z: number) => {
 };
 export const xWest = (z: number) => xOn(N4_WEST, z);
 export const xEast = (z: number) => xOn(N4_EAST, z);
-/** the carriageways' half widths (mapped: the southbound 6.6 m, the northbound 9.9 m) */
-export const W_HALF = 3.3, E_HALF = 4.95;
+/** the carriageways' half widths (mapped: the southbound 6.6 m, the northbound 9.9 m; the southbound as drawn, 9 m, so
+ *  the median stops at its edge instead of covering its inner lane: the owner's junction brief) */
+export const W_HALF = 4.5, E_HALF = 4.95;
 
 /** the junction box where La Bawaleshie Road and Jubilee Drive cross the N4. The mapped slip lanes and approaches take
  *  up the whole box at their mapped widths, so the signal posts stand where there is ground: on the four outer corners
@@ -62,7 +63,7 @@ export const SIGNALS = {
 };
 
 /** the median between the carriageways: kerbed patchy grass and red earth, young planted trees (Pairs 1, 2, 4, 9, 13) */
-export const MEDIAN = { z0: 905, z1: 1640, gap: [1190, 1262] as [number, number], tree: 19 };
+export const MEDIAN = { z0: 905, z1: 1640, gap: [1194, 1234] as [number, number], tree: 19 };
 
 /** the neighbourhood east of the N4 (Pairs 2, 4, 11, 12, 15-19; Additional References 3 to 6): every footprint here is
  *  built as the local mixed commercial fabric, not the campus template */

@@ -33,6 +33,7 @@ import { Bag, fanPalm, hash, tuft, vnoise, wallSolids } from './enkit';
 import { broadleaf } from './nsiaroad';
 import { drapeAt, groundCover } from './kuffourgarden';
 import { groundShade, weathering } from './shading';
+import { asphaltTexture } from './textures';
 import { medianGrass, pavers, rod, run, strip, wires, type V3 } from './upsa';
 import { inOkKeep, okOwns } from './okplan';
 import {
@@ -552,16 +553,64 @@ const corridor: Spec = {
       }
     }
 
+    // ---------- the junction's paved core (the owner's junction brief, 2026-10-15) ----------
+    // The mapped carriageways are separate ribbons: between them, where they meet the cross roads, the ground showed
+    // through as green triangles and wedges, and the corner drapes painted it pale. The real junction is one open
+    // asphalt area. Here every point of the junction's core that is not road but has road on at least seven of eight
+    // sides within 26 m is the junction's own surface, laid in the roads' asphalt under the roads' paint layer; and the
+    // approaches flare to their real width at the stop lines (the north approach's outer side, the south approach's
+    // outer side: about four to five cars abreast with the carriageway). The corner verges, kerbs and footways stay.
+    const JC = { x0: 958, x1: 1024, z0: 1195, z1: 1233 }, CELL = 0.25;
+    const cgw = Math.round((JC.x1 - JC.x0 + 56) / CELL), cgh = Math.round((JC.z1 - JC.z0 + 56) / CELL), cg = new Float32Array(cgw * cgh);
+    for (let j = 0; j < cgh; j++) for (let i = 0; i < cgw; i++) cg[j * cgw + i] = clearance(JC.x0 - 28 + i * CELL, JC.z0 - 28 + j * CELL);
+    const cl = (x: number, z: number) => { const i = Math.round((x - JC.x0 + 28) / CELL), j = Math.round((z - JC.z0 + 28) / CELL); return i < 0 || j < 0 || i >= cgw || j >= cgh ? 12 : cg[j * cgw + i]; };
+    const enclosed = (x: number, z: number) => {
+      let n = 0;
+      for (let d = 0; d < 8; d++) {
+        const a = (d / 8) * Math.PI * 2, ux = Math.cos(a), uz = Math.sin(a);
+        for (let t = 0.75; t <= 26; t += 0.75) if (cl(x + ux * t, z + uz * t) < 0) { n++; break; }
+      }
+      return n >= 7;
+    };
+    const flare = (x: number, z: number) => {
+      const c = cl(x, z);
+      if (c < -1.5 || c > 4.2 || buildingNear(x, z, 1)) return false;
+      // the south-bound approach from the north: its west side, the last 26 m to the junction
+      // (tapering from nothing to its full 4 m over the first 18 m, so its edge runs at a slant, not in steps)
+      const wN = 4.0 * Math.min(1, Math.max(0, (z - 1172) / 18)), wS = 4.0 * Math.min(1, Math.max(0, (1258 - z) / 18));
+      if (z > 1172 && z < 1197 && x < xWest(z) - W_HALF + 0.2 && x > xWest(z) - W_HALF - wN) return true;
+      // the north-bound approach from the south: its east side, the last 26 m
+      if (z > 1232 && z < 1258 && x > xEast(z) + E_HALF - 0.2 && x < xEast(z) + E_HALF + wS) return true;
+      return false;
+    };
+    // (road points inside the core are included too, so no sliver of ground shows along the ribbons' edges; the roads draw
+    // over it)
+    const junctionPaved = (x: number, z: number) => (x > JC.x0 && x < JC.x1 && z > JC.z0 && z < JC.z1 && enclosed(x, z)) || flare(x, z);
+    {
+      const pos: number[] = [];
+      for (let z = JC.z0 - 30; z < JC.z1 + 30; z += CELL) for (let x = JC.x0 - 8; x < JC.x1 + 8; x += CELL) {
+        if (!junctionPaved(x + CELL / 2, z + CELL / 2)) continue;
+        const q = [[x, z], [x + CELL, z], [x + CELL, z + CELL], [x, z + CELL]].map(([a, b]) => { const [px, pz] = A(a, b); return [px, gh(a, b) + 0.012, pz]; });
+        pos.push(...q[0], ...q[2], ...q[1], ...q[0], ...q[3], ...q[2]);
+      }
+      const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      const uv: number[] = []; for (let i = 0; i < pos.length; i += 3) uv.push((pos[i] + CO[0]) / 6, (pos[i + 2] + CO[1]) / 6);
+      geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); geo.computeVertexNormals();
+      const am = new THREE.MeshStandardMaterial({ color: '#f2f2f2', map: asphaltTexture(false), roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 });
+      const m = new THREE.Mesh(geo, am); m.receiveShadow = true; m.userData.noCollide = true; k.meshes.push(m);
+    }
+
     // ---------- the junction: signal posts, the islands' worn stone paving, the cabinet, bollards ----------
     for (const [key, [cx, cz]] of Object.entries(ISLANDS)) {
-      k.meshes.push(new THREE.Mesh(drapeAt(CO, cx - 9, cx + 9, cz - 9, cz + 9, 0.5, 0.06, (x, z) => {
-        if (clearance(x, z) < 0.15) return null;
+      // (the medians' noses, mn and ms, are the kerbed median itself now: no pale paving drawn over them)
+      if (key !== 'mn' && key !== 'ms') k.meshes.push(new THREE.Mesh(drapeAt(CO, cx - 9, cx + 9, cz - 9, cz + 9, 0.5, 0.06, (x, z) => {
+        if (clearance(x, z) < 0.15 || junctionPaved(x, z)) return null;
         const m = vnoise(x * 2.3, z * 2.3), n = vnoise(x * 0.6, z * 0.6);
         return n > 0.62 ? [0.55 + m * 0.05, 0.42, 0.3] : [0.56 + m * 0.08, 0.52 + m * 0.07, 0.47];
       }), groundCover()));
       // the post where the island has most room
       let best: P2 | null = null, bc = 0.5;
-      for (let i = 0; i < 60; i++) { const x = cx + (hash(i, cx) - 0.5) * 5, z = cz + (hash(cz, i) - 0.5) * 5, cl = clearance(x, z); if (cl > 0.6 && (!best || Math.hypot(x - cx, z - cz) < Math.hypot(best[0] - cx, best[1] - cz))) { bc = cl; best = [x, z]; } }
+      for (let i = 0; i < 60; i++) { const x = cx + (hash(i, cx) - 0.5) * 5, z = cz + (hash(cz, i) - 0.5) * 5, cl = clearance(x, z); if (cl > 0.6 && !junctionPaved(x, z) && (!best || Math.hypot(x - cx, z - cz) < Math.hypot(best[0] - cx, best[1] - cz))) { bc = cl; best = [x, z]; } }
       void bc;
       if (!best) continue;
       // (the Okponglo signals brief, pictures 1, 2, 11: tall slender grey masts with a long overhead arm over the lanes of
