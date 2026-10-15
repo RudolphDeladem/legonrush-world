@@ -16,7 +16,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { BRONZE, DARK, Facade, PAVE, PLINTH, Roof, SOFFIT, TANK, TRIM, WHITE, box, canvas, flat, flipWinding, merge, rnd, signTexture, speckle, type Part } from './modelkit';
-import { AREAS, BUILDINGS, type Building } from './campusmap';
+import { AREAS, BUILDINGS, NODE_XZ, ROADS, type Building } from './campusmap';
 import { buildingMaterials } from './facades';
 import { groundShade, weathering } from './shading';
 import { pavers } from './upsa';
@@ -137,6 +137,24 @@ export const diasporaFrames = (): readonly Readonly<Frame>[] => FRAMES;
 
 /** into a hall's local frame */
 const local = (f: Frame, x: number, z: number) => [(x - f.cx) * f.ax + (z - f.cz) * f.az, (x - f.cx) * f.fx + (z - f.cz) * f.fz];
+
+/** out of a hall's local frame */
+const toWorld = (f: Frame, x: number, z: number): [number, number] => [f.cx + x * f.ax + z * f.fx, f.cz + x * f.az + z * f.fz];
+/** how far (x, z) stands from the edge of the nearest mapped carriageway (negative: on it) */
+const HALF = [4.5, 3.7, 3.1, 2.3];
+function roadGap(x: number, z: number) {
+  let best = Infinity;
+  for (const r of ROADS) {
+    if (r.cls > 3 || r.surface) continue;
+    for (let i = 1; i < r.nodes.length; i++) {
+      const ax = NODE_XZ[r.nodes[i - 1] * 2], az = NODE_XZ[r.nodes[i - 1] * 2 + 1], bx = NODE_XZ[r.nodes[i] * 2], bz = NODE_XZ[r.nodes[i] * 2 + 1];
+      if (Math.min(ax, bx) > x + 20 || Math.max(ax, bx) < x - 20 || Math.min(az, bz) > z + 20 || Math.max(az, bz) < z - 20) continue;
+      const dx = bx - ax, dz = bz - az, L2 = dx * dx + dz * dz || 1, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / L2));
+      best = Math.min(best, Math.hypot(x - ax - t * dx, z - az - t * dz) - HALF[r.cls]);
+    }
+  }
+  return best;
+}
 
 /** Inside a Diaspora hall's courtyard, porches or stair towers: no trees, hedges, benches or people there. */
 export function inDiasporaHall(x: number, z: number, pad = 0) {
@@ -654,10 +672,14 @@ export function buildDiasporaHalls() {
         }
         if (lo < f.hz - 2 || lo > f.hz + 14 || ah < -f.hx - 15 || al > f.hx + 15 || hi > mid) continue;
         xl = Math.min(xl, al); xh = Math.max(xh, ah);
-        // the kerbed island between this car park and the drive
-        const z = hi + 1.0;
+        // the kerbed island between this car park and the drive, kept clear of the drive's carriageway (moved back toward
+        // the car park where the mapped road runs close, left out where it cannot be)
         for (let x0 = al + 1; x0 < ah - 3; x0 += 26) {
           const x1 = Math.min(x0 + 22, ah - 1);
+          let z = hi + 1.0;
+          const clear = (zz: number) => { for (let x = x0; x <= x1; x += 2) { const w = toWorld(f, x, zz); if (roadGap(w[0], w[1]) < 1.0) return false; } return true; };
+          while (!clear(z) && z > hi - 3) z -= 0.5;
+          if (!clear(z)) continue;
           isl.push([box(x0, x1, 0, 0.22, z - 0.75, z + 0.75), '#e8e5de'], [box(x0 + 0.15, x1 - 0.15, 0.22, 0.26, z - 0.6, z + 0.6), '#7a5a3e']);
           for (let x = x0 + 3; x < x1 - 1; x += 8) {
             isl.push([new THREE.CylinderGeometry(0.15, 0.22, 5.2, 7).translate(x, 2.6, z), '#8a7a62']);
