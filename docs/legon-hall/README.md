@@ -10,3 +10,10 @@ crossing, and the corner with the bare bed and the hall's board. Code: `greathal
 | Kept | The arcade of three arches, LEGON HALL over the middle arch, the loggia, the building, the routes. |
 
 Render: `entrance-2026-10-15.jpg`. The pictures were shown in the conversation and are not stored in the repository.
+
+## Correction (owner's photo `owner-entrance-car-park.webp`): the forecourt is a car park
+
+The walk between lawns is replaced: the whole front from the arcade to the avenue is paved in large worn tan square
+slabs with pale joints, white painted bays with SNR TUTOR, MASTER and RESERVED lettered on the ground, a parked car,
+low hedges along the building's foot either side of the arcade, white pots with plants by the piers, one flag pole on
+the west. The bare bed and the hall's board at the east corner stay. Render: `entrance-car-park.jpg`.
