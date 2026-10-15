@@ -74,3 +74,7 @@ pavilion. The lot and pavilion land on the game's own outlines.
   layer still ran over the westbound carriageway. Seen far off and at a low angle, the blurred texture leaked onto the
   asphalt as a red band. The layer's cells now end under the pavement, short of the road kerb. Probes along the whole
   drive and the corner find no ground layer on the asphalt.
+- **South footway restored (owner's follow-up) [FIXED]:** the stadium side has the same herringbone pavement as the plot
+  side, from the gate to the junction, between its road kerb and back kerb, before the planted strip and the fence. The
+  drive's centre line now follows the mapped roads node for node, so both footways sit on the asphalt's edges (there
+  was a thin grass gap near x 894).

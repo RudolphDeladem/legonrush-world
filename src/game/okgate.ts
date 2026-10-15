@@ -146,8 +146,8 @@ const edges: Spec = {
     const c: Part[] = [], h = DRIVE_HALF;
     // ---- the footways (the owner's pictures 2, 4, 5): herringbone pavers between a plain road kerb and a raised back kerb.
     // North: from the gate along the plot, along the westbound carriageway where the drive splits, round the junction's
-    // north-west corner onto the slip, ending against the pitched stone slab. South: only by the gate and the taxi rank
-    // (east of it deleted, the owner's picture 1); the kerb runs on to the junction. No channel, no slab joints ----
+    // north-west corner onto the slip, ending against the pitched stone slab. South: the same pavement along the stadium
+    // side from the gate to the junction (the owner's follow-up). No channel, no slab joints ----
     const nLine: P2[] = [];
     for (let x = WALK.x0; x <= 957; x += 1) nLine.push([x, northEdge(x)]);
     { // the corner: a curve from the westbound's north edge onto the slip's west edge, then along the slip
@@ -184,9 +184,7 @@ const edges: Spec = {
       }
     };
     walk(nLine, -1, true, () => true);
-    walk(sLine, 1, false, (x) => x <= WALK.south);
-    // the south kerb on to the junction where the footway is deleted
-    for (const r of runs(sLine, 0.3, false, (x) => x >= WALK.south - 1)) c.push([strip(offset(r, WALK.kerb / 2).map(([x, z]) => L(x, z)), 0, 0.15, WALK.kerb / 2), '#cbc5b6']);
+    walk(sLine, 1, false, () => true);
     // the low concrete separator between the westbound and eastbound carriageways where they part before the junction
     { const m: P2[] = [];
       for (let x = 928; x <= 962; x += 1) m.push(L(x, ((northEdge(x) + h) + h + (driveZ(x) - h)) / 2));

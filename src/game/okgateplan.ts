@@ -7,8 +7,9 @@
 export type P2 = [number, number];
 export type R4 = [number, number, number, number];
 
-/** Jubilee Drive's centre line through the work (the game road), west to east */
-export const DRIVE: P2[] = [[690, 1231.6], [700, 1232], [711, 1233], [722, 1234], [802, 1240], [834, 1242], [865, 1239], [893, 1236], [923, 1232], [939, 1234], [966, 1232]];
+/** Jubilee Drive's centre line through the work (the game roads 204, 203, 109, 780, 870 and 872, node for node: the
+ *  kerbs and footways sit on the asphalt's edges), west to east */
+export const DRIVE: P2[] = [[653.8, 1229.7], [700.2, 1232.5], [704.1, 1232.7], [711.2, 1233.1], [722.3, 1233.9], [802.3, 1240.2], [819.8, 1241.5], [830, 1241.8], [834.2, 1241.6], [839.1, 1241.5], [865.3, 1238.7], [869.2, 1238.3], [879, 1237], [893, 1235.5], [894.4, 1235.3], [904.8, 1234.1], [923.2, 1231.9], [932.8, 1233.6], [939.1, 1233.6], [966.7, 1232.1]];
 /** the drive's centre z at x (linear between the nodes) */
 export function driveZ(x: number) {
   for (let i = 1; i < DRIVE.length; i++) { const [ax, az] = DRIVE[i - 1], [bx, bz] = DRIVE[i]; if (x >= ax && x <= bx) return az + ((bz - az) * (x - ax)) / (bx - ax); }
@@ -73,9 +74,9 @@ export const PALMS: P2[] = [[694, 1219], [790, 1222]];
 export const FENCE_S = { x0: 735, x1: 960, off: 9.5 };
 /** the footways: herringbone pavers between a plain road kerb and a raised back kerb (the owner's pictures 2, 4, 5; the
  *  grey slabs with cross joints and the open channel behind the north one were wrong). The north footway runs from the
- *  gate along the plot to the junction's north-west corner; the south one only by the gate and the taxi rank: east of
- *  `south` it is deleted (the owner's picture 1), the stadium side keeps its kerb, planted strip and fence */
-export const WALK = { x0: 680, x1: 968, w: 2.0, kerb: 0.2, back: 0.18, south: 790 };
+ *  gate along the plot to the junction's north-west corner; the south one the same, from the gate along the stadium side
+ *  to the junction, before the planted strip and the fence (the owner's follow-up) */
+export const WALK = { x0: 680, x1: 968, w: 2.0, kerb: 0.2, back: 0.18 };
 /** the westbound carriageway the drive splits into before the junction (game road 1091): the north footway follows it */
 export const WESTBOUND: P2[] = [[923.2, 1231.9], [933, 1227.4], [938.5, 1226.4], [965.9, 1223.7]];
 /** the slip at the junction's north-west corner (game road 867, class 0): the footway turns onto it round the corner and
