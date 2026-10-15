@@ -264,14 +264,15 @@ export function buildOkGateGrounds() {
   const group = new THREE.Group();
   group.name = 'okponglo-gate-grounds';
   const color = (x: number, z: number): [number, number, number, number] | null => {
-    // (the soil stops at the north footway's back kerb: none on the carriageways or the pavement)
+    // (the soil stops at the north footway's back kerb; its 2 m cells stop under the pavement, short of the road kerb, so
+    // the blurred far-off texture cannot bleed onto the asphalt either: the owner's follow-up)
     if (!inPoly(PLOT, x, z) || nearSideRoad(x, z, -0.5) || z > northEdge(x) - (WALK.kerb + WALK.w + WALK.back)) return null;
     const n = vnoise2(x / 8, z / 8), m = vnoise2(x / 2.5 + 7, z / 2.5), t = hash2(Math.floor(x * 2), Math.floor(z * 2)) * 0.07;
     // the raised dry patch under the tree group keeps its scrub; the rest soil with dry grass in patches
     if (n > 0.62) return [128 - t * 200, 118 - t * 160, 66 - t * 80, 0.75];
     return [164 - t * 200, 104 - t * 140, 70 - t * 90, 0.82 + m * 0.15];
   };
-  const soil = coverOverlay({ box: [800, 976, 1108, 1236], mpp: 0.5, cell: 2, tile: 88, color, cellIn: (x, z) => inPoly(PLOT, x, z) });
+  const soil = coverOverlay({ box: [800, 976, 1108, 1236], mpp: 0.5, cell: 2, tile: 88, color, cellIn: (x, z) => inPoly(PLOT, x, z) && z < northEdge(x) - 1.9 });
   for (const m of soil) m.userData.noRelief = true;
   group.add(...soil);
   const crowns: Crown[] = TREES.map(([x, z, r], i) => { const s = hash2(x, z); return { x, z, r, h: r * 1.15 + 1, base: 2.2 + s * 1.5, trunk: 0.25 + r * 0.03, color: ['#3f6b2b', '#4e7a32', '#456f2e', '#5b8438'][i % 4], seed: s, solid: true }; });

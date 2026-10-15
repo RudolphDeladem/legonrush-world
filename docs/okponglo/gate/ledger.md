@@ -70,3 +70,7 @@ pavilion. The lot and pavilion land on the game's own outlines.
 - **The junction approach (picture 3):** the kerb and footway fragments that lay between the split carriageways are
   replaced by one low concrete separator. The plot's soil stops at the back kerb.
 - **Open question:** if the north footway should also go, it is one line in `okgate.ts` (`walk(nLine, ...)`).
+- **Soil at the road edge (owner's follow-up) [FIXED]:** the plot's soil colour stopped behind the pavement, but its ground
+  layer still ran over the westbound carriageway. Seen far off and at a low angle, the blurred texture leaked onto the
+  asphalt as a red band. The layer's cells now end under the pavement, short of the road kerb. Probes along the whole
+  drive and the corner find no ground layer on the asphalt.
