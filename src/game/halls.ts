@@ -164,6 +164,7 @@ export function inDiasporaHall(x: number, z: number, pad = 0) {
     const ax = Math.abs(lx), az = Math.abs(lz);
     if (ax < f.ix + pad && az < f.iz + pad) return true; // courtyard
     if (ax < PW + 1.5 + pad && az > f.hz - 1 && az < f.hz + PP + 3.5 + pad) return true; // entrance pavilions and their steps
+    if (lz > 0 && ax < 6 + pad && az > f.hz - 1 && az < f.hz + 22.5 + pad) return true; // the paved entrance approach
     if (Math.abs(ax - f.hx * TX) < TW + 1 + pad && az > f.hz - 1 && az < f.hz + TP + 1 + pad) return true; // stair towers
   }
   return false;
@@ -174,7 +175,7 @@ export function inDiasporaHall(x: number, z: number, pad = 0) {
  * One facade module (7.2 m) from the owner's photos of Jean Nelson Aka and Kwapong (2026-10-15): on the upper storeys a
  * PAIR of recessed balconies (a low solid parapet with two short slots and a slim dark rail, the back wall with a door
  * and a window), then a plain wall section with two small square windows and short horizontal slots under them; on the
- * ground storey two dark timber lattice grille windows under the balconies and two small square windows in the wall
+ * ground storey a dark-framed window behind a slim steel grille and a door under the balconies and two small square windows in the wall
  * section. 256 px across = 7.2 m; each storey 256 px tall = 3.15 m.
  */
 const MOD = 7.2, PXM = 256 / MOD, PYM = 256 / 3.15;
@@ -183,7 +184,7 @@ const mx_ = (m: number) => m * PXM, my_ = (h: number) => 256 - h * PYM;
 const BALC: [number, number][] = [[0.25, 2.75], [2.95, 5.45]];
 const SMALL: [number, number][] = [[5.8, 6.35], [6.55, 7.1]];
 /** lit window rectangles in atlas px (upper storey, ground storey) for the night lights */
-const UP_WIN = [mx_(1.6), my_(2.1), mx_(0.9), mx_(0) + PYM * 1.1] as const, GROUND_WIN = [mx_(0.45), 256 - PYM * 2.6, mx_(2.1), PYM * 2.0] as const;
+const UP_WIN = [mx_(1.6), my_(2.1), mx_(0.9), mx_(0) + PYM * 1.1] as const, GROUND_WIN = [mx_(0.55), 256 - PYM * 2.42, mx_(1.9), PYM * 1.52] as const;
 
 const facadeAtlas = () =>
   canvas(256, 512, (g) => {
@@ -218,14 +219,26 @@ const facadeAtlas = () =>
     R(0, 0, MOD, 0.12, '#e7e0d1'); R(0, 0.12, MOD, 0.14, 'rgba(70,60,50,0.3)');
     // ---- ground storey (y 256..512) ----
     const Y = 256;
-    for (const [l0, l1] of [[0.45, 2.55], [3.15, 5.25]] as [number, number][]) {
-      // dark timber lattice grille window
-      R(l0 - 0.08, 0.5, l1 + 0.08, 2.6, '#3d2a1f', Y);
-      R(l0, 0.58, l1, 2.52, '#2a1d16', Y);
-      g.fillStyle = '#5e3f2c';
-      for (let x = l0; x <= l1 + 0.01; x += 0.35) g.fillRect(mx_(x) - 1, Y + my_(2.52), 2.5, (2.52 - 0.58) * PYM);
-      for (let h = 0.58; h <= 2.53; h += 0.32) g.fillRect(mx_(l0), Y + my_(h) - 1, mx_(l1) - mx_(l0), 2.5);
-      R(l0 - 0.12, 0.42, l1 + 0.12, 0.5, '#e7e0d1', Y);
+    // a dark-framed window behind a slim steel security grille, then a door with a grilled fanlight (no solid panels)
+    {
+      const [l0, l1] = [0.55, 2.45];
+      R(l0 - 0.08, 0.82, l1 + 0.08, 2.5, '#26292c', Y);
+      const gl = g.createLinearGradient(0, Y + my_(2.42), 0, Y + my_(0.9));
+      gl.addColorStop(0, '#5d7383'); gl.addColorStop(1, '#2f3f4c');
+      R(l0, 0.9, l1, 2.42, gl, Y);
+      R((l0 + l1) / 2 - 0.03, 0.9, (l0 + l1) / 2 + 0.03, 2.42, '#26292c', Y);
+      g.fillStyle = 'rgba(40,42,45,0.85)';
+      for (let x = l0 + 0.16; x < l1; x += 0.16) g.fillRect(mx_(x) - 0.6, Y + my_(2.42), 1.3, 1.52 * PYM);
+      R(l0 - 0.12, 0.74, l1 + 0.12, 0.82, '#e2dbcc', Y);
+    }
+    {
+      const [d0, d1] = [3.35, 4.65];
+      R(d0 - 0.1, 0, d1 + 0.1, 2.7, '#26292c', Y);
+      R(d0, 0, d1, 2.05, '#3b4046', Y);
+      R(d0 + 0.06, 0.08, (d0 + d1) / 2 - 0.03, 1.97, '#454b52', Y); R((d0 + d1) / 2 + 0.03, 0.08, d1 - 0.06, 1.97, '#454b52', Y);
+      R(d0, 2.12, d1, 2.62, '#3a5468', Y);
+      g.fillStyle = 'rgba(40,42,45,0.9)';
+      for (let x = d0 + 0.13; x < d1; x += 0.13) g.fillRect(mx_(x) - 0.6, Y + my_(2.62), 1.3, 0.5 * PYM);
     }
     for (const [w0, w1] of SMALL) { R(w0, 1.6, w1, 2.15, '#2c3035', Y); R(w0 + 0.04, 1.64, w1 - 0.04, 2.11, '#3a5468', Y); }
     R(0, 2.95, MOD, 3.15, '#e7e0d1', Y);
@@ -353,7 +366,7 @@ function hallGeometry(hx: number, hz: number, ix: number, iz: number, look: Look
    * A facade run from A to B (local x, z), windows bay by bay; `blank` spans (metres from A)
    * are left plain (end walls, behind pavilions and towers).
    */
-  const run = (ax: number, az: number, bx: number, bz: number, blank: [number, number][]) => {
+  const run = (ax: number, az: number, bx: number, bz: number, blank: [number, number][], outer = false) => {
     const len = Math.hypot(bx - ax, bz - az), ux = (bx - ax) / len, uz = (bz - az) / len;
     const cuts = [...blank].sort((p, q) => p[0] - q[0]);
     const spans: [number, number, boolean][] = [];
@@ -369,6 +382,23 @@ function hallGeometry(hx: number, hz: number, ix: number, iz: number, look: Look
         continue;
       }
       const bays = Math.max(1, Math.round((s1 - s0) / BAY));
+      if (outer) {
+        // the balconies' depth (owner's photos): the slab ledge under each pair, the piers either side and between the two
+        // balconies standing forward of the recess, and the slim rail across each, on the upper floors
+        let nx = -uz, nz = ux;
+        if (nx * (x0 + x1) + nz * (z0 + z1) < 0) { nx = -nx; nz = -nz; }
+        const bw = (s1 - s0) / bays, k = bw / MOD, ang = -Math.atan2(uz, ux);
+        const at = (t: number, out: number, w: number, d: number, y0: number, y1: number, c: string) => {
+          const cx = ax + ux * t + nx * out, cz = az + uz * t + nz * out;
+          plain.push([new THREE.BoxGeometry(w, y1 - y0, d).rotateY(ang).translate(cx, (y0 + y1) / 2, cz), c]);
+        };
+        for (let b = 0; b < bays; b++) for (let fl = 1; fl < FLOORS; fl++) {
+          const t0 = s0 + b * bw, y = PL + fl * ST;
+          at(t0 + 2.85 * k, 0.12, 5.2 * k + 0.1, 0.24, y - 0.12, y + 0.03, '#ece6d8');
+          for (const e of [0.25, 2.85, 5.45]) at(t0 + e * k, 0.11, 0.2, 0.22, y, y + ST, '#f1ebdd');
+          for (const [b0, b1] of BALC) at(t0 + ((b0 + b1) / 2) * k, 0.06, (b1 - b0) * k, 0.05, y + 1.0, y + 1.06, '#2a2b2d');
+        }
+      }
       for (let k = 0; k < FLOORS; k++) {
         const y0 = PL + k * ST;
         fac.quad(x0, z0, x1, z1, y0, y0 + ST, bays, k === 0 ? 0 : 0.5, k === 0 ? 0.5 : 1, fac.bays, fac.bays + bays, k);
@@ -385,10 +415,10 @@ function hallGeometry(hx: number, hz: number, ix: number, iz: number, look: Look
   // outer facades: plain ends on the long sides, pavilions and stair towers in front of plain wall
   const L = 2 * hx, D = 2 * hz;
   const longBlanks: [number, number][] = [[0, 5.5], [L - 5.5, L], [hx - PW, hx + PW], [hx - tx - TW, hx - tx + TW], [hx + tx - TW, hx + tx + TW]];
-  run(-hx, hz, hx, hz, longBlanks);
-  run(-hx, -hz, hx, -hz, longBlanks);
-  run(hx, -hz, hx, hz, [[0, 3], [D - 3, D]]);
-  run(-hx, -hz, -hx, hz, [[0, 3], [D - 3, D]]);
+  run(-hx, hz, hx, hz, longBlanks, true);
+  run(-hx, -hz, hx, -hz, longBlanks, true);
+  run(hx, -hz, hx, hz, [[0, 3], [D - 3, D]], true);
+  run(-hx, -hz, -hx, hz, [[0, 3], [D - 3, D]], true);
   // courtyard facades: the towers behind the pavilions stand in front of plain wall
   run(-ix, iz, ix, iz, [[ix - TW, ix + TW]]);
   run(-ix, -iz, ix, -iz, [[ix - TW, ix + TW]]);
@@ -589,14 +619,14 @@ function hallGeometry(hx: number, hz: number, ix: number, iz: number, look: Look
     plain.push([box(Math.min(x0, x1), Math.max(x0, x1), 0, 0.18, hz + 0.1, hz + 1.1), '#e6e3dc']);
     for (let x = Math.min(x0, x1) + 0.6; x < Math.max(x0, x1) - 0.4; x += 1.2) plain.push([new THREE.IcosahedronGeometry(0.55, 0).scale(1, 0.75, 1).translate(x, 0.55, hz + 0.6), '#3c6a2e']);
   }
-  if (look.walk) for (let z = hz + PP + 7; z < hz + 24; z += 6) for (const sx of [-1, 1]) {
-    const x = sx * 3.6;
-    plain.push([box(x - 0.6, x + 0.6, 0, 0.2, z - 0.6, z + 0.6), '#e6e3dc'], [box(x - 0.48, x + 0.48, 0.2, 0.24, z - 0.48, z + 0.48), '#5b4632']);
-    plain.push([new THREE.CylinderGeometry(0.16, 0.24, 5.5, 7).translate(x, 2.75, z), '#8a7a62']);
-    for (let i = 0; i < 7; i++) {
-      const a = (i / 7) * Math.PI * 2;
-      plain.push([new THREE.BoxGeometry(2.4, 0.05, 0.45).translate(1.1, 0, 0).rotateZ(-0.45).rotateY(a).translate(x, 5.5, z), '#4c7f32']);
-    }
+  // broad-canopied shade trees in beds along the front either side of the entrance, as in the owner's photos of Jean
+  // Nelson and Kwapong (2026-10-15: no palms before the facade), clear of the stair towers
+  for (const sx of [-1, 1]) for (const d of [14, 27, 56, 69]) {
+    const x = sx * d, z = hz + 2.2;
+    plain.push([box(x - 1.3, x + 1.3, 0, 0.18, z - 1.0, z + 1.0), '#e6e3dc'], [box(x - 1.15, x + 1.15, 0.18, 0.22, z - 0.85, z + 0.85), '#5b4632']);
+    plain.push([new THREE.CylinderGeometry(0.17, 0.26, 3.2, 7).translate(x, 1.6, z), '#5e4a38']);
+    for (const [dx, dy, dz, r] of [[0, 4.6, 0, 2.6], [1.3, 4.0, 0.6, 1.9], [-1.2, 4.2, -0.5, 2.0], [0.4, 5.4, -0.8, 1.7]] as [number, number, number, number][])
+      plain.push([new THREE.IcosahedronGeometry(r, 1).scale(1, 0.62, 1).translate(x + dx, dy, z + dz), '#3f6e2f']);
   }
   return { fac, plain, glass, roof };
 }
@@ -645,7 +675,11 @@ export function buildDiasporaHalls() {
       add(g, pv, false);
     };
     apron(f.hz, f.hz + PP + 4.5, 7.5); apron(-(f.hz + PP + 4.5), -f.hz, 7.5);
-    if ((LOOKS[f.name] ?? DEFAULT_LOOK).walk) apron(f.hz + PP + 4.5, f.hz + 24, 2.4);
+    // the wide paved entrance approach between the parking rows, edged by white kerbs (the owner's Kwapong photo)
+    apron(f.hz + PP + 4.5, f.hz + 22, 5.5);
+    const kerbs: Part[] = [];
+    for (const sx of [-1, 1]) kerbs.push([box(sx * 5.5 - 0.15, sx * 5.5 + 0.15, 0, 0.18, f.hz + PP + 4.5, f.hz + 22), '#e9e6df']);
+    add(merge(kerbs), plain);
     // the ground between the facing halls (the owner's Street View between Limann and Kwapong, 2018): the car parks and
     // the drive between them all in greyish-tan herringbone pavers (owner: not brown), long kerbed islands planted with palms along both sides
     // of the drive, broken for the cars to pass; each hall paves its half, to the middle between the two fronts
@@ -673,8 +707,8 @@ export function buildDiasporaHalls() {
           if (!clear(z)) continue;
           isl.push([box(x0, x1, 0, 0.22, z - 0.75, z + 0.75), '#e8e5de'], [box(x0 + 0.15, x1 - 0.15, 0.22, 0.26, z - 0.6, z + 0.6), '#7a5a3e']);
           for (let x = x0 + 3; x < x1 - 1; x += 8) {
-            isl.push([new THREE.CylinderGeometry(0.15, 0.22, 5.2, 7).translate(x, 2.6, z), '#8a7a62']);
-            for (let i = 0; i < 7; i++) isl.push([new THREE.BoxGeometry(2.3, 0.05, 0.42).translate(1.05, 0, 0).rotateZ(-0.45).rotateY((i / 7) * Math.PI * 2 + x).translate(x, 5.2, z), '#4c7f32']);
+            isl.push([new THREE.CylinderGeometry(0.13, 0.19, 3.8, 7).translate(x, 1.9, z), '#8a7a62']);
+            for (let i = 0; i < 7; i++) isl.push([new THREE.BoxGeometry(1.7, 0.05, 0.34).translate(0.78, 0, 0).rotateZ(-0.45).rotateY((i / 7) * Math.PI * 2 + x).translate(x, 3.8, z), '#4c7f32']);
           }
         }
       }

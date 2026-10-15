@@ -24,3 +24,19 @@ parks as the map draws them (rows of bays), Diamond Jubilee Hall and the Diaspor
 2. The hall names on Kwapong's and Limann's porch canopies were there before this brief; should they stay?
 3. REF-01 and REF-05: which hall's courtyard do they show (Limann is assumed for REF-01)?
 4. The bush and red-earth margin south of the halls is left as it was; a picture of that edge would fix its extent.
+
+## Strict correction (2026-10-15, owner's text brief on Jean Nelson Aka Hall and all four halls)
+
+Compared with pictures 849-852 (`balconies-ground-floor-sheet.jpg`).
+
+| Item | Change |
+|---|---|
+| Balconies | Kept. One 7.2 m module per bay: a pair of recessed balconies (solid parapet with two slots, slim dark rail, door and window at the back), then a solid wall section with two small square windows. The outer faces have real depth: a ledge per floor, piers and rails. |
+| Central bay | Gable lowered to the photos' proportion; the tall arched window kept; paired columns and the blue name panel unchanged. |
+| Ground storey | The solid brown lattice panels (invented) are gone: dark-framed windows behind slim steel grilles and doors with grilled fanlights. |
+| Trees | The palms on the entrance walks replaced by broad-canopied trees in beds; the car-park island palms smaller. |
+| Approach | A wide paved approach with white kerbs from the steps to the car park at every hall; cars and props kept off it. |
+| Kept | Hall names and signs, locations, orientation, collisions, routes; Sey's dark roof and grid window; each courtyard. |
+
+Open: the photos show the car parks as asphalt with kerbed islands (852); the game keeps the pavers between the halls the
+owner asked for in 167. A photo of the ground floor's shopfronts at close range would fix their exact bays.
