@@ -79,6 +79,14 @@ const cedi: Spec = {
       for (const [a, b, c, d] of [[px0, px1, pz0 - 0.15, pz0], [px0, px1, pz1, pz1 + 0.15], [px0 - 0.15, px0, pz0, pz1]]) k.plain.push([box(a, b, 0, 0.14, c, d), '#d9d6cf']);
       for (const zz of [pz0 + 0.6, pz1 - 5.6]) for (let xx = px0 + 1.5; xx < px1 - 1; xx += 2.6) k.plain.push([box(xx - 0.05, xx + 0.05, 0.061, 0.065, zz, zz + 5.0), '#efefea']);
     }
+    // the car parks at the library's south-west, opposite this centre (the owner's pairing of Street View I063 with the
+    // game view along the road there): the strip before the library and the two lots south of the road, in the same
+    // grey interlocking pavers with a darker edge band, clear of the roads crossing them
+    for (const [wx0, wx1, wz0, wz1] of [[-80, -12, 11.8, 19], [-82, -62.6, 24.6, 32.5], [-57.8, -46, 24.6, 32.5]]) {
+      const [px0, px1, pz0, pz1] = [cx(wx0), cx(wx1), cz(wz0), cz(wz1)];
+      pave(k, px0, px1, pz0, pz1, pavers('grey'), 0.045, 2);
+      for (const [a, b, c, d] of [[px0, px1, pz0, pz0 + 0.5], [px0, px1, pz1 - 0.5, pz1], [px0, px0 + 0.5, pz0, pz1], [px1 - 0.5, px1, pz0, pz1]]) k.plain.push([box(a, b, 0.0, 0.065, c, d), '#6a655e']);
+    }
     // the deep white entablature round the roof, in stepped bands (owner's photo of the east face); on the east it
     // stands out over the columns. The pink hipped roof rises inside it (owner's top view)
     const ent = (a: number, b: number, c: number, out: number, eastOut: number) => {
@@ -801,6 +809,10 @@ const libraryWings: Spec = {
         // the perforated screen wall joining the low inner wing to this wing's south-west corner (owner's marked I059)
         screenWall(k, lx(34.5), lz(7.1), lx(wx0), lz(7.1));
         for (let t = 35; t < wx0; t += 0.8) SOLIDS.add(t, 7.1, 0.3);
+      } else {
+        // the perforated screen wall from the south-west kiosk to this wing's south end (Street View I062, I063)
+        screenWall(k, lx(-70.4), lz(3.0), lx(wx0), lz(3.0));
+        for (let t = -70; t < wx0; t += 0.8) SOLIDS.add(t, 3.0, 0.3);
       }
       // the maroon base
       for (const [a, b, c, d] of [[lx(wx0) - 0.06, lx(wx0), lz(-58.3), lz(7.1)], [lx(wx1), lx(wx1) + 0.06, lz(-58.3), lz(7.1)]]) k.plain.push([box(a, b, 0, 0.8, c, d), '#8e2f2a']);

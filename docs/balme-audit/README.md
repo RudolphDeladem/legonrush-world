@@ -63,6 +63,15 @@ Comparison: `comparison-sheet-3.jpg`.
 
 Comparison: `comparison-sheet-4.jpg`.
 
+## Round 5: the owner's second set of notes (`owner/note-statue-facing.webp`, `owner/note-i063-game-pair.webp`)
+
+| Note | Change |
+|---|---|
+| The roundabout group faces the wrong way: its front points to the road beside the Bookshop (two blue arrows) | The group turned to face east-north-east, toward the road beside the Bookshop. The marked aerial also shows the island's present state, now followed: a bed of shrubs and cactus round the plinth only (the outer clusters and the two palms removed), short dark bollard lights round the lawn, two flat dark plaques, dry patches in the grass. |
+| I063's game pair is the library's west side opposite CEDI (the owner's game frame), not the CEDI car park | The car parks there (the strip before the library and the two lots across the road) paved in grey interlocking pavers with a darker edge band, clear of the roads; grass tufts kept off all the paving round the library (science.ts PAVED). The perforated screen wall added from the south-west kiosk to the west wing (I062, I063). CEDI's own car park keeps its pavers. |
+
+Comparison: `comparison-sheet-5.jpg`.
+
 ## Not done yet (open, next)
 
 C04 roof tile ageing and junctions, C05 courtyard galleries and AC units (needs registration), C09 the weathered service elevation, C10 the columned block (location pending), C24-C28 trees, drains,

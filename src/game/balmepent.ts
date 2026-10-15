@@ -72,7 +72,9 @@ const islandSpec: Spec = {
     // sizes, some in flower (red and yellow), prickly-pear cactus clumps and pale rocks about the plinth, gaps of lawn
     // between the groups; no ring of equal round bushes
     const R = (i: number) => ((Math.sin(i * 127.1) * 43758.5453) % 1 + 1) % 1;
-    const groups = [[0.4, 3.2], [1.5, 4.5], [2.4, 3.6], [3.3, 5.2], [4.2, 3.9], [5.3, 4.8], [2.0, 9.5], [4.0, 10.5], [5.6, 11.8], [0.9, 12.6], [3.0, 13.4]];
+    // (the owner's marked aerial: the planting is a bed round the plinth only; the rest is a patchy lawn with short
+    // bollard lights and two flat plaques)
+    const groups = [[0.4, 2.6], [1.5, 3.2], [2.4, 2.8], [3.3, 3.6], [4.2, 3.0], [5.3, 3.4]];
     groups.forEach(([a, r], gi) => {
       const n = 3 + Math.floor(R(gi) * 4);
       for (let j = 0; j < n; j++) {
@@ -86,7 +88,7 @@ const islandSpec: Spec = {
       }
     });
     // prickly-pear cactus clumps: flat oval pads stacked on each other
-    for (const [a, r] of [[0.9, 2.6], [2.9, 2.8], [4.6, 2.5], [1.8, 6.2]]) {
+    for (const [a, r] of [[0.9, 2.4], [2.9, 2.6], [4.6, 2.3]]) {
       const px = Math.cos(a) * r, pz = Math.sin(a) * r;
       for (let q = 0; q < 9; q++) {
         const h = I.lawnH + 0.35 + (q % 3) * 0.42, ox = (R(q + a * 10) - 0.5) * 0.9, oz = (R(q * 3 + r) - 0.5) * 0.6;
@@ -100,16 +102,17 @@ const islandSpec: Spec = {
     }
     const m = new THREE.Mesh(merge(c), concrete(0.25)); m.castShadow = true; m.receiveShadow = true; k.meshes.push(m);
     for (let i = 0; i < 64; i++) { const a = (i / 64) * Math.PI * 2; SOLIDS.add(IO[0] + Math.cos(a) * (r2 - 0.15), IO[1] + Math.sin(a) * (r2 - 0.15), 0.25); }
-    // the two graduates with the torch on their tall plinth in the middle (C22, photo I066), facing north to the library
-    // (the oblique I037 shows them turned toward it)
-    k.meshes.push(...graduates(0, I.lawnH - 0.05, 0, Math.PI));
+    // the two graduates with the torch on their tall plinth in the middle (C22, photo I066), their fronts toward the road
+    // beside the Bookshop, east-north-east (the owner's marked aerial)
+    k.meshes.push(...graduates(0, I.lawnH - 0.05, 0, Math.atan2(29.5 - IO[0], 110 - IO[1])));
     SOLIDS.add(IO[0], IO[1], 1.1);
-    // two palms in the planting (I037, I040)
-    for (const [a, r] of [[3.9, 7.5], [0.2, 8.5]]) {
-      const px = Math.cos(a) * r, pz = Math.sin(a) * r, t: Part[] = [];
-      t.push([new THREE.CylinderGeometry(0.13, 0.18, 4.6, 8).translate(px, I.lawnH + 2.3, pz), '#8d8577']);
-      for (let q = 0; q < 9; q++) t.push([new THREE.ConeGeometry(0.22, 2.1, 3).rotateX(Math.PI / 2).translate(0, 0, 1.05).scale(1, 0.25, 1).rotateX(0.35).rotateY((q / 9) * Math.PI * 2).translate(px, I.lawnH + 4.6, pz), '#4c7f35']);
-      const pm = new THREE.Mesh(merge(t), concrete(0.1)); pm.castShadow = true; k.meshes.push(pm);
+    // short dark bollard lights round the lawn, two flat dark plaques set in it, dry patches in the grass
+    {
+      const t: Part[] = [];
+      for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2 + 0.2, r = 10.5; t.push([new THREE.CylinderGeometry(0.09, 0.1, 0.6, 8).translate(Math.cos(a) * r, I.lawnH + 0.3, Math.sin(a) * r), '#26282b'], [new THREE.CylinderGeometry(0.11, 0.11, 0.08, 8).translate(Math.cos(a) * r, I.lawnH + 0.62, Math.sin(a) * r), '#d9d6c8']); }
+      for (const [px, pz, ry] of [[1.2, 4.6, 0.1], [9.2, -2.2, 0.4]]) t.push([new THREE.BoxGeometry(1.4, 0.12, 0.9).rotateY(ry).translate(px, I.lawnH + 0.03, pz), '#3c3a37'], [new THREE.BoxGeometry(1.2, 0.02, 0.7).rotateY(ry).translate(px, I.lawnH + 0.1, pz), '#5a5a58']);
+      for (let i = 0; i < 9; i++) { const a = i * 2.1, r = 5 + (i * 1.37) % 9; t.push([new THREE.CircleGeometry(1.2 + (i % 3) * 0.8, 10).rotateX(-Math.PI / 2).translate(Math.cos(a) * r, I.lawnH + 0.005, Math.sin(a) * r), i % 2 ? '#8f8656' : '#a0915e']); }
+      const pm = new THREE.Mesh(merge(t), concrete(0.1)); pm.receiveShadow = true; k.meshes.push(pm);
     }
   },
 };
