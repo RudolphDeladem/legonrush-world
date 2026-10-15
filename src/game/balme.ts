@@ -30,6 +30,7 @@ import { hipRoof } from './waccbip';
 import { concrete, stoneMesh } from './concrete';
 import { SOLIDS } from './solids';
 import { pave, pavers } from './upsa';
+import { asphaltTexture } from './textures';
 import { statue } from './statues';
 
 // ---------- CEDI Conference Centre ----------
@@ -1047,6 +1048,23 @@ const steps: Spec = {
       for (const xx of [-15.28, -14.67]) k.plain.push([box(x(xx - 0.08), x(xx + 0.08), -0.02, 0.07, z(41), z(107)), '#b9b5ac']);
       for (let wz = 44; wz < 106; wz += 8.5) k.plain.push([box(x(-15.4), x(-14.6), 0.07, 0.1, z(wz), z(wz + 1.0)), '#a9a59c']);
     }
+    // asphalt, not grass, between the square and the lanes on its west, east and north and between its south end and the
+    // roundabout (owner, 2026-10-15): the lanes' surface carried up to the square's walls and beds, under the roads'
+    // own layer, the stair head and the roundabout island left out
+    {
+      const pos: number[] = [], C = 0.5, IO = BP.island.c, RI = 17.9;
+      const out = (wx: number, wz: number) => !(wx > -7.2 && wx < 25.2 && wz > 48.7 && wz < 102.3) && !(wx > 1.5 && wx < 14.5 && wz > 43 && wz < 48.7) && Math.hypot(wx - IO[0], wz - IO[1]) > RI;
+      for (let wz = 40.2; wz < 112; wz += C) for (let wx = -10.2; wx < 27.4; wx += C) {
+        if (!out(wx + C / 2, wz + C / 2)) continue;
+        const q = [[wx, wz], [wx + C, wz], [wx + C, wz + C], [wx, wz + C]].map(([a, b]) => [x(a), k.ground(x(a), z(b)) + 0.004, z(b)]);
+        pos.push(...q[0], ...q[2], ...q[1], ...q[0], ...q[3], ...q[2]);
+      }
+      const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      const uv: number[] = []; for (let i = 0; i < pos.length; i += 3) uv.push((pos[i] + SO[0]) / 6, (pos[i + 2] + SO[1]) / 6);
+      geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); geo.computeVertexNormals();
+      const am = new THREE.MeshStandardMaterial({ color: '#f2f2f2', map: asphaltTexture(false), roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 });
+      const m = new THREE.Mesh(geo, am); m.receiveShadow = true; k.meshes.push(m);
+    }
     const g = garden([-90, 100, 10, 110]);
     g.reseed(77);
     // rows of palms on the lawns either side of the pool
@@ -1195,12 +1213,7 @@ const steps: Spec = {
       const za = z(st.x0 + dir * u0), zb = z(st.x0 + dir * Math.min(len, u1)), h = st.at(st.x0 + dir * (u0 + 0.01));
       k.plain.push([box(x(st.z0), x(st.z1), h - 1.4, h + 0.02, Math.min(za, zb), Math.max(za, zb)), i === st.steps ? PAVE_B : i % 2 ? '#c9b597' : '#bfa98a']);
     }
-    // the statue on the upper level, to the east of the stairs (owner's photo)
-    const sx = x(23.5), sz = z(45.5);
-    k.plain.push([box(sx - 0.7, sx + 0.7, 0, 1.6, sz - 0.7, sz + 0.7), '#e6e3dc']);
-    k.plain.push([new THREE.CylinderGeometry(0.32, 0.42, 1.5, 12).translate(sx, 2.35, sz), '#eeece6']);
-    k.plain.push([new THREE.CylinderGeometry(0.3, 0.32, 0.55, 12).translate(sx, 3.35, sz), '#eeece6']);
-    k.plain.push([new THREE.SphereGeometry(0.2, 12, 10).translate(sx, 3.85, sz), '#eeece6']);
+    // (no statue on the upper level east of the stairs: owner, 2026-10-15)
   },
 };
 

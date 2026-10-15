@@ -150,18 +150,36 @@ function bookHolder(out: Part[]) {
   for (const [g, c] of f) out.push([g.translate(0, 0.19, 0), c]);
 }
 
-/** the west lawn's near figure (the elevated reference only): a long robe to the feet, both arms held a little away
- *  from the sides. Its identity and props are open. */
-function robed(out: Part[]) {
-  base(out, 0.85);
+/** the west lawn's near figure (the owner's photo, 2026-10-15): a woman in a long fitted dress with puffed short
+ *  sleeves, a beaded necklace, her hair drawn up; both elbows bent, her forearms forward at the waist holding a wide
+ *  cloth spread across them, its fall hanging in folds to the knees and down her right side; on a disc and slab */
+function clothHolder(out: Part[]) {
+  base(out, 0.85, 0.38);
   const f: Part[] = [];
   figure({
-    hip: 0.94, shoulder: 1.44, garment: 'gown',
-    lLeg: [[0.08, 0.5, 0.0], [0.1, 0.09, 0.02]],
-    rLeg: [[-0.08, 0.5, 0.0], [-0.1, 0.09, 0.02]],
-    rArm: [[-0.3, 1.18, 0.04], [-0.38, 0.95, 0.12]],
-    lArm: [[0.3, 1.18, 0.04], [0.38, 0.95, 0.12]],
+    hip: 0.94, shoulder: 1.44, garment: 'dress',
+    lLeg: [[0.08, 0.5, 0.01], [0.09, 0.09, 0.02]],
+    rLeg: [[-0.08, 0.5, 0.0], [-0.09, 0.09, 0.0]],
+    rArm: [[-0.27, 1.17, 0.09], [-0.36, 1.05, 0.33]],
+    lArm: [[0.27, 1.17, 0.09], [0.4, 1.08, 0.31]],
+    head: [0, 1.65, 0.02],
   }, f);
+  // the puffed sleeves, the necklace, the hair drawn up
+  for (const sx of [-1, 1]) f.push([new THREE.SphereGeometry(0.1, 10, 8).scale(1, 0.85, 1).translate(sx * 0.21, 1.4, 0.0), SILVER]);
+  f.push([new THREE.TorusGeometry(0.1, 0.022, 6, 16).rotateX(Math.PI / 2 - 0.5).translate(0, 1.42, 0.05), SILVER_D]);
+  f.push([new THREE.SphereGeometry(0.075, 8, 6).translate(0, 1.71, -0.085), SILVER]);
+  // the cloth: a wide sheet across the forearms, curving forward, its fall to the knees in folds, a long tail down
+  // from the right hand
+  // a thick bent slab (seen from both sides): across the forearms at the top, bowing forward, falling to the knees
+  const sheet = new THREE.BoxGeometry(0.95, 0.62, 0.045, 14, 6, 1), pos = sheet.attributes.position as THREE.BufferAttribute;
+  for (let i = 0; i < pos.count; i++) {
+    const u = pos.getX(i), v = pos.getY(i) + 0.31, t = pos.getZ(i);
+    pos.setXYZ(i, u * (1 - (0.62 - v) * 0.25), 0.5 + v, 0.24 + t + 0.08 * Math.cos(u * 3) * (v / 0.62) + Math.sin(u * 16) * 0.02 * (1 - v / 0.62));
+  }
+  sheet.computeVertexNormals();
+  f.push([sheet, SILVER_D]);
+  f.push([new THREE.CylinderGeometry(0.04, 0.04, 0.95, 8).rotateZ(Math.PI / 2).translate(0.02, 1.1, 0.33), SILVER]);
+  f.push([new THREE.BoxGeometry(0.14, 0.9, 0.05).rotateZ(-0.08).translate(-0.42, 0.66, 0.3), SILVER_D]);
   for (const [g, c] of f) out.push([g.translate(0, 0.19, 0), c]);
 }
 
@@ -190,8 +208,8 @@ function dancer(out: Part[]) {
   for (const [g, c] of f) out.push([g.translate(0, 0.19, 0), c]);
 }
 
-export type StatueKind = 'football' | 'draped' | 'suited' | 'book' | 'robed' | 'dancer';
-const BUILD: Record<StatueKind, (o: Part[]) => void> = { football: footballer, draped, suited, book: bookHolder, robed, dancer };
+export type StatueKind = 'football' | 'draped' | 'suited' | 'book' | 'cloth' | 'dancer';
+const BUILD: Record<StatueKind, (o: Part[]) => void> = { football: footballer, draped, suited, book: bookHolder, cloth: clothHolder, dancer };
 /** every figure 25% larger than life-size (owner, 2026-10-15) */
 export const STATUE_SCALE = 1.25;
 

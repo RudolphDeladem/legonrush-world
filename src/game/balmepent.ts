@@ -15,10 +15,10 @@ export const BP = {
   /** the pale figurative statues on the raised lawns either side of the pool (pair 2), world x, z */
   statues: [[-3.5, 66.5], [-3.5, 76.5], [-3.5, 86.5], [19.5, 66.5], [19.5, 76.5], [19.5, 86.5]] as [number, number][],
   /** who stands where (the audit's elevated photo I030 and the ground photos): the west lawn from the library end, the
-   *  footballer by the cross wall (I053), the dancer in the wrap before him (the owner's photo), a robed figure; the east lawn, the book-holder by the cross
+   *  footballer by the cross wall (I053), the dancer in the wrap before him, the woman holding the cloth nearest the road (the owner's photos); the east lawn, the book-holder by the cross
    *  wall (I067, the owner's arrow), the draped woman with the raised arm (I018, I067), the suited man with the long
-   *  object nearest the road (I014). The west lawn's middle and near figures are read from I030 alone (open). */
-  statueKinds: ['football', 'dancer', 'robed', 'book', 'draped', 'suited'] as StatueKind[],
+   *  object nearest the road (I014). */
+  statueKinds: ['football', 'dancer', 'cloth', 'book', 'draped', 'suited'] as StatueKind[],
   /** the two white pedestals with urns in the corner beds at the south end (the owner's marked aerial) */
   posts: [[-3.6, 97.8], [20.3, 97.8]] as [number, number][],
   /** the roundabout island before the library (pair 11, a 2014 reference state): its centre, the lawn's radius, the

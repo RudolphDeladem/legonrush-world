@@ -93,6 +93,16 @@ Comparison: `comparison-sheet-6.jpg`.
 The mapped footway across the square's south end (map line 1508) now runs under the two beds; nothing solid blocks it.
 Comparison: `comparison-sheet-7.jpg`. The red-circled west-lawn figure waits for the owner's photo.
 
+## Round 8: owner's notes (`owner/note8-*`)
+
+| Note | Change |
+|---|---|
+| The red-circled west-lawn figure (owner's photo) | Rebuilt as the woman holding the cloth: long fitted dress, puffed short sleeves, beaded necklace, hair drawn up, elbows bent with a wide cloth spread across her forearms and falling to the knees, a tail down her right side. |
+| The white pillar statue on the upper level east of the stairs does not exist | Removed. |
+| The grass round the square is asphalt | The lanes' asphalt carried up to the square's walls on the west and east, across the north (round the stair head) and from the beds to the roundabout; tufts kept off it. |
+
+Comparison: `comparison-sheet-8.jpg`.
+
 ## Not done yet (open, next)
 
 C04 roof tile ageing and junctions, C05 courtyard galleries and AC units (needs registration), C09 the weathered service elevation, C10 the columned block (location pending), C24-C28 trees, drains,
