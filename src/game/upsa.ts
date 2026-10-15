@@ -65,14 +65,16 @@ export function wires(spans: [V3, V3][], sag: number) {
 
 // ---------- materials: pavers laid herringbone, the median's grass ----------
 const paverMats = new Map<string, THREE.MeshStandardMaterial>();
-/** concrete pavers laid herringbone, one tile 4 m: tan (the sidewalks), grey (UGBS), dusty brown (GOIL) */
-export function pavers(kind: 'tan' | 'grey' | 'goil') {
+/** concrete pavers laid herringbone, one tile 4 m: tan (the sidewalks), grey (UGBS), dusty brown (GOIL), legon (the
+ *  banking square, Night Market and banks: taupe, grey and brown stones mixed, the correction brief's ground reference) */
+export function pavers(kind: 'tan' | 'grey' | 'goil' | 'legon') {
   let m = paverMats.get(kind);
   if (m) return m;
   const [base, cols] = {
     tan: ['#7c6a52', ['#c3a37c', '#b99872', '#caa984', '#b38f69', '#bf9e77']],
     grey: ['#605b55', ['#9b958c', '#908a81', '#a49e95', '#968f86', '#8a847b']],
     goil: ['#62574a', ['#a2917a', '#998871', '#a89781', '#94826b', '#9d8c76']],
+    legon: ['#77706a', ['#9b9187', '#958f89', '#9c8b7b', '#969089', '#918577']],
   }[kind] as [string, string[]];
   const cv = document.createElement('canvas');
   cv.width = cv.height = 256;
@@ -111,10 +113,10 @@ export function medianGrass() {
   return medianMat;
 }
 /** a flat paved rectangle (model frame), the texture laid in metres */
-export function pave(k: Kit, x0: number, x1: number, z0: number, z1: number, mat: THREE.Material, y = 0.025) {
+export function pave(k: Kit, x0: number, x1: number, z0: number, z1: number, mat: THREE.Material, y = 0.025, tile = 4) {
   const g = new THREE.PlaneGeometry(x1 - x0, z1 - z0).rotateX(-Math.PI / 2).translate((x0 + x1) / 2, y, (z0 + z1) / 2);
   const p = g.attributes.position as THREE.BufferAttribute, uv = g.attributes.uv as THREE.BufferAttribute;
-  for (let i = 0; i < p.count; i++) uv.setXY(i, p.getX(i) / 4, p.getZ(i) / 4);
+  for (let i = 0; i < p.count; i++) uv.setXY(i, p.getX(i) / tile, p.getZ(i) / tile);
   const m = new THREE.Mesh(g, mat); m.receiveShadow = true; k.meshes.push(m);
 }
 /** a raised strip between two edges (lists of model-frame points), its top at y, faces down to the ground on both sides */

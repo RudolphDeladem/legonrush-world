@@ -142,6 +142,49 @@ function fence(k: Kit, x0: number, x1: number) {
     }
   }
 }
+/** the same fence along any straight line from (ax, az) to (bx, bz) (world): built along +x, then turned onto the line */
+function fenceLine(k: Kit, ax: number, az: number, bx: number, bz: number) {
+  const L = Math.hypot(bx - ax, bz - az), ang = Math.atan2(bz - az, bx - ax);
+  const place = (g: THREE.BufferGeometry) => g.rotateY(-ang).translate(ax - GO[0], 0, az - GO[1]);
+  stoneMesh(k, [[place(box(0, L, 0, 0.85, -0.22, 0.22)), '#ffffff']]);
+  k.plain.push([place(box(0, L, 0.85, 0.95, -0.27, 0.27)), '#8d8a83']);
+  const n = Math.max(1, Math.round(L / 3.4));
+  for (let i = 0; i <= n; i++) {
+    const x = (L * i) / n;
+    k.plain.push([place(box(x - 0.24, x + 0.24, 0, 2.2, -0.24, 0.24)), PILLAR], [place(box(x - 0.29, x + 0.29, 2.2, 2.32, -0.29, 0.29)), '#dcdad3']);
+    if (i < n) {
+      const a = x + 0.24, b = (L * (i + 1)) / n - 0.24;
+      for (const y of [1.0, 1.95]) k.plain.push([place(box(a, b, y, y + 0.05, -0.03, 0.03)), RAIL]);
+      for (let t = a + 0.12; t < b; t += 0.14) k.plain.push([place(box(t - 0.015, t + 0.015, 0.95, 2.05, -0.015, 0.015)), RAIL]);
+    }
+  }
+}
+/**
+ * The rest of the school's boundary (the correction brief, slides 21-22: "fence the Legon Basic School"; the photos show
+ * the same railings on a rubble-stone base between square pillars, a hedge and trees behind, a paved footway outside).
+ * The line follows the roads round the school as the map draws them, a few metres inside their kerbs: Barimah Road's
+ * side on the west, the southern road, the road east of the hall and the road from the roundabout on the east. It stays
+ * open wherever a road or lane enters the grounds. The east side's exact line is not shown by any source (estimated).
+ */
+const BOUNDARY: [number, number, number, number][] = [
+  // La Road, west of the stub road at x -153 (the stretch east of it is the fence by the gate above)
+  [-207, 900.5, -158.5, 900.5],
+  // the west side, by Barimah Road, then along the bend of the road to the south
+  [-207, 900.5, -207, 1068], [-207, 1068, -209.5, 1112],
+  // the south side, inside the southern road, open at the lane at x -87
+  [-209.5, 1119, -91.5, 1110.5], [-82.5, 1110, -51, 1108.4],
+  // the east side: up the road east of the hall, along the lane south of the car park, up to the road from the
+  // roundabout, and back toward it short of the roundabout
+  [-42.5, 1106, -42.5, 1058], [-42.5, 1058, 12, 1058], [12, 1058, 12, 980], [12, 980, -3.5, 977],
+  [-17.5, 946, -17.5, 903],
+];
+const boundary: Spec = {
+  name: 'University of Ghana Basic School boundary fence',
+  axis: [1, 0], origin: GO, storey: 3, style: PLAIN, roofColor: '#6b3f2a', fascia: '#f3f2ee', pitch: 0.4,
+  blocks: [],
+  keep: [],
+  extras: (k: Kit) => { for (const [ax, az, bx, bz] of BOUNDARY) fenceLine(k, ax, az, bx, bz); },
+};
 const entrance: Spec = {
   name: 'University of Ghana Basic School entrance',
   axis: [1, 0], origin: GO, storey: 3, style: PLAIN, roofColor: '#6b3f2a', fascia: '#f3f2ee', pitch: 0.4,
@@ -177,5 +220,5 @@ const entrance: Spec = {
   },
 };
 
-/** the Basic School's blocks, its entrance and its fence */
-export const basicSchool = createSite('basicschool', [...BUILDINGS.map(block), entrance]);
+/** the Basic School's blocks, its entrance and its fence round the grounds */
+export const basicSchool = createSite('basicschool', [...BUILDINGS.map(block), entrance, boundary]);

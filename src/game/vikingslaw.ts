@@ -1,6 +1,8 @@
 // Mensah Sarbah Vikings Hostel and the School of Law, modelled from the owner's photos (block engine: blocks.ts).
 //
-// Vikings Hostel: an L of two five-storey wings with balcony corridors along their long sides, plain
+// Vikings Hostel: an L of two five-storey wings with balconies of real depth along their long sides (the correction
+// brief, slides 57-65: white walls, solid white parapets, fins between pairs of bays, barred dark ground-floor openings),
+// plain
 // end walls with square windows and a column of glass-block stair windows, a terracotta base, and a
 // hipped red roof. The main entrance is the single-storey VIKINGS HOSTEL block in the inner corner of
 // the L, facing the car park; a second door is at the foot of the long wing's south end.
@@ -14,27 +16,26 @@ import * as THREE from 'three';
 import { PAVE, WHITE, box } from './modelkit';
 import { PL, createSite, render, slab, window_, type Kit, type Spec, type Style } from './blocks';
 import { Bag } from './enkit';
+import { pave, pavers } from './upsa';
+import { car } from './banking';
 import { broadleaf } from './nsiaroad';
 
 // ---------- Vikings Hostel ----------
 const TERRACOTTA = '#b5573a';
-/** long sides: a corridor balcony behind a solid white parapet, doors and windows at the back */
+/** long sides: white walls behind the balconies (built in 3D in the extras: the correction brief, slides 58-65), a dark door
+ *  and a dark window to a bay; on the ground floor tall dark openings behind black bars */
 const VIK_BAL: Style = {
   bay: 3.4,
-  up: [[60, 40, 64, 120], [150, 50, 70, 80]],
-  ground: [[40, 50, 80, 130], [150, 60, 70, 100]],
+  up: [[60, 40, 64, 150], [150, 50, 70, 80]],
+  ground: [[40, 50, 80, 150], [150, 50, 70, 150]],
   draw: (g) => {
     render(g);
-    g.fillStyle = '#c9ac80'; g.fillRect(0, 0, 256, 226);
-    g.fillStyle = 'rgba(50,40,30,0.5)'; g.fillRect(0, 0, 256, 22);
-    window_(g, [60, 40, 64, 120], '#4a3d33', 1, 0);
+    window_(g, [60, 40, 64, 150], '#3a3d42', 1, 0);
     window_(g, [150, 50, 70, 80], '#3a3f45', 2, 0);
-    g.fillStyle = '#f6f4ee'; g.fillRect(0, 140, 256, 86);
-    g.fillStyle = '#ffffff'; g.fillRect(0, 136, 256, 8);
-    g.fillStyle = 'rgba(70,60,50,0.3)'; g.fillRect(0, 144, 256, 3);
-    slab(g, 226, 30);
-    window_(g, [40, 256 + 50, 80, 130], '#3a3f45', 2, 0.3);
-    window_(g, [150, 256 + 60, 70, 100], '#3a3f45', 2, 0.3);
+    window_(g, [40, 256 + 50, 80, 150], '#2b2e33', 2, 0);
+    window_(g, [150, 256 + 50, 70, 150], '#2b2e33', 2, 0);
+    g.fillStyle = '#121416';
+    for (const [x0, w] of [[40, 80], [150, 70]]) for (let x = x0 + 6; x < x0 + w; x += 9) g.fillRect(x, 256 + 50, 2, 150);
     g.fillStyle = TERRACOTTA; g.fillRect(0, 470, 256, 42);
   },
 };
@@ -59,7 +60,7 @@ const vikings: Spec = {
     { x0: -4, x1: 28.7, z0: -1.1, z1: 15.5, floors: 5, faces: { x1: VIK_END } },
     { x0: -4, x1: 11.5, z0: 15.5, z1: 23.5, floors: 1, roof: 'flat', faces: { z1: VIK_END, x1: VIK_END } },
   ],
-  keep: [[-11, 13, 23.5, 27.5]],
+  keep: [[-11, 14, 23.5, 27.5], [-26, 30.5, -30, 26]],
   extras: (k) => {
     // the terracotta base round both wings and the entrance block
     const base = (x0: number, x1: number, z0: number, z1: number) => {
@@ -73,11 +74,44 @@ const vikings: Spec = {
       k.plain.push([box(-19.3, -16.9, y, y + 0.7, Math.min(z, z + d * 0.06), Math.max(z, z + d * 0.06)), '#b9c6cc']);
       for (let x = -19.1; x < -17; x += 0.4) k.plain.push([box(x - 0.02, x + 0.02, y, y + 0.7, Math.min(z, z + d * 0.08), Math.max(z, z + d * 0.08)), '#e9eef0']);
     }
-    // the single-storey entrance block: a parapet, the VIKINGS HOSTEL sign board, its door at the left (owner's photo)
+    // balconies with real depth on the long faces, floors 1-4 (slides 59, 63, 65): a slab with a pale underside, a solid
+    // white parapet, short returns at the ends and fins between pairs of bays; the end walls stay plain
+    const bal = (face: 'x0' | 'x1' | 'z0' | 'z1', at: number, a0: number, a1: number) => {
+      const out = face === 'x0' || face === 'z0' ? -1 : 1, D = 1.4;
+      const seg = (u0: number, u1: number, v0: number, v1: number, y0: number, y1: number, c: string) =>
+        k.plain.push([face[0] === 'x' ? box(Math.min(v0, v1), Math.max(v0, v1), y0, y1, u0, u1) : box(u0, u1, y0, y1, Math.min(v0, v1), Math.max(v0, v1)), c]);
+      for (let f = 1; f < 5; f++) {
+        const y = PL + f * 3.0;
+        seg(a0, a1, at, at + out * D, y - 0.18, y + 0.02, '#ecebe6');
+        seg(a0, a1, at + out * (D - 0.12), at + out * D, y, y + 1.05, WHITE);
+        seg(a0, a1, at + out * D - out * 0.02, at + out * (D + 0.02), y + 1.0, y + 1.08, '#e0ddd5');
+        for (const u of [a0, a1]) seg(u - 0.06, u + 0.06, at, at + out * D, y, y + 1.05, WHITE);
+        for (let u = a0 + 6.8; u < a1 - 1; u += 6.8) seg(u - 0.07, u + 0.07, at, at + out * D, y, y + 2.85, WHITE);
+      }
+    };
+    bal('x0', -21.9, -25.4, 25.5); bal('x1', -4, -25.4, -1.7);
+    bal('z0', -1.1, -3.4, 28.1); bal('z1', 15.5, -3.4, 28.1);
+    // the single-storey entrance block (slide 59): a deep flat canopy over the front with VIKINGS HOSTEL on its fascia,
+    // its door at the left (owner's photo), the curved planter in a red-brown wall at its corner
     const top = k.wallTop(1);
-    k.plain.push([box(-4, 11.5, top, top + 0.7, 23.3, 23.6), WHITE], [box(11.3, 11.6, top, top + 0.7, 15.5, 23.6), WHITE]);
-    k.plain.push([box(-0.5, 10.5, top - 0.9, top + 0.6, 23.5, 23.7), '#f4f2ec']);
-    k.signs.push({ text: 'VIKINGS HOSTEL', x: 5, y: top - 0.1, z: 23.71, ry: 0, w: 5.2, colors: ['#f4f2ec', '#1f3a7a'] });
+    k.plain.push([box(-4.4, 12.4, top - 0.05, top + 0.35, 23.5, 26.0), WHITE], [box(-4.4, 12.4, top - 0.12, top - 0.05, 23.5, 26.0), '#d9d5cc']);
+    k.plain.push([box(11.3, 11.6, top, top + 0.35, 15.5, 23.6), WHITE]);
+    k.signs.push({ text: 'VIKINGS HOSTEL', x: 4.5, y: top + 0.15, z: 26.01, ry: 0, w: 6.4, colors: ['#f7f4ec', '#1f3a7a'] });
+    for (let i = 0; i < 12; i++) {
+      const a0 = (i / 12) * Math.PI, a1 = ((i + 1) / 12) * Math.PI, r = 1.9;
+      const cx = 11.5 + Math.cos((a0 + a1) / 2) * r, cz = 23.5 + Math.sin((a0 + a1) / 2) * r * 0.9;
+      k.plain.push([new THREE.BoxGeometry(0.22, 0.6, r * (a1 - a0) + 0.05).rotateY(-(a0 + a1) / 2).translate(cx, 0.3, cz), '#9c3f2a']);
+    }
+    k.plain.push([new THREE.CylinderGeometry(1.75, 1.75, 0.5, 16, 1, false, 0, Math.PI).rotateY(Math.PI / 2).scale(1, 1, 0.9).translate(11.5, 0.25, 23.5), '#4a6b2f']);
+    // the ground: block paving round the hostel and over the forecourt and car park (slides 58, 59, 63: paved up to the
+    // walls, not lawn), cars nose-in to the east wing, a kerbed island with a red-leaved plant
+    const pv = pavers('legon');
+    pave(k, -26, -21.9, -30, 26, pv, 0.03, 2); pave(k, -21.9, 30, -30, -26, pv, 0.03, 2); pave(k, -4, 30, -26, -1.1, pv, 0.03, 2);
+    pave(k, -21.9, 12, 26.1, 27.2, pv, 0.03, 2); pave(k, -4, 12, 15.5, 26.1, pv, 0.03, 2); pave(k, 12, 30, 15.5, 24.5, pv, 0.03, 2); pave(k, 28.7, 30.5, -1.1, 15.5, pv, 0.03, 2);
+    for (let x = 14; x < 28; x += 2.8) k.plain.push([box(x - 0.04, x + 0.04, 0.04, 0.05, 15.6, 20.6), '#f2f2ee']);
+    for (const [x, c] of [[15.4, '#9b1f24'], [18.2, '#e9e9ea'], [23.8, '#2b3b5a']] as [number, string][]) car(k, x, 18.2, 'z', c);
+    k.plain.push([box(6.8, 9.6, 0, 0.18, 24.4, 26.6), '#e9e7e0'], [box(7.0, 9.4, 0.18, 0.22, 24.6, 26.4), '#4a6b2f']);
+    for (let i = 0; i < 7; i++) k.plain.push([new THREE.BoxGeometry(0.06, 0.9, 0.5).rotateZ((i - 3) * 0.35).rotateY(i).translate(8.2, 0.65, 25.5), '#9e1f3c']);
     k.glass.push(box(-0.7, 1.7, PL, 2.9, 23.5, 23.55));
     k.plain.push([box(-0.8, 1.8, 2.9, 3.05, 23.5, 23.6), '#3a3d42'], [box(-1.2, 2.2, 0, 0.2, 23.5, 25), PAVE]);
     // the second door, at the foot of the long wing's south end (owner's photo, the small mark on the left)

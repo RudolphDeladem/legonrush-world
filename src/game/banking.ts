@@ -13,9 +13,16 @@
 // north notch, the Union Building's (sign: ALUMNI BUILDING) in the east notch.
 //
 // ADB and HFC (now Republic Bank): two red-roofed blocks beside the brown-roofed block OSM maps.
+//
+// The correction brief (65 slides, 2026-10-15): CalBank's porch and Prudential Bank's entrance on the compound, the
+// west wing's wall with its air-conditioning units; Republic Bank and the UG Credit Union Building on the long block's
+// west front over a block-paved forecourt behind a low rubble wall; Ecobank's door, steps, ramp, ATM and roadside sign.
 import * as THREE from 'three';
 import { PAVE, TRIM, WHITE, box, canvas, speckle } from './modelkit';
 import { BAND, OV, PL, createSite, render, ringRoof, window_, type Block, type Face, type Kit, type Spec, type Style } from './blocks';
+import { pave, pavers } from './upsa';
+import { letters } from './letters';
+import { stoneMesh } from './concrete';
 
 // ---------- facades ----------
 /** the compound's rooms: white render, a dark window in each bay over a red-brown base (owner's CBG photo) */
@@ -63,7 +70,7 @@ const UNION_WIN: Style = {
 };
 
 /** a parked car (body, cabin, glass) for the courtyard car park */
-function car(k: Kit, x: number, z: number, along: 'x' | 'z', color: string) {
+export function car(k: Kit, x: number, z: number, along: 'x' | 'z', color: string) {
   const [l, w] = [4.3, 1.8];
   const [sx, sz] = along === 'x' ? [l, w] : [w, l];
   k.plain.push([box(x - sx / 2, x + sx / 2, 0.3, 1.0, z - sz / 2, z + sz / 2), color]);
@@ -125,8 +132,10 @@ const compound: Spec = {
     { x0: -21.2, x1: -10.9, z0: -24.9, z1: -22, floors: ONE, roof: 'none' },
     { x0: 9, x1: 32.4, z0: -22, z1: -14.5, floors: ONE, roof: 'none' },
     { x0: 12.9, x1: 23, z0: -25.4, z1: -22, floors: ONE, roof: 'none' },
-    // west wing (CBG), the south-west block and its bay
+    // west wing (CBG), the south-west block and its bay; the rooms reach the road side under the roof's edge (the
+    // correction brief, slide 3: a continuous wall of windows with air-conditioning units along its foot, no veranda)
     { x0: -20.9, x1: -10.7, z0: -14.7, z1: 14.8, floors: ONE, roof: 'none' },
+    { x0: -32.3, x1: -20.9, z0: -13.4, z1: 14.8, floors: ONE, roof: 'none' },
     { x0: -33, x1: -10.6, z0: 14.8, z1: 23.1, floors: ONE, roof: 'none' },
     { x0: -20.9, x1: -10.6, z0: 23.1, z1: 25.3, floors: ONE, roof: 'none' },
     // south wing (UMB), the south-east block and its bay
@@ -142,12 +151,14 @@ const compound: Spec = {
     // one red roof over the rooms, the verandas and the walkways (owner aerial)
     ringRoof(k, [-33.6, 33.7, -26.0, 26.2], [-10.1, 12.8, -14.1, 13.9], e, 2.4);
     // verandas: slim posts along the outer roof line where OSM leaves the rooms open
-    for (let z = -12.5; z <= 14; z += 4.5) {
-      k.plain.push([box(-32.9, -32.6, 0, e, z - 0.15, z + 0.15), WHITE]);
-      k.plain.push([box(32.6, 32.9, 0, e, z - 0.15, z + 0.15), WHITE]);
+    for (let z = -12.5; z <= 14; z += 4.5) k.plain.push([box(32.6, 32.9, 0, e, z - 0.15, z + 0.15), WHITE]);
+    // the air-conditioning units along the foot of the west wall (slide 3)
+    for (let z = -11.2; z <= 13; z += 2.6) {
+      k.plain.push([box(-33.0, -32.3, 0.25, 0.95, z - 0.45, z + 0.45), '#e6e6e3'], [box(-33.04, -33.0, 0.4, 0.85, z - 0.3, z + 0.3), '#4a4d51']);
+      k.plain.push([box(-32.95, -32.35, 0, 0.25, z - 0.4, z - 0.32), '#7d7f82'], [box(-32.95, -32.35, 0, 0.25, z + 0.32, z + 0.4), '#7d7f82']);
     }
     for (const x of [-30, -25, -8.5, 11.5, 26, 30]) k.plain.push([box(x - 0.15, x + 0.15, 0, e, -25.3, -25.0), WHITE]); // the gate stays open
-    for (const x of [-31, -18, -7, -2, 6, 11, 27, 31]) k.plain.push([box(x - 0.15, x + 0.15, 0, e, 25.2, 25.5), WHITE]); // clear of the CBG and UMB doors
+    for (const x of [-31, -18, -2, 6, 11, 27, 31]) k.plain.push([box(x - 0.15, x + 0.15, 0, e, 25.2, 25.5), WHITE]); // clear of the CBG, CalBank and UMB doors
     k.plain.push([box(-33.4, 33.4, 0, 0.2, -26, -14.5), PAVE], [box(-33.4, 33.4, 0, 0.2, 14.5, 26), PAVE]);
     k.plain.push([box(-33.4, -20.9, 0, 0.2, -14.5, 14.5), PAVE], [box(23.6, 33.4, 0, 0.2, -14.5, 14.5), PAVE]);
     // the big entrance to the courtyard car park: gate pillars and a beam with the square's name
@@ -193,6 +204,39 @@ const compound: Spec = {
       k.signs.push({ text: 'umb', x: ux, y: gy + 0.85, z: uz + 3.68, ry: 0, w: 1.6, colors: [CHAR, '#f2c200'] });
       for (let i = 0; i < 3; i++) k.plain.push([box(ux - 2.2 - i * 0.2, ux + 2.2 + i * 0.2, 0, 0.6 - i * 0.2, uz, uz + 3.0 + i * 0.4), '#b0623f']);
     }
+    // CalBank (the correction brief, slides 10-13): its porch in the south wing's face between the south-west bay and UMB's porch (slide 1 puts CalBank in the south-west part): a
+    // deep dark louvred gable, a yellow band, white square columns, the white CalBank sign panel between them, tiled
+    // steps up to a recessed dark-glass entry, a trimmed hedge beside the steps
+    {
+      const qx = -6.4, qz = 23.1, CHAR = '#2f3236', YEL = '#f3b31b';
+      k.glass.push(box(qx - 1.4, qx + 1.4, PL, 3.0, qz - 0.6, qz - 0.56));
+      k.plain.push([box(qx - 1.9, qx - 1.4, PL, 3.0, qz - 0.6, qz), WHITE], [box(qx + 1.4, qx + 1.9, PL, 3.0, qz - 0.6, qz), WHITE]);
+      for (const s of [-1, 1]) k.plain.push([box(qx + s * 2.6 - 0.28, qx + s * 2.6 + 0.28, 0.6, e - 0.5, qz + 2.7, qz + 3.3), WHITE]);
+      k.plain.push([box(qx - 3.5, qx + 3.5, e - 0.8, e, qz, qz + 3.5), YEL]);
+      const gy = e, gh = 2.4, gw = 3.85;
+      k.plain.push([new THREE.ShapeGeometry(new THREE.Shape([new THREE.Vector2(-gw, 0), new THREE.Vector2(gw, 0), new THREE.Vector2(0, gh)])).translate(qx, gy, qz + 3.52), CHAR]);
+      for (let i = 1; i < 9; i++) k.plain.push([box(qx - gw * (1 - i / 9) + 0.15, qx + gw * (1 - i / 9) - 0.15, gy + (gh * i) / 9 - 0.04, gy + (gh * i) / 9, qz + 3.53, qz + 3.58), '#45494e']);
+      k.roof.quad([qx - gw - 0.3, gy, qz + 3.7], [qx - gw - 0.3, gy, qz - 0.5], [qx, gy + gh + 0.1, qz - 0.5], [qx, gy + gh + 0.1, qz + 3.7]);
+      k.roof.quad([qx + gw + 0.3, gy, qz - 0.5], [qx + gw + 0.3, gy, qz + 3.7], [qx, gy + gh + 0.1, qz + 3.7], [qx, gy + gh + 0.1, qz - 0.5]);
+      // the sign: a white panel under the band between the columns, the orange mark and the name
+      k.plain.push([box(qx - 1.9, qx + 1.9, e - 1.75, e - 0.85, qz + 3.25, qz + 3.35), '#fbfbf8']);
+      k.plain.push([box(qx - 1.75, qx - 1.25, e - 1.55, e - 1.05, qz + 3.35, qz + 3.38), '#ef7d1a']);
+      k.signs.push({ text: 'CalBank', x: qx + 0.25, y: e - 1.3, z: qz + 3.36, ry: 0, w: 2.6, colors: ['#fbfbf8', '#2b2b2b'] });
+      for (let i = 0; i < 3; i++) k.plain.push([box(qx - 2.1 - i * 0.15, qx + 2.1 + i * 0.15, 0, 0.6 - i * 0.2, qz, qz + 2.6 + i * 0.4), '#a9583a']);
+      k.plain.push([box(qx - 3.4, qx - 2.5, 0, 0.8, qz + 0.3, qz + 2.4), '#3f7a35']);
+    }
+    // Prudential Bank (slides 14, 15): its entrance in the west face of the north-west block, by the Prudential place: a
+    // recessed door with a gilt grille under the blue-lettered PRUDENTIAL BANK LTD. board, tiled steps
+    {
+      const px = -32.3, pz = -17.4;
+      k.plain.push([box(px - 0.12, px, PL, 3.0, pz - 1.6, pz + 1.6), '#f4f2ec']);
+      k.glass.push(box(px - 0.02, px + 0.02, PL, 2.7, pz - 1.0, pz + 1.0));
+      for (let z = pz - 0.9; z <= pz + 0.9; z += 0.3) k.plain.push([box(px - 0.08, px - 0.04, PL, 2.7, z - 0.025, z + 0.025), '#c9a227']);
+      k.plain.push([box(px - 0.2, px - 0.08, 2.75, 3.45, pz - 2.0, pz + 2.0), '#fbfbf8']);
+      k.plain.push([box(px - 0.24, px - 0.2, 2.85, 3.35, pz - 1.85, pz - 1.4), '#1f5fa8']);
+      k.signs.push({ text: 'PRUDENTIAL BANK LTD.', x: px - 0.21, y: 3.1, z: pz + 0.25, ry: -Math.PI / 2, w: 3.2, colors: ['#fbfbf8', '#1f5fa8'] });
+      for (let i = 0; i < 2; i++) k.plain.push([box(px - 0.5 - i * 0.35, px, 0, 0.4 - i * 0.2, pz - 1.6 - i * 0.2, pz + 1.6 + i * 0.2), '#a9583a']);
+    }
     // Stanbic: its door in the north face of the north-east corner block, toward the road and car park (owner's mark)
     bankDoorZ(k, 17, -25.4, -1, 'STANBIC BANK', ['#0a3ea8', '#ffffff']);
   },
@@ -229,10 +273,10 @@ const UNION_BLOCKS: Block[] = [
 ];
 const union: Spec = {
   name: 'Union Building (Banking Square)',
-  axis: UAX, origin: [245.4, 1030.3], storey: STOREY, style: UNION_WIN, roofColor: '#c98a62', fascia: TRIM, pitch: 0.32,
+  axis: UAX, origin: [245.4, 1030.3], storey: STOREY, style: UNION_WIN, roofColor: '#b2603f', fascia: TRIM, pitch: 0.32,
   replaces: [[232.5, 1016.2]],
   blocks: UNION_BLOCKS,
-  keep: [[-3.5, 3.9, -24, -12.4], [12.5, 24, -4.1, 2.6]],
+  keep: [[-12.1, 11.6, -25.4, -12.4], [12.5, 24, -4.1, 2.6]],
   extras: (k) => {
     const e = eaveOf();
     // the lantern over the middle: an octagonal drum with a gold cap (aerial)
@@ -245,12 +289,33 @@ const union: Spec = {
     const B = UNION_BLOCKS;
     panels(k, B[1], 'x0', e, 0.32); panels(k, B[2], 'x1', e, 0.32); panels(k, B[3], 'z0', e, 0.32);
     panels(k, B[7], 'z0', e, 0.32); panels(k, B[8], 'z1', e, 0.32); panels(k, B[4], 'z1', e, 0.32);
-    // Ecobank: its door in the north notch, between the two north wings (owner)
-    const zN = -12.4;
-    k.glass.push(box(-2.2, 2.2, PL, 3.0, zN - 0.04, zN));
-    k.plain.push([box(-3.4, 3.8, 3.1, 3.7, zN - 2.4, zN), '#0a5aa6']);
-    k.signs.push({ text: 'ECOBANK', x: 0.2, y: 3.4, z: zN - 2.41, ry: Math.PI, w: 3.2, colors: ['#0a5aa6', '#ffffff'] });
-    k.plain.push([box(-3.4, 3.8, 0, 0.25, zN - 3, zN), PAVE]);
+    // Ecobank: its door in the north notch, between the two north wings (owner); from the correction brief's photos
+    // (slides 43-56): blue-framed glass double doors under the teal Ecobank panel, concrete steps, a ramp with blue rails
+    // up to the ATM under its blue awning beside the door, clipped hedges in beds either side, a block-paved court
+    const zN = -12.4, BLUE = '#1f5fa8', TEAL = '#2a8ea3';
+    const pv = pavers('legon');
+    pave(k, -3.5, 3.9, -22.4, zN, pv, 0.03, 2);
+    pave(k, -12.1, 11.6, -25.4, -22.4, pv, 0.03, 2);
+    k.glass.push(box(-1.6, 1.6, 0.9, 3.0, zN - 0.04, zN));
+    for (const x of [-1.65, 0, 1.65]) k.plain.push([box(x - 0.06, x + 0.06, 0.9, 3.0, zN - 0.08, zN), BLUE]);
+    k.plain.push([box(-1.7, 1.7, 2.95, 3.08, zN - 0.08, zN), BLUE]);
+    k.plain.push([box(-2.6, 2.6, 3.25, 4.35, zN - 0.22, zN - 0.08), TEAL]);
+    k.signs.push({ text: 'Ecobank', x: 0, y: 3.8, z: zN - 0.23, ry: Math.PI, w: 3.4, colors: [TEAL, '#ffffff'] });
+    for (let i = 0; i < 4; i++) k.plain.push([box(-1.9, 1.9, 0, 0.9 - i * 0.22, zN - 0.9 - i * 0.45, zN), '#b9b6ae']);
+    // the ATM beside the door, under its blue awning, reached by a ramp with blue rails
+    k.plain.push([box(2.35, 3.75, 0.9, 2.5, zN - 0.35, zN), '#d9dde0'], [box(2.6, 3.5, 1.5, 2.1, zN - 0.37, zN - 0.35), '#26323c']);
+    k.plain.push([new THREE.CylinderGeometry(0.75, 0.75, 1.5, 12, 1, true, 0, Math.PI).rotateZ(Math.PI / 2).scale(1, 0.75, 1).translate(3.05, 2.85, zN - 0.05), BLUE]);
+    const rise = 0.9, run = 5.5, ang = Math.atan2(rise, run), len = Math.hypot(rise, run);
+    k.plain.push([new THREE.BoxGeometry(1.4, 0.12, len).rotateX(ang).translate(3.05, rise / 2, zN - 1.0 - run / 2), '#c4c1b9']);
+    k.plain.push([box(2.35, 3.75, 0, 0.9, zN - 1.0, zN), '#c4c1b9']);
+    for (const x of [2.32, 3.78]) {
+      k.plain.push([new THREE.BoxGeometry(0.05, 0.05, len).rotateX(ang).translate(x, rise / 2 + 0.95, zN - 1.0 - run / 2), BLUE]);
+      for (const t of [0, 0.5, 1]) k.plain.push([box(x - 0.025, x + 0.025, rise * (1 - t), rise * (1 - t) + 0.95, zN - 1.0 - run * t - 0.025, zN - 1.0 - run * t + 0.025), BLUE]);
+    }
+    // clipped hedges in kerbed beds before the wings (slides 49, 53, 54)
+    for (const [x0, x1] of [[-11.8, -3.9], [4.2, 11.3]] as [number, number][]) {
+      k.plain.push([box(x0, x1, 0, 0.15, -23.9, -22.6), '#e9e7e0'], [box(x0 + 0.15, x1 - 0.15, 0.15, 0.95, -23.75, -22.75), '#3c6a2e']);
+    }
     // the Union Building: glass doors in the east notch over a block-paved forecourt, the ALUMNI BUILDING sign (owner photo)
     const xE = 12.45;
     k.glass.push(box(xE, xE + 0.04, PL, 3.0, -2.6, 1.2));
@@ -272,8 +337,37 @@ const adbHfc: Spec = {
     { x0: 9.3, x1: 18.4, z0: -16, z1: 9.3, floors: ONE },
     { x0: 5.6, x1: 15.2, z0: -2.7, z1: 22.7, floors: ONE },
   ],
-  keep: [[-12, 9, -18.4, 27]],
+  keep: [[-17, 9, -18.4, 28]],
   extras: (k) => {
+    // the long red-roofed block's west front (the correction brief, slides 24-37): Republic Bank and the UG Credit Union
+    // Building in one low range: white over a grey dado, the blue Republic Bank board on the roof's edge, ENTRANCE over
+    // glass doors, the blue ATM pod, the UG CREDIT UNION BUILDING letters at its north end; tiled steps along the front,
+    // a raised bed with a white kerb and shrubs, flagpoles and a small booth at the south end (the frame's -x is west)
+    const fx = -11.2, e = eaveOf(), BLUE = '#2a8fd0';
+    k.plain.push([box(fx - 0.06, fx, 0, 1.0, -4.9, 22.4), '#8f9296']);
+    k.plain.push([box(fx - 0.25, fx - 0.05, e - 0.3, e + 0.9, 5.5, 12.5), BLUE]);
+    k.signs.push({ text: 'Republic Bank', x: fx - 0.26, y: e + 0.3, z: 9, ry: -Math.PI / 2, w: 5.8, colors: [BLUE, '#ffffff'] });
+    k.glass.push(box(fx - 0.04, fx, PL, 2.7, 7.8, 10.2));
+    k.plain.push([box(fx - 0.08, fx, PL, 2.7, 8.98, 9.02), '#3a3d42'], [box(fx - 0.1, fx, 2.75, 3.15, 7.6, 10.4), '#1f3a6a']);
+    k.signs.push({ text: 'ENTRANCE', x: fx - 0.11, y: 2.95, z: 9, ry: -Math.PI / 2, w: 2.2, colors: ['#1f3a6a', '#ffffff'] });
+    k.plain.push([box(fx - 0.7, fx, PL, 2.6, 5.4, 6.8), '#1f8fd6'], [box(fx - 0.72, fx - 0.7, 1.3, 1.9, 5.7, 6.5), '#26323c']);
+    letters(k, 'UG', fx - 0.05, 2.45, 0.2, -Math.PI / 2, 0.4, 0.06, '#c9a227');
+    letters(k, 'CREDIT UNION', fx - 0.05, 1.9, 0.2, -Math.PI / 2, 0.4, 0.06, '#c9a227');
+    letters(k, 'BUILDING', fx - 0.05, 1.35, 0.2, -Math.PI / 2, 0.4, 0.06, '#c9a227');
+    for (let i = 0; i < 3; i++) k.plain.push([box(fx - 0.9 - i * 0.5, fx, 0, 0.6 - i * 0.2, -4.4, 21.9), '#a9583a']);
+    k.plain.push([box(fx - 4.2, fx - 2.6, 0, 0.35, -2, 6.6), '#ecebe5'], [box(fx - 4.05, fx - 2.75, 0.35, 0.4, -1.85, 6.45), '#4c3a2a']);
+    k.plain.push([box(fx - 4.2, fx - 2.6, 0, 0.35, 11.4, 20), '#ecebe5'], [box(fx - 4.05, fx - 2.75, 0.35, 0.4, 11.55, 19.85), '#4c3a2a']);
+    for (const z of [-0.8, 1.6, 4, 12.6, 15, 17.4, 19.2]) k.plain.push([new THREE.IcosahedronGeometry(0.55, 0).scale(1, 0.8, 1).translate(fx - 3.4, 0.75, z), '#46762f']);
+    for (const [z, cols] of [[24.6, ['#ce1126', '#fcd116', '#006b3f']], [25.8, [BLUE, BLUE, '#ffffff']]] as [number, string[]][]) {
+      k.plain.push([new THREE.CylinderGeometry(0.05, 0.06, 7, 6).translate(fx - 5, 3.5, z), '#d8d8d8']);
+      cols.forEach((c, i) => k.plain.push([box(fx - 5.02, fx - 4.98, 6.5 - i * 0.3, 6.8 - i * 0.3, z, z + 1.4), c]));
+    }
+    k.plain.push([box(fx - 8.4, fx - 6.4, 0, 2.4, 24, 26), '#f3f2ec'], [box(fx - 8.6, fx - 6.2, 2.4, 2.55, 23.8, 26.2), '#2f5f9a']);
+    // ADB (slide 33): its own front on the east block, green columns and the adb board, not Republic Bank's colours
+    k.plain.push([box(18.4, 18.5, 2.9, 3.6, -5.2, -0.8), '#f4f4f0']);
+    k.signs.push({ text: 'adb', x: 18.51, y: 3.25, z: -3, ry: Math.PI / 2, w: 1.6, colors: ['#f4f4f0', '#1d7a3c'] });
+    for (const z of [-5.0, -1.0]) k.plain.push([box(18.4, 18.75, 0, 2.9, z - 0.18, z + 0.18), '#1d7a3c']);
+    k.glass.push(box(18.4, 18.44, PL, 2.6, -4.2, -1.8));
     // white canopies on the south side (aerial); the doors' exact places are not marked
     for (const x of [-7, 0]) {
       k.plain.push([box(x - 2, x + 2, 3.0, 3.4, 22.4, 25), WHITE]);
@@ -283,5 +377,55 @@ const adbHfc: Spec = {
   },
 };
 
-/** the banking square: the bank compound, the Union Building (Ecobank) and the ADB / HFC block */
-export const banking = createSite('banking-square', [compound, union, adbHfc]);
+// ---------- Republic Bank's forecourt and Ecobank's roadside sign (world axes) ----------
+const RFO: [number, number] = [205, 962];
+const rx = (x: number) => x - RFO[0], rz = (z: number) => z - RFO[1];
+const frontage: Spec = {
+  name: 'Republic Bank forecourt and Ecobank sign',
+  axis: [1, 0], origin: RFO, storey: 3, style: BANK_WIN, roofColor: '#b8743e', fascia: TRIM, pitch: 0.3,
+  blocks: [],
+  keep: [[rx(194), rx(213), rz(947), rz(982)], [rx(286), rx(294), rz(1013), rz(1023)]],
+  extras: (k) => {
+    const pv = pavers('legon');
+    // the forecourt between the road and the bank's front, block-paved, with bays painted on it (slides 25, 27, 36)
+    pave(k, rx(196), rx(222), rz(947), rz(982), pv, 0.03, 2);
+    pave(k, rx(193.4), rx(195.6), rz(949), rz(980), pavers('goil'), 0.035);
+    for (let z = 951; z <= 975; z += 2.7) k.plain.push([box(rx(204), rx(209), 0.04, 0.05, rz(z) - 0.05, rz(z) + 0.05), '#f2f2ee']);
+    for (const [z, c] of [[952.4, '#e9e9ea'], [957.8, '#2b3b5a'], [968.6, '#7a1e1e']] as [number, string][]) car(k, rx(206.5), rz(z), 'x', c);
+    // the low wall of rubble stone under a pale coping along the road side, broken by steps by the sign (slides 28-30, 33)
+    const wall = (z0: number, z1: number) => {
+      stoneMesh(k, [[box(rx(195.6), rx(196.1), 0, 0.75, rz(z0), rz(z1)), '#ffffff']]);
+      k.plain.push([box(rx(195.55), rx(196.15), 0.75, 0.85, rz(z0), rz(z1)), '#d9d4c8']);
+    };
+    wall(949, 966.4); wall(969.2, 980);
+    for (let i = 0; i < 3; i++) k.plain.push([box(rx(195.6 - i * 0.0), rx(196.1 + i * 0.35), 0, 0.25 + i * 0.25, rz(966.5), rz(969.1)), '#c2bcb0']);
+    // the tall blue roadside sign on its dark base, behind the wall (slides 28, 30)
+    const sx = rx(198), sz = rz(964.6);
+    k.plain.push([box(sx - 0.9, sx + 0.9, 0, 0.5, sz - 0.4, sz + 0.4), '#3a3d42']);
+    k.plain.push([box(sx - 0.6, sx + 0.6, 0.5, 5.1, sz - 0.18, sz + 0.18), '#2a8fd0']);
+    k.plain.push([box(sx - 0.62, sx + 0.62, 4.0, 4.9, sz - 0.2, sz + 0.2), '#f6f6f2']);
+    k.signs.push({ text: 'Republic Bank', x: sx - 0.63, y: 4.45, z: sz, ry: -Math.PI / 2, w: 1.15, colors: ['#f6f6f2', '#2a8fd0'] });
+    for (let y = 1.0; y < 3.8; y += 0.55) k.plain.push([box(sx - 0.62, sx + 0.62, y, y + 0.38, sz - 0.19, sz + 0.19), '#5fb3e3']);
+    // Ecobank's roadside sign by the main road (slide 42): stacked teal panels on a post, beside a Norfolk pine (slides
+    // 44, 46); the panels carry only what the photo shows legibly
+    const ex = rx(290.5), ez = rz(1018);
+    k.plain.push([box(ex - 0.12, ex + 0.12, 0, 4.6, ez - 0.12, ez + 0.12), '#2f3a44']);
+    ([['Ecobank', 0.9, 1.7], ['LEGON', 0.55, 1.35], ['HOURS', 0.5, 1.2], ['24H ATM', 0.5, 1.2], ['Rapidtransfer', 0.5, 1.2]] as [string, number, number][])
+      .reduce((y, [t, h, w]) => {
+        k.plain.push([box(ex - 0.16, ex + 0.16, y - h, y, ez - w / 2, ez + w / 2), '#23708a']);
+        k.signs.push({ text: t, x: ex - 0.17, y: y - h / 2, z: ez, ry: -Math.PI / 2, w: w * 0.92, colors: ['#23708a', '#ffffff'] });
+        k.signs.push({ text: t, x: ex + 0.17, y: y - h / 2, z: ez, ry: Math.PI / 2, w: w * 0.92, colors: ['#23708a', '#ffffff'] });
+        return y - h - 0.08;
+      }, 4.9);
+    k.plain.push([box(ex - 1.2, ex + 1.2, 0, 0.12, ez - 1.6, ez + 1.6), '#e9e7e0'], [box(ex - 1.1, ex + 1.1, 0.12, 0.5, ez - 1.5, ez + 1.5), '#3c6a2e']);
+    const px = rx(287.2), pz = rz(1021.5);
+    k.plain.push([new THREE.CylinderGeometry(0.12, 0.2, 9, 7).translate(px, 4.5, pz), '#5b4330']);
+    for (let i = 0; i < 9; i++) {
+      const y = 1.6 + i * 0.85, r = 1.9 - i * 0.18;
+      k.plain.push([new THREE.CylinderGeometry(r, r * 1.05, 0.22, 8).translate(px, y, pz), '#2f5a2a']);
+    }
+  },
+};
+
+/** the banking square: the bank compound, the Union Building (Ecobank), the ADB / Republic Bank block and its forecourt */
+export const banking = createSite('banking-square', [compound, union, adbHfc, frontage]);

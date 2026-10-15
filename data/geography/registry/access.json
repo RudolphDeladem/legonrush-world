@@ -45,7 +45,8 @@
   "owner-isser-annex": "Owner's marked aerial of the ISSER Annex and the ground west of it to Botanical Gardens Road, registered to the annex's outlines at 0.25 m/px, and owner's photos of the ISSER Annex (from the air, and from the road on the east); the entrances marked blue, the walk from the engineering school marked with a blue arrow.",
   "owner-earth-science": "Owner's marked aerial of the Department of Earth Science (storey building yellow, one-floor ranges violet, the entrance blue), registered at 0.25 m/px, and photos of its front and back.",
   "owner-nblock-front": "The owner's marked aerial of the ground round the front of the N Block (eleven numbered views) and a street photo of each view: Plant Biology's entrance terrace (views 9 to 11), the Centre for Biodiversity Conservation Research (view 2).",
-  "owner-wagmc": "the owner's marked WAGMC ride screenshot (2026-10-14) and docs/noguchi-wagmc/refs/owner-wagmc-entrance.png"
+  "owner-wagmc": "the owner's marked WAGMC ride screenshot (2026-10-14) and docs/noguchi-wagmc/refs/owner-wagmc-entrance.png",
+  "owner-correction-65": "The owner's correction brief of 2026-10-15 (CORRECTION FILE, 65 slides: Night Market / Jubilee Drive strip, Legon Basic School, Republic Bank, Ecobank, Vikings Hostel): satellite views with Google Maps labels, game screenshots and street photos; docs/correction-65/"
  },
  "campusGates": [
   {
@@ -856,6 +857,42 @@
    "refs": [
     "banking_square_labelled (owner aerial)",
     "umb_front (owner photo)"
+   ]
+  },
+  {
+   "place": "CalBank",
+   "entrance": {
+    "at": [
+     151.6,
+     1020.1
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "medium",
+   "cite": "owner-correction-65",
+   "approach": "From the road along the south side of the banking square, up the tiled steps under CalBank's dark louvred gable.",
+   "evidence": "Correction brief slides 10-13: CalBank's front (dark louvred gable, yellow band, white columns, the CalBank sign, steps); slide 1 labels CalBank on the south-west part of the compound. The porch is placed in the south wing between the south-west bay and UMB's porch; its exact bay is estimated.",
+   "refs": [
+    "correction-65 slides 1, 10-13"
+   ]
+  },
+  {
+   "place": "Prudential Bank",
+   "entrance": {
+    "at": [
+     125.7,
+     979.6
+    ]
+   },
+   "type": "public entrance",
+   "status": "verified",
+   "confidence": "medium",
+   "cite": "owner-correction-65",
+   "approach": "From Jubilee Drive on the west side of the banking square, up the tiled steps to the door under the PRUDENTIAL BANK LTD. board.",
+   "evidence": "Correction brief slides 14-15: Prudential Bank's front (blue-lettered board over a recessed door with a gilt grille, tiled steps) on a low white block with a red-brown roof by the road; placed on the north-west block's road face at the map's Prudential Bank point. Its exact bay is estimated.",
+   "refs": [
+    "correction-65 slides 14-15"
    ]
   },
   {

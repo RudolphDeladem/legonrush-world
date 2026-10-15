@@ -865,3 +865,5 @@ are in `uploads/` under their own names.
 | 839.webp | 185 | 1067x763 | log3 #167 | 2026-10-15 05:41 | picture 5 of 5: first of all, you coudl see in picture one that the ground is appearing on teh road (asphalt) , fix that. Also in picture one those sections of the pa |
 | 840.png | 113 | 451x202 | log3 #168 | 2026-10-15 06:15 | picture 1 of 1: WHY AM I STILL SEEING RED SOIL ALONG THE ASPHALT ROAD, I THOUGHT I TOLD YOU TO FIX THAT? |
 | 841.png | 242 | 706x416 | log3 #169 | 2026-10-15 06:34 | picture 1 of 1: YOU BUILD TEH PAVEMNET ALONG JUST ONE SIDE, THERE IS ALSO SAME PAVEMENT AT THE OTHER END WHERE YOU CURRENTLY HAVE GRASS, FIX IT |
+| 842.png | 312 | 399x501 | log4 #1 | 2026-10-15 11:13 | picture 1 of 2: the images show the inside view of the night market ... correct building facade, material, color and structures. dont assume most places are lawn...if paved make it pavement, also the environment (with LEGONRUSH_Correction_Brief_Detailed_All_65_Slides.docx) |
+| 843.png | 461 | 720x480 | log4 #1 | 2026-10-15 11:13 | picture 2 of 2: the new market stall sheds inside the Night Market (white partitions, timber-trussed sheet roof on black posts) |

@@ -992,7 +992,12 @@ export function buildCampusLife() {
     else if (hallColor.has(p.name)) busy.push([p, 0.45]);
     else if (p.kind === 'transport' && /Taxi|Station|Rank/.test(p.name)) busy.push([p, 0.3]);
   }
+  // (the correction brief, slide 16, "remove all wrong structures": the Night Market strip, the banking square, Republic
+  // Bank and Ecobank draw their own stalls, shops and forecourts from the photos; no generic kiosks, umbrellas or crowds
+  // are scattered over their lawns)
+  const inBankStrip = (x: number, z: number) => x > 40 && x < 300 && z > 900 && z < 1110;
   for (const [p, w] of busy) {
+    if (inBankStrip(p.x, p.z)) continue;
     const shirt = hallOf(p);
     const R = p === market ? 40 : 30;
     const n = (k: number) => Math.max(rand() < k * w - Math.floor(k * w) ? 1 : 0, Math.floor(k * w));
