@@ -74,7 +74,7 @@ for (let z = WIDEN.z0; z < WIDEN.z1; z += 3) for (const west of [true, false]) {
  *  up the whole box at their mapped widths, so the signal posts stand where there is ground: on the four outer corners
  *  and the two median noses (Pairs 5-7, 10) */
 export const JUNCTION = { x0: 958, x1: 1028, z0: 1195, z1: 1262 };
-export const ISLANDS: Record<'nw' | 'ne' | 'se' | 'sw' | 'mn' | 'ms', [number, number]> = { nw: [967, 1209], ne: [1019, 1204], se: [1025, 1241], sw: [966, 1243], mn: [988.4, 1190.5], ms: [996.9, 1237.5] };
+export const ISLANDS: Record<'nw' | 'ne' | 'se' | 'sw' | 'mn' | 'ms', [number, number]> = { nw: [967, 1209], ne: [1019, 1204], se: [1025, 1241], sw: [966, 1243], mn: [987.3, 1185], ms: [997.9, 1242.5] };
 
 /** the signal assemblies (the Okponglo signals brief, pictures 1, 2, 11): per island the unit direction its face looks
  *  (toward the approaching traffic) and, for a mast-arm, the arm's direction over that approach's lanes and its reach.
@@ -90,7 +90,7 @@ export const SIGNALS = {
 };
 
 /** the median between the carriageways: kerbed patchy grass and red earth, young planted trees (Pairs 1, 2, 4, 9, 13) */
-export const MEDIAN = { z0: 905, z1: 1640, gap: [1194, 1234] as [number, number], tree: 19 };
+export const MEDIAN = { z0: 905, z1: 1640, gap: [1187, 1240] as [number, number], tree: 19 };
 
 /** the neighbourhood east of the N4 (Pairs 2, 4, 11, 12, 15-19; Additional References 3 to 6): every footprint here is
  *  built as the local mixed commercial fabric, not the campus template */

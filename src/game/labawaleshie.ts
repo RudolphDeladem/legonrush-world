@@ -619,9 +619,61 @@ const corridor: Spec = {
       zebra([xWest(1237) - 6, 1237], [xEast(1237) + 6, 1237], 3);
       zebra([965, 1200], [965, 1240], 3);
       zebra([1018, 1195], [1018, 1235], 3);
-      const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.computeVertexNormals();
-      const pm = new THREE.MeshStandardMaterial({ color: '#e9e6dc', roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -8 });
-      const zm = new THREE.Mesh(geo, pm); zm.receiveShadow = true; zm.userData.noCollide = true; k.meshes.push(zm);
+      /** a flat painted shape: triangles given in a frame at (ox, oz) running along (fx, fz), `b` to the driver's right */
+      const yel: number[] = [];
+      const paint = (out: number[], ox: number, oz: number, fx: number, fz: number, tris: [number, number][]) => {
+        for (const [a, b2] of tris) {
+          const wx = ox + fx * a - fz * b2, wz = oz + fz * a + fx * b2, [lx, lz] = A(wx, wz);
+          out.push(lx, gh(wx, wz) + 0.03, lz);
+        }
+      };
+      const rect = (a0: number, a1: number, b0: number, b1: number): [number, number][] => [[a0, b0], [a1, b1], [a1, b0], [a0, b0], [a0, b1], [a1, b1]];
+      // (wound for a frame whose right is +b; the faces are drawn double-sided below)
+      /** the lane arrows (the owner's pictures): straight, or turning left or right */
+      const ARROW: Record<'S' | 'L' | 'R', [number, number][]> = {
+        S: [...rect(0, 3.2, -0.15, 0.15), [3.2, -0.5], [4.5, 0], [3.2, 0.5]],
+        L: [...rect(0, 2.5, -0.15, 0.15), ...rect(2.2, 2.5, -1.0, 0.15), [1.85, -1.0], [2.35, -1.7], [2.85, -1.0]],
+        R: [...rect(0, 2.5, -0.15, 0.15), ...rect(2.2, 2.5, -0.15, 1.0), [1.85, 1.0], [2.35, 1.7], [2.85, 1.0]],
+      };
+      // the N4's two approaches: a stop line before the crossing, and arrows down each third of the carriageway (left
+      // in the lane by the median, straight in the middle, right on the outside: traffic keeps right)
+      const approach = (stopZ: number, dirZ: 1 | -1, outer: (z: number) => number, inner: (z: number) => number) => {
+        const o0 = outer(stopZ), i0 = inner(stopZ);
+        paint(pos, (o0 + i0) / 2, stopZ, 0, dirZ, rect(-0.2, 0.2, -Math.abs(i0 - o0) / 2, Math.abs(i0 - o0) / 2));
+        for (const back of [6.5, 28]) {
+          const z = stopZ - dirZ * back, o = outer(z), i = inner(z), w = i - o, dx = (outer(z + dirZ) - o);
+          const l = Math.hypot(dx, 1), fx = dx / l, fz = dirZ / l;
+          (['R', 'S', 'L'] as const).forEach((kind, q) => paint(pos, o + (w * (q + 0.5)) / 3, z, fx * dirZ * dirZ, fz, ARROW[kind]));
+        }
+      };
+      approach(1188.5, 1, (z) => xWest(z) - 4.5, westInner);
+      approach(1239.5, -1, (z) => xEast(z) + 4.5, eastInner);
+      // the side roads' inbound halves: Jubilee Drive eastbound (its south half), La Bawaleshie Road westbound (its north)
+      paint(pos, 962.8, (1228.3 + 1236) / 2, 1, 0, rect(-0.2, 0.2, -(1236 - 1228.3) / 2, (1236 - 1228.3) / 2));
+      paint(pos, 1020.2, (1213 + 1222.9) / 2, -1, 0, rect(-0.2, 0.2, -(1222.9 - 1213) / 2, (1222.9 - 1213) / 2));
+      for (const [x, z, fx] of [[955, 1230.2, 1], [955, 1234.1, 1], [1028, 1215.5, -1], [1028, 1220.4, -1]] as [number, number, number][])
+        paint(pos, x, z, fx, 0, ARROW[(fx > 0 ? z > 1232 : z < 1218) ? 'R' : 'S']);
+      // the yellow lines (the owner's photo at the stop line; the top-down picture): along both kerbs of the median and
+      // along the carriageways' outer edges, not across the junction
+      const line = (out: number[], xAt: (z: number) => number, z0: number, z1: number) => {
+        for (let z = z0; z < z1; z += 2) {
+          const xa = xAt(z), xb = xAt(z + 2);
+          if (Number.isNaN(xa) || Number.isNaN(xb)) continue;
+          const q = [[xa - 0.08, z], [xb - 0.08, z + 2], [xb + 0.08, z + 2], [xa + 0.08, z]].map(([wx, wz]) => { const [lx, lz] = A(wx, wz); return [lx, gh(wx, wz) + 0.03, lz]; });
+          out.push(...q[0], ...q[1], ...q[2], ...q[0], ...q[2], ...q[3]);
+        }
+      };
+      for (const [z0, z1] of [[1100, MEDIAN.gap[0]], [MEDIAN.gap[1] + 0.5, 1340]] as [number, number][]) {
+        line(yel, (z) => westInner(z) - 0.3, z0, z1); line(yel, (z) => eastInner(z) + 0.3, z0, z1);
+      }
+      for (const [z0, z1] of [[1100, 1180], [1248, 1340]] as [number, number][]) {
+        line(yel, (z) => xWest(z) - 4.5 + 0.35, z0, z1); line(yel, (z) => xEast(z) + 4.5 - 0.35, z0, z1);
+      }
+      for (const [arr, col] of [[pos, '#e9e6dc'], [yel, '#e2b62a']] as [number[], string][]) {
+        const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(arr, 3)); geo.computeVertexNormals();
+        const pm = new THREE.MeshStandardMaterial({ color: col, roughness: 0.8, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -8 });
+        const zm = new THREE.Mesh(geo, pm); zm.receiveShadow = true; zm.userData.noCollide = true; k.meshes.push(zm);
+      }
     }
 
     // ---------- the junction: signal posts, the islands' worn stone paving, the cabinet, bollards ----------
@@ -664,7 +716,14 @@ const corridor: Spec = {
       // the second head part way down the mast
       c.push([box(px - 0.05, px + 0.05, SIGNAL.lowY + 0.4, SIGNAL.lowY + 0.5, pz - 0.05, pz + 0.05).translate(fx * 0.12, 0, fz * 0.12), '#55595d']);
       head(px + fx * 0.28, SIGNAL.lowY, pz + fz * 0.28);
-      SOLIDS.add(best[0], best[1], 0.2);
+      // the post stands in a white drum behind a yellow-and-black guard rail on its traffic side (the owner's photo)
+      c.push([new THREE.CylinderGeometry(0.42, 0.45, 0.75, 14).translate(px, 0.375, pz), '#eeeeea']);
+      for (const da of [-1.1, 0, 1.1]) {
+        const a = ry + da, gx = px + Math.sin(a) * 0.72, gz = pz + Math.cos(a) * 0.72;
+        for (let q = 0; q < 4; q++) c.push([new THREE.CylinderGeometry(0.06, 0.06, 0.2, 8).translate(gx, 0.1 + q * 0.2, gz), q % 2 ? '#e2b62a' : '#1d1d1d']);
+      }
+      c.push([new THREE.TorusGeometry(0.72, 0.05, 6, 16, 2.2).rotateX(Math.PI / 2).rotateY(-ry + Math.PI / 2 + 1.1).translate(px, 0.82, pz), '#e2b62a']);
+      SOLIDS.add(best[0], best[1], 0.8);
     }
     {
       // the cabinet on the north-west island, short black-and-yellow bollards along its edge (Pair 6)

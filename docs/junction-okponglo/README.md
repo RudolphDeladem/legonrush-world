@@ -77,3 +77,23 @@ nose and the view before this revision.
     the original carriageway's outer half near z 960, 1040, 1300 and 1380, which this change doesn't touch.
 - **Uncertain.** The 2.4 m median width is read from the 360 frames by comparison with car widths, not measured. The
   median may be wider farther from the junction than the photos show.
+
+## Revision 4 (the owner's two pictures: the top-down junction and the Street View at the stop line)
+
+`comparison-sheet-3.jpg`.
+
+- **Source of the geometry.** The road layout stays on the map and the real photographs. The generated top-down picture
+  was used for what goes on the road, not for the outlines.
+- **Median noses.** The noses now stop before the stop lines (median gap z 1187–1240), as in both pictures, and the
+  two signal masts stand on them.
+- **Signal bases.** Each signal post stands in a white drum behind a yellow-and-black guard rail on its traffic side,
+  as in the Street View photo. The post's collider grew to cover the drum.
+- **Markings** (`labawaleshie.ts`, one painted mesh per colour, no colliders):
+  - stop lines before the crossings, across each approach's inbound lanes;
+  - lane arrows on the N4 approaches, two sets per approach: left in the lane by the median, straight in the middle,
+    right on the outside (traffic keeps right);
+  - arrows on the inbound halves of Jubilee Drive and La Bawaleshie Road;
+  - yellow lines along both kerbs of the median and along the carriageways' outer edges from z 1100 to 1340, not
+    across the junction.
+- **Uncertain.** The arrow patterns per lane are read from the generated picture and the photo's left-turn arrow; the
+  real lane allocation is not documented. The side roads' inbound halves are read from the map's road widths.
