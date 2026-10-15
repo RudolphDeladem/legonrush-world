@@ -38,6 +38,49 @@ export const lawnMat = () => (LAWN ??= new THREE.MeshStandardMaterial({ roughnes
   g.fillStyle = 'rgba(255,255,255,0.03)'; for (let x = 0; x < 128; x += 32) g.fillRect(x, 0, 16, 128);
 }) }));
 
+/** specks over a 256 px tile from a fixed hash (not the shared random sequence the campus is placed by) */
+const grit = (g: CanvasRenderingContext2D, n: number, cols: string[]) => {
+  for (let i = 0; i < n; i++) { const h = (a: number) => { const v = Math.sin(i * 12.9898 + a * 78.233) * 43758.5453; return v - Math.floor(v); }; g.fillStyle = cols[i % cols.length]; g.fillRect(h(1) * 256, h(2) * 256, 1 + h(3), 1 + h(4)); }
+};
+let HERRING: THREE.MeshStandardMaterial | null = null;
+/** grey interlocking paver blocks laid in herringbone (0.2 x 0.1 m blocks; the owner's pictures of the Okponglo
+ *  footways): lay it with herringboneUV so the courses run at 45 degrees to the street, 1.6 m a tile */
+export const herringboneMat = () => (HERRING ??= new THREE.MeshStandardMaterial({ roughness: 0.93, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4, map: canvas(256, 256, (g) => {
+  g.fillStyle = '#a49d93'; g.fillRect(0, 0, 256, 256);
+  const cols = ['#7f7a74', '#8a847d', '#76716b', '#8f877e', '#837c73', '#7a736b'], U = 16;
+  const brick = (x: number, y: number, w: number, h: number, c: string) => {
+    for (const ox of [-256, 0, 256]) for (const oy of [-256, 0, 256]) { g.fillStyle = c; g.fillRect(x * U + ox + 1, y * U + oy + 1, w * U - 2, h * U - 2); }
+  };
+  // one band: a horizontal 2 x 1 block at (k, k) and a vertical 1 x 2 block at (k + 2, k - 1); the bands repeat every
+  // 4 units across (the pattern's lattice (1, 1), (4, 0): 16 units, the canvas, is a whole period)
+  for (let n = -4; n < 8; n++) for (let k = -4; k < 20; k++) {
+    const x = k + 4 * n, y = k;
+    brick(((x % 16) + 16) % 16, ((y % 16) + 16) % 16, 2, 1, cols[(k * 7 + n * 3 + 16) % cols.length]);
+    brick((((x + 2) % 16) + 16) % 16, (((y - 1) % 16) + 16) % 16, 1, 2, cols[(k * 5 + n * 11 + 32) % cols.length]);
+  }
+  grit(g, 700, ['#6e6963', '#9a948b', '#85807a']);
+}) }));
+/** the world-space UV for herringboneMat: 1.6 m a tile, the courses at 45 degrees */
+export const herringboneUV = (x: number, z: number): P2 => [(x + z) * 0.7071, (z - x) * 0.7071];
+let COBBLE: THREE.MeshStandardMaterial | null = null;
+/** pitched stone: irregular grey-brown stones set in dark mortar (the owner's picture 4, the junction corner), 2 m a tile */
+export const cobbleMat = () => (COBBLE ??= new THREE.MeshStandardMaterial({ roughness: 0.95, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4, map: canvas(256, 256, (g) => {
+  g.fillStyle = '#5b544c'; g.fillRect(0, 0, 256, 256);
+  const cols = ['#a39a8e', '#968c80', '#ada496', '#8d8377', '#b3a999', '#9c9284'];
+  let i = 0;
+  for (let y = 0; y < 256; y += 21) for (let x = (y / 21) % 2 ? -12 : 0; x < 256; x += 25) {
+    const w = 18 + ((i * 37) % 7), h = 14 + ((i * 53) % 6), cx = x + ((i * 13) % 5), cy = y + ((i * 29) % 4);
+    for (const ox of [-256, 0, 256]) {
+      g.fillStyle = cols[i % cols.length];
+      g.beginPath();
+      g.moveTo(cx + ox + 2, cy); g.lineTo(cx + ox + w - 1, cy + 2); g.lineTo(cx + ox + w, cy + h - 2); g.lineTo(cx + ox + w / 2, cy + h); g.lineTo(cx + ox, cy + h - 3);
+      g.closePath(); g.fill();
+    }
+    i++;
+  }
+  grit(g, 1200, ['#6d655b', '#b9b0a2', '#80786d']);
+}) }));
+
 /** a vertical curtain-wall strip along a polyline (model frame), y0..y1, its texture in metres */
 export function curtain(k: Kit, pts: P2[], y0: number, y1: number) {
   const pos: number[] = [], uv: number[] = [], idx: number[] = [];

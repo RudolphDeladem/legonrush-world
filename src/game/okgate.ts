@@ -6,19 +6,20 @@
 //   brown tiled hipped roof on broad eaves;
 // - the taxi lot (S06, Video Pair 2): its white bays, the kerbed tree islands, its cars in the bays; the open red-roof
 //   waiting pavilion at its corner;
-// - the drive's edges (S02, S04, S08, S10): plain kerbs, tan paver footways both sides, the open channel behind the north
-//   footway with its crossing slabs at the entries, slim road lamps, the stadium side's planted strip and light metal fence;
+// - the drive's edges (S02, S04, S08, S10; the owner's pictures 1-5 of the follow-up): plain kerbs, herringbone paver
+//   footways with a raised back kerb (north to the junction's corner and its pitched stone slab, south only by the gate and
+//   the taxi rank), slim road lamps, the stadium side's planted strip and light metal fence;
 // - the bare plot east of the lot (S12, S14, S16): reddish soil and dry grass, its localized tree group (buildOkGateGrounds).
 import * as THREE from 'three';
 import { createSite, type Kit, type Spec, type Style } from './blocks';
 import { box, canvas, type Part } from './modelkit';
-import { prism, strip } from './medkit';
+import { cobbleMat, herringboneMat, herringboneUV, offset, plane, prism, strip } from './medkit';
 import { hipRoof } from './waccbip';
 import { SOLIDS } from './solids';
 import { wallSolids } from './enkit';
 import { NODE_XZ, ROADS } from './campusmap';
 import { coverOverlay, crownTiles, hash2, vnoise2, type Crown } from './scrubkit';
-import { DRIVE_HALF, FENCE_S, GATE, LOT, PALMS, PAVILION, PLOT, SIGN_FRAME, TREES, WALK, driveZ, lotWorld, type P2 } from './okgateplan';
+import { DRIVE_HALF, FENCE_S, GATE, LOT, PALMS, PAVILION, PLOT, SIGN_FRAME, TREES, WALK, SLIP, SLIP_HALF, driveZ, lotWorld, northEdge, type P2 } from './okgateplan';
 
 const PLAIN: Style = { bay: 4, up: [], ground: [], draw: (g) => { g.fillStyle = '#f2f1ec'; g.fillRect(0, 0, 256, 512); } };
 const WHITE = '#f2f1ec', WINE = '#7a2a2e', DARK = '#2b2d2f';
@@ -124,6 +125,8 @@ const SIDE_ROADS = ROADS.map((r, i) => ({ i, cls: r.cls, pts: r.nodes.map((n) =>
 const segD = (x: number, z: number, [ax, az]: P2, [bx, bz]: P2) => { const dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1, f = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2)); return Math.hypot(x - ax - dx * f, z - az - dz * f); };
 const nearSideRoad = (x: number, z: number, r: number) => SIDE_ROADS.some(({ cls, pts }) => pts.some((q, i) => i > 0 && segD(x, z, pts[i - 1], q) < r + (cls <= 2 ? 3.2 : cls === 3 ? 2.3 : 1.3)));
 const inGate = (x: number) => Math.abs(x - GATE.origin[0]) < GATE.u[1] + 0.4;
+/** a paved road crossing a footway here (the earth track to the J.J. Rawlings yard, road 30, and the paths do not) */
+const crossesAt = (x: number, z: number) => SIDE_ROADS.some(({ i, cls, pts }) => cls <= 3 && i !== 30 && pts.some((q, j) => j > 0 && segD(x, z, pts[j - 1], q) < (cls <= 2 ? 3.5 : 2.6)));
 
 /** a band along the drive at offsets [o0, o1] (negative north) from x0 to x1, skipping where `skip` holds; y0..y1 */
 function band(c: Part[], x0: number, x1: number, o0: number, o1: number, y0: number, y1: number, col: string, skip: (x: number, z: number) => boolean) {
@@ -141,36 +144,65 @@ const edges: Spec = {
   keep: [],
   extras: (k) => {
     const c: Part[] = [], h = DRIVE_HALF;
-    // ---- kerbs (plain concrete), tan paver footways both sides, the open channel behind the north footway ----
-    const nK = (x: number, z: number) => inGate(x) || nearSideRoad(x, z, 0.5);
-    for (const s of [-1, 1]) {
-      band(c, WALK.x0, WALK.x1, s * (h + 0.02), s * (h + 0.22), 0, 0.14, '#cbc5b6', nK);
-      band(c, WALK.x0, WALK.x1, s * (h + 0.22), s * (h + 0.22 + WALK.w), 0.03, 0.1, '#bcb9b1', (x, z) => (s < 0 && inGate(x)) || nearSideRoad(x, z, 0.5));
+    // ---- the footways (the owner's pictures 2, 4, 5): herringbone pavers between a plain road kerb and a raised back kerb.
+    // North: from the gate along the plot, along the westbound carriageway where the drive splits, round the junction's
+    // north-west corner onto the slip, ending against the pitched stone slab. South: only by the gate and the taxi rank
+    // (east of it deleted, the owner's picture 1); the kerb runs on to the junction. No channel, no slab joints ----
+    const nLine: P2[] = [];
+    for (let x = WALK.x0; x <= 957; x += 1) nLine.push([x, northEdge(x)]);
+    { // the corner: a curve from the westbound's north edge onto the slip's west edge, then along the slip
+      const sEdge = SLIP.map((p, i) => { const a = SLIP[Math.max(0, i - 1)], b = SLIP[Math.min(SLIP.length - 1, i + 1)], dx = b[0] - a[0], dz = b[1] - a[1], l = Math.hypot(dx, dz); return [p[0] + (dz / l) * SLIP_HALF, p[1] - (dx / l) * SLIP_HALF] as P2; });
+      const d0x = SLIP[1][0] - SLIP[0][0], d0z = SLIP[1][1] - SLIP[0][1], l0 = Math.hypot(d0x, d0z);
+      const A = nLine[nLine.length - 1], C: P2 = [sEdge[0][0] - 0.4, northEdge(sEdge[0][0] - 0.4)], B: P2 = [sEdge[0][0] + (d0x / l0) * 3, sEdge[0][1] + (d0z / l0) * 3];
+      for (let t = 0.125; t <= 1.001; t += 0.125) nLine.push([(1 - t) ** 2 * A[0] + 2 * (1 - t) * t * C[0] + t * t * B[0], (1 - t) ** 2 * A[1] + 2 * (1 - t) * t * C[1] + t * t * B[1]]);
+      nLine.push(sEdge[1], sEdge[2]);
     }
-    // the pavement's joints across both footways (grey concrete slabs, S02/S04)
-    for (const s of [-1, 1]) for (let x = WALK.x0; x <= WALK.x1; x += 1.2) {
-      const o = s * (h + 0.22 + WALK.w / 2), z = driveZ(x) + o;
-      if ((s < 0 && inGate(x)) || nearSideRoad(x, z, 0.5)) continue;
-      const [lx, lz] = L(x, z); c.push([box(lx - 0.025, lx + 0.025, 0.1, 0.104, lz - WALK.w / 2, lz + WALK.w / 2), '#9a978f']);
-    }
-    // (the south footway runs on under the gate's walk bay)
-    { const d0 = h + 0.22 + WALK.w, d1 = d0 + WALK.drain, skip = (x: number, z: number) => inGate(x) || nearSideRoad(x, z, 1.5);
-      band(c, WALK.x0, WALK.x1, -d0, -(d0 + 0.14), 0, 0.34, '#bdb8ab', skip);
-      band(c, WALK.x0, WALK.x1, -(d1 - 0.14), -d1, 0, 0.34, '#bdb8ab', skip);
-      band(c, WALK.x0, WALK.x1, -(d0 + 0.14), -(d1 - 0.14), 0.01, 0.03, '#3d3a31', skip);
-      // the crossing slabs where an entry crosses the channel, with their slots (S04)
-      for (let x = WALK.x0; x <= WALK.x1; x += 1) {
-        const z = driveZ(x) - (d0 + d1) / 2;
-        if (inGate(x) || !nearSideRoad(x, z, 1.5)) continue;
-        const [lx, lz] = L(x, z);
-        c.push([box(lx - 0.5, lx + 0.5, 0, 0.12, lz - (d1 - d0) / 2 - 0.15, lz + (d1 - d0) / 2 + 0.15), '#cfcabd'], [box(lx - 0.04, lx + 0.04, 0.12, 0.125, lz - 0.3, lz + 0.3), '#6e6a60']);
-      } }
-    // ---- slim road lamps along the north footway (S08, S10); the stadium's floodlights are its own ----
-    for (let x = 690; x < 968; x += 34) {
-      const z = driveZ(x) - (h + 0.22 + WALK.w - 0.35);
-      if (inGate(x) || nearSideRoad(x, z, 1)) continue;
+    const sLine: P2[] = [];
+    for (let x = WALK.x0; x <= 962; x += 1) sLine.push([x, driveZ(x) + h]);
+    /** the runs of a line clear of the gate (north) and of the paved roads that cross it (earth tracks and paths do not
+     *  break the pavement), its points d metres off the line (negative north and west of travel) */
+    const runs = (line: P2[], dTest: number, gate: boolean, keep: (x: number) => boolean) => {
+      const off = offset(line, dTest), out: number[][] = [[]];
+      line.forEach(([x], i) => { const [tx, tz] = off[i]; if (!keep(x) || (gate && inGate(x)) || crossesAt(tx, tz)) { if (out[out.length - 1].length) out.push([]); } else out[out.length - 1].push(i); });
+      return out.filter((r) => r.length > 1).map((r) => line.slice(r[0], r[r.length - 1] + 1));
+    };
+    const walk = (line: P2[], s: -1 | 1, gate: boolean, keep: (x: number) => boolean) => {
+      const k0 = WALK.kerb, w = WALK.w, bk = WALK.back;
+      for (const r of runs(line, s * (k0 + w / 2), gate, keep)) {
+        const at = (d: number) => offset(r, s * d).map(([x, z]) => L(x, z));
+        c.push([strip(at(k0 / 2), 0, 0.15, k0 / 2), '#cbc5b6']);
+        // the raised back kerb (0.25 m: a bike rolls over it), open where an earth track or a path comes in
+        { const back = offset(r, s * (k0 + w + bk / 2)); let run: P2[] = [];
+          const flush = () => { if (run.length > 1) c.push([strip(run, 0, 0.25, bk / 2), '#b3a58f']); run = []; };
+          back.forEach(([x, z]) => { if (SIDE_ROADS.some(({ cls, pts }) => cls >= 3 && pts.some((q, j) => j > 0 && segD(x, z, pts[j - 1], q) < (cls === 3 ? 2.6 : 1.6)))) flush(); else run.push(L(x, z)); });
+          flush(); }
+        const inner = at(k0), outer = at(k0 + w);
+        for (let i = 0; i < r.length - 1; i += 30) {
+          const j = Math.min(r.length - 1, i + 31);
+          plane(k, [...inner.slice(i, j + 1), ...outer.slice(i, j + 1).reverse()], 0.1, herringboneMat(), 1.6, (u, v) => herringboneUV(u + O[0], v + O[1]));
+        }
+      }
+    };
+    walk(nLine, -1, true, () => true);
+    walk(sLine, 1, false, (x) => x <= WALK.south);
+    // the south kerb on to the junction where the footway is deleted
+    for (const r of runs(sLine, 0.3, false, (x) => x >= WALK.south - 1)) c.push([strip(offset(r, WALK.kerb / 2).map(([x, z]) => L(x, z)), 0, 0.15, WALK.kerb / 2), '#cbc5b6']);
+    // the low concrete separator between the westbound and eastbound carriageways where they part before the junction
+    { const m: P2[] = [];
+      for (let x = 928; x <= 962; x += 1) m.push(L(x, ((northEdge(x) + h) + h + (driveZ(x) - h)) / 2));
+      c.push([strip(m, 0, 0.12, 0.16), '#d2cec6']); }
+    // the pitched stone slab behind the corner (the owner's picture 4): grey-brown stones rising gently from the back kerb
+    { const i0 = nLine.findIndex(([x]) => x >= 946), seg = nLine.slice(i0), d0 = WALK.kerb + WALK.w + WALK.back;
+      const a = offset(seg, -d0), full = offset(seg, -(d0 + 4.5)), b = full.map(([x, z], i) => { const t = Math.min(1, i / 7); return [a[i][0] + (x - a[i][0]) * t, a[i][1] + (z - a[i][1]) * t] as P2; }), pos: number[] = [], uv: number[] = [], idx: number[] = [];
+      seg.forEach((_, i) => { for (const [p, y] of [[a[i], 0.12], [b[i], 0.28]] as [P2, number][]) { const [lx, lz] = L(...p); pos.push(lx, y, lz); uv.push(p[0] / 2, p[1] / 2); } if (i) { const q = (i - 1) * 2; idx.push(q, q + 1, q + 2, q + 1, q + 3, q + 2); } });
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); g.setIndex(idx); g.computeVertexNormals();
+      const m = new THREE.Mesh(g, cobbleMat()); m.receiveShadow = true; m.userData.noCollide = true; k.meshes.push(m); }
+    // ---- slim road lamps behind the north footway (S08, S10; the owner's picture 2); the stadium's floodlights are its own ----
+    for (let x = 690; x < 958; x += 34) {
+      const z = northEdge(x) - (WALK.kerb + WALK.w + WALK.back + 1.0);
+      if (inGate(x) || crossesAt(x, z)) continue;
       const [lx, lz] = L(x, z);
-      c.push([new THREE.CylinderGeometry(0.06, 0.09, 9, 8).translate(lx, 4.5, lz), '#9da3a8'], [box(lx - 0.08, lx + 0.08, 8.85, 8.95, lz, lz + 1.6), '#9da3a8'], [box(lx - 0.15, lx + 0.15, 8.7, 8.9, lz + 1.3, lz + 1.9), '#d8dcdf']);
+      c.push([new THREE.CylinderGeometry(0.06, 0.09, 9, 8).translate(lx, 4.5, lz), '#9da3a8'], [box(lx - 0.08, lx + 0.08, 8.85, 8.95, lz, lz + 2.4), '#9da3a8'], [box(lx - 0.15, lx + 0.15, 8.7, 8.9, lz + 2.1, lz + 2.7), '#d8dcdf']);
       SOLIDS.add(x, z, 0.15);
     }
     // ---- the slim sign frame on the plot's verge (S12-S16): two posts and a cross bar, the plate left blank ----
@@ -232,7 +264,8 @@ export function buildOkGateGrounds() {
   const group = new THREE.Group();
   group.name = 'okponglo-gate-grounds';
   const color = (x: number, z: number): [number, number, number, number] | null => {
-    if (!inPoly(PLOT, x, z) || nearSideRoad(x, z, -0.5)) return null;
+    // (the soil stops at the north footway's back kerb: none on the carriageways or the pavement)
+    if (!inPoly(PLOT, x, z) || nearSideRoad(x, z, -0.5) || z > northEdge(x) - (WALK.kerb + WALK.w + WALK.back)) return null;
     const n = vnoise2(x / 8, z / 8), m = vnoise2(x / 2.5 + 7, z / 2.5), t = hash2(Math.floor(x * 2), Math.floor(z * 2)) * 0.07;
     // the raised dry patch under the tree group keeps its scrub; the rest soil with dry grass in patches
     if (n > 0.62) return [128 - t * 200, 118 - t * 160, 66 - t * 80, 0.75];
@@ -245,7 +278,7 @@ export function buildOkGateGrounds() {
   // sparse low scrub over the plot (not a garden, not a forest)
   for (let i = 0; i < 70; i++) {
     const x = 812 + hash2(i, 1) * 150, z = 1118 + hash2(i, 2) * 108;
-    if (!inPoly(PLOT, x, z) || nearSideRoad(x, z, 2)) continue;
+    if (!inPoly(PLOT, x, z) || nearSideRoad(x, z, 2) || z > northEdge(x) - (WALK.kerb + WALK.w + WALK.back) - (x > 944 ? 5.5 : 1)) continue;
     crowns.push({ x, z, r: 0.6 + hash2(i, 3) * 0.6, h: 0.9 + hash2(i, 4) * 0.6, base: 0, trunk: 0, color: hash2(i, 5) < 0.5 ? '#6f7a3c' : '#7c7a46', seed: hash2(i, 6), solid: false });
   }
   group.add(...crownTiles(crowns, 100, 75));

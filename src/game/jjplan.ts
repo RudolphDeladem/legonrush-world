@@ -37,8 +37,9 @@ export const CONTAINER: P2 = [898.5, 920];
 export const RED_SHED: Box = [866, 894, 948, 983];
 /** the bare field west of the yard (picture 13: pale ground, no pitch where the game drew two) */
 export const FIELD: P2[] = [[726.5, 954], [817.8, 954], [817.8, 1066.6], [726.5, 1066.6]];
-/** the earth track up to the yard from Jubilee Drive and on north (game roads 30 and 1516: earth on every picture) */
-export const EARTH_BOX: Box = [826, 872, 900, 1241];
+/** the earth track up to the yard from Jubilee Drive and on north (game roads 30 and 1516: earth on every picture), up to
+ *  the drive's north footway (not over the drive: the owner's picture 1) */
+export const EARTH_BOX: Box = [826, 872, 900, 1235.5];
 
 // ---------- the east frontage across the avenue (pairs 2-4; picture 13 callouts 3, 4) ----------
 /** the broad dusty opening off the avenue's east edge: its mouth on the road and the area behind it */

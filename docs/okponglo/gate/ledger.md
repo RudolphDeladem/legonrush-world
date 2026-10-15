@@ -52,3 +52,21 @@ pavilion. The lot and pavilion land on the game's own outlines.
   rendered from the game with `tools/preview/flyover.mjs` (120 frames at 12 fps, 480 × 128), encoded to
   `public/video/okgate-aerial.webm` and `.mp4`, muted and repeating. A still picture shows until the video plays.
 - The footways along the drive are grey concrete pavement with joints, not tan.
+
+## Footway follow-up (batch 163; the owner's five pictures, `footways-sheet.jpg`)
+- **Earth on the drive [FIXED]:** the J.J. Rawlings earth track's ground counted a Jubilee Drive segment as track and
+  painted earth over the asphalt. Now only class 3-4 roads count as track, and the box (`jjplan.ts` `EARTH_BOX`) stops at
+  the north footway's back kerb.
+- **Footways deleted (picture 1):** the south footway between the junction and the taxi rank zone is removed (x > 790).
+  The stadium side keeps its plain kerb, the planted strip and the fence.
+  - Also removed: the open channel behind the north footway and its crossing slabs (a second lane).
+- **North footway kept [DECISION: pictures 2 and 5 show it]:** pictures 2 and 5 show a footway along the north side,
+  by the plot. It is now one herringbone paver footway between a plain road kerb and a raised back kerb (0.25 m: a bike
+  rolls over it), with no cross joints.
+  - The back kerb is open where the earth track and the paths come in.
+  - Where the drive splits it follows the westbound carriageway (road 1091).
+  - At the north-west corner it turns onto the slip and ends against a pitched stone slab (picture 4).
+  - The lamps stand behind the back kerb.
+- **The junction approach (picture 3):** the kerb and footway fragments that lay between the split carriageways are
+  replaced by one low concrete separator. The plot's soil stops at the back kerb.
+- **Open question:** if the north footway should also go, it is one line in `okgate.ts` (`walk(nLine, ...)`).

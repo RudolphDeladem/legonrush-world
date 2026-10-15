@@ -71,8 +71,24 @@ export const PALMS: P2[] = [[694, 1219], [790, 1222]];
 
 /** the stadium-side boundary fence along the drive's south verge (S02, S08, S10): light metal, behind a planted strip */
 export const FENCE_S = { x0: 735, x1: 960, off: 9.5 };
-/** the north footway (tan pavers) and the open channel behind it with crossing slabs at the lot's entries (S02, S04) */
-export const WALK = { x0: 680, x1: 968, w: 2.2, drain: 0.9 };
+/** the footways: herringbone pavers between a plain road kerb and a raised back kerb (the owner's pictures 2, 4, 5; the
+ *  grey slabs with cross joints and the open channel behind the north one were wrong). The north footway runs from the
+ *  gate along the plot to the junction's north-west corner; the south one only by the gate and the taxi rank: east of
+ *  `south` it is deleted (the owner's picture 1), the stadium side keeps its kerb, planted strip and fence */
+export const WALK = { x0: 680, x1: 968, w: 2.0, kerb: 0.2, back: 0.18, south: 790 };
+/** the westbound carriageway the drive splits into before the junction (game road 1091): the north footway follows it */
+export const WESTBOUND: P2[] = [[923.2, 1231.9], [933, 1227.4], [938.5, 1226.4], [965.9, 1223.7]];
+/** the slip at the junction's north-west corner (game road 867, class 0): the footway turns onto it round the corner and
+ *  ends against the pitched stone slab (the owner's pictures 3, 4) */
+export const SLIP: P2[] = [[965.9, 1223.7], [971.4, 1218.4], [973.8, 1214.5]];
+export const SLIP_HALF = 4.5;
+/** the north edge of the drive's northernmost carriageway at x (the drive west of the split, the westbound east of it) */
+export function northEdge(x: number) {
+  let z = driveZ(x);
+  if (x >= WESTBOUND[0][0]) for (let i = 1; i < WESTBOUND.length; i++) { const [ax, az] = WESTBOUND[i - 1], [bx, bz] = WESTBOUND[i]; if (x >= ax && x <= bx) z = Math.min(z, az + ((bz - az) * (x - ax)) / (bx - ax)); }
+  if (x > WESTBOUND[WESTBOUND.length - 1][0]) z = Math.min(z, WESTBOUND[WESTBOUND.length - 1][1]);
+  return z - DRIVE_HALF;
+}
 
 /** the slim sign frame on the plot's verge by the stop (S12, S14, S16; its plate unreadable: left blank) */
 export const SIGN_FRAME: P2 = [893.5, 1228.2];

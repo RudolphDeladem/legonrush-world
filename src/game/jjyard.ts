@@ -148,7 +148,7 @@ export const jjSite = createSite('jj-rawlings', [corridor]);
 // ======================================================================================================
 // the ground and the planting (world frame)
 // ======================================================================================================
-const TRACKS = ROADS.map((r) => r.nodes.map((n) => [NODE_XZ[n * 2], NODE_XZ[n * 2 + 1]] as P2)).filter((p) => p.some(([x, z]) => x > EARTH_BOX[0] && x < EARTH_BOX[1] && z > EARTH_BOX[2] && z < EARTH_BOX[3]));
+const TRACKS = ROADS.filter((r) => r.cls >= 3).map((r) => r.nodes.map((n) => [NODE_XZ[n * 2], NODE_XZ[n * 2 + 1]] as P2)).filter((p) => p.some(([x, z]) => x > EARTH_BOX[0] && x < EARTH_BOX[1] && z > EARTH_BOX[2] && z < EARTH_BOX[3]));
 const segD = (x: number, z: number, [ax, az]: P2, [bx, bz]: P2) => { const dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1, f = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2)); return Math.hypot(x - ax - dx * f, z - az - dz * f); };
 /** distance to the earth track (roads 30 and 1516 inside EARTH_BOX) */
 export const jjTrackDist = (x: number, z: number) => {
@@ -170,7 +170,7 @@ export function buildJjGrounds() {
     return null;
   };
   const cellIn = (x: number, z: number) => inYard(x, z) || inPoly(FIELD, x, z) || inPoly(OPENING, x, z) || jjTrackDist(x, z) < 3;
-  const soil = [...coverOverlay({ box: [720, 920, 830, 1070], mpp: 0.5, cell: 2, tile: 100, color, cellIn }), ...coverOverlay({ box: [926, 992, 760, 824], mpp: 0.5, cell: 2, tile: 66, color, cellIn }), ...coverOverlay({ box: [826, 872, 1070, 1241], mpp: 0.5, cell: 2, tile: 86, color, cellIn })];
+  const soil = [...coverOverlay({ box: [720, 920, 830, 1070], mpp: 0.5, cell: 2, tile: 100, color, cellIn }), ...coverOverlay({ box: [926, 992, 760, 824], mpp: 0.5, cell: 2, tile: 66, color, cellIn }), ...coverOverlay({ box: [826, 872, 1070, EARTH_BOX[3]], mpp: 0.5, cell: 2, tile: 86, color, cellIn })];
   for (const m of soil) m.userData.noRelief = true;
   group.add(...soil);
   // the small slender roadside trees on the east frontage (pair 4); the scrub at the yard's north edge stays generic
