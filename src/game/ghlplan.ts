@@ -11,6 +11,7 @@
 import { NODE_XZ, ROADS, BUILDINGS } from './campusmap';
 import { GH_COVER, TC_COVER, type CoverGrid } from './landcover';
 import { nogEarthDist } from './nogplan';
+import { EARTH_BOX } from './jjplan';
 
 export type P2 = [number, number];
 export type Box = [number, number, number, number];
@@ -77,11 +78,12 @@ export { GH_COVER, TC_COVER };
 export const TC_EARTH: Box[] = [[-760, -600, -205, -45], [-760, -660, -45, 5]];
 /** (and Noguchi and WAGMC's red-earth tracks, nogplan.ts NOG_EARTH: the owner's correction brief, S02/S17/S18) */
 const nearNogEarth = (x: number, z: number, r: number) => x > 170 && x < 560 && z > 1820 && z < 2220 && nogEarthDist(x, z) < r;
-const inEarthArea = (x: number, z: number) => inGhl(x, z) || TC_EARTH.some(([a, b, c, d]) => x > a && x < b && z > c && z < d) || nearNogEarth(x, z, 6);
+// (and the earth track to the J.J. Rawlings yard, jjplan.ts EARTH_BOX)
+const inEarthArea = (x: number, z: number) => inGhl(x, z) || [...TC_EARTH, EARTH_BOX].some(([a, b, c, d]) => x > a && x < b && z > c && z < d) || nearNogEarth(x, z, 6);
 /** a mapped track or service road (classes 3 and 4) that the aerials show as earth where it crosses the area: every
  *  path and track there, and the service roads there (the dirt road from the tennis complex's corner west to the grey
  *  patch, the curve south to the pale rectangle): none is sealed in the aerials */
-export const EARTH_ROADS: number[] = ROADS.flatMap((r, i) => (r.cls >= 3 && (r.nodes.some((n) => inGhl(NODE_XZ[n * 2], NODE_XZ[n * 2 + 1]) || TC_EARTH.some(([a, b, c, d]) => NODE_XZ[n * 2] > a && NODE_XZ[n * 2] < b && NODE_XZ[n * 2 + 1] > c && NODE_XZ[n * 2 + 1] < d)) || r.nodes.every((n) => nearNogEarth(NODE_XZ[n * 2], NODE_XZ[n * 2 + 1], 1.5))) ? [i] : []));
+export const EARTH_ROADS: number[] = ROADS.flatMap((r, i) => (r.cls >= 3 && (r.nodes.some((n) => inGhl(NODE_XZ[n * 2], NODE_XZ[n * 2 + 1]) || [...TC_EARTH, EARTH_BOX].some(([a, b, c, d]) => NODE_XZ[n * 2] > a && NODE_XZ[n * 2] < b && NODE_XZ[n * 2 + 1] > c && NODE_XZ[n * 2 + 1] < d)) || r.nodes.every((n) => nearNogEarth(NODE_XZ[n * 2], NODE_XZ[n * 2 + 1], 1.5))) ? [i] : []));
 /** half width of an earth track as drawn: the worn footpaths narrow, the service tracks a vehicle's width */
 export const earthHalf = (ri: number) => (ROADS[ri].cls === 4 ? 0.9 : ROADS[ri].nodes.every((n) => nearNogEarth(NODE_XZ[n * 2], NODE_XZ[n * 2 + 1], 1.5)) ? 2.1 : ROADS[ri].surface === 'trail' ? 1.3 : 1.9);
 const SG = 24;

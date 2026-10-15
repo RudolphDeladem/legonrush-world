@@ -27,6 +27,7 @@ import { parkingFill, parkingSpots } from './lbplan';
 import { inLfKeep } from './lfplan';
 import { inEcKeep } from './ecgplan';
 import { ownsOg } from './okgateplan';
+import { ownsJj } from './jjplan';
 import { inTcLocal } from './tennisplan';
 
 /** real road widths by class: main, through, residential, service lane, footpath */
@@ -142,7 +143,7 @@ export const inLandmark = (x: number, z: number, pad = 0) => inKeepOut(x, z, pad
 /** by the Kuffour Quadrangle, where the roads' kerbs, drains and lamps are modelled from the owner's photos */
 const inKqPlain = (x: number, z: number) => KQ.plain.some(([px0, px1, pz0, pz1]) => x > px0 && x < px1 && z > pz0 && z < pz1) || offAsphalt(x, z, 6);
 // (the Okponglo entrance draws its own trees, edges and plot: okgate.ts; no generic kiosks or crowds on its open ground)
-const freeSpot = (x: number, z: number, r: number) => roadClearance(x, z, r + 6) > r && !buildingAt(x, z, r) && !inKeepOut(x, z, r) && !inCutBand(x, z, r + 1) && !ownsOg(x, z);
+const freeSpot = (x: number, z: number, r: number) => roadClearance(x, z, r + 6) > r && !buildingAt(x, z, r) && !inKeepOut(x, z, r) && !inCutBand(x, z, r + 1) && !ownsOg(x, z) && !ownsJj(x, z);
 
 // ---------- the sign atlas ----------
 const ATLAS = 1024, SLOT_W = 512, SLOT_H = 32, ROWS = 23; // rows above the white block
@@ -819,7 +820,7 @@ export function buildCampusLife() {
           lampSide = -lampSide;
           const off = kerbAt + 1.7;
           const x = ax + ux * lt + nx * lampSide * off, z = az + uz * lt + nz * lampSide * off;
-          if (roadClearance(x, z, 8, ri) < 0.5 || buildingAt(x, z, 0.5) || inKqPlain(x, z) || inCutBand(x, z, 1) || inLfKeep(x, z) || inEcKeep(x, z) || ownsOg(x, z)) continue;
+          if (roadClearance(x, z, 8, ri) < 0.5 || buildingAt(x, z, 0.5) || inKqPlain(x, z) || inCutBand(x, z, 1) || inLfKeep(x, z) || inEcKeep(x, z) || ownsOg(x, z) || ownsJj(x, z)) continue;
           // the arm reaches out over the road
           const yaw = Math.atan2(-nx * lampSide, -nz * lampSide) - Math.PI / 2;
           cells.p(x, z).add(M.lampPole, yawM(x, 0, z, yaw));
@@ -1138,7 +1139,7 @@ function kerbs(cells: Cells, r: (typeof ROADS)[number], ri: number, at: number) 
         const t = (j / n) * len;
         const x = ax + ux * t + nx * at, z = az + uz * t + nz * at;
         const nearJ = (junction[k] && t < 10) || (junction[k + 1] && len - t < 10);
-        const clear = roadClearance(x + nx * 0.1, z + nz * 0.1, 8, ri) > 0.3 && !onRouteSurface(x, z, ri, undefined, { x: x - nx * at, z: z - nz * at, nx, nz }) && !buildingAt(x, z) && !inKqPlain(x, z) && !inCutBand(x, z, 1.5) && !ownsOg(x, z);
+        const clear = roadClearance(x + nx * 0.1, z + nz * 0.1, 8, ri) > 0.3 && !onRouteSurface(x, z, ri, undefined, { x: x - nx * at, z: z - nz * at, nx, nz }) && !buildingAt(x, z) && !inKqPlain(x, z) && !inCutBand(x, z, 1.5) && !ownsOg(x, z) && !ownsJj(x, z);
         if (!clear) { flush(); continue; }
         // straight runs away from junctions need only their ends
         const last = run[run.length - 1];

@@ -19,6 +19,8 @@
 //   compound with its walls, gates, signs and planting.
 // Names and lettering are only what the photographs show legibly; phone numbers, prices and fine print are not copied.
 import * as THREE from 'three';
+import { behindYardFence } from './jjplan';
+import { NODE_XZ, ROADS } from './campusmap';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { createSite, render, type Block, type Kit, type Spec, type Style } from './blocks';
 import { box, canvas, merge, type Part } from './modelkit';
@@ -454,7 +456,8 @@ const corridor: Spec = {
       for (let i = 0; i < 11000 && n < 3600; i++) {
         // (over the bank and on along the unraised scrub beyond its ends, SCRUB in lbplan.ts)
         const z = SCRUB.z0 + 2 + hash(i, 0.37) * (SCRUB.z1 - SCRUB.z0 - 4), d = 0.5 + Math.pow(hash(0.71, i), 1.25) * (bk.back + 10), x = bankFace(bk, z) - d;
-        if (Number.isNaN(x) || SOLIDS_NEAR(x, z)) continue;
+        // (the J.J. Rawlings corridor brief, jjplan.ts: the scrub stops at the yard's enclosure)
+        if (Number.isNaN(x) || SOLIDS_NEAR(x, z) || behindYardFence(x, z) || ON_TRAIL(x, z)) continue;
         n++;
         const y = gh(x, z), r = hash(i, 5.3), near = d < 9;
         if (r < (near ? 0.6 : 0.42)) shrub(leaf, CO, x, z, y, 0.5 + Math.pow(hash(i, 6), 1.6) * (near ? 1.3 : 1.1), i, ['#3f6a2a', '#4d7a31', '#5b7f36', '#36602a', '#66803a', '#557331', '#6f8b3c', '#7a8a40']);
@@ -552,6 +555,10 @@ const corridor: Spec = {
 };
 /** a spot already taken by something solid (a pole, a board) */
 const SOLIDS_NEAR = (x: number, z: number) => SOLIDS.at(x, z, 0.6);
+/** the mapped footpaths through the west scrub (the walking path along the avenue: the J.J. Rawlings corridor brief, pair 5):
+ *  kept clear of the scrub's plants */
+const SCRUB_TRAILS = ROADS.filter((r) => r.cls === 4).map((r) => r.nodes.map((n) => [NODE_XZ[n * 2], NODE_XZ[n * 2 + 1]] as P2)).filter((p) => p.some(([x, z]) => x > 860 && x < 990 && z > 870 && z < 1190));
+const ON_TRAIL = (x: number, z: number) => SCRUB_TRAILS.some((p) => p.some((q, i) => { if (!i) return false; const [ax, az] = p[i - 1], dx = q[0] - ax, dz = q[1] - az, f = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz || 1))); return Math.hypot(ax + dx * f - x, az + dz * f - z) < 1.9; }));
 
 // ======================================================================================================
 // the frontage north of La-Bawaleshi Road: First Eye Plaza, the low roofed structure, the ALPHA LED shop

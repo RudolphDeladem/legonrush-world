@@ -22,6 +22,7 @@
 // - the junction: a signal post on each island, the islands' worn stone paving, the utility cabinet and short bollards
 //   (Pairs 5-7, 10).
 import * as THREE from 'three';
+import { RED_SHED, behindYardFence, inYard } from './jjplan';
 import { BUILDINGS, NODE_XZ, ROADS, AREAS, buildingNear } from './campusmap';
 import { createSite, render, type Kit, type Spec, type Style } from './blocks';
 import { box, canvas, merge, speckle, type Part } from './modelkit';
@@ -322,7 +323,10 @@ const hood: Spec = {
       if (inCompound(cx, cz)) {
         // the compound beyond the scrub: plain grey and white sheds under blue and grey sheet roofs, no shops
         const r = hash(cx, cz);
-        building(W, c, ring, { storeys: Math.abs(area(ring)) > 250 && r < 0.4 ? 2 : 1, wall: r < 0.5 ? '#e4e3de' : '#c9c8c2', roof: 'metal', roofColor: r < 0.55 ? '#3d6ea8' : '#9aa0a3', shops: false, tank: false, gallery: false, upper: 'win', bay: 4 }, cx * 3 + cz);
+        // (inside the J.J. Rawlings corridor brief's yard, jjplan.ts: low weathered grey service sheds, one storey; the
+        // red-roof building of its picture 13 callout 2)
+        const yard = inYard(cx, cz), red = yard && cx > RED_SHED[0] && cx < RED_SHED[1] && cz > RED_SHED[2] && cz < RED_SHED[3];
+        building(W, c, ring, { storeys: yard ? 1 : Math.abs(area(ring)) > 250 && r < 0.4 ? 2 : 1, wall: yard ? (r < 0.5 ? '#b9b8b2' : '#c9c8c2') : r < 0.5 ? '#e4e3de' : '#c9c8c2', roof: 'metal', roofColor: red ? '#a8432f' : r < 0.55 ? '#3d6ea8' : '#9aa0a3', shops: false, tank: false, gallery: false, upper: 'win', bay: 4 }, cx * 3 + cz);
         continue;
       }
       if (pick) { buildPick(W, c, ring, pick, cx * 3 + cz); continue; }
@@ -494,7 +498,7 @@ const corridor: Spec = {
       const off = (x: number, z: number) => kerb(z) - x;
       k.meshes.push(new THREE.Mesh(drapeAt(CO, 860, 985, SCRUB.z0, SCRUB.z1, 1.6, 0.03, (x, z) => {
         const d = off(x, z);
-        if (Number.isNaN(d) || d < 0.2 || d > SCRUB.depth + 6 || inPond(x, z) || clearance(x, z) < 0.2) return null;
+        if (Number.isNaN(d) || d < 0.2 || d > SCRUB.depth + 6 || inPond(x, z) || clearance(x, z) < 0.2 || behindYardFence(x, z)) return null;
         const m = vnoise(x * 1.1, z * 1.1);
         if (d > SCRUB.path[0] && d < SCRUB.path[1] + (vnoise(z * 0.2, 1) - 0.5)) return [0.62 + m * 0.05, 0.42 + m * 0.04, 0.29];
         return d < SCRUB.path[0] ? [0.5 + m * 0.05, 0.52, 0.32] : [0.33 + m * 0.07, 0.36 + m * 0.06, 0.2];

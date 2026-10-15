@@ -522,6 +522,14 @@
       "reason": "the owner's Okponglo entrance audit (OKP-006; M1, M2 registered on the game map; Street View S12/S14/S16): the mapped pond lies in the bare plot east of the taxi lot, where both satellites and the ground views show dry soil, tracks and a tree group, no water"
     },
     {
+      "id": "osm:way/758602542",
+      "reason": "the owner's J.J. Rawlings corridor brief (pictures 13-16, registered on the game map): the two southern pitches of the vector map lie on the equipment yard's south-west and the bare field west of it; the satellites show no pitch there (the northern pitches are kept)"
+    },
+    {
+      "id": "osm:way/758602543",
+      "reason": "the owner's J.J. Rawlings corridor brief (pictures 13-16, registered on the game map): the two southern pitches of the vector map lie on the equipment yard's south-west and the bare field west of it; the satellites show no pitch there (the northern pitches are kept)"
+    },
+    {
       "id": "ml:b175b03a-e7b9-424f-918a-a04baebbcd1d",
       "reason": "A detected fragment inside the Noguchi laboratory group: the group is modelled whole (nog.ts)."
     },
