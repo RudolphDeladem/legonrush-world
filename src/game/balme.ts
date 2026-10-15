@@ -29,6 +29,7 @@ import { garden } from './gardens';
 import { hipRoof } from './waccbip';
 import { concrete, stoneMesh } from './concrete';
 import { SOLIDS } from './solids';
+import { statue } from './statues';
 
 // ---------- CEDI Conference Centre ----------
 const C: [number, number, number, number] = [-153.4, -106.4, 1.7, 49.7];
@@ -458,12 +459,24 @@ const LIB_WALL: Style = {
   ground: [[86, 256 + 56, 84, 150]],
   draw: (g) => { render(g, '#f7f5ef'); window_(g, [86, 48, 84, 150], '#ffffff', 2, 0.3); window_(g, [86, 256 + 56, 84, 150], '#ffffff', 2, 0.3); },
 };
-/** the centre block: tall narrow windows (owner's top view) */
+/** the centre block (the audit's C01, photos I043, I058): a solid white wall with one small square opening high in each
+ *  bay, the clerestory band under the roofs; no tall window grid */
 const LIB_TALL: Style = {
   bay: 2.4,
-  up: [[96, 18, 64, 220]],
-  ground: [[96, 256 + 24, 64, 214]],
-  draw: (g) => { render(g, '#f7f5ef'); window_(g, [96, 18, 64, 220], '#ffffff', 1, 0.2); window_(g, [96, 256 + 24, 64, 214], '#ffffff', 1, 0.2); },
+  up: [[88, 40, 80, 80]],
+  ground: [],
+  draw: (g) => { render(g, '#f7f5ef'); g.fillStyle = '#e9e5db'; g.fillRect(84, 36, 88, 88); g.fillStyle = '#2c2a28'; g.fillRect(88, 40, 80, 80); g.fillStyle = '#4a3a30'; g.fillRect(88, 116, 80, 4); },
+};
+/** the low ranges either side of the entrance pavilion (I043): wide brown-framed windows high in the wall */
+const LIB_LOW: Style = {
+  bay: 3.4,
+  up: [[50, 70, 156, 56]],
+  ground: [[50, 256 + 70, 156, 56]],
+  draw: (g) => {
+    render(g, '#f7f5ef');
+    for (const y0 of [0, 256]) { g.fillStyle = '#6b3a28'; g.fillRect(44, y0 + 64, 168, 68); g.fillStyle = '#2a2624'; g.fillRect(52, y0 + 72, 152, 52); g.fillStyle = '#6b3a28'; g.fillRect(126, y0 + 72, 4, 52); }
+    g.fillStyle = '#8e2f2a'; g.fillRect(0, 512 - 22, 256, 22);
+  },
 };
 const TILE = '#b9592f';
 /** the pavilion on the north front before the tower (the owner's Kuffour Quadrangle brief, pair 2): round-arched dark
@@ -492,19 +505,47 @@ function stage(k: Kit, h: number, y0: number, y1: number, n: number, ww: number,
   k.plain.push([box(-h, h, y0, y1, -h, h), WHITE]);
   for (let i = 0; i < n; i++) {
     const t = n === 1 ? 0 : (i / (n - 1) - 0.5) * (2 * h - 2.2);
-    k.plain.push([box(t - ww / 2, t + ww / 2, wy0, wy1, -h - 0.05, h + 0.05), '#2a2f38'], [box(-h - 0.05, h + 0.05, wy0, wy1, t - ww / 2, t + ww / 2), '#2a2f38']);
+    // a square window of brown timber lattice (I058)
+    k.plain.push([box(t - ww / 2, t + ww / 2, wy0, wy1, -h - 0.05, h + 0.05), '#6b3524'], [box(-h - 0.05, h + 0.05, wy0, wy1, t - ww / 2, t + ww / 2), '#6b3524']);
+    const q = ww / 4;
+    for (let j = 1; j < 4; j++) {
+      for (const [a, b] of [[t - ww / 2 + j * q - 0.035, t - ww / 2 + j * q + 0.035]]) k.plain.push([box(a, b, wy0, wy1, -h - 0.07, h + 0.07), '#2a2220'], [box(-h - 0.07, h + 0.07, wy0, wy1, a, b), '#2a2220']);
+      const yy = wy0 + (j * (wy1 - wy0)) / 4;
+      k.plain.push([box(t - ww / 2, t + ww / 2, yy - 0.035, yy + 0.035, -h - 0.07, h + 0.07), '#2a2220'], [box(-h - 0.07, h + 0.07, yy - 0.035, yy + 0.035, t - ww / 2, t + ww / 2), '#2a2220']);
+    }
   }
 }
 let clockTex: THREE.Texture | null = null;
-const clockFace = () => (clockTex ??= canvas(128, 128, (x) => {
-  x.fillStyle = '#f7f3e8'; x.beginPath(); x.arc(64, 64, 60, 0, Math.PI * 2); x.fill();
-  x.strokeStyle = '#1d2333'; x.lineWidth = 6; x.stroke();
-  x.fillStyle = '#1d2333';
-  for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; x.fillRect(64 + Math.sin(a) * 46 - 3, 64 - Math.cos(a) * 46 - 3, 6, 6); }
-  x.lineCap = 'round';
-  x.lineWidth = 7; x.beginPath(); x.moveTo(64, 64); x.lineTo(88, 50); x.stroke();
-  x.lineWidth = 5; x.beginPath(); x.moveTo(64, 64); x.lineTo(60, 22); x.stroke();
+/** the clock (I058): a round white dial with a ring of dots and a patterned centre, dark hands, set in a square grey-blue
+ *  patterned panel with a pale border */
+const clockFace = () => (clockTex ??= canvas(256, 256, (x) => {
+  x.fillStyle = '#e4e2dc'; x.fillRect(0, 0, 256, 256);
+  x.fillStyle = '#7d8a9a'; x.fillRect(10, 10, 236, 236);
+  x.strokeStyle = '#5b6878'; x.lineWidth = 2;
+  for (let i = 0; i < 12; i++) { x.beginPath(); x.moveTo(10 + i * 20, 10); x.lineTo(10, 10 + i * 20); x.stroke(); x.beginPath(); x.moveTo(246 - i * 20, 246); x.lineTo(246, 246 - i * 20); x.stroke(); }
+  x.fillStyle = '#f5f3ee'; x.beginPath(); x.arc(128, 128, 104, 0, Math.PI * 2); x.fill();
+  x.strokeStyle = '#26324a'; x.lineWidth = 5; x.stroke();
+  x.fillStyle = '#26324a';
+  for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; x.beginPath(); x.arc(128 + Math.sin(a) * 86, 128 - Math.cos(a) * 86, 7, 0, Math.PI * 2); x.fill(); }
+  x.strokeStyle = '#8a95a6'; x.lineWidth = 2;
+  for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2; x.beginPath(); x.arc(128 + Math.sin(a) * 26, 128 - Math.cos(a) * 26, 26, 0, Math.PI * 2); x.stroke(); }
+  x.lineCap = 'round'; x.strokeStyle = '#1b2233';
+  x.lineWidth = 10; x.beginPath(); x.moveTo(128, 128); x.lineTo(172, 102); x.stroke();
+  x.lineWidth = 7; x.beginPath(); x.moveTo(128, 128); x.lineTo(122, 44); x.stroke();
 }));
+let archTex: THREE.Texture | null = null;
+/** THE BALME LIBRARY in dark capitals along the arch's head (I043, I045), on a transparent ground */
+const archLetters = () => (archTex ??= (() => {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 256;
+  const g = c.getContext('2d')!;
+  g.fillStyle = '#1e1c1b'; g.font = 'bold 34px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  const text = 'THE BALME LIBRARY', R = 196, a0 = -Math.PI * 0.86, a1 = -Math.PI * 0.14;
+  for (let i = 0; i < text.length; i++) {
+    const a = a0 + ((a1 - a0) * i) / (text.length - 1);
+    g.save(); g.translate(256 + Math.cos(a) * R, 236 + Math.sin(a) * R); g.rotate(a + Math.PI / 2); g.fillText(text[i], 0, 0); g.restore();
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
+})());
 const library: Spec = {
   name: 'The Balme Library',
   axis: [1, 0], origin: LO, storey: 4.4, style: LIB_WALL, roofColor: TILE, fascia: '#f7f5ef', pitch: 0.62,
@@ -517,7 +558,7 @@ const library: Spec = {
     L(34.5, 57.1, -32.7, -18.1, 2), // and east
     L(-9.2, 19.6, -32.7, -18.1, 2), // and behind the centre block
     L(-5.3, 15.6, -36.5, -14.7, 3, { roof: 'none', faces: { x0: LIB_TALL, x1: LIB_TALL, z0: LIB_TALL, z1: LIB_TALL } }), // the centre block
-    L(-9.2, 19.6, -1.8, 6.9, 1, { pitch: 0.5 }), // the entrance range
+    L(-9.2, 19.6, -1.8, 6.9, 1, { pitch: 0.5, faces: { z1: LIB_LOW } }), // the entrance range (the pavilion before it: extras)
   ],
   keep: [[-6, 6, 32.4, 38]],
   extras: (k: Kit) => {
@@ -526,7 +567,7 @@ const library: Spec = {
     // hipped cap, an open lantern and the red spire
     const E = k.wallTop(3), bx = 10.45 + 0.8, bz = 10.9 + 0.8;
     const S1 = 4.6, s1top = E + 7;
-    stage(k, S1, E, s1top, 3, 1.1, E + 4.4, E + 6.2);
+    stage(k, S1, E, s1top, 3, 1.25, E + 4.6, E + 5.85);
     collar(k, [-bx, bx, -bz, bz], [-S1, S1, -S1, S1], E, E + 3.6);
     const C = 1.7, ctop = s1top + 7.4;
     k.plain.push([box(-C, C, s1top, ctop, -C, C), WHITE]);
@@ -534,13 +575,15 @@ const library: Spec = {
     // the balcony round the foot of the clock stage, and its railing
     const by = s1top + 3.2;
     k.plain.push([box(-C - 0.5, C + 0.5, by - 0.2, by, -C - 0.5, C + 0.5), WHITE]);
-    for (const [a, b, c, d] of [[-C - 0.5, C + 0.5, -C - 0.5, -C - 0.42], [-C - 0.5, C + 0.5, C + 0.42, C + 0.5], [-C - 0.5, -C - 0.42, -C - 0.5, C + 0.5], [C + 0.42, C + 0.5, -C - 0.5, C + 0.5]]) k.plain.push([box(a, b, by + 0.85, by + 0.95, c, d), '#e9e6de']);
-    for (let t = -C - 0.45; t <= C + 0.46; t += 0.45) for (const [x, z] of [[t, -C - 0.46], [t, C + 0.46], [-C - 0.46, t], [C + 0.46, t]]) k.plain.push([box(x - 0.04, x + 0.04, by, by + 0.9, z - 0.04, z + 0.04), '#e9e6de']);
-    // tall narrow openings under the clocks
-    for (const [x, z, w, d] of [[0, -C, 0.5, 0.1], [0, C, 0.5, 0.1], [-C, 0, 0.1, 0.5], [C, 0, 0.1, 0.5]]) k.plain.push([box(x - w / 2 - 0.02, x + w / 2 + 0.02, by + 0.3, by + 2.3, z - d / 2 - 0.02, z + d / 2 + 0.02), '#2a2f38']);
+    // the balustrade (I058): a brown rail and close brown balusters between white corner and middle posts
+    for (const [a, b, c, d] of [[-C - 0.5, C + 0.5, -C - 0.5, -C - 0.42], [-C - 0.5, C + 0.5, C + 0.42, C + 0.5], [-C - 0.5, -C - 0.42, -C - 0.5, C + 0.5], [C + 0.42, C + 0.5, -C - 0.5, C + 0.5]]) k.plain.push([box(a, b, by + 0.85, by + 0.97, c, d), '#7a3a2a'], [box(a, b, by + 0.12, by + 0.2, c, d), '#7a3a2a']);
+    for (let t = -C - 0.4; t <= C + 0.41; t += 0.16) for (const [x, z] of [[t, -C - 0.46], [t, C + 0.46], [-C - 0.46, t], [C + 0.46, t]]) k.plain.push([box(x - 0.025, x + 0.025, by + 0.2, by + 0.85, z - 0.025, z + 0.025), '#6e3424']);
+    for (const t of [-C - 0.46, 0, C + 0.46]) for (const [x, z] of [[t, -C - 0.46], [t, C + 0.46], [-C - 0.46, t], [C + 0.46, t]]) k.plain.push([box(x - 0.09, x + 0.09, by, by + 1.12, z - 0.09, z + 0.09), '#f1eee6']);
+    // a small brown door under each clock, onto the balcony (I058)
+    for (const [x, z, w, d] of [[0, -C, 0.5, 0.1], [0, C, 0.5, 0.1], [-C, 0, 0.1, 0.5], [C, 0, 0.1, 0.5]]) k.plain.push([box(x - w / 2 - 0.04, x + w / 2 + 0.04, by + 0.2, by + 1.15, z - d / 2 - 0.04, z + d / 2 + 0.04), '#6e3424']);
     const cy = ctop - 1.6, mat = new THREE.MeshStandardMaterial({ map: clockFace(), roughness: 0.6 });
     for (let i = 0; i < 4; i++) {
-      const a = (i * Math.PI) / 2, f = new THREE.Mesh(new THREE.CircleGeometry(1.15, 24), mat);
+      const a = (i * Math.PI) / 2, f = new THREE.Mesh(new THREE.PlaneGeometry(2.7, 2.7), mat);
       f.position.set(Math.sin(a) * (C + 0.03), cy, Math.cos(a) * (C + 0.03));
       f.rotation.y = a;
       k.meshes.push(f);
@@ -548,24 +591,73 @@ const library: Spec = {
     const capTop = ctop + 1.3, L2 = 0.85;
     collar(k, [-C - 0.6, C + 0.6, -C - 0.6, C + 0.6], [-L2, L2, -L2, L2], ctop, capTop);
     // the lantern: four posts and a slab, then the red spire and its finial
-    for (const [x, z] of [[-L2, -L2], [L2, -L2], [-L2, L2], [L2, L2]]) k.plain.push([box(x - 0.2, x + 0.2, capTop, capTop + 1.5, z - 0.2, z + 0.2), WHITE]);
-    k.plain.push([box(-L2 - 0.1, L2 + 0.1, capTop + 1.5, capTop + 1.75, -L2 - 0.1, L2 + 0.1), WHITE]);
-    k.plain.push([new THREE.ConeGeometry(1.3, 4.2, 4).rotateY(Math.PI / 4).translate(0, capTop + 1.75 + 2.1, 0), '#b3262b']);
-    k.plain.push([box(-0.05, 0.05, capTop + 5.9, capTop + 7, -0.05, 0.05), '#3a3a3a']);
-    // the entrance on the south face of the entrance range (owner's photo): a round-arched doorway with a grey
-    // shutter, 'THE BALME LIBRARY' over the arch, windows and notice boards either side, up a flight of steps
-    const fz = 6.9 - LO[1], ax = 0;
-    k.plain.push([box(ax - 2.6, ax + 2.6, PL, PL + 4.1, fz, fz + 0.25), '#fbf9f3']);
-    k.plain.push([box(ax - 1.5, ax + 1.5, PL, PL + 2.6, fz + 0.25, fz + 0.3), '#8d9399']);
-    k.plain.push([new THREE.CylinderGeometry(1.5, 1.5, 0.05, 20, 1, false, -Math.PI / 2, Math.PI).rotateX(-Math.PI / 2).translate(ax, PL + 2.6, fz + 0.3), '#8d9399']);
-    for (const dx of [-0.75, 0, 0.75]) k.plain.push([box(ax + dx - 0.03, ax + dx + 0.03, PL, PL + 3.5, fz + 0.3, fz + 0.33), '#6b7177']);
-    k.signs.push({ text: 'THE BALME LIBRARY', x: ax, y: PL + 4.45, z: fz + 0.27, ry: 0, w: 4.4, colors: ['#fbf9f3', '#1d2333'] });
-    for (const sx of [-1, 1]) {
-      k.plain.push([box(ax + sx * 3.6 - 0.55, ax + sx * 3.6 + 0.55, PL + 0.9, PL + 2.9, fz, fz + 0.06), '#5a2a22']);
-      k.plain.push([box(ax + sx * 5.2 - 0.6, ax + sx * 5.2 + 0.6, PL + 1.1, PL + 2.3, fz, fz + 0.06), '#dfe3e6']);
-      k.plain.push([box(ax + sx * 4.6 - 0.6, ax + sx * 4.6 + 0.6, 0, 0.9, fz + 1.2, fz + 2.2), '#9a8f80']);
+    // the lantern (I058): a white box with a brown louvred shutter in each face, a white cornice, then a low red cap,
+    // its bulb finial and the slender rod
+    k.plain.push([box(-L2, L2, capTop, capTop + 1.6, -L2, L2), WHITE]);
+    for (let i = 0; i < 4; i++) {
+      const a = (i * Math.PI) / 2, cs = Math.cos(a), sn = Math.sin(a);
+      const P = (u: number, y0: number, y1: number, w: number) => new THREE.BoxGeometry(w, y1 - y0, 0.06).translate(u, (y0 + y1) / 2, L2 + 0.02).rotateY(a);
+      k.plain.push([P(0, capTop + 0.3, capTop + 1.35, 1.05), '#6e3424']);
+      for (let j = 0; j < 7; j++) k.plain.push([new THREE.BoxGeometry(0.98, 0.04, 0.06).rotateX(-0.6).translate(0, capTop + 0.4 + j * 0.14, L2 + 0.08).rotateY(a), '#4e2418']);
+      void cs; void sn;
     }
-    for (let i = 0; i < 4; i++) k.plain.push([box(ax - 5 - i * 0.3, ax + 5 + i * 0.3, 0, PL - i * 0.1, fz, fz + 1.2 + i * 1.1), '#cfc8bb']);
+    k.plain.push([box(-L2 - 0.18, L2 + 0.18, capTop + 1.6, capTop + 1.82, -L2 - 0.18, L2 + 0.18), WHITE]);
+    k.plain.push([new THREE.ConeGeometry(1.25, 1.1, 4).rotateY(Math.PI / 4).translate(0, capTop + 1.82 + 0.55, 0), '#b3392e']);
+    k.plain.push([new THREE.CylinderGeometry(0.16, 0.22, 0.3, 10).translate(0, capTop + 2.5, 0), '#a8352b'], [new THREE.SphereGeometry(0.2, 10, 8).scale(1, 1.3, 1).translate(0, capTop + 2.8, 0), '#a8352b']);
+    k.plain.push([box(-0.03, 0.03, capTop + 3.0, capTop + 5.2, -0.03, 0.03), '#4a4a4a']);
+    // the entrance pavilion (the audit's C01, C02; photos I043, I045): a taller white block with its own hipped tiled
+    // roof standing forward of the low ranges; in its solid face the tall round-headed arch with a pale border and THE
+    // BALME LIBRARY lettered round its head, the grey roller shutter in the arch's head over brown timber door leaves,
+    // and either side a narrow brown shuttered window in a white frame and a glazed notice case; up a flight of steps
+    const fz0 = 6.9 - LO[1], ax = 0, PW = 6.8, PD = 1.4, PH = PL + 5.7, fz = fz0 + PD, AW_ = 1.8;
+    // the body, then its front skin 0.5 m thick with the arch cut through it (the reveal)
+    k.plain.push([box(ax - PW, ax + PW, 0, PH, fz0 - 2, fz - 0.5), '#f7f5ef']);
+    {
+      const fr = new THREE.Shape([new THREE.Vector2(-PW, 0), new THREE.Vector2(PW, 0), new THREE.Vector2(PW, PH), new THREE.Vector2(-PW, PH)]);
+      const hole = new THREE.Path(); hole.moveTo(-AW_, PL); hole.lineTo(AW_, PL); hole.lineTo(AW_, PL + 3.0); hole.absarc(0, PL + 3.0, AW_, 0, Math.PI, false); hole.lineTo(-AW_, PL);
+      fr.holes.push(hole);
+      k.plain.push([new THREE.ExtrudeGeometry(fr, { depth: 0.5, bevelEnabled: false, curveSegments: 24 }).translate(ax, 0, fz - 0.5), '#f7f5ef']);
+    }
+    for (const sx of [-1, 1]) k.plain.push([box(sx < 0 ? ax - PW - 0.05 : ax + AW_, sx < 0 ? ax - AW_ : ax + PW + 0.05, 0, PL + 0.35, fz - 0.05, fz + 0.03), '#8e2f2a']);
+    k.plain.push([box(ax - PW - 0.1, ax + PW + 0.1, PH - 0.3, PH, fz0 - 2.1, fz + 0.1), '#f1eee6']);
+    k.roof.c = new THREE.Color(TILE);
+    hipRoof(k, (x, z) => [x, z], ax - PW - 0.9, ax + PW + 0.9, fz0 - 2.9, fz + 0.9, PH, 0.5, 'x', [{ gw: 0, tri: false }, { gw: 0, tri: false }], k.plain, '#3a2a22');
+    // the pavilion's forward part is solid (the doorway stays open)
+    for (let t = -PW + 0.6; t <= PW - 0.6; t += 0.9) if (Math.abs(t) > AW_ + 0.3) SOLIDS.add(LO[0] + t, 6.9 + PD / 2, 0.75);
+    // the arch: opening 3.6 m wide, its head a half round; the pale border; the recess dark behind
+    const AW = 1.8, AH = PL + 3.0, ring = (r0: number, r1: number, z0: number, d: number, col: string) => {
+      const sh = new THREE.Shape().absarc(0, 0, r1, 0, Math.PI, false);
+      sh.lineTo(-r0, 0); sh.absarc(0, 0, r0, Math.PI, 0, true); sh.lineTo(r1, 0);
+      k.plain.push([new THREE.ExtrudeGeometry(sh, { depth: d, bevelEnabled: false, curveSegments: 24 }).translate(ax, AH, z0), col]);
+    };
+    ring(AW, AW + 0.35, fz, 0.06, '#fbfaf6');
+    for (const sx of [-1, 1]) k.plain.push([box(ax + sx * AW - (sx > 0 ? 0 : 0.35), ax + sx * AW + (sx > 0 ? 0.35 : 0), PL, AH, fz, fz + 0.06), '#fbfaf6']);
+    // the shutter filling the arch's head down to the door height; the doors' brown leaves folded open; the hall beyond
+    const sh = new THREE.Shape().absarc(0, 0, AW, 0, Math.PI, false); sh.lineTo(AW, 0);
+    k.plain.push([new THREE.ShapeGeometry(sh, 24).translate(ax, AH, fz - 0.48), '#8f959b']);
+    k.plain.push([box(ax - AW, ax + AW, PL + 2.4, AH, fz - 0.5, fz - 0.47), '#8f959b']);
+    for (let y = PL + 2.5; y < AH + AW; y += 0.12) k.plain.push([box(ax - Math.sqrt(Math.max(0, AW * AW - Math.max(0, y - AH) ** 2)), ax + Math.sqrt(Math.max(0, AW * AW - Math.max(0, y - AH) ** 2)), y, y + 0.02, fz - 0.47, fz - 0.45), '#737a80']);
+    k.plain.push([box(ax - AW, ax + AW, PL, PL + 2.4, fz - 0.5, fz - 0.48), '#2e2926']);
+    for (const sx of [-1, 1]) k.plain.push([box(ax + sx * AW - (sx > 0 ? 0.12 : -0.02), ax + sx * AW + (sx > 0 ? -0.02 : 0.12), PL, PL + 2.4, fz - 0.48, fz - 0.05), '#6b3a24']);
+    const letters = new THREE.Mesh(new THREE.PlaneGeometry(5.6, 2.8), new THREE.MeshStandardMaterial({ map: archLetters(), transparent: true, alphaTest: 0.3, roughness: 0.7 }));
+    letters.position.set(ax, AH + 0.93, fz + 0.08); k.meshes.push(letters);
+    for (const sx of [-1, 1]) {
+      // the narrow window: white surround, brown timber shutter with horizontal boards, a sill
+      const wx = ax + sx * 4.4;
+      k.plain.push([box(wx - 0.62, wx + 0.62, PL + 1.0, PL + 3.15, fz, fz + 0.07), '#fbfaf6']);
+      k.plain.push([box(wx - 0.45, wx + 0.45, PL + 1.15, PL + 3.0, fz + 0.07, fz + 0.1), '#7a3f27']);
+      for (let y = PL + 1.3; y < PL + 3.0; y += 0.17) k.plain.push([box(wx - 0.45, wx + 0.45, y, y + 0.025, fz + 0.1, fz + 0.12), '#55291a']);
+      k.plain.push([box(wx - 0.7, wx + 0.7, PL + 0.92, PL + 1.0, fz, fz + 0.16), '#efebe2']);
+      // the glazed notice case beside the arch
+      const nx = ax + sx * 2.85;
+      k.plain.push([box(nx - 0.5, nx + 0.5, PL + 1.1, PL + 2.35, fz, fz + 0.12), '#7a5a3c'], [box(nx - 0.42, nx + 0.42, PL + 1.18, PL + 2.27, fz + 0.12, fz + 0.13), '#c9d3d8']);
+      // the low stone-faced planter walls before the face (I043)
+      k.plain.push([box(ax + sx * 5.4 - 1.3, ax + sx * 5.4 + 1.3, 0, 0.85, fz + 0.4, fz + 1.6), '#a8896a'], [box(ax + sx * 5.4 - 1.36, ax + sx * 5.4 + 1.36, 0.85, 0.93, fz + 0.34, fz + 1.66), '#e2dccf']);
+      for (let i = 0; i < 4; i++) k.plain.push([new THREE.IcosahedronGeometry(0.3, 0).translate(ax + sx * (4.5 + i * 0.6), 1.15, fz + 1.0), i % 2 ? '#4f8a3a' : '#5d9442']);
+    }
+    // the landing before the door, then the steps down to the forecourt
+    k.plain.push([box(ax - 2.6, ax + 2.6, 0, PL, fz, fz + 1.6), '#cfc8bb']);
+    for (let i = 0; i < 4; i++) k.plain.push([box(ax - 7 - i * 0.3, ax + 7 + i * 0.3, 0, PL - i * 0.1, fz + 1.6, fz + 2.2 + i * 0.9), '#cfc8bb']);
   },
 };
 /** the outer wings (owner's photo of the west side): bands of wide dark windows, narrow ones near the gable ends */
@@ -591,7 +683,8 @@ const screen = () => (screenMat ??= (() => {
   const t = canvas(64, 64, (g) => {
     g.clearRect(0, 0, 64, 64);
     g.fillStyle = '#ecebe5'; g.fillRect(0, 0, 64, 64);
-    g.clearRect(10, 10, 18, 18); g.clearRect(36, 10, 18, 18); g.clearRect(10, 36, 18, 18); g.clearRect(36, 36, 18, 18);
+    // (the audit's C08, photo I060: a dense grid of small square holes, about 10 cm apart, in solid masonry)
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) g.clearRect(4 + i * 16, 4 + j * 16, 8, 8);
   });
   return new THREE.MeshStandardMaterial({ map: t, transparent: true, alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.9 });
 })());
@@ -607,6 +700,19 @@ function screenWall(k: Kit, ax: number, az: number, bx: number, bz: number) {
   k.meshes.push(m);
   const n = Math.max(1, Math.round(len / 4));
   for (let i = 0; i <= n; i++) k.plain.push([box(ax + ((bx - ax) * i) / n - 0.2, ax + ((bx - ax) * i) / n + 0.2, 0, 2.6, az + ((bz - az) * i) / n - 0.2, az + ((bz - az) * i) / n + 0.2), '#ecebe5']);
+}
+/** a dark louvred octagonal opening set into a wall: centre (x, y, z), half-width w and half-height h, facing yaw (0: +z) */
+function octagon(k: Kit, x: number, y: number, z: number, w: number, h: number, yaw: number) {
+  const c = 0.41, pts = [[-w, -h * c], [-w * c, -h], [w * c, -h], [w, -h * c], [w, h * c], [w * c, h], [-w * c, h], [-w, h * c]].map(([a, b]) => new THREE.Vector2(a, b));
+  const shape = new THREE.Shape(pts), frame = new THREE.Shape(pts.map((p) => p.clone().multiplyScalar(1.08)));
+  k.plain.push([new THREE.ShapeGeometry(frame).translate(0, 0, 0.005).rotateY(yaw).translate(x, y, z), '#1d1e21']);
+  k.plain.push([new THREE.ShapeGeometry(shape).translate(0, 0, 0.012).rotateY(yaw).translate(x, y, z), '#121315']);
+  // the louvre blades, clipped to the octagon's width at each height
+  for (let v = -h + 0.12; v < h - 0.08; v += 0.13) {
+    const half = Math.abs(v) < h * c ? w : w - (Math.abs(v) - h * c) * (w * (1 - c)) / (h * (1 - c));
+    k.plain.push([new THREE.BoxGeometry(half * 2 * 0.92, 0.035, 0.03).translate(0, v, 0.03).rotateY(yaw).translate(x, y, z), '#33363b']);
+  }
+  k.plain.push([new THREE.BoxGeometry(0.05, h * 1.9, 0.03).translate(0, 0, 0.04).rotateY(yaw).translate(x, y, z), '#26282c']);
 }
 /** a hipped pyramid roof of tiles over a square, with a dark fascia */
 function pyramid(k: Kit, x0: number, x1: number, z0: number, z1: number, y: number, rise: number, o = 0.9) {
@@ -671,8 +777,6 @@ const libraryWings: Spec = {
     pyramid(k, tx0, tx1, tz0, tz1, tt, 1.6, 0.9);
     k.plain.push([box(tx0 + 2.2, tx1 - 2.2, tt + 1.0, tt + 2.1, tz0 + 2.2, tz1 - 2.2), '#eceae4']);
     pyramid(k, tx0 + 2.2, tx1 - 2.2, tz0 + 2.2, tz1 - 2.2, tt + 2.1, 1.0, 0.5);
-    const ox = lx(89.3) + 0.05, oz = lz(-50.15), oct = new THREE.CircleGeometry(0.85, 8).rotateY(Math.PI / 2).rotateX(Math.PI / 8);
-    k.plain.push([oct.translate(ox, 1.7, oz), '#141518']);
     const gz = lz(-25.4), gx = lx(-74.3);
     k.plain.push([new THREE.CylinderGeometry(1.25, 1.25, 0.08, 8).rotateZ(Math.PI / 2).rotateX(Math.PI / 8).translate(gx - 0.04, 2.0, gz), '#1c1c1e']);
     for (const [a, b, c, d] of [[gx - 0.06, gx, lz(-32.7), lz(-18.1)], [lx(85.9), lx(85.9) + 0.06, lz(-32.7), lz(-18.1)]]) k.plain.push([box(a, b, 0, 0.8, c, d), '#8e2f2a']);
@@ -680,8 +784,14 @@ const libraryWings: Spec = {
     for (const [kx0, kx1, kz0, kz1] of [[-77.9, -71, -53.8, -46.8], [82.7, 89.3, -53.8, -46.5], [-77.4, -70.4, -3.2, 3.8], [82.6, 89.8, -3.6, 3.8]]) {
       k.plain.push([box(lx(kx0), lx(kx1), 0, 3.2, lz(kz0), lz(kz1)), WHITE]);
       k.plain.push([box(lx(kx0) - 0.05, lx(kx1) + 0.05, 0, 0.7, lz(kz0) - 0.05, lz(kz1) + 0.05), '#8e2f2a']);
-      for (const [a, b, c, d] of [[kx0 - 0.03, kx0 + 0.03, (kz0 + kz1) / 2 - 0.8, (kz0 + kz1) / 2 + 0.8], [kx1 - 0.03, kx1 + 0.03, (kz0 + kz1) / 2 - 0.8, (kz0 + kz1) / 2 + 0.8]]) k.plain.push([box(lx(a), lx(b), 1.3, 2.4, lz(c), lz(d)), '#1c2026']);
+      // (the audit's C07, photos I032, I060): no window strip; one isolated dark louvred octagon in the blank wall
+      // facing the road, and a separate tall narrow octagon in each end wall; the red base a metre high
+      const road = kx0 < 0 ? lx(kx0) : lx(kx1), out = kx0 < 0 ? -1 : 1, zc = lz((kz0 + kz1) / 2);
+      octagon(k, road + out * 0.03, 1.85, zc, 0.95, 0.95, Math.PI / 2 * out);
+      for (const [zz, dir] of [[lz(kz0) - 0.03, Math.PI], [lz(kz1) + 0.03, 0]] as [number, number][]) octagon(k, (lx(kx0) + lx(kx1)) / 2 + out * 1.6, 1.85, zz, 0.32, 0.85, dir);
+      k.plain.push([box(lx(kx0) - 0.06, lx(kx1) + 0.06, 0, 1.0, lz(kz0) - 0.06, lz(kz1) + 0.06), '#b8382c']);
       pyramid(k, lx(kx0), lx(kx1), lz(kz0), lz(kz1), 3.2, 2.6, 0.7);
+      k.plain.push([new THREE.SphereGeometry(0.22, 10, 8).translate((lx(kx0) + lx(kx1)) / 2, 3.2 + 2.6 + 0.12, (lz(kz0) + lz(kz1)) / 2), '#a8452f']);
     }
     // the screen walls between them along the roads, west and east, with the gatehouses between
     for (const wx of [-74.3, 85.9]) {
@@ -827,14 +937,12 @@ const steps: Spec = {
     wall(x(-7.2), x(0.25), z(93.5), z(94.1), mid, 0.35);
     wall(x(15.75), x(25.2), z(93.5), z(94.1), mid, 0.35);
     stoneMeshOf(k, stoneParts);
-    // the pale statues on the lawns (pair 2), the two short white cylinders with dark tops at the south end
-    for (const [wx, wz] of BP.statues) {
-      const sx = x(wx), sz = z(wz), y = mid;
-      k.plain.push([box(sx - 0.45, sx + 0.45, y - 1.2 + 1.2 - 0.05, y + 0.9, sz - 0.45, sz + 0.45), '#e3e0d8']);
-      k.plain.push([new THREE.CylinderGeometry(0.2, 0.26, 1.0, 10).translate(sx, y + 1.4, sz), '#f1efe9'], [new THREE.CylinderGeometry(0.17, 0.2, 0.5, 10).translate(sx, y + 2.1, sz), '#f1efe9'], [new THREE.SphereGeometry(0.15, 10, 8).translate(sx, y + 2.5, sz), '#f1efe9']);
-      for (const dx of [-0.24, 0.24]) k.plain.push([new THREE.CylinderGeometry(0.05, 0.06, 0.65, 6).translate(sx + dx, y + 2.05, sz), '#f1efe9']);
-      SOLIDS.add(wx, wz, 0.5);
-    }
+    // the six silver statues on the lawns, each its own figure (the owner's Balme Library audit C18-C21, C29; statues.ts),
+    // on its low base, facing south down the lawns; the two short white cylinders with dark tops at the south end
+    BP.statues.forEach(([wx, wz], i) => {
+      k.meshes.push(statue(BP.statueKinds[i], x(wx), mid, z(wz), 0));
+      SOLIDS.add(wx, wz, 0.55);
+    });
     for (const [wx, wz] of BP.posts) {
       k.plain.push([new THREE.CylinderGeometry(0.75, 0.75, 1.1, 18).translate(x(wx), 0.55, z(wz)), '#f2f1ec'], [new THREE.CylinderGeometry(0.62, 0.62, 0.06, 18).translate(x(wx), 1.12, z(wz)), '#3a3836']);
       SOLIDS.add(wx, wz, 0.8);

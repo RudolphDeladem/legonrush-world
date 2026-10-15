@@ -7,12 +7,18 @@ import { merge, type Part } from './modelkit';
 import { createSite, type Kit, type Spec } from './blocks';
 import { concrete } from './concrete';
 import { SOLIDS } from './solids';
+import { graduates, type StatueKind } from './statues';
 
 export const BP = {
   /** the pool's jets: on (spray drawn) or off (the elevated reference shows little or none) */
   jets: true,
   /** the pale figurative statues on the raised lawns either side of the pool (pair 2), world x, z */
   statues: [[-3.5, 66.5], [-3.5, 76.5], [-3.5, 86.5], [19.5, 66.5], [19.5, 76.5], [19.5, 86.5]] as [number, number][],
+  /** who stands where (the audit's elevated photo I030 and the ground photos): the west lawn from the library end, the
+   *  footballer by the cross wall (I053), an upright figure, a robed figure; the east lawn, the book-holder by the cross
+   *  wall (I067, the owner's arrow), the draped woman with the raised arm (I018, I067), the suited man with the long
+   *  object nearest the road (I014). The west lawn's middle and near figures are read from I030 alone (open). */
+  statueKinds: ['football', 'standing', 'robed', 'book', 'draped', 'suited'] as StatueKind[],
   /** the two short white cylinders with dark tops at the south end (pair 2's foreground) */
   posts: [[-4.5, 96.6], [21.5, 96.6]] as [number, number][],
   /** the roundabout island before the library (pair 11, a 2014 reference state): its centre, the lawn's radius, the
@@ -46,7 +52,7 @@ const ring = (r0: number, r1: number, y0: number, y1: number, seg = 96) => {
 const islandSpec: Spec = {
   name: 'Balme roundabout island', axis: [1, 0], origin: IO, storey: 3, style: { bay: 3, up: [], ground: [], draw: (g) => { g.fillStyle = '#ccc'; g.fillRect(0, 0, 256, 512); } }, roofColor: '#888', fascia: '#888', pitch: 0.1,
   blocks: [],
-  // no generic trees, benches or people on the island (the reference shows clipped shrubs only)
+  // no generic trees, benches or people on the island (its own planting and statue only)
   keep: [[-18, 18, -18, 18]],
   extras: (k: Kit) => {
     const I = BP.island, c: Part[] = [];
@@ -62,13 +68,49 @@ const islandSpec: Spec = {
       const a = (i / 40) * Math.PI * 2, r = (r2 + r3) / 2;
       c.push([new THREE.CircleGeometry(0.12 + (i % 3) * 0.05, 5).rotateX(-Math.PI / 2).translate(Math.cos(a) * r, 0.035, Math.sin(a) * r), ['#7a5c34', '#9b7a44', '#5f4c2c'][i % 3]]);
     }
-    // small irregular clipped shrubs on the lawn, in clumps near its edge (the reference's planting)
-    for (let i = 0; i < 26; i++) {
-      const a = i * 2.39996, r = 4 + ((i * 37) % 100) / 100 * (r1 - 5.2), s = 0.45 + ((i * 13) % 7) * 0.08;
-      c.push([new THREE.IcosahedronGeometry(s, 1).scale(1.3, 0.8, 1.1).translate(Math.cos(a) * r, I.lawnH + s * 0.55, Math.sin(a) * r), ['#3d6b2d', '#4a7a33', '#2f5a24', '#5b8a3c'][i % 4]]);
+    // the planting round the statue (the audit's C23, photos I066, I037, I040): irregular groups of shrubs of different
+    // sizes, some in flower (red and yellow), prickly-pear cactus clumps and pale rocks about the plinth, gaps of lawn
+    // between the groups; no ring of equal round bushes
+    const R = (i: number) => ((Math.sin(i * 127.1) * 43758.5453) % 1 + 1) % 1;
+    const groups = [[0.4, 3.2], [1.5, 4.5], [2.4, 3.6], [3.3, 5.2], [4.2, 3.9], [5.3, 4.8], [2.0, 9.5], [4.0, 10.5], [5.6, 11.8], [0.9, 12.6], [3.0, 13.4]];
+    groups.forEach(([a, r], gi) => {
+      const n = 3 + Math.floor(R(gi) * 4);
+      for (let j = 0; j < n; j++) {
+        const aa = a + (R(gi * 7 + j) - 0.5) * (2.2 / r), rr = r + (R(gi * 11 + j) - 0.5) * 1.6, s = 0.32 + R(gi * 13 + j) * 0.5;
+        const px = Math.cos(aa) * rr, pz = Math.sin(aa) * rr;
+        c.push([new THREE.IcosahedronGeometry(s, 1).scale(1.25, 0.75 + R(j + gi) * 0.4, 1.1).translate(px, I.lawnH + s * 0.5, pz), ['#3d6b2d', '#4a7a33', '#2f5a24', '#5b8a3c', '#476f2e'][(gi + j) % 5]]);
+        if ((gi + j) % 3 === 0) for (let q = 0; q < 7; q++) {
+          const fa = R(gi * 31 + j * 5 + q) * Math.PI * 2;
+          c.push([new THREE.IcosahedronGeometry(0.07, 0).translate(px + Math.cos(fa) * s * 1.0, I.lawnH + s * (0.75 + R(q + j) * 0.35), pz + Math.sin(fa) * s * 0.9), gi % 2 ? '#d4372a' : '#e6c31f']);
+        }
+      }
+    });
+    // prickly-pear cactus clumps: flat oval pads stacked on each other
+    for (const [a, r] of [[0.9, 2.6], [2.9, 2.8], [4.6, 2.5], [1.8, 6.2]]) {
+      const px = Math.cos(a) * r, pz = Math.sin(a) * r;
+      for (let q = 0; q < 9; q++) {
+        const h = I.lawnH + 0.35 + (q % 3) * 0.42, ox = (R(q + a * 10) - 0.5) * 0.9, oz = (R(q * 3 + r) - 0.5) * 0.6;
+        c.push([new THREE.SphereGeometry(0.24, 7, 6).scale(1, 1.3, 0.28).rotateZ((R(q + 9) - 0.5) * 0.9).rotateY(R(q + 4) * 3).translate(px + ox, h, pz + oz), '#5e8a4a']);
+      }
+    }
+    // pale rocks set about the plinth's foot and the beds
+    for (let i = 0; i < 14; i++) {
+      const a = i * 0.45 + R(i) * 0.3, r = 1.6 + R(i + 40) * 1.6, s = 0.18 + R(i + 80) * 0.22;
+      c.push([new THREE.DodecahedronGeometry(s, 0).scale(1, 0.8 + R(i) * 0.6, 0.9).translate(Math.cos(a) * r, I.lawnH + s * 0.5, Math.sin(a) * r), ['#d8d3c8', '#c7c1b4', '#e2ded6'][i % 3]]);
     }
     const m = new THREE.Mesh(merge(c), concrete(0.25)); m.castShadow = true; m.receiveShadow = true; k.meshes.push(m);
     for (let i = 0; i < 64; i++) { const a = (i / 64) * Math.PI * 2; SOLIDS.add(IO[0] + Math.cos(a) * (r2 - 0.15), IO[1] + Math.sin(a) * (r2 - 0.15), 0.25); }
+    // the two graduates with the torch on their tall plinth in the middle (C22, photo I066), facing the approach from
+    // the south (estimated)
+    k.meshes.push(...graduates(0, I.lawnH - 0.05, 0, 0));
+    SOLIDS.add(IO[0], IO[1], 1.1);
+    // two palms in the planting (I037, I040)
+    for (const [a, r] of [[3.9, 7.5], [0.2, 8.5]]) {
+      const px = Math.cos(a) * r, pz = Math.sin(a) * r, t: Part[] = [];
+      t.push([new THREE.CylinderGeometry(0.13, 0.18, 4.6, 8).translate(px, I.lawnH + 2.3, pz), '#8d8577']);
+      for (let q = 0; q < 9; q++) t.push([new THREE.ConeGeometry(0.22, 2.1, 3).rotateX(Math.PI / 2).translate(0, 0, 1.05).scale(1, 0.25, 1).rotateX(0.35).rotateY((q / 9) * Math.PI * 2).translate(px, I.lawnH + 4.6, pz), '#4c7f35']);
+      const pm = new THREE.Mesh(merge(t), concrete(0.1)); pm.castShadow = true; k.meshes.push(pm);
+    }
   },
 };
 

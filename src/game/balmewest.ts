@@ -582,6 +582,27 @@ function mast(k: Kit, O: [number, number], x: number, z: number, h: number) {
   k.plain.push([box(cx + 1.0, cx + 2.0, 0, 1.6, cz - 0.5, cz + 0.4), '#cfd2d4']);
 }
 
+let fcTex: THREE.Texture | null = null;
+/** worn warm slabs between pale strips, irregular stone panels set in (the audit's C14) */
+const forecourtTex = () => (fcTex ??= (() => {
+  const t = canvas(256, 512, (g) => {
+    g.fillStyle = '#b49c7e'; g.fillRect(0, 0, 256, 512);
+    let seed = 7; const r = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
+    for (let py = 0; py < 512; py += 64) for (let px = 0; px < 256; px += 64) {
+      // each panel a cluster of irregular stones
+      for (let i = 0; i < 9; i++) {
+        const cx = px + 8 + r() * 48, cy = py + 8 + r() * 48, rad = 7 + r() * 9, n = 5 + Math.floor(r() * 3);
+        g.fillStyle = ['#c9a77d', '#a98b68', '#d1b48c', '#9c8164', '#bb9a74'][Math.floor(r() * 5)];
+        g.beginPath();
+        for (let j = 0; j < n; j++) { const a = (j / n) * Math.PI * 2 + r() * 0.5, rr = rad * (0.7 + r() * 0.4); g.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); }
+        g.closePath(); g.fill();
+      }
+      g.fillStyle = '#c7bfb2'; g.fillRect(px, py, 64, 6); g.fillRect(px, py, 6, 64);
+    }
+    for (let i = 0; i < 70; i++) { g.fillStyle = 'rgba(70,60,50,0.12)'; g.beginPath(); g.arc(r() * 256, r() * 512, 4 + r() * 14, 0, Math.PI * 2); g.fill(); }
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
+})());
 // ---------- the University Bookshop, east across the square (owner's street view: its south end and west side) ----------
 // The twin of the long block opposite: two floors under orange tiles, its gables north and south boarded in dark timber,
 // the raised lantern over its middle; along the west side a tiled pent roof over the ground floor's tall dark shop
@@ -600,9 +621,29 @@ const W_SHOP: Style = {
     g.fillStyle = '#121212'; g.fillRect(126, 256 + 30, 4, 200); g.fillRect(20, 256 + 96, 216, 4);
   },
 };
+/** the wings' fronts to the square (the audit's C11, photo I012): on the ground floor a large dark window in a white
+ *  frame in each bay, wall between; above, the open gallery in shade behind square white piers and a solid parapet */
+const W_WING: Style = {
+  bay: 3.4, up: [[30, 20, 196, 120]], ground: [[34, 256 + 70, 188, 128]],
+  draw: (g) => {
+    paint(g);
+    g.fillStyle = '#4a4741'; g.fillRect(22, 0, 212, 150);
+    g.fillStyle = '#2c2a27'; g.fillRect(40, 20, 176, 130);
+    g.fillStyle = 'rgba(0,0,0,0.25)'; g.fillRect(22, 0, 212, 14);
+    g.fillStyle = '#e9e6de'; g.fillRect(26, 256 + 62, 204, 144);
+    g.fillStyle = '#151514'; g.fillRect(34, 256 + 70, 188, 128);
+    g.fillStyle = '#e9e6de'; g.fillRect(20, 256 + 204, 216, 8);
+  },
+};
+/** the portico's back wall (I018, I024): a row of small dark windows above, the rest plain; the door and its fittings
+ *  are modelled */
+const W_BKPORT: Style = {
+  bay: 2.0, up: [[50, 70, 156, 70]], ground: [],
+  draw: (g) => { paint(g); g.fillStyle = '#d9d6ce'; g.fillRect(46, 66, 164, 78); g.fillStyle = '#16191c'; g.fillRect(50, 70, 156, 70); },
+};
 const bookshop: Spec = (() => {
   const { X, Z, B, M } = frame(KO);
-  const BN = [42.7, 55.7, 44.4, 63.8], BM = [39.8, 58.9, 63.8, 87.6], BS = [42.7, 56.0, 87.6, 106.2], RC = [70.5, 81.0, 56.6];
+  const BN = [42.7, 55.7, 44.4, 63.8], BM = [39.8, 58.9, 63.8, 87.6], BS = [42.7, 56.0, 87.6, 106.2], RC = [70.5, 81.0, 56.6], PX = 42.4;
   const blk = (r: number[], more: Partial<Block> = {}): Block => ({ x0: X(r[0]), x1: X(r[1]), z0: Z(r[2]), z1: Z(r[3]), floors: 2, roof: 'none', ...more });
   return {
     name: 'University of Ghana Bookshop',
@@ -610,9 +651,12 @@ const bookshop: Spec = (() => {
     // the back toward the car park (owner's second reference PDF, page 14): the middle stands forward, its centre set
     // back between two plain piers with a round window high in each, the roof carried over it on two columns; the
     // north range's upper floor a verandah in shade
-    blocks: [blk(BN, { faces: { x0: W_SHOP, x1: W_VERANDAH } }), blk([BM[0], BM[1], BM[2], RC[0]], { faces: { x0: W_SHOP, x1: W_SOLID } }),
-      blk([BM[0], RC[2], RC[0], RC[1]], { faces: { x0: W_SHOP } }), blk([BM[0], BM[1], RC[1], BM[3]], { faces: { x0: W_SHOP, x1: W_SOLID } }), blk(BS, { faces: { x0: W_SHOP } })],
-    keep: [[X(37), X(60), Z(106), Z(111)], [X(55.7), X(60), Z(56.4), Z(63.8)]],
+    // the front to the square (the owner's Balme Library audit, C11-C14): the middle's two forward masses, solid but for
+    // a round vent high in each, the two-storey portico recessed between them under the roof; the wings either side
+    // with framed windows below and the open gallery above (no lean-to, no strip of shop glass)
+    blocks: [blk(BN, { faces: { x0: W_WING, x1: W_VERANDAH } }), blk([BM[0], BM[1], BM[2], RC[0]], { faces: { x0: W_SOLID, x1: W_SOLID } }),
+      blk([PX, RC[2], RC[0], RC[1]], { faces: { x0: W_BKPORT } }), blk([BM[0], BM[1], RC[1], BM[3]], { faces: { x0: W_SOLID, x1: W_SOLID } }), blk(BS, { faces: { x0: W_WING } })],
+    keep: [[X(37), X(60), Z(106), Z(111)], [X(55.7), X(60), Z(56.4), Z(63.8)], [X(32.5), X(39.8), Z(66), Z(85.5)], [X(36.5), X(42.7), Z(48.5), Z(60)]],
     extras: (k: Kit) => {
       const c: Part[] = [], st: Part[] = [];
       // the roofs: gables north and south, the hip over the middle with its lantern
@@ -627,12 +671,6 @@ const bookshop: Spec = (() => {
         k.plain.push([B(lx0 - 0.07, lx0 - 0.02, y, y + 0.06, lz0, lz1), '#3a3631'], [B(lx1 + 0.02, lx1 + 0.07, y, y + 0.06, lz0, lz1), '#3a3631']);
       }
       hipRoof(k, M, lx0 - 0.6, lx1 + 0.6, lz0 - 0.6, lz1 + 0.6, lt, 0.45, 'z', [hip, hip], c, BARGE, TIMBER);
-      // the tiled pent roof along the west side over the shop windows
-      const pe = PL + LST - 0.15, po = 1.6;
-      for (const [x, z0, z1] of [[BN[0], BN[2] + 0.6, BN[3]], [BM[0], BM[2], BM[3]], [BS[0], BS[2], BS[3] - 0.6]] as [number, number, number][]) {
-        k.roof.quad([X(x - po), pe - 0.75, Z(z1)], [X(x - po), pe - 0.75, Z(z0)], [X(x), pe, Z(z0)], [X(x), pe, Z(z1)]);
-        k.plain.push([B(x - po - 0.05, x - po + 0.05, pe - 0.95, pe - 0.7, z0, z1), BARGE]);
-      }
       // the south end: the entrance under the first-floor balcony on two columns, the balcony's solid white parapet
       const zs = BS[3], F1 = PL + LST, xa = 47.0, xb = 54.6, xm = (xa + xb) / 2;
       c.push([B(xa, xb, F1 - 0.25, F1, zs, zs + 2.0), WALL]);
@@ -647,9 +685,58 @@ const bookshop: Spec = (() => {
       stoneWall(k, KO, st, 43.0, xm - 1.6, zs, zs + 3.4, 0.6);
       stoneWall(k, KO, st, xm + 1.6, 56.0, zs, zs + 2.8, 0.6);
       for (let i = 0; i < 4; i++) k.plain.push([B(xm - 1.6, xm + 1.6, 0, 0.6 - 0.15 * i, zs, zs + 2.0 + 0.35 * i), '#cfcac0']);
-      // a stone-faced bed along the west front, shrubs in it
-      stoneWall(k, KO, st, 37.8, 39.6, 64.5, 87.0, 0.45);
-      for (let z = 66; z < 86; z += 4) k.plain.push([new THREE.IcosahedronGeometry(0.55, 0).scale(1.2, 0.8, 1).translate(X(38.7), 0.85, Z(z)), '#3f6f2c']);
+      // ---- the portico (C12, photos I018, I024): two tall square columns standing forward, the floor raised a step
+      // and paved; in the back wall the doorway with its black grille leaves and the diamond grille over them, the blue
+      // UNIVERSITY OF GHANA BOOKSHOP board over that, a grilled window either side, a dark side door at each end, white
+      // twisted pots with clipped shrubs by the columns
+      const pz0 = RC[0], pz1 = RC[1], pm = (pz0 + pz1) / 2, top = LE - 0.1;
+      for (const z of [pm - 2.6, pm + 2.6]) c.push([B(BM[0] + 0.15, BM[0] + 0.75, 0, top, z - 0.3, z + 0.3), WALL]);
+      c.push([B(BM[0] + 0.1, PX, top - 0.5, top, pz0, pz1), WALL]);
+      k.plain.push([B(BM[0] - 0.1, PX, 0, 0.28, pz0, pz1), '#b9a58a']);
+      for (let z = pz0 + 1.2; z < pz1; z += 1.2) k.plain.push([B(BM[0] - 0.1, PX, 0.28, 0.29, z - 0.03, z + 0.03), '#8f7d66']);
+      const dx = PX - 0.02;
+      k.plain.push([B(dx - 0.04, dx, 0.28, 2.9, pm - 1.6, pm + 1.6), '#141414']);
+      for (let z = pm - 1.55; z <= pm + 1.56; z += 0.16) k.plain.push([B(dx - 0.08, dx - 0.04, 0.28, 2.3, z, z + 0.035), '#2a2a2a']);
+      for (let i = 0; i < 12; i++) {
+        const z = pm - 1.5 + i * 0.27;
+        k.plain.push([new THREE.BoxGeometry(0.03, 0.32, 0.03).rotateX(Math.PI / 4).translate(X(dx - 0.07), 2.6, Z(z)), '#3a3a3a'], [new THREE.BoxGeometry(0.03, 0.32, 0.03).rotateX(-Math.PI / 4).translate(X(dx - 0.07), 2.6, Z(z)), '#3a3a3a']);
+      }
+      k.plain.push([B(dx - 0.05, dx, 2.95, 3.85, pm - 1.7, pm + 1.7), '#f4f4f1'], [B(dx - 0.06, dx - 0.04, 2.95, 3.2, pm - 1.7, pm + 1.7), '#1d3f7a']);
+      k.signs.push({ text: 'UNIVERSITY OF GHANA BOOKSHOP', x: X(dx - 0.07), y: 3.5, z: Z(pm), ry: -Math.PI / 2, w: 3.2, colors: ['#f4f4f1', '#1d3f7a'] });
+      for (const sz of [-1, 1]) {
+        const wz = pm + sz * 3.7;
+        k.plain.push([B(dx - 0.06, dx, 0.95, 2.6, wz - 0.55, wz + 0.55), '#e9e6de'], [B(dx - 0.08, dx - 0.06, 1.05, 2.5, wz - 0.45, wz + 0.45), '#5d8a96']);
+        for (let z = wz - 0.4; z < wz + 0.45; z += 0.13) k.plain.push([B(dx - 0.11, dx - 0.08, 1.05, 2.5, z, z + 0.025), '#202020']);
+        k.plain.push([B(dx - 0.05, dx, 0.28, 2.5, pm + sz * 5.0 - 0.45, pm + sz * 5.0 + 0.45), '#1b1d20']);
+        // the pots
+        const potZ = pm + sz * 2.0, potX = BM[0] + 0.45;
+        k.plain.push([new THREE.CylinderGeometry(0.32, 0.22, 0.7, 10).translate(X(potX + 0.6), 0.63, Z(potZ)), '#f1f0ec'], [new THREE.IcosahedronGeometry(0.32, 1).translate(X(potX + 0.6), 1.15, Z(potZ)), '#3f6f2c']);
+      }
+      // the round vents high in the two forward masses' fronts: a black grille in a white ring (I012, I018)
+      for (const z of [(BM[2] + RC[0]) / 2, (RC[1] + BM[3]) / 2]) {
+        k.plain.push([new THREE.CylinderGeometry(0.6, 0.6, 0.06, 20).rotateZ(Math.PI / 2).translate(X(BM[0] - 0.02), PL + LST + 2.0, Z(z)), '#1b1c1e']);
+        k.plain.push([new THREE.TorusGeometry(0.62, 0.06, 6, 20).rotateY(Math.PI / 2).translate(X(BM[0] - 0.04), PL + LST + 2.0, Z(z)), '#e9e7e1']);
+        for (const d of [-0.3, 0, 0.3]) k.plain.push([B(BM[0] - 0.07, BM[0] - 0.04, PL + LST + 1.45, PL + LST + 2.55, z + d - 0.025, z + d + 0.025), '#3a3a3a']);
+        // a framed window with a black grille low in each mass
+        k.plain.push([B(BM[0] - 0.06, BM[0], 1.0, 2.9, z - 0.6, z + 0.6), '#ece9e1'], [B(BM[0] - 0.08, BM[0] - 0.06, 1.12, 2.78, z - 0.45, z + 0.45), '#16181a']);
+        for (const d of [-0.22, 0, 0.22]) k.plain.push([B(BM[0] - 0.1, BM[0] - 0.08, 1.12, 2.78, z + d - 0.03, z + d + 0.03), '#2e2e2e']);
+      }
+      // hedges before the forward masses (I012); the forecourt between them is open
+      for (const [z0, z1] of [[64.4, 69.8], [81.7, 87.0]]) for (let z = z0 + 0.7; z < z1; z += 1.2) k.plain.push([new THREE.IcosahedronGeometry(0.75, 1).scale(1.1, 1.0, 1.2).translate(X(38.8), 0.75, Z(z)), '#2f5a24']);
+      // ---- the forecourt (C14, I010, I024): large worn square slabs between straight strips, panels of irregular
+      // flat stone set into them
+      const fc = new THREE.Mesh(new THREE.PlaneGeometry(6.4, pz1 - pz0 + 3).rotateX(-Math.PI / 2).translate(X(BM[0] - 3.2), 0.035, Z(pm)), new THREE.MeshStandardMaterial({ map: forecourtTex(), roughness: 0.95 }));
+      fc.receiveShadow = true; k.meshes.push(fc);
+      // ---- the benches on the slabs before the north wing (C13, I012): cast white end frames, blue slats
+      k.plain.push([B(37.3, 42.7, 0, 0.04, 48.8, 59.4), '#b8a88f']);
+      for (let z = 48.8; z < 59.4; z += 1.2) k.plain.push([B(37.3, 42.7, 0.04, 0.045, z, z + 0.04), '#8f7f68']);
+      for (const z of [50.5, 54.0, 57.5]) {
+        const bx = 38.6;
+        for (const e of [-0.85, 0.85]) c.push([B(bx - 0.3, bx + 0.32, 0, 0.82, z + e - 0.07, z + e + 0.07), '#e3e0d8']);
+        for (let i = 0; i < 4; i++) k.plain.push([B(bx - 0.28 + i * 0.13, bx - 0.18 + i * 0.13, 0.44, 0.48, z - 0.95, z + 0.95), '#2c5aa0']);
+        for (let i = 0; i < 3; i++) k.plain.push([B(bx + 0.24, bx + 0.28, 0.58 + i * 0.12, 0.66 + i * 0.12, z - 0.95, z + 0.95), '#2c5aa0']);
+        SOLIDS.add(bx, z, 0.6);
+      }
       // the back: the two columns in the recess, the round windows in the piers, air-conditioners, the water tanks in
       // their railed pen before the north range
       for (const z of [RC[0] + 3.5, RC[1] - 3.5]) c.push([B(BM[1] - 0.75, BM[1] - 0.3, 0, LE - 0.1, z - 0.22, z + 0.22), WALL]);
