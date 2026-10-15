@@ -29,6 +29,8 @@ try {
   // Noguchi and WAGMC (nogplan.ts)
   const N = await server.ssrLoadModule('/src/game/nogplan.ts');
   const nw = (F, ring) => ring.map(([u, v]) => F.world(u, v).map(r1));
+  // the Okponglo entrance audit (okgate.ts, docs/okponglo/gate/ledger.md)
+  out.exclude.push({ id: 'osm:way/700264510', reason: "the owner's Okponglo entrance audit (OKP-006; M1, M2 registered on the game map; Street View S12/S14/S16): the mapped pond lies in the bare plot east of the taxi lot, where both satellites and the ground views show dry soil, tracks and a tree group, no water" });
   const NSRC = "the owner's Noguchi + WAGMC brief (docs/noguchi-wagmc/): Apple satellite M1/M2 registered at 2.617 / 2.242 px/m";
   out.reshape.push({ id: 'osm:way/1239491142', place: 'Noguchi Advanced Research Laboratories', source: NSRC, ring: nw(N.NG, N.LAB_OUTLINE), reason: 'The L follows the long wing, the taller signed end, the service block and the west arm on the satellite, kept clear of the mapped drives north and west of it, so that the bike stops at the walls the model draws (nog.ts).' });
   out.reshape.push({ id: 'ml:bb10dd81-3cd6-40d5-99d0-f8fac678746a', place: 'West African Genetic Medicine Centre', source: NSRC, ring: nw(N.WG, N.WAG_OUTLINE), reason: 'The game map had no WAGMC building (the brief: "a text label is not a building"); this detected fragment of its roof becomes the U the satellite and the drone frames show (two forward wings, the base with the portal, the rear extension).' });

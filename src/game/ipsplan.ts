@@ -9,6 +9,7 @@ import { ownsLb } from './lbplan';
 import { ownsFs } from './fsplan';
 import { ownsLf } from './lfplan';
 import { ownsEc } from './ecgplan';
+import { ownsOg } from './okgateplan';
 
 type Line = [number, number][];
 /** the mapped road whose line passes within a metre of (x, z), of the given class */
@@ -91,6 +92,8 @@ export const POLE_OFF = 7.6, LAMP_OFF = 7.0;
 export function ownsEdges(x: number, z: number) {
   // (and the Agriculture side's own footways, drains and aprons: agplan.ts)
   if (agOwns(x, z)) return true;
+  // (and Jubilee Drive at the Okponglo entrance: its kerbs, footways, channel, fence and plot, okgate.ts)
+  if (ownsOg(x, z)) return true;
   // (and the N4 by the stadium and La Bawaleshie: the median, the scrub, the verges, the frontage: labawaleshie.ts)
   if (ownsLb(x, z)) return true;
   // (and the fire station's La Road frontage and the R2 cluster's forecourt and court, firestation.ts, boateng.ts)

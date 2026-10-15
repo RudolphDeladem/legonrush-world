@@ -149,7 +149,9 @@ export const ROADSIDE_OFF = 10;
 /** the transport places whose generic shuttle shelter this brief replaces (life.ts skips them): the concrete shelter at
  *  "UPS" (Pair 10), the open trading corner at "UPSA Taxi Rank" (Pairs 8, 9: no standard shelter there), the roadside
  *  shelter at "Presec" (Pair 20) */
-export const MODELLED_STOPS = ['UPS', 'UPSA Taxi Rank', 'Presec'];
+// (Legon Taxi Rank and the two stops on Jubilee Drive by it: the Okponglo entrance audit, okgate.ts: no shuttle shelter,
+// the open plot's verge has only a slim sign frame)
+export const MODELLED_STOPS = ['UPS', 'UPSA Taxi Rank', 'Presec', 'Legon Taxi Rank', 'Legon Traffic Light', 'Legon (near Emporium Pharmacy)'];
 
 /** the solids these models put beside the ride, for the route checks: x, z, radius */
 export function bpiPosts(): [number, number, number][] {

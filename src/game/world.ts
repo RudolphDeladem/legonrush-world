@@ -24,6 +24,7 @@ import { buildUpsaGreen } from './upsagreen';
 import { buildEngineeringGrounds } from './engground';
 import { buildUgmcGrounds } from './ugmcground';
 import { buildNogGrounds } from './nog';
+import { buildOkGateGrounds } from './okgate';
 import { buildEvandyGrounds } from './evandy';
 import { NOG_TREES } from './nogtrees';
 import { NG, NOG_BACK, NOG_FINISH, WAG_SIDES, WG } from './nogplan';
@@ -501,6 +502,8 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
   group.add(buildNogGrounds(NOG_TREES));
   // Evandy Hostel's islands, shrubs, court tree, and the scrub and sandy field east of it (evandy.ts)
   group.add(buildEvandyGrounds());
+  // the Okponglo entrance's bare plot and trees (okgate.ts)
+  group.add(buildOkGateGrounds());
   yield 'step';
 
   // trees, kerbs, lamps, stops, signs, cars, kiosks and people (see life.ts)

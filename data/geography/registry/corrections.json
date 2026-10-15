@@ -518,6 +518,10 @@
       "reason": "A detected fragment inside the Outpatients block's east wing (UGMC): the block is modelled whole (ugmc.ts)."
     },
     {
+      "id": "osm:way/700264510",
+      "reason": "the owner's Okponglo entrance audit (OKP-006; M1, M2 registered on the game map; Street View S12/S14/S16): the mapped pond lies in the bare plot east of the taxi lot, where both satellites and the ground views show dry soil, tracks and a tree group, no water"
+    },
+    {
       "id": "ml:b175b03a-e7b9-424f-918a-a04baebbcd1d",
       "reason": "A detected fragment inside the Noguchi laboratory group: the group is modelled whole (nog.ts)."
     },
