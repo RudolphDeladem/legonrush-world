@@ -29,6 +29,7 @@ import { garden } from './gardens';
 import { hipRoof } from './waccbip';
 import { concrete, stoneMesh } from './concrete';
 import { SOLIDS } from './solids';
+import { pave, pavers } from './upsa';
 import { statue } from './statues';
 
 // ---------- CEDI Conference Centre ----------
@@ -68,6 +69,16 @@ const cedi: Spec = {
   extras: (k: Kit) => {
     const [x0, x1, z0, z1] = [cx(C[0]), cx(C[1]), cz(C[2]), cz(C[3])];
     const e = k.wallTop(F);
+    // the car park north of the centre, across the road from the library's west wing (the owner's Balme Library audit,
+    // C26, Street View I062-I065): grey interlocking pavers over the mapped lot, a band of darker pavers and a low
+    // kerb round its edge, white bay lines along both long sides
+    {
+      const [px0, px1, pz0, pz1] = [cx(-132.8), cx(-95), cz(-27.6), cz(-1.15)];
+      pave(k, px0, px1, pz0, pz1, pavers('grey'), 0.04, 2);
+      for (const [a, b, c, d] of [[px0, px1, pz0, pz0 + 0.6], [px0, px1, pz1 - 0.6, pz1], [px0, px0 + 0.6, pz0, pz1], [px1 - 0.6, px1, pz0, pz1]]) k.plain.push([box(a, b, 0.0, 0.06, c, d), '#6a655e']);
+      for (const [a, b, c, d] of [[px0, px1, pz0 - 0.15, pz0], [px0, px1, pz1, pz1 + 0.15], [px0 - 0.15, px0, pz0, pz1]]) k.plain.push([box(a, b, 0, 0.14, c, d), '#d9d6cf']);
+      for (const zz of [pz0 + 0.6, pz1 - 5.6]) for (let xx = px0 + 1.5; xx < px1 - 1; xx += 2.6) k.plain.push([box(xx - 0.05, xx + 0.05, 0.061, 0.065, zz, zz + 5.0), '#efefea']);
+    }
     // the deep white entablature round the roof, in stepped bands (owner's photo of the east face); on the east it
     // stands out over the columns. The pink hipped roof rises inside it (owner's top view)
     const ent = (a: number, b: number, c: number, out: number, eastOut: number) => {
@@ -889,7 +900,22 @@ const sprayMat = () => (sprayM ??= new THREE.MeshStandardMaterial({ color: '#eef
 // middle terrace 1.2 m down, each behind a laterite stone retaining wall, the central stairs climbing between them
 const SO: [number, number] = [8.5, 70];
 const STONE = '#9b6e4a', STONE_L = '#b7865f', PAVE_B = '#d6d0c2';
-let slabT: THREE.Texture | null = null, crazyT: THREE.Texture | null = null;
+let slabT: THREE.Texture | null = null, crazyT: THREE.Texture | null = null, herrT: THREE.Texture | null = null;
+/** 1.2 m of grey interlocking pavers laid herringbone (I055) */
+const herringTex = () => (herrT ??= (() => {
+  const t = canvas(128, 128, (g) => {
+    g.fillStyle = '#6f6c66'; g.fillRect(0, 0, 128, 128);
+    let sd = 5; const r = () => ((sd = (sd * 9301 + 49297) % 233280) / 233280);
+    const cols = ['#a7a49d', '#9d9a93', '#b0ada6', '#96938c'];
+    // bricks 2:1 (16 x 8 px = 0.15 x 0.075 m) in a herringbone: pairs at right angles stepping diagonally
+    for (let i = -16; i < 24; i++) for (let j = -16; j < 24; j++) {
+      const ox = i * 16 + j * 8, oy = j * 8 - i * 0;
+      g.fillStyle = cols[Math.floor(r() * 4)]; g.fillRect(ox + 1, oy + 1, 14, 6);
+      g.fillStyle = cols[Math.floor(r() * 4)]; g.fillRect(ox + 1 + 8, oy + 1 - 8 + 8, 6, 14);
+    }
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
+})());
 /** 2.4 m of worn warm square slabs (four 0.6 m slabs a side), dark joints, uneven staining */
 const slabTex = () => (slabT ??= (() => {
   const t = canvas(256, 256, (g) => {
@@ -961,6 +987,18 @@ const steps: Spec = {
       k.plain.push([box(ix - 0.3, ix + 0.3, deck, deck + 0.85, iz - 0.2, iz + 0.2), '#8a5a44']);
       k.plain.push([new THREE.BoxGeometry(0.9, 0.06, 0.6).rotateX(-0.45).translate(ix, deck + 1.0, iz), '#3c3a38'], [new THREE.BoxGeometry(0.8, 0.01, 0.5).rotateX(-0.45).translate(ix, deck + 1.035, iz + 0.015), '#6f7478']);
       SOLIDS.add(8, 92.4, 0.45);
+    }
+    // along the west lane (C25, photo I055): a herringbone paver walkway outside the asphalt, the narrow open concrete
+    // drain between them with cover slabs at intervals; flush with the ground, nothing to ride into
+    {
+      const hb = new THREE.MeshStandardMaterial({ map: herringTex(), roughness: 0.95 });
+      const wg = new THREE.PlaneGeometry(1.8, 66).rotateX(-Math.PI / 2);
+      const uv = wg.attributes.uv as THREE.BufferAttribute;
+      for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 1.8 / 1.2, uv.getY(i) * 66 / 1.2);
+      const wm = new THREE.Mesh(wg, hb); wm.position.set(x(-16.1), 0.045, z(74)); wm.receiveShadow = true; k.meshes.push(wm);
+      k.plain.push([box(x(-15.2), x(-14.75), -0.02, 0.012, z(41), z(107)), '#3b3a37']);
+      for (const xx of [-15.28, -14.67]) k.plain.push([box(x(xx - 0.08), x(xx + 0.08), -0.02, 0.07, z(41), z(107)), '#b9b5ac']);
+      for (let wz = 44; wz < 106; wz += 8.5) k.plain.push([box(x(-15.4), x(-14.6), 0.07, 0.1, z(wz), z(wz + 1.0)), '#a9a59c']);
     }
     const g = garden([-90, 100, 10, 110]);
     g.reseed(77);

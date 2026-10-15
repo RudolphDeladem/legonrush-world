@@ -39,6 +39,20 @@ road scan round the library (only the two existing hits at roads 1508 and 1509, 
 
 Comparison: `comparison-sheet-2.jpg`. Checks as round 1 (all clean; road scan unchanged).
 
+## Round 3: Part 3 of the audit (the implementation prompt and the 67-photo appendix)
+
+Part 3 (pages 101-146) restates each confirmed item with a mandatory acceptance check and holds every supplied photo
+(RW-I001 to I067). Checked against it:
+
+| Item | Code | Change / finding |
+|---|---|---|
+| C22 orientation | `balmepent.ts` | The oblique I037 (with I040, I041) shows the two graduates turned toward the library, and the front photo I066 has no library behind it: the group now faces north to the library (it faced south in round 1). |
+| C25 drain | `balme.ts` herringTex | Along the west lane (the source segment of I055): a herringbone paver walkway outside the asphalt, the narrow open concrete drain between them with cover slabs every 8.5 m; flush with the ground, the lane and its entrances unchanged. |
+| C26 parking | `balme.ts` cedi extras | The mapped car park north of the CEDI centre, across the road from the library's west wing (Street View I062-I065): grey interlocking pavers in place of plain concrete, a darker paver band and low kerb round its edge, white bay lines along both long sides. Cars stay as the life system parks them. |
+| Acceptance checks C01-C03, C07, C08, C15-C21 | (rounds 1, 2) | Checked against the listed views: blank wall areas and the clerestory band (C01); the arch lettering, the reveal and the side openings (C02); the square surround, dial, balcony and caps (C03); isolated octagons with solid margins (C07); the dense masonry screen with its red base (C08); the separate basin, coping and walls (C15-C17); statue slots, limbs, props and bases, with unresolved identities flagged (C18-C21, C29). |
+
+Comparison: `comparison-sheet-3.jpg`.
+
 ## Not done yet (open, next)
 
 C04 roof tile ageing and junctions, C05 courtyard galleries and AC units (needs registration), C09 the weathered service elevation, C10 the columned block (location pending), C24-C28 trees, drains,

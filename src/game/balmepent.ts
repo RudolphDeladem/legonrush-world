@@ -100,9 +100,9 @@ const islandSpec: Spec = {
     }
     const m = new THREE.Mesh(merge(c), concrete(0.25)); m.castShadow = true; m.receiveShadow = true; k.meshes.push(m);
     for (let i = 0; i < 64; i++) { const a = (i / 64) * Math.PI * 2; SOLIDS.add(IO[0] + Math.cos(a) * (r2 - 0.15), IO[1] + Math.sin(a) * (r2 - 0.15), 0.25); }
-    // the two graduates with the torch on their tall plinth in the middle (C22, photo I066), facing the approach from
-    // the south (estimated)
-    k.meshes.push(...graduates(0, I.lawnH - 0.05, 0, 0));
+    // the two graduates with the torch on their tall plinth in the middle (C22, photo I066), facing north to the library
+    // (the oblique I037 shows them turned toward it)
+    k.meshes.push(...graduates(0, I.lawnH - 0.05, 0, Math.PI));
     SOLIDS.add(IO[0], IO[1], 1.1);
     // two palms in the planting (I037, I040)
     for (const [a, r] of [[3.9, 7.5], [0.2, 8.5]]) {
