@@ -11,6 +11,7 @@ import { ownsLf } from './lfplan';
 import { ownsEc } from './ecgplan';
 import { ownsOg } from './okgateplan';
 import { ownsJj } from './jjplan';
+import { ownsDj } from './djplan';
 
 type Line = [number, number][];
 /** the mapped road whose line passes within a metre of (x, z), of the given class */
@@ -97,6 +98,8 @@ export function ownsEdges(x: number, z: number) {
   if (ownsOg(x, z)) return true;
   // (and the J.J. Rawlings Avenue yard, east opening and GRA frontage, jjyard.ts)
   if (ownsJj(x, z)) return true;
+  // (and the Diamond Jubilee Hall's forecourt, verge and rear ground, diamondjubilee.ts)
+  if (ownsDj(x, z)) return true;
   // (and the N4 by the stadium and La Bawaleshie: the median, the scrub, the verges, the frontage: labawaleshie.ts)
   if (ownsLb(x, z)) return true;
   // (and the fire station's La Road frontage and the R2 cluster's forecourt and court, firestation.ts, boateng.ts)
