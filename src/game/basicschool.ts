@@ -168,14 +168,15 @@ function fenceLine(k: Kit, ax: number, az: number, bx: number, bz: number) {
  */
 const BOUNDARY: [number, number, number, number][] = [
   // La Road, west of the stub road at x -153 (the stretch east of it is the fence by the gate above)
-  [-207, 900.5, -158.5, 900.5],
+  // (open at the corner, where Barimah Road's link crosses it)
+  [-186, 900.5, -158.5, 900.5],
   // the west side, by Barimah Road, then along the bend of the road to the south
-  [-207, 900.5, -207, 1068], [-207, 1068, -209.5, 1112],
+  [-207, 914, -207, 1068], [-207, 1068, -209.5, 1112],
   // the south side, inside the southern road, open at the lane at x -87
   [-209.5, 1119, -91.5, 1110.5], [-82.5, 1110, -51, 1108.4],
   // the east side: up the road east of the hall, along the lane south of the car park, up to the road from the
   // roundabout, and back toward it short of the roundabout
-  [-42.5, 1106, -42.5, 1058], [-42.5, 1058, 12, 1058], [12, 1058, 12, 980], [12, 980, -3.5, 977],
+  [-42.5, 1106, -42.5, 1058], [-42.5, 1058, 12, 1058], [12, 1058, 12, 983.5], [12, 983.5, -3.5, 981.5],
   [-17.5, 946, -17.5, 903],
 ];
 const boundary: Spec = {
