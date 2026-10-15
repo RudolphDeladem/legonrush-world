@@ -94,5 +94,5 @@ export const onEarth = (x: number, z: number) => [...SC.earth, EN.earthBox].some
 export const PAVED: [number, number, number, number][] = [[203.5, 223.9, -137.0, -78],
   // the paving round the Balme Library (the owner's Balme Library audit, C16, C26: no grass on intact paving): the car
   // parks south and south-west of it, CEDI's car park, the forecourt, the square and the pool, the Bookshop's forecourt
-  [-80, -12, 11.8, 19], [-82, -46, 22.5, 32.5], [-132.8, -95, -27.6, -1.1], [-8, 21, 11.5, 36], [-10, 27.2, 40.8, 102.5], [32.5, 42.6, 66, 85.5]];
+  [-80, -12, 11.8, 19], [-82, -46, 22.5, 32.5], [-132.8, -95, -27.6, -1.1], [-8, 21, 11.5, 36], [0.7, 15.3, 49, 102.5], [32.5, 42.6, 66, 85.5]];
 export const onPaved = (x: number, z: number) => PAVED.some(([x0, x1, z0, z1]) => x > x0 && x < x1 && z > z0 && z < z1);

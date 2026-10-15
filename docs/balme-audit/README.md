@@ -81,6 +81,18 @@ Comparison: `comparison-sheet-5.jpg`.
 
 Comparison: `comparison-sheet-6.jpg`.
 
+## Round 7: owner's notes (`owner/note7-*`)
+
+| Note | Change |
+|---|---|
+| No paving outside the square on the west, east and north; the south closed by the beds' short white kerb at the road | The road-level slab strips round the square removed; the two corner beds now reach the road and their rounded white kerbs close the south end; the open slope between them stays. |
+| The circled post is a white cylinder (the enhanced aerial had made it an urn on a pier) | Each bed's centrepiece is again a white cylinder with a flat overhanging cap (owner's photo). |
+| Statues 25% larger | Every lawn statue and the roundabout's graduates scaled by 1.25 (`STATUE_SCALE`). |
+| The figure before the footballer (owner's photo) | Rebuilt as the dancer: bare chest, a cloth wrapped at the waist with folds and a knot, fringed raffia bands at the ankles, knees bent with the left forward, elbows bent and fists held forward at the waist, head up, mouth open, on a disc and square slab. |
+
+The mapped footway across the square's south end (map line 1508) now runs under the two beds; nothing solid blocks it.
+Comparison: `comparison-sheet-7.jpg`. The red-circled west-lawn figure waits for the owner's photo.
+
 ## Not done yet (open, next)
 
 C04 roof tile ageing and junctions, C05 courtyard galleries and AC units (needs registration), C09 the weathered service elevation, C10 the columned block (location pending), C24-C28 trees, drains,

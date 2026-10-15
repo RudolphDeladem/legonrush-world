@@ -991,13 +991,9 @@ const steps: Spec = {
     // the paving at road level all round the sunken square (owner): from the road before the library to the upper
     // wall (round the head of the stairs), from the lanes to the side walls, and south of the pool to the footway
     const PAVE_T = '#d9d3c6';
-    k.plain.push([box(x(-10), x(27.2), -0.05, 0.05, z(40.8), z(43)), PAVE_T]);
-    k.plain.push([box(x(-10), x(st.z0), -0.05, 0.05, z(43), z(48.7)), PAVE_T]);
-    k.plain.push([box(x(st.z1), x(27.2), -0.05, 0.05, z(43), z(48.7)), PAVE_T]);
-    k.plain.push([box(x(-10), x(-7.2), -0.05, 0.05, z(48.7), z(94.6)), PAVE_T]);
-    k.plain.push([box(x(25.2), x(27.2), -0.05, 0.05, z(48.7), z(94.6)), PAVE_T]);
-    k.plain.push([box(x(-10), x(0.25), -0.05, 0.03, z(94.1), z(102)), PAVE_T]);
-    k.plain.push([box(x(15.75), x(27.2), -0.05, 0.03, z(94.1), z(102)), PAVE_T]);
+    // (none on the west, east and north of the square, and none outside the corner beds: owner, 2026-10-15; the
+    // beds' white kerbs close the south end)
+    void PAVE_T;
     // worn warm square slabs with joints on the pool deck round the pool and on the middle terrace (C16, C17); the stone
     // panel of irregular flat stones set into the paving south of the pool (C15, I030); the sloped information slab on
     // its stand at the pool's south end (C27, I042)
@@ -1011,8 +1007,7 @@ const steps: Spec = {
     sp(0.7, 2.95, 60.75, 93.5, deck + 0.05); sp(13.05, 15.3, 60.75, 93.5, deck + 0.05);
     sp(2.95, 13.05, 60.75, 64.55, deck + 0.05); sp(2.95, 13.05, 91.45, 93.5, deck + 0.05);
     sp(-1, 17, 49.3, 60.3, mid + 0.05);
-    // the road-level paving all round the square: the same slabs, not a plain colour (owner)
-    for (const [a, b, c, d] of [[-10, 27.2, 40.8, 43], [-10, st.z0 + SO[0], 43, 48.7], [st.z1 + SO[0], 27.2, 43, 48.7], [-10, -7.2, 48.7, 94.6], [25.2, 27.2, 48.7, 94.6], [-10, 0.25, 94.1, 102], [15.75, 27.2, 94.1, 102]]) sp(a, b, c, d, 0.06);
+
     // the slope from the deck up to the footway: slabs following the ground, and the panel of irregular flat stones
     // between straight slab strips before the information slab (I042, taken from the footway)
     const gp = (x0: number, x1: number, z0: number, z1: number, mat: THREE.Material, tile: number, lift: number) => {
@@ -1120,7 +1115,7 @@ const steps: Spec = {
     // planter before the pedestal; a black railing behind it; a green lamp post with four globes; the bed's corner
     // toward the road rounded, edged with a white kerb
     for (const [wx, wz] of BP.posts) {
-      const west = wx < 8, bx0 = west ? -9.6 : 15.9, bx1 = west ? 0.1 : 26.4, bz0 = 94.25, bz1 = 101.2, R = 2.2;
+      const west = wx < 8, bx0 = west ? -9.9 : 15.9, bx1 = west ? 0.1 : 27.4, bz0 = 94.25, bz1 = 102.3, R = 3.2;
       const bedParts: Part[] = [];
       // the bed's outline: a rectangle with its outer road corner rounded
       const ox = west ? bx0 : bx1, sgn = west ? 1 : -1;
@@ -1147,17 +1142,14 @@ const steps: Spec = {
         }
       };
       const fz0 = bz1 - 0.9, fz1 = bz1 - 0.25;
-      if (west) { hedge(-7.6, -4.6, fz0, fz1); hedge(-2.2, -0.2, fz0, fz1); hedge(-9.3, -8.7, 95, bz1 - R); }
-      else { hedge(16.2, 18.2, fz0, fz1); hedge(20.6, 23.8, fz0, fz1); hedge(25.6, 26.2, 95, bz1 - R); }
+      if (west) { hedge(-7.6, -4.6, fz0, fz1); hedge(-2.2, -0.2, fz0, fz1); hedge(-9.6, -9.0, 95, bz1 - R); }
+      else { hedge(16.2, 18.2, fz0, fz1); hedge(20.6, 23.8, fz0, fz1); hedge(26.6, 27.2, 95, bz1 - R); }
       // the low brick planter before the pedestal
       bedParts.push([box(x(wx - 1.1), x(wx + 1.1), 0.08, 0.45, z(wz + 1.3), z(wz + 2.0)), '#8a4a34'], [box(x(wx - 1.0), x(wx + 1.0), 0.45, 0.6, z(wz + 1.35), z(wz + 1.95)), '#4f7d38']);
-      // the pedestal and its urn
-      bedParts.push([box(x(wx - 0.8), x(wx + 0.8), 0.08, 0.38, z(wz - 0.8), z(wz + 0.8)), '#e7e4dc'], [box(x(wx - 0.6), x(wx + 0.6), 0.38, 2.35, z(wz - 0.6), z(wz + 0.6)), '#f2f0ea']);
-      bedParts.push([box(x(wx - 0.78), x(wx + 0.78), 2.35, 2.55, z(wz - 0.78), z(wz + 0.78)), '#ebe8e0'], [box(x(wx - 0.68), x(wx + 0.68), 2.55, 2.68, z(wz - 0.68), z(wz + 0.68)), '#f2f0ea']);
-      bedParts.push([box(x(wx - 0.36), x(wx + 0.36), 1.05, 1.5, z(wz + 0.6), z(wz + 0.63)), '#8a6a3a']);
-      const urn = new THREE.LatheGeometry([[0.0, 0], [0.24, 0], [0.24, 0.08], [0.12, 0.14], [0.11, 0.3], [0.3, 0.42], [0.42, 0.62], [0.4, 0.82], [0.3, 0.95], [0.32, 1.0], [0.26, 1.04], [0.2, 1.12], [0.08, 1.2], [0.05, 1.3], [0.0, 1.32]].map(([a, b]) => new THREE.Vector2(a, b)), 16);
-      bedParts.push([urn.translate(x(wx), 2.68, z(wz)), '#f4f2ec']);
-      for (const sx of [-1, 1]) bedParts.push([new THREE.TorusGeometry(0.16, 0.035, 6, 10, Math.PI).rotateZ(sx > 0 ? -Math.PI / 2 : Math.PI / 2).translate(x(wx) + sx * 0.42, 2.68 + 0.82, z(wz)), '#f4f2ec']);
+      // the white cylinder with its flat overhanging cap (the owner's photo; the enhanced aerial had turned it into an
+      // urn on a pier)
+      bedParts.push([new THREE.CylinderGeometry(0.66, 0.68, 1.95, 24).translate(x(wx), 0.08 + 0.975, z(wz)), '#f3f1ec']);
+      bedParts.push([new THREE.CylinderGeometry(0.86, 0.84, 0.13, 24).translate(x(wx), 2.03 + 0.065, z(wz)), '#e1ded6'], [new THREE.CylinderGeometry(0.8, 0.8, 0.02, 24).translate(x(wx), 2.17, z(wz)), '#47443f']);
       // the clipped conifers either side
       for (const sx of [-1, 1]) {
         const cxw = wx + sx * 2.5;

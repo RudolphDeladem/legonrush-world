@@ -22,7 +22,7 @@ const ball = (p: P, r: number) => new THREE.SphereGeometry(r, 10, 8).translate(.
 interface Pose {
   hip: number; shoulder: number; lean?: number;
   rLeg: [P, P]; lLeg: [P, P]; rArm: [P, P]; lArm: [P, P];
-  head?: P; garment: 'kit' | 'dress' | 'suit' | 'plain' | 'gown';
+  head?: P; garment: 'kit' | 'dress' | 'suit' | 'plain' | 'gown' | 'wrap';
 }
 
 function figure(o: Pose, out: Part[]) {
@@ -58,6 +58,11 @@ function figure(o: Pose, out: Part[]) {
     // a graduate's gown to the shins, its open front and wide sleeves; the stole down the chest
     out.push([new THREE.CylinderGeometry(0.19, 0.27, sy - 0.2, 14).scale(1, 1, 0.7).translate(0, (sy + 0.2) / 2 - 0.02, 0), c]);
     for (const s of [-1, 1]) out.push([new THREE.BoxGeometry(0.06, sy - 0.45, 0.02).translate(s * 0.07, (sy + 0.45) / 2, 0.205), SILVER_D]);
+  } else if (o.garment === 'wrap') {
+    // a cloth wrapped round the waist to mid-thigh, its folds hanging, a knot and a fall of cloth at the front; the chest bare
+    out.push([new THREE.CylinderGeometry(0.175, 0.23, hy - 0.58 + 0.08, 14).scale(1, 1, 0.74).translate(0, (hy + 0.08 + 0.58) / 2, 0.01), SILVER_D]);
+    for (let i = 0; i < 7; i++) { const a = -0.9 + i * 0.3; out.push([new THREE.BoxGeometry(0.03, hy - 0.6, 0.03).translate(Math.sin(a) * 0.22, (hy + 0.6) / 2 - 0.02, Math.cos(a) * 0.17), SILVER]); }
+    out.push([new THREE.SphereGeometry(0.06, 8, 6).translate(0.03, hy + 0.02, 0.17), SILVER], [new THREE.BoxGeometry(0.12, 0.3, 0.03).rotateZ(0.15).translate(0.04, hy - 0.15, 0.18), SILVER]);
   } else if (o.garment === 'suit') {
     // the jacket to the hips, its lapels
     out.push([new THREE.CylinderGeometry(0.2, 0.2, sy - hy + 0.2, 12).scale(1, 1, 0.64).translate(0, (sy + hy - 0.2) / 2, z / 2), c]);
@@ -160,22 +165,35 @@ function robed(out: Part[]) {
   for (const [g, c] of f) out.push([g.translate(0, 0.19, 0), c]);
 }
 
-/** the west lawn's middle figure (the elevated reference only): standing upright, arms at the sides (open) */
-function standing(out: Part[]) {
-  base(out, 0.8);
+/** the west lawn's middle figure, in front of the footballer (the owner's photo, 2026-10-15): a bare-chested man in a
+ *  cloth wrapped round his waist, fringed raffia bands at the ankles, knees bent in a dance, the left knee forward, both
+ *  elbows bent with the fists held forward at the waist, head up, mouth open; a disc on a square stone slab */
+function dancer(out: Part[]) {
+  base(out, 0.9, 0.38);
   const f: Part[] = [];
   figure({
-    hip: 0.95, shoulder: 1.45, garment: 'plain',
-    lLeg: [[0.1, 0.5, 0.0], [0.11, 0.09, 0.0]],
-    rLeg: [[-0.1, 0.5, 0.0], [-0.11, 0.09, 0.0]],
-    rArm: [[-0.25, 1.17, 0.02], [-0.26, 0.92, 0.06]],
-    lArm: [[0.25, 1.17, 0.02], [0.26, 0.92, 0.06]],
+    hip: 0.93, shoulder: 1.46, lean: 0.03, garment: 'wrap',
+    rLeg: [[-0.14, 0.5, 0.04], [-0.16, 0.1, 0.0]],
+    lLeg: [[0.12, 0.53, 0.17], [0.13, 0.1, 0.04]],
+    rArm: [[-0.29, 1.15, -0.01], [-0.17, 1.0, 0.24]],
+    lArm: [[0.29, 1.15, -0.01], [0.16, 1.02, 0.24]],
+    head: [0, 1.69, 0.04],
   }, f);
+  // the clenched fists, a little larger; the open mouth
+  for (const sx of [-1, 1]) f.push([new THREE.SphereGeometry(0.06, 8, 6).translate(sx * 0.165, 1.0, 0.25), SILVER]);
+  f.push([new THREE.SphereGeometry(0.03, 6, 5).scale(1, 1.4, 0.6).translate(0, 1.64, 0.13), '#7e8288']);
+  // the fringed bands at the ankles
+  for (const [ax, az] of [[-0.16, 0.0], [0.13, 0.04]]) {
+    f.push([new THREE.CylinderGeometry(0.07, 0.13, 0.17, 10, 1, true).translate(ax, 0.13, az), SILVER_D]);
+    for (let i = 0; i < 10; i++) { const a = (i / 10) * Math.PI * 2; f.push([new THREE.BoxGeometry(0.02, 0.15, 0.02).rotateX(0.35).rotateY(-a).translate(ax + Math.sin(a) * 0.12, 0.08, az + Math.cos(a) * 0.12), SILVER]); }
+  }
   for (const [g, c] of f) out.push([g.translate(0, 0.19, 0), c]);
 }
 
-export type StatueKind = 'football' | 'draped' | 'suited' | 'book' | 'robed' | 'standing';
-const BUILD: Record<StatueKind, (o: Part[]) => void> = { football: footballer, draped, suited, book: bookHolder, robed, standing };
+export type StatueKind = 'football' | 'draped' | 'suited' | 'book' | 'robed' | 'dancer';
+const BUILD: Record<StatueKind, (o: Part[]) => void> = { football: footballer, draped, suited, book: bookHolder, robed, dancer };
+/** every figure 25% larger than life-size (owner, 2026-10-15) */
+export const STATUE_SCALE = 1.25;
 
 let mat: THREE.MeshStandardMaterial | null = null;
 /** silver paint: a little metallic sheen, not a mirror */
@@ -185,7 +203,7 @@ export const statueMat = () => (mat ??= new THREE.MeshStandardMaterial({ vertexC
 export function statue(kind: StatueKind, x: number, y: number, z: number, yaw = 0): THREE.Mesh {
   const parts: Part[] = [];
   BUILD[kind](parts);
-  const m = new THREE.Mesh(merge(parts.map(([g, c]) => [g.rotateY(yaw).translate(x, y, z), c] as Part)), statueMat());
+  const m = new THREE.Mesh(merge(parts.map(([g, c]) => [g.scale(STATUE_SCALE, STATUE_SCALE, STATUE_SCALE).rotateY(yaw).translate(x, y, z), c] as Part)), statueMat());
   m.castShadow = true; m.receiveShadow = true;
   return m;
 }
@@ -201,7 +219,7 @@ export function graduates(x: number, y: number, z: number, yaw = 0): THREE.Mesh[
   const p = new THREE.Mesh(merge(plinth.map(([g, c]) => [g.rotateY(yaw).translate(x, y, z), c] as Part)), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9 }));
   p.castShadow = true; p.receiveShadow = true;
   const f: Part[] = [];
-  const S = 1.18;
+  const S = 1.18 * STATUE_SCALE;
   // the man on the left (seen from the front), his left arm raised holding the torch
   const man: Part[] = [];
   figure({
