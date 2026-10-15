@@ -30,6 +30,9 @@ import { BUILDINGS, NODE_XZ, ROADS, type Building } from './campusmap';
 import { PAVE, WHITE, box, canvas } from './modelkit';
 import { PL, createSite, louvre, render, slab, type Block, type Kit, type Spec, type Style } from './blocks';
 import { garden } from './gardens';
+import { pave, pavers } from './upsa';
+/** grey interlocking blocks for Legon Hall's front walk */
+const legonPavers = () => pavers('grey');
 import { rectsOf, type Rect } from './rectilinear';
 import { AKUAFO_GALLERY, LEGON_GALLERY, galleryBlocks, galleryParts, type GalleryJob, type GalleryLook } from './galleries';
 
@@ -473,21 +476,35 @@ export const legon = twin('Legon Hall', LO, [-215, -50, 150, 390], [-165, -129, 
   lattice(k, xm - 1.2, xm + 1.2, 2.3, 2.9, P - 0.09, 0.2);
   k.plain.push([box(xm - 1.3, xm + 1.3, 0.15, 0.17, F + 0.5, P), '#55524f']);
   k.plain.push([box(x0, x1, 0, 0.08, F - 0.5, F), '#bfb7a7']);
-  // the paved forecourt of square slabs before it
-  k.plain.push([box(X(-166), X(-128), 0, 0.04, Z(141), F - 0.5), '#c7bfae']);
-  for (let x = -166; x <= -128; x += 1.2) k.plain.push([box(X(x) - 0.02, X(x) + 0.02, 0.04, 0.045, Z(141), F - 0.5), '#a59d8d']);
-  for (let z = 141; z <= 154; z += 1.2) k.plain.push([box(X(-166), X(-128), 0.04, 0.045, Z(z) - 0.02, Z(z) + 0.02), '#a59d8d']);
-  // the flag pole on the forecourt, west of the middle; RESERVED signs; the welcome banner stand
-  flagPole(k, X(-143.4), Z(150.5), 10);
-  for (const [x, z] of [[-150.2, 146.5], [-142.4, 146.8]]) k.plain.push([new THREE.BoxGeometry(0.9, 0.6, 0.05).rotateX(0.3).translate(X(x), 0.55, Z(z)), '#3e4d5c'], [new THREE.BoxGeometry(0.9, 0.6, 0.05).rotateX(-0.3).translate(X(x), 0.55, Z(z) + 0.3), '#3e4d5c']);
-  k.plain.push([box(X(-139.3), X(-138.3), 0, 2.1, Z(153.0), Z(153.1)), '#f2f2ee']);
-  k.signs.push({ text: 'APOSA-LEGON', x: X(-138.8), y: 1.8, z: Z(152.99), ry: Math.PI, w: 0.95, colors: ['#1d3f7a', '#ffffff'] });
-  // the raised planter east of the front, before the gap to the east block (owner's photos): a low dark stone wall
+  // the approach (the owner's entrance photos, 2026-10-15): a band of square slabs along the arcade's foot, then a
+  // straight walk of grey interlocking pavers from the zebra crossing on the avenue to the middle arch, between two
+  // lawns edged with low clipped hedges; a tall pole either side of the walk before the arcade
+  const WA = 1.9, SL = F - 3.5;
+  k.plain.push([box(X(-160), X(-134), 0, 0.04, SL, F - 0.5), '#c7bfae']);
+  for (let x = -160; x <= -134; x += 1.2) k.plain.push([box(X(x) - 0.02, X(x) + 0.02, 0.04, 0.045, SL, F - 0.5), '#a59d8d']);
+  pave(k, xm - WA, xm + WA, Z(141), SL, legonPavers(), 0.035);
+  for (const sx of [-1, 1]) {
+    k.plain.push([box(xm + sx * WA - 0.1, xm + sx * WA + 0.1, 0, 0.12, Z(141), SL), '#d9d5cc']);
+    // the lawns' low hedges: along the slab band, and short runs by the walk
+    gs.hedge(k, sx < 0 ? X(-159) : xm + WA + 1.2, SL - 0.8, sx < 0 ? xm - WA - 1.2 : X(-135), SL - 0.8);
+    for (let z = 143.5; z < 151; z += 2.6) k.plain.push([new THREE.IcosahedronGeometry(0.5, 1).scale(1.2, 0.8, 1.2).translate(xm + sx * (WA + 0.9), 0.4, Z(z)), '#3f6a2a']);
+    flagPole(k, xm + sx * (WA + 1.6), SL - 0.3, 9);
+  }
+  // the bare earth bed by the road east of the walk, inside a white kerb (owner's photo of the corner), and the hall's
+  // board UNIVERSITY OF GHANA / LEGON HALL on two posts at its west end
+  const B0 = -141.2, B1 = -128.6, C0 = 141.6, C1 = 146.2;
+  k.plain.push([box(X(B0), X(B1), 0, 0.05, Z(C0), Z(C1)), '#9a7b5f']);
+  for (const [a, b, c, d] of [[B0, B1, C0 - 0.2, C0], [B0, B1, C1, C1 + 0.2], [B0 - 0.2, B0, C0 - 0.2, C1 + 0.2], [B1, B1 + 0.2, C0 - 0.2, C1 + 0.2]]) k.plain.push([box(X(a), X(b), 0, 0.22, Z(c), Z(d)), '#f2f1ec']);
+  for (const [x, z] of [[-136.5, 143.4], [-132.2, 144.6]]) k.plain.push([new THREE.IcosahedronGeometry(0.35, 1).translate(X(x), 0.3, Z(z)), '#4f7d38']);
+  for (const dx of [-0.75, 0.75]) k.plain.push([box(X(-140.2 + dx) - 0.05, X(-140.2 + dx) + 0.05, 0, 2.4, Z(142.4) - 0.05, Z(142.4) + 0.05), '#6b6f72']);
+  k.plain.push([box(X(-141.2), X(-139.2), 1.4, 2.35, Z(142.4) - 0.04, Z(142.4) + 0.04), '#f4f4f1'], [box(X(-141.2), X(-139.2), 1.4, 1.62, Z(142.4) - 0.05, Z(142.4) + 0.05), '#1d3f7a']);
+  k.signs.push({ text: 'UNIVERSITY OF GHANA / LEGON HALL', x: X(-140.2), y: 1.95, z: Z(142.4) - 0.06, ry: Math.PI, w: 1.9, colors: ['#f4f4f1', '#1d3f7a'] });
+  // the raised planter east of the front, before the gap to the east block (owner's photos): low slab-capped edges
   // round a fan palm and bushes, a bench; a hedge before the east block's gable; a big tree beyond
-  const P0 = -136.6, P1 = -129.2, Q0 = 146.5, Q1 = 154.5;
-  k.plain.push([box(X(P0), X(P1), 0, 0.7, Z(Q0), Z(Q0) + 0.4), '#56524d'], [box(X(P0), X(P1), 0, 0.7, Z(Q1) - 0.4, Z(Q1)), '#56524d']);
-  k.plain.push([box(X(P0), X(P0) + 0.4, 0, 0.7, Z(Q0), Z(Q1)), '#56524d'], [box(X(P1) - 0.4, X(P1), 0, 0.7, Z(Q0), Z(Q1)), '#56524d']);
-  k.plain.push([box(X(P0) + 0.4, X(P1) - 0.4, 0, 0.5, Z(Q0) + 0.4, Z(Q1) - 0.4), '#4a3b2c']);
+  const P0 = -136.6, P1 = -129.2, Q0 = 146.8, Q1 = 154.5;
+  k.plain.push([box(X(P0), X(P1), 0, 0.4, Z(Q0), Z(Q0) + 0.35), '#d2cbbe'], [box(X(P0), X(P1), 0, 0.4, Z(Q1) - 0.35, Z(Q1)), '#d2cbbe']);
+  k.plain.push([box(X(P0), X(P0) + 0.35, 0, 0.4, Z(Q0), Z(Q1)), '#d2cbbe'], [box(X(P1) - 0.35, X(P1), 0, 0.4, Z(Q0), Z(Q1)), '#d2cbbe']);
+  k.plain.push([box(X(P0) + 0.35, X(P1) - 0.35, 0, 0.32, Z(Q0) + 0.35, Z(Q1) - 0.35), '#6b5240']);
   gs.reseed(17);
   gs.palm(k, X(-133.2), Z(150.4), 6.5);
   for (const [x, z] of [[-135.2, 148.2], [-130.8, 152.6], [-131, 148.4]]) gs.bush(k, X(x), Z(z), 0.8);
