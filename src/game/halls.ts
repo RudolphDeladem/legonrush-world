@@ -16,7 +16,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { BRONZE, DARK, Facade, PAVE, PLINTH, Roof, SOFFIT, TANK, TRIM, WHITE, box, canvas, flat, flipWinding, merge, rnd, signTexture, speckle, type Part } from './modelkit';
-import { BUILDINGS, type Building } from './campusmap';
+import { AREAS, BUILDINGS, type Building } from './campusmap';
 import { buildingMaterials } from './facades';
 import { groundShade, weathering } from './shading';
 import { pavers } from './upsa';
@@ -637,6 +637,42 @@ export function buildDiasporaHalls() {
     };
     apron(f.hz, f.hz + PP + 4.5, 7.5); apron(-(f.hz + PP + 4.5), -f.hz, 7.5);
     if ((LOOKS[f.name] ?? DEFAULT_LOOK).walk) apron(f.hz + PP + 4.5, f.hz + 24, 2.4);
+    // the ground between the facing halls (the owner's Street View between Limann and Kwapong, 2018): the car parks and
+    // the drive between them all in red-brown herringbone pavers, long kerbed islands planted with palms along both sides
+    // of the drive, broken for the cars to pass; each hall paves its half, to the middle between the two fronts
+    const partner = FRAMES.find((o) => o.name === PAIRS[f.name]);
+    if (partner) {
+      const mid = ((partner.cx - f.cx) * f.fx + (partner.cz - f.cz) * f.fz) / 2;
+      let xl = Infinity, xh = -Infinity;
+      const isl: Part[] = [];
+      for (const a of AREAS) {
+        if (a.kind !== 'parking') continue;
+        let lo = Infinity, hi = -Infinity, al = Infinity, ah = -Infinity;
+        for (let i = 0; i < a.pts.length; i += 2) {
+          const [lx, lz] = local(f, a.pts[i], a.pts[i + 1]);
+          lo = Math.min(lo, lz); hi = Math.max(hi, lz); al = Math.min(al, lx); ah = Math.max(ah, lx);
+        }
+        if (lo < f.hz - 2 || lo > f.hz + 14 || ah < -f.hx - 15 || al > f.hx + 15 || hi > mid) continue;
+        xl = Math.min(xl, al); xh = Math.max(xh, ah);
+        // the kerbed island between this car park and the drive
+        const z = hi + 1.0;
+        for (let x0 = al + 1; x0 < ah - 3; x0 += 26) {
+          const x1 = Math.min(x0 + 22, ah - 1);
+          isl.push([box(x0, x1, 0, 0.22, z - 0.75, z + 0.75), '#e8e5de'], [box(x0 + 0.15, x1 - 0.15, 0.22, 0.26, z - 0.6, z + 0.6), '#7a5a3e']);
+          for (let x = x0 + 3; x < x1 - 1; x += 8) {
+            isl.push([new THREE.CylinderGeometry(0.15, 0.22, 5.2, 7).translate(x, 2.6, z), '#8a7a62']);
+            for (let i = 0; i < 7; i++) isl.push([new THREE.BoxGeometry(2.3, 0.05, 0.42).translate(1.05, 0, 0).rotateZ(-0.45).rotateY((i / 7) * Math.PI * 2 + x).translate(x, 5.2, z), '#4c7f32']);
+          }
+        }
+      }
+      if (xl < xh) {
+        const g = new THREE.PlaneGeometry(xh - xl, mid - f.hz).rotateX(-Math.PI / 2).translate((xl + xh) / 2, 0.03, (f.hz + mid) / 2);
+        const pa = g.attributes.position as THREE.BufferAttribute, uv = g.attributes.uv as THREE.BufferAttribute;
+        for (let i = 0; i < pa.count; i++) uv.setXY(i, pa.getX(i) / 2, pa.getZ(i) / 2);
+        add(g, pv, false);
+        add(merge(isl), plain);
+      }
+    }
     const courtMat = new THREE.MeshStandardMaterial({ map: geo.court, roughness: 0.92, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
     add(new THREE.PlaneGeometry(2 * f.ix, 2 * f.iz).rotateX(-Math.PI / 2).translate(0, 0.05, 0), courtMat, false);
     // the hall's name on both porch canopies
