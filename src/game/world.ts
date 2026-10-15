@@ -32,6 +32,7 @@ import { buildEvandyGrounds } from './evandy';
 import { NOG_TREES } from './nogtrees';
 import { NG, NOG_BACK, NOG_FINISH, WAG_SIDES, WG } from './nogplan';
 import { ugLocal } from './ugmcplan';
+import { n4Widen } from './lbplan';
 import { ownsEdges } from './ipsplan';
 import { collisionRoots } from './meshcollide';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, roadClearance, ROAD_WIDTH } from './life';
@@ -420,7 +421,15 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
     const buf = footpath ? pathBuf : n4 ? n4Buf : roadBuf;
     for (const pts of runs) {
       if (pts.length < 2) continue;
+      const base = buf.pos.length / 3;
       polyStrip(pts, half, buf.pos, buf.idx);
+      // (beside the stadium the N4's carriageways reach in to the narrow median, lbplan.ts: each inner edge pushed out)
+      if (n4) pts.forEach(([x, z], i) => {
+        const w = n4Widen(x, z), a = (base + i * 2) * 3, b = a + 3;
+        if (!w) return;
+        const inner = (w > 0) === (buf.pos[b] > buf.pos[a]) ? b : a;
+        buf.pos[inner] += w;
+      });
       for (const [x, z] of [pts[0], pts[pts.length - 1]]) (footpath ? pathCaps : n4 ? n4Caps : caps).push(new THREE.CircleGeometry(half, 10).rotateX(-Math.PI / 2).translate(x, 0, z));
     }
   }
@@ -472,9 +481,17 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
       let t = carry;
       for (; t + 3 <= len; t += 9) {
         const x0 = ax + dx * t, z0 = az + dz * t, x1 = x0 + dx * 3, z1 = z0 + dz * 3;
-        const base = dashPos.length / 3;
-        dashPos.push(x0 - nx, 0, z0 - nz, x0 + nx, 0, z0 + nz, x1 + nx, 0, z1 + nz, x1 - nx, 0, z1 - nz);
-        dashIdx.push(base, base + 1, base + 2, base, base + 2, base + 3);
+        // (none across the Okponglo junction's box: the brief has no painted line through it)
+        if (x0 > 958 && x0 < 1024 && z0 > 1195 && z0 < 1233) continue;
+        // where the N4's carriageway is widened inward (lbplan.ts) its one centre line becomes two lane lines, a third
+        // and two thirds across, as the satellite shows
+        const w = r.cls === 0 && r.name === 'J.J. Rawlings Avenue' ? n4Widen(x0, z0) : 0;
+        const offs = w ? [1, 2].map((q) => -Math.sign(w) * 4.5 + ((9 + Math.abs(w)) * q / 3) * Math.sign(w)) : [0];
+        for (const o of offs) {
+          const base = dashPos.length / 3;
+          dashPos.push(x0 + o - nx, 0, z0 - nz, x0 + o + nx, 0, z0 + nz, x1 + o + nx, 0, z1 + nz, x1 + o - nx, 0, z1 - nz);
+          dashIdx.push(base, base + 1, base + 2, base, base + 2, base + 3);
+        }
       }
       carry = Math.max(0, t - len);
     }

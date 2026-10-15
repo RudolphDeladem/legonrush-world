@@ -38,7 +38,7 @@ import { medianGrass, pavers, rod, run, strip, wires, type V3 } from './upsa';
 import { inOkKeep, okOwns } from './okplan';
 import {
   CABINET, COMPOUND, E_HALF, HOOD, ISLANDS, JUNCTION, MASSES, MAST, MEDIAN, ROADSIDE, SCRUB, SIGNAL, SIGNALS, VERGE_W, W_HALF,
-  halfOf, inCompound, inHood, offEdge, pickOf, xEast, xWest, type Mass, type Pick,
+  N4_WIDE, eastInner, halfOf, inCompound, inHood, offEdge, pickOf, westInner, xEast, xWest, type Mass, type Pick,
 } from './lbplan';
 
 const PLAIN: Style = { bay: 4, up: [], ground: [], draw: (g) => render(g, '#f1efe9') };
@@ -56,6 +56,16 @@ for (const r of ROADS) for (let i = 0; i < r.nodes.length - 1; i++) {
   const h = halfOf(r);
   const k = segs.length;
   segs.push([ax, az, bx, bz, h, r.cls]);
+  for (let gx = Math.floor((Math.min(ax, bx) - 12) / SG); gx <= Math.floor((Math.max(ax, bx) + 12) / SG); gx++)
+    for (let gz = Math.floor((Math.min(az, bz) - 12) / SG); gz <= Math.floor((Math.max(az, bz) + 12) / SG); gz++) {
+      const key = `${gx},${gz}`;
+      (grid.get(key) ?? grid.set(key, []).get(key)!).push(k);
+    }
+}
+// (and the N4's carriageways widened inward to the narrow median, lbplan.ts N4_WIDE)
+for (const [ax, az, bx, bz, h] of N4_WIDE) {
+  const k = segs.length;
+  segs.push([ax, az, bx, bz, h, 0]);
   for (let gx = Math.floor((Math.min(ax, bx) - 12) / SG); gx <= Math.floor((Math.max(ax, bx) + 12) / SG); gx++)
     for (let gz = Math.floor((Math.min(az, bz) - 12) / SG); gz <= Math.floor((Math.max(az, bz) + 12) / SG); gz++) {
       const key = `${gx},${gz}`;
@@ -475,7 +485,7 @@ const corridor: Spec = {
       const runs: [number, number, number][][] = [];
       let cur: [number, number, number][] = [];
       for (let z = MEDIAN.z0; z <= MEDIAN.z1; z += 1.5) {
-        const a = xWest(z) + W_HALF + 0.05, o = xEast(z) - E_HALF - 0.05;
+        const a = westInner(z) + 0.05, o = eastInner(z) - 0.05;
         const ok = !(z > MEDIAN.gap[0] && z < MEDIAN.gap[1]) && !Number.isNaN(a) && !Number.isNaN(o) && o - a > 1.2 && clearance((a + o) / 2, z) > -0.2;
         if (!ok) { if (cur.length > 1) runs.push(cur); cur = []; continue; }
         cur.push([z, a, o]);
@@ -557,10 +567,10 @@ const corridor: Spec = {
     // The mapped carriageways are separate ribbons: between them, where they meet the cross roads, the ground showed
     // through as green triangles and wedges, and the corner drapes painted it pale. The real junction is one open
     // asphalt area. Here every point of the junction's core that is not road but has road on at least seven of eight
-    // sides within 26 m is the junction's own surface, laid in the roads' asphalt under the roads' paint layer; and the
-    // approaches flare to their real width at the stop lines (the north approach's outer side, the south approach's
-    // outer side: about four to five cars abreast with the carriageway). The corner verges, kerbs and footways stay.
-    const JC = { x0: 958, x1: 1024, z0: 1195, z1: 1233 }, CELL = 0.25;
+    // sides within 26 m is the junction's own surface, laid in the roads' asphalt under the roads' paint layer. (The
+    // approaches take five cars abreast from the carriageways' widening, lbplan.ts.) The corner verges, kerbs and
+    // footways stay.
+    const JC = { x0: 958, x1: 1024, z0: 1190, z1: 1240 }, CELL = 0.25;
     const cgw = Math.round((JC.x1 - JC.x0 + 56) / CELL), cgh = Math.round((JC.z1 - JC.z0 + 56) / CELL), cg = new Float32Array(cgw * cgh);
     for (let j = 0; j < cgh; j++) for (let i = 0; i < cgw; i++) cg[j * cgw + i] = clearance(JC.x0 - 28 + i * CELL, JC.z0 - 28 + j * CELL);
     const cl = (x: number, z: number) => { const i = Math.round((x - JC.x0 + 28) / CELL), j = Math.round((z - JC.z0 + 28) / CELL); return i < 0 || j < 0 || i >= cgw || j >= cgh ? 12 : cg[j * cgw + i]; };
@@ -572,20 +582,9 @@ const corridor: Spec = {
       }
       return n >= 7;
     };
-    const flare = (x: number, z: number) => {
-      const c = cl(x, z);
-      if (c < -1.5 || c > 4.2 || buildingNear(x, z, 1)) return false;
-      // the south-bound approach from the north: its west side, the last 26 m to the junction
-      // (tapering from nothing to its full 4 m over the first 18 m, so its edge runs at a slant, not in steps)
-      const wN = 4.0 * Math.min(1, Math.max(0, (z - 1172) / 18)), wS = 4.0 * Math.min(1, Math.max(0, (1258 - z) / 18));
-      if (z > 1172 && z < 1197 && x < xWest(z) - W_HALF + 0.2 && x > xWest(z) - W_HALF - wN) return true;
-      // the north-bound approach from the south: its east side, the last 26 m
-      if (z > 1232 && z < 1258 && x > xEast(z) + E_HALF - 0.2 && x < xEast(z) + E_HALF + wS) return true;
-      return false;
-    };
     // (road points inside the core are included too, so no sliver of ground shows along the ribbons' edges; the roads draw
     // over it)
-    const junctionPaved = (x: number, z: number) => (x > JC.x0 && x < JC.x1 && z > JC.z0 && z < JC.z1 && enclosed(x, z)) || flare(x, z);
+    const junctionPaved = (x: number, z: number) => (x > JC.x0 && x < JC.x1 && z > JC.z0 && z < JC.z1 && enclosed(x, z));
     {
       const pos: number[] = [];
       for (let z = JC.z0 - 30; z < JC.z1 + 30; z += CELL) for (let x = JC.x0 - 8; x < JC.x1 + 8; x += CELL) {
@@ -598,6 +597,31 @@ const corridor: Spec = {
       geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); geo.computeVertexNormals();
       const am = new THREE.MeshStandardMaterial({ color: '#f2f2f2', map: asphaltTexture(false), roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 });
       const m = new THREE.Mesh(geo, am); m.receiveShadow = true; m.userData.noCollide = true; k.meshes.push(m);
+    }
+
+    // ---------- the zebra crossings on the four arms (the satellite, the owner's Street View at the stop line) ----------
+    {
+      const pos: number[] = [];
+      /** stripes 0.5 m wide every 1.1 m along the line from p to q, each `len` long across it, only on the road */
+      const zebra = ([px, pz]: P2, [qx, qz]: P2, len: number) => {
+        const L = Math.hypot(qx - px, qz - pz), ux = (qx - px) / L, uz = (qz - pz) / L;
+        for (let t = 0.3; t + 0.5 <= L; t += 1.1) {
+          const x = px + ux * (t + 0.25), z = pz + uz * (t + 0.25);
+          if (clearance(x, z) > -0.4 || westInner(z) + 0.2 < x && x < eastInner(z) - 0.2 && z > 1100 && z < 1300 && x > 975 && x < 1010) continue;
+          const q = [[t, -len / 2], [t + 0.5, -len / 2], [t + 0.5, len / 2], [t, len / 2]].map(([a, b]) => {
+            const wx = px + ux * a - uz * b, wz = pz + uz * a + ux * b, [lx, lz] = A(wx, wz);
+            return [lx, gh(wx, wz) + 0.03, lz];
+          });
+          pos.push(...q[0], ...q[2], ...q[1], ...q[0], ...q[3], ...q[2]);
+        }
+      };
+      zebra([xWest(1191) - 6, 1191], [xEast(1191) + 6, 1191], 3);
+      zebra([xWest(1237) - 6, 1237], [xEast(1237) + 6, 1237], 3);
+      zebra([965, 1200], [965, 1240], 3);
+      zebra([1018, 1195], [1018, 1235], 3);
+      const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.computeVertexNormals();
+      const pm = new THREE.MeshStandardMaterial({ color: '#e9e6dc', roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -8 });
+      const zm = new THREE.Mesh(geo, pm); zm.receiveShadow = true; zm.userData.noCollide = true; k.meshes.push(zm);
     }
 
     // ---------- the junction: signal posts, the islands' worn stone paving, the cabinet, bollards ----------

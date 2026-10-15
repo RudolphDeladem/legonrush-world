@@ -23,7 +23,7 @@ import { NSIA } from './nsia';
 import { KQ } from './kuffour';
 import { offAsphalt } from './science';
 import { ownsEdges } from './ipsplan';
-import { parkingFill, parkingSpots } from './lbplan';
+import { N4_WIDE, parkingFill, parkingSpots } from './lbplan';
 import { inLfKeep } from './lfplan';
 import { inEcKeep } from './ecgplan';
 import { ownsOg } from './okgateplan';
@@ -76,6 +76,15 @@ function segDist(s: Seg, x: number, z: number) {
   const t = Math.max(0, Math.min(1, ((x - s.ax) * dx + (z - s.az) * dz) / l2));
   return Math.hypot(x - s.ax - dx * t, z - s.az - dz * t);
 }
+/** the N4's carriageways widened inward beside the stadium (lbplan.ts N4_WIDE): road for the clearance tests, not
+ *  roads of their own (no route or nearest-road lookup sees them) */
+const WIDE: Seg[] = N4_WIDE.map(([ax, az, bx, bz, half]) => ({ ax, az, bx, bz, half, road: -3, cls: 0 }));
+const wideDist = (x: number, z: number) => {
+  if (x < 900 || x > 1110 || z < 890 || z > 1660) return Infinity;
+  let best = Infinity;
+  for (const s of WIDE) if (Math.abs(s.az - z) < 6) best = Math.min(best, segDist(s, x, z) - s.half);
+  return best;
+};
 /**
  * Distance from (x, z) to the nearest road edge (negative on the road), looking
  * `reach` metres round; footpaths count only when `paths` is set.
@@ -91,12 +100,13 @@ export function roadClearance(x: number, z: number, reach = 12, skipRoad = -1, p
       if (d < best) best = d;
     }
   }
-  return best;
+  return Math.min(best, wideDist(x, z));
 }
 /** Whether (x, z) lies on the road a ridden route would lay over another road (any road but footpaths, as wide as
  *  the route's road, and wider still where a route rounds the corner into it), skipping road skipRoad: a kerb, verge
  *  or drain there would show on the route's road. */
 function onRouteSurface(x: number, z: number, skipRoad: number, reach = ROUTE_EDGE + 4, side?: { x: number; z: number; nx: number; nz: number }) {
+  if (wideDist(x, z) < 0) return true;
   const cx = Math.floor(x / SG), cz = Math.floor(z / SG);
   for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) {
     for (const s of segGrid.get(gkey(cx + i, cz + j)) ?? []) {

@@ -33,7 +33,7 @@ import { letters } from './letters';
 import { pavers, rod, run, strip, type V3 } from './upsa';
 import { concrete } from './concrete';
 import { lattice } from './labawaleshie';
-import { E_HALF, MEDIAN, SCRUB, W_HALF, xEast, xWest } from './lbplan';
+import { E_HALF, MEDIAN, SCRUB, W_HALF, eastInner, westInner, xEast, xWest } from './lbplan';
 import {
   ALPHA, BANKS, DIAMED, GREENWALL, LEASAFRIC, LOWROOF, MEDIAN_BOARDS, MEDIAN_RUNS, OK_KEEP, OK_OUTLINES, P21, PLAZA, PROVISION, SIGNSHOP,
   bankFace, bankTop, mcdanX, type Bank,
@@ -330,8 +330,8 @@ export function medianPlan(): MedianPlant[] {
     while (z < r.z1 - 3) {
       z += r.kind === 'trees' ? 6 + hash(z, 1.7) * 9 : 5 + hash(z, 2.9) * 8;
       if (z > MEDIAN.gap[0] - 4 && z < MEDIAN.gap[1] + 4) continue;
-      const a = xWest(z) + W_HALF + 0.6, o = xEast(z) - E_HALF - 0.6, w = o - a;
-      if (Number.isNaN(w) || w < 1.6) continue;
+      const a = westInner(z) + 0.45, o = eastInner(z) - 0.45, w = o - a;
+      if (Number.isNaN(w) || w < 1.0) continue;
       if (hash(z, 4.4) < (r.kind === 'trees' ? 0.16 : 0.3)) continue;
       if (MEDIAN_BOARDS.some(([bz]) => Math.abs(bz - z) < 3)) continue;
       const x = a + w * (0.3 + hash(z, 3.1) * 0.4);
@@ -370,7 +370,7 @@ const corridor: Spec = {
     // the median's soil: bare patches and worn paths across it, over the grass
     k.meshes.push(Object.assign(new THREE.Mesh(drapeAt(CO, 940, 1060, 905, 1640, 1.0, MY + 0.03, (x, z) => {
       if (z > MEDIAN.gap[0] - 1 && z < MEDIAN.gap[1] + 1) return null;
-      const a = xWest(z) + W_HALF + 0.35, o = xEast(z) - E_HALF - 0.35;
+      const a = westInner(z) + 0.35, o = eastInner(z) - 0.35;
       if (Number.isNaN(a) || x < a || x > o) return null;
       // (the owner's soil and grass brief: no worn crossbars, no repeated stamps: bare earth where the grass has worn
       // thin, in irregular patches of two scales, dry olive grass round their edges; the earth a muted dusty red-brown)
@@ -381,7 +381,7 @@ const corridor: Spec = {
     }), groundCover()), { receiveShadow: true, userData: { noCollide: true } }));
     // the boards on the median
     for (const [z, kind] of MEDIAN_BOARDS) {
-      const a = xWest(z) + W_HALF, o = xEast(z) - E_HALF, x = (a + o) / 2 + (kind === 'visa' ? -0.6 : kind === 'kfc' ? 0.4 : 0), y = gh(x, z) + MY;
+      const a = westInner(z), o = eastInner(z), x = (a + o) / 2 + (kind === 'visa' ? -0.6 : kind === 'kfc' ? 0.4 : 0), y = gh(x, z) + MY;
       const [px, pz] = A(x, z);
       if (kind === 'bluePylon') {
         // a tall narrow blue pylon sign, its dark face to the north (Pair 2)

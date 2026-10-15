@@ -47,3 +47,33 @@ fits 4–5 cars. This was measured on the clearance grid used to build the pavin
 - Stop lines and lane markings were not rebuilt.
 - Frame rate was not measured. The core adds one merged mesh.
 - Where the south median restarts (z 1234) is estimated from the satellite.
+
+## Revision 3 (owner's notes: "the space in between the double road is too big, each road can carry 5 cars"; brief v3 and the 360 screenshots)
+
+`comparison-sheet-2.jpg`: top view, a raised view from the south, the four approaches, the 360 frame of the median
+nose and the view before this revision.
+
+- **Cause.** The two N4 carriageways are drawn on their mapped centre lines, which are about 20.8 m apart, and each is
+  9 m wide. That left an 11 m strip of grass and red earth between them. The satellite, the Street View photo and the
+  360 frames (3 and 12) show a narrow raised kerbed median with the signal mast on its nose.
+- **Fix.** Between z 905 and 1640 (where the median runs, tapering over 30 m at each end), each carriageway's inner
+  edge now reaches in to a median 2.4 m wide (`lbplan.ts` `MED_HALF`, `westInner`/`eastInner`). The outer kerbs stay at
+  their mapped edges and the road graph is unchanged. This is done in the road mesh itself (`world.ts`), not as an
+  overlay.
+  - The median's kerbed strip, soil, planting and boards follow the new edges (`labawaleshie.ts`, `okponglo.ts`).
+  - The signal masts on the median noses moved onto them, and their arms are longer.
+  - The flares of the previous revision are removed; the widening replaces them.
+  - The clearance tests in `life.ts`, `lbplan.ts` and `labawaleshie.ts` count the widened road, so nothing generated
+    stands on it, and the old inner kerb is cut along it.
+- **Width.** Each carriageway is about 13.3–13.7 m. Five test cars, 1.8 m wide and evenly spaced, were placed side by
+  side on each approach and rendered. They fit with about 0.8 m between them. The test cars were removed afterwards.
+- **Markings.** On the widened stretch the one centre line became two lane lines, a third and two thirds of the way
+  across, as the satellite shows. There are no dashes across the junction box. There are zebra crossings on the four
+  arms, as on the satellite and the Street View photo, laid only on the road. The paved core now spans z 1190–1240, so
+  the last grass triangle by the south crossing is gone.
+- **Checks.** Typecheck, geo, route tests and build pass. The camera check reports 0 views inside buildings. Route
+  lengths are unchanged. The road blockage scan shows only the existing hits on road 864.
+  - A scan of the widened carriageways for colliders finds none on the new strip. It does find existing colliders on
+    the original carriageway's outer half near z 960, 1040, 1300 and 1380, which this change doesn't touch.
+- **Uncertain.** The 2.4 m median width is read from the 360 frames by comparison with car widths, not measured. The
+  median may be wider farther from the junction than the photos show.

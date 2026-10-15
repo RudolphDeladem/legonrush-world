@@ -42,20 +42,47 @@ export const xEast = (z: number) => xOn(N4_EAST, z);
 /** the carriageways' half widths (mapped: the southbound 6.6 m, the northbound 9.9 m; the southbound as drawn, 9 m, so
  *  the median stops at its edge instead of covering its inner lane: the owner's junction brief) */
 export const W_HALF = 4.5, E_HALF = 4.95;
+/** the carriageways widened inward (the owner, with the junction brief v3: the space between the two roads was too big;
+ *  each road takes five cars side by side). The outer kerbs stay at the mapped edges; each carriageway reaches in to a
+ *  kerbed median MED_HALF either side of the line half way between them, about 13.4 m of road each way, along the
+ *  stretch the median runs (tapering back to the mapped width over WIDEN.ramp at its ends) */
+export const MED_HALF = 1.2;
+export const WIDEN = { z0: 905, z1: 1640, ramp: 30 };
+const widenK = (z: number) => Math.max(0, Math.min(1, (z - WIDEN.z0) / WIDEN.ramp, (WIDEN.z1 - z) / WIDEN.ramp));
+const midN4 = (z: number) => (xWest(z) + xEast(z)) / 2;
+/** the drawn inner edges: the southbound carriageway's east edge, the northbound's west edge */
+export const westInner = (z: number) => { const e = xWest(z) + 4.5; return e + Math.max(0, midN4(z) - MED_HALF - e) * widenK(z); };
+export const eastInner = (z: number) => { const e = xEast(z) - 4.5; return e - Math.max(0, e - midN4(z) - MED_HALF) * widenK(z); };
+/** how far east (+) or west (-) a point on an N4 carriageway's centre line has its inner edge pushed out */
+export const n4Widen = (x: number, z: number) => {
+  if (z < WIDEN.z0 || z > WIDEN.z1) return 0;
+  const w = xWest(z), e = xEast(z);
+  if (Math.abs(x - w) < 1.5) return westInner(z) - (w + 4.5);
+  if (Math.abs(x - e) < 1.5) return eastInner(z) - (e - 4.5);
+  return 0;
+};
+/** the widening as road pieces (x0, z0, x1, z1, half) for the clearance tests, every 3 m down each carriageway */
+export const N4_WIDE: [number, number, number, number, number][] = [];
+for (let z = WIDEN.z0; z < WIDEN.z1; z += 3) for (const west of [true, false]) {
+  const band = (zz: number): [number, number] => west ? [xWest(zz) + 4.5, westInner(zz)] : [eastInner(zz), xEast(zz) - 4.5];
+  const [a0, b0] = band(z), [a1, b1] = band(z + 3);
+  if ([a0, b0, a1, b1].some(Number.isNaN) || b0 - a0 < 0.05) continue;
+  N4_WIDE.push([(a0 + b0) / 2, z, (a1 + b1) / 2, z + 3, (b0 - a0) / 2 + 0.3]);
+}
 
 /** the junction box where La Bawaleshie Road and Jubilee Drive cross the N4. The mapped slip lanes and approaches take
  *  up the whole box at their mapped widths, so the signal posts stand where there is ground: on the four outer corners
  *  and the two median noses (Pairs 5-7, 10) */
 export const JUNCTION = { x0: 958, x1: 1028, z0: 1195, z1: 1262 };
-export const ISLANDS: Record<'nw' | 'ne' | 'se' | 'sw' | 'mn' | 'ms', [number, number]> = { nw: [967, 1209], ne: [1019, 1204], se: [1025, 1241], sw: [966, 1243], mn: [990, 1200], ms: [1000, 1244] };
+export const ISLANDS: Record<'nw' | 'ne' | 'se' | 'sw' | 'mn' | 'ms', [number, number]> = { nw: [967, 1209], ne: [1019, 1204], se: [1025, 1241], sw: [966, 1243], mn: [988.4, 1190.5], ms: [996.9, 1237.5] };
 
 /** the signal assemblies (the Okponglo signals brief, pictures 1, 2, 11): per island the unit direction its face looks
  *  (toward the approaching traffic) and, for a mast-arm, the arm's direction over that approach's lanes and its reach.
  *  Heights and reach are calibrated to the carriageways' mapped widths, not measured (no metres in the sources) */
 export const SIGNAL = { mast: 7.2, pole: 5.4, armY: 6.6, lowY: 2.9, heads: [0.62, 0.92] };
 export const SIGNALS = {
-  mn: { face: [0, -1] as P2, arm: [-1, 0] as P2, reach: 11.5 },
-  ms: { face: [0, 1] as P2, arm: [1, 0] as P2, reach: 9.5 },
+  mn: { face: [0, -1] as P2, arm: [-1, 0] as P2, reach: 12.5 },
+  ms: { face: [0, 1] as P2, arm: [1, 0] as P2, reach: 12.5 },
   sw: { face: [-1, 0] as P2, arm: [0, -1] as P2, reach: 8.5 },
   ne: { face: [1, 0] as P2, arm: [0, 1] as P2, reach: 11 },
   nw: { face: [1, 0] as P2, arm: [0, 0] as P2, reach: 0 },
@@ -132,6 +159,11 @@ export function edgeClearance(x: number, z: number, paths = false) {
       const dx = bx - ax, dz = bz - az, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz || 1)));
       best = Math.min(best, Math.hypot(ax + dx * t - x, az + dz * t - z) - h);
     }
+  }
+  for (const [ax, az, bx, bz, h] of N4_WIDE) {
+    if (Math.abs(az - z) > 6) continue;
+    const dx = bx - ax, dz = bz - az, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz || 1)));
+    best = Math.min(best, Math.hypot(ax + dx * t - x, az + dz * t - z) - h);
   }
   return best;
 }
