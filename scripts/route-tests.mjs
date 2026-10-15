@@ -725,7 +725,7 @@ try {
   for (const [x, z] of [[95, 1573], [-88, 1676], [210, 1509], [200, 1500]]) if (cm.buildingNear(x, z, 0.35)) fail(`free ride: the road at ${x},${z} is blocked by ${cm.buildingNear(x, z, 0.35).name ?? 'a building'}`);
   if (!cm.buildingNear(182.5, 1632.5, 0.35)) fail('free ride: a Diaspora hall (the east wing of Kwapong) does not block the bike');
   const bankModels = (await server.ssrLoadModule('/src/game/banking.ts')).banking.frames();
-  if (bankModels.length !== 3) fail(`expected the bank compound, the Union Building and the ADB/HFC block, found ${bankModels.length}`);
+  if (bankModels.length !== 4) fail(`expected the bank compound, the Union Building, the ADB/HFC block and Republic Bank's forecourt, found ${bankModels.length}`);
   const hostels = (await server.ssrLoadModule('/src/game/hostels.ts')).hostels.frames();
   if (hostels.length !== 3) fail(`expected Jubilee Hall, ISH 1 and ISH 2 models, found ${hostels.length}`);
   if (lowLegs) notes.push(`${lowLegs} low-confidence destinations have a building between the network and the entrance (enclosed courtyards / mapping gaps; listed in data/geography/access-report.json)`);

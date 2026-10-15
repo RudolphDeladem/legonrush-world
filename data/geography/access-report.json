@@ -1,19 +1,19 @@
 {
  "destinations": 437,
  "byMethod": {
-  "curated": 96,
+  "curated": 98,
   "osm-entrance": 0,
   "gate": 1,
   "path-access": 2,
   "drive-access": 18,
   "area-entry": 8,
-  "frontage": 205,
+  "frontage": 203,
   "point": 107
  },
  "byConfidence": {
   "high": 89,
-  "low": 209,
-  "medium": 139
+  "low": 207,
+  "medium": 141
  },
  "campusGates": 5,
  "problems": [],
@@ -362,8 +362,8 @@
  ],
  "byStatus": {
   "verified": 88,
-  "inferred": 200,
-  "partial": 8,
+  "inferred": 198,
+  "partial": 10,
   "unverified": 9,
   "mapped": 132
  },
@@ -439,6 +439,13 @@
    "facing": 174
   },
   {
+   "place": "CalBank",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 3.6,
+   "facing": 360
+  },
+  {
    "place": "University of Ghana Registry",
    "type": "public entrance",
    "arrivalOn": "service",
@@ -451,6 +458,13 @@
    "arrivalOn": "service",
    "arrivalDistance": 3.5,
    "facing": 360
+  },
+  {
+   "place": "Prudential Bank",
+   "type": "public entrance",
+   "arrivalOn": "Jubilee Link",
+   "arrivalDistance": 2.7,
+   "facing": 92
   },
   {
    "place": "Stanbic Bank",

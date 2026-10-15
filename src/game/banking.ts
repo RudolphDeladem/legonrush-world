@@ -418,7 +418,7 @@ const frontage: Spec = {
         return y - h - 0.08;
       }, 4.9);
     k.plain.push([box(ex - 1.2, ex + 1.2, 0, 0.12, ez - 1.6, ez + 1.6), '#e9e7e0'], [box(ex - 1.1, ex + 1.1, 0.12, 0.5, ez - 1.5, ez + 1.5), '#3c6a2e']);
-    const px = rx(287.2), pz = rz(1021.5);
+    const px = rx(284.5), pz = rz(1010.5);
     k.plain.push([new THREE.CylinderGeometry(0.12, 0.2, 9, 7).translate(px, 4.5, pz), '#5b4330']);
     for (let i = 0; i < 9; i++) {
       const y = 1.6 + i * 0.85, r = 1.9 - i * 0.18;
