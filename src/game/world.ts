@@ -26,6 +26,7 @@ import { buildUgmcGrounds } from './ugmcground';
 import { buildNogGrounds } from './nog';
 import { buildOkGateGrounds } from './okgate';
 import { buildJjGrounds } from './jjyard';
+import { buildUgbsNewGrounds } from './ugbsnew';
 import { buildEvandyGrounds } from './evandy';
 import { NOG_TREES } from './nogtrees';
 import { NG, NOG_BACK, NOG_FINISH, WAG_SIDES, WG } from './nogplan';
@@ -507,6 +508,8 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
   group.add(buildOkGateGrounds());
   // the J.J. Rawlings Avenue yard, opening, field and earth track (jjyard.ts)
   group.add(buildJjGrounds());
+  // the new UGBS graduate building's site (ugbsnew.ts)
+  group.add(buildUgbsNewGrounds());
   yield 'step';
 
   // trees, kerbs, lamps, stops, signs, cars, kiosks and people (see life.ts)

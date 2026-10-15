@@ -68,9 +68,19 @@ export const BOARDS: [number, number, number, number, number, number][] = [
   [866.5, -712, -0.3, 3.2, 4.2, 3.2], [885.5, -768, -0.3, 6.4, 3.2, 4.6], [900.5, -806, -0.35, 3.0, 4.0, 3.0],
   [913, -842, -0.35, 6.0, 3.0, 4.2], [926, -821, -0.35, 3.2, 4.4, 3.4], [925, -798, 2.8, 6.4, 3.2, 4.6],
 ];
-/** the unroofed structure east of the avenue (R2: a ring and a rectangular frame, pale, open to the sky): no outline
- *  in any source (a coverage gap), traced provisionally from R2; its height and state are unconfirmed */
-export const SHELL_FRAME = { ring: { x: 931, z: -628, r: 15 }, block: [938, 984, -652, -607] as [number, number, number, number], levels: 2 };
+/** the new UGBS graduate building south of the red-roof Graduate Block (the owner's Okponglo signals and UGBS brief:
+ *  picture 9 registered on the game by the old block's outline, x = 1002 + (px - 385) / 3.73, z = -751 + (py - 195) / 3.73;
+ *  pictures 7/8 for its current finish). It replaces the provisional unroofed frame an earlier brief placed 45 m west
+ *  (ugbsnew.ts). The site: the building's working ground and the yard east of it inside the boundary */
+export const UGBS_NEW = {
+  /** the rounded wing: its centre and half axes (convex, projecting west) */
+  round: { c: [975, -656] as [number, number], rx: 14, rz: 12.5, east: 988 },
+  core: [988, 998, -672, -650] as [number, number, number, number],
+  north: [997, 1022, -677, -656] as [number, number, number, number],
+  south: [989, 1025, -650, -632] as [number, number, number, number],
+  site: [940, 1150, -693, -612] as [number, number, number, number],
+};
+export const inUgbsSite = (x: number, z: number, pad = 0) => { const [a, b, c, d] = UGBS_NEW.site; return x > a - pad && x < b + pad && z > c - pad && z < d + pad; };
 /** the open scrub and soil west of the avenue between the station and the Pent blocks, and east of it by the UGBS
  *  side (R2; Pairs 2-6) */
 export const SCRUB_W: [number, number, number, number] = [745, 900, -805, -598];

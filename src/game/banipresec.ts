@@ -34,7 +34,7 @@ import { place, textPanel } from './fskit';
 import { TOWERS } from './upsaplan';
 import {
   AHEAD_BB, AV_HALF, BANI_CREAM, BANI_PEACH, BIG_BB, BOARDS, CORNER, FRAME, GATE, GATHER, LOW_WALL, PALM, PJ_BOARDS,
-  POLES_W, POLE_OFF, ROADSIDE, ROADSIDE_OFF, SCRUB_E, SCRUB_W, SHEDS, SHELL_FRAME, SHELL_FRONT, SHELL_PYLON, SHELTER, SHELTER_BB,
+  POLES_W, POLE_OFF, ROADSIDE, ROADSIDE_OFF, SCRUB_E, SCRUB_W, SHEDS, SHELL_FRONT, inUgbsSite, SHELL_PYLON, SHELTER, SHELTER_BB,
   SIDE_BOARDS, SIDE_Z, SIG_IPS, SIG_PJ, TALL_BB, TOWERS_W, TRADE, WALL_H, WALL_N, WALL_S, WING, avDir, xE, xW,
 } from './bpiplan';
 
@@ -213,14 +213,14 @@ const corridor: Spec = {
     const nearShell = (x: number, z: number) => x < 816 && z > -652;
     // ---- the ground: scrub and red soil either side of the avenue (R2), the station kept as the station model has it ----
     k.meshes.push(ground(CO, SCRUB_W, scrubCol, (x, z) => nearShell(x, z) || inPoly(SHELL_FRONT, x, z)));
-    k.meshes.push(ground(CO, SCRUB_E, scrubCol, (x, z) => x > SHELL_FRAME.block[0] - 1 && x < SHELL_FRAME.block[1] + 1 && z > SHELL_FRAME.block[2] - 1 && z < SHELL_FRAME.block[3] + 1));
+    k.meshes.push(ground(CO, SCRUB_E, scrubCol, (x, z) => inUgbsSite(x, z, 1)));
     k.meshes.push(ground(CO, [880, 1000, -885, -700], scrubCol));
-    shrubs(b, SCRUB_W, 520, 11, nearShell); shrubs(b, SCRUB_E, 260, 23); shrubs(b, [880, 950, -880, -700], 160, 37);
+    shrubs(b, SCRUB_W, 520, 11, nearShell); shrubs(b, SCRUB_E, 260, 23, (x, z) => inUgbsSite(x, z, 2)); shrubs(b, [880, 950, -880, -700], 160, 37);
     // (the owner's second corrections, A18/A19: east of the avenue south of the IPS Road junction the ground is dense low
     // scrub, not an empty lawn)
     denseScrub(k, b, [935, 1000, -885, -700], 2600, 53);
     for (const [x, z, h] of [[790, -700, 5], [826, -760, 4.5], [770, -735, 6], [840, -672, 4], [960, -660, 5.5], [990, -610, 6]] as [number, number, number][]) {
-      if (roadGap(x, z) > 3 && !inBuilding(x, z, 2)) broadleaf(k, b.leaf, x, z, { h, spread: h * 0.9, sparse: true, seed: x + z, origin: CO });
+      if (roadGap(x, z) > 3 && !inBuilding(x, z, 2) && !inUgbsSite(x, z, 3)) broadleaf(k, b.leaf, x, z, { h, spread: h * 0.9, sparse: true, seed: x + z, origin: CO });
     }
     // ---- Pair 1: the paved forecourt out to the road walk (no lawn setback), the low kerb and the planted strip ----
     {
@@ -296,27 +296,7 @@ const corridor: Spec = {
       for (let i = 0; i < tops.length - 1; i++) for (let j = 0; j < 3; j++) spans.push([tops[i][j], tops[i + 1][j]]);
       k.meshes.push(wires(spans, 0.8));
     }
-    // ---- the unroofed frame east of the avenue (R2; no outline in any source: provisional, height unconfirmed) ----
-    {
-      const F = SHELL_FRAME, [x0, x1, z0, z1] = F.block.map((v, i) => v - CO[i < 2 ? 0 : 1]) as [number, number, number, number], L = 3.4;
-      for (let x = x0; x <= x1 + 0.01; x += (x1 - x0) / 8) for (let z = z0; z <= z1 + 0.01; z += (z1 - z0) / 7) {
-        c.push([box(x - 0.2, x + 0.2, 0, F.levels * L, z - 0.2, z + 0.2), '#bdb8ae']);
-      }
-      // (a slab at the lower level only; the top open, its beams exposed: R2 shows it unroofed)
-      for (let l = 1; l < F.levels; l++) c.push([box(x0 - 0.2, (x0 + x1) / 2, l * L - 0.25, l * L, (z0 + z1) / 2, z1 + 0.2), '#c9c4ba']);
-      for (let x = x0; x <= x1 + 0.01; x += (x1 - x0) / 8) c.push([box(x - 0.18, x + 0.18, F.levels * L - 0.45, F.levels * L, z0, z1), '#bdb8ae']);
-      for (const z of [z0, z1]) c.push([box(x0, x1, F.levels * L - 0.45, F.levels * L, z - 0.18, z + 0.18), '#bdb8ae']);
-      for (const [a0, a1, b0, b1] of [[x0, x1, z0, z0 + 0.25], [x0, x1, z1 - 0.25, z1], [x0, x0 + 0.25, z0, z1], [x1 - 0.25, x1, z0, z1]]) c.push([box(a0, a1, 0, 1.4, b0, b1), '#a9a49a']);
-      const rx = F.ring.x - CO[0], rz = F.ring.z - CO[1];
-      for (let i = 0; i < 40; i++) {
-        const a = (i / 40) * Math.PI * 2, a2 = ((i + 1) / 40) * Math.PI * 2;
-        if (i > 8 && i < 13) continue;
-        c.push([run(rx + Math.cos(a) * F.ring.r, rz + Math.sin(a) * F.ring.r, rx + Math.cos(a2) * F.ring.r, rz + Math.sin(a2) * F.ring.r, 0, 4.2, 0.4), '#c3beb4']);
-        c.push([run(rx + Math.cos(a) * (F.ring.r - 3), rz + Math.sin(a) * (F.ring.r - 3), rx + Math.cos(a2) * (F.ring.r - 3), rz + Math.sin(a2) * (F.ring.r - 3), 0, 2.2, 0.3), '#bdb8ae']);
-      }
-      wallSolids(F.block[0], F.block[2], F.block[1], F.block[2], 0.3); wallSolids(F.block[0], F.block[3], F.block[1], F.block[3], 0.3);
-      wallSolids(F.block[0], F.block[2], F.block[0], F.block[3], 0.3); wallSolids(F.block[1], F.block[2], F.block[1], F.block[3], 0.3);
-    }
+    // (the structure east of the avenue is the new UGBS graduate building, modelled at its registered place: ugbsnew.ts)
     finishParts(k, c);
     b.finish(k, 0.25);
   },
@@ -595,7 +575,7 @@ const baniSide: Spec = {
     shrubs(b, [860, 990, -1190, -1090], 320, 71, (x, z) => x > SHEDS[0][0] - 1 && x < SHEDS[1][1] + 1 && z > -1187 && z < -1179);
     shrubs(b, [945, 990, -1300, -1222], 90, 83);
     for (const [x, z, h] of [[902, -1150, 7], [930, -1120, 6], [880, -1110, 8], [948, -1165, 6.5], [915, -1170, 5.5], [960, -1135, 7]] as [number, number, number][]) {
-      if (roadGap(x, z) > 3 && !inBuilding(x, z, 2)) broadleaf(k, b.leaf, x, z, { h, spread: h, sparse: true, seed: x + z, origin: BO });
+      if (roadGap(x, z) > 3 && !inBuilding(x, z, 2) && !inUgbsSite(x, z, 3)) broadleaf(k, b.leaf, x, z, { h, spread: h, sparse: true, seed: x + z, origin: BO });
     }
     // ---- the low grey block wall along the north side, broken where the Bani lane leaves; the boards on posts ----
     const wz = SIDE_Z - 6.4;

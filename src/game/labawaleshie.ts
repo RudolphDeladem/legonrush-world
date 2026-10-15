@@ -36,7 +36,7 @@ import { groundShade, weathering } from './shading';
 import { medianGrass, pavers, rod, run, strip, wires, type V3 } from './upsa';
 import { inOkKeep, okOwns } from './okplan';
 import {
-  CABINET, COMPOUND, E_HALF, HOOD, ISLANDS, JUNCTION, MASSES, MAST, MEDIAN, ROADSIDE, SCRUB, VERGE_W, W_HALF,
+  CABINET, COMPOUND, E_HALF, HOOD, ISLANDS, JUNCTION, MASSES, MAST, MEDIAN, ROADSIDE, SCRUB, SIGNAL, SIGNALS, VERGE_W, W_HALF,
   halfOf, inCompound, inHood, offEdge, pickOf, xEast, xWest, type Mass, type Pick,
 } from './lbplan';
 
@@ -553,7 +553,7 @@ const corridor: Spec = {
     }
 
     // ---------- the junction: signal posts, the islands' worn stone paving, the cabinet, bollards ----------
-    for (const [cx, cz] of Object.values(ISLANDS)) {
+    for (const [key, [cx, cz]] of Object.entries(ISLANDS)) {
       k.meshes.push(new THREE.Mesh(drapeAt(CO, cx - 9, cx + 9, cz - 9, cz + 9, 0.5, 0.06, (x, z) => {
         if (clearance(x, z) < 0.15) return null;
         const m = vnoise(x * 2.3, z * 2.3), n = vnoise(x * 0.6, z * 0.6);
@@ -564,13 +564,33 @@ const corridor: Spec = {
       for (let i = 0; i < 60; i++) { const x = cx + (hash(i, cx) - 0.5) * 5, z = cz + (hash(cz, i) - 0.5) * 5, cl = clearance(x, z); if (cl > 0.6 && (!best || Math.hypot(x - cx, z - cz) < Math.hypot(best[0] - cx, best[1] - cz))) { bc = cl; best = [x, z]; } }
       void bc;
       if (!best) continue;
-      const [px, pz] = A(...best);
-      c.push([new THREE.CylinderGeometry(0.08, 0.1, 4.6, 8).translate(px, 2.3, pz), '#3e6b45']);
-      for (const ry of [0, Math.PI / 2, Math.PI]) {
-        const head = box(-0.17, 0.17, 3.0, 4.1, -0.15, 0.15).rotateY(ry).translate(px, 0, pz);
-        c.push([head, '#1d1f22']);
-        for (const [y, col] of [[3.85, '#7a1d1d'], [3.55, '#7a5a12'], [3.25, '#1d6a2a']] as [number, string][]) c.push([new THREE.CylinderGeometry(0.1, 0.1, 0.05, 10).rotateX(Math.PI / 2).translate(0, y, 0.17).rotateY(ry).translate(px, 0, pz), col]);
-      }
+      // (the Okponglo signals brief, pictures 1, 2, 11: tall slender grey masts with a long overhead arm over the lanes of
+      // the approach each serves, two heads standing on the arm and a second head part way down the mast, all facing the
+      // approaching traffic; on the two other corners a tall pole with an upper and a lower head)
+      const [px, pz] = A(...best), sig = SIGNALS[key as keyof typeof SIGNALS];
+      const [fx, fz] = sig.face, ry = Math.atan2(fx, fz), H = sig.reach ? SIGNAL.mast : SIGNAL.pole;
+      c.push([new THREE.CylinderGeometry(0.11, 0.16, H, 10).translate(px, H / 2, pz), '#9aa0a5'], [new THREE.CylinderGeometry(0.28, 0.3, 0.25, 10).translate(px, 0.12, pz), '#8c9196']);
+      /** a head: dark housing, three lenses with visors on its face side only, a bracket back to its support */
+      const head = (x: number, y: number, z: number) => {
+        c.push([box(-0.17, 0.17, y, y + 1.05, -0.15, 0.15).rotateY(ry).translate(x, 0, z), '#1d1f22']);
+        for (const [dy, col] of [[0.86, '#8a1f1f'], [0.53, '#8a6a12'], [0.2, '#1f7a2f']] as [number, string][]) {
+          c.push([new THREE.CylinderGeometry(0.1, 0.1, 0.05, 10).rotateX(Math.PI / 2).translate(0, y + dy, 0.17).rotateY(ry).translate(x, 0, z), col]);
+          c.push([box(-0.13, 0.13, y + dy + 0.1, y + dy + 0.13, 0.15, 0.32).rotateY(ry).translate(x, 0, z), '#1d1f22']);
+        }
+      };
+      if (sig.reach) {
+        const [ax, az] = sig.arm, L = sig.reach, y = SIGNAL.armY;
+        const g = new THREE.CylinderGeometry(0.06, 0.09, L, 8).rotateZ(Math.PI / 2).rotateY(-Math.atan2(az, ax)).translate(px + (ax * L) / 2, y, pz + (az * L) / 2);
+        c.push([g, '#9aa0a5']);
+        // the joint and a short brace under the arm
+        c.push([box(px - 0.2, px + 0.2, y - 0.25, y + 0.25, pz - 0.2, pz + 0.2), '#8c9196']);
+        { const b0 = new THREE.Vector3(px, y - 1.4, pz), b1 = new THREE.Vector3(px + ax * 2.2, y, pz + az * 2.2), d = b1.clone().sub(b0), bg = new THREE.CylinderGeometry(0.035, 0.035, d.length(), 6);
+          bg.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.clone().normalize())); c.push([bg.translate((b0.x + b1.x) / 2, (b0.y + b1.y) / 2, (b0.z + b1.z) / 2), '#9aa0a5']); }
+        for (const t of SIGNAL.heads) { const hx = px + ax * L * t, hz = pz + az * L * t; c.push([box(hx - 0.05, hx + 0.05, y + 0.05, y + 0.2, hz - 0.05, hz + 0.05), '#55595d']); head(hx, y + 0.2, hz); }
+      } else head(px + fx * 0.25, SIGNAL.pole - 1.3, pz + fz * 0.25);
+      // the second head part way down the mast
+      c.push([box(px - 0.05, px + 0.05, SIGNAL.lowY + 0.4, SIGNAL.lowY + 0.5, pz - 0.05, pz + 0.05).translate(fx * 0.12, 0, fz * 0.12), '#55595d']);
+      head(px + fx * 0.28, SIGNAL.lowY, pz + fz * 0.28);
       SOLIDS.add(best[0], best[1], 0.2);
     }
     {

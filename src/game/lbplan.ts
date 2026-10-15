@@ -11,6 +11,7 @@ import { evandySpots } from './evandyplan';
 import { ogSpots } from './okgateplan';
 
 type Line = [number, number][];
+type P2 = [number, number];
 const pts = (nodes: number[]): Line => nodes.map((n) => [NODE_XZ[n * 2], NODE_XZ[n * 2 + 1]]);
 /** the N4's carriageways through the stretch, joined north to south: the southbound one on the west, the northbound one
  *  on the east (one-way ways, told apart by the way their nodes run) */
@@ -46,6 +47,19 @@ export const W_HALF = 3.3, E_HALF = 4.95;
  *  and the two median noses (Pairs 5-7, 10) */
 export const JUNCTION = { x0: 958, x1: 1028, z0: 1195, z1: 1262 };
 export const ISLANDS: Record<'nw' | 'ne' | 'se' | 'sw' | 'mn' | 'ms', [number, number]> = { nw: [967, 1209], ne: [1019, 1204], se: [1025, 1241], sw: [966, 1243], mn: [990, 1200], ms: [1000, 1244] };
+
+/** the signal assemblies (the Okponglo signals brief, pictures 1, 2, 11): per island the unit direction its face looks
+ *  (toward the approaching traffic) and, for a mast-arm, the arm's direction over that approach's lanes and its reach.
+ *  Heights and reach are calibrated to the carriageways' mapped widths, not measured (no metres in the sources) */
+export const SIGNAL = { mast: 7.2, pole: 5.4, armY: 6.6, lowY: 2.9, heads: [0.62, 0.92] };
+export const SIGNALS = {
+  mn: { face: [0, -1] as P2, arm: [-1, 0] as P2, reach: 11.5 },
+  ms: { face: [0, 1] as P2, arm: [1, 0] as P2, reach: 9.5 },
+  sw: { face: [-1, 0] as P2, arm: [0, -1] as P2, reach: 8.5 },
+  ne: { face: [1, 0] as P2, arm: [0, 1] as P2, reach: 11 },
+  nw: { face: [1, 0] as P2, arm: [0, 0] as P2, reach: 0 },
+  se: { face: [-1, 0] as P2, arm: [0, 0] as P2, reach: 0 },
+};
 
 /** the median between the carriageways: kerbed patchy grass and red earth, young planted trees (Pairs 1, 2, 4, 9, 13) */
 export const MEDIAN = { z0: 905, z1: 1640, gap: [1190, 1262] as [number, number], tree: 19 };
