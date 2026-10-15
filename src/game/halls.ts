@@ -180,9 +180,10 @@ const UP_WIN = [40, 32, 118, 122] as const, GROUND_WIN = [40, 34, 176, 176] as c
  */
 const facadeAtlas = () =>
   canvas(256, 512, (g) => {
-    g.fillStyle = '#f8f6f1';
+    // warm cream render (the owner's photos)
+    g.fillStyle = '#f5efe2';
     g.fillRect(0, 0, 256, 512);
-    speckle(g, 0, 0, 256, 512, 3200, ['#efece4', '#ffffff', '#e9e5dc']);
+    speckle(g, 0, 0, 256, 512, 3200, ['#ede6d6', '#faf6ec', '#e8e0cf']);
     // ---- upper storey (y 0..256) ----
     // the balcony recess between the piers, shaded under the slab above
     const rec = g.createLinearGradient(0, 0, 0, 232);
@@ -456,19 +457,23 @@ function hallGeometry(hx: number, hz: number, ix: number, iz: number, look: Look
     P.push([box(-PW - 0.12, PW + 0.12, WALL - 0.3, WALL, zf, zf + 0.14), TRIM]);
     // string course over the porch
     P.push([box(-PW - 0.06, PW + 0.06, 5.55, 5.8, zf, zf + 0.12), '#ebe5d9']);
-    // porch: platform and steps, four slim columns, a flat canopy, glass doors behind
-    P.push([box(-4.2, 4.2, 0, PL, zf, zf + 1.8), PAVE]);
-    P.push([box(-3.2, 3.2, 0, 0.3, zf + 1.8, zf + 2.2), PAVE]);
-    P.push([box(-3.2, 3.2, 0, 0.15, zf + 2.2, zf + 2.6), PAVE]);
-    for (const x of [-3.6, -1.25, 1.25, 3.6]) {
-      P.push([new THREE.CylinderGeometry(0.17, 0.19, 4.6, 10).translate(x, PL + 2.3, zf + 1.45), WHITE]);
-      P.push([box(x - 0.26, x + 0.26, PL, PL + 0.25, zf + 1.19, zf + 1.71), TRIM]);
+    // porch (the owner's photos of the Kwapong and Jean Nelson entrances, 2026-10-15): wide steps, two pairs of tall cream
+    // columns carrying the tower over the door, no flat canopy; two pairs of glazed doors in maroon frames, the blue name
+    // panel on the wall over them (drawn in buildDiasporaHalls), a band of dark windows above it under the tower's soffit
+    P.push([box(-4.6, 4.6, 0, PL, zf, zf + 2.2), PAVE]);
+    P.push([box(-4.0, 4.0, 0, 0.3, zf + 2.2, zf + 2.6), PAVE]);
+    P.push([box(-4.0, 4.0, 0, 0.15, zf + 2.6, zf + 3.0), PAVE]);
+    for (const x of [-3.7, -2.75, 2.75, 3.7]) {
+      P.push([new THREE.CylinderGeometry(0.24, 0.26, 6.2 - PL, 14).translate(x, (PL + 6.2) / 2, zf + 1.6), '#f2ead8']);
+      P.push([box(x - 0.32, x + 0.32, PL, PL + 0.22, zf + 1.28, zf + 1.92), TRIM]);
     }
-    P.push([box(-4.0, 4.0, 5.05, 5.45, zf, zf + 1.75), TRIM]);
-    G.push(box(-3.0, 3.0, PL, 4.8, zf, zf + 0.04));
-    for (const x of [-3.05, -1.5, 0, 1.5, 3.05]) P.push([box(x - 0.06, x + 0.06, PL, 4.8, zf, zf + 0.08), BRONZE]);
-    P.push([box(-3.05, 3.05, 3.3, 3.42, zf, zf + 0.08), BRONZE]);
-    P.push([box(-3.15, 3.15, 4.8, 5.05, zf, zf + 0.1), BRONZE]);
+    P.push([box(-4.3, 4.3, 6.1, 6.5, zf, zf + 2.1), '#f2ead8']);
+    G.push(box(-2.2, 2.2, PL, 3.0, zf, zf + 0.04));
+    for (const x of [-2.2, -1.1, 0, 1.1, 2.2]) P.push([box(x - 0.06, x + 0.06, PL, 3.0, zf, zf + 0.08), '#5a2a24']);
+    P.push([box(-2.26, 2.26, 3.0, 3.12, zf, zf + 0.08), '#5a2a24']);
+    P.push([box(-2.7, 2.7, 3.25, 4.05, zf, zf + 0.1), '#1f4f9a']);
+    G.push(box(-2.6, 2.6, 4.35, 5.45, zf, zf + 0.03));
+    for (const x of [-2.6, -1.3, 0, 1.3, 2.6]) P.push([box(x - 0.05, x + 0.05, 4.35, 5.45, zf + 0.03, zf + 0.09), '#2b2e33']);
     if (look.glazing === 'grid') {
       // Elizabeth Sey (REF-09): a tall rectangular window of dark glass in a grid of dark frames over the upper floors
       const y0 = 6.3, y1 = 12.4, w = 2.1;
@@ -644,9 +649,9 @@ export function buildDiasporaHalls() {
     add(geo.plain, plain);
     add(geo.glass, glass, false);
     add(geo.roof, roofMat);
-    // red-brown pavers at both entrances (the apron under the steps) and, on Kwapong and Limann, the walk across the car
+    // greyish-tan pavers at both entrances (the apron under the steps) and, on Kwapong and Limann, the walk across the car
     // parks to the partner hall's door (the Diaspora brief: paved forecourts, not lawn, before the entrances)
-    const pv = pavers('redbrown');
+    const pv = pavers('halltan');
     const apron = (z0: number, z1: number, w: number) => {
       const g = new THREE.PlaneGeometry(2 * w, z1 - z0).rotateX(-Math.PI / 2).translate(0, 0.035, (z0 + z1) / 2);
       const pa = g.attributes.position as THREE.BufferAttribute, uv = g.attributes.uv as THREE.BufferAttribute;
@@ -656,7 +661,7 @@ export function buildDiasporaHalls() {
     apron(f.hz, f.hz + PP + 4.5, 7.5); apron(-(f.hz + PP + 4.5), -f.hz, 7.5);
     if ((LOOKS[f.name] ?? DEFAULT_LOOK).walk) apron(f.hz + PP + 4.5, f.hz + 24, 2.4);
     // the ground between the facing halls (the owner's Street View between Limann and Kwapong, 2018): the car parks and
-    // the drive between them all in red-brown herringbone pavers, long kerbed islands planted with palms along both sides
+    // the drive between them all in greyish-tan herringbone pavers (owner: not brown), long kerbed islands planted with palms along both sides
     // of the drive, broken for the cars to pass; each hall paves its half, to the middle between the two fronts
     const partner = FRAMES.find((o) => o.name === PAIRS[f.name]);
     if (partner) {
@@ -697,14 +702,14 @@ export function buildDiasporaHalls() {
     }
     const courtMat = new THREE.MeshStandardMaterial({ map: geo.court, roughness: 0.92, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
     add(new THREE.PlaneGeometry(2 * f.ix, 2 * f.iz).rotateX(-Math.PI / 2).translate(0, 0.05, 0), courtMat, false);
-    // the hall's name on both porch canopies
+    // the hall's name on the blue panel over both entrances' doors
     const { tex, aspect } = signTexture(SIGN[f.name] ?? f.name.toUpperCase());
     const signMat = new THREE.MeshBasicMaterial({ map: tex });
-    const w = Math.min(7.6, 0.34 * aspect), h = w / aspect;
+    const w = Math.min(5.0, 0.7 * aspect), h = w / aspect;
     for (const sd of [1, -1]) {
       const sign = new THREE.Mesh(new THREE.PlaneGeometry(w, h), signMat);
       sign.name = 'hall-sign';
-      sign.position.set(0, 5.25, sd * (geo.hz + PP + 1.76));
+      sign.position.set(0, 3.65, sd * (geo.hz + PP + 0.11));
       sign.rotation.y = sd > 0 ? 0 : Math.PI;
       hall.add(sign);
     }

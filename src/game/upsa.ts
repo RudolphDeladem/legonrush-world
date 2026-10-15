@@ -67,7 +67,7 @@ export function wires(spans: [V3, V3][], sag: number) {
 const paverMats = new Map<string, THREE.MeshStandardMaterial>();
 /** concrete pavers laid herringbone, one tile 4 m: tan (the sidewalks), grey (UGBS), dusty brown (GOIL), legon (the
  *  banking square, Night Market and banks: taupe, grey and brown stones mixed, the correction brief's ground reference) */
-export function pavers(kind: 'tan' | 'grey' | 'goil' | 'legon' | 'redbrown') {
+export function pavers(kind: 'tan' | 'grey' | 'goil' | 'legon' | 'halltan') {
   let m = paverMats.get(kind);
   if (m) return m;
   const [base, cols] = {
@@ -75,7 +75,7 @@ export function pavers(kind: 'tan' | 'grey' | 'goil' | 'legon' | 'redbrown') {
     grey: ['#605b55', ['#9b958c', '#908a81', '#a49e95', '#968f86', '#8a847b']],
     goil: ['#62574a', ['#a2917a', '#998871', '#a89781', '#94826b', '#9d8c76']],
     legon: ['#77706a', ['#9b9187', '#958f89', '#9c8b7b', '#969089', '#918577']],
-    redbrown: ['#5c4136', ['#9a5f48', '#8d5a46', '#a06a52', '#946250', '#88604e']],
+    halltan: ['#6f645a', ['#a8998a', '#9e9083', '#ab9a88', '#a39587', '#998b7c']],
   }[kind] as [string, string[]];
   const cv = document.createElement('canvas');
   cv.width = cv.height = 256;
