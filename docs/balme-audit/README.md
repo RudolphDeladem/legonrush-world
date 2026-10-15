@@ -53,6 +53,16 @@ Part 3 (pages 101-146) restates each confirmed item with a mandatory acceptance 
 
 Comparison: `comparison-sheet-3.jpg`.
 
+## Round 4: the owner's marked notes on rounds 2-3 (`owner/`)
+
+| Note | Change |
+|---|---|
+| The perforated screen joining the buildings (blue arrow on I059) was missing | A screen wall (dense perforated panels, piers, red base) from the low inner east wing to the tall east wing's south-west corner, solid to riders. The glazed projection is now only on the outer part of that end, as I059 shows; the west wing's end (not photographed) has none. |
+| The pavements were plain colours | Every paved surface round the library now carries the worn slab texture: the forecourt before the entrance (the mapped plaza), the entrance landing, the road-level paving round the sunken square and the side strips, as well as the deck and terrace (round 2). |
+| I042 was taken from the footway at the arrow's tail; the middle section across the pool's south end does not exist | The stone wall across the deck's south end removed: the slab paving rises from the deck to the footway in one slope (relief.ts), low walls down its sides, the lawns' end walls kept; the irregular stone panel sits in the slope before the information slab, where I042 shows it from the footway. The route test that held that spot flat now checks the slope instead (the paving beside the lawns' ends stays flat). |
+
+Comparison: `comparison-sheet-4.jpg`.
+
 ## Not done yet (open, next)
 
 C04 roof tile ageing and junctions, C05 courtyard galleries and AC units (needs registration), C09 the weathered service elevation, C10 the columned block (location pending), C24-C28 trees, drains,

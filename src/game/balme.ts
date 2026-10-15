@@ -668,6 +668,10 @@ const library: Spec = {
     }
     // the landing before the door, then the steps down to the forecourt
     k.plain.push([box(ax - 2.6, ax + 2.6, 0, PL, fz, fz + 1.6), '#cfc8bb']);
+    {
+      const lm = new THREE.Mesh(new THREE.PlaneGeometry(5.2, 1.6).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ map: slabTex(), roughness: 0.95 }));
+      lm.position.set(ax, PL + 0.006, fz + 0.8); lm.receiveShadow = true; k.meshes.push(lm);
+    }
     for (let i = 0; i < 4; i++) k.plain.push([box(ax - 7 - i * 0.3, ax + 7 + i * 0.3, 0, PL - i * 0.1, fz + 1.6, fz + 2.2 + i * 0.9), '#cfc8bb']);
   },
 };
@@ -785,14 +789,19 @@ const libraryWings: Spec = {
       pyramid(k, xc - 1.3, xc + 1.3, lzm - 1.3, lzm + 1.3, top + 1.1, 1.0, 0.5);
       // the low glazed projection across the foot of the south end (C06, I059): dark glazing between white piers under
       // a tiled lean-to
-      const zs = lz(7.1), pd = 2.2;
-      k.plain.push([box(lx(wx0) + 0.6, lx(wx1) - 0.6, 0, 0.7, zs, zs + pd), '#8e2f2a'], [box(lx(wx0) + 0.6, lx(wx1) - 0.6, 0.7, 2.9, zs + pd - 0.1, zs + pd), '#20252b']);
-      for (let t = lx(wx0) + 0.6; t <= lx(wx1) - 0.55; t += (lx(wx1) - lx(wx0) - 1.2) / 5) k.plain.push([box(t - 0.12, t + 0.12, 0.7, 2.9, zs + pd - 0.14, zs + pd + 0.02), WHITE]);
-      for (const xx of [lx(wx0) + 0.6, lx(wx1) - 0.6]) k.plain.push([box(xx - 0.1, xx + 0.1, 0.7, 2.9, zs, zs + pd), WHITE]);
-      k.plain.push([box(lx(wx0) + 0.4, lx(wx1) - 0.4, 2.9, 3.05, zs, zs + pd + 0.3), WHITE]);
-      k.roof.c = new THREE.Color(TILE);
-      k.roof.quad([lx(wx1) - 0.3, 3.05, zs + pd + 0.5], [lx(wx0) + 0.3, 3.05, zs + pd + 0.5], [lx(wx0) + 0.3, 4.0, zs], [lx(wx1) - 0.3, 4.0, zs]);
-      for (let t = wx0 + 1.2; t < wx1 - 0.6; t += 1.4) SOLIDS.add(t, 7.1 + pd / 2, 1.1);
+      // (on the east wing only, across the outer part of its end, as I059 shows; the west wing's end is not photographed)
+      if (wx0 > 0) {
+        const zs = lz(7.1), pd = 2.2, pa = lx(wx0 + 6.2), pb = lx(wx1) - 0.3;
+        k.plain.push([box(pa, pb, 0, 0.7, zs, zs + pd), '#8e2f2a'], [box(pa, pb, 0.7, 2.9, zs + pd - 0.1, zs + pd), '#20252b']);
+        for (let t = pa; t <= pb + 0.05; t += (pb - pa) / 4) k.plain.push([box(t - 0.12, t + 0.12, 0.7, 2.9, zs + pd - 0.14, zs + pd + 0.02), WHITE]);
+        k.plain.push([box(pa - 0.1, pa + 0.1, 0.7, 2.9, zs, zs + pd), WHITE], [box(pa - 0.2, pb + 0.2, 2.9, 3.05, zs, zs + pd + 0.3), WHITE]);
+        k.roof.c = new THREE.Color(TILE);
+        k.roof.quad([pb + 0.2, 3.05, zs + pd + 0.5], [pa - 0.2, 3.05, zs + pd + 0.5], [pa - 0.2, 4.0, zs], [pb + 0.2, 4.0, zs]);
+        for (let t = wx0 + 6.6; t < wx1 - 0.4; t += 1.4) SOLIDS.add(t, 7.1 + pd / 2, 1.1);
+        // the perforated screen wall joining the low inner wing to this wing's south-west corner (owner's marked I059)
+        screenWall(k, lx(34.5), lz(7.1), lx(wx0), lz(7.1));
+        for (let t = 35; t < wx0; t += 0.8) SOLIDS.add(t, 7.1, 0.3);
+      }
       // the maroon base
       for (const [a, b, c, d] of [[lx(wx0) - 0.06, lx(wx0), lz(-58.3), lz(7.1)], [lx(wx1), lx(wx1) + 0.06, lz(-58.3), lz(7.1)]]) k.plain.push([box(a, b, 0, 0.8, c, d), '#8e2f2a']);
     }
@@ -967,7 +976,8 @@ const steps: Spec = {
     k.plain.push([box(x(st.z1), x(27.2), -0.05, 0.05, z(43), z(48.7)), PAVE_T]);
     k.plain.push([box(x(-10), x(-7.2), -0.05, 0.05, z(48.7), z(94.6)), PAVE_T]);
     k.plain.push([box(x(25.2), x(27.2), -0.05, 0.05, z(48.7), z(94.6)), PAVE_T]);
-    k.plain.push([box(x(-10), x(27.2), -0.05, 0.03, z(94.1), z(102)), PAVE_T]);
+    k.plain.push([box(x(-10), x(0.25), -0.05, 0.03, z(94.1), z(102)), PAVE_T]);
+    k.plain.push([box(x(15.75), x(27.2), -0.05, 0.03, z(94.1), z(102)), PAVE_T]);
     // worn warm square slabs with joints on the pool deck round the pool and on the middle terrace (C16, C17); the stone
     // panel of irregular flat stones set into the paving south of the pool (C15, I030); the sloped information slab on
     // its stand at the pool's south end (C27, I042)
@@ -981,7 +991,29 @@ const steps: Spec = {
     sp(0.7, 2.95, 60.75, 93.5, deck + 0.05); sp(13.05, 15.3, 60.75, 93.5, deck + 0.05);
     sp(2.95, 13.05, 60.75, 64.55, deck + 0.05); sp(2.95, 13.05, 91.45, 93.5, deck + 0.05);
     sp(-1, 17, 49.3, 60.3, mid + 0.05);
-    sp(4.6, 11.6, 95.0, 100.6, 0.06, new THREE.MeshStandardMaterial({ map: crazyTex(), roughness: 0.95 }));
+    // the road-level paving all round the square: the same slabs, not a plain colour (owner)
+    for (const [a, b, c, d] of [[-10, 27.2, 40.8, 43], [-10, st.z0 + SO[0], 43, 48.7], [st.z1 + SO[0], 27.2, 43, 48.7], [-10, -7.2, 48.7, 94.6], [25.2, 27.2, 48.7, 94.6], [-10, 0.25, 94.1, 102], [15.75, 27.2, 94.1, 102]]) sp(a, b, c, d, 0.06);
+    // the slope from the deck up to the footway: slabs following the ground, and the panel of irregular flat stones
+    // between straight slab strips before the information slab (I042, taken from the footway)
+    const gp = (x0: number, x1: number, z0: number, z1: number, mat: THREE.Material, tile: number, lift: number) => {
+      const nx = Math.max(2, Math.round((x1 - x0) / 0.8)), nz = Math.max(2, Math.round((z1 - z0) / 0.5));
+      const g2 = new THREE.PlaneGeometry(x1 - x0, z1 - z0, nx, nz).rotateX(-Math.PI / 2).translate(x((x0 + x1) / 2), 0, z((z0 + z1) / 2));
+      const pos = g2.attributes.position as THREE.BufferAttribute, uv = g2.attributes.uv as THREE.BufferAttribute;
+      for (let i = 0; i < pos.count; i++) { const px = pos.getX(i), pz = pos.getZ(i); pos.setY(i, k.ground(px, pz) + lift); uv.setXY(i, (px + SO[0]) / tile, (pz + SO[1]) / tile); }
+      g2.computeVertexNormals();
+      const m = new THREE.Mesh(g2, mat); m.receiveShadow = true; k.meshes.push(m);
+    };
+    gp(0.7, 15.3, 93.4, 102.4, slab, 2.4, 0.05);
+    gp(4.8, 11.4, 95.6, 100.2, new THREE.MeshStandardMaterial({ map: crazyTex(), roughness: 0.95 }), 3, 0.065);
+    // the forecourt before the library's entrance (the mapped plaza): the same worn slabs
+    {
+      const pts = [[-1.0, 11.5], [16.0, 11.5], [16.0, 18.0], [21.0, 18.0], [21.0, 29.0], [16.0, 29.0], [16.0, 36.0], [-1.0, 36.0], [-1.0, 29.0], [-8.0, 29.0], [-8.0, 18.0], [-1.0, 18.0]];
+      const sh = new THREE.Shape(pts.map(([a, b]) => new THREE.Vector2(x(a), -z(b))));
+      const g2 = new THREE.ShapeGeometry(sh).rotateX(-Math.PI / 2);
+      const pos = g2.attributes.position as THREE.BufferAttribute, uv = g2.attributes.uv as THREE.BufferAttribute;
+      for (let i = 0; i < pos.count; i++) uv.setXY(i, (pos.getX(i) + SO[0]) / 2.4, (pos.getZ(i) + SO[1]) / 2.4);
+      const m = new THREE.Mesh(g2, slab); m.position.y = 0.045; m.receiveShadow = true; k.meshes.push(m);
+    }
     {
       const ix = x(8), iz = z(92.4);
       k.plain.push([box(ix - 0.3, ix + 0.3, deck, deck + 0.85, iz - 0.2, iz + 0.2), '#8a5a44']);
@@ -1047,8 +1079,11 @@ const steps: Spec = {
         k.plain.push([box(x(xs - 0.18), x(xs + 0.18), mid - 0.4, mid + 0.3 * (i + 1), z(75.5), z(79.5)), i % 2 ? '#d9d3c6' : '#cfc9bc']);
       }
     }
-    // the south wall below the footway: tall across the deck, low across the lawns
-    wall(x(0.25), x(15.75), z(93.5), z(94.1), deck, 0.35);
+    // the south wall below the footway, across the lawns' ends only
+    // (none across the deck: its paving rises to the footway, owner's marked aerial); the lawns' ends either side, and
+    // low walls down the sides of the slope
+    wall(x(0.25), x(0.7), z(93.5), z(102.3), deck, 0.35);
+    wall(x(15.3), x(15.75), z(93.5), z(102.3), deck, 0.35);
     wall(x(-7.2), x(0.25), z(93.5), z(94.1), mid, 0.35);
     wall(x(15.75), x(25.2), z(93.5), z(94.1), mid, 0.35);
     stoneMeshOf(k, stoneParts);

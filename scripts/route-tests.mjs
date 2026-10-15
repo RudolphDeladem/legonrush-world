@@ -326,7 +326,10 @@ try {
   // owner: no building north of Akuafo Annex A's slab; the paving round the Balme Library's sunken square is flat to
   // the walls (no slope outside them)
   if (buildingAt(132, 416)) fail('a building still stands beside Akuafo Hall Annex A (the owner: there is none)');
-  { const { groundHeight: gh } = await server.ssrLoadModule('/src/game/relief.ts'); for (const [x, z] of [[-7.25, 70], [25.25, 70], [8, 94.2], [-9, 55]]) if (gh(x, z) !== 0) fail(`Balme: the paving at ${x},${z} slopes down (${gh(x, z).toFixed(2)})`); }
+  // (later, the owner's marked aerial: no wall across the pool's south end, its paving runs on up to the road, so the
+  // middle of the south end climbs from the deck; the paving beside the lawns' ends stays flat)
+  { const { groundHeight: gh } = await server.ssrLoadModule('/src/game/relief.ts'); for (const [x, z] of [[-7.25, 70], [25.25, 70], [-3, 94.2], [20, 94.2], [-9, 55]]) if (gh(x, z) !== 0) fail(`Balme: the paving at ${x},${z} slopes down (${gh(x, z).toFixed(2)})`);
+    if (!(gh(8, 94.2) < -1 && gh(8, 102.6) === 0)) fail('Balme: the pool deck does not climb to the road at its south end (owner)'); }
   // owner: one-floor buildings by Volta Hall Road, opposite the Business School and the lecturers' houses in their wood
   { const one = (x, z) => { const b = buildingAt(x, z); return b && b.height <= 5; };
     for (const [n, x, z] of [['the Volta Hall Road stretch', -198.6, -38.8], ['the Larway Oraca Building', -263, -178], ['the building opposite the Business School', -266, -135], ['a lecturer\'s house (East Legon 20)', 262, 560], ['a lecturer\'s house (East Legon 11)', 385.9, 426]]) if (!one(x, z)) fail(`${n} is not one floor (owner)`);
