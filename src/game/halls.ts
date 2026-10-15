@@ -1,5 +1,6 @@
 // The four Diaspora halls (Dr. Hilla Limann, Alexander Kwapong, Elizabeth Frances Sey and
-// Jean Nelson Aka): one design, built in facing pairs, modelled from the owner's photos.
+// Jean Nelson Aka): one design, built in facing pairs, modelled from the owner's photos; since the owner's Diaspora
+// halls brief (2026-10-15) each keeps its own roof colour, entrance window and courtyard (LOOKS).
 //
 // Each hall is a four-storey quadrangle of white rendered rooms round a courtyard, under a
 // terracotta hipped roof (hips at the outer corners, valleys at the inner ones). In the middle of
@@ -18,6 +19,7 @@ import { BRONZE, DARK, Facade, PAVE, PLINTH, Roof, SOFFIT, TANK, TRIM, WHITE, bo
 import { BUILDINGS, type Building } from './campusmap';
 import { buildingMaterials } from './facades';
 import { groundShade, weathering } from './shading';
+import { pavers } from './upsa';
 
 /** each hall and the hall its front entrance faces */
 const PAIRS: Record<string, string> = {
@@ -34,6 +36,57 @@ const SIGN: Record<string, string> = {
 };
 export const isDiasporaHall = (b: Building) => !!b.name && b.name in PAIRS;
 
+/**
+ * What tells the four halls apart (the owner's Diaspora halls brief, 2026-10-15: MAP-01 to MAP-05 satellites, REF-01 to
+ * REF-17 photos; docs/diaspora-halls/). Courtyard features are placed in metres from the courtyard's middle: u toward
+ * the hall's north end (the Jubilee Link end), v toward its front (the partner hall); every place is read from the
+ * satellites, so it is an estimate to about 3 m.
+ *  - roof: the satellite's roof colour (Elizabeth Sey's is dark brown, the others terracotta);
+ *  - glazing: the entrance tower's window, a round-headed arch (Jean Nelson, REF-12/13/14/17; kept on Kwapong and Limann,
+ *    which no photo shows) or a tall rectangular grid (Elizabeth Sey, REF-09);
+ *  - court: the courtyard's plazas, courts, lawns, pavilions and trees as MAP-03/MAP-04 show them.
+ */
+type Feature =
+  | { k: 'lawn' | 'plaza' | 'slab'; u0: number; u1: number; v0: number; v1: number }
+  | { k: 'basket' | 'blue' | 'tennis'; u: number; v: number }
+  | { k: 'fountain' | 'gazebo'; u: number; v: number }
+  | { k: 'hut'; u: number; v: number; w: number; d: number }
+  | { k: 'trees'; pts: [number, number, number][] };
+interface Look { roof: string; glazing: 'arch' | 'grid'; court: Feature[]; /** a paved walk across the car parks to the partner's door, through the gap between the bays (MAP-04) */ walk?: boolean }
+const LOOKS: Record<string, Look> = {
+  // MAP-04: the blue court with two white circles in the north half, a small red-roofed pavilion at the north end on the
+  // front side, trees and lawn in the middle, the plain concrete court in the south half
+  'Alexander Kwapong Hall': { roof: '#b4573b', glazing: 'arch', walk: true, court: [
+    { k: 'lawn', u0: -63.7, u1: -50, v0: -20, v1: 20 }, { k: 'lawn', u0: -22, u1: 22, v0: -20, v1: -4 }, { k: 'lawn', u0: -22, u1: 22, v0: 4, v1: 20 },
+    { k: 'blue', u: 37, v: -3 }, { k: 'gazebo', u: 56, v: 15 }, { k: 'slab', u0: -46, u1: -26, v0: -16, v1: 6 },
+    { k: 'trees', pts: [[-12, 12, 3.2], [-4, 15, 2.8], [8, 11, 3.4], [15, 15, 2.6], [-14, -11, 3], [2, -13, 3.4], [13, -10, 2.8], [-56, 12, 3], [-58, -10, 2.8], [52, -15, 2.6]] },
+  ] },
+  // MAP-04 and REF-01: the teal basketball court with red keys in the north half and its tiled gazebo, the small round
+  // fountain in the middle, the pale square court on the back side, lawns and trees toward the south end
+  'Dr. Hilla Limann Hall': { roof: '#bb5c3d', glazing: 'arch', walk: true, court: [
+    { k: 'lawn', u0: -63.7, u1: -24, v0: 4, v1: 20 }, { k: 'lawn', u0: -63.7, u1: -30, v0: -20, v1: -4 }, { k: 'lawn', u0: 12, u1: 22, v0: -20, v1: 20 },
+    { k: 'basket', u: 38, v: 0 }, { k: 'gazebo', u: 56, v: 14 }, { k: 'fountain', u: 0, v: 0 }, { k: 'slab', u0: -21, u1: -7, v0: -19, v1: -5 },
+    { k: 'trees', pts: [[-30, 13, 3.4], [-42, 9, 3], [-52, 15, 3.4], [-58, -12, 3], [-44, -12, 2.8], [-34, -15, 3.2], [16, 15, 2.8], [16, -15, 2.8]] },
+  ] },
+  // MAP-03: a large pale plaza across the north end with a small red-roofed building in its back corner, lawns and paths in
+  // the middle, the pale square court on the back side toward the south, dense trees at the south end
+  'Elizabeth Frances Sey Hall': { roof: '#6e4b3a', glazing: 'grid', court: [
+    { k: 'plaza', u0: 34, u1: 63.7, v0: -20, v1: 20 }, { k: 'hut', u: 52, v: -15, w: 9, d: 5 },
+    { k: 'lawn', u0: 4, u1: 30, v0: -20, v1: -3 }, { k: 'lawn', u0: 4, u1: 30, v0: 3, v1: 20 }, { k: 'lawn', u0: -63.7, u1: -34, v0: -20, v1: 20 },
+    { k: 'slab', u0: -24, u1: -10, v0: -18, v1: -4 },
+    { k: 'trees', pts: [[-40, 14, 3.6], [-48, 6, 3.2], [-55, 15, 3.8], [-58, -4, 3.4], [-46, -14, 3.6], [-38, -6, 3], [-60, -15, 3.2], [16, 13, 2.6], [22, -12, 2.6]] },
+  ] },
+  // MAP-03: a pale plaza at the north end, trees in the middle, the small red-and-green court in the south half on the
+  // front side, trees at the south end
+  'Jean Nelson Aka Hall': { roof: '#c4633c', glazing: 'arch', court: [
+    { k: 'plaza', u0: 36, u1: 63.7, v0: -20, v1: 20 },
+    { k: 'lawn', u0: -6, u1: 32, v0: -20, v1: -3 }, { k: 'lawn', u0: -6, u1: 32, v0: 3, v1: 20 }, { k: 'lawn', u0: -63.7, u1: -38, v0: -20, v1: 20 },
+    { k: 'tennis', u: -22, v: 7 },
+    { k: 'trees', pts: [[10, 13, 3.4], [20, 9, 3], [26, -12, 3.2], [8, -14, 2.8], [-46, 12, 3.4], [-54, -6, 3.6], [-44, -14, 3], [-58, 14, 3]] },
+  ] },
+};
+const DEFAULT_LOOK: Look = LOOKS['Alexander Kwapong Hall'];
+
 // ---------- dimensions (metres) ----------
 /** plinth, storey height, storeys, top of the walls */
 const PL = 0.45, ST = 3.15, FLOORS = 4;
@@ -48,7 +101,7 @@ const GA = WALL + GW * GP; // gable apex
 const TW = 2.25, TP = 1.2, TX = 0.53;
 
 /** A hall's placement: centre, axes (local x along the length, local z out of the front), half sizes. */
-interface Frame { name: string; cx: number; cz: number; yaw: number; ax: number; az: number; fx: number; fz: number; hx: number; hz: number; ix: number; iz: number }
+interface Frame { name: string; cx: number; cz: number; yaw: number; ax: number; az: number; fx: number; fz: number; hx: number; hz: number; ix: number; iz: number; /** the local x sign of the north (Jubilee Link) end */ n: 1 | -1 }
 
 function frameOf(b: Building, partner: Building | undefined): Frame {
   const P: [number, number][] = [];
@@ -75,7 +128,7 @@ function frameOf(b: Building, partner: Building | undefined): Frame {
   };
   const hole = b.holes[0];
   const hx = ext(b.pts, ax, az), hz = ext(b.pts, fx, fz);
-  return { name: b.name!, cx, cz, yaw: Math.atan2(fx, fz), ax, az, fx, fz, hx, hz, ix: hole ? ext(hole, ax, az) : hx - 15, iz: hole ? ext(hole, fx, fz) : hz - 16 };
+  return { name: b.name!, cx, cz, yaw: Math.atan2(fx, fz), ax, az, fx, fz, hx, hz, ix: hole ? ext(hole, ax, az) : hx - 15, iz: hole ? ext(hole, fx, fz) : hz - 16, n: az < 0 ? 1 : -1 };
 }
 
 const FRAMES: Frame[] = BUILDINGS.filter(isDiasporaHall).map((b) => frameOf(b, BUILDINGS.find((o) => o.name === PAIRS[b.name!])));
@@ -100,7 +153,7 @@ export function inDiasporaHall(x: number, z: number, pad = 0) {
 
 // ---------- textures ----------
 /** window glass in a 256 x 256 storey cell (upper floors), and the ground floor's louvred windows */
-const UP_WIN = [50, 32, 156, 122] as const, GROUND_WIN = [40, 34, 176, 176] as const;
+const UP_WIN = [40, 32, 118, 122] as const, GROUND_WIN = [40, 34, 176, 176] as const;
 
 /**
  * One window bay (3.6 m) of the facade: the top half is an upper storey (a recessed balcony
@@ -117,10 +170,13 @@ const facadeAtlas = () =>
     const rec = g.createLinearGradient(0, 0, 0, 232);
     rec.addColorStop(0, '#6e675d'); rec.addColorStop(0.12, '#a69d90'); rec.addColorStop(1, '#bdb4a6');
     g.fillStyle = rec;
-    g.fillRect(20, 0, 216, 232);
-    // the window at the back of the balcony: timber frame, glass, mullions and a transom
+    g.fillRect(20, 0, 156, 232);
+    // the wall between balconies: two small square vents (REF-02, REF-15)
+    g.fillStyle = '#26292d';
+    for (const [vx, vy] of [[198, 62], [222, 62], [198, 104], [222, 104]] as [number, number][]) g.fillRect(vx, vy, 16, 16);
+    // the window at the back of the balcony: dark charcoal frame, tinted glass, mullions and a transom
     const [wx, wy, ww, wh] = UP_WIN;
-    g.fillStyle = '#b98f58';
+    g.fillStyle = '#2b2e33';
     g.fillRect(wx - 6, wy - 6, ww + 12, wh + 12);
     const glass = g.createLinearGradient(0, wy, 0, wy + wh);
     glass.addColorStop(0, '#5d7286'); glass.addColorStop(0.5, '#2e3c4b'); glass.addColorStop(1, '#1d2631');
@@ -128,17 +184,17 @@ const facadeAtlas = () =>
     g.fillRect(wx, wy, ww, wh);
     g.fillStyle = 'rgba(255,255,255,0.09)';
     g.beginPath(); g.moveTo(wx + 20, wy); g.lineTo(wx + 56, wy); g.lineTo(wx + 16, wy + wh); g.lineTo(wx, wy + wh); g.lineTo(wx, wy + 50); g.fill();
-    g.fillStyle = '#b98f58';
+    g.fillStyle = '#2b2e33';
     for (const x of [wx + ww / 3, wx + (2 * ww) / 3]) g.fillRect(x - 3, wy, 6, wh);
     g.fillRect(wx, wy + 38, ww, 5);
     // solid white parapet across the balcony, lit on top, a drip shadow under its coping
     g.fillStyle = '#f5f2eb';
-    g.fillRect(20, 160, 216, 72);
-    speckle(g, 20, 160, 216, 72, 500, ['#ebe7de', '#ffffff']);
+    g.fillRect(20, 160, 156, 72);
+    speckle(g, 20, 160, 156, 72, 400, ['#ebe7de', '#ffffff']);
     g.fillStyle = '#ffffff';
-    g.fillRect(16, 156, 224, 8);
+    g.fillRect(16, 156, 164, 8);
     g.fillStyle = 'rgba(80,70,60,0.28)';
-    g.fillRect(20, 164, 216, 3);
+    g.fillRect(20, 164, 156, 3);
     // slab band at the foot of the storey, and a shadow line on the piers' inner edges
     g.fillStyle = '#f2efe8';
     g.fillRect(0, 232, 256, 24);
@@ -146,6 +202,7 @@ const facadeAtlas = () =>
     g.fillRect(0, 232, 256, 2);
     g.fillStyle = 'rgba(60,50,40,0.18)';
     g.fillRect(20, 0, 4, 160);
+    g.fillRect(172, 0, 4, 160);
     // ---- ground storey (y 256..512) ----
     const [gx, gy, gw, gh] = GROUND_WIN;
     const y0 = 256;
@@ -188,12 +245,16 @@ const lightsTexture = () =>
     }
   });
 
-/** The courtyard from above at 8 px/m: paving, planting along the walls, lawns, the two courts and the fountain plaza. */
+/** The courtyard from above at 8 px/m: concrete paving, planting along the walls, and the hall's own lawns, plazas, courts
+ *  and walks (LOOKS); n is the local x sign of the north end. */
 const PPM = 8;
-function courtyardTexture(ix: number, iz: number) {
+function courtyardTexture(ix: number, iz: number, look: Look, n: 1 | -1) {
   const W = Math.round(2 * ix * PPM), H = Math.round(2 * iz * PPM);
-  const X = (x: number) => (x + ix) * PPM, Y = (z: number) => (z + iz) * PPM;
-  const rect = (g: CanvasRenderingContext2D, x0: number, z0: number, x1: number, z1: number) => g.fillRect(X(x0), Y(z0), (x1 - x0) * PPM, (z1 - z0) * PPM);
+  const X = (u: number) => (n * u + ix) * PPM, Y = (v: number) => (v + iz) * PPM;
+  const rect = (g: CanvasRenderingContext2D, u0: number, v0: number, u1: number, v1: number) => {
+    const xa = X(u0), xb = X(u1);
+    g.fillRect(Math.min(xa, xb), Y(v0), Math.abs(xb - xa), (v1 - v0) * PPM);
+  };
   const t = canvas(W, H, (g) => {
     // concrete paving slabs
     g.fillStyle = '#cbc4b6';
@@ -202,62 +263,48 @@ function courtyardTexture(ix: number, iz: number) {
     g.fillStyle = 'rgba(120,110,95,0.25)';
     for (let x = 0; x < W; x += 1.2 * PPM) g.fillRect(x, 0, 1, H);
     for (let y = 0; y < H; y += 1.2 * PPM) g.fillRect(0, y, W, 1);
-    // planting beds along the walls and lawns at the ends of the courtyard and round the plaza
-    const lawn = (x0: number, z0: number, x1: number, z1: number, c: string) => {
-      g.fillStyle = c; rect(g, x0, z0, x1, z1);
-      speckle(g, X(x0), Y(z0), (x1 - x0) * PPM, (z1 - z0) * PPM, (x1 - x0) * (z1 - z0) * 12, ['#264a1f', '#3f7232', '#2f5a26', '#4a7e3a']);
+    const lawn = (u0: number, v0: number, u1: number, v1: number, c: string) => {
+      g.fillStyle = c; rect(g, u0, v0, u1, v1);
+      const xa = Math.min(X(u0), X(u1));
+      speckle(g, xa, Y(v0), Math.abs(u1 - u0) * PPM, (v1 - v0) * PPM, Math.abs(u1 - u0) * (v1 - v0) * 12, ['#264a1f', '#3f7232', '#2f5a26', '#4a7e3a']);
     };
-    lawn(-ix, -iz, ix, -iz + 3, '#2f5626');
-    lawn(-ix, iz - 3, ix, iz, '#2f5626');
-    lawn(-ix, -iz, -ix + 3, iz, '#2f5626');
-    lawn(ix - 3, -iz, ix, iz, '#2f5626');
-    lawn(-ix + 5, -iz + 5, -38, iz - 5, '#3f7232');
-    lawn(47, -iz + 5, ix - 5, iz - 5, '#3f7232');
-    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
-      const x0 = sx < 0 ? -12 : 3.5, x1 = sx < 0 ? -3.5 : 12, z0 = sz < 0 ? -iz + 5 : 3, z1 = sz < 0 ? -3 : iz - 5;
-      lawn(x0, z0, x1, z1, '#3f7232');
+    // planting beds along the walls
+    lawn(-ix, -iz, ix, -iz + 2.5, '#2f5626'); lawn(-ix, iz - 2.5, ix, iz, '#2f5626');
+    lawn(-ix, -iz, -ix + 2.5, iz, '#2f5626'); lawn(ix - 2.5, -iz, ix, iz, '#2f5626');
+    const line = (u0: number, v0: number, u1: number, v1: number) => { g.beginPath(); g.moveTo(X(u0), Y(v0)); g.lineTo(X(u1), Y(v1)); g.stroke(); };
+    for (const f of look.court) {
+      if (f.k === 'lawn') lawn(f.u0, f.v0, f.u1, f.v1, '#3f7232');
+      else if (f.k === 'plaza') { g.fillStyle = '#d9d4c9'; rect(g, f.u0, f.v0, f.u1, f.v1); g.strokeStyle = 'rgba(120,110,95,0.35)'; g.lineWidth = 1; for (let u = f.u0; u < f.u1; u += 2.4) line(u, f.v0, u, f.v1); }
+      else if (f.k === 'slab') { g.fillStyle = '#d4d0c8'; rect(g, f.u0, f.v0, f.u1, f.v1); g.strokeStyle = '#eceae4'; g.lineWidth = 2; line(f.u0 + 1, f.v0 + 1, f.u1 - 1, f.v0 + 1); line(f.u0 + 1, f.v1 - 1, f.u1 - 1, f.v1 - 1); line(f.u0 + 1, f.v0 + 1, f.u0 + 1, f.v1 - 1); line(f.u1 - 1, f.v0 + 1, f.u1 - 1, f.v1 - 1); }
+      else if (f.k === 'fountain') {
+        g.fillStyle = '#d9d3c6'; g.beginPath(); g.arc(X(f.u), Y(f.v), 7.5 * PPM, 0, Math.PI * 2); g.fill();
+        g.strokeStyle = '#a89f8f'; g.lineWidth = 3;
+        for (const r of [7.4, 5.2]) { g.beginPath(); g.arc(X(f.u), Y(f.v), r * PPM, 0, Math.PI * 2); g.stroke(); }
+      } else if (f.k === 'basket' || f.k === 'blue') {
+        // a 28 x 15 m court: teal with red keys and circles (Limann), or blue with white circles (Kwapong)
+        const [base, key] = f.k === 'basket' ? ['#3f9e86', '#c4574c'] : ['#3f7fb2', '#e9eef2'];
+        g.fillStyle = '#bab2a3'; rect(g, f.u - 16, f.v - 9.5, f.u + 16, f.v + 9.5);
+        g.fillStyle = base; rect(g, f.u - 14, f.v - 7.5, f.u + 14, f.v + 7.5);
+        g.fillStyle = key;
+        for (const s of [-1, 0, 1]) { g.beginPath(); g.arc(X(f.u + s * 9), Y(f.v), (s ? 2.6 : 1.8) * PPM, 0, Math.PI * 2); f.k === 'basket' || !s ? g.fill() : null; }
+        if (f.k === 'basket') for (const s of [-1, 1]) rect(g, Math.min(f.u + s * 14, f.u + s * 8.2), f.v - 2.45, Math.max(f.u + s * 14, f.u + s * 8.2), f.v + 2.45);
+        g.strokeStyle = '#f4f7f2'; g.lineWidth = 2;
+        line(f.u - 14, f.v - 7.5, f.u + 14, f.v - 7.5); line(f.u - 14, f.v + 7.5, f.u + 14, f.v + 7.5); line(f.u - 14, f.v - 7.5, f.u - 14, f.v + 7.5); line(f.u + 14, f.v - 7.5, f.u + 14, f.v + 7.5);
+        line(f.u, f.v - 7.5, f.u, f.v + 7.5);
+        for (const s of [-1, 0, 1]) { g.beginPath(); g.arc(X(f.u + s * 9), Y(f.v), (s ? 2.6 : 1.8) * PPM, 0, Math.PI * 2); g.stroke(); }
+      } else if (f.k === 'tennis') {
+        // a red surround with a green 24 x 11 m playing area (MAP-03)
+        g.fillStyle = '#b8574a'; rect(g, f.u - 15, f.v - 8, f.u + 15, f.v + 8);
+        g.fillStyle = '#4a8f5a'; rect(g, f.u - 12, f.v - 5.5, f.u + 12, f.v + 5.5);
+        g.strokeStyle = '#f4f7f2'; g.lineWidth = 2;
+        line(f.u - 12, f.v - 5.5, f.u + 12, f.v - 5.5); line(f.u - 12, f.v + 5.5, f.u + 12, f.v + 5.5); line(f.u - 12, f.v - 5.5, f.u - 12, f.v + 5.5); line(f.u + 12, f.v - 5.5, f.u + 12, f.v + 5.5);
+        line(f.u, f.v - 5.5, f.u, f.v + 5.5); line(f.u - 6.4, f.v, f.u + 6.4, f.v); line(f.u - 6.4, f.v - 4.1, f.u - 6.4, f.v + 4.1); line(f.u + 6.4, f.v - 4.1, f.u + 6.4, f.v + 4.1);
+      }
     }
-    // the portal-to-portal walk and the cross walk, a little lighter
+    // the portal-to-portal walk and the cross walk, a little lighter, drawn over the lawns
     g.fillStyle = '#d8d2c5';
     rect(g, -1.8, -iz, 1.8, iz);
-    rect(g, -ix + 3, -1.5, ix - 3, 1.5);
-    // fountain plaza: a ring of paving round the basin
-    g.fillStyle = '#d9d3c6';
-    g.beginPath(); g.arc(X(0), Y(0), 7.5 * PPM, 0, Math.PI * 2); g.fill();
-    g.strokeStyle = '#a89f8f'; g.lineWidth = 3;
-    for (const r of [7.4, 5.2]) { g.beginPath(); g.arc(X(0), Y(0), r * PPM, 0, Math.PI * 2); g.stroke(); }
-    // court surrounds
-    g.fillStyle = '#bab2a3';
-    rect(g, -36, -6.5, -14, 6.5);
-    rect(g, 13, -9.5, 45, 9.5);
-    // volleyball court, teal (18 x 9 m)
-    const line = (x0: number, z0: number, x1: number, z1: number) => { g.beginPath(); g.moveTo(X(x0), Y(z0)); g.lineTo(X(x1), Y(z1)); g.stroke(); };
-    g.fillStyle = '#4fb8a0';
-    rect(g, -34, -4.5, -16, 4.5);
-    g.strokeStyle = '#f4f7f2'; g.lineWidth = 2;
-    g.strokeRect(X(-34), Y(-4.5), 18 * PPM, 9 * PPM);
-    line(-25, -4.5, -25, 4.5); line(-28, -4.5, -28, 4.5); line(-22, -4.5, -22, 4.5);
-    // basketball court, green with red circles and keys (28 x 15 m)
-    const bx = 29;
-    g.fillStyle = '#3f9e74';
-    rect(g, bx - 14, -7.5, bx + 14, 7.5);
-    g.fillStyle = '#c4574c';
-    g.beginPath(); g.arc(X(bx), Y(0), 1.8 * PPM, 0, Math.PI * 2); g.fill();
-    for (const s of [-1, 1]) {
-      const e = bx + s * 14;
-      g.fillStyle = '#c4574c';
-      rect(g, Math.min(e, e - s * 5.8), -2.45, Math.max(e, e - s * 5.8), 2.45);
-      g.beginPath(); g.arc(X(e - s * 5.8), Y(0), 1.8 * PPM, 0, Math.PI * 2); g.fill();
-    }
-    g.strokeStyle = '#f4f7f2'; g.lineWidth = 2;
-    g.strokeRect(X(bx - 14), Y(-7.5), 28 * PPM, 15 * PPM);
-    line(bx, -7.5, bx, 7.5);
-    g.beginPath(); g.arc(X(bx), Y(0), 1.8 * PPM, 0, Math.PI * 2); g.stroke();
-    for (const s of [-1, 1]) {
-      const e = bx + s * 14, hoop = e - s * 1.575;
-      g.strokeRect(X(Math.min(e, e - s * 5.8)), Y(-2.45), 5.8 * PPM, 4.9 * PPM);
-      g.beginPath(); g.arc(X(hoop), Y(0), 6.75 * PPM, s < 0 ? -Math.PI / 2 + 0.2 : Math.PI / 2 + 0.2, s < 0 ? Math.PI / 2 - 0.2 : (3 * Math.PI) / 2 - 0.2); g.stroke();
-    }
+    rect(g, -ix + 2.5, -1.5, ix - 2.5, 1.5);
   });
   t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
   return t;
@@ -287,11 +334,11 @@ export function setHallLights(on: boolean) {
 
 // ---------- geometry ----------
 /** One hall in its local frame: length along x, front facing +z, ground at y = 0. */
-function hallGeometry(hx: number, hz: number, ix: number, iz: number) {
+function hallGeometry(hx: number, hz: number, ix: number, iz: number, look: Look, n: 1 | -1) {
   const fac = new Facade();
   const plain: Part[] = [];
   const glass: THREE.BufferGeometry[] = [];
-  const roof = new Roof(new THREE.Color('#b9572f'));
+  const roof = new Roof(new THREE.Color(look.roof));
   const rx = (hx + ix) / 2, rz = (hz + iz) / 2;
   /** roof height at a distance from the outer (or inner) eave line, long wings */
   const pitch = (RIDGE - WALL) / (hz + OV - rz);
@@ -404,22 +451,32 @@ function hallGeometry(hx: number, hz: number, ix: number, iz: number) {
     for (const x of [-3.05, -1.5, 0, 1.5, 3.05]) P.push([box(x - 0.06, x + 0.06, PL, 4.8, zf, zf + 0.08), BRONZE]);
     P.push([box(-3.05, 3.05, 3.3, 3.42, zf, zf + 0.08), BRONZE]);
     P.push([box(-3.15, 3.15, 4.8, 5.05, zf, zf + 0.1), BRONZE]);
-    // the tall round-headed window over the top two floors
-    const r = 1.9, y0 = 6.3, yc = 10.6;
-    const archPts = (rr: number, lo: number): [number, number][] => {
-      const pts: [number, number][] = [[-rr, lo], [rr, lo]];
-      for (let i = 0; i <= 16; i++) { const a = (i / 16) * Math.PI; pts.push([Math.cos(a) * rr, yc + Math.sin(a) * rr]); }
-      return pts;
-    };
-    G.push(flat(archPts(r, y0), zf + 0.03));
-    const frame = new THREE.Shape(archPts(r + 0.32, y0 - 0.32).map(([x, y]) => new THREE.Vector2(x, y)));
-    frame.holes.push(new THREE.Path(archPts(r, y0).map(([x, y]) => new THREE.Vector2(x, y)).reverse()));
-    P.push([new THREE.ShapeGeometry(frame).translate(0, 0, zf + 0.05), '#ece6da']);
-    P.push([box(-r - 0.5, r + 0.5, y0 - 0.5, y0 - 0.3, zf, zf + 0.2), TRIM]); // sill
-    P.push([box(-0.06, 0.06, y0, yc + r, zf + 0.03, zf + 0.1), BRONZE]);
-    for (const x of [-0.95, 0.95]) P.push([box(x - 0.05, x + 0.05, y0, yc + Math.sqrt(r * r - x * x), zf + 0.03, zf + 0.09), BRONZE]);
-    for (const y of [7.75, 9.2, yc]) P.push([box(-r, r, y - 0.05, y + 0.05, zf + 0.03, zf + 0.09), BRONZE]);
-    for (const a of [Math.PI / 4, (3 * Math.PI) / 4]) P.push([new THREE.BoxGeometry(r, 0.08, 0.06).translate(r / 2, 0, 0).rotateZ(a).translate(0, yc, zf + 0.06), BRONZE]);
+    if (look.glazing === 'grid') {
+      // Elizabeth Sey (REF-09): a tall rectangular window of dark glass in a grid of dark frames over the upper floors
+      const y0 = 6.3, y1 = 12.4, w = 2.1;
+      G.push(box(-w, w, y0, y1, zf, zf + 0.03));
+      P.push([box(-w - 0.3, w + 0.3, y0 - 0.3, y1 + 0.3, zf, zf + 0.02), '#ece6da']);
+      P.push([box(-w - 0.5, w + 0.5, y0 - 0.5, y0 - 0.3, zf, zf + 0.2), TRIM]);
+      for (const x of [-w, -w / 3, w / 3, w]) P.push([box(x - 0.06, x + 0.06, y0, y1, zf + 0.03, zf + 0.1), '#2b2e33']);
+      for (const y of [y0, 8.35, 10.4, y1]) P.push([box(-w, w, y - 0.06, y + 0.06, zf + 0.03, zf + 0.1), '#2b2e33']);
+    } else {
+      // the tall round-headed window over the top two floors
+      const r = 1.9, y0 = 6.3, yc = 10.6;
+      const archPts = (rr: number, lo: number): [number, number][] => {
+        const pts: [number, number][] = [[-rr, lo], [rr, lo]];
+        for (let i = 0; i <= 16; i++) { const a = (i / 16) * Math.PI; pts.push([Math.cos(a) * rr, yc + Math.sin(a) * rr]); }
+        return pts;
+      };
+      G.push(flat(archPts(r, y0), zf + 0.03));
+      const frame = new THREE.Shape(archPts(r + 0.32, y0 - 0.32).map(([x, y]) => new THREE.Vector2(x, y)));
+      frame.holes.push(new THREE.Path(archPts(r, y0).map(([x, y]) => new THREE.Vector2(x, y)).reverse()));
+      P.push([new THREE.ShapeGeometry(frame).translate(0, 0, zf + 0.05), '#ece6da']);
+      P.push([box(-r - 0.5, r + 0.5, y0 - 0.5, y0 - 0.3, zf, zf + 0.2), TRIM]); // sill
+      P.push([box(-0.06, 0.06, y0, yc + r, zf + 0.03, zf + 0.1), BRONZE]);
+      for (const x of [-0.95, 0.95]) P.push([box(x - 0.05, x + 0.05, y0, yc + Math.sqrt(r * r - x * x), zf + 0.03, zf + 0.09), BRONZE]);
+      for (const y of [7.75, 9.2, yc]) P.push([box(-r, r, y - 0.05, y + 0.05, zf + 0.03, zf + 0.09), BRONZE]);
+      for (const a of [Math.PI / 4, (3 * Math.PI) / 4]) P.push([new THREE.BoxGeometry(r, 0.08, 0.06).translate(r / 2, 0, 0).rotateZ(a).translate(0, yc, zf + 0.06), BRONZE]);
+    }
     // small windows either side of the arch on the upper floors
     for (const x of [-3.7, 3.7]) for (let k = 2; k < FLOORS; k++) {
       const y = PL + k * ST + 0.9;
@@ -475,27 +532,62 @@ function hallGeometry(hx: number, hz: number, ix: number, iz: number) {
     glass.push(box(x - 1.0, x + 1.0, PL, PL + 2.6, Math.min(z, z - s * 0.05), Math.max(z, z - s * 0.05)));
   }
 
-  // ---- courtyard: fountain, basketball hoops, volleyball net and trees ----
-  plain.push([new THREE.CylinderGeometry(3.1, 3.2, 0.6, 28).translate(0, 0.3, 0), '#e9e4da']);
-  plain.push([new THREE.CylinderGeometry(2.8, 2.8, 0.05, 28).translate(0, 0.52, 0), '#4f8fbf']);
-  plain.push([new THREE.CylinderGeometry(0.7, 0.9, 1.3, 16).translate(0, 1.1, 0), '#e9e4da']);
-  plain.push([new THREE.CylinderGeometry(1.4, 0.5, 0.35, 18).translate(0, 1.9, 0), '#e9e4da']);
-  plain.push([new THREE.CylinderGeometry(0.25, 0.3, 1.4, 10).translate(0, 2.7, 0), '#c9c2b4']);
-  plain.push([new THREE.SphereGeometry(0.42, 12, 8).translate(0, 3.55, 0), '#c9c2b4']);
-  const bx = 29;
-  for (const s of [-1, 1]) {
-    const x = bx + s * 15.2, hoopX = bx + s * 12.4;
-    plain.push([new THREE.CylinderGeometry(0.1, 0.1, 3.3, 8).translate(x, 1.65, 0), '#3a3e45']);
-    plain.push([box(Math.min(x, hoopX + s * 1.2), Math.max(x, hoopX + s * 1.2), 3.2, 3.3, -0.06, 0.06), '#3a3e45']);
-    plain.push([box(hoopX + s * 1.15, hoopX + s * 1.2, 2.9, 3.95, -0.9, 0.9), '#f4f4f2']);
-    plain.push([new THREE.TorusGeometry(0.23, 0.025, 6, 16).rotateX(Math.PI / 2).translate(hoopX + s * 0.85, 3.05, 0), '#e0602a']);
-  }
-  for (const s of [-1, 1]) plain.push([new THREE.CylinderGeometry(0.06, 0.06, 2.5, 8).translate(-25, 1.25, s * 5.0), '#3a3e45']);
-  plain.push([box(-25.02, -24.98, 1.5, 2.45, -5, 5), '#22252a']);
-  const trees: [number, number, number][] = [[-52, -iz + 4.5, 3.4], [-40, -iz + 5, 3], [-10, -iz + 4.5, 3.6], [11, -iz + 4.5, 3.2], [40, -iz + 5, 3], [53, -iz + 4.5, 3.4], [-55, iz - 5, 2.8], [55, iz - 5, 2.8], [-8, 7, 2.6], [8, -7, 2.6]];
-  for (const [x, z, r] of trees) {
+  // ---- courtyard: the hall's own fountain, hoops, nets, pavilions and trees (LOOKS) ----
+  const NU = (u: number) => n * u;
+  const tree = (x: number, z: number, r: number) => {
     plain.push([new THREE.CylinderGeometry(0.18, 0.26, 2.6, 7).translate(x, 1.3, z), '#5b4330']);
     plain.push([new THREE.IcosahedronGeometry(r, 1).scale(1, 0.82, 1).translate(x, 2.4 + r * 0.7, z), r > 3.1 ? '#2f5d27' : '#3d7030']);
+  };
+  for (const f of look.court) {
+    if (f.k === 'fountain') {
+      const x = NU(f.u), z = f.v;
+      plain.push([new THREE.CylinderGeometry(3.1, 3.2, 0.6, 28).translate(x, 0.3, z), '#e9e4da']);
+      plain.push([new THREE.CylinderGeometry(2.8, 2.8, 0.05, 28).translate(x, 0.52, z), '#4f8fbf']);
+      plain.push([new THREE.CylinderGeometry(0.7, 0.9, 1.3, 16).translate(x, 1.1, z), '#e9e4da']);
+      plain.push([new THREE.CylinderGeometry(1.4, 0.5, 0.35, 18).translate(x, 1.9, z), '#e9e4da']);
+      plain.push([new THREE.SphereGeometry(0.42, 12, 8).translate(x, 2.35, z), '#c9c2b4']);
+    } else if (f.k === 'basket' || f.k === 'blue') {
+      // hoops at both ends of the court
+      for (const s of [-1, 1]) {
+        const x = NU(f.u + s * 15.2), hoopX = NU(f.u + s * 12.4), d = Math.sign(x - hoopX);
+        plain.push([new THREE.CylinderGeometry(0.1, 0.1, 3.3, 8).translate(x, 1.65, f.v), '#3a3e45']);
+        plain.push([box(Math.min(x, hoopX + d * 1.2), Math.max(x, hoopX + d * 1.2), 3.2, 3.3, f.v - 0.06, f.v + 0.06), '#3a3e45']);
+        plain.push([box(Math.min(hoopX + d * 1.15, hoopX + d * 1.2), Math.max(hoopX + d * 1.15, hoopX + d * 1.2), 2.9, 3.95, f.v - 0.9, f.v + 0.9), '#f4f4f2']);
+        plain.push([new THREE.TorusGeometry(0.23, 0.025, 6, 16).rotateX(Math.PI / 2).translate(hoopX + d * 0.85, 3.05, f.v), '#e0602a']);
+      }
+    } else if (f.k === 'tennis') {
+      for (const s of [-1, 1]) plain.push([new THREE.CylinderGeometry(0.05, 0.05, 1.07, 8).translate(NU(f.u), 0.53, f.v + s * 6.2), '#3a3e45']);
+      plain.push([box(NU(f.u) - 0.02, NU(f.u) + 0.02, 0.15, 0.95, f.v - 6.2, f.v + 6.2), '#22252a']);
+    } else if (f.k === 'gazebo') {
+      // a round open pavilion under an eight-sided tiled roof on white posts (REF-01, the red spot of MAP-04)
+      const x = NU(f.u), z = f.v;
+      plain.push([new THREE.CylinderGeometry(3.2, 3.3, 0.3, 16).translate(x, 0.15, z), '#d9d3c6']);
+      for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2; plain.push([new THREE.CylinderGeometry(0.13, 0.13, 2.5, 8).translate(x + Math.cos(a) * 2.8, 1.55, z + Math.sin(a) * 2.8), WHITE]); }
+      plain.push([new THREE.CylinderGeometry(2.85, 2.85, 0.9, 16, 1, true).translate(x, 0.75, z), '#efe9dc']);
+      plain.push([new THREE.ConeGeometry(4.1, 2.4, 8).translate(x, 4.0, z), '#c25b33']);
+    } else if (f.k === 'hut') {
+      // the small one-storey building in the plaza's corner, under a red roof (MAP-03)
+      const x = NU(f.u), z = f.v, w = f.w / 2, d = f.d / 2;
+      plain.push([box(x - w, x + w, 0, 3.2, z - d, z + d), WHITE]);
+      plain.push([box(x - w - 0.4, x + w + 0.4, 3.2, 3.45, z - d - 0.4, z + d + 0.4), '#b5452f']);
+      plain.push([box(x - 0.6, x + 0.6, 0.1, 2.3, z + d, z + d + 0.05), DARK]);
+    } else if (f.k === 'trees') for (const [u, v, r] of f.pts) tree(NU(u), v, r);
+  }
+  // ---- at the front: clipped shrub beds along the facade either side of the pavilion (REF-09, REF-12); on Kwapong and
+  // Limann, palms in kerbed planters along the walk across the car parks (MAP-04, REF-12, REF-17) ----
+  for (const sx of [-1, 1]) {
+    const x0 = sx * (PW + 1.5), x1 = sx * (PW + 13);
+    plain.push([box(Math.min(x0, x1), Math.max(x0, x1), 0, 0.18, hz + 0.1, hz + 1.1), '#e6e3dc']);
+    for (let x = Math.min(x0, x1) + 0.6; x < Math.max(x0, x1) - 0.4; x += 1.2) plain.push([new THREE.IcosahedronGeometry(0.55, 0).scale(1, 0.75, 1).translate(x, 0.55, hz + 0.6), '#3c6a2e']);
+  }
+  if (look.walk) for (let z = hz + PP + 7; z < hz + 24; z += 6) for (const sx of [-1, 1]) {
+    const x = sx * 3.6;
+    plain.push([box(x - 0.6, x + 0.6, 0, 0.2, z - 0.6, z + 0.6), '#e6e3dc'], [box(x - 0.48, x + 0.48, 0.2, 0.24, z - 0.48, z + 0.48), '#5b4632']);
+    plain.push([new THREE.CylinderGeometry(0.16, 0.24, 5.5, 7).translate(x, 2.75, z), '#8a7a62']);
+    for (let i = 0; i < 7; i++) {
+      const a = (i / 7) * Math.PI * 2;
+      plain.push([new THREE.BoxGeometry(2.4, 0.05, 0.45).translate(1.1, 0, 0).rotateZ(-0.45).rotateY(a).translate(x, 5.5, z), '#4c7f32']);
+    }
   }
   return { fac, plain, glass, roof };
 }
@@ -509,12 +601,13 @@ export function buildDiasporaHalls() {
   const cull: THREE.Mesh[] = [];
   const cache = new Map<string, { hz: number; walls: THREE.BufferGeometry; plain: THREE.BufferGeometry; glass: THREE.BufferGeometry; roof: THREE.BufferGeometry; court: THREE.Texture }>();
   for (const f of FRAMES) {
-    // the four footprints are the same size to a few centimetres: build once, place four times
-    const key = [f.hx, f.hz, f.ix, f.iz].map((v) => Math.round(v * 2)).join(',');
+    // (each hall now has its own roof colour, entrance window and courtyard: one geometry per hall)
+    const key = f.name;
     let geo = cache.get(key);
     if (!geo) {
-      const h = hallGeometry(f.hx, f.hz, f.ix, f.iz);
-      geo = { hz: f.hz, walls: h.fac.geometry(), plain: merge(h.plain), glass: mergeGeometries(h.glass.map((g) => { const n = g.index ? g.toNonIndexed() : g; for (const k of Object.keys(n.attributes)) if (k !== 'position' && k !== 'normal') n.deleteAttribute(k); return n; })), roof: h.roof.geometry(), court: courtyardTexture(f.ix, f.iz) };
+      const look = LOOKS[f.name] ?? DEFAULT_LOOK;
+      const h = hallGeometry(f.hx, f.hz, f.ix, f.iz, look, f.n);
+      geo = { hz: f.hz, walls: h.fac.geometry(), plain: merge(h.plain), glass: mergeGeometries(h.glass.map((g) => { const n = g.index ? g.toNonIndexed() : g; for (const k of Object.keys(n.attributes)) if (k !== 'position' && k !== 'normal') n.deleteAttribute(k); return n; })), roof: h.roof.geometry(), court: courtyardTexture(f.ix, f.iz, look, f.n) };
       cache.set(key, geo);
     }
     const hall = new THREE.Group();
@@ -533,6 +626,17 @@ export function buildDiasporaHalls() {
     add(geo.plain, plain);
     add(geo.glass, glass, false);
     add(geo.roof, roofMat);
+    // red-brown pavers at both entrances (the apron under the steps) and, on Kwapong and Limann, the walk across the car
+    // parks to the partner hall's door (the Diaspora brief: paved forecourts, not lawn, before the entrances)
+    const pv = pavers('redbrown');
+    const apron = (z0: number, z1: number, w: number) => {
+      const g = new THREE.PlaneGeometry(2 * w, z1 - z0).rotateX(-Math.PI / 2).translate(0, 0.035, (z0 + z1) / 2);
+      const pa = g.attributes.position as THREE.BufferAttribute, uv = g.attributes.uv as THREE.BufferAttribute;
+      for (let i = 0; i < pa.count; i++) uv.setXY(i, pa.getX(i) / 2, pa.getZ(i) / 2);
+      add(g, pv, false);
+    };
+    apron(f.hz, f.hz + PP + 4.5, 7.5); apron(-(f.hz + PP + 4.5), -f.hz, 7.5);
+    if ((LOOKS[f.name] ?? DEFAULT_LOOK).walk) apron(f.hz + PP + 4.5, f.hz + 24, 2.4);
     const courtMat = new THREE.MeshStandardMaterial({ map: geo.court, roughness: 0.92, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
     add(new THREE.PlaneGeometry(2 * f.ix, 2 * f.iz).rotateX(-Math.PI / 2).translate(0, 0.05, 0), courtMat, false);
     // the hall's name on both porch canopies
