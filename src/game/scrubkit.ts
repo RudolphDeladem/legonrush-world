@@ -42,6 +42,9 @@ export interface Overlay {
   /** whether the ground grid has a cell centred at x, z */
   cellIn: (x: number, z: number) => boolean;
   lift?: number;
+  /** take a cell where any of its corners is in (the painted alpha then draws the true edge, not the cells' notches;
+   *  the colour must be null outside the cover) */
+  pixelEdge?: boolean;
 }
 
 let DETAIL: THREE.Texture | null = null;
@@ -128,7 +131,8 @@ export function coverOverlay(o: Overlay): THREE.Mesh[] {
     }
     for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
       const cx = tx + ((ex - tx) * (i + 0.5)) / nx, cz = tz + ((ez - tz) * (j + 0.5)) / nz;
-      if (!o.cellIn(cx, cz)) continue;
+      const ddx = (ex - tx) / nx / 2, ddz = (ez - tz) / nz / 2;
+      if (!o.cellIn(cx, cz) && !(o.pixelEdge && (o.cellIn(cx - ddx, cz - ddz) || o.cellIn(cx + ddx, cz - ddz) || o.cellIn(cx - ddx, cz + ddz) || o.cellIn(cx + ddx, cz + ddz)))) continue;
       const a = j * (nx + 1) + i, c = a + nx + 1;
       idx.push(a, c, a + 1, a + 1, c, c + 1);
     }

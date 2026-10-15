@@ -145,10 +145,11 @@ export function buildUgbsNewGrounds() {
     const e = Math.min(x - x0, x1 - x, z - z0, z1 - z);
     if (e < 0) return null;
     const n = vnoise2(x / 6, z / 6), t = hash2(Math.floor(x * 2), Math.floor(z * 2)) * 0.06;
-    if (e < 3 + n * 3 && n > 0.45) return [118, 122, 70, 0.8];
-    return [150 - t * 200, 92 - t * 120, 62 - t * 80, 0.9];
+    // (rough grass thinning into the working ground at the edges, blended, not stamped: the owner's soil and grass brief)
+    const gr = Math.min(1, Math.max(0, 1 - (e - 1 - n * 3) / 3));
+    return [150 - 32 * gr - t * 200, 92 + 30 * gr - t * 120, 62 + 8 * gr - t * 80, 0.9 - 0.25 * gr];
   };
-  const soil = coverOverlay({ box: [x0, x1, z0, z1], mpp: 0.5, cell: 2, tile: 106, color, cellIn: (x, z) => x > x0 && x < x1 && z > z0 && z < z1 });
+  const soil = coverOverlay({ box: [x0, x1, z0, z1], mpp: 0.5, cell: 2, tile: 106, color, pixelEdge: true, cellIn: (x, z) => x > x0 && x < x1 && z > z0 && z < z1 });
   for (const m of soil) m.userData.noRelief = true;
   group.add(...soil);
   return group;

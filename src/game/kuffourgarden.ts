@@ -42,16 +42,40 @@ const vnoise = (x: number, z: number) => {
 /** a grid over x0..x1, z0..z1 following the ground `lift` above it, coloured by `col` (null leaves a cell out) */
 export function drapeAt(org: [number, number], x0: number, x1: number, z0: number, z1: number, cell: number, lift: number, col: (x: number, z: number) => [number, number, number] | null) {
   const nx = Math.max(1, Math.round((x1 - x0) / cell)), nz = Math.max(1, Math.round((z1 - z0) / cell));
-  const pos: number[] = [], color: number[] = [], idx: number[] = [], keep: boolean[] = [];
+  const pos: number[] = [], color: number[] = [], idx: number[] = [], keep: boolean[] = [], wx: number[] = [], wz: number[] = [];
+  const add = (x: number, z: number, c: [number, number, number]) => {
+    pos.push(x - org[0], gh(x, z) + lift, z - org[1]); color.push(c[0] ** 2.2, c[1] ** 2.2, c[2] ** 2.2);
+    return pos.length / 3 - 1;
+  };
   for (let j = 0; j <= nz; j++) for (let i = 0; i <= nx; i++) {
     const x = x0 + ((x1 - x0) * i) / nx, z = z0 + ((z1 - z0) * j) / nz, c = col(x, z);
-    keep.push(!!c);
-    pos.push(x - org[0], gh(x, z) + lift, z - org[1]);
-    const cc = c ?? [0, 0, 0]; color.push(cc[0] ** 2.2, cc[1] ** 2.2, cc[2] ** 2.2);
+    keep.push(!!c); wx.push(x); wz.push(z);
+    add(x, z, c ?? [0, 0, 0]);
   }
+  // (the owner's soil and grass brief, SOIL-01, SOIL-03: where a cell is partly covered, its covered part is cut along the
+  // drape's own edge, found by halving the cell's side, instead of dropping the whole cell: no staircase of square
+  // stamps, and nothing past the edge the colour function draws, so the cover never spills onto a kerb or the road)
+  const edgePoint = (a: number, b: number) => {
+    let kx = wx[a], kz = wz[a], ox = wx[b], oz = wz[b], c = col(kx, kz)!;
+    for (let s = 0; s < 6; s++) {
+      const mx = (kx + ox) / 2, mz = (kz + oz) / 2, cm = col(mx, mz);
+      if (cm) { kx = mx; kz = mz; c = cm; } else { ox = mx; oz = mz; }
+    }
+    return add(kx, kz, c);
+  };
   for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
     const a = j * (nx + 1) + i, b = a + 1, c = a + nx + 1, d = c + 1;
-    if (keep[a] && keep[b] && keep[c] && keep[d]) idx.push(a, c, b, b, c, d);
+    const ring = [a, b, d, c], n = ring.filter((v) => keep[v]).length;
+    if (n === 4) { idx.push(a, c, b, b, c, d); continue; }
+    if (n === 0) continue;
+    const poly: number[] = [];
+    for (let q = 0; q < 4; q++) {
+      const v = ring[q], w = ring[(q + 1) % 4];
+      if (keep[v]) poly.push(v);
+      if (keep[v] !== keep[w]) poly.push(keep[v] ? edgePoint(v, w) : edgePoint(w, v));
+    }
+    // (the ring runs a, b, d, c: the same winding as the full cells' triangles)
+    for (let q = 1; q < poly.length - 1; q++) idx.push(poly[0], poly[q + 1], poly[q]);
   }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));

@@ -162,15 +162,15 @@ export function buildJjGrounds() {
     const n = vnoise2(x / 7, z / 7), m = vnoise2(x / 2.2 + 3, z / 2.2), t = hash2(Math.floor(x * 2), Math.floor(z * 2)) * 0.06;
     if (jjTrackDist(x, z) < 2 + (m - 0.5) * 0.6) return [170 - t * 200, 120 - t * 140, 82 - t * 90, 0.95];
     // the yard: pale compacted soil, darker where worked
-    if (inYard(x, z)) return n > 0.68 ? [150 - t * 200, 128 - t * 160, 96 - t * 100, 0.95] : [196 - t * 200, 170 - t * 160, 128 - t * 100, 0.95];
+    if (inYard(x, z)) { const w = Math.min(1, Math.max(0, (n - 0.6) / 0.16)); return [196 - 46 * w - t * 200, 170 - 42 * w - t * 160, 128 - 32 * w - t * 100, 0.95]; }
     // the dusty opening: tan, a little red, grit
     if (inPoly(OPENING, x, z)) return [192 - t * 200, 150 - t * 160, 108 - t * 100, 0.95];
     // the field west of the yard: dry grass and bare patches, no pitch
-    if (inPoly(FIELD, x, z)) return n > 0.5 ? [176 - t * 200, 146 - t * 150, 104 - t * 100, 0.85] : [138, 128, 74, 0.7];
+    if (inPoly(FIELD, x, z)) { const w = Math.min(1, Math.max(0, (n - 0.42) / 0.16)); return [138 + 38 * w - t * 200, 128 + 18 * w - t * 150, 74 + 30 * w - t * 100, 0.7 + 0.15 * w]; }
     return null;
   };
   const cellIn = (x: number, z: number) => inYard(x, z) || inPoly(FIELD, x, z) || inPoly(OPENING, x, z) || jjTrackDist(x, z) < 3;
-  const soil = [...coverOverlay({ box: [720, 920, 830, 1070], mpp: 0.5, cell: 2, tile: 100, color, cellIn }), ...coverOverlay({ box: [926, 992, 760, 824], mpp: 0.5, cell: 2, tile: 66, color, cellIn }), ...coverOverlay({ box: [826, 872, 1070, EARTH_BOX[3]], mpp: 0.5, cell: 2, tile: 86, color, cellIn })];
+  const soil = [...coverOverlay({ box: [720, 920, 830, 1070], mpp: 0.5, cell: 2, tile: 100, color, cellIn, pixelEdge: true }), ...coverOverlay({ box: [926, 992, 760, 824], mpp: 0.5, cell: 2, tile: 66, color, cellIn, pixelEdge: true }), ...coverOverlay({ box: [826, 872, 1070, EARTH_BOX[3]], mpp: 0.5, cell: 2, tile: 86, color, cellIn, pixelEdge: true })];
   for (const m of soil) m.userData.noRelief = true;
   group.add(...soil);
   // the small slender roadside trees on the east frontage (pair 4); the scrub at the yard's north edge stays generic

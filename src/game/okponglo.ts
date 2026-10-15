@@ -372,9 +372,11 @@ const corridor: Spec = {
       if (z > MEDIAN.gap[0] - 1 && z < MEDIAN.gap[1] + 1) return null;
       const a = xWest(z) + W_HALF + 0.35, o = xEast(z) - E_HALF - 0.35;
       if (Number.isNaN(a) || x < a || x > o) return null;
-      const n = vnoise(x * 0.35, z * 0.12), path = Math.abs(((z * 0.031) % 1) - 0.5) < 0.04 && hash(Math.floor(z * 0.031), 2) < 0.6, m = vnoise(x * 2, z * 2);
-      if (n > 0.58 || path) return [0.56 + m * 0.06, 0.43 + m * 0.04, 0.31];
-      if (n > 0.5) return [0.5 + m * 0.05, 0.47, 0.32];
+      // (the owner's soil and grass brief: no worn crossbars, no repeated stamps: bare earth where the grass has worn
+      // thin, in irregular patches of two scales, dry olive grass round their edges; the earth a muted dusty red-brown)
+      const n = vnoise(x * 0.3, z * 0.09) * 0.7 + vnoise(x * 0.9 + 3.1, z * 0.5) * 0.3, m = vnoise(x * 2, z * 2);
+      if (n > 0.64) return [0.52 + m * 0.05, 0.4 + m * 0.04, 0.3];
+      if (n > 0.59) return [0.47 + m * 0.04, 0.45, 0.31];
       return null;
     }), groundCover()), { receiveShadow: true, userData: { noCollide: true } }));
     // the boards on the median

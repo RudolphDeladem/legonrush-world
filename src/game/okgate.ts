@@ -261,16 +261,20 @@ const inPoly = (p: P2[], x: number, z: number) => { let c = false; for (let i = 
 export function buildOkGateGrounds() {
   const group = new THREE.Group();
   group.name = 'okponglo-gate-grounds';
+  /** distance inside the plot's outline (m) */
+  const edgeIn = (x: number, z: number) => { let d = 1e9; for (let i = 0, j = PLOT.length - 1; i < PLOT.length; j = i++) { const [ax, az] = PLOT[j], [bx, bz] = PLOT[i], dx = bx - ax, dz = bz - az, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz || 1))); d = Math.min(d, Math.hypot(ax + dx * t - x, az + dz * t - z)); } return d; };
   const color = (x: number, z: number): [number, number, number, number] | null => {
     // (the soil stops at the north footway's back kerb; its 2 m cells stop under the pavement, short of the road kerb, so
     // the blurred far-off texture cannot bleed onto the asphalt either: the owner's follow-up)
     if (!inPoly(PLOT, x, z) || nearSideRoad(x, z, -0.5) || z > northEdge(x) - (WALK.kerb + WALK.w + WALK.back)) return null;
     const n = vnoise2(x / 8, z / 8), m = vnoise2(x / 2.5 + 7, z / 2.5), t = hash2(Math.floor(x * 2), Math.floor(z * 2)) * 0.07;
     // the raised dry patch under the tree group keeps its scrub; the rest soil with dry grass in patches
-    if (n > 0.62) return [128 - t * 200, 118 - t * 160, 66 - t * 80, 0.75];
-    return [164 - t * 200, 104 - t * 140, 70 - t * 90, 0.82 + m * 0.15];
+    // (dry grass and soil blend into each other, no hard two-tone stamps; the cover thins out toward the plot's edges so
+    // the lawn round it meets it softly: the owner's soil and grass brief)
+    const w = Math.min(1, Math.max(0, (n - 0.5) / 0.2)), e = Math.min(1, edgeIn(x, z) / 3);
+    return [164 - 36 * w - t * 200, 104 + 14 * w - t * 150, 70 - 4 * w - t * 90, (0.62 + m * 0.2 + 0.1 * (1 - w)) * (0.35 + 0.65 * e)];
   };
-  const soil = coverOverlay({ box: [800, 976, 1108, 1236], mpp: 0.5, cell: 2, tile: 88, color, cellIn: (x, z) => inPoly(PLOT, x, z) && z < northEdge(x) - 1.9 });
+  const soil = coverOverlay({ box: [800, 976, 1108, 1236], mpp: 0.5, cell: 2, tile: 88, color, pixelEdge: true, cellIn: (x, z) => inPoly(PLOT, x, z) && z < northEdge(x) - 1.9 });
   for (const m of soil) m.userData.noRelief = true;
   group.add(...soil);
   const crowns: Crown[] = TREES.map(([x, z, r], i) => { const s = hash2(x, z); return { x, z, r, h: r * 1.15 + 1, base: 2.2 + s * 1.5, trunk: 0.25 + r * 0.03, color: ['#3f6b2b', '#4e7a32', '#456f2e', '#5b8438'][i % 4], seed: s, solid: true }; });
