@@ -72,6 +72,15 @@ Comparison: `comparison-sheet-4.jpg`.
 
 Comparison: `comparison-sheet-5.jpg`.
 
+## Round 6: the owner's notes on the tower and the fountain (`owner/note-tower.png`, `owner/note-fountain-beds.webp`)
+
+| Note | Change |
+|---|---|
+| The thin pole at the top; every shape in the tower | The long slender rod over a red bulb finial; the lantern's tall flared red cap; the cap over the clocks painted red (not tiled) above a white cornice on small white brackets; the balcony set straight on the tiled cap (the white shaft below it removed); dark brown fascias under the tiled roofs; the centre block's top storey with one row of six square openings, the storeys below plain. |
+| The walls round the fountain, their divisions; the beds at the south ends (yellow circles) | The two corner beds rebuilt from the aerial: a tall white square pedestal with cornice and bronze plaque and a white urn with handles on top, a clipped conifer either side, short runs of clipped hedge with orange-red flowers, a low brick planter, a black railing behind the pedestal, a green lamp post with four globes, the bed's road corner rounded with a white kerb (the white cylinders removed). The pool's rim pale with a thin dark water line; the walks and plaza in terracotta tiles with pale joints; the walls' copings thin and grey, not broad pale caps; lamp posts on the lawns' outer edges, the palms moved to those edges, runs of red-flowering shrubs along the lawns' inner edges. |
+
+Comparison: `comparison-sheet-6.jpg`.
+
 ## Not done yet (open, next)
 
 C04 roof tile ageing and junctions, C05 courtyard galleries and AC units (needs registration), C09 the weathered service elevation, C10 the columned block (location pending), C24-C28 trees, drains,

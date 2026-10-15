@@ -481,11 +481,13 @@ const LIB_WALL: Style = {
 /** the centre block (the audit's C01, photos I043, I058): a solid white wall with one small square opening high in each
  *  bay, the clerestory band under the roofs; no tall window grid */
 const LIB_TALL: Style = {
-  bay: 2.4,
-  up: [[88, 40, 80, 80]],
+  bay: 3.5,
+  up: [[80, 30, 96, 66]],
   ground: [],
-  draw: (g) => { render(g, '#f7f5ef'); g.fillStyle = '#e9e5db'; g.fillRect(84, 36, 88, 88); g.fillStyle = '#2c2a28'; g.fillRect(88, 40, 80, 80); g.fillStyle = '#4a3a30'; g.fillRect(88, 116, 80, 4); },
+  draw: (g) => { render(g, '#f7f5ef'); g.fillStyle = '#e4dfd4'; g.fillRect(74, 24, 108, 78); g.fillStyle = '#26221f'; g.fillRect(80, 30, 96, 66); g.fillStyle = '#4d433c'; g.fillRect(80, 30, 96, 8); g.fillRect(80, 30, 8, 66); },
 };
+/** the centre block's lower storeys: plain white wall (I043, the owner's tower photo) */
+const LIB_SOLID: Style = { bay: 3.5, up: [], ground: [], draw: (g) => render(g, '#f7f5ef') };
 /** the low ranges either side of the entrance pavilion (I043): wide brown-framed windows high in the wall */
 const LIB_LOW: Style = {
   bay: 3.4,
@@ -516,8 +518,10 @@ function collar(k: Kit, [ox0, ox1, oz0, oz1]: number[], [ix0, ix1, iz0, iz1]: nu
   k.roof.quad([ox1, y0, oz1], [ox0, y0, oz1], [ix0, y1, iz1], [ix1, y1, iz1]);
   k.roof.quad([ox1, y0, oz0], [ox1, y0, oz1], [ix1, y1, iz1], [ix1, y1, iz0]);
   k.roof.quad([ox0, y0, oz1], [ox0, y0, oz0], [ix0, y1, iz0], [ix0, y1, iz1]);
-  k.plain.push([box(ox0, ox1, y0 - 0.3, y0 + 0.03, oz0 - 0.06, oz0 + 0.06), WHITE], [box(ox0, ox1, y0 - 0.3, y0 + 0.03, oz1 - 0.06, oz1 + 0.06), WHITE]);
-  k.plain.push([box(ox0 - 0.06, ox0 + 0.06, y0 - 0.3, y0 + 0.03, oz0, oz1), WHITE], [box(ox1 - 0.06, ox1 + 0.06, y0 - 0.3, y0 + 0.03, oz0, oz1), WHITE]);
+  // (dark brown fascias under the tiles, as the owner's tower photo shows)
+  const F = '#4a2e22';
+  k.plain.push([box(ox0, ox1, y0 - 0.3, y0 + 0.03, oz0 - 0.06, oz0 + 0.06), F], [box(ox0, ox1, y0 - 0.3, y0 + 0.03, oz1 - 0.06, oz1 + 0.06), F]);
+  k.plain.push([box(ox0 - 0.06, ox0 + 0.06, y0 - 0.3, y0 + 0.03, oz0, oz1), F], [box(ox1 - 0.06, ox1 + 0.06, y0 - 0.3, y0 + 0.03, oz0, oz1), F]);
 }
 /** a square stage of white wall, half-width h, from y0 to y1, with n dark windows on each face */
 function stage(k: Kit, h: number, y0: number, y1: number, n: number, ww: number, wy0: number, wy1: number) {
@@ -576,7 +580,7 @@ const library: Spec = {
     L(-45, -23.9, -32.7, -18.1, 2), // the range across the middle, west
     L(34.5, 57.1, -32.7, -18.1, 2), // and east
     L(-9.2, 19.6, -32.7, -18.1, 2), // and behind the centre block
-    L(-5.3, 15.6, -36.5, -14.7, 3, { roof: 'none', faces: { x0: LIB_TALL, x1: LIB_TALL, z0: LIB_TALL, z1: LIB_TALL } }), // the centre block
+    L(-5.3, 15.6, -36.5, -14.7, 3, { roof: 'none', floorStyle: { 0: LIB_SOLID, 1: LIB_SOLID, 2: LIB_TALL } }), // the centre block: one row of square openings under the roof
     L(-9.2, 19.6, -1.8, 6.9, 1, { pitch: 0.5, faces: { z1: LIB_LOW } }), // the entrance range (the pavilion before it: extras)
   ],
   keep: [[-6, 6, 32.4, 38]],
@@ -588,11 +592,11 @@ const library: Spec = {
     const S1 = 4.6, s1top = E + 7;
     stage(k, S1, E, s1top, 3, 1.25, E + 4.6, E + 5.85);
     collar(k, [-bx, bx, -bz, bz], [-S1, S1, -S1, S1], E, E + 3.6);
-    const C = 1.7, ctop = s1top + 7.4;
+    const C = 1.7, ctop = s1top + 1.9 + 5.0;
     k.plain.push([box(-C, C, s1top, ctop, -C, C), WHITE]);
     collar(k, [-S1 - 1.1, S1 + 1.1, -S1 - 1.1, S1 + 1.1], [-C, C, -C, C], s1top, s1top + 1.9);
     // the balcony round the foot of the clock stage, and its railing
-    const by = s1top + 3.2;
+    const by = s1top + 1.9;
     k.plain.push([box(-C - 0.5, C + 0.5, by - 0.2, by, -C - 0.5, C + 0.5), WHITE]);
     // the balustrade (I058): a brown rail and close brown balusters between white corner and middle posts
     for (const [a, b, c, d] of [[-C - 0.5, C + 0.5, -C - 0.5, -C - 0.42], [-C - 0.5, C + 0.5, C + 0.42, C + 0.5], [-C - 0.5, -C - 0.42, -C - 0.5, C + 0.5], [C + 0.42, C + 0.5, -C - 0.5, C + 0.5]]) k.plain.push([box(a, b, by + 0.85, by + 0.97, c, d), '#7a3a2a'], [box(a, b, by + 0.12, by + 0.2, c, d), '#7a3a2a']);
@@ -600,30 +604,31 @@ const library: Spec = {
     for (const t of [-C - 0.46, 0, C + 0.46]) for (const [x, z] of [[t, -C - 0.46], [t, C + 0.46], [-C - 0.46, t], [C + 0.46, t]]) k.plain.push([box(x - 0.09, x + 0.09, by, by + 1.12, z - 0.09, z + 0.09), '#f1eee6']);
     // a small brown door under each clock, onto the balcony (I058)
     for (const [x, z, w, d] of [[0, -C, 0.5, 0.1], [0, C, 0.5, 0.1], [-C, 0, 0.1, 0.5], [C, 0, 0.1, 0.5]]) k.plain.push([box(x - w / 2 - 0.04, x + w / 2 + 0.04, by + 0.2, by + 1.15, z - d / 2 - 0.04, z + d / 2 + 0.04), '#6e3424']);
-    const cy = ctop - 1.6, mat = new THREE.MeshStandardMaterial({ map: clockFace(), roughness: 0.6 });
+    const cy = ctop - 1.9, mat = new THREE.MeshStandardMaterial({ map: clockFace(), roughness: 0.6 });
     for (let i = 0; i < 4; i++) {
       const a = (i * Math.PI) / 2, f = new THREE.Mesh(new THREE.PlaneGeometry(2.7, 2.7), mat);
       f.position.set(Math.sin(a) * (C + 0.03), cy, Math.cos(a) * (C + 0.03));
       f.rotation.y = a;
       k.meshes.push(f);
     }
-    const capTop = ctop + 1.3, L2 = 0.85;
-    collar(k, [-C - 0.6, C + 0.6, -C - 0.6, C + 0.6], [-L2, L2, -L2, L2], ctop, capTop);
-    // the lantern: four posts and a slab, then the red spire and its finial
-    // the lantern (I058): a white box with a brown louvred shutter in each face, a white cornice, then a low red cap,
-    // its bulb finial and the slender rod
+    // the cap over the clocks (the owner's tower photo): a white cornice on small white brackets, then a flared roof
+    // painted red, not tiled
+    const capTop = ctop + 1.3, L2 = 0.85, RED = '#b8352c', sq = (r0: number, r1: number, h: number, y: number) => new THREE.CylinderGeometry(r0 * Math.SQRT2, r1 * Math.SQRT2, h, 4, 1).rotateY(Math.PI / 4).translate(0, y + h / 2, 0);
+    k.plain.push([box(-C - 0.25, C + 0.25, ctop - 0.25, ctop, -C - 0.25, C + 0.25), WHITE]);
+    for (let i = 0; i < 4; i++) for (const t of [-1.3, -0.65, 0, 0.65, 1.3]) k.plain.push([new THREE.BoxGeometry(0.16, 0.22, 0.3).translate(t, ctop - 0.36, C + 0.12).rotateY((i * Math.PI) / 2), WHITE]);
+    k.plain.push([sq(C + 0.75, C + 0.75, 0.1, ctop), RED], [sq(L2 + 0.05, C + 0.75, capTop - ctop - 0.1, ctop + 0.1), RED]);
+    // the lantern: a white box with a brown louvred shutter in each face, a white cornice, then a tall flared red cap,
+    // its red bulb finial and the long slender rod
     k.plain.push([box(-L2, L2, capTop, capTop + 1.6, -L2, L2), WHITE]);
     for (let i = 0; i < 4; i++) {
-      const a = (i * Math.PI) / 2, cs = Math.cos(a), sn = Math.sin(a);
-      const P = (u: number, y0: number, y1: number, w: number) => new THREE.BoxGeometry(w, y1 - y0, 0.06).translate(u, (y0 + y1) / 2, L2 + 0.02).rotateY(a);
-      k.plain.push([P(0, capTop + 0.3, capTop + 1.35, 1.05), '#6e3424']);
+      const a = (i * Math.PI) / 2;
+      k.plain.push([new THREE.BoxGeometry(1.05, 1.05, 0.06).translate(0, capTop + 0.82, L2 + 0.02).rotateY(a), '#6e3424']);
       for (let j = 0; j < 7; j++) k.plain.push([new THREE.BoxGeometry(0.98, 0.04, 0.06).rotateX(-0.6).translate(0, capTop + 0.4 + j * 0.14, L2 + 0.08).rotateY(a), '#4e2418']);
-      void cs; void sn;
     }
-    k.plain.push([box(-L2 - 0.18, L2 + 0.18, capTop + 1.6, capTop + 1.82, -L2 - 0.18, L2 + 0.18), WHITE]);
-    k.plain.push([new THREE.ConeGeometry(1.25, 1.1, 4).rotateY(Math.PI / 4).translate(0, capTop + 1.82 + 0.55, 0), '#b3392e']);
-    k.plain.push([new THREE.CylinderGeometry(0.16, 0.22, 0.3, 10).translate(0, capTop + 2.5, 0), '#a8352b'], [new THREE.SphereGeometry(0.2, 10, 8).scale(1, 1.3, 1).translate(0, capTop + 2.8, 0), '#a8352b']);
-    k.plain.push([box(-0.03, 0.03, capTop + 3.0, capTop + 5.2, -0.03, 0.03), '#4a4a4a']);
+    k.plain.push([box(-L2 - 0.2, L2 + 0.2, capTop + 1.6, capTop + 1.8, -L2 - 0.2, L2 + 0.2), WHITE]);
+    k.plain.push([sq(L2 + 0.35, L2 + 0.35, 0.08, capTop + 1.8), RED], [sq(0.12, L2 + 0.35, 1.5, capTop + 1.88), RED]);
+    k.plain.push([new THREE.CylinderGeometry(0.1, 0.16, 0.25, 10).translate(0, capTop + 3.45, 0), RED], [new THREE.SphereGeometry(0.27, 12, 10).scale(1, 1.35, 1).translate(0, capTop + 3.85, 0), RED], [new THREE.ConeGeometry(0.1, 0.3, 8).translate(0, capTop + 4.3, 0), RED]);
+    k.plain.push([new THREE.CylinderGeometry(0.035, 0.05, 4.2, 6).translate(0, capTop + 4.4 + 2.1, 0), '#8c8f93']);
     // the entrance pavilion (the audit's C01, C02; photos I043, I045): a taller white block with its own hipped tiled
     // roof standing forward of the low ranges; in its solid face the tall round-headed arch with a pale border and THE
     // BALME LIBRARY lettered round its head, the grey roller shutter in the arch's head over brown timber door leaves,
@@ -885,7 +890,9 @@ const pool: Spec = {
     // either side, a strip of white stones along its south edge; the jets in a row down its middle, their spray
     // switchable (BP.jets); white tapered pots with small palms along both margins
     const [x0, x1, z0, z1] = [-4.6, 4.6, -13, 12.3];
-    for (const [a, b, c, d] of [[x0 - 0.45, x1 + 0.45, z0 - 0.45, z0], [x0 - 0.45, x1 + 0.45, z1, z1 + 0.45], [x0 - 0.45, x0, z0, z1], [x1, x1 + 0.45, z0, z1]]) k.plain.push([box(a, b, 0, 0.42, c, d), '#3f4143'], [box(a, b, 0.42, 0.46, c, d), '#55585a']);
+    for (const [a, b, c, d] of [[x0 - 0.45, x1 + 0.45, z0 - 0.45, z0], [x0 - 0.45, x1 + 0.45, z1, z1 + 0.45], [x0 - 0.45, x0, z0, z1], [x1, x1 + 0.45, z0, z1]]) k.plain.push([box(a, b, 0, 0.42, c, d), '#ddd7cb'], [box(a, b, 0.42, 0.46, c, d), '#ece8df']);
+    // (a pale rim, as the owner's aerial shows; a thin dark line at the water's edge)
+    for (const [a, b, c, d] of [[x0, x1, z0, z0 + 0.06], [x0, x1, z1 - 0.06, z1], [x0, x0 + 0.06, z0, z1], [x1 - 0.06, x1, z0, z1]]) k.plain.push([box(a, b, 0.1, 0.44, c, d), '#4a4b4c']);
     k.plain.push([box(x0, x1, 0, 0.12, z0, z1), '#3c4a42']);
     const water = new THREE.Mesh(new THREE.PlaneGeometry(x1 - x0, z1 - z0, 1, 1).rotateX(-Math.PI / 2).translate(0, 0.3, (z0 + z1) / 2), waterMat());
     water.receiveShadow = true; k.meshes.push(water);
@@ -942,11 +949,12 @@ const slabTex = () => (slabT ??= (() => {
   const t = canvas(256, 256, (g) => {
     let sd = 3; const r = () => ((sd = (sd * 9301 + 49297) % 233280) / 233280);
     for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) {
-      const c = ['#cdb39a', '#c4a88e', '#d2b9a0', '#bfa287', '#c9ae93'][Math.floor(r() * 5)];
+      const c = ['#c4826b', '#bb7863', '#c98d77', '#b5705c', '#c08069'][Math.floor(r() * 5)];
       g.fillStyle = c; g.fillRect(i * 64, j * 64, 64, 64);
       for (let q = 0; q < 3; q++) { g.fillStyle = `rgba(90,70,55,${0.05 + r() * 0.08})`; g.beginPath(); g.arc(i * 64 + r() * 64, j * 64 + r() * 64, 6 + r() * 16, 0, Math.PI * 2); g.fill(); }
     }
-    g.fillStyle = '#8f7a66'; for (let i = 0; i <= 4; i++) { g.fillRect(i * 64 - 1, 0, 2, 256); g.fillRect(0, i * 64 - 1, 256, 2); }
+    // (terracotta tiles with pale joints, the owner's aerial of the pool)
+    g.fillStyle = '#dcc0b0'; for (let i = 0; i <= 4; i++) { g.fillRect(i * 64 - 1, 0, 2, 256); g.fillRect(0, i * 64 - 1, 256, 2); }
   });
   t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
 })());
@@ -1047,7 +1055,8 @@ const steps: Spec = {
     const g = garden([-90, 100, 10, 110]);
     g.reseed(77);
     // rows of palms on the lawns either side of the pool
-    for (let wz = 64; wz <= 92; wz += 7) for (const wx of [-4.2, 21.2]) g.palm(k, x(wx), z(wz), 4.5);
+    // (along the lawns' outer edges by the lanes, the owner's aerial; the statues stand in the middle)
+    for (let wz = 64; wz <= 92; wz += 7) for (const wx of [-5.9, 23.9]) g.palm(k, x(wx), z(wz), 4.5);
     // under the trees the ground is shaded leaf litter and bare earth, not lawn (owner's top view)
     const litter = new THREE.MeshStandardMaterial({ color: '#5d5a3a', roughness: 1 });
     for (const [x0, x1, z0, z1] of [[-46, -12.5, 19.6, 35.5], [22.5, 52, 19.6, 35.5], [-24.5, -15.5, 38.5, 104], [31.5, 37.5, 38.5, 104]]) {
@@ -1072,7 +1081,7 @@ const steps: Spec = {
     const stoneParts: Part[] = [];
     const wall = (x0: number, x1: number, z0: number, z1: number, y0: number, y1: number) => {
       stoneParts.push([box(x0, x1, y0 - 0.2, y1, z0, z1), '#ffffff']);
-      k.plain.push([box(x0 - 0.08, x1 + 0.08, y1, y1 + 0.1, z0 - 0.08, z1 + 0.08), '#e3dccb']);
+      k.plain.push([box(x0 - 0.03, x1 + 0.03, y1, y1 + 0.06, z0 - 0.03, z1 + 0.03), '#b9b0a2']);
     };
     // the upper wall (the middle terrace up to the road), open at the stairs, a low parapet over the road's level
     wall(xa, x(st.z0), z(48.7), z(49.3), mid, 0.35);
@@ -1105,9 +1114,82 @@ const steps: Spec = {
       k.meshes.push(statue(BP.statueKinds[i], x(wx), mid, z(wz), 0));
       SOLIDS.add(wx, wz, 0.55);
     });
+    // ---- the two corner beds at the south ends of the lawns (the owner's marked aerial): in each a tall white square
+    // pedestal with a cornice and a bronze plaque, a white urn with handles and a lid on top; a clipped conifer either
+    // side; a low hedge with orange-red flowers along the front and the lane side, in short clipped runs; a low brick
+    // planter before the pedestal; a black railing behind it; a green lamp post with four globes; the bed's corner
+    // toward the road rounded, edged with a white kerb
     for (const [wx, wz] of BP.posts) {
-      k.plain.push([new THREE.CylinderGeometry(0.75, 0.75, 1.1, 18).translate(x(wx), 0.55, z(wz)), '#f2f1ec'], [new THREE.CylinderGeometry(0.62, 0.62, 0.06, 18).translate(x(wx), 1.12, z(wz)), '#3a3836']);
-      SOLIDS.add(wx, wz, 0.8);
+      const west = wx < 8, bx0 = west ? -9.6 : 15.9, bx1 = west ? 0.1 : 26.4, bz0 = 94.25, bz1 = 101.2, R = 2.2;
+      const bedParts: Part[] = [];
+      // the bed's outline: a rectangle with its outer road corner rounded
+      const ox = west ? bx0 : bx1, sgn = west ? 1 : -1;
+      const sh = new THREE.Shape();
+      const P = (px: number, pz: number) => new THREE.Vector2(x(px), -z(pz));
+      const pts: THREE.Vector2[] = [];
+      pts.push(P(west ? bx1 : bx0, bz0), P(ox, bz0), P(ox, bz1 - R));
+      for (let i = 1; i <= 8; i++) { const a = (i / 8) * Math.PI / 2; pts.push(P(ox + sgn * (R - R * Math.cos(a)), bz1 - R + R * Math.sin(a))); }
+      pts.push(P(west ? bx1 : bx0, bz1));
+      if (THREE.ShapeUtils.isClockWise(pts)) pts.reverse();
+      sh.setFromPoints(pts);
+      bedParts.push([new THREE.ShapeGeometry(sh).rotateX(-Math.PI / 2).translate(0, 0.08, 0), '#4a3b2c']);
+      // the white kerb round the bed (outline points, a low white strip between each pair)
+      for (let i = 1; i < pts.length; i++) {
+        const a = pts[i - 1], b = pts[i], len = a.distanceTo(b), mx = (a.x + b.x) / 2, mz = -(a.y + b.y) / 2;
+        bedParts.push([new THREE.BoxGeometry(len + 0.05, 0.2, 0.16).rotateY(Math.atan2(-(b.y - a.y), b.x - a.x) * -1).translate(mx, 0.1, mz), '#eeebe4']);
+      }
+      // hedge runs with flowers along the front and the lane side
+      const hedge = (x0: number, x1: number, z0: number, z1: number) => {
+        bedParts.push([box(x(x0), x(x1), 0.08, 0.75, z(z0), z(z1)), '#3f6a2a']);
+        for (let i = 0; i < Math.abs(x1 - x0) * Math.abs(z1 - z0) * 3; i++) {
+          const fx = x0 + ((i * 0.618) % 1) * (x1 - x0), fz = z0 + ((i * 0.381) % 1) * (z1 - z0);
+          bedParts.push([new THREE.IcosahedronGeometry(0.07, 0).translate(x(fx), 0.77, z(fz)), i % 3 ? '#e0502a' : '#d8381f']);
+        }
+      };
+      const fz0 = bz1 - 0.9, fz1 = bz1 - 0.25;
+      if (west) { hedge(-7.6, -4.6, fz0, fz1); hedge(-2.2, -0.2, fz0, fz1); hedge(-9.3, -8.7, 95, bz1 - R); }
+      else { hedge(16.2, 18.2, fz0, fz1); hedge(20.6, 23.8, fz0, fz1); hedge(25.6, 26.2, 95, bz1 - R); }
+      // the low brick planter before the pedestal
+      bedParts.push([box(x(wx - 1.1), x(wx + 1.1), 0.08, 0.45, z(wz + 1.3), z(wz + 2.0)), '#8a4a34'], [box(x(wx - 1.0), x(wx + 1.0), 0.45, 0.6, z(wz + 1.35), z(wz + 1.95)), '#4f7d38']);
+      // the pedestal and its urn
+      bedParts.push([box(x(wx - 0.8), x(wx + 0.8), 0.08, 0.38, z(wz - 0.8), z(wz + 0.8)), '#e7e4dc'], [box(x(wx - 0.6), x(wx + 0.6), 0.38, 2.35, z(wz - 0.6), z(wz + 0.6)), '#f2f0ea']);
+      bedParts.push([box(x(wx - 0.78), x(wx + 0.78), 2.35, 2.55, z(wz - 0.78), z(wz + 0.78)), '#ebe8e0'], [box(x(wx - 0.68), x(wx + 0.68), 2.55, 2.68, z(wz - 0.68), z(wz + 0.68)), '#f2f0ea']);
+      bedParts.push([box(x(wx - 0.36), x(wx + 0.36), 1.05, 1.5, z(wz + 0.6), z(wz + 0.63)), '#8a6a3a']);
+      const urn = new THREE.LatheGeometry([[0.0, 0], [0.24, 0], [0.24, 0.08], [0.12, 0.14], [0.11, 0.3], [0.3, 0.42], [0.42, 0.62], [0.4, 0.82], [0.3, 0.95], [0.32, 1.0], [0.26, 1.04], [0.2, 1.12], [0.08, 1.2], [0.05, 1.3], [0.0, 1.32]].map(([a, b]) => new THREE.Vector2(a, b)), 16);
+      bedParts.push([urn.translate(x(wx), 2.68, z(wz)), '#f4f2ec']);
+      for (const sx of [-1, 1]) bedParts.push([new THREE.TorusGeometry(0.16, 0.035, 6, 10, Math.PI).rotateZ(sx > 0 ? -Math.PI / 2 : Math.PI / 2).translate(x(wx) + sx * 0.42, 2.68 + 0.82, z(wz)), '#f4f2ec']);
+      // the clipped conifers either side
+      for (const sx of [-1, 1]) {
+        const cxw = wx + sx * 2.5;
+        bedParts.push([new THREE.CylinderGeometry(0.12, 0.15, 0.4, 6).translate(x(cxw), 0.28, z(wz + 0.2)), '#5a4632']);
+        bedParts.push([new THREE.ConeGeometry(1.0, 2.8, 9).translate(x(cxw), 0.4 + 1.4, z(wz + 0.2)), '#2e5424'], [new THREE.SphereGeometry(0.98, 9, 7).scale(1, 0.7, 1).translate(x(cxw), 0.95, z(wz + 0.2)), '#335b28']);
+        SOLIDS.add(cxw, wz + 0.2, 0.9);
+      }
+      // the black railing behind the pedestal, between the conifers
+      for (let t = wx - 1.9; t <= wx + 1.91; t += 0.13) bedParts.push([box(x(t - 0.012), x(t + 0.012), 0.08, 1.2, z(wz - 1.05), z(wz - 1.02)), '#1d1e1f']);
+      for (const h of [0.2, 1.12]) bedParts.push([box(x(wx - 1.9), x(wx + 1.9), h, h + 0.04, z(wz - 1.06), z(wz - 1.01)), '#1d1e1f']);
+      // the green lamp post with four globes
+      const lx2 = west ? wx - 3.9 : wx + 3.9;
+      bedParts.push([new THREE.CylinderGeometry(0.07, 0.1, 4.0, 8).translate(x(lx2), 2.0, z(wz + 0.9)), '#2e6a52']);
+      for (let i = 0; i < 4; i++) { const a = (i / 4) * Math.PI * 2 + Math.PI / 4; bedParts.push([new THREE.CylinderGeometry(0.025, 0.025, 0.5, 5).rotateZ(Math.PI / 2).rotateY(a).translate(x(lx2) + Math.cos(a) * 0.25, 3.85, z(wz + 0.9) - Math.sin(a) * 0.25), '#2e6a52'], [new THREE.SphereGeometry(0.18, 10, 8).translate(x(lx2) + Math.cos(a) * 0.5, 4.0, z(wz + 0.9) - Math.sin(a) * 0.5), '#f6f4ee']); }
+      const bm = new THREE.Mesh(merge(bedParts), concrete(0.15)); bm.castShadow = true; bm.receiveShadow = true; k.meshes.push(bm);
+      SOLIDS.add(wx, wz, 0.9);
+    }
+    // green lamp posts with four globes along the lawns' outer edges, and runs of orange-red flowering shrubs along their
+    // inner edges by the walks (the owner's aerial)
+    {
+      const lp: Part[] = [];
+      for (const [lxw, lzw] of [[-5.9, 67.5], [-5.9, 81.5], [23.9, 67.5], [23.9, 81.5]]) {
+        lp.push([new THREE.CylinderGeometry(0.07, 0.1, 4.0, 8).translate(x(lxw), mid + 2.0, z(lzw)), '#2e6a52']);
+        for (let i = 0; i < 4; i++) { const a = (i / 4) * Math.PI * 2 + Math.PI / 4; lp.push([new THREE.SphereGeometry(0.18, 10, 8).translate(x(lxw) + Math.cos(a) * 0.5, mid + 4.0, z(lzw) - Math.sin(a) * 0.5), '#f6f4ee'], [new THREE.CylinderGeometry(0.025, 0.025, 0.5, 5).rotateZ(Math.PI / 2).rotateY(a).translate(x(lxw) + Math.cos(a) * 0.25, mid + 3.85, z(lzw) - Math.sin(a) * 0.25), '#2e6a52']); }
+        SOLIDS.add(lxw, lzw, 0.25);
+      }
+      for (const fxw of [-0.3, 16.3]) for (let fzw = 62; fzw < 92.6; fzw += 1.15) {
+        const s0 = 0.28 + ((fzw * 7) % 3) * 0.06;
+        lp.push([new THREE.IcosahedronGeometry(s0, 0).scale(1.2, 0.8, 1).translate(x(fxw), mid + s0 * 0.6, z(fzw)), '#3d6a2b']);
+        lp.push([new THREE.IcosahedronGeometry(0.06, 0).translate(x(fxw) + 0.1, mid + s0 * 1.1, z(fzw) + 0.1), '#e0502a'], [new THREE.IcosahedronGeometry(0.06, 0).translate(x(fxw) - 0.12, mid + s0 * 1.05, z(fzw) - 0.1), '#d8381f']);
+      }
+      const lm = new THREE.Mesh(merge(lp), concrete(0.1)); lm.castShadow = true; k.meshes.push(lm);
     }
     // white planters with small shrubs along the tops of the walls (owner's photo)
     for (const [y, zz] of [[mid + 0.4, 60.6], [0.45, 49]] as [number, number][]) for (const wx of (zz > 55 ? [-5, -1.5, 17, 20, 23] : [-5, -1.5, 17, 20, 23])) {

@@ -19,8 +19,8 @@ export const BP = {
    *  wall (I067, the owner's arrow), the draped woman with the raised arm (I018, I067), the suited man with the long
    *  object nearest the road (I014). The west lawn's middle and near figures are read from I030 alone (open). */
   statueKinds: ['football', 'standing', 'robed', 'book', 'draped', 'suited'] as StatueKind[],
-  /** the two short white cylinders with dark tops at the south end (pair 2's foreground) */
-  posts: [[-4.5, 96.6], [21.5, 96.6]] as [number, number][],
+  /** the two white pedestals with urns in the corner beds at the south end (the owner's marked aerial) */
+  posts: [[-3.6, 97.8], [20.3, 97.8]] as [number, number][],
   /** the roundabout island before the library (pair 11, a 2014 reference state): its centre, the lawn's radius, the
    *  pale curb, the open drain outside it and the pale outer edge (radial widths), heights above the road */
   island: { c: [6.7, 125.3] as [number, number], lawn: 16.3, curb: 0.3, drain: 0.5, edge: 0.55, curbH: 0.32, edgeH: 0.14, lawnH: 0.26 },
