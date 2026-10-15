@@ -677,6 +677,24 @@ const OUTER_WALL: Style = {
     g.fillStyle = '#8e2f2a'; g.fillRect(0, 512 - 24, 256, 24);
   },
 };
+/** the outer wings' gable ends (the audit's C06, photo I059): separate narrow dark openings with wide solid wall between,
+ *  not the long window bands; staggered from bay to bay by the bay's own texture half */
+const OUTER_END: Style = {
+  bay: 3.4,
+  up: [[52, 60, 46, 120], [168, 90, 40, 70]],
+  ground: [[52, 256 + 60, 46, 120]],
+  draw: (g) => {
+    render(g, '#f1efe9');
+    for (let i = 0; i < 14; i++) {
+      const x = (i * 71 + (i % 3) * 17) % 250, y = [0, 180, 256, 436][i % 4], len = 30 + ((i * 29) % 90);
+      const gr = g.createLinearGradient(0, y, 0, y + len); gr.addColorStop(0, 'rgba(70,68,62,0.28)'); gr.addColorStop(1, 'rgba(70,68,62,0)');
+      g.fillStyle = gr; g.fillRect(x, y, 3 + (i % 3) * 2, len);
+    }
+    for (const y0 of [0, 256]) { g.fillStyle = '#1c2026'; g.fillRect(52, y0 + 60, 46, 120); }
+    g.fillStyle = '#1c2026'; g.fillRect(168, 90, 40, 70);
+    g.fillStyle = '#8e2f2a'; g.fillRect(0, 512 - 24, 256, 24);
+  },
+};
 /** perforated concrete blocks: a white screen wall with square openings, on a maroon base */
 let screenMat: THREE.MeshStandardMaterial | null = null;
 const screen = () => (screenMat ??= (() => {
@@ -729,9 +747,9 @@ const libraryWings: Spec = {
   // the four small corner kiosks (satellite outlines and the 'Balme Library extension') are drawn here
   replaces: [[-74.5, -50.3], [86, -50.2], [-73.9, 0.3], [86.2, 0.1]],
   blocks: [
-    L(-59.1, -45, -58.3, 7.1, 4, { roof: 'none' }), // the outer west wing
+    L(-59.1, -45, -58.3, 7.1, 4, { roof: 'none', faces: { z0: OUTER_END, z1: OUTER_END } }), // the outer west wing
     L(-74.3, -59.1, -32.7, -18.1, 1, { roof: 'none' }), // its gatehouse to the west, one floor
-    L(57.1, 71.1, -58.3, 7.1, 4, { roof: 'none' }), // the outer east wing
+    L(57.1, 71.1, -58.3, 7.1, 4, { roof: 'none', faces: { z0: OUTER_END, z1: OUTER_END } }), // the outer east wing
     L(71.1, 85.9, -32.7, -18.1, 4, { roof: 'none' }), // its arm to the east, four floors to the road (owner's reference PDF, pages 34-37)
     L(71.1, 76.9, -52.7, -44, 1), // the small annex on the east
   ],
@@ -754,6 +772,16 @@ const libraryWings: Spec = {
       k.plain.push([box(xc - 1.3, xc + 1.3, top - 0.6, top + 1.1, lzm - 1.3, lzm + 1.3), WHITE]);
       for (const sx of [-1, 1]) k.plain.push([box(xc + sx * 1.3 - 0.02, xc + sx * 1.3 + 0.02, top, top + 0.8, lzm - 0.9, lzm + 0.9), '#1c2026']);
       pyramid(k, xc - 1.3, xc + 1.3, lzm - 1.3, lzm + 1.3, top + 1.1, 1.0, 0.5);
+      // the low glazed projection across the foot of the south end (C06, I059): dark glazing between white piers under
+      // a tiled lean-to
+      const zs = lz(7.1), pd = 2.2;
+      k.plain.push([box(lx(wx0) + 0.6, lx(wx1) - 0.6, 0, 0.7, zs, zs + pd), '#8e2f2a'], [box(lx(wx0) + 0.6, lx(wx1) - 0.6, 0.7, 2.9, zs + pd - 0.1, zs + pd), '#20252b']);
+      for (let t = lx(wx0) + 0.6; t <= lx(wx1) - 0.55; t += (lx(wx1) - lx(wx0) - 1.2) / 5) k.plain.push([box(t - 0.12, t + 0.12, 0.7, 2.9, zs + pd - 0.14, zs + pd + 0.02), WHITE]);
+      for (const xx of [lx(wx0) + 0.6, lx(wx1) - 0.6]) k.plain.push([box(xx - 0.1, xx + 0.1, 0.7, 2.9, zs, zs + pd), WHITE]);
+      k.plain.push([box(lx(wx0) + 0.4, lx(wx1) - 0.4, 2.9, 3.05, zs, zs + pd + 0.3), WHITE]);
+      k.roof.c = new THREE.Color(TILE);
+      k.roof.quad([lx(wx1) - 0.3, 3.05, zs + pd + 0.5], [lx(wx0) + 0.3, 3.05, zs + pd + 0.5], [lx(wx0) + 0.3, 4.0, zs], [lx(wx1) - 0.3, 4.0, zs]);
+      for (let t = wx0 + 1.2; t < wx1 - 0.6; t += 1.4) SOLIDS.add(t, 7.1 + pd / 2, 1.1);
       // the maroon base
       for (const [a, b, c, d] of [[lx(wx0) - 0.06, lx(wx0), lz(-58.3), lz(7.1)], [lx(wx1), lx(wx1) + 0.06, lz(-58.3), lz(7.1)]]) k.plain.push([box(a, b, 0, 0.8, c, d), '#8e2f2a']);
     }
@@ -861,13 +889,42 @@ const sprayMat = () => (sprayM ??= new THREE.MeshStandardMaterial({ color: '#eef
 // middle terrace 1.2 m down, each behind a laterite stone retaining wall, the central stairs climbing between them
 const SO: [number, number] = [8.5, 70];
 const STONE = '#9b6e4a', STONE_L = '#b7865f', PAVE_B = '#d6d0c2';
+let slabT: THREE.Texture | null = null, crazyT: THREE.Texture | null = null;
+/** 2.4 m of worn warm square slabs (four 0.6 m slabs a side), dark joints, uneven staining */
+const slabTex = () => (slabT ??= (() => {
+  const t = canvas(256, 256, (g) => {
+    let sd = 3; const r = () => ((sd = (sd * 9301 + 49297) % 233280) / 233280);
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) {
+      const c = ['#cdb39a', '#c4a88e', '#d2b9a0', '#bfa287', '#c9ae93'][Math.floor(r() * 5)];
+      g.fillStyle = c; g.fillRect(i * 64, j * 64, 64, 64);
+      for (let q = 0; q < 3; q++) { g.fillStyle = `rgba(90,70,55,${0.05 + r() * 0.08})`; g.beginPath(); g.arc(i * 64 + r() * 64, j * 64 + r() * 64, 6 + r() * 16, 0, Math.PI * 2); g.fill(); }
+    }
+    g.fillStyle = '#8f7a66'; for (let i = 0; i <= 4; i++) { g.fillRect(i * 64 - 1, 0, 2, 256); g.fillRect(0, i * 64 - 1, 256, 2); }
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
+})());
+/** irregular flat stones in warm browns and greys, close-set (crazy paving) */
+const crazyTex = () => (crazyT ??= (() => {
+  const t = canvas(256, 256, (g) => {
+    g.fillStyle = '#8c7562'; g.fillRect(0, 0, 256, 256);
+    let sd = 11; const r = () => ((sd = (sd * 9301 + 49297) % 233280) / 233280);
+    for (let i = 0; i < 90; i++) {
+      const cx = r() * 256, cy = r() * 256, rad = 10 + r() * 14, n = 5 + Math.floor(r() * 3);
+      g.fillStyle = ['#b89474', '#a58367', '#c4a283', '#9a8a7a', '#b0927a', '#8f7a6a'][Math.floor(r() * 6)];
+      g.beginPath();
+      for (let j = 0; j < n; j++) { const a = (j / n) * Math.PI * 2 + r() * 0.5, rr = rad * (0.7 + r() * 0.4); g.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); }
+      g.closePath(); g.fill();
+    }
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
+})());
 const steps: Spec = {
   name: 'Balme Library steps',
   axis: [1, 0], origin: SO, storey: 3, style: LIB_WALL, roofColor: TILE, fascia: WHITE, pitch: 0.5,
   blocks: [],
   onGround: true,
   // no generated props on the stairs or in the sunken square
-  keep: [[1 - SO[0], 15 - SO[0], 42 - SO[1], 62 - SO[1]], [-8 - SO[0], 26 - SO[0], 48 - SO[1], 94 - SO[1]]],
+  keep: [[1 - SO[0], 15 - SO[0], 42 - SO[1], 62 - SO[1]], [-8 - SO[0], 26 - SO[0], 48 - SO[1], 94 - SO[1]], [3.5 - SO[0], 12.7 - SO[0], 94 - SO[1], 101.5 - SO[1]]],
   extras: (k: Kit) => {
     const st = stairsOf().find((q) => q.alongZ && q.x0 === 61.6)!; // the library's own stair (found by place, not order)
     const x = (wx: number) => wx - SO[0], z = (wz: number) => wz - SO[1];
@@ -885,6 +942,26 @@ const steps: Spec = {
     k.plain.push([box(x(-10), x(-7.2), -0.05, 0.05, z(48.7), z(94.6)), PAVE_T]);
     k.plain.push([box(x(25.2), x(27.2), -0.05, 0.05, z(48.7), z(94.6)), PAVE_T]);
     k.plain.push([box(x(-10), x(27.2), -0.05, 0.03, z(94.1), z(102)), PAVE_T]);
+    // worn warm square slabs with joints on the pool deck round the pool and on the middle terrace (C16, C17); the stone
+    // panel of irregular flat stones set into the paving south of the pool (C15, I030); the sloped information slab on
+    // its stand at the pool's south end (C27, I042)
+    const slab = new THREE.MeshStandardMaterial({ map: slabTex(), roughness: 0.95 });
+    const sp = (x0: number, x1: number, z0: number, z1: number, y: number, mat = slab) => {
+      const g2 = new THREE.PlaneGeometry(x1 - x0, z1 - z0).rotateX(-Math.PI / 2);
+      const uv = g2.attributes.uv as THREE.BufferAttribute;
+      for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * (x1 - x0) / 2.4, uv.getY(i) * (z1 - z0) / 2.4);
+      const m = new THREE.Mesh(g2, mat); m.position.set(x((x0 + x1) / 2), y, z((z0 + z1) / 2)); m.receiveShadow = true; k.meshes.push(m);
+    };
+    sp(0.7, 2.95, 60.75, 93.5, deck + 0.05); sp(13.05, 15.3, 60.75, 93.5, deck + 0.05);
+    sp(2.95, 13.05, 60.75, 64.55, deck + 0.05); sp(2.95, 13.05, 91.45, 93.5, deck + 0.05);
+    sp(-1, 17, 49.3, 60.3, mid + 0.05);
+    sp(4.6, 11.6, 95.0, 100.6, 0.06, new THREE.MeshStandardMaterial({ map: crazyTex(), roughness: 0.95 }));
+    {
+      const ix = x(8), iz = z(92.4);
+      k.plain.push([box(ix - 0.3, ix + 0.3, deck, deck + 0.85, iz - 0.2, iz + 0.2), '#8a5a44']);
+      k.plain.push([new THREE.BoxGeometry(0.9, 0.06, 0.6).rotateX(-0.45).translate(ix, deck + 1.0, iz), '#3c3a38'], [new THREE.BoxGeometry(0.8, 0.01, 0.5).rotateX(-0.45).translate(ix, deck + 1.035, iz + 0.015), '#6f7478']);
+      SOLIDS.add(8, 92.4, 0.45);
+    }
     const g = garden([-90, 100, 10, 110]);
     g.reseed(77);
     // rows of palms on the lawns either side of the pool

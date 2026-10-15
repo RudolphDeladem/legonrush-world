@@ -29,9 +29,17 @@ Labels: **change** (done in this batch), **estimated**, **open** (left for a lat
 Checks: typecheck, geography build, route tests, production build, route lengths unchanged, camera check (0 inside),
 road scan round the library (only the two existing hits at roads 1508 and 1509, the same before this batch).
 
-## Not done in this batch (open, next)
+## Round 2 (same day)
 
-C04 roof tile ageing and junctions, C05 courtyard galleries and AC units (needs registration), C06 the outer wings' end
-walls, C09 the weathered service elevation, C10 the columned block (location pending), C15-C17 fountain basin coping,
-pots and terrace levels (already close to the photos; finer stone and slab detail left), C24-C28 trees, drains,
+| Item | Code | Change |
+|---|---|---|
+| C06 outer wings' ends | `balme.ts` OUTER_END | The gable ends of both four-storey outer wings no longer repeat the long window bands: separate narrow dark openings with wide solid wall between, light grey streaks under them; a low glazed projection across the foot of each south end (dark glazing between white piers, red base, tiled lean-to). **Estimated:** the projection on the west wing (I059 shows one end). |
+| C15-C17 deck | `balme.ts` slabTex | Worn warm square slabs with dark joints on the pool deck round the pool and on the middle terrace, in place of the smooth pale surface. |
+| C15, C27 stone panel and slab | `balme.ts` crazyTex | The panel of irregular flat stones in the paving south of the pool (I030), kept clear of trees; the sloped dark information slab on its brown stand at the pool's south end (I042). |
+
+Comparison: `comparison-sheet-2.jpg`. Checks as round 1 (all clean; road scan unchanged).
+
+## Not done yet (open, next)
+
+C04 roof tile ageing and junctions, C05 courtyard galleries and AC units (needs registration), C09 the weathered service elevation, C10 the columned block (location pending), C24-C28 trees, drains,
 parking, stone objects and surface ageing.
