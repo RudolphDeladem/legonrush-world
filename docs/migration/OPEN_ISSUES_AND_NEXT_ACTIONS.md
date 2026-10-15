@@ -2,6 +2,30 @@
 
 Labels: [VERIFIED] · [DECISION] · [PROPOSAL] · [INCOMPLETE] · [ASSUMPTION].
 
+## 00. Update 2026-10-15 (account 1's third run ends; batches 124–164 all deployed)
+
+- **Nothing is half-done.** The last request (batch 164: the herringbone pavement on both sides of Jubilee Drive, and
+  no soil on the asphalt) is deployed, with CI and Pages green.
+- **Unconfirmed assumptions the owner may correct** (each listed in its brief's ledger):
+  - Diamond Jubilee Hall (`docs/diamond-jubilee/ledger.md`):
+    - the entrance's position, on the side road's axis;
+    - the landings of the non-named towers and the fins on the rear towers;
+    - the courts' bed layout;
+    - the use of the pale slab to the west.
+  - New UGBS building (`docs/ugbs-new/ledger.md`): the hidden faces, the central entrance and the rear.
+  - UGMC (`docs/ugmc/audit-ledger.md`): the unverified issues (W2, the garden, the training centre and posts, the
+    interiors) were left as they were.
+  - J.J. Rawlings yard (`docs/jj-rawlings/ledger.md`): its function and the grey rows' identity.
+- **Bike blockages that were already there, reported and not fixed** [VERIFIED by stash comparison]:
+  - the chain-link fence on La Bawaleshie slip road 864 near (1013, 1238);
+  - the WAGMC tracks 1349, 1352 and 1354;
+  - the N4 west-verge line near road 761;
+  - the Okponglo gatehouse's north rooms beside the drive (x 699–707, z 1226–1238);
+  - a bollard on the junction's north-west island (968, 1214);
+  - spots on the Jean Nelson side of Jubilee Link: (−249, 1774), (−243, 1755), (−227, 1746), (−176, 1932).
+- **Next:** wait for the owner's next brief. They usually send a PDF with registered satellite (M) pictures, real (R/P)
+  photos and game (G) frames, plus a correction list; or marked screenshots of the last render.
+
 ## 0. Update 2026-10-13 (account 1's return, batches 97–121)
 
 Settled since 2026-10-11: D1 (the migration docs were committed and pushed on the owner's approval, `8f9eaec`); D3

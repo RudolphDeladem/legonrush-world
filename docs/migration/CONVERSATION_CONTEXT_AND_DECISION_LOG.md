@@ -86,6 +86,30 @@ Claude was working.
 
 Messages 81, 88, 93, 103 and 107 were "I hit my usage limit… continue" or "Try again": the work resumed where it was.
 
+## Account 1's third run (2026-10-13 15:41 → 10-15)
+
+Session c259208d, branch `claude/wizardly-fermi-q6virk`. The full text is in `docs/handover/conversation-log-3.md`
+(owner messages 110–170). The decisions that last:
+- **Progress messages (#161):** keep updates short and only about the area being worked on. Recapping earlier batches
+  costs the owner tokens.
+- **Previews (#123, #155 and others):** when asking for confirmation, send preview renders, with the questions marked
+  on the picture.
+- **Unknown structures (#124):** where the evidence is missing, the owner may say "put some random structure in the
+  area's style for now". Do that, and label it.
+- **Evandy (#139):** every window is grey louvre blades (glass only where a picture shows glass).
+- **UGMC (#158):** a fence runs round the whole UGMC community.
+- **Okponglo gate (#163/164):** the display over the portal is an LED screen playing a ten-second loop of the game's
+  own aerial views. The footways are pavement, not brown.
+- **Okponglo drive (#167–169):**
+  - no soil on the asphalt, ever, at any distance;
+  - herringbone paver footways (no slab joint lines), on both sides of the drive from the gate to the junction;
+  - the extra lane behind the north footway is removed;
+  - at the junction's north-west corner the footway meets a pitched stone slab.
+- **Push and deploy after testing, every batch (#118, #125, #130).** The owner checks the live site and answers with
+  marked screenshots.
+- **Handover (#170):** the owner moves to another Claude account when credits run out. Everything, including this
+  chat, is pushed to the repo.
+
 ## Cross-cutting decisions (both accounts)
 
 - Owner photos and marked aerials override map data where they disagree; ask nothing the photos answer.

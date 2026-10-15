@@ -18,7 +18,8 @@ Then, as the task needs:
 
 The owner's pictures are in `docs/handover/images/` (indexed in `docs/handover/IMAGE_INVENTORY.md`) and the briefs,
 packs and prompt files they attached are in `docs/handover/uploads/`. The conversation is in
-`docs/handover/conversation-log.md` (2026-10-06 → 10-09) and `conversation-log-2.md` (2026-10-09 → 10-13). Each
+`docs/handover/conversation-log.md` (2026-10-06 → 10-09), `conversation-log-2.md` (2026-10-09 → 10-13) and
+`conversation-log-3.md` (2026-10-13 → 10-15, the latest). Each
 recent brief has a folder under `docs/` (for example `docs/okponglo/`, `docs/great-hall/`) with its evidence audit and
 open questions. Copy `tools/preview/*` to `.preview/` for the
 preview camera views and the route-length and camera checks.

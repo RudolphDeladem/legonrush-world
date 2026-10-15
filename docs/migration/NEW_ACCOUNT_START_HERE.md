@@ -1,8 +1,13 @@
 # LEGONRUSH — start here (new Claude account)
 
-Updated 2026-10-13, when the first account (back from 2026-10-11 to 10-13) ran out of credits again. The history so
-far: account 1 (10-06 → 10-09, batches 1–63), account 2 (10-09 → 10-11, batches 64–96), account 1 again
-(10-11 → 10-13, batches 97–121). Everything is in this repository.
+Updated 2026-10-15, when account 1's third run (2026-10-13 15:41 → 10-15, batches 124–164) ran out of credits. The
+history so far:
+- account 1 (10-06 → 10-09): batches 1–63;
+- account 2 (10-09 → 10-11): batches 64–96;
+- account 1 again (10-11 → 10-13): batches 97–123;
+- account 1's third run (10-13 → 10-15): batches 124–164.
+
+Everything is in this repository, including the chat history of every account-1 run.
 
 ## For the owner: 5 steps
 
@@ -14,7 +19,7 @@ far: account 1 (10-06 → 10-09, batches 1–63), account 2 (10-09 → 10-11, ba
 5. Send your next batch of marked pictures or a PDF/Word brief, as before.
 
 You do **not** need to re-upload anything from before. The pictures you pasted are in `docs/handover/images/`
-(1–775, indexed by `docs/handover/IMAGE_INVENTORY.md`); every PDF, Word brief, zip pack and prompt file you attached
+(1–841, indexed by `docs/handover/IMAGE_INVENTORY.md`); every PDF, Word brief, zip pack and prompt file you attached
 to the first account is in `docs/handover/uploads/` under its own name. Account 2's private PDFs and chat stay in the
 private backup zip it sent you (`ASSET_INVENTORY.md` §6).
 
@@ -31,14 +36,18 @@ it (UPSA, IPS Road, Okponglo, La Bawaleshie). Live: https://rudolphdeladem.githu
 
 Before doing anything:
 1. Read CLAUDE.md, then docs/migration/NEW_ACCOUNT_START_HERE.md and docs/migration/PROJECT_MASTER_HANDOVER.md,
-   then docs/handover/HANDOVER.md and docs/handover/TASKS.md (121 completed batches), then the latest sections of
+   then docs/handover/HANDOVER.md and docs/handover/TASKS.md (164 completed batches), then the latest sections of
    docs/LEGON_BUILDINGS.md (from "Rendering: flicker and frame cost" to the end: the UPSA junction, the 30-pair
    brief, IPS Road, the Agriculture side, Commonwealth and the Great Hall, UPSA, La Bawaleshie, Limbo, the Fire
    Station, IPS Road opposite UPSA, UPSA landmarks, Bani/PRESEC, Okponglo, the in-ride map and fly-over camera).
 2. Read docs/migration/PRODUCT_REQUIREMENTS_AND_DECISIONS.md, OPEN_ISSUES_AND_NEXT_ACTIONS.md,
    CONVERSATION_CONTEXT_AND_DECISION_LOG.md and GIT_AND_DEPLOYMENT_RUNBOOK.md.
-3. Skim docs/handover/conversation-log-2.md (my latest messages and your replies, 2026-10-09 → 10-13) to learn how
-   I write briefs and what I corrected. Each recent brief has its own folder under docs/ with an evidence audit.
+3. Read docs/handover/conversation-log-3.md (my latest messages and your replies, 2026-10-13 → 10-15, batches
+   124–164; the folded "Automatic context summary" blocks are the best short record), then skim
+   conversation-log-2.md (10-09 → 10-13), to learn how I write briefs and what I corrected. Each recent brief has its
+   own folder under docs/ with a ledger or evidence audit and a before/after sheet (latest: docs/okponglo/gate/,
+   docs/diamond-jubilee/, docs/ugbs-new/, docs/jj-rawlings/, docs/ugmc/, docs/noguchi-wagmc/, docs/evandy/,
+   docs/bani/, docs/jtny/, docs/campus-corrections/, docs/upsa-campus/, docs/engineering-ses/).
 4. Copy the preview tools: mkdir -p .preview && cp tools/preview/* .preview/
 5. Run the baseline checks without changing anything: npx tsc --noEmit -p . ; npm run test:routes ; npm run build ;
    npm run smoke. Report the results.
@@ -51,6 +60,8 @@ Rules:
   guessed names or text; say what is estimated.
 - The bike must never pass through walls, buildings or cars, and never be blocked by things that are not there.
 - Controllers: computer only, nothing controller-related drawn on screen.
+- Keep your progress messages short and about the area you are working on now; do not recap earlier batches (it
+  costs me tokens). When you need my confirmation, show me preview renders.
 - Always push and deploy after testing: push the commit to the working branch and to main (no pull requests), then
   confirm the CI and Pages runs.
 - No model names in commits or code. Never put keys, passwords or tokens in the repo.
@@ -63,14 +74,23 @@ Then wait for my next batch.
 
 ## For Claude: orientation in 60 seconds
 
-- State at handover: `main` = `7e114a0` ("View map in the pause menu and a fly-over camera view"), CI run
-  38383733854 and Pages run 38383733849 both `success` (2026-10-13 10:29 UTC), plus this handover commit on top.
-  The last working branch was `claude/nifty-gauss-z13ch8` (same commit as `main`). Use whatever branch your session
-  assigns, and still push to `main` after the checks (`git push origin HEAD:main`), per the owner's workflow.
-- The newest work (batches 97–121): flicker and lag fixes, the bars-across-roads regression, the UPSA junction
-  (UGBS/GOIL), the N4 cutting at the main gate, IPS Road to the UPSA Hostel and on into UPSA (a provenance-tagged map
-  extension), the Agriculture side, Commonwealth Hall and the Great Hall, La Bawaleshie and Okponglo, Limbo, the Fire
-  Station, Bani/PRESEC, destination/FINISH banners, the pause menu's "View map" and the fly-over camera.
+- State at handover (2026-10-15): `main` = this handover commit, on top of `2ad4a8d` ("Okponglo drive: herringbone
+  pavement on the stadium side too…"). CI and Pages were `success` for `2ad4a8d`. The last working branch was
+  `claude/wizardly-fermi-q6virk` (same commit as `main`). Use whatever branch your session assigns, and still push to
+  `main` after the checks (`git push origin HEAD:main`), per the owner's workflow.
+- The newest work (batches 124–164, one line each in `TASKS.md`):
+  - Commonwealth west tennis complex; the land behind the Great Hall; loading without freezes.
+  - UPSA campus (layout, facades, ground, planting, PCU brief); the School of Engineering Sciences; the main gate
+    bridges.
+  - UGMC, Noguchi and WAGMC (two briefs, a 147-page audit, tower and entrance follow-ups).
+  - Evandy Hostel (43-page and eight-pair briefs, many marked follow-ups); Bani Hostel; James Topp Nelson Yankah Hall
+    and its boundary.
+  - Campus corrections (20 pictures, JQB/PRESEC); the J.J. Rawlings Avenue corridor.
+  - The Okponglo entrance: the gatehouse with an LED screen looping a game fly-over, the taxi lot, the signals, and the
+    drive's herringbone footways on both sides.
+  - The new UGBS graduate building; the Diamond Jubilee Hall behind Jean Nelson Aka Hall.
+- The last thing the owner asked for (batch 164) is done and deployed: the same herringbone pavement on both sides of
+  Jubilee Drive from the gate to the Okponglo junction, and no red soil on the asphalt. Nothing is half-finished.
 - Code for each area: one site file plus a `*plan.ts` with its numbers (e.g. `okponglo.ts`/`okplan.ts`,
   `greathall.ts`/`greathallplan.ts`, `banipresec.ts`/`bpiplan.ts`, `upsalandmarks.ts`/`upsalandmarksplan.ts`), the
   cameras in a `*views.ts` (`okviews.ts`, `pairviews.ts`, `ipsviews.ts`…), all listed in `sites.ts`.
@@ -84,3 +104,24 @@ Then wait for my next batch.
 - Read the owner's colour key in each message before modelling. Answer "has it been deployed?" with the CI and Pages
   run results. Long tasks: the owner often sends the next brief while you work; queue it and do it next.
 - Use the labels VERIFIED / DECISION / PROPOSAL / INCOMPLETE / ASSUMPTION when reporting.
+- Preview and check tools (copy `tools/preview/*` to `.preview/`; start vite first:
+  `(setsid nohup npx vite --port 5299 --strictPort > /tmp/vite.log 2>&1 &)`):
+  - `qshoot.mjs <outdir> '[{"name":"x","cam":"cam=x,h,z,tx,th,tz,fov","ids":[]}]'`: renders camera views (heights
+    above the ground).
+  - `rdlist.mjs x0,x1,z0,z1`: the game roads in a box (index, class, points).
+  - `bid.mjs x,z` / `aid.mjs x,z`: the building or area under a point.
+  - `probe.mjs cx,cz '[[x,z],…]'`: which meshes lie under points (for "what draws this?").
+  - `roadblk.mjs x0,x1,z0,z1`: anything standing on a road.
+  - `stuckraw.mjs x0,x1,z0,z1`: anything blocking within 3 m of a road; compare with the code before your change
+    (`git stash`) to tell your blockers from older ones.
+  - `nanall.mjs`: NaN geometry; copy it and edit its camera and name regex for an area.
+  - `lens.mjs`: route lengths; must equal the previous run.
+  - `flyover.mjs`: the gate screen's video.
+- Checks before every push: `npx tsc --noEmit -p .`, `npm run -s test:routes`, the lens comparison, the NaN check,
+  the road-blocking and stuck scans of the area, `npm run -s build`, `timeout 900 npm run -s smoke`. Then push to the
+  branch and `main`, and poll the GitHub Actions runs for the commit until "CI" and "Deploy to GitHub Pages" succeed.
+- Per batch: bump CLAUDE.md "(N so far)", append the batch to `docs/handover/TASKS.md`, and write the ledger and
+  sheet in the brief's `docs/<area>/` folder.
+- Ground layers (`coverOverlay`, scrubkit.ts) must not have cells over a road. The colour can be cut back, but the
+  blurred far-off texture still leaks: keep the `cellIn` cells off the asphalt (the owner's batch 164 complaint).
+- Do not edit `src` while a render runs: vite HMR reloads the page and kills it. Never use a bare `rm $VAR/*`.

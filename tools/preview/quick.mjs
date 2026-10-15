@@ -1,0 +1,11 @@
+import { chromium } from 'playwright';
+const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+const page = await browser.newPage();
+const t0 = Date.now();
+page.on('pageerror', (e) => console.log('PAGEERROR', e.message));
+page.on('console', (m) => console.log('C', ((Date.now() - t0) / 1000).toFixed(0), m.type(), m.text().slice(0, 160)));
+page.on('requestfailed', (r) => console.log('FAIL', r.url()));
+await page.goto('http://localhost:5299/play/', { timeout: 120000, waitUntil: 'domcontentloaded' });
+await page.waitForTimeout(+process.argv[2] * 1000);
+console.log('html', (await page.evaluate(() => document.getElementById('app')?.innerHTML.slice(0, 200))));
+await browser.close();

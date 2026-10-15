@@ -69,6 +69,22 @@ Nothing from the development work is uncommitted. The only uncommitted files are
 
 Nothing from the development work is uncommitted.
 
+## 2b. State at handover, 2026-10-15 [VERIFIED]
+
+| Item | Value |
+|---|---|
+| Branch worked on | `claude/wizardly-fermi-q6virk` (session c259208d, 2026-10-13 15:41 → 10-15) |
+| `origin/main` before the handover commit | `2ad4a8d` "Okponglo drive: herringbone pavement on the stadium side too; the drive line follows the mapped roads exactly" |
+| CI and Pages for `2ad4a8d` | both `success` (2026-10-15) |
+| Batches done in this run | 124–164 (`docs/handover/TASKS.md`) |
+| Handover commit | docs, the owner's pictures and briefs, and `tools/preview/` (51 more preview and check scripts), pushed to the branch and `main` |
+| `src/game/` | 180 files |
+| Owner pictures | `docs/handover/images/` 1–841 (776–841 from this run) |
+| Owner briefs and packs | `docs/handover/uploads/` (67 files, about 443MB) |
+| Chat | `conversation-log.md` (owner messages 1–64), `conversation-log-2.md` (65–109), `conversation-log-3.md` (110–170) |
+
+Nothing from the development work is uncommitted.
+
 ## 3. History in one page
 
 | Period | Account | Work |

@@ -1,0 +1,24 @@
+import { chromium } from 'playwright';
+const [, , ...views] = process.argv;
+const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+const page = await browser.newPage({ viewport: { width: 640, height: 380 } });
+page.on('pageerror', (e) => console.log('PAGEERROR', e.message));
+await page.goto(`http://localhost:5299/.preview/halls.html?view=${views[0]}`, { timeout: 600000 });
+await page.waitForFunction(() => window.__done, null, { timeout: 600000 });
+for (const v of views) console.log(v, await page.evaluate((n) => {
+  const s = window.__scene, r = window.__r;
+  s.fog = { isFog: true, color: s.background.clone(), near: 70, far: 340, name: '' };
+  r.shadowMap.enabled = false;
+  window.__view(n);
+  let g; s.traverse((o) => { if (o.name === 'scrub-lands') g = o; });
+  const count = () => { r.info.autoReset = false; r.info.reset(); r.render(s, window.__cam); return r.info.render.triangles; };
+  const all = count();
+  const parts = {};
+  const by = (pred, name) => { const hid = []; g.traverse((o) => { if (o.visible && pred(o)) { o.visible = false; hid.push(o); } }); parts[name] = all - count(); for (const o of hid) o.visible = true; };
+  by((o) => o.isInstancedMesh && o.geometry.attributes.position.count === 15, 'tufts');
+  by((o) => o.isInstancedMesh && o.geometry.attributes.position.count > 100, 'nearCrowns');
+  by((o) => o.isInstancedMesh && o.geometry.attributes.position.count > 15 && o.geometry.attributes.position.count <= 100, 'farOrTrunk');
+  by((o) => o.name === 'cover-overlay', 'overlay');
+  return `${all} ${JSON.stringify(parts)}`;
+}, v));
+await browser.close();
