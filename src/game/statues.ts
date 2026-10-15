@@ -208,8 +208,25 @@ function dancer(out: Part[]) {
   for (const [g, c] of f) out.push([g.translate(0, 0.19, 0), c]);
 }
 
-export type StatueKind = 'football' | 'draped' | 'suited' | 'book' | 'cloth' | 'dancer';
-const BUILD: Record<StatueKind, (o: Part[]) => void> = { football: footballer, draped, suited, book: bookHolder, cloth: clothHolder, dancer };
+/** Mensah Sarbah's statue before the hall's lodge (the owner's photos, 2026-10-15): a man standing in a long coat to
+ *  the knees over trousers, the right arm down holding a rolled paper, the left forearm across the waist; on its own
+ *  tall dark granite plinth (drawn by the hall) */
+function frockCoat(out: Part[]) {
+  const f: Part[] = [];
+  figure({
+    hip: 0.96, shoulder: 1.47, garment: 'suit',
+    lLeg: [[0.1, 0.5, 0.02], [0.12, 0.09, 0.04]], rLeg: [[-0.1, 0.5, -0.02], [-0.12, 0.09, -0.02]],
+    rArm: [[-0.27, 1.16, 0.02], [-0.26, 0.9, 0.08]],
+    lArm: [[0.26, 1.18, 0.08], [0.02, 1.08, 0.22]],
+  }, f);
+  // the long coat: from the shoulders to the knees, open a little at the front
+  f.push([new THREE.CylinderGeometry(0.21, 0.29, 1.0, 14).scale(1, 1, 0.7).translate(0, 0.95, 0), SILVER]);
+  f.push([limb([-0.26, 0.9, 0.08], [-0.3, 0.62, 0.1], 0.03), SILVER_D]);
+  for (const [g, c] of f) out.push([g, c]);
+}
+
+export type StatueKind = 'football' | 'draped' | 'suited' | 'book' | 'cloth' | 'dancer' | 'frock';
+const BUILD: Record<StatueKind, (o: Part[]) => void> = { football: footballer, draped, suited, book: bookHolder, cloth: clothHolder, dancer, frock: frockCoat };
 /** every figure 25% larger than life-size (owner, 2026-10-15) */
 export const STATUE_SCALE = 1.25;
 
@@ -218,9 +235,11 @@ let mat: THREE.MeshStandardMaterial | null = null;
 export const statueMat = () => (mat ??= new THREE.MeshStandardMaterial({ vertexColors: true, metalness: 0.5, roughness: 0.38 }));
 
 /** one statue at (x, y, z) facing the direction `yaw` (radians about +y; 0 faces +z) */
-export function statue(kind: StatueKind, x: number, y: number, z: number, yaw = 0): THREE.Mesh {
-  const parts: Part[] = [];
+const BRONZE: Record<string, string> = { [SILVER]: '#7a5a3c', [SILVER_D]: '#5e432c' };
+export function statue(kind: StatueKind, x: number, y: number, z: number, yaw = 0, bronze = false): THREE.Mesh {
+  let parts: Part[] = [];
   BUILD[kind](parts);
+  if (bronze) parts = parts.map(([g, c]) => [g, BRONZE[c as string] ?? c] as Part);
   const m = new THREE.Mesh(merge(parts.map(([g, c]) => [g.scale(STATUE_SCALE, STATUE_SCALE, STATUE_SCALE).rotateY(yaw).translate(x, y, z), c] as Part)), statueMat());
   m.castShadow = true; m.receiveShadow = true;
   return m;

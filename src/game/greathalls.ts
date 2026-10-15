@@ -47,6 +47,8 @@ const legonSlabs = () => (lgSlab ??= (() => {
   return new THREE.MeshStandardMaterial({ map: t, roughness: 0.95 });
 })());
 import { car } from './cc';
+import { statue } from './statues';
+import { SOLIDS } from './solids';
 import { rectsOf, type Rect } from './rectilinear';
 import { AKUAFO_GALLERY, LEGON_GALLERY, galleryBlocks, galleryParts, type GalleryJob, type GalleryLook } from './galleries';
 
@@ -222,6 +224,73 @@ const inRect = (x: number, z: number, [x0, x1, z0, z1]: number[]) => x >= x0 && 
 const gs = garden([-220, 220, 140, 760]);
 
 // ---------- Mensah Sarbah Hall ----------
+/** the front garden before the lodge (the owner's four entrance photos, 2026-10-15): lawns either side of a straight walk
+ *  of terracotta slabs with grey borders and white kerbs from the avenue, across the drive, to Mensah Sarbah's bronze
+ *  statue on its dark granite plinth before the door; low clipped hedges along the walk, rows of red-flowering shrubs
+ *  along the avenue and across the lawns, short dark bollard lights, brown lattice benches, two big spreading trees by
+ *  the wings, the hall's board by the avenue (world metres through X, Z) */
+function sarbahGarden(k: Kit, X: (x: number) => number, Z: (z: number) => number) {
+  const xm = 4.9, W = 1.2, slab = sarbahWalk();
+  const walk = (z0: number, z1: number, w: number) => {
+    pave(k, X(xm - w), X(xm + w), Z(z0), Z(z1), slab, 0.04, 2.4);
+    for (const sx of [-1, 1]) k.plain.push([box(X(xm + sx * w) - 0.09, X(xm + sx * w) + 0.09, 0, 0.14, Z(z0), Z(z1)), '#efeee8']);
+  };
+  walk(568.4, 595.6, W);
+  walk(600.6, 606.6, 2.6);
+  // the hedges along the walk, the shrub rows with red flowers along the avenue and across the lawns
+  const flowers = (x0: number, z0: number, x1: number, z1: number) => {
+    const n = Math.max(2, Math.round(Math.hypot(x1 - x0, z1 - z0) / 0.9));
+    for (let i = 0; i <= n; i++) {
+      const x = x0 + ((x1 - x0) * i) / n, z = z0 + ((z1 - z0) * i) / n;
+      k.plain.push([new THREE.IcosahedronGeometry(0.34, 1).scale(1.2, 0.8, 1.2).translate(X(x), 0.3, Z(z)), '#3f6a2a']);
+      if (i % 2 === 0) k.plain.push([new THREE.IcosahedronGeometry(0.08, 0).translate(X(x) + 0.12, 0.6, Z(z)), '#d8381f'], [new THREE.IcosahedronGeometry(0.08, 0).translate(X(x) - 0.1, 0.58, Z(z) + 0.1), '#e0502a']);
+    }
+  };
+  for (const sx of [-1, 1]) {
+    // (a low clipped hedge, knee high, as in the photos)
+    k.plain.push([box(X(xm + sx * (W + 0.55)) - 0.3, X(xm + sx * (W + 0.55)) + 0.3, 0, 0.45, Z(569), Z(595)), '#3f6a2a']);
+    for (let z = 569.4; z < 595; z += 0.9) k.plain.push([new THREE.IcosahedronGeometry(0.3, 0).scale(1, 0.5, 1.4).translate(X(xm + sx * (W + 0.55)), 0.46, Z(z)), '#4a7a33']);
+    flowers(xm + sx * (W + 1.2), 569.4, xm + sx * 10.6, 569.4);
+    flowers(xm + sx * (W + 1.2), 589, xm + sx * 9.6, 589);
+    for (const z of [574, 582]) k.plain.push([new THREE.CylinderGeometry(0.07, 0.08, 0.7, 8).translate(X(xm + sx * 5.2), 0.35, Z(z)), '#232426'], [new THREE.CylinderGeometry(0.1, 0.1, 0.1, 8).translate(X(xm + sx * 5.2), 0.75, Z(z)), '#e9e6dc']);
+    // a brown lattice bench at each end of the cross row, facing the walk
+    const bx = xm + sx * 8.2, bz = 586.2;
+    k.plain.push([box(X(bx) - 0.9, X(bx) + 0.9, 0.42, 0.48, Z(bz) - 0.25, Z(bz) + 0.25), '#7a4a2a']);
+    for (let t = -0.8; t <= 0.81; t += 0.2) k.plain.push([box(X(bx) + t - 0.02, X(bx) + t + 0.02, 0.48, 1.0, Z(bz) + 0.22, Z(bz) + 0.26), '#7a4a2a']);
+    for (const h of [0.6, 0.8, 1.0]) k.plain.push([box(X(bx) - 0.9, X(bx) + 0.9, h - 0.02, h + 0.02, Z(bz) + 0.22, Z(bz) + 0.26), '#7a4a2a']);
+    for (const e of [-0.85, 0.85]) k.plain.push([box(X(bx) + e - 0.04, X(bx) + e + 0.04, 0, 0.48, Z(bz) - 0.25, Z(bz) + 0.25), '#5e3a22']);
+    SOLIDS.add(bx, bz, 0.6);
+    // the big spreading tree by the wing
+    gs.tree(k, X(xm + sx * 27), Z(598), 2.0);
+  }
+  // the statue: the dark granite plinth with its plaque, the bronze figure facing the avenue
+  const sz = 603.6;
+  k.plain.push([box(X(xm) - 0.85, X(xm) + 0.85, 0, 0.3, Z(sz) - 0.85, Z(sz) + 0.85), '#2f2f31'], [box(X(xm) - 0.62, X(xm) + 0.62, 0.3, 1.9, Z(sz) - 0.62, Z(sz) + 0.62), '#3b3a3d']);
+  k.plain.push([box(X(xm) - 0.72, X(xm) + 0.72, 1.9, 2.02, Z(sz) - 0.72, Z(sz) + 0.72), '#2f2f31'], [box(X(xm) - 0.42, X(xm) + 0.42, 0.75, 1.45, Z(sz) - 0.64, Z(sz) - 0.62), '#a08452']);
+  k.meshes.push(statue('frock', X(xm), 2.02, Z(sz), Math.PI, true));
+  SOLIDS.add(xm, sz, 0.95);
+  // the hall's board by the avenue, east of the walk
+  const ux = 27.5, uz = 569.6;
+  for (const dx of [-0.5, 0.5]) k.plain.push([box(X(ux + dx) - 0.05, X(ux + dx) + 0.05, 0, 2.6, Z(uz) - 0.05, Z(uz) + 0.05), '#d8d8d4']);
+  k.plain.push([box(X(ux) - 0.7, X(ux) + 0.7, 1.2, 2.6, Z(uz) - 0.06, Z(uz) + 0.06), '#f4f4f1'], [box(X(ux) - 0.7, X(ux) + 0.7, 2.25, 2.6, Z(uz) - 0.07, Z(uz) + 0.07), '#1d3f7a']);
+  k.signs.push({ text: 'MENSAH SARBAH HALL', x: X(ux), y: 1.7, z: Z(uz) - 0.08, ry: Math.PI, w: 1.3, colors: ['#f4f4f1', '#1d3f7a'] });
+  SOLIDS.add(ux, uz, 0.6);
+}
+let sarbahSlab: THREE.MeshStandardMaterial | null = null;
+/** the walk's slabs: terracotta and grey squares in a running band, as the photos show */
+const sarbahWalk = () => (sarbahSlab ??= (() => {
+  const t = canvas(256, 256, (g) => {
+    let sd = 4; const r = () => ((sd = (sd * 9301 + 49297) % 233280) / 233280);
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) {
+      const edge = i === 0 || i === 3;
+      g.fillStyle = edge ? ['#a9a6a0', '#b3afa8', '#a19e98'][Math.floor(r() * 3)] : ['#a8644a', '#b4725a', '#9c5a42', '#ad6b52'][Math.floor(r() * 4)];
+      g.fillRect(i * 64, j * 64, 64, 64);
+    }
+    g.fillStyle = '#d9d2c6'; for (let i = 0; i <= 4; i++) { g.fillRect(i * 64 - 1, 0, 2, 256); g.fillRect(0, i * 64 - 1, 256, 2); }
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return new THREE.MeshStandardMaterial({ map: t, roughness: 0.9 });
+})());
 const SO: [number, number] = [5, 645];
 const wings = piecesOf(footprints(-80, 90, 580, 700, 400, /Dining|Lodge/), 3);
 /** the Administration and Porters' Lodge, the entrance (map x -4.3..14.1, z 609.1..622.7), two storeys */
@@ -242,23 +311,31 @@ const sarbah: Spec = {
   axis: [1, 0], origin: SO, storey: 3.3, style: SARBAH_WIN, roofColor: ROOF, fascia: FASCIA, pitch: 0.5,
   replaces: [...pointsOf(wings), [4.9, 616], [3.5, 710], [-25, 709], [30, 710]],
   blocks: sarbahBlocks.blocks,
-  keep: [[-8 - SO[0], 18 - SO[0], 600 - SO[1], 609.1 - SO[1]], [-20 - SO[0], 27 - SO[0], 690 - SO[1], 699 - SO[1]]],
+  keep: [[-8 - SO[0], 18 - SO[0], 600 - SO[1], 609.1 - SO[1]], [-7 - SO[0], 17 - SO[0], 566 - SO[1], 596 - SO[1]], [-20 - SO[0], 27 - SO[0], 690 - SO[1], 699 - SO[1]]],
   extras: (k) => {
     gateways(k, sarbahBlocks.gates);
     const X = (x: number) => x - SO[0], Z = (z: number) => z - SO[1];
     // ----- the lodge: the gate in the middle of its front (owner's blue mark), a small raised lantern on its roof
     const lx = X((LODGE[0] + LODGE[1]) / 2), lz0 = Z(LODGE[2]), ltop = k.wallTop(2) + ((LODGE[3] - LODGE[2]) / 2 + 0.8) * 0.5;
-    k.plain.push([box(lx - 1.8, lx + 1.8, 0, 3.4, lz0 - 0.04, lz0), '#2a2420']);
-    k.plain.push([new THREE.CircleGeometry(1.8, 16, 0, Math.PI).rotateY(Math.PI).translate(lx, 3.4, lz0 - 0.05), '#2a2420']);
-    for (let x = -1.6; x <= 1.61; x += 0.32) k.plain.push([box(lx + x - 0.03, lx + x + 0.03, 0.1, 3.3, lz0 - 0.1, lz0 - 0.06), '#6d6d6d']);
+    // (the owner's entrance photos, 2026-10-15: a blue band along the foot of the lodge's front, a rectangular glazed
+    // doorway in a brown frame with MENSAH SARBAH HALL over it, a flag pole either side before it)
+    const [fx0, fx1] = [X(LODGE[0]), X(LODGE[1])];
+    k.plain.push([box(fx0, fx1, 0, 1.0, lz0 - 0.05, lz0 + 0.01), '#2f6aa3']);
+    k.plain.push([box(lx - 1.5, lx + 1.5, 0, 2.9, lz0 - 0.07, lz0), '#6b3f26'], [box(lx - 1.3, lx + 1.3, 0.05, 2.75, lz0 - 0.09, lz0 - 0.07), '#33414c']);
+    k.plain.push([box(lx - 0.03, lx + 0.03, 0.05, 2.75, lz0 - 0.11, lz0 - 0.09), '#6b3f26']);
+    k.plain.push([box(lx - 2.1, lx + 2.1, 3.05, 3.55, lz0 - 0.08, lz0), '#f4f4f1']);
+    k.signs.push({ text: 'MENSAH SARBAH HALL', x: lx, y: 3.3, z: lz0 - 0.09, ry: Math.PI, w: 3.9, colors: ['#f4f4f1', '#1d3f7a'] });
     k.plain.push([box(lx - 3, lx + 3, 0, 0.18, lz0 - 2.5, lz0), PAVE]);
+    flagPole(k, lx - 3.9, lz0 - 2.4, 9); flagPole(k, lx + 3.9, lz0 - 2.4, 9);
+    sarbahGarden(k, X, Z);
     k.roof.c = new THREE.Color(ROOF);
     const cy = ltop - 0.9;
     k.plain.push([box(lx - 2.6, lx + 2.6, cy, cy + 1.0, Z(616) - 2, Z(616) + 2), WHITE]);
     k.roof.quad([lx - 3, cy + 1, Z(616) - 2.4], [lx + 3, cy + 1, Z(616) - 2.4], [lx + 2, cy + 1.8, Z(616)], [lx - 2, cy + 1.8, Z(616)]);
     k.roof.quad([lx + 3, cy + 1, Z(616) + 2.4], [lx - 3, cy + 1, Z(616) + 2.4], [lx - 2, cy + 1.8, Z(616)], [lx + 2, cy + 1.8, Z(616)]);
-    k.plain.push([new THREE.CylinderGeometry(0.35, 0.45, 1.3, 8).translate(lx, cy + 2.4, Z(616)), '#c8a24a']);
-    k.plain.push([new THREE.ConeGeometry(0.5, 0.7, 8).translate(lx, cy + 3.4, Z(616)), '#c8a24a']);
+    // the lantern: a square red-brown shaft with white trim, a red cap and a finial (owner's photos)
+    k.plain.push([box(lx - 0.45, lx + 0.45, cy + 1.6, cy + 3.1, Z(616) - 0.45, Z(616) + 0.45), '#9a3d2c'], [box(lx - 0.52, lx + 0.52, cy + 3.1, cy + 3.25, Z(616) - 0.52, Z(616) + 0.52), '#f2efe6']);
+    k.plain.push([new THREE.ConeGeometry(0.62, 0.6, 4).rotateY(Math.PI / 4).translate(lx, cy + 3.55, Z(616)), '#a8402e'], [box(lx - 0.02, lx + 0.02, cy + 3.8, cy + 4.5, Z(616) - 0.02, Z(616) + 0.02), '#5a5a5a']);
     // ----- the dining hall: hip roof, the raised clerestory and the tall gold lantern; stone terrace, steps, end doors
     const [hx0, hx1, hz0, hz1] = [X(HALL[0]), X(HALL[1]), Z(HALL[2]), Z(HALL[3])];
     const e = k.wallTop(2) + 0.6, hxm = (hx0 + hx1) / 2, hzm = (hz0 + hz1) / 2;
