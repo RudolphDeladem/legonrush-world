@@ -97,3 +97,9 @@ nose and the view before this revision.
     across the junction.
 - **Uncertain.** The arrow patterns per lane are read from the generated picture and the photo's left-turn arrow; the
   real lane allocation is not documented. The side roads' inbound halves are read from the map's road widths.
+
+## Revision 5: the strict correction brief (2026-10-16)
+
+The layout above was rebuilt from the owner's strict correction brief. Its record is in `STRICT_CORRECTION.md`: the
+zone ledger, the counts as built, and the RD-001 to RD-013 completion record. It supersedes revisions 1 to 4 on lane
+counts, the paved core, the widening and the median ends.

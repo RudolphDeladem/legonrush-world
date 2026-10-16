@@ -37,9 +37,10 @@ import { dustySoil, ramp, soilMesh } from './soilground';
 import { medianGrass, pavers, rod, run, strip, wires, type V3 } from './upsa';
 import { inOkKeep, okOwns } from './okplan';
 import {
-  CABINET, COMPOUND, E_HALF, HOOD, ISLANDS, JUNCTION, MASSES, MAST, MEDIAN, ROADSIDE, SCRUB, SIGNAL, SIGNALS, VERGE_W, W_HALF,
-  N4_WIDE, eastInner, halfOf, inCompound, inHood, offEdge, pickOf, westInner, xEast, xWest, type Mass, type Pick,
+  CABINET, COMPOUND, E_HALF, HOOD, JUNCTION, MASSES, MAST, MEDIAN, ROADSIDE, SCRUB, SIGNAL, SIGNALS, VERGE_W, W_HALF,
+  eastInner, halfOf, inCompound, inHood, offEdge, pickOf, westInner, xEast, xWest, type Mass, type Pick,
 } from './lbplan';
+import { OKJ_SEGS, okjIslands, westEdge, wOuter } from './okjplan';
 
 const PLAIN: Style = { bay: 4, up: [], ground: [], draw: (g) => render(g, '#f1efe9') };
 const O: [number, number] = [1150, 1250];
@@ -62,8 +63,8 @@ for (const r of ROADS) for (let i = 0; i < r.nodes.length - 1; i++) {
       (grid.get(key) ?? grid.set(key, []).get(key)!).push(k);
     }
 }
-// (and the N4's carriageways widened inward to the narrow median, lbplan.ts N4_WIDE)
-for (const [ax, az, bx, bz, h] of N4_WIDE) {
+// (and the N4 through the median's stretch, the Okponglo junction's arms, corners and bay as built: okjplan.ts)
+for (const [ax, az, bx, bz, h] of OKJ_SEGS) {
   const k = segs.length;
   segs.push([ax, az, bx, bz, h, 0]);
   for (let gx = Math.floor((Math.min(ax, bx) - 12) / SG); gx <= Math.floor((Math.max(ax, bx) + 12) / SG); gx++)
@@ -498,7 +499,7 @@ const corridor: Spec = {
 
     // ---------- the scrub west of the N4 north of the junction (Pair 3) ----------
     {
-      const kerb = (z: number) => xWest(z) - W_HALF;
+      const kerb = (z: number) => wOuter(z);
       for (let z = SCRUB.z0; z < SCRUB.z1; z += 2) {
         const [ax, az] = A(kerb(z), z), [bx, bz] = A(kerb(z + 2), z + 2);
         if (Number.isNaN(ax) || Number.isNaN(bx)) continue;
@@ -521,7 +522,8 @@ const corridor: Spec = {
 
     // ---------- the stadium-side verge (Pairs 8, 14): the red brick path, rough ground, the steel fence ----------
     {
-      const kerb = (z: number) => xWest(z) - W_HALF;
+      // (the kerb is the bay's outer edge along zone 5's concrete stopping bay)
+      const kerb = (z: number) => westEdge(z);
       const brick = pavers('goil');
       const rows: [number, number, number][] = [];
       for (let z = VERGE_W.z0; z <= VERGE_W.z1; z += 2) { const kz = kerb(z); if (!Number.isNaN(kz) && clear(kz - VERGE_W.path[1], z, 0.3)) rows.push([z, kz - VERGE_W.path[0], kz - VERGE_W.path[1]]); else if (rows.length) break; }
@@ -564,130 +566,21 @@ const corridor: Spec = {
       }
     }
 
-    // ---------- the junction's paved core (the owner's junction brief, 2026-10-15) ----------
-    // The mapped carriageways are separate ribbons: between them, where they meet the cross roads, the ground showed
-    // through as green triangles and wedges, and the corner drapes painted it pale. The real junction is one open
-    // asphalt area. Here every point of the junction's core that is not road but has road on at least seven of eight
-    // sides within 26 m is the junction's own surface, laid in the roads' asphalt under the roads' paint layer. (The
-    // approaches take five cars abreast from the carriageways' widening, lbplan.ts.) The corner verges, kerbs and
-    // footways stay.
-    const JC = { x0: 958, x1: 1024, z0: 1190, z1: 1240 }, CELL = 0.25;
-    const cgw = Math.round((JC.x1 - JC.x0 + 56) / CELL), cgh = Math.round((JC.z1 - JC.z0 + 56) / CELL), cg = new Float32Array(cgw * cgh);
-    for (let j = 0; j < cgh; j++) for (let i = 0; i < cgw; i++) cg[j * cgw + i] = clearance(JC.x0 - 28 + i * CELL, JC.z0 - 28 + j * CELL);
-    const cl = (x: number, z: number) => { const i = Math.round((x - JC.x0 + 28) / CELL), j = Math.round((z - JC.z0 + 28) / CELL); return i < 0 || j < 0 || i >= cgw || j >= cgh ? 12 : cg[j * cgw + i]; };
-    const enclosed = (x: number, z: number) => {
-      let n = 0;
-      for (let d = 0; d < 8; d++) {
-        const a = (d / 8) * Math.PI * 2, ux = Math.cos(a), uz = Math.sin(a);
-        for (let t = 0.75; t <= 26; t += 0.75) if (cl(x + ux * t, z + uz * t) < 0) { n++; break; }
-      }
-      return n >= 7;
-    };
-    // (road points inside the core are included too, so no sliver of ground shows along the ribbons' edges; the roads draw
-    // over it)
-    const junctionPaved = (x: number, z: number) => (x > JC.x0 && x < JC.x1 && z > JC.z0 && z < JC.z1 && enclosed(x, z));
-    {
-      const pos: number[] = [];
-      for (let z = JC.z0 - 30; z < JC.z1 + 30; z += CELL) for (let x = JC.x0 - 8; x < JC.x1 + 8; x += CELL) {
-        if (!junctionPaved(x + CELL / 2, z + CELL / 2)) continue;
-        const q = [[x, z], [x + CELL, z], [x + CELL, z + CELL], [x, z + CELL]].map(([a, b]) => { const [px, pz] = A(a, b); return [px, gh(a, b) + 0.012, pz]; });
-        pos.push(...q[0], ...q[2], ...q[1], ...q[0], ...q[3], ...q[2]);
-      }
-      const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-      const uv: number[] = []; for (let i = 0; i < pos.length; i += 3) uv.push((pos[i] + CO[0]) / 6, (pos[i + 2] + CO[1]) / 6);
-      geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); geo.computeVertexNormals();
-      const am = new THREE.MeshStandardMaterial({ color: '#f2f2f2', map: asphaltTexture(false), roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 });
-      const m = new THREE.Mesh(geo, am); m.receiveShadow = true; m.userData.noCollide = true; k.meshes.push(m);
-    }
-
-    // ---------- the zebra crossings on the four arms (the satellite, the owner's Street View at the stop line) ----------
-    {
-      const pos: number[] = [];
-      /** stripes 0.5 m wide every 1.1 m along the line from p to q, each `len` long across it, only on the road */
-      const zebra = ([px, pz]: P2, [qx, qz]: P2, len: number) => {
-        const L = Math.hypot(qx - px, qz - pz), ux = (qx - px) / L, uz = (qz - pz) / L;
-        for (let t = 0.3; t + 0.5 <= L; t += 1.1) {
-          const x = px + ux * (t + 0.25), z = pz + uz * (t + 0.25);
-          if (clearance(x, z) > -0.4 || westInner(z) + 0.2 < x && x < eastInner(z) - 0.2 && z > 1100 && z < 1300 && x > 975 && x < 1010) continue;
-          const q = [[t, -len / 2], [t + 0.5, -len / 2], [t + 0.5, len / 2], [t, len / 2]].map(([a, b]) => {
-            const wx = px + ux * a - uz * b, wz = pz + uz * a + ux * b, [lx, lz] = A(wx, wz);
-            return [lx, gh(wx, wz) + 0.03, lz];
-          });
-          pos.push(...q[0], ...q[2], ...q[1], ...q[0], ...q[3], ...q[2]);
-        }
-      };
-      zebra([xWest(1191) - 6, 1191], [xEast(1191) + 6, 1191], 3);
-      zebra([xWest(1237) - 6, 1237], [xEast(1237) + 6, 1237], 3);
-      zebra([965, 1200], [965, 1240], 3);
-      zebra([1018, 1195], [1018, 1235], 3);
-      /** a flat painted shape: triangles given in a frame at (ox, oz) running along (fx, fz), `b` to the driver's right */
-      const yel: number[] = [];
-      const paint = (out: number[], ox: number, oz: number, fx: number, fz: number, tris: [number, number][]) => {
-        for (const [a, b2] of tris) {
-          const wx = ox + fx * a - fz * b2, wz = oz + fz * a + fx * b2, [lx, lz] = A(wx, wz);
-          out.push(lx, gh(wx, wz) + 0.03, lz);
-        }
-      };
-      const rect = (a0: number, a1: number, b0: number, b1: number): [number, number][] => [[a0, b0], [a1, b1], [a1, b0], [a0, b0], [a0, b1], [a1, b1]];
-      // (wound for a frame whose right is +b; the faces are drawn double-sided below)
-      /** the lane arrows (the owner's pictures): straight, or turning left or right */
-      const ARROW: Record<'S' | 'L' | 'R', [number, number][]> = {
-        S: [...rect(0, 3.2, -0.15, 0.15), [3.2, -0.5], [4.5, 0], [3.2, 0.5]],
-        L: [...rect(0, 2.5, -0.15, 0.15), ...rect(2.2, 2.5, -1.0, 0.15), [1.85, -1.0], [2.35, -1.7], [2.85, -1.0]],
-        R: [...rect(0, 2.5, -0.15, 0.15), ...rect(2.2, 2.5, -0.15, 1.0), [1.85, 1.0], [2.35, 1.7], [2.85, 1.0]],
-      };
-      // the N4's two approaches: a stop line before the crossing, and arrows down each third of the carriageway (left
-      // in the lane by the median, straight in the middle, right on the outside: traffic keeps right)
-      const approach = (stopZ: number, dirZ: 1 | -1, outer: (z: number) => number, inner: (z: number) => number) => {
-        const o0 = outer(stopZ), i0 = inner(stopZ);
-        paint(pos, (o0 + i0) / 2, stopZ, 0, dirZ, rect(-0.2, 0.2, -Math.abs(i0 - o0) / 2, Math.abs(i0 - o0) / 2));
-        for (const back of [6.5, 28]) {
-          const z = stopZ - dirZ * back, o = outer(z), i = inner(z), w = i - o, dx = (outer(z + dirZ) - o);
-          const l = Math.hypot(dx, 1), fx = dx / l, fz = dirZ / l;
-          (['R', 'S', 'L'] as const).forEach((kind, q) => paint(pos, o + (w * (q + 0.5)) / 3, z, fx * dirZ * dirZ, fz, ARROW[kind]));
-        }
-      };
-      approach(1188.5, 1, (z) => xWest(z) - 4.5, westInner);
-      approach(1239.5, -1, (z) => xEast(z) + 4.5, eastInner);
-      // the side roads' inbound halves: Jubilee Drive eastbound (its south half), La Bawaleshie Road westbound (its north)
-      paint(pos, 962.8, (1228.3 + 1236) / 2, 1, 0, rect(-0.2, 0.2, -(1236 - 1228.3) / 2, (1236 - 1228.3) / 2));
-      paint(pos, 1020.2, (1213 + 1222.9) / 2, -1, 0, rect(-0.2, 0.2, -(1222.9 - 1213) / 2, (1222.9 - 1213) / 2));
-      for (const [x, z, fx] of [[955, 1230.2, 1], [955, 1234.1, 1], [1028, 1215.5, -1], [1028, 1220.4, -1]] as [number, number, number][])
-        paint(pos, x, z, fx, 0, ARROW[(fx > 0 ? z > 1232 : z < 1218) ? 'R' : 'S']);
-      // the yellow lines (the owner's photo at the stop line; the top-down picture): along both kerbs of the median and
-      // along the carriageways' outer edges, not across the junction
-      const line = (out: number[], xAt: (z: number) => number, z0: number, z1: number) => {
-        for (let z = z0; z < z1; z += 2) {
-          const xa = xAt(z), xb = xAt(z + 2);
-          if (Number.isNaN(xa) || Number.isNaN(xb)) continue;
-          const q = [[xa - 0.08, z], [xb - 0.08, z + 2], [xb + 0.08, z + 2], [xa + 0.08, z]].map(([wx, wz]) => { const [lx, lz] = A(wx, wz); return [lx, gh(wx, wz) + 0.03, lz]; });
-          out.push(...q[0], ...q[1], ...q[2], ...q[0], ...q[2], ...q[3]);
-        }
-      };
-      for (const [z0, z1] of [[1100, MEDIAN.gap[0]], [MEDIAN.gap[1] + 0.5, 1340]] as [number, number][]) {
-        line(yel, (z) => westInner(z) - 0.3, z0, z1); line(yel, (z) => eastInner(z) + 0.3, z0, z1);
-      }
-      for (const [z0, z1] of [[1100, 1180], [1248, 1340]] as [number, number][]) {
-        line(yel, (z) => xWest(z) - 4.5 + 0.35, z0, z1); line(yel, (z) => xEast(z) + 4.5 - 0.35, z0, z1);
-      }
-      for (const [arr, col] of [[pos, '#e9e6dc'], [yel, '#e2b62a']] as [number[], string][]) {
-        const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(arr, 3)); geo.computeVertexNormals();
-        const pm = new THREE.MeshStandardMaterial({ color: col, roughness: 0.8, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -8 });
-        const zm = new THREE.Mesh(geo, pm); zm.receiveShadow = true; zm.userData.noCollide = true; k.meshes.push(zm);
-      }
-    }
+    // (the junction's surface, its crossings, stop lines, arrows and yellow lines are built from its plan with the
+    // roads: okjplan.ts, okjunction.ts, the owner's strict correction brief of 2026-10-16. The earlier paved core that
+    // filled the box between the mapped ribbons is gone with them.)
 
     // ---------- the junction: signal posts, the islands' worn stone paving, the cabinet, bollards ----------
-    for (const [key, [cx, cz]] of Object.entries(ISLANDS)) {
+    for (const [key, [cx, cz]] of Object.entries(okjIslands())) {
       // (the medians' noses, mn and ms, are the kerbed median itself now: no pale paving drawn over them)
       if (key !== 'mn' && key !== 'ms') k.meshes.push(soilMesh(CO, cx - 9, cx + 9, cz - 9, cz + 9, 0.5, (x, z) => {
-        if (clearance(x, z) < 0.15 || junctionPaved(x, z)) return null;
+        if (clearance(x, z) < 0.15) return null;
         // the corner verges: worn bare where people cross, the grass thin
         return 0.3 + 0.55 * ramp(0.4, 0.68, vnoise(x * 0.6, z * 0.6));
       }));
       // the post where the island has most room
       let best: P2 | null = null, bc = 0.5;
-      for (let i = 0; i < 60; i++) { const x = cx + (hash(i, cx) - 0.5) * 5, z = cz + (hash(cz, i) - 0.5) * 5, cl = clearance(x, z); if (cl > 0.6 && !junctionPaved(x, z) && (!best || Math.hypot(x - cx, z - cz) < Math.hypot(best[0] - cx, best[1] - cz))) { bc = cl; best = [x, z]; } }
+      for (let i = 0; i < 60; i++) { const x = cx + (hash(i, cx) - 0.5) * 5, z = cz + (hash(cz, i) - 0.5) * 5, cl = clearance(x, z); if (cl > 0.6 && (!best || Math.hypot(x - cx, z - cz) < Math.hypot(best[0] - cx, best[1] - cz))) { bc = cl; best = [x, z]; } }
       void bc;
       if (!best) continue;
       // (the Okponglo signals brief, pictures 1, 2, 11: tall slender grey masts with a long overhead arm over the lanes of
@@ -735,10 +628,11 @@ const corridor: Spec = {
         for (const dx of [-0.5, 0.5]) c.push([box(px + dx - 0.04, px + dx + 0.04, 0, 0.25, pz - 0.3, pz + 0.3), '#6b6e70']);
         SOLIDS.add(x, z, 0.7);
       }
-      const [ix, iz] = ISLANDS.nw;
+      const [ix, iz] = okjIslands().nw;
       for (let i = 0; i < 14; i++) {
-        const a = (i / 14) * Math.PI * 2, x2 = ix + Math.cos(a) * 4.5, z2 = iz + Math.sin(a) * 4.5;
-        if (clearance(x2, z2) < 0.35 || clearance(x2, z2) > 1.6) continue;
+        const a = (i / 14) * Math.PI * 2, x2 = ix + Math.cos(a) * 3.4, z2 = iz + Math.sin(a) * 3.4;
+        // (behind the corner's footway, okgate.ts, which follows the rebuilt kerb)
+        if (clearance(x2, z2) < 2.7 || clearance(x2, z2) > 3.6) continue;
         const [px, pz] = A(x2, z2);
         c.push([new THREE.CylinderGeometry(0.08, 0.08, 0.8, 8).translate(px, 0.4, pz), '#1d1d1d'], [new THREE.CylinderGeometry(0.085, 0.085, 0.16, 8).translate(px, 0.62, pz), '#e7c21f']);
         SOLIDS.add(x2, z2, 0.12);

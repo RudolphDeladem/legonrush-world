@@ -16,7 +16,8 @@ import * as THREE from 'three';
 import { grassMacroTexture, grassTexture } from './textures';
 import { drapeAt } from './kuffourgarden';
 import { NODE_XZ, ROADS } from './campusmap';
-import { N4_WIDE, halfOf } from './lbplan';
+import { halfOf } from './lbplan';
+import { OKJ_SEGS } from './okjplan';
 import { vnoise } from './enkit';
 
 const TILE = 200;
@@ -99,7 +100,8 @@ function segGrid() {
   };
   for (const r of ROADS) for (let i = 0; i < r.nodes.length - 1; i++)
     put([NODE_XZ[r.nodes[i] * 2], NODE_XZ[r.nodes[i] * 2 + 1], NODE_XZ[r.nodes[i + 1] * 2], NODE_XZ[r.nodes[i + 1] * 2 + 1], halfOf(r)]);
-  for (const w of N4_WIDE) put(w);
+  // (and the N4 and the Okponglo junction as built from their plan, okjplan.ts)
+  for (const w of OKJ_SEGS) put(w);
   return (grid = g);
 }
 /** distance from (x, z) to the nearest road, lane or footway edge (negative on one) */

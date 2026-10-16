@@ -23,7 +23,8 @@ import { NSIA } from './nsia';
 import { KQ } from './kuffour';
 import { offAsphalt } from './science';
 import { ownsEdges } from './ipsplan';
-import { N4_WIDE, parkingFill, parkingSpots } from './lbplan';
+import { parkingFill, parkingSpots } from './lbplan';
+import { OKJ_SEGS, onOkRoad } from './okjplan';
 import { inLfKeep } from './lfplan';
 import { inEcKeep } from './ecgplan';
 import { ownsOg } from './okgateplan';
@@ -76,13 +77,14 @@ function segDist(s: Seg, x: number, z: number) {
   const t = Math.max(0, Math.min(1, ((x - s.ax) * dx + (z - s.az) * dz) / l2));
   return Math.hypot(x - s.ax - dx * t, z - s.az - dz * t);
 }
-/** the N4's carriageways widened inward beside the stadium (lbplan.ts N4_WIDE): road for the clearance tests, not
- *  roads of their own (no route or nearest-road lookup sees them) */
-const WIDE: Seg[] = N4_WIDE.map(([ax, az, bx, bz, half]) => ({ ax, az, bx, bz, half, road: -3, cls: 0 }));
+/** the N4 through the median's stretch and the Okponglo junction as built from their plan (okjplan.ts: the widenings,
+ *  the arms, the corners, the concrete bay): road for the clearance tests, not roads of their own (no route or
+ *  nearest-road lookup sees them) */
+const WIDE: Seg[] = OKJ_SEGS.map(([ax, az, bx, bz, half]) => ({ ax, az, bx, bz, half, road: -3, cls: 0 }));
 const wideDist = (x: number, z: number) => {
-  if (x < 900 || x > 1110 || z < 890 || z > 1660) return Infinity;
+  if (x < 890 || x > 1110 || z < 890 || z > 1660) return Infinity;
   let best = Infinity;
-  for (const s of WIDE) if (Math.abs(s.az - z) < 6) best = Math.min(best, segDist(s, x, z) - s.half);
+  for (const s of WIDE) if (z > Math.min(s.az, s.bz) - 6 - s.half && z < Math.max(s.az, s.bz) + 6 + s.half) best = Math.min(best, segDist(s, x, z) - s.half);
   return best;
 };
 /**
@@ -1081,6 +1083,8 @@ export function buildCampusLife() {
     const m = new THREE.Mesh(g.geometry(), glowMat);
     m.renderOrder = 2;
     m.userData.shared = true;
+    // (light, not a thing: the glow's cones and pools never stop a bike, meshcollide.ts)
+    m.userData.noCollide = true;
     meshes.push(m);
     group.add(m);
   }
@@ -1214,7 +1218,7 @@ export function buildRoadEdges(map: THREE.Texture) {
           const t = (Math.min(j, n) / n) * len;
           const x = ax + ux * t, z = az + uz * t;
           // (along IPS Road upsa.ts and ipsroad.ts draw the kerbs, sidewalks and verges themselves: ipsplan.ts)
-          const ok = j <= n && !inKqPlain(x, z) && !ownsEdges(x + nx * (at + 0.5), z + nz * (at + 0.5)) && roadClearance(x + nx * (at + 0.8), z + nz * (at + 0.8), 8, ri) > 0.3 && !onRouteSurface(x + nx * (at + 0.5), z + nz * (at + 0.5), ri, undefined, { x, z, nx, nz }) && !buildingAt(x + nx * (at + 1), z + nz * (at + 1)) && !inCutBand(x + nx * at, z + nz * at, 2.5);
+          const ok = j <= n && !inKqPlain(x, z) && !onOkRoad(x + nx * (at + 0.5), z + nz * (at + 0.5)) && !onOkRoad(x + nx * (at + 0.9), z + nz * (at + 0.9)) && !ownsEdges(x + nx * (at + 0.5), z + nz * (at + 0.5)) && roadClearance(x + nx * (at + 0.8), z + nz * (at + 0.8), 8, ri) > 0.3 && !onRouteSurface(x + nx * (at + 0.5), z + nz * (at + 0.5), ri, undefined, { x, z, nx, nz }) && !buildingAt(x + nx * (at + 1), z + nz * (at + 1)) && !inCutBand(x + nx * at, z + nz * at, 2.5);
           if (ok && start < 0) start = j;
           if (!ok && start >= 0) {
             const t0 = (start / n) * len, t1 = (Math.min(j - 1, n) / n) * len;

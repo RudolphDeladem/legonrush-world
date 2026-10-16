@@ -20,7 +20,10 @@ import { SOLIDS } from './solids';
 import { wallSolids } from './enkit';
 import { NODE_XZ, ROADS } from './campusmap';
 import { crownTiles, hash2, vnoise2, type Crown } from './scrubkit';
-import { DRIVE_HALF, FENCE_S, GATE, LOT, PALMS, PAVILION, PLOT, SIGN_FRAME, TREES, WALK, SLIP, SLIP_HALF, driveZ, lotWorld, northEdge, type P2 } from './okgateplan';
+import { DRIVE_HALF, FENCE_S, GATE, LOT, PALMS, PAVILION, PLOT, SIGN_FRAME, TREES, WALK, driveZ, lotWorld, northEdge, type P2 } from './okgateplan';
+import { ARM, CORNERS, armEdges, okjOwns } from './okjplan';
+/** the drive's north kerb at x: the mapped road's, or east of its end the junction's widened arm (okjplan.ts) */
+const kerbNorth = (x: number) => (x > ARM.x0 ? armEdges(x)[0] : northEdge(x));
 
 const PLAIN: Style = { bay: 4, up: [], ground: [], draw: (g) => { g.fillStyle = '#f2f1ec'; g.fillRect(0, 0, 256, 512); } };
 const WHITE = '#f2f1ec', WINE = '#7a2a2e', DARK = '#2b2d2f';
@@ -122,7 +125,9 @@ const O: P2 = [826, 1200];
 const L = (x: number, z: number): P2 => [x - O[0], z - O[1]];
 /** the other roads' centre lines near the work (the gaps in the channel and footways where they cross) */
 const SIDE_ROADS = ROADS.map((r, i) => ({ i, cls: r.cls, pts: r.nodes.map((n) => [NODE_XZ[n * 2], NODE_XZ[n * 2 + 1]] as P2) }))
-  .filter((r) => r.pts.some(([x, z]) => x > 660 && x < 990 && z > 1150 && z < 1300) && !(r.cls <= 1 && r.pts.every(([x, z]) => Math.abs(z - driveZ(x)) < 2.5)));
+  .filter((r) => r.pts.some(([x, z]) => x > 660 && x < 990 && z > 1150 && z < 1300) && !(r.cls <= 1 && r.pts.every(([x, z]) => Math.abs(z - driveZ(x)) < 2.5)))
+  // (the mapped pieces the junction's rebuild replaces, okjplan.ts, are not roads crossing the footways)
+  .filter((r) => !r.pts.every(([x, z]) => okjOwns(ROADS[r.i], x, z)));
 const segD = (x: number, z: number, [ax, az]: P2, [bx, bz]: P2) => { const dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1, f = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2)); return Math.hypot(x - ax - dx * f, z - az - dz * f); };
 const nearSideRoad = (x: number, z: number, r: number) => SIDE_ROADS.some(({ cls, pts }) => pts.some((q, i) => i > 0 && segD(x, z, pts[i - 1], q) < r + (cls <= 2 ? 3.2 : cls === 3 ? 2.3 : 1.3)));
 const inGate = (x: number) => Math.abs(x - GATE.origin[0]) < GATE.u[1] + 0.4;
@@ -149,17 +154,17 @@ const edges: Spec = {
     // North: from the gate along the plot, along the westbound carriageway where the drive splits, round the junction's
     // north-west corner onto the slip, ending against the pitched stone slab. South: the same pavement along the stadium
     // side from the gate to the junction (the owner's follow-up). No channel, no slab joints ----
+    // (east of the mapped road's end at x 923.2 the kerbs are the junction's as rebuilt by the owner's brief of
+    // 2026-10-16, okjplan.ts: Jubilee Drive widening to five lanes, the rounded corners onto the N4)
+    const nw = CORNERS.find((q) => q.key === 'nw')!, sw = CORNERS.find((q) => q.key === 'sw')!;
+    const kerbN = kerbNorth, kerbS = (x: number) => (x > ARM.x0 ? armEdges(x)[1] : driveZ(x) + h);
     const nLine: P2[] = [];
-    for (let x = WALK.x0; x <= 957; x += 1) nLine.push([x, northEdge(x)]);
-    { // the corner: a curve from the westbound's north edge onto the slip's west edge, then along the slip
-      const sEdge = SLIP.map((p, i) => { const a = SLIP[Math.max(0, i - 1)], b = SLIP[Math.min(SLIP.length - 1, i + 1)], dx = b[0] - a[0], dz = b[1] - a[1], l = Math.hypot(dx, dz); return [p[0] + (dz / l) * SLIP_HALF, p[1] - (dx / l) * SLIP_HALF] as P2; });
-      const d0x = SLIP[1][0] - SLIP[0][0], d0z = SLIP[1][1] - SLIP[0][1], l0 = Math.hypot(d0x, d0z);
-      const A = nLine[nLine.length - 1], C: P2 = [sEdge[0][0] - 0.4, northEdge(sEdge[0][0] - 0.4)], B: P2 = [sEdge[0][0] + (d0x / l0) * 3, sEdge[0][1] + (d0z / l0) * 3];
-      for (let t = 0.125; t <= 1.001; t += 0.125) nLine.push([(1 - t) ** 2 * A[0] + 2 * (1 - t) * t * C[0] + t * t * B[0], (1 - t) ** 2 * A[1] + 2 * (1 - t) * t * C[1] + t * t * B[1]]);
-      nLine.push(sEdge[1], sEdge[2]);
-    }
+    for (let x = WALK.x0; x < nw.t2[0]; x += 1) nLine.push([x, kerbN(x)]);
+    // round the north-west corner's kerb onto the N4's southbound edge, ending against the pitched stone slab
+    nLine.push(...nw.arc.slice().reverse(), [nw.t1[0] + nw.u[0] * 3, nw.t1[1] + nw.u[1] * 3]);
     const sLine: P2[] = [];
-    for (let x = WALK.x0; x <= 962; x += 1) sLine.push([x, driveZ(x) + h]);
+    for (let x = WALK.x0; x < sw.t2[0]; x += 1) sLine.push([x, kerbS(x)]);
+    sLine.push(...sw.arc.slice().reverse());
     /** the runs of a line clear of the gate (north) and of the paved roads that cross it (earth tracks and paths do not
      *  break the pavement), its points d metres off the line (negative north and west of travel) */
     const runs = (line: P2[], dTest: number, gate: boolean, keep: (x: number) => boolean) => {
@@ -186,10 +191,9 @@ const edges: Spec = {
     };
     walk(nLine, -1, true, () => true);
     walk(sLine, 1, false, () => true);
-    // the low concrete separator between the westbound and eastbound carriageways where they part before the junction
-    { const m: P2[] = [];
-      for (let x = 928; x <= 962; x += 1) m.push(L(x, ((northEdge(x) + h) + h + (driveZ(x) - h)) / 2));
-      c.push([strip(m, 0, 0.12, 0.16), '#d2cec6']); }
+    // (the low concrete separator that stood between the mapped westbound and eastbound carriageways before the junction
+    // is gone: the junction brief of 2026-10-16 makes Jubilee Drive one five-lane arm there, its directions divided by
+    // paint, no raised separator in it, okjunction.ts)
     // the pitched stone slab behind the corner (the owner's picture 4): grey-brown stones rising gently from the back kerb
     { const i0 = nLine.findIndex(([x]) => x >= 946), seg = nLine.slice(i0), d0 = WALK.kerb + WALK.w + WALK.back;
       const a = offset(seg, -d0), full = offset(seg, -(d0 + 4.5)), b = full.map(([x, z], i) => { const t = Math.min(1, i / 7); return [a[i][0] + (x - a[i][0]) * t, a[i][1] + (z - a[i][1]) * t] as P2; }), pos: number[] = [], uv: number[] = [], idx: number[] = [];
@@ -198,7 +202,7 @@ const edges: Spec = {
       const m = new THREE.Mesh(g, cobbleMat()); m.receiveShadow = true; m.userData.noCollide = true; k.meshes.push(m); }
     // ---- slim road lamps behind the north footway (S08, S10; the owner's picture 2); the stadium's floodlights are its own ----
     for (let x = 690; x < 958; x += 34) {
-      const z = northEdge(x) - (WALK.kerb + WALK.w + WALK.back + 1.0);
+      const z = kerbNorth(x) - (WALK.kerb + WALK.w + WALK.back + 1.0);
       if (inGate(x) || crossesAt(x, z)) continue;
       const [lx, lz] = L(x, z);
       c.push([new THREE.CylinderGeometry(0.06, 0.09, 9, 8).translate(lx, 4.5, lz), '#9da3a8'], [box(lx - 0.08, lx + 0.08, 8.85, 8.95, lz, lz + 2.4), '#9da3a8'], [box(lx - 0.15, lx + 0.15, 8.7, 8.9, lz + 2.1, lz + 2.7), '#d8dcdf']);
@@ -223,7 +227,7 @@ const edges: Spec = {
           wallSolids(px, pz, x, z, 0.15);
         }
         prev = [x, z];
-        if (hash2(x, 3) < 0.45) { const sz = driveZ(x) + h + 0.22 + WALK.w + 1.4 + hash2(x, 5) * 2.5, [sx, sl] = L(x + 1, sz); c.push([new THREE.IcosahedronGeometry(0.55 + hash2(x, 7) * 0.35, 0).scale(1.3, 0.7, 1.3).translate(sx, 0.35, sl), hash2(x, 9) < 0.5 ? '#4f7a32' : '#6a8a3e']); }
+        if (hash2(x, 3) < 0.45) { const sz = kerbS(x) + 0.22 + WALK.w + 1.4 + hash2(x, 5) * 2.5, [sx, sl] = L(x + 1, sz); c.push([new THREE.IcosahedronGeometry(0.55 + hash2(x, 7) * 0.35, 0).scale(1.3, 0.7, 1.3).translate(sx, 0.35, sl), hash2(x, 9) < 0.5 ? '#4f7a32' : '#6a8a3e']); }
       } }
     // ---- the taxi lot: white bays, the kerbed tree islands ----
     { const P = (s: number, t: number) => L(...lotWorld(s, t)), inIsland = (s: number, _t0 = 99) => LOT.islands.some(([a, b]) => s > a - 0.6 && s < b + 0.6) || (LOT.gaps.some(([a, b]) => s > a && s < b));
@@ -266,7 +270,7 @@ export function buildOkGateGrounds() {
   const edgeIn = (x: number, z: number) => { let d = 1e9; for (let i = 0, j = PLOT.length - 1; i < PLOT.length; j = i++) { const [ax, az] = PLOT[j], [bx, bz] = PLOT[i], dx = bx - ax, dz = bz - az, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz || 1))); d = Math.min(d, Math.hypot(ax + dx * t - x, az + dz * t - z)); } return d; };
   // (the owner's revised soil order: the plot is the ground itself, soil exposed with dry grass in patches, the lawn's own
   // grass between; its coverage fades over its last 3 m so the lawn round it meets it with no seam; soilground.ts)
-  const inPlot = (x: number, z: number) => inPoly(PLOT, x, z) && !nearSideRoad(x, z, -0.5) && z <= northEdge(x) - (WALK.kerb + WALK.w + WALK.back);
+  const inPlot = (x: number, z: number) => inPoly(PLOT, x, z) && !nearSideRoad(x, z, -0.5) && z <= kerbNorth(x) - (WALK.kerb + WALK.w + WALK.back);
   const soil = soilMesh([0, 0], 800, 976, 1108, 1236, 1.0, (x, z) => {
     if (!inPlot(x, z)) return null;
     const w = ramp(0.48, 0.72, vnoise2(x / 8, z / 8));
@@ -278,7 +282,7 @@ export function buildOkGateGrounds() {
   // sparse low scrub over the plot (not a garden, not a forest)
   for (let i = 0; i < 70; i++) {
     const x = 812 + hash2(i, 1) * 150, z = 1118 + hash2(i, 2) * 108;
-    if (!inPoly(PLOT, x, z) || nearSideRoad(x, z, 2) || z > northEdge(x) - (WALK.kerb + WALK.w + WALK.back) - (x > 944 ? 5.5 : 1)) continue;
+    if (!inPoly(PLOT, x, z) || nearSideRoad(x, z, 2) || z > kerbNorth(x) - (WALK.kerb + WALK.w + WALK.back) - (x > 944 ? 5.5 : 1)) continue;
     crowns.push({ x, z, r: 0.6 + hash2(i, 3) * 0.6, h: 0.9 + hash2(i, 4) * 0.6, base: 0, trunk: 0, color: hash2(i, 5) < 0.5 ? '#6f7a3c' : '#7c7a46', seed: hash2(i, 6), solid: false });
   }
   group.add(...crownTiles(crowns, 100, 75));

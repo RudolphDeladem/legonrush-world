@@ -35,7 +35,8 @@ import { buildEvandyGrounds } from './evandy';
 import { NOG_TREES } from './nogtrees';
 import { NG, NOG_BACK, NOG_FINISH, WAG_SIDES, WG } from './nogplan';
 import { ugLocal } from './ugmcplan';
-import { n4Widen } from './lbplan';
+import { okjOwns, okjRuns, onOkRoad } from './okjplan';
+import { okjMeshes, okjSurfaces } from './okjunction';
 import { ownsEdges } from './ipsplan';
 import { collisionRoots } from './meshcollide';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, roadClearance, ROAD_WIDTH } from './life';
@@ -383,12 +384,18 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
   const pathCaps: THREE.BufferGeometry[] = [];
   for (const [ri, r] of ROADS.entries()) {
     // (a road partly earth, ghlplan.ts: sampled every 2 m, so its asphalt or concrete stops where the earth begins)
-    const all = EARTH_SET.has(ri) ? densifyAll(r.nodes.map((i) => [NODE_XZ[i * 2], NODE_XZ[i * 2 + 1]] as [number, number])) : densify(r.nodes.map((i) => [NODE_XZ[i * 2], NODE_XZ[i * 2 + 1]] as [number, number]));
-    // the stairway up to Commonwealth Hall is modelled step by step (commonwealth.ts): no flat path over it
+    const line = r.nodes.map((i) => [NODE_XZ[i * 2], NODE_XZ[i * 2 + 1]] as [number, number]);
+    // (the Okponglo junction and the N4 through the median's stretch are built from their own plan, okjplan.ts: the
+    // mapped carriageways, slip roads and connectors there are not drawn, and any other road stops at its kerb)
     const runs: [number, number][][] = [[]];
-    for (const p of all) {
-      // (and where the science campus brief has a road as earth or brick, drawn by sciencesite.ts)
-      if ((r.surface === 'steps' && inStairs(p[0], p[1])) || offAsphalt(p[0], p[1])) { if (runs[runs.length - 1].length) runs.push([]); } else runs[runs.length - 1].push(p);
+    for (const piece of okjRuns(r, line)) {
+      const all = EARTH_SET.has(ri) ? densifyAll(piece) : densify(piece);
+      if (runs[runs.length - 1].length) runs.push([]);
+      // the stairway up to Commonwealth Hall is modelled step by step (commonwealth.ts): no flat path over it
+      for (const p of all) {
+        // (and where the science campus brief has a road as earth or brick, drawn by sciencesite.ts)
+        if ((r.surface === 'steps' && inStairs(p[0], p[1])) || offAsphalt(p[0], p[1])) { if (runs[runs.length - 1].length) runs.push([]); } else runs[runs.length - 1].push(p);
+      }
     }
     const half = ROAD_WIDTH[r.cls] / 2;
     const footpath = r.cls === 4;
@@ -396,15 +403,7 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
     const buf = footpath ? pathBuf : n4 ? n4Buf : roadBuf;
     for (const pts of runs) {
       if (pts.length < 2) continue;
-      const base = buf.pos.length / 3;
       polyStrip(pts, half, buf.pos, buf.idx);
-      // (beside the stadium the N4's carriageways reach in to the narrow median, lbplan.ts: each inner edge pushed out)
-      if (n4) pts.forEach(([x, z], i) => {
-        const w = n4Widen(x, z), a = (base + i * 2) * 3, b = a + 3;
-        if (!w) return;
-        const inner = (w > 0) === (buf.pos[b] > buf.pos[a]) ? b : a;
-        buf.pos[inner] += w;
-      });
       for (const [x, z] of [pts[0], pts[pts.length - 1]]) (footpath ? pathCaps : n4 ? n4Caps : caps).push(new THREE.CircleGeometry(half, 10).rotateX(-Math.PI / 2).translate(x, 0, z));
     }
   }
@@ -433,10 +432,17 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
   paths.receiveShadow = true;
   // (on a bridge deck these lie on the deck, not on the road in the cutting below)
   roads.userData.heightFn = paths.userData.heightFn = crestHeight;
+  // the Okponglo junction's carriageways, arms and corners in the same asphalt (okjunction.ts)
+  const okj = okjSurfaces();
+  { const base = n4Buf.pos.length / 3; n4Buf.pos.push(...okj.asphalt.pos); for (const i of okj.asphalt.idx) n4Buf.idx.push(base + i); }
   const n4Road = new THREE.Mesh(merged(flatGeometry(n4Buf.pos, n4Buf.idx), n4Caps), asphalt);
   n4Road.receiveShadow = true;
   n4Road.userData.heightFn = floorHeight;
   group.add(paths, roads, n4Road);
+  // and its concrete stopping bay (zone 5) and its paint, lowered with the N4
+  const okm = okjMeshes(concreteTexture());
+  wettable(okm.material);
+  for (const m of [okm.bay, ...okm.paint]) { m.userData.heightFn = floorHeight; group.add(m); }
   yield 'step';
 
   // painted centre dashes on the main and through roads, all in one mesh
@@ -456,17 +462,11 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
       let t = carry;
       for (; t + 3 <= len; t += 9) {
         const x0 = ax + dx * t, z0 = az + dz * t, x1 = x0 + dx * 3, z1 = z0 + dz * 3;
-        // (none across the Okponglo junction's box: the brief has no painted line through it)
-        if (x0 > 958 && x0 < 1024 && z0 > 1195 && z0 < 1233) continue;
-        // where the N4's carriageway is widened inward (lbplan.ts) its one centre line becomes two lane lines, a third
-        // and two thirds across, as the satellite shows
-        const w = r.cls === 0 && r.name === 'J.J. Rawlings Avenue' ? n4Widen(x0, z0) : 0;
-        const offs = w ? [1, 2].map((q) => -Math.sign(w) * 4.5 + ((9 + Math.abs(w)) * q / 3) * Math.sign(w)) : [0];
-        for (const o of offs) {
-          const base = dashPos.length / 3;
-          dashPos.push(x0 + o - nx, 0, z0 - nz, x0 + o + nx, 0, z0 + nz, x1 + o + nx, 0, z1 + nz, x1 + o - nx, 0, z1 - nz);
-          dashIdx.push(base, base + 1, base + 2, base, base + 2, base + 3);
-        }
+        // (none on the Okponglo junction's roads: their lanes are painted from its plan, okjunction.ts)
+        if (okjOwns(r, x0, z0) || okjOwns(r, x1, z1)) continue;
+        const base = dashPos.length / 3;
+        dashPos.push(x0 - nx, 0, z0 - nz, x0 + nx, 0, z0 + nz, x1 + nx, 0, z1 + nz, x1 - nx, 0, z1 - nz);
+        dashIdx.push(base, base + 1, base + 2, base, base + 2, base + 3);
       }
       carry = Math.max(0, t - len);
     }
@@ -681,6 +681,21 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
     if (s0 >= 0) stairs.push([s0, L]);
     stairs.sort((a, b) => a[0] - b[0]);
   }
+  // (nor over the Okponglo junction and the N4 beside it, built from their own plan, okjplan.ts: the route rides on
+  // that road, and lays no road, lines, pavements, kerbs, trees or lamps of its own over its lanes and corners, the
+  // owner's junction brief of 2026-10-16, E1 and RD-008)
+  const okjSpans: [number, number][] = [];
+  {
+    let s0 = -1;
+    for (let d = 0; d <= L; d += 1) {
+      const on = [0, -ROAD_HALF - 1.6, ROAD_HALF + 1.6].some((l) => { const p = track.pose(d, l); return onOkRoad(p.x, p.z); });
+      if (on && s0 < 0) s0 = Math.max(0, d - 2);
+      if (!on && s0 >= 0) { okjSpans.push([s0, Math.min(L, d + 2)]); s0 = -1; }
+    }
+    if (s0 >= 0) okjSpans.push([s0, L]);
+    stairs.push(...okjSpans);
+    stairs.sort((a, b) => a[0] - b[0]);
+  }
   const paved = openRuns(stairs, L), onStairs = (d: number) => stairs.some(([a, b]) => d > a && d < b);
   // stretches where the real roads carry no paint and no pavements (the owner's NSIA Road brief): the route's road
   // stays, plain, with no edge lines, centre dashes, pavements or decorative trees
@@ -695,6 +710,8 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
       if (!on && s0 >= 0) { plain.push([s0, d]); s0 = -1; }
     }
     if (s0 >= 0) plain.push([s0, L]);
+    plain.push(...okjSpans);
+    plain.sort((a, b) => a[0] - b[0]);
   }
   const onPlain = (d: number) => plain.some(([a, b]) => d > a && d < b);
   // stretches whose kerbs, sidewalks, verges, trees and lights a modelled site draws (IPS Road: upsa.ts, ipsroad.ts): the
@@ -709,7 +726,7 @@ export function buildRouteLayer(track: Track, o: RouteLayerOptions) {
       if (!on && s0 >= 0) { out.push([s0, d]); s0 = -1; }
     }
     if (s0 >= 0) out.push([s0, L]);
-    return out;
+    return [...out, ...okjSpans].sort((a, b) => a[0] - b[0]);
   });
   const onOwned = (d: number, s: number) => owned[s > 0 ? 1 : 0].some(([a, b]) => d > a && d < b);
   const lined = openRuns([...stairs, ...plain].sort((a, b) => a[0] - b[0]), L);

@@ -34,6 +34,9 @@ import { pavers, rod, run, strip, type V3 } from './upsa';
 import { concrete } from './concrete';
 import { lattice } from './labawaleshie';
 import { E_HALF, MEDIAN, SCRUB, W_HALF, eastInner, westInner, xEast, xWest } from './lbplan';
+import { CORNERS, CORNER_R, eOuter, onOkRoad } from './okjplan';
+/** within 1.2 m of the junction's road (toward it from the south-east block) */
+const nearOkRoad = (x: number, z: number) => onOkRoad(x, z) || onOkRoad(x - 1.2, z) || onOkRoad(x, z - 1.2) || onOkRoad(x - 0.85, z - 0.85);
 import { ramp, soilMesh } from './soilground';
 import {
   ALPHA, BANKS, DIAMED, GREENWALL, LEASAFRIC, LOWROOF, MEDIAN_BOARDS, MEDIAN_RUNS, OK_KEEP, OK_OUTLINES, P21, PLAZA, PROVISION, SIGNSHOP,
@@ -313,7 +316,10 @@ export function wallLine(c: Part[], O: P2, a: P2, b: P2, h: number, t: number, b
 /** a point along a line from a to b at t (0..1) */
 const lerp2 = (a: P2, b: P2, t: number): P2 => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
 /** the east frontage line: off metres out from the northbound carriageway's edge, at z */
-const eastLine = (z: number, off: number): P2 => [xEast(z) + E_HALF + off, z];
+/** the east frontage's base line: the mapped edge of the northbound carriageway, or the built kerb where the
+ *  junction's widening (zone 4, okjplan.ts) pushes it farther out, so nothing along the frontage stands on the road */
+const eastFront = (z: number) => Math.max(xEast(z) + E_HALF, eOuter(z) + 0.45);
+const eastLine = (z: number, off: number): P2 => [eastFront(z) + off, z];
 /** a run of wall along the east frontage from z0 to z1, broken into short straight pieces (the road bends a little) */
 function frontWall(c: Part[], O: P2, off: number, z0: number, z1: number, h: number, t: number, body: string, cap: string, base?: string) {
   const n = Math.max(1, Math.round((z1 - z0) / 6));
@@ -380,6 +386,8 @@ const corridor: Spec = {
     { const sm = k.meshes[k.meshes.length - 1]; sm.position.y += MY; }
     // the boards on the median
     for (const [z, kind] of MEDIAN_BOARDS) {
+      // (none on the tails the junction brief of 2026-10-16 removed: the median ends at its pulled-back tips, U-01)
+      if (z > MEDIAN.gap[0] - 2.5 && z < MEDIAN.gap[1] + 2.5) continue;
       const a = westInner(z), o = eastInner(z), x = (a + o) / 2 + (kind === 'visa' ? -0.6 : kind === 'kfc' ? 0.4 : 0), y = gh(x, z) + MY;
       const [px, pz] = A(x, z);
       if (kind === 'bluePylon') {
@@ -638,7 +646,7 @@ const north: Spec = {
     // ---- the forecourt: concrete slabs from the kerb to the shops, worn patches; kiosks and canopies at the corner ----
     {
       const rows: [number, number, number][] = [], edge: Part[] = [];
-      for (let z = 1112; z <= 1196.01; z += 2) rows.push([z, xEast(z) + E_HALF + 0.3, z < p.north ? 1011.5 : z <= p.south + 0.5 ? front - 0.05 : z < LOWROOF.gz1 + 0.3 ? LOWROOF.grille - 0.15 : ALPHA.x0 - 0.5]);
+      for (let z = 1112; z <= 1196.01; z += 2) rows.push([z, eOuter(z) + 0.75, z < p.north ? 1011.5 : z <= p.south + 0.5 ? front - 0.05 : z < LOWROOF.gz1 + 0.3 ? LOWROOF.grille - 0.15 : ALPHA.x0 - 0.5]);
       strip(k, rows.map(([z, a]) => [L(a), Lz(z)] as P2), rows.map(([z, , o]) => [L(o), Lz(z)] as P2), 0.05, SLABS(), edge, '#b8b3a9', null);
       // (no soil over the slabs: the owner's revised soil order, R-4; the patches that lay here on the paving are gone)
     }
@@ -772,7 +780,7 @@ const southFront: Spec = {
     c.push([box(X(NB[0]) - 0.02, X(NB[1]) + 0.02, nt, nt + 0.7, Z(NB[2]) - 0.02, Z(NB[2]) + 0.18), '#86b4d6']);
     // ---- the forecourt (Pair 8): gravel and compacted soil, the wire-mesh fence with its posts and the open gate ----
     const fc = SIGNSHOP.forecourt;
-    k.meshes.push(soilMesh(GO, fc.x0, fc.x1, fc.z0, fc.z1 + 0.5, 0.5, (x, z) => (x < xEast(z) + E_HALF + 0.3 ? null : 1), (x, z) => {
+    k.meshes.push(soilMesh(GO, fc.x0, fc.x1, fc.z0, fc.z1 + 0.5, 0.5, (x, z) => (x < eOuter(z) + 0.75 || nearOkRoad(x, z) ? null : 1), (x, z) => {
       // gravel over compacted soil, the soil showing through where it is worn (no two-tone stamp)
       const m = vnoise(x * 3, z * 3), t = ramp(0.5, 0.7, vnoise(x * 0.4, z * 0.4));
       return [0.6 + m * 0.06 - t * 0.02, 0.57 + m * 0.05 - t * 0.1, 0.52 + m * 0.05 - t * 0.17];
@@ -788,18 +796,25 @@ const southFront: Spec = {
       P.wall(mesh, a[0], a[1], bb[0], bb[1], 0.05, 2.05, len / 0.8, 2.0 / 0.8, 0);
       wallSolids(a[0], a[1], bb[0], bb[1], 0.15);
     };
-    const nwX = xEast(fc.z0) + E_HALF + 1.2;
-    fence([nwX, fc.z0], [1028.5, fc.z0]);
+    // (its corner on the junction follows the rounded kerb of the junction's south-east corner, 1.2 m in from it: the
+    // junction brief of 2026-10-16 rounds that corner for the bottom-right route, okjplan.ts)
+    const se = CORNERS.find((q) => q.key === 'se')!, rr = CORNER_R - 1.2;
+    const xN = se.c[0] - Math.sqrt(Math.max(0, rr * rr - (se.c[1] - fc.z0) ** 2)), xW = eOuter(fc.z1) + 1.65;
+    const zW = se.c[1] - Math.sqrt(Math.max(0, rr * rr - (se.c[0] - xW) ** 2));
+    fence([xN, fc.z0], [1028.5, fc.z0]);
     fence([1034.5, fc.z0], [fc.x1, fc.z0]);
-    fence([nwX, fc.z0], [xEast(fc.z1) + E_HALF + 1.2, fc.z1]);
+    { const a0 = Math.atan2(fc.z0 - se.c[1], xN - se.c[0]), a1 = Math.atan2(zW - se.c[1], xW - se.c[0]), n = 5;
+      for (let i = 0; i < n; i++) { const t0 = a0 + ((a1 - a0) * i) / n, t1 = a0 + ((a1 - a0) * (i + 1)) / n;
+        fence([se.c[0] + Math.cos(t0) * rr, se.c[1] + Math.sin(t0) * rr], [se.c[0] + Math.cos(t1) * rr, se.c[1] + Math.sin(t1) * rr]); } }
+    fence([xW, zW], [xW, fc.z1]);
     // ---- the sidewalk along the frontage: interlocking blocks between the kerb and the walls, a rough verge ----
     const rows: [number, number, number][] = [];
-    for (let z = 1258; z <= 1474; z += 2) rows.push([z, xEast(z) + E_HALF + 0.35, xEast(z) + E_HALF + 3.2]);
+    for (let z = 1258; z <= 1474; z += 2) rows.push([z, eOuter(z) + 0.8, eastFront(z) + 3.2]);
     const edge: Part[] = [];
     strip(k, rows.map(([z, a]) => [X(a), Z(z)] as P2), rows.map(([z, , o]) => [X(o), Z(z)] as P2), 0.06, pavers('grey'), edge, '#bdb8ae', null);
     if (edge.length) { const e = new THREE.Mesh(merge(edge), concrete(0.2)); e.receiveShadow = true; k.meshes.push(e); }
     k.meshes.push(soilMesh(GO, 1015, 1065, 1258, 1474, 0.6, (x, z) => {
-      const d = x - (xEast(z) + E_HALF);
+      const d = x - eastFront(z);
       if (d < 3.3 || d > 4.5) return null;
       return 1 - ramp(0.48, 0.62, vnoise(x * 2, z * 0.7));
     }));

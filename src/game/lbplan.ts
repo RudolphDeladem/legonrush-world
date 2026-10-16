@@ -70,27 +70,28 @@ for (let z = WIDEN.z0; z < WIDEN.z1; z += 3) for (const west of [true, false]) {
   N4_WIDE.push([(a0 + b0) / 2, z, (a1 + b1) / 2, z + 3, (b0 - a0) / 2 + 0.3]);
 }
 
-/** the junction box where La Bawaleshie Road and Jubilee Drive cross the N4. The mapped slip lanes and approaches take
- *  up the whole box at their mapped widths, so the signal posts stand where there is ground: on the four outer corners
- *  and the two median noses (Pairs 5-7, 10) */
+/** the junction box where La Bawaleshie Road and Jubilee Drive cross the N4 (the road itself is built from its plan,
+ *  okjplan.ts; the signal posts stand on its four corner verges and the two median noses, okjIslands there). ISLANDS are
+ *  the earlier spots, kept for reference (Pairs 5-7, 10) */
 export const JUNCTION = { x0: 958, x1: 1028, z0: 1195, z1: 1262 };
 export const ISLANDS: Record<'nw' | 'ne' | 'se' | 'sw' | 'mn' | 'ms', [number, number]> = { nw: [967, 1209], ne: [1019, 1204], se: [1025, 1241], sw: [966, 1243], mn: [987.3, 1185], ms: [997.9, 1242.5] };
 
 /** the signal assemblies (the Okponglo signals brief, pictures 1, 2, 11): per island the unit direction its face looks
  *  (toward the approaching traffic) and, for a mast-arm, the arm's direction over that approach's lanes and its reach.
- *  Heights and reach are calibrated to the carriageways' mapped widths, not measured (no metres in the sources) */
+ *  Heights are calibrated, not measured (no metres in the sources); the reach spans the approach's middle lanes (the
+ *  junction brief of 2026-10-16: four on the N4, three on Jubilee Drive) */
 export const SIGNAL = { mast: 7.2, pole: 5.4, armY: 6.6, lowY: 2.9, heads: [0.62, 0.92] };
 export const SIGNALS = {
-  mn: { face: [0, -1] as P2, arm: [-1, 0] as P2, reach: 12.5 },
-  ms: { face: [0, 1] as P2, arm: [1, 0] as P2, reach: 12.5 },
-  sw: { face: [-1, 0] as P2, arm: [0, -1] as P2, reach: 8.5 },
+  mn: { face: [0, -1] as P2, arm: [-1, 0] as P2, reach: 14 },
+  ms: { face: [0, 1] as P2, arm: [1, 0] as P2, reach: 14 },
+  sw: { face: [-1, 0] as P2, arm: [0, -1] as P2, reach: 9.5 },
   ne: { face: [1, 0] as P2, arm: [0, 1] as P2, reach: 11 },
   nw: { face: [1, 0] as P2, arm: [0, 0] as P2, reach: 0 },
   se: { face: [-1, 0] as P2, arm: [0, 0] as P2, reach: 0 },
 };
 
 /** the median between the carriageways: kerbed patchy grass and red earth, young planted trees (Pairs 1, 2, 4, 9, 13) */
-export const MEDIAN = { z0: 905, z1: 1640, gap: [1187, 1240] as [number, number], tree: 19 };
+export const MEDIAN = { z0: 905, z1: 1640, gap: [1179.5, 1257] as [number, number], tree: 19 };
 
 /** the neighbourhood east of the N4 (Pairs 2, 4, 11, 12, 15-19; Additional References 3 to 6): every footprint here is
  *  built as the local mixed commercial fabric, not the campus template */
