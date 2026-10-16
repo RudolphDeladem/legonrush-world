@@ -11,7 +11,7 @@ import { deckAt } from './cutplan';
 import { walkSurfaceAt } from './walksurf';
 import { Tufts } from './tufts';
 import { installLogDepthOffset, tagLogDepthOffsets } from './logdepth';
-import { buildCampusAsync, buildRouteLayer, buildSky, disposeLayer, lampGlow, LANES, ROAD_HALF } from './world';
+import { buildCampusAsync, buildRouteLayer, buildSky, disposeLayer, GENERIC_BUILDINGS, lampGlow, LANES, ROAD_HALF } from './world';
 import { compactGeometry, freeAfterUpload } from './memory';
 import { AREAS, buildingAt, buildingNear, mapBounds, roadAt } from './campusmap';
 import { DECK_SOLIDS, inPassage, solidAt } from './solids';
@@ -303,9 +303,11 @@ function footBlocked(x: number, z: number, floor: number) {
   if (d && floor > d.h - 2.5) return DECK_SOLIDS.at(x, z, 0.25);
   if (gates.blocked(x, z) || solidAt(x, z, 0.25) || walkBlocked(x, z, floor)) return true;
   if (roadClearance(x, z, 6, -1, true) <= 0) return false;
-  // (the map's building outlines do not stop a walker: some reach well past the drawn walls, over the ground before a
-  // porch, and the walk grid already holds every drawn wall, the generic buildings' included. The owner, 2026-10-16:
-  // the Bani blocks' entrance steps could not be reached)
+  // (a building modelled from photos stops a walker by its drawn walls (the walk grid), not by its map outline, which
+  // can reach well past them over the ground before a porch: the owner, 2026-10-16, could not reach the Bani blocks'
+  // entrance steps. A generic block's outline is its wall)
+  const b = buildingNear(x, z, 0.35);
+  if (b && GENERIC_BUILDINGS.has(b) && !inPassage(x, z)) return true;
   return inWater(x, z);
 }
 function freeBlocked(x: number, z: number, onFoot = false) {

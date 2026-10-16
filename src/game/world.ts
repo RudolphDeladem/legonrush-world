@@ -39,7 +39,7 @@ import { ugLocal } from './ugmcplan';
 import { okjOwns, okjRuns, onOkRoad } from './okjplan';
 import { okjMeshes, okjSurfaces } from './okjunction';
 import { ownsEdges } from './ipsplan';
-import { collisionRoots, walkRoots } from './meshcollide';
+import { collisionRoots } from './meshcollide';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, roadClearance, ROAD_WIDTH } from './life';
 
 export const LANES = [-2.4, 0, 2.4];
@@ -261,6 +261,9 @@ function densifyAll(pts: [number, number][]) {
  * The real campus, built once: ground, ground areas (pitches, parking, water),
  * every road and footpath at its real width, and every building footprint.
  */
+/** the buildings drawn as generic blocks on their map outlines (the rest are modelled from photos by their sites):
+ *  for these the outline is the wall, and it stops a person on foot (Game.ts) */
+export const GENERIC_BUILDINGS = new Set<Building>();
 export function buildCampus() {
   const it = campusSteps();
   let r = it.next();
@@ -476,7 +479,9 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
 
   // every building: cream walls with window bays, a plinth, and terracotta tile roofs
   // (buildings modelled from photos are built by halls.ts and the block-model sites instead)
-  const buildings = buildBuildings(BUILDINGS.filter((b) => !isDiasporaHall(b) && !BLOCK_SITES.some((s) => s.replaces(b))), (b) => nogDoors(b, greatHallPrecinct(b) ?? gateLow(b) ?? lowZones(b) ?? medStyle(b) ?? upsaStyle(b) ?? newPentStyle(b) ?? behindPentStyle(b) ?? whitePaint(b)));
+  GENERIC_BUILDINGS.clear();
+  for (const b of BUILDINGS) if (!isDiasporaHall(b) && !BLOCK_SITES.some((s) => s.replaces(b))) GENERIC_BUILDINGS.add(b);
+  const buildings = buildBuildings([...GENERIC_BUILDINGS], (b) => nogDoors(b, greatHallPrecinct(b) ?? gateLow(b) ?? lowZones(b) ?? medStyle(b) ?? upsaStyle(b) ?? newPentStyle(b) ?? behindPentStyle(b) ?? whitePaint(b)));
   group.add(buildings);
   yield 'step';
   const halls = buildDiasporaHalls();
@@ -532,8 +537,6 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
   yield 'step';
   // what the free-ridden bike bumps into besides footprints and trunks (meshcollide.ts)
   collisionRoots(halls, ...sites, life, gateways);
-  // (a person on foot meets the generic buildings' drawn walls rather than their outlines: meshcollide.ts)
-  walkRoots(buildings);
   cullBeyondFog(group, [...(buildings.children as THREE.Mesh[]), ...(halls.userData.cullMeshes as THREE.Mesh[]), ...sites.flatMap((s) => s.userData.cullMeshes as THREE.Mesh[]), ...(life.userData.cullMeshes as THREE.Mesh[]), ...edges.meshes, ...(scrub.userData.cullMeshes as THREE.Mesh[])]);
   return group;
 }
