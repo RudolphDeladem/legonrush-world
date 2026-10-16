@@ -23,7 +23,7 @@ import { OPASSAGES, SOLIDS } from './solids';
 import { roadClearance } from './life';
 
 export type GateMake = 'boards' | 'panels' | 'grille' | 'sheet';
-export interface GatewayRecord { residence: string; entrance: string; kind: 'passage' | 'standalone' | 'open passage' | 'none'; depth?: number; width?: number; make?: GateMake | null; lodge?: 'left' | 'right' | null; note?: string }
+export interface GatewayRecord { residence: string; entrance: string; kind: 'passage' | 'standalone' | 'driveway' | 'open passage' | 'none'; depth?: number; width?: number; make?: GateMake | null; lodge?: 'left' | 'right' | null; note?: string }
 export const GATEWAYS: GatewayRecord[] = [];
 
 /** the halls built round courts: the entrance is a passage through to the court */
@@ -32,6 +32,9 @@ export const COURT_HALLS = new Set(['commonwealth', 'sarbah', 'volta', 'akuafo',
 const OWN_GATE = new Set(['vikings', 'valco-1', 'valco-2', 'new-pent']);
 /** open entrances, no gate (the owner): Evandy's main block and its annexes */
 const NO_GATE = new Set(['evandy']);
+/** the passage's width where the hall's own doorway sets it (Commonwealth's recess: the grilled doors 5 m across,
+ *  commonwealth.ts); the Diaspora halls' 3 m between their entrance columns */
+const PASSAGE_WIDTH: Record<string, number> = { commonwealth: 5.0, 'jean-nelson': 3.0, limann: 3.0, sey: 3.0, kwapong: 3.0 };
 /** the lodge on the left going in (the owner) */
 const LODGE_LEFT = new Set(['evandy', 'limann', 'sey']);
 /** where the lodge is part of the site's own model already (residence.ts existingLodge), or there is none */
@@ -295,7 +298,7 @@ export function buildGateways(roots: THREE.Object3D[]): THREE.Group {
     if (court && (depth === null || depth < 1)) { rec.note = 'no court found along the entrance line'; depth = null; }
     if (court && depth !== null) {
       // ----- a passage through to the court -----
-      const a0 = facadeAt(e, ux, uz) - 0.6, a1 = depth + 0.4, W = r.id.startsWith('dia') || ['jean-nelson', 'limann', 'sey', 'kwapong'].includes(r.id) ? 3.0 : 3.6, hw = W / 2, H = 3.1;
+      const a0 = facadeAt(e, ux, uz) - 0.6, a1 = depth + 0.4, W = PASSAGE_WIDTH[r.id] ?? 3.6, hw = W / 2, H = 3.1;
       let gmin = Infinity, gmax = -Infinity;
       for (let a = a0; a <= a1; a += 0.5) for (const b of [-hw, 0, hw]) { const [x, z] = at(a, b), g = gh(x, z); gmin = Math.min(gmin, g); gmax = Math.max(gmax, g); }
       cuts.push({ ox: e.at[0], oz: e.at[1], ux, uz, a0, a1, hw, y0: gmin + 0.04, y1: gmax + H });
@@ -365,7 +368,22 @@ export function buildGateways(roots: THREE.Object3D[]): THREE.Group {
     // stands at the first place along the way in, else out, clear of it)
     const clear = (a: number) => [-hw - 1.9, 0, hw + 1.9].every((b) => roadClearance(...at(a, b), 6, -1, true) >= 0.4) && ![-hw - 1, 0, hw + 1].some((b) => buildingNear(...at(a, b), 0.2));
     const a = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, -1, -2, -3, -4, -5, -6].map((d) => a00 + d).find(clear);
-    if (a === undefined) { rec.note = 'the entrance is on a road with no clear place near it: no gate placed'; return; }
+    if (a === undefined) {
+      // ----- a driveway gate: piers at the road's edges, two leaves across it that open for the bike too -----
+      const edge = (s: 1 | -1) => { for (let b = 0.5; b < 9; b += 0.25) if (roadClearance(...at(a00, s * b), 6, -1, true) > 0.3) return b + 0.3; return 9; };
+      const bl = edge(-1), br = edge(1);
+      if (bl + br > 14) { rec.note = 'the entrance is on a road too wide for a gate: none placed'; return; }
+      const mid = (br - bl) / 2, [cx, cz] = at(a00, mid), g = gh(cx, cz), W = bl + br, hw = W / 2;
+      const P = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number, col: string) => parts.push([box(x0, x1, y0, y1, z0, z1).applyMatrix4(mat(a00, mid)).translate(0, g, 0), col]);
+      for (const s of [-1, 1]) {
+        P(s * hw - 0.3 + s * 0.3, s * hw + 0.3 + s * 0.3, -0.3, 2.6, -0.3, 0.3, '#efe9dc');
+        P(s * hw - 0.38 + s * 0.3, s * hw + 0.38 + s * 0.3, 2.6, 2.72, -0.38, 0.38, '#d8cfbd');
+        const [px, pz] = at(a00, mid + s * (hw + 0.3)); SOLIDS.add(px, pz, 0.35);
+      }
+      Object.assign(rec, { kind: 'driveway', width: +W.toFixed(1), lodge: null, note: 'a driveway gate across the entrance road: it opens for the bike as well as for walkers' });
+      hang(r, e, make!, [cx, cz], ux, uz, nx, nz, W, 2.0, g, true);
+      return;
+    }
     if (a !== a00) rec.note = `the gate stands ${Math.abs(a - a00).toFixed(0)} m ${a > a00 ? 'in' : 'out'} from the entrance point, clear of the road`;
     const [cx, cz] = at(a, 0), g = gh(cx, cz);
     const P = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number, col: string) => parts.push([box(x0, x1, y0, y1, z0, z1).applyMatrix4(mat(a, 0)).translate(0, g, 0), col]);
@@ -379,14 +397,14 @@ export function buildGateways(roots: THREE.Object3D[]): THREE.Group {
     hang(r, e, make!, [cx, cz], ux, uz, nx, nz, W - 0.5, 2.2, g);
   });
   /** two leaves across the opening at (cx, cz), meeting in the middle, hinged at its sides, opening inward */
-  function hang(r: Residence, e: Entrance, make: GateMake, [cx, cz]: [number, number], ux: number, uz: number, nx: number, nz: number, W: number, H: number, y: number) {
+  function hang(r: Residence, e: Entrance, make: GateMake, [cx, cz]: [number, number], ux: number, uz: number, nx: number, nz: number, W: number, H: number, y: number, vehicle = false) {
     const L = W / 2;
     for (const s of [-1, 1] as const) {
       // the hinge at the side s; the closed leaf points across toward the middle (-s n); it swings in toward +u
       const leaf = gateLeaf(make, L, H, `${e.id}${s}`, s);
       leaf.traverse((o) => { o.userData.noCollide = true; });
       leaf.position.y = y;
-      gates.register({ id: `${e.id}:gate${s > 0 ? 'R' : 'L'}`, buildingId: r.id, hinge: [cx + nx * s * L, cz + nz * s * L], dir: [-s * nx, -s * nz], length: L, open: s < 0 ? 1.45 : -1.45, leaf, near: 12, exit: 26 });
+      gates.register({ id: `${e.id}:gate${s > 0 ? 'R' : 'L'}`, buildingId: r.id, hinge: [cx + nx * s * L, cz + nz * s * L], dir: [-s * nx, -s * nz], length: L, open: s < 0 ? 1.45 : -1.45, leaf, near: 12, exit: 26, vehicle });
     }
     void ux; void uz;
   }

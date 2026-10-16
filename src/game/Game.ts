@@ -1788,6 +1788,8 @@ export class Game {
     // on foot (the walking feature): the bike stays parked; in the allocated room nothing outside moves
     if (this.phase === 'riding' && this.room) { gates.update(dt, null, undefined, this.othersOnFoot); return; }
     if (this.phase === 'riding' && this.foot) return this.updateWalk(dt);
+    // (riding: the driveway gates open for the bike; gateways.ts)
+    if (this.phase === 'riding') gates.update(dt, null, { x: this.rider.root.position.x, z: this.rider.root.position.z }, this.othersOnFoot);
     if (this.phase === 'riding' && this.free) return this.updateFree(dt);
     if (this.phase === 'riding') {
       this.time += dt;

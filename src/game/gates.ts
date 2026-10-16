@@ -21,6 +21,8 @@ export interface GateSpec {
   /** opens within this distance of the hinge; closes beyond exit (metres, working values) */
   near?: number;
   exit?: number;
+  /** a gate across a driveway: it opens for the bike too (from further off, so it is open before the bike reaches it) */
+  vehicle?: boolean;
 }
 interface Gate extends GateSpec { t: number; want: boolean; baseYaw: number }
 
@@ -47,7 +49,8 @@ class Gates {
       const p = at ?? this.last, d = p ? Math.hypot(p.x - g.hinge[0], p.z - g.hinge[1]) : Infinity;
       // another person in the shared ride near the gate keeps it open too
       const otherNear = others.some((o) => Math.hypot(o.x - g.hinge[0], o.z - g.hinge[1]) < g.near!);
-      if (this.occupied === g.buildingId || d < g.near! || (g.t > 0 && otherNear)) g.want = true;
+      const bikeNear = !!g.vehicle && !!bike && Math.hypot(bike.x - g.hinge[0], bike.z - g.hinge[1]) < 30;
+      if (this.occupied === g.buildingId || d < g.near! || (g.t > 0 && otherNear) || bikeNear) g.want = true;
       else if (d > g.exit!) {
         // close only when the swing is clear of the character, the bike and everyone else
         const clear = (q: { x: number; z: number } | null | undefined) => !q || Math.hypot(q.x - g.hinge[0], q.z - g.hinge[1]) > g.length + 0.6;
