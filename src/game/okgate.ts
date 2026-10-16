@@ -10,6 +10,7 @@
 //   footways with a raised back kerb (north to the junction's corner and its pitched stone slab, south only by the gate and
 //   the taxi rank), slim road lamps, the stadium side's planted strip and light metal fence;
 // - the bare plot east of the lot (S12, S14, S16): reddish soil and dry grass, its localized tree group (buildOkGateGrounds).
+import { ramp, soilMesh } from './soilground';
 import * as THREE from 'three';
 import { createSite, type Kit, type Spec, type Style } from './blocks';
 import { box, canvas, type Part } from './modelkit';
@@ -18,7 +19,7 @@ import { hipRoof } from './waccbip';
 import { SOLIDS } from './solids';
 import { wallSolids } from './enkit';
 import { NODE_XZ, ROADS } from './campusmap';
-import { coverOverlay, crownTiles, hash2, vnoise2, type Crown } from './scrubkit';
+import { crownTiles, hash2, vnoise2, type Crown } from './scrubkit';
 import { DRIVE_HALF, FENCE_S, GATE, LOT, PALMS, PAVILION, PLOT, SIGN_FRAME, TREES, WALK, SLIP, SLIP_HALF, driveZ, lotWorld, northEdge, type P2 } from './okgateplan';
 
 const PLAIN: Style = { bay: 4, up: [], ground: [], draw: (g) => { g.fillStyle = '#f2f1ec'; g.fillRect(0, 0, 256, 512); } };
@@ -263,20 +264,16 @@ export function buildOkGateGrounds() {
   group.name = 'okponglo-gate-grounds';
   /** distance inside the plot's outline (m) */
   const edgeIn = (x: number, z: number) => { let d = 1e9; for (let i = 0, j = PLOT.length - 1; i < PLOT.length; j = i++) { const [ax, az] = PLOT[j], [bx, bz] = PLOT[i], dx = bx - ax, dz = bz - az, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz || 1))); d = Math.min(d, Math.hypot(ax + dx * t - x, az + dz * t - z)); } return d; };
-  const color = (x: number, z: number): [number, number, number, number] | null => {
-    // (the soil stops at the north footway's back kerb; its 2 m cells stop under the pavement, short of the road kerb, so
-    // the blurred far-off texture cannot bleed onto the asphalt either: the owner's follow-up)
-    if (!inPoly(PLOT, x, z) || nearSideRoad(x, z, -0.5) || z > northEdge(x) - (WALK.kerb + WALK.w + WALK.back)) return null;
-    const n = vnoise2(x / 8, z / 8), m = vnoise2(x / 2.5 + 7, z / 2.5), t = hash2(Math.floor(x * 2), Math.floor(z * 2)) * 0.07;
-    // the raised dry patch under the tree group keeps its scrub; the rest soil with dry grass in patches
-    // (dry grass and soil blend into each other, no hard two-tone stamps; the cover thins out toward the plot's edges so
-    // the lawn round it meets it softly: the owner's soil and grass brief)
-    const w = Math.min(1, Math.max(0, (n - 0.5) / 0.2)), e = Math.min(1, edgeIn(x, z) / 3);
-    return [164 - 36 * w - t * 200, 104 + 14 * w - t * 150, 70 - 4 * w - t * 90, (0.62 + m * 0.2 + 0.1 * (1 - w)) * (0.35 + 0.65 * e)];
-  };
-  const soil = coverOverlay({ box: [800, 976, 1108, 1236], mpp: 0.5, cell: 2, tile: 88, color, pixelEdge: true, cellIn: (x, z) => inPoly(PLOT, x, z) && z < northEdge(x) - 1.9 });
-  for (const m of soil) m.userData.noRelief = true;
-  group.add(...soil);
+  // (the owner's revised soil order: the plot is the ground itself, soil exposed with dry grass in patches, the lawn's own
+  // grass between; its coverage fades over its last 3 m so the lawn round it meets it with no seam; soilground.ts)
+  const inPlot = (x: number, z: number) => inPoly(PLOT, x, z) && !nearSideRoad(x, z, -0.5) && z <= northEdge(x) - (WALK.kerb + WALK.w + WALK.back);
+  const soil = soilMesh([0, 0], 800, 976, 1108, 1236, 1.0, (x, z) => {
+    if (!inPlot(x, z)) return null;
+    const w = ramp(0.48, 0.72, vnoise2(x / 8, z / 8));
+    return (0.82 - 0.55 * w) * Math.min(1, edgeIn(x, z) / 3);
+  }, (x, z) => { const w = ramp(0.48, 0.72, vnoise2(x / 8, z / 8)), m = vnoise2(x / 2.5 + 7, z / 2.5); return [0.62 - 0.1 * w + m * 0.04, 0.42 + 0.04 * w + m * 0.03, 0.29 + m * 0.02]; });
+  soil.userData.noRelief = true;
+  group.add(soil);
   const crowns: Crown[] = TREES.map(([x, z, r], i) => { const s = hash2(x, z); return { x, z, r, h: r * 1.15 + 1, base: 2.2 + s * 1.5, trunk: 0.25 + r * 0.03, color: ['#3f6b2b', '#4e7a32', '#456f2e', '#5b8438'][i % 4], seed: s, solid: true }; });
   // sparse low scrub over the plot (not a garden, not a forest)
   for (let i = 0; i < 70; i++) {

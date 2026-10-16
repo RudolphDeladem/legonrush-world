@@ -41,6 +41,7 @@ const vnoise = (x: number, z: number) => {
 
 /** a grid over x0..x1, z0..z1 following the ground `lift` above it, coloured by `col` (null leaves a cell out) */
 export function drapeAt(org: [number, number], x0: number, x1: number, z0: number, z1: number, cell: number, lift: number, col: (x: number, z: number) => [number, number, number] | null) {
+  ((globalThis as any).__DRAPES ??= []).push({ kind: 'drape', box: [x0, x1, z0, z1], at: (new Error().stack ?? '').split('\n')[2] }); // TEMPINV
   const nx = Math.max(1, Math.round((x1 - x0) / cell)), nz = Math.max(1, Math.round((z1 - z0) / cell));
   const pos: number[] = [], color: number[] = [], idx: number[] = [], keep: boolean[] = [], wx: number[] = [], wz: number[] = [];
   const add = (x: number, z: number, c: [number, number, number]) => {

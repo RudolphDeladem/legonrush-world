@@ -27,13 +27,14 @@ import { box, canvas, merge, type Part } from './modelkit';
 import { SOLIDS } from './solids';
 import { Bag, fanPalm, hash, tuft, vnoise, wallSolids } from './enkit';
 import { broadleaf } from './nsiaroad';
-import { christmasPalm, drapeAt, groundCover } from './kuffourgarden';
+import { christmasPalm } from './kuffourgarden';
 import { groundHeight as gh } from './relief';
 import { letters } from './letters';
 import { pavers, rod, run, strip, type V3 } from './upsa';
 import { concrete } from './concrete';
 import { lattice } from './labawaleshie';
 import { E_HALF, MEDIAN, SCRUB, W_HALF, eastInner, westInner, xEast, xWest } from './lbplan';
+import { ramp, soilMesh } from './soilground';
 import {
   ALPHA, BANKS, DIAMED, GREENWALL, LEASAFRIC, LOWROOF, MEDIAN_BOARDS, MEDIAN_RUNS, OK_KEEP, OK_OUTLINES, P21, PLAZA, PROVISION, SIGNSHOP,
   bankFace, bankTop, mcdanX, type Bank,
@@ -368,17 +369,15 @@ const corridor: Spec = {
       } else shrub(leaf, CO, pl.x, pl.z, y, pl.h, pl.z);
     }
     // the median's soil: bare patches and worn paths across it, over the grass
-    k.meshes.push(Object.assign(new THREE.Mesh(drapeAt(CO, 940, 1060, 905, 1640, 1.0, MY + 0.03, (x, z) => {
+    // (the owner's revised soil order: the median's own ground, grass and bare earth one surface, soilground.ts)
+    k.meshes.push(soilMesh(CO, 940, 1060, 905, 1640, 0.8, (x, z) => {
       if (z > MEDIAN.gap[0] - 1 && z < MEDIAN.gap[1] + 1) return null;
       const a = westInner(z) + 0.35, o = eastInner(z) - 0.35;
       if (Number.isNaN(a) || x < a || x > o) return null;
-      // (the owner's soil and grass brief: no worn crossbars, no repeated stamps: bare earth where the grass has worn
-      // thin, in irregular patches of two scales, dry olive grass round their edges; the earth a muted dusty red-brown)
-      const n = vnoise(x * 0.3, z * 0.09) * 0.7 + vnoise(x * 0.9 + 3.1, z * 0.5) * 0.3, m = vnoise(x * 2, z * 2);
-      if (n > 0.64) return [0.52 + m * 0.05, 0.4 + m * 0.04, 0.3];
-      if (n > 0.59) return [0.47 + m * 0.04, 0.45, 0.31];
-      return null;
-    }), groundCover()), { receiveShadow: true, userData: { noCollide: true } }));
+      // bare where the grass has worn thin, at two scales, never a repeated bar
+      return ramp(0.5, 0.68, vnoise(x * 0.3, z * 0.09) * 0.7 + vnoise(x * 0.9 + 3.1, z * 0.5) * 0.3);
+    }));
+    { const sm = k.meshes[k.meshes.length - 1]; sm.position.y += MY; }
     // the boards on the median
     for (const [z, kind] of MEDIAN_BOARDS) {
       const a = westInner(z), o = eastInner(z), x = (a + o) / 2 + (kind === 'visa' ? -0.6 : kind === 'kfc' ? 0.4 : 0), y = gh(x, z) + MY;
@@ -482,14 +481,13 @@ const corridor: Spec = {
     // south (Pair 21): rough grass and earth, worn paths, low plants; the structures on it
     {
       const bk = BANKS.south;
-      k.meshes.push(Object.assign(new THREE.Mesh(drapeAt(CO, 960, 1030, bk.z0 - bk.ends, bk.z1 + bk.ends, 1.0, 0.04, (x, z) => {
+      k.meshes.push(soilMesh(CO, 960, 1030, bk.z0 - bk.ends, bk.z1 + bk.ends, 0.8, (x, z) => {
         const d = bankFace(bk, z) - x;
         if (d < 0.25 || d > bk.back + 2) return null;
-        const m = vnoise(x * 1.3, z * 1.3), n = vnoise(x * 0.2, z * 0.25);
-        // a worn path along the top behind the face, dusty
-        if (d > 0.6 && d < 2.0 + vnoise(z * 0.3, 2) * 0.8) return [0.64 + m * 0.05, 0.5 + m * 0.04, 0.36];
-        return n > 0.55 ? [0.55 + m * 0.05, 0.44, 0.31] : [0.42 + m * 0.06, 0.48 + m * 0.05, 0.27];
-      }), groundCover()), { receiveShadow: true, userData: { noCollide: true } }));
+        // a worn path along the top behind the face; dry patches; the rest grass
+        const c = 1.3 + vnoise(z * 0.3, 2) * 0.4, path = 1 - ramp(0.5, 0.9, Math.abs(d - c));
+        return Math.max(path, ramp(0.5, 0.64, vnoise(x * 0.2, z * 0.25)));
+      }));
       for (let i = 0; i < 700; i++) {
         const z = bk.z0 + hash(i, 1.9) * (bk.z1 - bk.z0), x = bankFace(bk, z) - 2.4 - hash(2.1, i) * (bk.back - 3);
         if ((z > P21.blue.z0 - 2 && z < P21.cream.z1 + 2 && x > bankFace(bk, z) - 6) || P21.signs.some((s) => Math.abs(s - z) < 1.5)) continue;
@@ -642,11 +640,7 @@ const north: Spec = {
       const rows: [number, number, number][] = [], edge: Part[] = [];
       for (let z = 1112; z <= 1196.01; z += 2) rows.push([z, xEast(z) + E_HALF + 0.3, z < p.north ? 1011.5 : z <= p.south + 0.5 ? front - 0.05 : z < LOWROOF.gz1 + 0.3 ? LOWROOF.grille - 0.15 : ALPHA.x0 - 0.5]);
       strip(k, rows.map(([z, a]) => [L(a), Lz(z)] as P2), rows.map(([z, , o]) => [L(o), Lz(z)] as P2), 0.05, SLABS(), edge, '#b8b3a9', null);
-      k.meshes.push(Object.assign(new THREE.Mesh(drapeAt(NO, 996, 1013, 1112, 1196, 0.6, 0.08, (x, z) => {
-        if (x < xEast(z) + E_HALF + 0.4 || x > front - 0.2) return null;
-        const m = vnoise(x * 1.7, z * 1.7);
-        return vnoise(x * 0.25, z * 0.25) > 0.68 ? [0.6 + m * 0.05, 0.5 + m * 0.04, 0.38] : null;
-      }), groundCover()), { receiveShadow: true, userData: { noCollide: true } }));
+      // (no soil over the slabs: the owner's revised soil order, R-4; the patches that lay here on the paving are gone)
     }
     const kiosk = (x: number, z: number, w: number, d: number, h: number, roof: string, body: string, open = true) => {
       const X0 = L(x - w / 2), X1 = L(x + w / 2), Z0 = Lz(z - d / 2), Z1 = Lz(z + d / 2);
@@ -778,11 +772,11 @@ const southFront: Spec = {
     c.push([box(X(NB[0]) - 0.02, X(NB[1]) + 0.02, nt, nt + 0.7, Z(NB[2]) - 0.02, Z(NB[2]) + 0.18), '#86b4d6']);
     // ---- the forecourt (Pair 8): gravel and compacted soil, the wire-mesh fence with its posts and the open gate ----
     const fc = SIGNSHOP.forecourt;
-    k.meshes.push(Object.assign(new THREE.Mesh(drapeAt(GO, fc.x0, fc.x1, fc.z0, fc.z1 + 0.5, 0.5, 0.04, (x, z) => {
-      if (x < xEast(z) + E_HALF + 0.3) return null;
-      const m = vnoise(x * 3, z * 3), n = vnoise(x * 0.4, z * 0.4);
-      return n > 0.6 ? [0.58 + m * 0.05, 0.47 + m * 0.04, 0.35] : [0.6 + m * 0.1, 0.58 + m * 0.09, 0.53 + m * 0.08];
-    }), groundCover()), { receiveShadow: true, userData: { noCollide: true } }));
+    k.meshes.push(soilMesh(GO, fc.x0, fc.x1, fc.z0, fc.z1 + 0.5, 0.5, (x, z) => (x < xEast(z) + E_HALF + 0.3 ? null : 1), (x, z) => {
+      // gravel over compacted soil, the soil showing through where it is worn (no two-tone stamp)
+      const m = vnoise(x * 3, z * 3), t = ramp(0.5, 0.7, vnoise(x * 0.4, z * 0.4));
+      return [0.6 + m * 0.06 - t * 0.02, 0.57 + m * 0.05 - t * 0.1, 0.52 + m * 0.05 - t * 0.17];
+    }));
     const mesh = pic('wireMesh', 64, 64, (g) => {
       g.clearRect(0, 0, 64, 64); g.strokeStyle = 'rgba(150,155,158,0.95)'; g.lineWidth = 2;
       for (let i = -64; i < 128; i += 10) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i + 64, 64); g.stroke(); g.beginPath(); g.moveTo(i, 64); g.lineTo(i + 64, 0); g.stroke(); }
@@ -804,12 +798,11 @@ const southFront: Spec = {
     const edge: Part[] = [];
     strip(k, rows.map(([z, a]) => [X(a), Z(z)] as P2), rows.map(([z, , o]) => [X(o), Z(z)] as P2), 0.06, pavers('grey'), edge, '#bdb8ae', null);
     if (edge.length) { const e = new THREE.Mesh(merge(edge), concrete(0.2)); e.receiveShadow = true; k.meshes.push(e); }
-    k.meshes.push(Object.assign(new THREE.Mesh(drapeAt(GO, 1015, 1065, 1258, 1474, 1.0, 0.04, (x, z) => {
+    k.meshes.push(soilMesh(GO, 1015, 1065, 1258, 1474, 0.6, (x, z) => {
       const d = x - (xEast(z) + E_HALF);
       if (d < 3.3 || d > 4.5) return null;
-      const m = vnoise(x * 2, z * 0.7);
-      return m > 0.55 ? [0.45, 0.5, 0.28] : [0.58 + m * 0.05, 0.47, 0.34];
-    }), groundCover()), { receiveShadow: true, userData: { noCollide: true } }));
+      return 1 - ramp(0.48, 0.62, vnoise(x * 2, z * 0.7));
+    }));
     // ---- the long green wall round the planted plot (Pair 12), its return to the block behind the sign shop ----
     const gw = GREENWALL, GREEN = '#8fa58a';
     frontWall(c, GO, gw.off, gw.z0, gw.z1, gw.h, 0.25, GREEN, '#a7b8a2', '#6f7d6b');
@@ -1223,14 +1216,14 @@ const compounds: Spec = {
         const x = mcdanX(z) - 3.1 - 0.35, tilt = (hash(z, 5) - 0.5) * 0.25;
         c.push([box(-0.12, 0.12, -0.1, 0.22, -0.48, 0.48).rotateX(tilt).translate(X(x), 0, Z(z)), '#b9b5ad']);
       }
-      k.meshes.push(Object.assign(new THREE.Mesh(drapeAt(CPO, 1100, 1125, PROVISION.z1, D.z1, 0.6, 0.05, (x, z) => {
+      k.meshes.push(soilMesh(CPO, 1100, 1125, PROVISION.z1, D.z1, 0.5, (x, z) => {
         const w = mcdanWall(z)[0], e = mcdanX(z) - 3.1;
         if (x < w + 0.2 || x > e - 0.2) return null;
-        const m = vnoise(x * 2, z * 2);
-        if (z > D.blueGate[0] - 0.4 && z < D.blueGate[1] + 0.4) return [0.62 + m * 0.06, 0.48 + m * 0.04, 0.36];
         if (z > D.gate[0] - 0.4 && z < D.gate[1] + 0.4) return null;
-        return m > 0.7 ? [0.6, 0.48, 0.35] : [0.36 + m * 0.06, 0.52 + m * 0.05, 0.25];
-      }), groundCover()), { receiveShadow: true, userData: { noCollide: true } }));
+        // bare in front of the blue house's gate, grass elsewhere with worn spots
+        const g = ramp(0.2, 0.9, 1 - Math.abs(z - (D.blueGate[0] + D.blueGate[1]) / 2) / ((D.blueGate[1] - D.blueGate[0]) / 2 + 0.8));
+        return Math.max(g, ramp(0.66, 0.78, vnoise(x * 2, z * 2)));
+      }));
     }
     const m = new THREE.Mesh(merge(trunks), concrete(0.25)); m.castShadow = true; k.meshes.push(m);
     b.leaf.push(...leaf, ...fronds);

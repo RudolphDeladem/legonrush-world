@@ -5,7 +5,8 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { AREAS, BUILDINGS, NODE_XZ, ROADS, buildingAt, mapBounds, type Building, type Place, type PlaceKind } from './campusmap';
 import { UPSA_FINISH, UPSA_LAND } from './upsawestplan';
 import type { Track } from './track';
-import { asphaltTexture, billboardTexture, concreteTexture, grassMacroTexture, grassTexture, labelTexture, pitchTexture } from './textures';
+import { asphaltTexture, billboardTexture, concreteTexture, labelTexture, pitchTexture } from './textures';
+import { terrainGrass } from './soilground';
 import { buildBuildings, type BuildingStyle } from './facades';
 import { buildDiasporaHalls, isDiasporaHall } from './halls';
 import { BLOCK_SITES } from './sites';
@@ -238,33 +239,7 @@ function flatGeometry(pos: number[], idx: number[]) {
 const groundMat = (color: string, layer: number, map?: THREE.Texture) =>
   new THREE.MeshStandardMaterial({ color, ...(map && { map }), roughness: 0.95, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -layer, polygonOffsetUnits: -layer * 2 });
 
-/**
- * Grass with large light, dark and dry patches laid over the fine 8 m texture,
- * so the open fields do not show an obvious repeat. One extra texture lookup.
- */
-function grassMaterial(map: THREE.Texture) {
-  const macro = grassMacroTexture();
-  macro.colorSpace = THREE.NoColorSpace;
-  // a touch less saturated than the texture: sun-bleached Legon grass, not a football pitch
-  const mat = new THREE.MeshStandardMaterial({ map, roughness: 1, color: '#e4e0cc' });
-  mat.onBeforeCompile = (sh) => {
-    sh.uniforms.grassMacro = { value: macro };
-    sh.vertexShader = sh.vertexShader
-      .replace('#include <common>', '#include <common>\nvarying vec2 vGrassW;')
-      .replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvGrassW = (modelMatrix * vec4(transformed, 1.0)).xz;');
-    sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', '#include <common>\nvarying vec2 vGrassW;\nuniform sampler2D grassMacro;')
-      .replace(
-        '#include <map_fragment>',
-        `#include <map_fragment>
-        vec2 gm = texture2D(grassMacro, vGrassW / 260.0).rg + texture2D(grassMacro, vGrassW / 71.0 + 0.37).rg - 1.0;
-        diffuseColor.rgb *= 1.0 + gm.r * 0.8;
-        diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * vec3(1.18, 1.05, 0.62), clamp(gm.g * 2.2, 0.0, 0.5));`,
-      );
-  };
-  mat.customProgramCacheKey = () => 'legon-grass';
-  return mat;
-}
+/** (the campus grass: soilground.ts terrainGrass, shared with the soil meshes so the two match exactly) */
 
 /** every road earth for part of its length (ghlplan.ts) */
 const EARTH_SET = new Set(EARTH_ROADS);
@@ -336,9 +311,7 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
       tiles.push(piece(gx, gz, xs[a], xs[a + 1], zs[c], zs[c + 1]));
     }
   }
-  const grassTex = grassTexture();
-  grassTex.repeat.set(TILE / 8, TILE / 8);
-  const grass = grassMaterial(grassTex);
+  const grass = terrainGrass();
   const ground = new THREE.Mesh(mergeGeometries(tiles), grass);
   ground.receiveShadow = true;
   // under the roads the relief grid sinks out of sight (a road's strip is flat across, the slope under it is not)

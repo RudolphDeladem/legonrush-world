@@ -15,6 +15,7 @@
 //   retaining wall and the wooded ground over it, the tiers and the two small red-roof structures, the dense scrub and
 //   the lattice tower on the east, the planted separation of young trees and shrubs.
 // Names and lettering are only what the photographs show legibly; the price display is the photograph's (editable).
+import { dustySoil, onHardscape, ramp, soilMesh } from './soilground';
 import * as THREE from 'three';
 import { createSite, render, type Spec, type Style } from './blocks';
 import { box, merge, type Part } from './modelkit';
@@ -61,6 +62,8 @@ const st = (bay: number, draw: (g: CanvasRenderingContext2D) => void): Style => 
 const PLAIN = st(3, (g) => render(g, '#ddd'));
 const earth = (x: number, z: number): [number, number, number] => { const m = vnoise(x * 1.1, z * 1.1), n = vnoise(x * 0.2, z * 0.2); return n > 0.62 ? [0.48 + m * 0.05, 0.45 + m * 0.04, 0.3] : [0.62 + m * 0.07, 0.42 + m * 0.05, 0.3 + m * 0.03]; };
 const worn = (x: number, z: number): [number, number, number] => { const m = vnoise(x * 0.7, z * 0.7), s = vnoise(x * 0.15, z * 0.15); const v = 0.58 + m * 0.08 - (s > 0.7 ? 0.08 : 0); return [v + 0.02, v, v - 0.03]; };
+/** the scrub's floor: exposed soil coverage, bare in broad worn patches (soilground.ts) */
+const scrubSoil = (x: number, z: number) => ramp(0.46, 0.64, vnoise(x * 0.25, z * 0.3));
 const scrubGround = (x: number, z: number): [number, number, number] => { const m = vnoise(x * 0.9, z * 0.9), n = vnoise(x * 0.25, z * 0.3); return n > 0.6 ? [0.58 + m * 0.06, 0.43 + m * 0.04, 0.3] : n > 0.45 ? [0.5 + m * 0.06, 0.5 + m * 0.05, 0.32] : [0.36 + m * 0.06, 0.45 + m * 0.06, 0.24]; };
 
 // ---------- pictures ----------
@@ -292,10 +295,12 @@ const station: Spec = {
     const [c0, c1, c2, c3] = STATION.court;
     k.meshes.push(drapeMesh(drapeAt(SO, c0 - 8, c1 + 4, c2, c3, 0.8, 0.035, (x, z) => {
       if (x < eastKerb(z) + 0.2) return null;
-      if (islandN(x, z) || islandS(x, z)) { const m = vnoise(x * 1.5, z * 1.5); return [0.35 + m * 0.06, 0.52 + m * 0.06, 0.26]; }
+      if (islandN(x, z) || islandS(x, z)) return null;
       if (x > sp[0] - 0.2 && z > sp[2] && z < sp[3]) return null;
       return worn(x, z);
     })));
+    // the grass islands at the access: the lawn's own ground, worn thin in spots (the owner's revised soil order)
+    k.meshes.push(soilMesh(SO, c0 - 8, c1 + 4, c2, c3, 0.5, (x, z) => (islandN(x, z) || islandS(x, z) ? 0.1 + 0.6 * ramp(0.58, 0.74, vnoise(x * 0.5, z * 0.5)) : null)));
     // the islands' kerbs and the striped posts along their road edges (Pairs 5, 8, 10)
     for (const [z0, z1] of [[431.5, m0 - 0.5], [m1 + 0.5, 482]] as [number, number][]) {
       const pts: P2[] = []; for (let z = z0; z <= z1 + 0.01; z += 1.5) pts.push(offLine(ESVC, z, SVC_HALF + 1.2));
@@ -425,14 +430,20 @@ const station: Spec = {
       wallSolids(xa + 0.1, z, xb + 0.1, z2, 0.22); 
     }
     // the access: a broad hard apron up onto the plot, gravel, the railing and the short white posts (Pair 16)
+    const plotIn = (x: number, z: number) => { const f = face(Math.min(PLOT.z1, Math.max(PLOT.access[0], z))); return !(x < f + (z < PLOT.access[1] ? -PLOT.wallOff + 0.2 : 0.3) || x > f + PLOT.depth); };
+    const apron = (x: number, z: number) => z < PLOT.access[1] + 10 && x < face(Math.min(PLOT.z1, Math.max(PLOT.access[0], z))) + 22;
+    // the apron: hard, and never past a mapped road's edge (the owner's revised soil order: no apron in the lane)
     k.meshes.push(drapeMesh(drapeAt(SO, 870, 990, PLOT.access[0] - 2, PLOT.z1 + 4, 0.8, 0.04, (x, z) => {
-      const f = face(Math.min(PLOT.z1, Math.max(PLOT.access[0], z)));
-      if (x < f + (z < PLOT.access[1] ? -PLOT.wallOff + 0.2 : 0.3) || x > f + PLOT.depth) return null;
-      const m = vnoise(x * 0.5, z * 0.5);
-      if (z < PLOT.access[1] + 10 && x < f + 22) return m > 0.55 ? [0.58, 0.56, 0.52] : worn(x, z);
-      if (x < f + 30 && m > 0.45) return worn(x, z);
-      return scrubGround(x, z);
+      if (!plotIn(x, z) || !apron(x, z) || onHardscape(x, z)) return null;
+      return vnoise(x * 0.5, z * 0.5) > 0.55 ? [0.58, 0.56, 0.52] : worn(x, z);
     })));
+    // beyond it the plot's ground: gravel and bare soil where it is worked, grass and scrub between
+    k.meshes.push(soilMesh(SO, 870, 990, PLOT.access[0] - 2, PLOT.z1 + 4, 0.8, (x, z) => {
+      if (!plotIn(x, z) || apron(x, z)) return null;
+      const f = face(Math.min(PLOT.z1, Math.max(PLOT.access[0], z)));
+      const worked = x < f + 30 ? ramp(0.4, 0.52, vnoise(x * 0.5, z * 0.5)) : 0;
+      return Math.max(worked, ramp(0.47, 0.64, vnoise(x * 0.25, z * 0.3)));
+    }, (x, z) => (x < face(Math.min(PLOT.z1, Math.max(PLOT.access[0], z))) + 30 && vnoise(x * 0.5, z * 0.5) > 0.45 ? [0.58, 0.54, 0.48] : dustySoil(x, z))));
     // (the railing and the posts leave the mapped access road open where it runs on south over the plot)
     for (const [ra, rb] of clearRuns(face(PLOT.access[1]) + 2, face(PLOT.access[1]) + 20, PLOT.access[1] - 0.3, 0.4)) {
       const z = PLOT.access[1] - 0.3;
@@ -540,13 +551,7 @@ const corridor: Spec = {
     // ---------- the grass strip between the southbound carriageway and the west service road: patchy grass and earth,
     // a low shrub now and then, the branching lamps with their small boards (Pairs 11, 14) ----------
     const stripIn = (x: number, z: number) => { const w = xAt(WSVC, z) + SVC_HALF + 0.3, e = xAt(SB, z) - N4_HALF - 0.3; return !Number.isNaN(w) && !Number.isNaN(e) && x > w && x < e; };
-    k.meshes.push(drapeMesh(drapeAt(CO, 800, 912, 410, PLANTED.z1, 0.8, 0.03, (x, z) => {
-      if (!stripIn(x, z)) return null;
-      const n = vnoise(x * 0.4, z * 0.15), m = vnoise(x * 2, z * 2);
-      if (n > 0.63) return [0.6 + m * 0.05, 0.45 + m * 0.04, 0.32];
-      if (n > 0.5) return [0.5 + m * 0.05, 0.5, 0.31];
-      return null;
-    })));
+    k.meshes.push(soilMesh(CO, 800, 912, 410, PLANTED.z1, 0.8, (x, z) => (stripIn(x, z) ? ramp(0.5, 0.66, vnoise(x * 0.4, z * 0.15)) : null)));
     const boards = ['#2a5fb0', '#e07a22', '#2a5fb0', '#d8d4c8'];
     for (let z = 420, i = 0; z < PLANTED.z1 - 5; z += 34, i++) {
       const w = xAt(WSVC, z) + SVC_HALF, e = xAt(SB, z) - N4_HALF;
@@ -593,10 +598,10 @@ const corridor: Spec = {
       }
     }
     // the ground over the wall: rough grass and leaf litter, the mature spreading crowns, a tall sparse tree, shrubs
-    k.meshes.push(drapeMesh(drapeAt(CO, 770, 880, RWALL.z0, RWALL.tiers.z1 + 4, 1.0, 0.04, (x, z) => {
+    k.meshes.push(soilMesh(CO, 770, 880, RWALL.z0, RWALL.tiers.z1 + 4, 1.0, (x, z) => {
       const f = rface(z); if (Number.isNaN(f) || x > f - 0.4 || x < f - RWALL.back) return null;
-      return scrubGround(x, z);
-    })));
+      return scrubSoil(x, z);
+    }));
     for (let i = 0; i < 2600; i++) {
       const z = RWALL.z0 + 4 + hash(i, 0.53) * (RWALL.tiers.z1 - RWALL.z0 - 6), d = 1.2 + Math.pow(hash(0.61, i), 1.1) * (RWALL.back - 4), x = rface(z) - d;
       if (Number.isNaN(x) || SOLIDS.at(x, z, 0.8) || nearRoad(x, z, 0.8) || TIER_HOUSES.some(([a, bb, cc, dd]) => x > a - 2 && x < bb + 2 && z > cc - 2 && z < dd + 2)) continue;
@@ -616,11 +621,8 @@ const corridor: Spec = {
     }
     // ---------- the east side south of the raised plot: dense scrub rising behind the verge, rock patches (Pair 12) ----
     const eIn = (x: number, z: number) => { const k0 = eastEdge(z); return !Number.isNaN(k0) && x > k0 + 2.4 && x < k0 + EAST_SCRUB.depth; };
-    k.meshes.push(drapeMesh(drapeAt(CO, 880, 990, PLOT.z1 + 4, EAST_SCRUB.z1, 1.0, 0.04, (x, z) => {
-      if (!eIn(x, z)) return null;
-      const r = vnoise(x * 0.35, z * 0.35); if (r > 0.7 && x < eastEdge(z) + 14) return [0.56, 0.53, 0.48];
-      return scrubGround(x, z);
-    })));
+    const rock = (x: number, z: number) => x < eastEdge(z) + 14 ? ramp(0.66, 0.74, vnoise(x * 0.35, z * 0.35)) : 0;
+    k.meshes.push(soilMesh(CO, 880, 990, PLOT.z1 + 4, EAST_SCRUB.z1, 1.0, (x, z) => (eIn(x, z) ? Math.max(rock(x, z), scrubSoil(x, z)) : null), (x, z) => (rock(x, z) > 0.5 ? [0.56, 0.53, 0.48] : dustySoil(x, z))));
     for (let i = 0; i < 2600; i++) {
       const z = PLOT.z1 + 6 + hash(i, 0.83) * (EAST_SCRUB.z1 - PLOT.z1 - 8), d = 2.8 + Math.pow(hash(0.37, i), 1.2) * (EAST_SCRUB.depth - 4), x = eastEdge(z) + d;
       if (Number.isNaN(x) || SOLIDS.at(x, z, 0.8) || nearRoad(x, z, 0.8)) continue;

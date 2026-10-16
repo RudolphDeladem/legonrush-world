@@ -31,9 +31,9 @@ import { SOLIDS } from './solids';
 import { groundHeight as gh } from './relief';
 import { Bag, fanPalm, hash, tuft, vnoise, wallSolids } from './enkit';
 import { broadleaf } from './nsiaroad';
-import { drapeAt, groundCover } from './kuffourgarden';
 import { groundShade, weathering } from './shading';
 import { asphaltTexture } from './textures';
+import { dustySoil, ramp, soilMesh } from './soilground';
 import { medianGrass, pavers, rod, run, strip, wires, type V3 } from './upsa';
 import { inOkKeep, okOwns } from './okplan';
 import {
@@ -350,12 +350,12 @@ const hood: Spec = {
     for (const me of W.meshes()) k.meshes.push(me);
 
     // ---- the ground: compacted earth and dust, worn grass in patches, paved forecourts along the frontage ----
-    k.meshes.push(new THREE.Mesh(drapeAt(O, 990, HOOD.x1, HOOD.z0, HOOD.z1, 2.5, 0.03, (x, z) => {
+    // (the owner's revised soil order: one ground, soil exposed where the compounds are worn bare, the lawn's own grass
+    // between; soilground.ts)
+    k.meshes.push(soilMesh(O, 990, HOOD.x1, HOOD.z0, HOOD.z1, 1.6, (x, z) => {
       if (!inHood(x, z) || clearance(x, z) < 0.3) return null;
-      const n = vnoise(x * 0.06, z * 0.06), m = vnoise(x * 0.9, z * 0.9), f = clearance(x, z, false, 2);
-      if (f < 9 && n > 0.3) return [0.58 + m * 0.05, 0.55 + m * 0.05, 0.5];
-      return n > 0.62 ? [0.42 + m * 0.06, 0.47 + m * 0.05, 0.27] : n > 0.4 ? [0.6 + m * 0.06, 0.43 + m * 0.05, 0.3] : [0.56 + m * 0.05, 0.5 + m * 0.04, 0.42];
-    }), groundCover()));
+      return ramp(0.34, 0.56, vnoise(x * 0.06, z * 0.06) * 0.65 + vnoise(x * 0.21, z * 0.21) * 0.35);
+    }, (x, z) => (clearance(x, z, false, 2) < 9 ? [0.6, 0.52, 0.43] : dustySoil(x, z))));
     // ---- mature trees and palms in the gaps; tall narrow trees by the 15-16 frontage (Pair 16) ----
     // (and the frontages and compounds the Okponglo brief models and plants itself)
     const taken = (x: number, z: number, r: number) => !!buildingNear(x, z, r) || MASSES.some((m) => x > m.r[0] - r && x < m.r[1] + r && z > m.r[2] - r && z < m.r[3] + r) || inOkKeep(x, z, r);
@@ -507,13 +507,14 @@ const corridor: Spec = {
       const pond = AREAS.filter((a) => a.kind === 'water');
       const inPond = (x: number, z: number) => pond.some((a) => { let ins = false; const p = a.pts, n = p.length / 2; for (let i = 0, j = n - 1; i < n; j = i++) { const xi = p[i * 2], zi = p[i * 2 + 1], xj = p[j * 2], zj = p[j * 2 + 1]; if ((zi > z) !== (zj > z) && x < ((xj - xi) * (z - zi)) / (zj - zi) + xi) ins = !ins; } return ins; });
       const off = (x: number, z: number) => kerb(z) - x;
-      k.meshes.push(new THREE.Mesh(drapeAt(CO, 860, 985, SCRUB.z0, SCRUB.z1, 1.6, 0.03, (x, z) => {
+      k.meshes.push(soilMesh(CO, 860, 985, SCRUB.z0, SCRUB.z1, 1.0, (x, z) => {
         const d = off(x, z);
         if (Number.isNaN(d) || d < 0.2 || d > SCRUB.depth + 6 || inPond(x, z) || clearance(x, z) < 0.2 || behindYardFence(x, z)) return null;
-        const m = vnoise(x * 1.1, z * 1.1);
-        if (d > SCRUB.path[0] && d < SCRUB.path[1] + (vnoise(z * 0.2, 1) - 0.5)) return [0.62 + m * 0.05, 0.42 + m * 0.04, 0.29];
-        return d < SCRUB.path[0] ? [0.5 + m * 0.05, 0.52, 0.32] : [0.33 + m * 0.07, 0.36 + m * 0.06, 0.2];
-      }), groundCover()));
+        // the worn path behind the kerb (bare), the verge before it (grass), the scrub floor beyond (litter and bare patches)
+        const c = (SCRUB.path[0] + SCRUB.path[1]) / 2 + (vnoise(z * 0.2, 1) - 0.5) * 0.5, w = (SCRUB.path[1] - SCRUB.path[0]) / 2;
+        const path = 1 - ramp(w - 0.25, w + 0.35, Math.abs(d - c));
+        return Math.max(path, d < SCRUB.path[0] ? 0.05 : 0.2 + 0.5 * ramp(0.5, 0.72, vnoise(x * 0.15, z * 0.15)));
+      }, (x, z) => (Math.abs(off(x, z) - (SCRUB.path[0] + SCRUB.path[1]) / 2) < 1.5 ? [0.62, 0.45, 0.31] : [0.47, 0.36, 0.26])));
       // (its planting over the raised bank behind the stone face: okponglo.ts, the Okponglo brief's Pair 3)
       void inPond;
     }
@@ -529,12 +530,11 @@ const corridor: Spec = {
         const [ax, az] = A(kerb(z), z), [bx, bz] = A(kerb(z + 2), z + 2);
         if (!Number.isNaN(ax) && !Number.isNaN(bx)) edge.push([run(ax, az, bx, bz, 0, 0.15, 0.18, 0.09), '#cfcbc2']);
       }
-      k.meshes.push(new THREE.Mesh(drapeAt(CO, 935, 1060, VERGE_W.z0, VERGE_W.z1, 1.6, 0.03, (x, z) => {
+      k.meshes.push(soilMesh(CO, 935, 1060, VERGE_W.z0, VERGE_W.z1, 1.2, (x, z) => {
         const d = kerb(z) - x;
         if (Number.isNaN(d) || d < VERGE_W.path[1] + 0.1 || clearance(x, z) < 0.3 || clearance(x, z, true) < 0.1) return null;
-        const m = vnoise(x * 1.2, z * 1.2), n = vnoise(x * 0.15, z * 0.15);
-        return n > 0.6 ? [0.52 + m * 0.05, 0.42 + m * 0.04, 0.3] : n > 0.45 ? [0.46 + m * 0.05, 0.47 + m * 0.04, 0.3] : [0.4 + m * 0.06, 0.48 + m * 0.05, 0.26];
-      }), groundCover()));
+        return ramp(0.5, 0.68, vnoise(x * 0.15, z * 0.15));
+      }));
       for (let i = 0; i < 900; i++) {
         const z = VERGE_W.z0 + hash(i, 3.3) * (VERGE_W.z1 - VERGE_W.z0), x = kerb(z) - VERGE_W.path[1] - 0.8 - hash(4.4, i) * 30;
         if (Number.isNaN(x) || !clear(x, z, 0.8, true)) continue;
@@ -679,11 +679,11 @@ const corridor: Spec = {
     // ---------- the junction: signal posts, the islands' worn stone paving, the cabinet, bollards ----------
     for (const [key, [cx, cz]] of Object.entries(ISLANDS)) {
       // (the medians' noses, mn and ms, are the kerbed median itself now: no pale paving drawn over them)
-      if (key !== 'mn' && key !== 'ms') k.meshes.push(new THREE.Mesh(drapeAt(CO, cx - 9, cx + 9, cz - 9, cz + 9, 0.5, 0.06, (x, z) => {
+      if (key !== 'mn' && key !== 'ms') k.meshes.push(soilMesh(CO, cx - 9, cx + 9, cz - 9, cz + 9, 0.5, (x, z) => {
         if (clearance(x, z) < 0.15 || junctionPaved(x, z)) return null;
-        const m = vnoise(x * 2.3, z * 2.3), n = vnoise(x * 0.6, z * 0.6);
-        return n > 0.62 ? [0.55 + m * 0.05, 0.42, 0.3] : [0.56 + m * 0.08, 0.52 + m * 0.07, 0.47];
-      }), groundCover()));
+        // the corner verges: worn bare where people cross, the grass thin
+        return 0.3 + 0.55 * ramp(0.4, 0.68, vnoise(x * 0.6, z * 0.6));
+      }));
       // the post where the island has most room
       let best: P2 | null = null, bc = 0.5;
       for (let i = 0; i < 60; i++) { const x = cx + (hash(i, cx) - 0.5) * 5, z = cz + (hash(cz, i) - 0.5) * 5, cl = clearance(x, z); if (cl > 0.6 && !junctionPaved(x, z) && (!best || Math.hypot(x - cx, z - cz) < Math.hypot(best[0] - cx, best[1] - cz))) { bc = cl; best = [x, z]; } }

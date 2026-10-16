@@ -7,6 +7,7 @@
 //   tyre planters, the small slender trees, the grey walking strip along the road, the grey pad south of the opening;
 // - the Ghana Revenue Authority frontage (pair 1): the railing on its low wall with the entrance gap, the grey forecourt,
 //   the GRA sign; the ground (buildJjGrounds): the yard's and the field's soil, the opening's dust, the earth track.
+import { ramp, soilMesh } from './soilground';
 import * as THREE from 'three';
 import { createSite, type Spec, type Style } from './blocks';
 import { box, canvas, type Part } from './modelkit';
@@ -14,7 +15,7 @@ import { strip } from './medkit';
 import { SOLIDS } from './solids';
 import { wallSolids } from './enkit';
 import { NODE_XZ, ROADS } from './campusmap';
-import { coverOverlay, crownTiles, hash2, vnoise2, type Crown } from './scrubkit';
+import { crownTiles, hash2, vnoise2, type Crown } from './scrubkit';
 import {
   BOARD, CONTAINER, CRANE, EARTH_BOX, FENCE, FIELD, FRAME, GRA, OPENING, POTS, ROWS, SMALL_TREES, SOUTH_PAD, STRIP, WALL_Z, YARD,
   eastKerb, inYard, type P2,
@@ -158,19 +159,22 @@ export const jjTrackDist = (x: number, z: number) => {
 export function buildJjGrounds() {
   const group = new THREE.Group();
   group.name = 'jj-rawlings-grounds';
-  const color = (x: number, z: number): [number, number, number, number] | null => {
-    const n = vnoise2(x / 7, z / 7), m = vnoise2(x / 2.2 + 3, z / 2.2), t = hash2(Math.floor(x * 2), Math.floor(z * 2)) * 0.06;
-    if (jjTrackDist(x, z) < 2 + (m - 0.5) * 0.6) return [170 - t * 200, 120 - t * 140, 82 - t * 90, 0.95];
+  // (the owner's revised soil order: the yard, the opening, the track and the field are the ground itself: exposed soil
+  // by coverage, the lawn's own grass between; nothing past a mapped road; soilground.ts)
+  type RGB = [number, number, number];
+  const own = (x: number, z: number): [number, RGB] | null => {
+    const n = vnoise2(x / 7, z / 7), m = vnoise2(x / 2.2 + 3, z / 2.2) * 0.04;
+    const tr = jjTrackDist(x, z);
+    if (tr < 2.6) return [1 - ramp(1.6, 2.6, tr + (vnoise2(x / 3, z / 3) - 0.5) * 0.6), [0.66 + m, 0.47 + m, 0.32]];
     // the yard: pale compacted soil, darker where worked
-    if (inYard(x, z)) { const w = Math.min(1, Math.max(0, (n - 0.6) / 0.16)); return [196 - 46 * w - t * 200, 170 - 42 * w - t * 160, 128 - 32 * w - t * 100, 0.95]; }
-    // the dusty opening: tan, a little red, grit
-    if (inPoly(OPENING, x, z)) return [192 - t * 200, 150 - t * 160, 108 - t * 100, 0.95];
+    if (inYard(x, z)) { const w = ramp(0.6, 0.76, n); return [1, [0.77 - 0.18 * w + m, 0.67 - 0.16 * w + m, 0.5 - 0.12 * w]]; }
+    // the dusty opening: tan, a little red
+    if (inPoly(OPENING, x, z)) return [0.95, [0.72 + m, 0.56 + m, 0.41]];
     // the field west of the yard: dry grass and bare patches, no pitch
-    if (inPoly(FIELD, x, z)) { const w = Math.min(1, Math.max(0, (n - 0.42) / 0.16)); return [138 + 38 * w - t * 200, 128 + 18 * w - t * 150, 74 + 30 * w - t * 100, 0.7 + 0.15 * w]; }
+    if (inPoly(FIELD, x, z)) return [0.25 + 0.55 * ramp(0.42, 0.6, n), [0.6 + m, 0.5 + m, 0.36]];
     return null;
   };
-  const cellIn = (x: number, z: number) => inYard(x, z) || inPoly(FIELD, x, z) || inPoly(OPENING, x, z) || jjTrackDist(x, z) < 3;
-  const soil = [...coverOverlay({ box: [720, 920, 830, 1070], mpp: 0.5, cell: 2, tile: 100, color, cellIn, pixelEdge: true }), ...coverOverlay({ box: [926, 992, 760, 824], mpp: 0.5, cell: 2, tile: 66, color, cellIn, pixelEdge: true }), ...coverOverlay({ box: [826, 872, 1070, EARTH_BOX[3]], mpp: 0.5, cell: 2, tile: 86, color, cellIn, pixelEdge: true })];
+  const soil = [[720, 920, 830, 1070], [926, 992, 760, 824], [826, 872, 1070, EARTH_BOX[3]]].map(([a, b, c, d]) => soilMesh([0, 0], a, b, c, d, 1.0, (x, z) => own(x, z)?.[0] ?? null, (x, z) => own(x, z)?.[1] ?? [0.6, 0.45, 0.32]));
   for (const m of soil) m.userData.noRelief = true;
   group.add(...soil);
   // the small slender roadside trees on the east frontage (pair 4); the scrub at the yard's north edge stays generic
