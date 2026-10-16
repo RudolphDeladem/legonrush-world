@@ -121,7 +121,7 @@ export function pave(k: Kit, x0: number, x1: number, z0: number, z1: number, mat
   const m = new THREE.Mesh(g, mat); m.receiveShadow = true; k.meshes.push(m);
 }
 /** a raised strip between two edges (lists of model-frame points), its top at y, faces down to the ground on both sides */
-export function strip(k: Kit, a: [number, number][], b: [number, number][], y: number, mat: THREE.Material, edge: Part[], edgeCol: string, kerbs: [number, number] | null) {
+export function strip(k: Kit, a: [number, number][], b: [number, number][], y: number, mat: THREE.Material, edge: Part[], edgeCol: string, kerbs: [number, number] | null, ends: [boolean, boolean] = [true, true]) {
   const pos: number[] = [], uv: number[] = [], idx: number[] = [];
   for (let i = 0; i < a.length; i++) {
     pos.push(a[i][0], y, a[i][1], b[i][0], y, b[i][1]);
@@ -150,10 +150,10 @@ export function strip(k: Kit, a: [number, number][], b: [number, number][], y: n
       }
     }
   }
-  // a face across each end
-  edge.push([run(a[0][0], a[0][1], b[0][0], b[0][1], 0, y + (kerbs ? 0.06 : 0), 0.06), edgeCol]);
+  // a face across each end (none where the strip runs on into something, as the median into its rounded nose)
+  if (ends[0]) edge.push([run(a[0][0], a[0][1], b[0][0], b[0][1], 0, y + (kerbs ? 0.06 : 0), 0.06), edgeCol]);
   const n = a.length - 1;
-  edge.push([run(a[n][0], a[n][1], b[n][0], b[n][1], 0, y + (kerbs ? 0.06 : 0), 0.06), edgeCol]);
+  if (ends[1]) edge.push([run(a[n][0], a[n][1], b[n][0], b[n][1], 0, y + (kerbs ? 0.06 : 0), 0.06), edgeCol]);
 }
 
 /** a lattice transmission tower at px, pz (model frame) on the ground (y 0): four tapering legs braced in bays, three

@@ -501,12 +501,13 @@ const corridor: Spec = {
         cur.push([z, a, o]);
       }
       if (cur.length > 1) runs.push(cur);
-      for (const r of runs) strip(k, r.map(([z, a]) => A(a, z)), r.map(([z, , o]) => A(o, z)), 0.16, medianGrass(), edge, '#cfcbc2', [0.2, 0.2]);
+      // (no face across a straight end that runs on into a rounded nose)
+      const atCap = (z: number) => Math.abs(z - c0.zc) < 1e-6 || Math.abs(z - c1.zc) < 1e-6;
+      for (const r of runs) strip(k, r.map(([z, a]) => A(a, z)), r.map(([z, , o]) => A(o, z)), 0.16, medianGrass(), edge, '#cfcbc2', [0.2, 0.2], [!atCap(r[0][0]), !atCap(r[r.length - 1][0])]);
       // each end's half circle: a raised half disc of the same grass, its face down to the road and its kerb round the curve
       for (const [c, s1] of [[c0, 1], [c1, -1]] as const) {
         const r = c.r - 0.05, [cx, cz] = A(c.x, c.zc);
-        // (a little more than a half disc, reaching back under the straight end, so no seam shows between them)
-        const disc = new THREE.CircleGeometry(r, 28, (s1 > 0 ? Math.PI : 0) - 0.35, Math.PI + 0.7).rotateX(-Math.PI / 2).translate(cx, 0.161, cz);
+        const disc = new THREE.CircleGeometry(r, 28, s1 > 0 ? Math.PI : 0, Math.PI).rotateX(-Math.PI / 2).translate(cx, 0.16, cz);
         const uv = disc.attributes.uv as THREE.BufferAttribute, dp = disc.attributes.position as THREE.BufferAttribute;
         for (let i = 0; i < uv.count; i++) uv.setXY(i, dp.getX(i) / 4, dp.getZ(i) / 4);
         const m = new THREE.Mesh(disc, medianGrass()); m.receiveShadow = true; k.meshes.push(m);
