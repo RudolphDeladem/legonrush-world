@@ -506,7 +506,7 @@ function windowOpening(p: Part[], dyn: Dyn, x0: number, y0: number, x1: number, 
   const id = `window-${dyn.ints.length}`;
   if (style === 'louvres') {
     // each pane a stack of blades turning about their own long axes (clips in the jambs)
-    const blade = std('#cfd9de', { roughness: 0.25, metalness: 0.05, transparent: true, opacity: 0.72 });
+    const blade = std('#d5dde1', { roughness: 0.6, metalness: 0.05, transparent: true, opacity: 0.86 });
     const blades: THREE.Mesh[] = [];
     const panes = new THREE.Group(); panes.position.set(cx, 0, cy); panes.rotation.y = a; dyn.group.add(panes);
     const pw = L / cols;

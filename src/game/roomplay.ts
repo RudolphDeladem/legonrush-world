@@ -43,7 +43,13 @@ function residenceBuilding(acc: Accommodation): Building | null {
   for (const n of names) { const p = placeByName(n); if (p) pts.push([p.x, p.z]); const a = ACCESS.get(n); if (a) { const f = (a.facing * Math.PI) / 180; for (const d of [4, 9]) pts.push([a.entrance[0] + Math.sin(f) * d, a.entrance[1] - Math.cos(f) * d]); } }
   for (const e of r.entrances) { const f = (e.facing * Math.PI) / 180; for (const d of [4, 9, 15]) pts.push([e.at[0] + Math.sin(f) * d, e.at[1] - Math.cos(f) * d]); }
   for (const [x, z] of pts) { const b = buildingAt(x, z) ?? buildingNear(x, z, 3); if (b) return b; }
-  return null;
+  // (an unnamed footprint a little way from the place's point: the nearest corner within 20 m)
+  let best: Building | null = null, bd = 20;
+  for (const b of BUILDINGS) for (const [x, z] of pts.slice(0, 3)) {
+    if (x < b.minX - bd || x > b.maxX + bd || z < b.minZ - bd || z > b.maxZ + bd) continue;
+    for (let i = 0; i < b.pts.length; i += 2) { const d = Math.hypot(b.pts[i] - x, b.pts[i + 1] - z); if (d < bd) { bd = d; best = b; } }
+  }
+  return best;
 }
 /**
  * Where the allocated room is in its building: a face of the footprint long enough for it (chosen from the room ID, so
@@ -184,8 +190,9 @@ export class RoomPlay {
   }
   /**
    * The campus camera for the view out: the room camera carried into the world by the room's pose. Its near plane
-   * starts just beyond the building's face, so the building's own facade (drawn panes, frames) never covers the
-   * openings; whatever is further out (the campus, the building's other wings) is drawn as it is.
+   * starts 1.8 m beyond the building's face, so the building's own facade where the room is (drawn panes, frames,
+   * balcony fronts standing proud of the footprint) never covers the openings; whatever is further out (the campus,
+   * the building's other wings) is drawn as it is.
    */
   worldCamera(cam: THREE.PerspectiveCamera, out: THREE.PerspectiveCamera) {
     if (!this.pose) return false;
@@ -196,7 +203,8 @@ export class RoomPlay {
     const f = this.pose.face, dir = new THREE.Vector3(0, 0, -1).applyQuaternion(out.quaternion);
     const s = (f.x - out.position.x) * f.nx + (f.z - out.position.z) * f.nz;
     const cos = dir.x * f.nx + dir.z * f.nz;
-    out.near = s > 0 && cos > 0.05 ? Math.min(80, s / cos + 0.35) : 0.1;
+    // (models stand a little proud of the map's footprints: balcony fronts, frames and panes up to ~1.5 m beyond it)
+    out.near = s > 0 && cos > 0.05 ? Math.min(80, s / cos + 1.8) : 0.1;
     out.updateProjectionMatrix();
     out.updateMatrixWorld(true);
     return true;

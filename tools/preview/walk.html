@@ -11,6 +11,8 @@ import { placeByName } from '/src/game/campusmap.ts';
 import { BIKES } from '/src/data/campus.ts';
 import { residenceById, allocate } from '/src/game/residence.ts';
 import { gates } from '/src/game/gates.ts';
+import { occupantsOf } from '/src/features/rooms.ts';
+window.occupantsOf = occupantsOf;
 import { stairsOf } from '/src/game/relief.ts';
 window.STAIRS = () => stairsOf().map((s) => ({ x0: s.x0, x1: s.x1, z0: s.z0, z1: s.z1, alongZ: !!s.alongZ, foot: s.foot, top: s.top }));
 import { walkSurfaceAt, walkSurfaces } from '/src/game/walksurf.ts';

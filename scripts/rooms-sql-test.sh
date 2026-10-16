@@ -69,5 +69,17 @@ check "$($PSQL t -At -c "select max(n) from (select count(*) n from public.room_
 # 10. leave_room gives up the place
 $PSQL t -c "set test.uid = '$(u 7)'; select public.leave_room();" >/dev/null
 check "$($PSQL t -At -c "select count(*) from public.room_places where user_id = '$(u 7)'")" "0" "leave_room gives up the place"
+# 11. for the game's runtime check: a four-person room with two real players, then a third joining (an NPC's place),
+# then the first signing in again (ROSTER_OUT=file writes the server's rows as JSON)
+if [ -n "${ROSTER_OUT:-}" ]; then
+  roster() { $PSQL t -At -c "set test.uid = '$(u "$1")'; select coalesce(json_agg(row_to_json(x)), '[]') from public.room_roster() x;"; }
+  claim 51 limann '' dia-4 >/dev/null; claim 52 limann '' dia-4 >/dev/null
+  r1=$(roster 51)
+  claim 53 limann '' dia-4 >/dev/null
+  r2=$(roster 51)
+  again=$(claim 51 limann '' dia-4); r3=$(roster 51)
+  printf '{"twoReal": %s, "threeReal": %s, "reclaim": "%s", "afterReclaim": %s}\n' "$r1" "$r2" "$again" "$r3" > "$ROSTER_OUT"
+  echo "ok   roster rows written for the game check"
+fi
 echo "rooms SQL: $([ $fail = 0 ] && echo ok || echo FAILED)"
 exit $fail
