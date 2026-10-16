@@ -116,7 +116,8 @@ const padContainer = () => {
   const wu = document.querySelector<HTMLElement>('.room-screen:not([hidden])') ?? app.querySelector<HTMLElement>('.walk-ui #wHall:not([hidden]), .walk-ui #wList:not([hidden]), .walk-ui #wPop:not([hidden])');
   if (wu) return wu;
   if (game.isRiding) {
-    if (game.paused || game.freeRiding) return null;
+    // (on foot or in a room the ride's stop card is not in play: the D-pad moves the pointer)
+    if (game.paused || game.freeRiding || game.walking || game.inRoom) return null;
     const gc = app.querySelector<HTMLElement>('#guideCard');
     return gc && !gc.hidden ? gc : null;
   }
