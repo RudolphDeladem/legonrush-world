@@ -66,8 +66,33 @@ if ('serviceWorker' in navigator) {
     immediate: true,
     onNeedRefresh: () => { updateReady = true; showUpdate(game?.isRiding ? 'ride' : 'menu'); },
     onRegisterError: () => {},
+    // (a game left open for hours still hears of a new deploy: the service worker checks every 15 minutes)
+    onRegisteredSW: (_url, reg) => { if (reg) setInterval(() => { void reg.update().catch(() => {}); }, 15 * 60 * 1000); },
   });
-  updateBar.querySelector('#updateNow')!.addEventListener('click', () => updateSW(true));
+  // (the owner, 2026-10-16: Update did not reload the page, a hard reload was needed. The plugin's update waits for
+  // one 'controlling' event that does not always come (another tab open, the new version already active). So the
+  // button activates the waiting version itself, reloads when it takes over, and if it has not after a few seconds,
+  // drops the old service worker and its caches and reloads from the network, as a hard reload would)
+  updateBar.querySelector('#updateNow')!.addEventListener('click', async () => {
+    const btn = updateBar.querySelector<HTMLButtonElement>('#updateNow')!;
+    btn.disabled = true; btn.textContent = 'Updating…';
+    let reloading = false;
+    const reload = () => { if (!reloading) { reloading = true; location.reload(); } };
+    navigator.serviceWorker.addEventListener('controllerchange', reload);
+    try {
+      void updateSW(true);
+      const reg = await navigator.serviceWorker.getRegistration();
+      reg?.waiting?.postMessage({ type: 'SKIP_WAITING' });
+    } catch { /* fall through to the hard path */ }
+    setTimeout(async () => {
+      if (reloading) return;
+      try {
+        for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister();
+        if ('caches' in window) for (const k of await caches.keys()) await caches.delete(k);
+      } catch { /* reload regardless */ }
+      reload();
+    }, 2500);
+  });
 }
 
 const app = document.getElementById('app')!;
