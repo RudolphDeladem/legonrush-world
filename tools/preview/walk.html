@@ -15,7 +15,7 @@ await game.ready;
 const q = new URLSearchParams(location.search);
 const res = residenceById(q.get('b') ?? 'jean-nelson');
 const e = res.entrances[+(q.get('e') ?? 0)];
-game.setRoute(exploreRoute(placeByName('Balme Library'), placeByName('Jean Nelson Aka Hall')));
+game.setRoute(exploreRoute(placeByName('The Balme Library'), placeByName('Jean Nelson Aka Hall')));
 game.setLook({ gender: 'female', body: 'regular', skin: '#6b4226', outfit: 'hall-tee', jersey: '#16a3a3', helmet: '#f5c518', accessories: ['backpack'] }, '#f2c230');
 game.start(BIKES[0], true);
 await new Promise((r) => setTimeout(r, 400));
