@@ -989,8 +989,13 @@ function play(tutorial: boolean, route: Route = CAMPUS_LOOP, opts: PlayOpts = {}
   }, 60));
 }
 
+/** the ride on screen's cleanup: a new ride runs it first (a ride started without the previous one cleaned up, as a new
+ *  destination chosen from the ride can be, left the old ride's controller and key listeners, and every press then
+ *  counted twice: Options opened the pause menu and closed it again at once, a lane change went two lanes) */
+let rideCleanup: (() => void) | null = null;
 function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
   if (!profile) return;
+  rideCleanup?.(); rideCleanup = null;
   applyLook();
   if (!opts.live && !opts.rivals && !opts.challenge && !opts.challengeRide) saveLastRide(route);
   // the Garage's stats (bike + parts) ride; prize rides and paid Race Challenges are a level field: same plain bike, no upgrades or items
@@ -1727,7 +1732,11 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
   const onHidden = () => { if (document.hidden && game.isRiding && !game.paused && !game.photoMode) togglePause(); };
   document.addEventListener('visibilitychange', onHidden);
 
+  let cleaned = false;
   function cleanup() {
+    if (cleaned) return;
+    cleaned = true;
+    if (rideCleanup === cleanup) rideCleanup = null;
     rideMap?.close();
     // Map tab: the You marker starts where this ride ended
     rememberRidePos(game.riderXZ, settings.campus);
@@ -1768,6 +1777,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     if (vibe) { vibe.onPos = null; vibe.redraw = null; }
     opts.eventPlay?.stop();
   }
+  rideCleanup = cleanup;
 
   game.calm = lr?.kind === 'vibe' || (isExplore(route) && exploreOpts.calm);
   // Explore's guided ride: walking pace, stopping at each place to introduce it
