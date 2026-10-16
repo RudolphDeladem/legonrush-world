@@ -104,7 +104,7 @@ export function buildLodges(): THREE.Group {
     // (the Volta annex: Volta Hall's lodge at the main hall's main entrance serves it; nothing is built at the annex)
     if (!r.lodge) { rec.status = 'served by another lodge'; rec.servedBy = r.lodgeAt; continue; }
     if (r.lodge === 'L01') { rec.status = 'indoor reception (L01)'; continue; }
-    if (r.lodge === 'L06') { rec.status = 'existing gatehouse reused'; continue; }
+    if (r.lodge === 'L06' || r.existingLodge) { rec.status = 'existing gatehouse reused'; continue; }
     // (a tight frontage: the lodge may stand right at the kerb)
     const t = TEMPLATES[r.lodge], p = place(e, t) ?? place(e, t, 0.05);
     if (!p) { rec.status = 'no clear place'; continue; }

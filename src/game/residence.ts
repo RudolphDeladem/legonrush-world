@@ -65,6 +65,8 @@ export interface Residence {
   note?: string;
   /** a residence with no lodge of its own: the residence whose lodge serves it */
   lodgeAt?: string;
+  /** a porter's lodge already modelled from the owner's photographs (no second one is built) */
+  existingLodge?: string;
 }
 
 /** an entrance from the map's access data for a place */
@@ -96,7 +98,7 @@ export const RESIDENCES: Residence[] = [
   { id: 'diamond-jubilee', name: 'Diamond Jubilee Hall', kind: 'residential', catalogue: 'diamond', lodge: 'L01', paint: 'white', places: [], entrances: [djEntrance()], note: 'Kept separate from Jubilee Hall (L10).' },
   // L02, L03: the traditional main halls
   R('commonwealth', 'Commonwealth Hall', 'traditional', 'L02', 'white', ['Commonwealth Hall']),
-  R('sarbah', 'Mensah Sarbah Hall', 'traditional', 'L02', 'white', ['Mensah Sarbah Hall']),
+  R('sarbah', 'Mensah Sarbah Hall', 'traditional', 'L02', 'white', ['Mensah Sarbah Hall'], { existingLodge: "the Administration and Porters' Lodge at the entrance (greathalls.ts, the owner's entrance photos)" }),
   R('volta', 'Volta Hall', 'traditional', 'L02', 'white', ['Volta Hall']),
   R('akuafo', 'Akuafo Hall', 'traditional', 'L03', 'white', ['Akuafo Hall Main']),
   R('legon', 'Legon Hall', 'traditional', 'L03', 'white', ['Legon Hall']),

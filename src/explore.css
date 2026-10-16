@@ -128,7 +128,7 @@
 /* the walking feature (ui/walkui.ts): walk pad, nearby list, entrance popup (top-right), hall actions, room view */
 .walk-ui { position: absolute; inset: 0; z-index: 8; pointer-events: none; }
 .walk-ui [hidden] { display: none !important; }
-.walk-ui .walk-pad { position: absolute; inset: 0; }
+.walk-ui .walk-pad { position: absolute; inset: 0; pointer-events: none; }
 .walk-ui .fp-hint { position: absolute; top: calc(118px + var(--safe-t, 0px)); left: 50%; transform: translateX(-50%); margin: 0; padding: 6px 12px; border-radius: 14px; background: rgba(16, 33, 63, 0.72); color: #fff; font-size: 13px; width: max-content; max-width: calc(100vw - 150px); text-align: center; }
 .walk-ui .fp-btn { pointer-events: auto; border: 0; border-radius: 18px; background: rgba(255, 255, 255, 0.92); color: #10213f; font: inherit; font-weight: 800; font-size: 17px; min-width: 72px; height: 64px; padding: 0 14px; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3); touch-action: none; user-select: none; -webkit-user-select: none; cursor: pointer; }
 .walk-ui .fp-btn.on { background: #f5c518; transform: scale(0.96); }
@@ -138,7 +138,7 @@
 .walk-ui .fp-feet { position: absolute; right: 14px; bottom: calc(24px + var(--safe-b, 0px)); display: flex; gap: 10px; }
 .walk-ui .wp-top { position: absolute; left: 14px; top: calc(160px + var(--safe-t, 0px)); display: flex; flex-direction: column; gap: 8px; }
 .walk-ui .wp-top .fp-btn { height: 42px; font-size: 14px; border-radius: 999px; }
-.walk-ui .walk-pop { pointer-events: auto; position: absolute; top: calc(70px + var(--safe-t, 0px)); right: 14px; display: flex; align-items: center; gap: 8px; max-width: min(340px, calc(100vw - 28px)); padding: 8px 8px 8px 14px; border-radius: 16px; background: rgba(16, 33, 63, 0.9); color: #fff; font-weight: 700; font-size: 14px; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); }
+.walk-ui .walk-pop { pointer-events: auto; z-index: 2; position: absolute; top: calc(70px + var(--safe-t, 0px)); right: 14px; display: flex; align-items: center; gap: 8px; max-width: min(340px, calc(100vw - 28px)); padding: 8px 8px 8px 14px; border-radius: 16px; background: rgba(16, 33, 63, 0.9); color: #fff; font-weight: 700; font-size: 14px; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); }
 .walk-ui .walk-pop .btn { width: auto; padding: 6px 14px; min-height: 0; }
 .walk-ui .wp-x { pointer-events: auto; border: 0; background: transparent; color: inherit; font-size: 22px; line-height: 1; cursor: pointer; padding: 2px 6px; }
 .walk-ui .walk-list { pointer-events: auto; position: absolute; left: 14px; top: calc(260px + var(--safe-t, 0px)); width: min(320px, calc(100vw - 28px)); max-height: 46vh; overflow: auto; padding: 10px; border-radius: 16px; background: rgba(255, 255, 255, 0.96); color: #10213f; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3); }
@@ -151,3 +151,12 @@
 .walk-ui .walk-room .wr-top { position: absolute; top: calc(70px + var(--safe-t, 0px)); left: 14px; right: 14px; display: flex; flex-direction: column; gap: 2px; padding: 8px 12px; border-radius: 14px; background: rgba(16, 33, 63, 0.78); color: #fff; max-width: 520px; }
 .walk-ui .walk-room .wr-foot { position: absolute; right: 14px; bottom: calc(24px + var(--safe-b, 0px)); display: flex; gap: 10px; }
 .walk-ui .walk-room .fp-btn { height: 48px; font-size: 15px; }
+.walk-ui .walk-room .wr-top, .walk-ui .walk-room .wr-who { pointer-events: auto; }
+.walk-ui .walk-room .wr-who summary { cursor: pointer; font-size: 13px; }
+.walk-ui .walk-room .wr-who ul { margin: 4px 0 0; padding-left: 18px; font-size: 13px; }
+/* the room's one action for the part within reach, centred above the walking buttons */
+.walk-ui .walk-room .wr-act { position: absolute; left: 50%; bottom: calc(104px + var(--safe-b, 0px)); transform: translateX(-50%); background: #f5c518; min-width: 180px; }
+.walk-ui .walk-room .wr-pad .fp-feet { right: 14px; bottom: calc(84px + var(--safe-b, 0px)); }
+.walk-ui .walk-room .wr-pad .fp-steer { bottom: calc(24px + var(--safe-b, 0px)); }
+/* menus and sheets opened while walking (pause, accommodation) sit above the walking controls */
+.walk-ui ~ .overlay { z-index: 20; }

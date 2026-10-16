@@ -10,6 +10,7 @@ import { RESIDENCES, categoryById, residenceOfPlace, validAccommodation, type Ac
 import { accommodationLabel } from './accommodation';
 import { esc } from '../features/host';
 import { occupantsOf, type RoomPlace } from '../features/rooms';
+import { LODGE_PLACEMENTS } from '../game/lodges';
 
 /** a place one can walk up to: a residence's entrance, or another building's mapped entrance */
 interface Spot { key: string; name: string; at: [number, number]; residence?: Residence; entranceIndex?: number; kind: PlaceKind | 'residence' }
@@ -175,7 +176,13 @@ export function startWalking(ctx: WalkContext) {
     const mine = acc && validAccommodation(acc) && acc.buildingId === r.id;
     const blockOf = r.blocks && r.entrances.length === r.blocks.length && s.entranceIndex !== undefined ? r.blocks[s.entranceIndex] : null;
     const wrongBlock = mine && blockOf && acc!.blockId !== blockOf.id ? r.blocks!.find((b) => b.id === acc!.blockId) : null;
-    const lodge = r.lodge ? (r.lodge === 'L01' ? "the porter's reception (L01)" : r.lodge === 'L06' ? 'the gatehouse at the entrance' : `the porter's lodge by the entrance (${r.lodge})`) : r.lodgeAt ? `the annex: its porter's lodge is at ${RESIDENCES.find((x) => x.id === r.lodgeAt)?.name ?? 'the main hall'}'s main entrance` : 'the entrance';
+    // what the entrance has, as built: the reception, a modelled or placed lodge, the main hall's lodge, or none yet
+    const lp = LODGE_PLACEMENTS.find((x) => x.residence === r.id && x.entrance === r.entrances[s.entranceIndex ?? 0]?.id);
+    const lodge = r.lodge === 'L01' ? "the porter's reception (L01)"
+      : r.lodgeAt ? `the annex: its porter's lodge is at ${RESIDENCES.find((x) => x.id === r.lodgeAt)?.name ?? 'the main hall'}'s main entrance`
+      : lp?.status === 'existing gatehouse reused' ? "the porter's lodge at the entrance"
+      : lp?.status === 'built' ? `the porter's lodge by the entrance (${r.lodge})`
+      : 'the entrance (its porter\'s lodge position is not confirmed yet)';
     H.hidden = false;
     H.innerHTML = `<div class="panel">
       <p class="kicker">${esc(r.name)}</p>
@@ -233,7 +240,7 @@ export function startWalking(ctx: WalkContext) {
       return `<li>Bed ${bed + 1}: ${r ? (r.you ? '<b>You</b>' : `${esc(r.name)} <small class="muted">(player)</small>`) : `<span class="muted">NPC roommate</span>`}</li>`;
     }).join('');
     R.hidden = false;
-    R.innerHTML = `<div class="wr-top"><b>Room ${esc(p.roomId)}</b><small>${esc(accommodationLabel({ ...acc, roomId: p.roomId }))}</small>
+    R.innerHTML = `<div class="wr-top"><b>Room ${esc(p.roomId)}</b><small>${esc(accommodationLabel({ ...acc, roomId: p.roomId }).replace(/ · Room \S+$/, ''))}</small>
         <details class="wr-who"><summary>${p.capacity === 1 ? 'Single room' : `${p.capacity} residents`}${p.source === 'local' ? ' · NPC roommates' : ''}</summary><ul>${who}</ul>${p.note ? `<p class="muted small">${esc(p.note)}</p>` : ''}</details>
         <small class="muted">${c.evidence === 'adapted' ? 'Adapted design' : 'Reference-led design'} · W/S walk · A/D step · ←/→ turn · drag to look · E: use</small></div>
       <button class="fp-btn wr-act" id="rAct" hidden></button>
