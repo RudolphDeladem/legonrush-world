@@ -47,19 +47,24 @@ console.log('clusters', JSON.stringify(C.map((c) => c.map((v) => +v.toFixed(1)))
 let n = 0;
 for (const [, px, pz, sx, sz] of C) {
   if (n++ >= 3) break;
-  const start = await page.evaluate(([px, pz, sx, sz]) => {
+  // each side in turn (one side is the building): the first start the character can walk from
+  const starts = await page.evaluate(([px, pz, sx, sz]) => {
     const W = window.__walkgrid;
-    // from the long sides' outside, then the short ones
     const cand = sx > sz ? [[px, pz + sz / 2 + 2.5], [px, pz - sz / 2 - 2.5], [px + sx / 2 + 2.5, pz], [px - sx / 2 - 2.5, pz]] : [[px + sx / 2 + 2.5, pz], [px - sx / 2 - 2.5, pz], [px, pz + sz / 2 + 2.5], [px, pz - sz / 2 - 2.5]];
-    for (const [x, z] of cand) if (W.walkTopAt(x, z, 0.1) === null && !W.walkBlocked(x, z, 0)) return [x, z, Math.atan2(-(px - x), -(pz - z))];
-    return null;
+    return cand.filter(([x, z]) => W.walkTopAt(x, z, 0.1) === null && !W.walkBlocked(x, z, 0)).map(([x, z]) => [x, z, Math.atan2(-(px - x), -(pz - z))]);
   }, [px, pz, sx, sz]);
-  if (!start) { console.log('cluster', px.toFixed(1), pz.toFixed(1), 'no start'); continue; }
-  await page.evaluate(([x, z, yaw]) => { const f = __game['foot']; f.x = x; f.z = z; f.yaw = yaw; f.y = 0; __game['snapCam'] = true; }, start);
-  await frames(4);
-  await page.keyboard.down('KeyW'); await frames(22); await page.keyboard.up('KeyW');
-  const r = await page.evaluate(() => ({ y: __game['foot'].y, xz: __game.footXZ }));
-  console.log('climb', px.toFixed(1), pz.toFixed(1), JSON.stringify({ start, ...r }));
-  await page.screenshot({ path: `${out}/stairs${n}.png`, timeout: 600000 });
+  let done = false;
+  for (const start of starts) {
+    await page.evaluate(([x, z, yaw]) => { const f = __game['foot']; f.x = x; f.z = z; f.yaw = yaw; f.y = 0; __game['snapCam'] = true; }, start);
+    await frames(4);
+    await page.keyboard.down('KeyW'); await frames(22); await page.keyboard.up('KeyW');
+    const r = await page.evaluate(() => ({ y: __game['foot'].y, xz: __game.footXZ }));
+    const moved = Math.hypot(r.xz[0] - start[0], r.xz[1] - start[1]);
+    if (moved < 0.3) { console.log('blocked side', px.toFixed(1), pz.toFixed(1), JSON.stringify(start.map((v) => +v.toFixed(1)))); continue; }
+    console.log('climb', px.toFixed(1), pz.toFixed(1), JSON.stringify({ start, moved: +moved.toFixed(2), ...r }));
+    await page.screenshot({ path: `${out}/stairs${n}.png`, timeout: 600000 });
+    done = true; break;
+  }
+  if (!done) console.log('cluster', px.toFixed(1), pz.toFixed(1), 'no walkable side');
 }
 await browser.close();
