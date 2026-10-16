@@ -1,0 +1,37 @@
+// node .preview/gatetest.mjs outdir — the Evandy slot gate: shut while far, opens for the walker, stays open nearby and
+// while in that building's room, closes when they have left; also the lodge placement statuses
+import { chromium } from 'playwright';
+const [, , out] = process.argv;
+const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+const page = await browser.newPage({ viewport: { width: 900, height: 560 } });
+page.on('pageerror', (e) => console.log('PAGEERROR', e.stack));
+await page.goto(`${process.env.HOST ?? 'http://localhost:4199/'}.preview/walk.html?b=evandy&e=0&back=10`, { timeout: 1500000 });
+await page.waitForFunction(() => window.__done, null, { timeout: 1500000 });
+const log = (k, v) => console.log(k, JSON.stringify(v));
+const counts = await page.evaluate(() => { const c = {}; for (const l of window.LODGES) c[l.status] = (c[l.status] ?? 0) + 1; return { c, none: window.LODGES.filter((l) => l.status === 'no clear place').map((l) => l.residence) }; });
+log('lodges', counts);
+await page.waitForTimeout(1500);
+log('getDown', await page.evaluate(() => game.getDown()));
+const g = await page.evaluate(() => { const x = gates['list'][0]; return { hinge: x.hinge, dir: x.dir, length: x.length }; });
+log('gate', g);
+const put = (d, side) => page.evaluate(([d, side, g]) => { const f = game['foot'], nx = -g.dir[1], nz = g.dir[0]; const mx = g.hinge[0] + g.dir[0] * g.length / 2, mz = g.hinge[1] + g.dir[1] * g.length / 2; f.x = mx + nx * d * side; f.z = mz + nz * d * side; f.yaw = Math.atan2(nx * side, nz * side); game['snapCam'] = true; }, [d, side, g]);
+const openNow = () => page.evaluate(() => gates.all[0].open);
+const blockedMid = () => page.evaluate((g) => gates.blocked(g.hinge[0] + g.dir[0] * g.length / 2, g.hinge[1] + g.dir[1] * g.length / 2), g);
+const until = async (want, ms) => { const t0 = Date.now(); while (Date.now() - t0 < ms) { const o = await openNow(); if (want ? o >= 0.999 : o <= 0.001) return o; await page.waitForTimeout(500); } return openNow(); };
+await put(30, 1); await page.waitForTimeout(2500);
+log('far', { open: await openNow(), blockedMid: await blockedMid() });
+await page.screenshot({ path: `${out}/gate_1-closed.png`, timeout: 600000 });
+await put(6, 1);
+log('near', { open: await until(true, 120000), blockedMid: await blockedMid() });
+await page.screenshot({ path: `${out}/gate_2-open.png`, timeout: 600000 });
+await put(15, 1); await page.waitForTimeout(4000);
+log('stillNearby15m', { open: await openNow() });
+const acc = await page.evaluate(() => allocate('test-rider', 'evandy', 'ev-2', 'main'));
+log('enterRoom', await page.evaluate((a) => game.enterRoom(a), acc));
+await page.waitForTimeout(4000);
+log('inRoom', { open: await openNow() });
+await page.evaluate(() => game.leaveRoom());
+await put(40, 1);
+log('left40m', { open: await until(false, 120000), blockedMid: await blockedMid() });
+await page.screenshot({ path: `${out}/gate_3-closed-again.png`, timeout: 600000 });
+await browser.close();

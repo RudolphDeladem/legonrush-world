@@ -68,21 +68,28 @@ const lodgeSign = () => (signMat ??= new THREE.MeshStandardMaterial({ roughness:
 export interface LodgePlacement { residence: string; entrance: string; family: LodgeFamily | null; status: 'built' | 'indoor reception (L01)' | 'existing gatehouse reused' | 'no family assigned' | 'no clear place'; at?: [number, number]; side?: 'left' | 'right'; inside?: boolean }
 export const LODGE_PLACEMENTS: LodgePlacement[] = [];
 
-/** a place just inside the entrance (else just outside it) and to one side of the route, clear of buildings, roads and solids */
-function place(e: Entrance, t: Template): { x: number; z: number; yaw: number; side: 'left' | 'right'; inside: boolean } | null {
+/**
+ * A place just inside the entrance (else just outside it) and to one side of the route, clear of buildings, roads and
+ * solids: the nearest clear spot on a widening search, preferring inside the gate and close to the route.
+ */
+function place(e: Entrance, t: Template, roadGap = 0.4): { x: number; z: number; yaw: number; side: 'left' | 'right'; inside: boolean } | null {
   const b = (e.facing * Math.PI) / 180, ux = Math.sin(b), uz = -Math.cos(b), nx = Math.cos(b), nz = Math.sin(b);
-  const free = (x: number, z: number) => !buildingNear(x, z, 0.4) && roadClearance(x, z, 6, -1, true) > 0.6 && !SOLIDS.at(x, z, 0.3);
-  for (const along of [3.5, 5, 7, -3.5, -5]) for (const side of [1, -1]) for (const off of [t.hx + 1.6, t.hx + 2.6]) {
+  const free = (x: number, z: number) => !buildingNear(x, z, 0.4) && roadClearance(x, z, 6, -1, true) > roadGap && !SOLIDS.at(x, z, 0.3);
+  let best: { x: number; z: number; yaw: number; side: 'left' | 'right'; inside: boolean; score: number } | null = null;
+  for (let along = -10; along <= 14; along += 1) for (const side of [1, -1]) for (let off = t.hx + 1.4; off <= t.hx + 9; off += 1) {
+    // inside the gate and near the route first; the entrance point itself may lie inside the building's footprint
+    const score = (along > 0 ? along : 6 - along * 1.5) + (off - t.hx) * 1.2;
+    if (best && score >= best.score) continue;
     const x = along * ux + side * off * nx + e.at[0], z = along * uz + side * off * nz + e.at[1];
     // the corners of the footprint (counter toward the route) all clear, the ground nearly level
     const yaw = Math.atan2(-side * nx, -side * nz);
     const cs = Math.cos(yaw), sn = Math.sin(yaw), pts = [[-t.hx, -t.hz], [t.hx, -t.hz], [-t.hx, t.hz + 0.4], [t.hx, t.hz + 0.4], [0, 0]].map(([a, c]) => [x + a * cs + c * sn, z - a * sn + c * cs]);
     if (!pts.every(([px, pz]) => free(px, pz))) continue;
     const hs = pts.map(([px, pz]) => gh(px, pz));
-    if (Math.max(...hs) - Math.min(...hs) > 0.6) continue;
-    return { x, z, yaw, side: side > 0 ? 'right' : 'left', inside: along > 0 };
+    if (Math.max(...hs) - Math.min(...hs) > 0.8) continue;
+    best = { x, z, yaw, side: side > 0 ? 'right' : 'left', inside: along > 0, score };
   }
-  return null;
+  return best && { x: best.x, z: best.z, yaw: best.yaw, side: best.side, inside: best.inside };
 }
 
 /** every lodge, built once with the campus */
@@ -97,7 +104,8 @@ export function buildLodges(): THREE.Group {
     if (!r.lodge) { rec.status = 'no family assigned'; continue; }
     if (r.lodge === 'L01') { rec.status = 'indoor reception (L01)'; continue; }
     if (r.lodge === 'L06') { rec.status = 'existing gatehouse reused'; continue; }
-    const t = TEMPLATES[r.lodge], p = place(e, t);
+    // (a tight frontage: the lodge may stand right at the kerb)
+    const t = TEMPLATES[r.lodge], p = place(e, t) ?? place(e, t, 0.05);
     if (!p) { rec.status = 'no clear place'; continue; }
     Object.assign(rec, { at: [+p.x.toFixed(1), +p.z.toFixed(1)], side: p.side, inside: p.inside });
     const c: Part[] = [];

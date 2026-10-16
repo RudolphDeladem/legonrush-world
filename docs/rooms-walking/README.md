@@ -22,7 +22,8 @@ volumes is marked **pending** below and in the code; nothing is invented to clos
 | Room interior built only for the allocated room, alone, away from the campus (privacy) | `game/roomkit.ts`, `Game.enterRoom` | implemented |
 | Blurred transition from the entrance into the room and back, no corridor walk | `walkui.ts` | implemented |
 | Room views: several fixed views per room plus drag to look round, Next view, Leave room | `Game.roomCamera`, `walkui.ts` | implemented |
-| Porter's lodges per family at each configured entrance (L02–L05, L07–L13 built; L01 an indoor reception shown on arrival; L06 the existing Evandy gatehouse) | `game/lodges.ts` | implemented, placements provisional |
+| Porter's lodges per family at each configured entrance (29 built for L02–L05 and L07–L13; L01 an indoor reception shown on arrival; L06 the existing Evandy gatehouse) | `game/lodges.ts` | implemented, placements provisional |
+| Porch and steps walkable at the Diaspora halls (the walker stands on them instead of sinking) | `game/walksurf.ts`, `halls.ts` | implemented there only |
 | Entrance gate that opens for a walker, stays open while near or in that building's room, closes when clear | `game/gates.ts`; Evandy's slot gate | implemented for the one modelled leaf |
 
 ## Room rules (checked by `npx tsx scripts/room-tests.ts`)
@@ -71,7 +72,48 @@ volumes is marked **pending** below and in the code; nothing is invented to clos
 
 ## Tests T01–T35
 
-RESULTS
+Run in the game (a production bundle of `tools/preview/walk.html`, software rendering): `walktest.mjs` (Jean Nelson
+Aka Hall, a four-person Diaspora room), `gatetest.mjs` (Evandy's slot gate), `lodgeshot.mjs` (one lodge per family)
+and `npm run test:rooms` (the catalogue rules). Software rendering draws a few frames a second, so the tests place the
+walker by the entrance instead of walking the whole approach; the short walks they do make move and collide normally.
+
+| Test | Result |
+|---|---|
+| T01 dismount and walk | pass on Explore rides (route and free ride); other modes do not offer it |
+| T02 dismount beside an obstruction | pass: a clear side spot is searched; "no clear ground" is reported instead of a bad state; the bike stays parked, one bike |
+| T03 no entry while riding or away from an entrance | pass (the popup only exists on foot, within 4.5 m) |
+| T04 popup appears, clears on leaving or remounting | pass (in 4.5 m, out 7 m, one popup) |
+| T05 nearby list | pass: buildings within 150 m with left/right/ahead/behind |
+| T06 selecting a target | pass: beacon on the chosen entrance, no teleport, entry still needs the walk |
+| T07 halls vs departments | pass: hall panel at residences; departments and the Great Hall get "no interior" |
+| T08 enter the assigned room | pass: room JN230, layout R04, two bunks; same character and choice give the same room; no assignment asks for one |
+| T09 smooth transition | pass: blur in and out, no corridor walk; a second enter while inside is refused |
+| T10 look around | pass: several views per unit, drag/keys/stick, pitch limited, camera kept inside the room bounds |
+| T11 leave the room | pass: back on foot at the entrance, bike where it was parked; riding again from beside it works |
+| T12 common area and stairs | **partial**: open ground only; stairs and landings are not built |
+| T13 riding still works after repeated cycles | pass in the test sequence (ride, walk, room, walk, ride); camera check 0 inside buildings, route lengths unchanged |
+| T14 room colours | pass: white groups, Bani blue, Evandy cream; TF pending (neutral) |
+| T15 gate opens for the walker | pass at Evandy (open within 6 m; the closed leaf no longer blocks the opening) |
+| T16 a second entrance while walking | pass by design (no remount needed); only one modelled gate leaf exists to show it |
+| T17 stays open nearby | pass (still open at 15 m) |
+| T18 occupancy keeps it open | pass (open while in the Evandy room) |
+| T19 closes when clear | pass (closed again at 40 m; closes only when the swing is clear of the walker and the bike) |
+| T20 collision follows the leaf | pass (blocked when closed, clear when open) |
+| T21 lodge just inside, one side | **partial**: 29 lodges built, 5 L01 indoor receptions, Evandy's gatehouse reused; Valco Phase 1 and Vikings have no ground between the frontage and the road (pending); Volta annex has no family |
+| T22 13 family assignments | pass (`npm run test:rooms`) |
+| T23 families stay consistent | pass: one fixed template per family, deterministic placement |
+| T24 cycling and transitions after the additions | pass (as T13) |
+| T25 changing hall or block | pass: options refresh, incompatible choice cleared |
+| T26 annexes and Valco | pass: annexes four; Valco one or two, en-suite, kitchen group of 12 rooms |
+| T27 New Pent, Old Pent, Vikings | pass |
+| T28 Evandy and Bani variants | pass |
+| T29 higher occupancies | pass: only Jubilee, TF, ISH 1 and ISH 2 |
+| T30 traditional single and three | pass: small chamber; three = two outer and one inner place |
+| T31 paint | pass (as T14); exteriors and lodges unchanged |
+| T32 privacy | pass: only the allocated room is built, alone, and the campus is hidden while it is shown; no other interior exists to see |
+| T33 room matches the selection | pass; changing the profile clears an incompatible room |
+| T34 Valco kitchen grouping by rooms | pass |
+| T35 legacy profiles | pass: the new field is optional; an invalid one is cleared without touching the rest |
 
 ## Pending (not settled by the volumes, or not done)
 
@@ -85,6 +127,10 @@ RESULTS
 - Gates: only Evandy's slot gate is a modelled leaf; other entrances have open gateways (nothing to swing).
 - Old Pent court names as entrances: the alias is inferred from the map, not confirmed.
 - Vikings double-room video: not in the pack; the Vikings double uses the volume's text only.
+- Valco Phase 1 and Vikings: the building's front is 1 to 2.5 m from the road, so no lodge fits outside; their
+  lodges are probably inside the ground floor, which the volumes do not confirm. No lodge is built there yet.
+- Porches and steps are walkable only at the four Diaspora halls; at other entrances the walker stands at ground
+  height and can look sunk into a raised porch.
 - Lodge placements are computed (inside the entrance, to one side, clear of buildings, roads and solids); they are
   not registered to photographs of each lodge.
 - Walking is reachable from Explore rides only (not from races or timed modes).
