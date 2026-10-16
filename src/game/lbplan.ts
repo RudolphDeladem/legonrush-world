@@ -91,7 +91,26 @@ export const SIGNALS = {
 };
 
 /** the median between the carriageways: kerbed patchy grass and red earth, young planted trees (Pairs 1, 2, 4, 9, 13) */
-export const MEDIAN = { z0: 905, z1: 1640, gap: [1179.5, 1257] as [number, number], tree: 19 };
+// (the owner, 2026-10-16, on a screenshot: the median's last stretch before the junction on each side taken off, the
+// INSTANT ADMISSION pylon and the A-frame with it, the road asphalt there, and each new end a half circle: gap
+// [1179.5, 1257] became [1158, 1278.5])
+export const MEDIAN = { z0: 905, z1: 1640, gap: [1158, 1278.5] as [number, number], tree: 19 };
+/** each junction end of the median: its half circle's centre (the straight edges end there) and radius */
+export function medianCap(end: 0 | 1) {
+  const z = MEDIAN.gap[end], r = Math.max(0.6, (eastInner(z) - westInner(z)) / 2);
+  return { zc: end === 0 ? z - r : z + r, r, x: (westInner(z) + eastInner(z)) / 2 };
+}
+/** whether (x, z) is on the median: between its kerbs, outside the junction's gap, inside the half circles at its ends */
+export function onMedian(x: number, z: number) {
+  if (z < MEDIAN.z0 || z > MEDIAN.z1 || (z > MEDIAN.gap[0] && z < MEDIAN.gap[1])) return false;
+  const a = westInner(z), o = eastInner(z);
+  if (Number.isNaN(a) || Number.isNaN(o) || x < a || x > o) return false;
+  for (const end of [0, 1] as const) {
+    const c = medianCap(end);
+    if (end === 0 ? z > c.zc : z < c.zc) return Math.hypot(x - c.x, z - c.zc) <= c.r;
+  }
+  return true;
+}
 
 /** the neighbourhood east of the N4 (Pairs 2, 4, 11, 12, 15-19; Additional References 3 to 6): every footprint here is
  *  built as the local mixed commercial fabric, not the campus template */

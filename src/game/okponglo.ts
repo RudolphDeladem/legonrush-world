@@ -33,7 +33,7 @@ import { letters } from './letters';
 import { pavers, rod, run, strip, type V3 } from './upsa';
 import { concrete } from './concrete';
 import { lattice } from './labawaleshie';
-import { E_HALF, MEDIAN, SCRUB, W_HALF, eastInner, westInner, xEast, xWest } from './lbplan';
+import { E_HALF, MEDIAN, SCRUB, W_HALF, eastInner, onMedian, westInner, xEast, xWest } from './lbplan';
 import { CORNERS, CORNER_R, eOuter, onOkRoad } from './okjplan';
 /** within 1.2 m of the junction's road (toward it from the south-east block) */
 const nearOkRoad = (x: number, z: number) => onOkRoad(x, z) || onOkRoad(x - 1.2, z) || onOkRoad(x, z - 1.2) || onOkRoad(x - 0.85, z - 0.85);
@@ -379,7 +379,7 @@ const corridor: Spec = {
     k.meshes.push(soilMesh(CO, 940, 1060, 905, 1640, 0.8, (x, z) => {
       if (z > MEDIAN.gap[0] - 1 && z < MEDIAN.gap[1] + 1) return null;
       const a = westInner(z) + 0.35, o = eastInner(z) - 0.35;
-      if (Number.isNaN(a) || x < a || x > o) return null;
+      if (Number.isNaN(a) || x < a || x > o || !onMedian(x, z)) return null;
       // bare where the grass has worn thin, at two scales, never a repeated bar
       return ramp(0.5, 0.68, vnoise(x * 0.3, z * 0.09) * 0.7 + vnoise(x * 0.9 + 3.1, z * 0.5) * 0.3);
     }));

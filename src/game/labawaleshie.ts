@@ -38,7 +38,7 @@ import { medianGrass, pavers, rod, run, strip, wires, type V3 } from './upsa';
 import { inOkKeep, okOwns } from './okplan';
 import {
   CABINET, COMPOUND, E_HALF, HOOD, JUNCTION, MASSES, MAST, MEDIAN, ROADSIDE, SCRUB, SIGNAL, SIGNALS, VERGE_W, W_HALF,
-  eastInner, halfOf, inCompound, inHood, offEdge, pickOf, westInner, xEast, xWest, type Mass, type Pick,
+  eastInner, halfOf, inCompound, inHood, medianCap, offEdge, pickOf, westInner, xEast, xWest, type Mass, type Pick,
 } from './lbplan';
 import { OKJ_SEGS, okjIslands, westEdge, wOuter } from './okjplan';
 
@@ -485,14 +485,38 @@ const corridor: Spec = {
     {
       const runs: [number, number, number][][] = [];
       let cur: [number, number, number][] = [];
-      for (let z = MEDIAN.z0; z <= MEDIAN.z1; z += 1.5) {
+      // (the straight edges stop where each junction end's half circle begins: the owner, 2026-10-16)
+      const c0 = medianCap(0), c1 = medianCap(1);
+      const zs: number[] = [];
+      for (let z = MEDIAN.z0; z <= MEDIAN.z1; z += 1.5) zs.push(z);
+      zs.push(c0.zc, c1.zc);
+      zs.sort((p, q) => p - q);
+      for (const z of zs) {
         const a = westInner(z) + 0.05, o = eastInner(z) - 0.05;
-        const ok = !(z > MEDIAN.gap[0] && z < MEDIAN.gap[1]) && !Number.isNaN(a) && !Number.isNaN(o) && o - a > 1.2 && clearance((a + o) / 2, z) > -0.2;
+        // (near the junction the mapped carriageway ribbons overlap the median: the junction's plan owns it there, and the
+        // kerbed median runs right up to its rounded ends, rather than stopping short over bare ground)
+        const nearJ = z > MEDIAN.gap[0] - 60 && z < MEDIAN.gap[1] + 60;
+        const ok = !(z > c0.zc + 1e-6 && z < c1.zc - 1e-6) && !Number.isNaN(a) && !Number.isNaN(o) && o - a > 1.2 && (nearJ || clearance((a + o) / 2, z) > -0.2);
         if (!ok) { if (cur.length > 1) runs.push(cur); cur = []; continue; }
         cur.push([z, a, o]);
       }
       if (cur.length > 1) runs.push(cur);
       for (const r of runs) strip(k, r.map(([z, a]) => A(a, z)), r.map(([z, , o]) => A(o, z)), 0.16, medianGrass(), edge, '#cfcbc2', [0.2, 0.2]);
+      // each end's half circle: a raised half disc of the same grass, its face down to the road and its kerb round the curve
+      for (const [c, s1] of [[c0, 1], [c1, -1]] as const) {
+        const r = c.r - 0.05, [cx, cz] = A(c.x, c.zc);
+        const disc = new THREE.CircleGeometry(r, 24, s1 > 0 ? Math.PI : 0, Math.PI).rotateX(-Math.PI / 2).translate(cx, 0.16, cz);
+        const uv = disc.attributes.uv as THREE.BufferAttribute, dp = disc.attributes.position as THREE.BufferAttribute;
+        for (let i = 0; i < uv.count; i++) uv.setXY(i, dp.getX(i) / 4, dp.getZ(i) / 4);
+        const m = new THREE.Mesh(disc, medianGrass()); m.receiveShadow = true; k.meshes.push(m);
+        for (let i = 0; i < 24; i++) {
+          const t0 = (i / 24) * Math.PI, t1 = ((i + 1) / 24) * Math.PI;
+          const ax = cx + Math.cos(t0) * r, az = cz + s1 * Math.sin(t0) * r, bx = cx + Math.cos(t1) * r, bz = cz + s1 * Math.sin(t1) * r;
+          edge.push([run(ax, az, bx, bz, 0, 0.16, 0.04), '#cfcbc2']);
+          const kx = cx + Math.cos(t0) * (r - 0.1), kz = cz + s1 * Math.sin(t0) * (r - 0.1), lx = cx + Math.cos(t1) * (r - 0.1), lz = cz + s1 * Math.sin(t1) * (r - 0.1);
+          edge.push([run(kx, kz, lx, lz, 0, 0.22, 0.2), '#cfcbc2']);
+        }
+      }
       // (its planting: compact trees, shrubs and the open stretch's boards, okponglo.ts, the Okponglo brief's Pairs 1, 2,
       // 4, 13, 14)
     }

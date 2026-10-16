@@ -4,7 +4,7 @@
 // road), zone 5's concrete stopping bay flush beside the asphalt, and the lane lines, corner-lane guides, stop lines,
 // crossings and arrows on the final geometry. world.ts lays the surface with the other roads and lowers it with them.
 import * as THREE from 'three';
-import { MEDIAN, WIDEN, eastInner, westInner } from './lbplan';
+import { MEDIAN, WIDEN, eastInner, medianCap, westInner } from './lbplan';
 import {
   ARM, CORNERS, CORNER_R, LANE, STOP, XM, ZEBRA, ZONES, armEdges, armLane, armLanes, bayOuter, bayWidth, clz, eInner, eLane, eOuter,
   eastLanes, hfN4, inGap, wInner, wLane, wOuter, westEdge, westLanes, type Corner,
@@ -28,11 +28,13 @@ export function okjSurfaces(): { asphalt: Buf; bay: Buf } {
   // the carriageways, a quad a metre; the median's tips and the bay's ends exactly
   const zs = new Set<number>();
   for (let z = WIDEN.z0; z <= WIDEN.z1; z += 1) zs.add(z);
-  for (const z of [...MEDIAN.gap, ...ZONES[5].bay, WIDEN.z1]) zs.add(z);
+  // (and the median's rounded ends: asphalt under them, from where the half circles begin, so their corners are road)
+  const c0 = medianCap(0).zc, c1 = medianCap(1).zc;
+  for (const z of [...MEDIAN.gap, ...ZONES[5].bay, WIDEN.z1, c0, c1]) zs.add(z);
   const zl = [...zs].sort((a, b) => a - b);
   for (let i = 0; i < zl.length - 1; i++) {
     const z0 = zl[i], z1 = zl[i + 1], zm = (z0 + z1) / 2;
-    if (inGap(zm)) quad(asphalt, [wOuter(z0), z0], [eOuter(z0), z0], [eOuter(z1), z1], [wOuter(z1), z1]);
+    if (zm > c0 && zm < c1) quad(asphalt, [wOuter(z0), z0], [eOuter(z0), z0], [eOuter(z1), z1], [wOuter(z1), z1]);
     else {
       quad(asphalt, [wOuter(z0), z0], [westInner(z0), z0], [westInner(z1), z1], [wOuter(z1), z1]);
       quad(asphalt, [eastInner(z0), z0], [eOuter(z0), z0], [eOuter(z1), z1], [eastInner(z1), z1]);

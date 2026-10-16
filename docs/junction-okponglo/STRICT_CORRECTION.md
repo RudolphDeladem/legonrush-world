@@ -150,3 +150,17 @@ Not completed:
   renders.
 - **Riding the junction by hand in the browser.** The route tests ride every tour, and the collision scan covers every
   lane and corner.
+
+## Median ends, owner's screenshot (2026-10-16, after the strict correction)
+
+The owner circled the median's last stretch before the junction (grass, the INSTANT ADMISSION pylon and the A-frame
+board) and asked for it to go, the road asphalt there, and the new end a half circle, on both sides.
+
+- `lbplan.ts` `MEDIAN.gap` is now [1158, 1278.5] (was [1179.5, 1257]): 21.5 m off each end. The boards and trees on
+  the removed stretch go with it (they are filtered by the gap); the signal masts on the noses move to the new ends.
+- Each end is a raised half disc of the median grass with its kerb round the curve (`labawaleshie.ts`; `medianCap`,
+  `onMedian` in `lbplan.ts`); the asphalt runs under the rounded corners (`okjunction.ts`).
+- Near the junction the mapped carriageway ribbons overlap the median, which had stopped the kerbed median short and
+  left flat bare grass before its end (what the screenshot showed): the kerbed median now runs right up to the nose.
+
+Evidence: `evidence/median-north-end.jpg`, `evidence/median-north-nose-top.jpg`, `evidence/median-south-nose-top.jpg`.

@@ -26,7 +26,9 @@ await wait(6000);
 // the controller on the ride's screens: Options opens the pause menu, the D-pad moves its highlight to "Get down and
 // walk", Cross chooses it; then on foot the D-pad pointer reaches the "Ride bicycle" button and Cross presses it
 const hold = async (i, n = 3) => { await page.evaluate((i) => __padSet(i, true), i); await frames(n); await page.evaluate((i) => __padSet(i, false), i); await frames(3); };
-await hold(9);
+await shot('p0-before');
+log('state', await page.evaluate(() => ({ riding: __game.isRiding, phase: __game.phase, paused: __game.paused, mode: __pad.mode, overlay: !!document.querySelector('#pauseOverlay, .overlay') })));
+for (let k = 0; k < 4 && !(await page.$('#pauseOverlay [data-p="walk"]')); k++) { await hold(9, 4); await frames(6); }
 await page.waitForSelector('#pauseOverlay [data-p="walk"]', { timeout: 120000 });
 log('pause', await page.evaluate(() => document.activeElement?.textContent?.trim()));
 for (let k = 0; k < 8; k++) {
