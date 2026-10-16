@@ -115,3 +115,4 @@ class PadPointer {
 
 /** the one on-screen pointer for the whole game */
 export const padPointer = new PadPointer();
+if (import.meta.env.DEV && typeof window !== 'undefined') (window as unknown as { __padPointer: PadPointer }).__padPointer = padPointer;
