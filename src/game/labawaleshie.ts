@@ -505,7 +505,8 @@ const corridor: Spec = {
       // each end's half circle: a raised half disc of the same grass, its face down to the road and its kerb round the curve
       for (const [c, s1] of [[c0, 1], [c1, -1]] as const) {
         const r = c.r - 0.05, [cx, cz] = A(c.x, c.zc);
-        const disc = new THREE.CircleGeometry(r, 24, s1 > 0 ? Math.PI : 0, Math.PI).rotateX(-Math.PI / 2).translate(cx, 0.16, cz);
+        // (a little more than a half disc, reaching back under the straight end, so no seam shows between them)
+        const disc = new THREE.CircleGeometry(r, 28, (s1 > 0 ? Math.PI : 0) - 0.35, Math.PI + 0.7).rotateX(-Math.PI / 2).translate(cx, 0.161, cz);
         const uv = disc.attributes.uv as THREE.BufferAttribute, dp = disc.attributes.position as THREE.BufferAttribute;
         for (let i = 0; i < uv.count; i++) uv.setXY(i, dp.getX(i) / 4, dp.getZ(i) / 4);
         const m = new THREE.Mesh(disc, medianGrass()); m.receiveShadow = true; k.meshes.push(m);

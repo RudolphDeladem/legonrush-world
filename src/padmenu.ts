@@ -62,7 +62,9 @@ export function padMenus(container: () => HTMLElement | null, back: () => void) 
     if (dir !== repeatDir) { repeatDir = dir; repeatT = 0.4; if (dir) move(root, dir as 'up'); }
     else if (dir) { repeatT -= dt; if (repeatT <= 0) { repeatT = 0.14; move(root, dir as 'up'); } }
     // (the on-screen pointer, when showing, has the face button: padpointer.ts)
-    if (f.actPressed('confirm') && !padPointer.active) {
+    // (the pointer has the face button only while it rests on something it can press; otherwise the menu's highlight,
+    // or its main button, has it: the arrival card's Ride it yourself, Drone view, Done, the owner 2026-10-16)
+    if (f.actPressed('confirm') && !padPointer.overClickable()) {
       const cur = document.activeElement instanceof HTMLElement && root.contains(document.activeElement) && visible(document.activeElement) ? document.activeElement : null;
       const target = cur ?? [...root.querySelectorAll<HTMLElement>('.btn-primary')].find(visible) ?? null;
       if (target && !(target instanceof HTMLInputElement && target.type === 'range')) {

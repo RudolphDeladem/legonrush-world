@@ -1465,7 +1465,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
         ${slider('reverseDelay', 'Reverse delay (s)', 0.2, 1.2, 0.05)}
         <label class="pad-set"><span>Invert look left/right</span><input type="checkbox" data-k="invertX" ${padSettings.invertX ? 'checked' : ''}></label>
         <label class="pad-set"><span>Invert look up/down</span><input type="checkbox" data-k="invertY" ${padSettings.invertY ? 'checked' : ''}></label>
-        ${padPointer.canTouchpad && fam === 'playstation' ? `<button class="btn btn-ghost btn-sm" data-r="touch">${padPointer.touchpadOn ? 'Touchpad mouse: on' : 'Use the touchpad as a mouse'}</button><p class="muted small">The D-pad moves the pointer on any controller; ${esc(padLabel(fam, 'south'))} or a touchpad press clicks.</p>` : `<p class="muted small">The D-pad moves the on-screen pointer; ${esc(padLabel(fam, 'south'))} clicks.</p>`}
+        <p class="muted small">The D-pad moves the on-screen pointer; ${esc(padLabel(fam, 'south'))}${fam === 'playstation' ? ' or a press of the touchpad' : ''} clicks.</p>
         <div class="pad-map">${ACTS.map(([a, label]) => `<button class="btn btn-ghost btn-sm" data-a="${a}">${label}: <b>${waiting === a ? 'press a button…' : esc(padActionLabel(fam, a))}</b></button>`).join('')}</div>
         <div class="row"><button class="btn btn-ghost btn-sm" data-r="reset">Reset to defaults</button><button class="btn btn-primary" data-r="done">Done</button></div>`;
       panel.querySelectorAll<HTMLInputElement>('input[type=range]').forEach((i) => i.addEventListener('input', () => {
@@ -1488,7 +1488,6 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
           if (f.anyPressed !== null) { remapControl(f.id, PAD_ACTIONS[waiting], f.anyPressed); waiting = null; offCapture?.(); offCapture = null; setTimeout(() => (pad.capturing = false), 0); draw(); }
         });
       }));
-      panel.querySelector('[data-r="touch"]')?.addEventListener('click', () => { void padPointer.enableTouchpad(true).then(() => draw()); });
       panel.querySelector('[data-r="reset"]')!.addEventListener('click', () => { savePadSettings({ ...PAD_DEFAULTS }); if (g) resetRemap(g.id); draw(); });
       panel.querySelector('[data-r="done"]')!.addEventListener('click', () => { offCapture?.(); pad.capturing = false; ov.remove(); game.paused = false; togglePause(); });
     };
@@ -1701,7 +1700,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
       }
       game.freeInput.throttle = f.r2;
       // the bottom face button hops the bike (when the on-screen pointer is not using it)
-      if (f.actPressed('confirm') && !padPointer.active) game.freeHop();
+      if (f.actPressed('confirm') && !padPointer.overClickable()) game.freeHop();
       // the brake: pressed past a quarter of its travel (a little hysteresis against noise), as hard as it is pressed
       if (!padBraking && f.l2 > 0.25) { game.freeBrake(true); padBraking = true; }
       else if (padBraking && f.l2 < 0.12) { game.freeBrake(false); padBraking = false; }
@@ -1719,7 +1718,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
       if (f.lx > 0.6 && lastLx <= 0.6) game.action('right');
       lastLx = f.lx;
       const card = app.querySelector<HTMLElement>('#guideCard');
-      if (f.actPressed('confirm') && !(card && !card.hidden) && !padPointer.active) game.action('jump');
+      if (f.actPressed('confirm') && !(card && !card.hidden) && !padPointer.overClickable()) game.action('jump');
       if (isExplore(route)) return;
       if (f.actPressed('pedal')) game.action('pedal');
       if (f.actPressed('boost')) game.action('boost');

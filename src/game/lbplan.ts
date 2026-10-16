@@ -97,8 +97,9 @@ export const SIGNALS = {
 export const MEDIAN = { z0: 905, z1: 1640, gap: [1158, 1278.5] as [number, number], tree: 19 };
 /** each junction end of the median: its half circle's centre (the straight edges end there) and radius */
 export function medianCap(end: 0 | 1) {
-  const z = MEDIAN.gap[end], r = Math.max(0.6, (eastInner(z) - westInner(z)) / 2);
-  return { zc: end === 0 ? z - r : z + r, r, x: (westInner(z) + eastInner(z)) / 2 };
+  const z = MEDIAN.gap[end], r = Math.max(0.6, (eastInner(z) - westInner(z)) / 2), zc = end === 0 ? z - r : z + r;
+  // (centred on the median's middle where the straight edges end, so the half circle meets them: the owner saw a seam)
+  return { zc, r, x: (westInner(zc) + eastInner(zc)) / 2 };
 }
 /** whether (x, z) is on the median: between its kerbs, outside the junction's gap, inside the half circles at its ends */
 export function onMedian(x: number, z: number) {

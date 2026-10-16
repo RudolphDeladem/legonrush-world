@@ -390,7 +390,7 @@ export function startWalking(ctx: WalkContext) {
       if (free) { game.walkInput.fwd = -f.ly; game.walkInput.strafe = f.lx; game.walkInput.turn = 0; padUsed = true; }
       game.roomLook.x = f.rx; game.roomLook.y = f.ry;
       const screen = document.querySelector('.room-screen:not([hidden])');
-      if (!screen && !padPointer.active && f.actPressed('confirm')) act();
+      if (!screen && !padPointer.overClickable() && f.actPressed('confirm')) act();
       if (!screen && f.pressed('west')) doActivity();
       if (!screen && f.actPressed('camera')) toggleRoomView();
     }
