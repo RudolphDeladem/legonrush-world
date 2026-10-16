@@ -16,7 +16,7 @@ export interface RoomPlace {
   bed: number;
   capacity: number;
   /** real residents of the room, the player included */
-  residents: { bed: number; name: string; you: boolean; look?: RiderLook }[];
+  residents: { bed: number; name: string; you: boolean; look?: RiderLook; id?: string }[];
   /** cloud: the server's shared allocation; local: this device only (no real roommates) */
   source: 'cloud' | 'local';
   /** why the shared allocation was not used, when it was not */
@@ -32,7 +32,7 @@ export function occupantsOf(place: RoomPlace, roomKey: string, youName: string):
   const out: Occupant[] = [];
   for (let bed = 0; bed < place.capacity; bed++) {
     const r = place.residents.find((x) => x.bed === bed);
-    if (r) out.push({ bed, kind: r.you ? 'you' : 'player', name: r.you ? youName : r.name, look: r.look, online: undefined });
+    if (r) out.push({ bed, kind: r.you ? 'you' : 'player', name: r.you ? youName : r.name, look: r.look, online: undefined, id: r.id });
     else out.push({ bed, kind: 'npc', name: npcName(roomKey, bed) });
   }
   return out;
@@ -46,7 +46,7 @@ async function rpc(): Promise<Rpc | null> {
 }
 
 /** the local place: the stable room from allocate(), the player on the first bed, NPCs on the rest */
-function localPlace(acc: Accommodation, note: string): RoomPlace {
+export function localPlace(acc: Accommodation, note: string): RoomPlace {
   const c = categoryById(acc.categoryId);
   return { roomId: acc.roomId, bed: 0, capacity: c?.capacity ?? 1, residents: [{ bed: 0, name: 'You', you: true }], source: 'local', note };
 }
@@ -77,10 +77,10 @@ export async function rosterOf(acc: Accommodation): Promise<RoomPlace> {
   try {
     const { data, error } = await call('room_roster');
     if (error) throw new Error(error.message);
-    const rows = data as { room: string; capacity: number; bed: number; name: string; look: RiderLook | null; you: boolean }[];
+    const rows = data as { room: string; capacity: number; bed: number; name: string; look: RiderLook | null; you: boolean; user_id: string }[];
     const me = rows.find((r) => r.you);
     if (!me) return localPlace(acc, 'Your place was released: choose your room again.');
-    return { roomId: me.room, bed: me.bed, capacity: me.capacity, residents: rows.map((r) => ({ bed: r.bed, name: r.name, you: r.you, look: r.look ?? undefined })), source: 'cloud' };
+    return { roomId: me.room, bed: me.bed, capacity: me.capacity, residents: rows.map((r) => ({ bed: r.bed, name: r.name, you: r.you, look: r.look ?? undefined, id: r.user_id })), source: 'cloud' };
   } catch {
     return localPlace(acc, 'No connection to the room server: your roommates are NPCs for now.');
   }

@@ -17,6 +17,8 @@ import VIKINGS_MODULES from '../data/vikings-modules.json';
 export const ROOM_ORIGIN = new THREE.Vector3(30000, 0, 30000);
 const WALL_T = 0.12, DOOR_H = 2.1, SILL = 0.95, HEAD = 2.15;
 
+/** an activity's place in the room: its footprint (x, z, w, d) and kind */
+export interface RoomSpot { kind: 'desk' | 'chair' | 'shower' | 'basin' | 'toilet' | 'hob' | 'counter' | 'sink' | 'door'; x: number; z: number; w: number; d: number }
 export interface RoomView { label: string; pos: THREE.Vector3; yaw: number; bounds: [number, number, number, number] }
 /** a working part of the room (group-local coordinates: plan x, height, plan y) */
 export interface Interactable {
@@ -57,6 +59,11 @@ export interface BuiltRoom {
   walk: WalkArea;
   interactables: Interactable[];
   places: SleepPlace[];
+  /** where the room's activities happen (group-local plan coordinates): desks with their chairs, the shower, basin and
+   *  WC, the cooker and counter; the entry door (for a shared washroom down the corridor) */
+  spots: RoomSpot[];
+  /** whether the category has its own bathroom (else the washroom is shared, off the corridor) */
+  privateBath: boolean;
   /** the outer face the room's windows and balcony look out of: a point on it (group-local, floor level) and the
    *  outward direction; the side windows that do not face out open onto a light well */
   facade: { x: number; z: number; nx: number; nz: number };
@@ -740,6 +747,9 @@ export function buildRoom(acc: Accommodation): BuiltRoom | null {
     if (o.type === 'bed') places.push({ ...base, h: (/dark/.test(o.material ?? '') ? 0.36 : 0.42) + 0.16, upper: false, bed: places.length });
     else { places.push({ ...base, h: 0.58, upper: false, bed: places.length }); places.push({ ...base, h: 1.68, upper: true, bed: places.length }); }
   }
+  const SPOT = new Set(['desk', 'chair', 'shower', 'basin', 'toilet', 'hob', 'counter', 'sink']);
+  const spots: RoomSpot[] = plan.objects.filter((o) => SPOT.has(o.type)).map((o) => ({ kind: o.type as RoomSpot['kind'], x: o.x, z: o.y, w: o.w, d: o.d }));
+  spots.push({ kind: 'door', x: l.spawn[0] - 0.4, z: l.spawn[1] - 0.1, w: 0.8, d: 0.2 });
   // where the character arrives: just inside the entry door, clear of the furniture
   const sp = new THREE.Vector3(l.spawn[0], 0, l.spawn[1] + 0.9);
   const singles = plan.objects.filter((o) => o.type === 'bed').length, bunks = plan.objects.filter((o) => o.type === 'bunk').length;
@@ -748,7 +758,7 @@ export function buildRoom(acc: Accommodation): BuiltRoom | null {
   return {
     group, spawn: W(sp.x, sp.z), spawnYaw: Math.PI, views, singles, bunks,
     wood: c.wood ?? (l.traditional_wood || plan.objects.some((o) => (o.type === 'bed' || o.type === 'bunk') && o.material === 'wood')), paint: paintHex, layout: l.id,
-    walk, interactables: dyn.ints, places, facade, hasBalcony: !!plan.balcony, windowStyle: style,
+    walk, interactables: dyn.ints, places, spots, privateBath: c.bath === 'private' || plan.objects.some((o) => o.type === 'shower'), facade, hasBalcony: !!plan.balcony, windowStyle: style,
     dispose() { group.traverse((o) => { if (o instanceof THREE.Mesh) o.geometry.dispose(); }); group.removeFromParent(); },
   };
 }

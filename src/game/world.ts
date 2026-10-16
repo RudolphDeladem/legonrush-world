@@ -8,6 +8,7 @@ import type { Track } from './track';
 import { asphaltTexture, billboardTexture, concreteTexture, labelTexture, pitchTexture } from './textures';
 import { terrainGrass } from './soilground';
 import { buildLodges } from './lodges';
+import { buildGateways } from './gateways';
 import { gates } from './gates';
 import { buildBuildings, type BuildingStyle } from './facades';
 import { buildDiasporaHalls, isDiasporaHall } from './halls';
@@ -525,8 +526,12 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
     if (c.matrix.equals(I)) { applyRelief(c); yield 'relief ' + c.name; }
     else applyRelief(group, c);
   }
+  // the halls' gateways: their passages cut through to the courts, lined, gated, with the lodge inside (gateways.ts)
+  const gateways = buildGateways([halls, ...sites, buildings]);
+  group.add(gateways);
+  yield 'step';
   // what the free-ridden bike bumps into besides footprints and trunks (meshcollide.ts)
-  collisionRoots(halls, ...sites, life);
+  collisionRoots(halls, ...sites, life, gateways);
   cullBeyondFog(group, [...(buildings.children as THREE.Mesh[]), ...(halls.userData.cullMeshes as THREE.Mesh[]), ...sites.flatMap((s) => s.userData.cullMeshes as THREE.Mesh[]), ...(life.userData.cullMeshes as THREE.Mesh[]), ...edges.meshes, ...(scrub.userData.cullMeshes as THREE.Mesh[])]);
   return group;
 }

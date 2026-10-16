@@ -16,7 +16,7 @@ import * as THREE from 'three';
 import { createSite, type Spec, type Style } from './blocks';
 import { box, merge, type Part } from './modelkit';
 import { concrete } from './concrete';
-import { SOLIDS } from './solids';
+import { DECK_SOLIDS, SOLIDS } from './solids';
 import { CUT, CUT_Z, DECKS, DECK_WALKS, cutDepth, cutDrop, deckAt, inBowl, laneE, laneW, onBowlSlope, serviceE, serviceW, walkEdgeZ, wallE, wallW } from './cutplan';
 
 const O: [number, number] = [777, 0];
@@ -302,8 +302,8 @@ const spec: Spec = {
         const x = r0 + ((x1 - r0) * j) / n, [px, pz] = at(x, o1 - 0.12);
         c.push([box(px - 0.04, px + 0.04, 0.16, 1.2, pz - 0.04, pz + 0.04), '#9aa0a5']);
         const wz = walkEdgeZ(wk, x) + wk.inward * (o1 - 0.12);
-        SOLIDS.add(x, wz, 0.25);
-        if (j < n) { const xn = r0 + ((x1 - r0) * (j + 0.5)) / n; SOLIDS.add(xn, walkEdgeZ(wk, xn) + wk.inward * (o1 - 0.12), 0.25); }
+        DECK_SOLIDS.add(x, wz, 0.25);
+        if (j < n) { const xn = r0 + ((x1 - r0) * (j + 0.5)) / n; DECK_SOLIDS.add(xn, walkEdgeZ(wk, xn) + wk.inward * (o1 - 0.12), 0.25); }
       }
       { const A = at(r0, o1 - 0.12), B = at(x1, o1 - 0.12);
         for (const y of [1.15, 0.85, 0.6, 0.35]) c.push([run(A[0], A[1], B[0], B[1], y - 0.03, y + 0.03, 0.05), '#9aa0a5']); }
@@ -311,7 +311,7 @@ const spec: Spec = {
       if (wk.bollardsAt !== undefined) for (const off of [0.9, 1.75, 2.6]) {
         const [px, pz] = at(wk.bollardsAt, off);
         c.push([new THREE.CylinderGeometry(0.11, 0.11, 0.95, 10).translate(px, 0.16 + 0.475, pz), '#eeeeea'], [new THREE.CylinderGeometry(0.115, 0.115, 0.08, 10).translate(px, 0.9, pz), '#2b2b2b']);
-        SOLIDS.add(wk.bollardsAt, walkEdgeZ(wk, wk.bollardsAt) + wk.inward * off, 0.15);
+        DECK_SOLIDS.add(wk.bollardsAt, walkEdgeZ(wk, wk.bollardsAt) + wk.inward * off, 0.15);
       }
     }
     // ---- the parapet along the top of the bowl's slope, from the west wall's parapet at one bridge to the other's (the

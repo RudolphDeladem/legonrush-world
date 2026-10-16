@@ -737,7 +737,10 @@ const site: Spec = {
         for (const y of [0.1, 1.0, 2.1]) leafParts.push([box(0, L, y - 0.03, y + 0.03, -0.03, 0.03), '#5a4a3a']);
         const leaf = new THREE.Mesh(merge(leafParts), concrete(0.2)); leaf.castShadow = true; leaf.userData.noCollide = true;
         leaf.position.y = gh(g0, (za + zb) / 2);
-        gates.register({ id: 'evandy:slot-gate', buildingId: 'evandy', hinge: [g0, za], dir: [0, 1], length: L, open: -1.35, leaf });
+        // (the owner, 2026-10-16: Evandy's entrances are open, with no gate: the leaf stands swung open against the
+        // block's corner and never closes)
+        leaf.position.x = g0; leaf.position.z = za; leaf.rotation.y = -Math.atan2(1, 0) - 1.35;
+        gates.group.add(leaf);
         wallSolids(g0, zb, g0, zf, 0.3); }
       }
     wallRun([SITE.x0, SITE.zFence], [SITE.x0, SITE.z0]); wallRun([SITE.x0, SITE.z0], [SITE.x1, SITE.z0]); wallRun([SITE.x1, SITE.z0], [SITE.x1, -1216]);

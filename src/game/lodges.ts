@@ -16,6 +16,7 @@ import { buildingNear } from './campusmap';
 import { roadClearance } from './life';
 import { RESIDENCES, type Entrance, type LodgeFamily, type Residence } from './residence';
 import { ROOM_ORIGIN } from './roomkit';
+import { COURT_HALLS } from './gateways';
 
 /** a family's template: parts in local metres, the counter facing local +z (toward the route), footprint half sizes */
 interface Template { build(c: Part[]): void; hx: number; hz: number; signY: number }
@@ -65,7 +66,7 @@ const TEMPLATES: Record<Exclude<LodgeFamily, 'L01'>, Template> = {
 let signMat: THREE.MeshStandardMaterial | null = null;
 const lodgeSign = () => (signMat ??= new THREE.MeshStandardMaterial({ roughness: 0.6, map: canvas(256, 48, (g) => { g.fillStyle = '#16365f'; g.fillRect(0, 0, 256, 48); g.fillStyle = '#ffffff'; g.font = 'bold 26px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText("PORTER'S LODGE", 128, 25); }) }));
 
-export interface LodgePlacement { residence: string; entrance: string; family: LodgeFamily | null; status: 'built' | 'indoor reception (L01)' | 'existing gatehouse reused' | 'served by another lodge' | 'no clear place'; servedBy?: string; at?: [number, number]; side?: 'left' | 'right'; inside?: boolean }
+export interface LodgePlacement { residence: string; entrance: string; family: LodgeFamily | null; status: 'built' | 'in the gateway' | 'indoor reception (L01)' | 'existing gatehouse reused' | 'served by another lodge' | 'no clear place'; servedBy?: string; at?: [number, number]; side?: 'left' | 'right'; inside?: boolean }
 export const LODGE_PLACEMENTS: LodgePlacement[] = [];
 
 /**
@@ -76,9 +77,9 @@ function place(e: Entrance, t: Template, roadGap = 0.4): { x: number; z: number;
   const b = (e.facing * Math.PI) / 180, ux = Math.sin(b), uz = -Math.cos(b), nx = Math.cos(b), nz = Math.sin(b);
   const free = (x: number, z: number) => !buildingNear(x, z, 0.4) && roadClearance(x, z, 6, -1, true) > roadGap && !SOLIDS.at(x, z, 0.3);
   let best: { x: number; z: number; yaw: number; side: 'left' | 'right'; inside: boolean; score: number } | null = null;
-  for (let along = -10; along <= 14; along += 1) for (const side of [1, -1]) for (let off = t.hx + 1.4; off <= t.hx + 9; off += 1) {
-    // inside the gate and near the route first; the entrance point itself may lie inside the building's footprint
-    const score = (along > 0 ? along : 6 - along * 1.5) + (off - t.hx) * 1.2;
+  // (the owner, 2026-10-16: the lodge is inside, after the gate, on the right going in; never outside before the gate)
+  for (let along = 2; along <= 16; along += 1) for (const side of [1, -1]) for (let off = t.hx + 1.4; off <= t.hx + 9; off += 1) {
+    const score = along + (off - t.hx) * 1.2 + (side > 0 ? 0 : 8);
     if (best && score >= best.score) continue;
     const x = along * ux + side * off * nx + e.at[0], z = along * uz + side * off * nz + e.at[1];
     // the corners of the footprint (counter toward the route) all clear, the ground nearly level
@@ -105,6 +106,8 @@ export function buildLodges(): THREE.Group {
     if (!r.lodge) { rec.status = 'served by another lodge'; rec.servedBy = r.lodgeAt; continue; }
     if (r.lodge === 'L01') { rec.status = 'indoor reception (L01)'; continue; }
     if (r.lodge === 'L06' || r.existingLodge) { rec.status = 'existing gatehouse reused'; continue; }
+    // (the halls built round courts: the lodge is a room in the gateway's side wall, inside the gate: gateways.ts)
+    if (COURT_HALLS.has(r.id)) { rec.status = 'in the gateway'; rec.inside = true; rec.side = r.id === 'limann' || r.id === 'sey' ? 'left' : 'right'; continue; }
     // (a tight frontage: the lodge may stand right at the kerb)
     const t = TEMPLATES[r.lodge], p = place(e, t) ?? place(e, t, 0.05);
     if (!p) { rec.status = 'no clear place'; continue; }

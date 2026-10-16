@@ -160,3 +160,58 @@
 .walk-ui .walk-room .wr-pad .fp-steer { bottom: calc(24px + var(--safe-b, 0px)); }
 /* menus and sheets opened while walking (pause, accommodation) sit above the walking controls */
 .walk-ui ~ .overlay { z-index: 20; }
+
+/* ---------- the room's full-screen moments (roomscreens.ts) ---------- */
+.room-screen { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; font-family: inherit; }
+.room-screen .rs-mid { position: relative; text-align: center; color: #fff; display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 16px; }
+.room-screen .rs-big { font-size: 1.4rem; font-weight: 700; margin: 0; }
+.rs-sleep { background: rgba(4, 8, 20, 0.92); animation: rsFade .8s ease; }
+.rs-sleep .rs-moon { font-size: 4rem; color: #f5e9b8; text-shadow: 0 0 30px rgba(245, 233, 184, .6); }
+.rs-sleep .rs-clock { font: 600 2.2rem/1 ui-monospace, monospace; color: #cfd8ff; margin: 0; }
+.rs-bath { background: linear-gradient(#1b3b55ee, #0d2235ee); overflow: hidden; animation: rsFade .5s ease; }
+.rs-bath .rs-drops i { position: absolute; top: -10%; width: 2px; height: 14%; background: linear-gradient(transparent, #bfe6ff); opacity: .6; animation: rsDrop 1.2s linear infinite; }
+.rs-bath .rs-bar { width: min(320px, 70vw); height: 10px; border-radius: 6px; background: rgba(255, 255, 255, .2); overflow: hidden; }
+.rs-bath .rs-bar b { display: block; height: 100%; width: 0; background: #7fd3ff; transition: width .1s linear; }
+@keyframes rsDrop { to { transform: translateY(800%); } }
+@keyframes rsFade { from { opacity: 0; } }
+/* the laptop: a monitor's frame (bezel, camera, brand), the screen inside it, a base under it */
+.rs-laptop { background: radial-gradient(ellipse at 50% 120%, #3a2a1c 0%, #1a130d 70%); flex-direction: column; animation: rsFade .4s ease; padding: 2vh 2vw; }
+.rs-laptop .lp-frame { position: relative; width: min(96vw, 160vh); height: min(84vh, 54vw); background: #16181c; border-radius: 18px 18px 6px 6px; padding: 26px 26px 34px; box-shadow: 0 20px 60px rgba(0, 0, 0, .6), inset 0 0 0 2px #2a2d33; box-sizing: border-box; }
+.rs-laptop .lp-cam { position: absolute; top: 9px; left: 50%; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: #0b0c0e; box-shadow: inset 0 0 0 2px #2c3036; }
+.rs-laptop .lp-brand { position: absolute; bottom: 9px; left: 0; right: 0; text-align: center; font: 700 11px/1 sans-serif; letter-spacing: .3em; color: #6b7078; }
+.rs-laptop .lp-base { width: min(104vw, 172vh); height: 16px; background: linear-gradient(#bfc3c9, #8c9097); border-radius: 0 0 22px 22px; margin-top: -2px; box-shadow: 0 10px 20px rgba(0, 0, 0, .5); }
+.rs-laptop .lp-screen { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 3px; background: linear-gradient(135deg, #0f3d6b 0%, #1e6b52 55%, #c9a227 120%); color: #111; }
+.rs-laptop .lp-screen.off { background: #000; transition: background .6s; }
+.rs-laptop .lp-bye { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; background: #0a2240; font: 600 1.2rem sans-serif; }
+.rs-laptop .lp-desk { position: absolute; inset: 10px 10px 46px; display: grid; grid-template-columns: repeat(auto-fill, 96px); grid-auto-rows: 92px; gap: 6px; align-content: start; }
+.rs-laptop .lp-icon { background: transparent; border: 0; color: #fff; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px; border-radius: 8px; cursor: pointer; text-shadow: 0 1px 2px #000; }
+.rs-laptop .lp-icon span { font-size: 34px; }
+.rs-laptop .lp-icon small { font-size: 11px; line-height: 1.2; word-break: break-word; }
+.rs-laptop .lp-icon:hover, .rs-laptop .lp-icon.pad-focus, .rs-laptop .lp-icon:focus-visible { background: rgba(255, 255, 255, .22); outline: none; }
+.rs-laptop .lp-wins { position: absolute; inset: 0 0 40px; pointer-events: none; }
+.rs-laptop .lp-win { position: absolute; width: min(560px, 70%); max-height: 78%; display: flex; flex-direction: column; background: #fbfaf7; border-radius: 8px; box-shadow: 0 12px 36px rgba(0, 0, 0, .45); pointer-events: auto; overflow: hidden; }
+.rs-laptop .lp-title { display: flex; align-items: center; justify-content: space-between; background: #e6e3dc; padding: 6px 8px 6px 12px; cursor: move; font-size: 13px; }
+.rs-laptop .lp-x { border: 0; background: #d64545; color: #fff; width: 26px; height: 22px; border-radius: 5px; cursor: pointer; font-size: 16px; line-height: 1; }
+.rs-laptop .lp-body { padding: 10px 16px 16px; overflow: auto; font: 15px/1.55 Georgia, serif; }
+.rs-laptop .lp-body h3 { font: 700 18px/1.3 sans-serif; margin: 4px 0 8px; color: #0f3d6b; }
+.rs-laptop .lp-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 8px; background: rgba(10, 16, 28, .82); color: #fff; font-size: 13px; }
+.rs-laptop .lp-start { font-weight: 800; background: #c9a227; color: #0f3d6b; border-radius: 6px; padding: 4px 8px; }
+.rs-laptop .lp-task { background: rgba(255, 255, 255, .14); color: #fff; border: 0; border-radius: 5px; padding: 4px 8px; margin-right: 4px; font-size: 12px; cursor: pointer; }
+.rs-laptop .lp-off { background: #d64545; color: #fff; border: 0; }
+/* the phone */
+.rs-phone { background: rgba(0, 0, 0, .55); animation: rsFade .3s ease; }
+.rs-phone .ph { position: relative; width: min(360px, 92vw); height: min(680px, 92vh); background: #0d0f12; border-radius: 38px; padding: 14px; box-shadow: 0 20px 60px rgba(0, 0, 0, .6), inset 0 0 0 3px #2b2f36; display: flex; flex-direction: column; box-sizing: border-box; }
+.rs-phone .ph-notch { width: 110px; height: 22px; border-radius: 0 0 14px 14px; background: #0d0f12; margin: -14px auto 0; position: relative; z-index: 1; }
+.rs-phone .ph-head { display: flex; align-items: center; gap: 8px; background: #1f8f5f; color: #fff; padding: 10px; border-radius: 24px 24px 0 0; margin-top: -8px; }
+.rs-phone .ph-head small { opacity: .8; margin-left: auto; }
+.rs-phone .ph-back { background: none; border: 0; color: #fff; font-size: 26px; line-height: 1; cursor: pointer; }
+.rs-phone .ph-av { width: 30px; height: 30px; border-radius: 50%; background: #fff3; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.rs-phone .ph-msgs { flex: 1; overflow: auto; background: #ece5dd; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+.rs-phone .ph-m { align-self: flex-start; max-width: 78%; background: #fff; border-radius: 10px; padding: 6px 10px; margin: 0; font-size: 14px; color: #111; }
+.rs-phone .ph-m.me { align-self: flex-end; background: #d9fdd3; }
+.rs-phone .ph-m small { display: block; text-align: right; color: #667; font-size: 10px; }
+.rs-phone .ph-empty { text-align: center; color: #555; }
+.rs-phone .ph-in { display: flex; gap: 6px; background: #f0f0f0; padding: 8px; border-radius: 0 0 24px 24px; }
+.rs-phone .ph-in input { flex: 1; border: 0; border-radius: 18px; padding: 8px 12px; font-size: 14px; }
+/* the room's activity button and view button */
+.walk-room .wr-view { position: absolute; right: 12px; top: 64px; }

@@ -8,6 +8,9 @@ export interface WalkerFigure {
   setLook(look: RiderLook): void;
   /** phase: radians of the stride; amount 0 (standing) .. 1 (walking) */
   pose(phase: number, amount: number): void;
+  /** a still posture (the room's activities): sitting on a chair (arms on the desk), cooking or washing at a counter
+   *  (arms forward), or none (back to standing and walking) */
+  posture(kind: 'sit' | 'type' | 'counter' | 'none'): void;
 }
 
 export function buildWalker(): WalkerFigure {
@@ -26,12 +29,16 @@ export function buildWalker(): WalkerFigure {
   const bag = mesh(new THREE.BoxGeometry(0.3, 0.36, 0.14).translate(0, 1.25, 0.22), pack);
   // hips and shorts
   mesh(new THREE.CapsuleGeometry(0.16, 0.08, 4, 12).scale(1, 0.8, 0.85).translate(0, 0.94, 0), shorts);
-  const legs: THREE.Group[] = [], arms: THREE.Group[] = [];
+  const legs: THREE.Group[] = [], arms: THREE.Group[] = [], knees: THREE.Group[] = [];
   for (const s of [-1, 1]) {
     const hip = new THREE.Group(); hip.position.set(s * 0.09, 0.92, 0); root.add(hip);
     mesh(new THREE.CapsuleGeometry(0.07, 0.24, 4, 10).translate(0, -0.18, 0), shorts, hip);
-    mesh(new THREE.CapsuleGeometry(0.055, 0.36, 4, 10).translate(0, -0.6, 0), skin, hip);
-    mesh(new THREE.BoxGeometry(0.1, 0.07, 0.24).translate(0, -0.88, -0.04), shoe, hip);
+    mesh(new THREE.CapsuleGeometry(0.055, 0.12, 4, 10).translate(0, -0.4, 0), skin, hip);
+    // the knee: the shin and the shoe below it bend for sitting
+    const knee = new THREE.Group(); knee.position.set(0, -0.48, 0); hip.add(knee);
+    mesh(new THREE.CapsuleGeometry(0.052, 0.26, 4, 10).translate(0, -0.17, 0), skin, knee);
+    mesh(new THREE.BoxGeometry(0.1, 0.07, 0.24).translate(0, -0.4, -0.04), shoe, knee);
+    knees.push(knee);
     legs.push(hip);
     const sh = new THREE.Group(); sh.position.set(s * 0.22, 1.45, 0); root.add(sh);
     mesh(new THREE.CapsuleGeometry(0.055, 0.14, 4, 10).translate(0, -0.1, 0), shirt, sh);
@@ -52,7 +59,15 @@ export function buildWalker(): WalkerFigure {
       bag.visible = has('backpack');
       void neck; void head;
     },
+    posture(kind) {
+      const sit = kind === 'sit' || kind === 'type';
+      for (const l of legs) l.rotation.x = sit ? Math.PI / 2 : 0;
+      for (const k of knees) k.rotation.x = sit ? -Math.PI / 2 : 0;
+      for (const a of arms) a.rotation.x = kind === 'type' ? 1.15 : kind === 'counter' ? 0.95 : 0;
+      // (seated: the hips at the seat's height, set by the caller)
+    },
     pose(phase, amount) {
+      for (const k of knees) k.rotation.x = 0;
       const a = Math.sin(phase) * 0.5 * amount;
       legs[0].rotation.x = a; legs[1].rotation.x = -a;
       arms[0].rotation.x = -a * 0.8; arms[1].rotation.x = a * 0.8;

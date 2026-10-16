@@ -8,11 +8,11 @@
 // room number gives, the window wall (or balcony) facing out. Each frame the campus is drawn first from that same eye
 // position in the world, then the room over it; only the window openings and the open balcony let the campus show.
 import * as THREE from 'three';
-import { ROOM_ORIGIN, type BuiltRoom, type Interactable } from './roomkit';
+import { ROOM_ORIGIN, type BuiltRoom, type Interactable, type RoomSpot } from './roomkit';
 import { residenceById, type Accommodation } from './residence';
 import { ACCESS, BUILDINGS, buildingAt, buildingNear, placeByName, type Building } from './campusmap';
 import { groundHeight } from './relief';
-import { buildWalker } from './walker';
+import { buildWalker, type WalkerFigure } from './walker';
 import type { RiderLook } from './models';
 
 // ---------- the room's place in its building ----------
@@ -96,7 +96,13 @@ export interface Occupant {
   look?: RiderLook;
   /** a real resident who is not in the game now still owns the place */
   online?: boolean;
+  /** a real resident's account id (their presence in the room's live channel) */
+  id?: string;
 }
+/** what someone in the room is doing */
+export type RoomActivity = 'sleep' | 'study' | 'cook' | 'bath' | 'read' | 'stand';
+/** an action the player can start at the part of the room within reach */
+export interface RoomAction { kind: 'sleep' | 'study' | 'bath'; label: string; spot: RoomSpot | null; bed?: number }
 const NPC_LOOKS: RiderLook[] = [
   { gender: 'male', body: 'regular', skin: '#5a3a24', outfit: 'jersey', jersey: '#2e6db4', helmet: '#f5c518', accessories: [] },
   { gender: 'female', body: 'slim', skin: '#6b4226', outfit: 'hall-tee', jersey: '#c0392b', helmet: '#f5c518', accessories: [] },
@@ -119,9 +125,19 @@ export class RoomPlay {
   x = 0; z = 0; yaw = 0; pitch = -0.05;
   /** the working part within reach and in view, if any (one at a time) */
   focus: Interactable | null = null;
+  /** the activity within reach (a bed, a desk's chair, the shower or basin, the door to a shared washroom) */
+  action: RoomAction | null = null;
+  /** the view: through the character's eyes, or from behind the character (the room's fifth view) */
+  view: 'eye' | 'character' = 'eye';
+  /** what the player is doing now (sitting at the desk, asleep, in the shower), or nothing */
+  doing: RoomAction | null = null;
   readonly figures = new THREE.Group();
-  private idle: { root: THREE.Object3D; t: number; arm: THREE.Object3D | null }[] = [];
-  constructor(readonly built: BuiltRoom, readonly pose: RoomPose | null, readonly occupants: Occupant[], readonly roomKey: string) {
+  private self: WalkerFigure | null = null;
+  private idle: { root: THREE.Object3D; t: number; arm: THREE.Object3D | null; kind: RoomActivity }[] = [];
+  private occ: Occupant[] = [];
+  /** what each other occupant is doing (by bed), for the residents list */
+  readonly activities = new Map<number, RoomActivity>();
+  constructor(readonly built: BuiltRoom, readonly pose: RoomPose | null, occupants: Occupant[], readonly roomKey: string, private look: RiderLook | null = null) {
     const s = built.spawn.clone().sub(ROOM_ORIGIN);
     this.x = s.x; this.z = s.z; this.yaw = 0;
     if (!this.free(this.x, this.z)) {
@@ -129,8 +145,20 @@ export class RoomPlay {
       outer: for (let r = 0.1; r < 2; r += 0.1) for (let a = 0; a < Math.PI * 2; a += 0.4) if (this.free(s.x + Math.cos(a) * r, s.z + Math.sin(a) * r)) { this.x = s.x + Math.cos(a) * r; this.z = s.z + Math.sin(a) * r; break outer; }
     }
     this.figures.name = 'occupants';
-    for (const o of occupants) if (o.kind !== 'you') this.addFigure(o);
     built.group.add(this.figures);
+    this.setOccupants(occupants);
+  }
+  get occupants() { return this.occ; }
+  /** (re)places the other occupants: a real roommate who is in the room stands by their bed and can be messaged; an NPC
+   *  does something of their own (sleeping, studying at a desk, cooking, in the shower, reading, by the window) */
+  setOccupants(occupants: Occupant[]) {
+    this.occ = occupants;
+    for (const c of [...this.figures.children]) if (c !== this.self?.root) { this.figures.remove(c); c.traverse((o) => { if (o instanceof THREE.Mesh) o.geometry.dispose(); }); }
+    this.idle = [];
+    this.activities.clear();
+    const desks = this.built.spots.filter((q) => q.kind === 'chair' || q.kind === 'desk');
+    const used = new Set<RoomSpot>();
+    for (const o of occupants) if (o.kind !== 'you') this.addFigure(o, desks, used);
   }
   /** whether the character can stand at (x, z): on the floor of the unit, clear of walls, parapets and furniture */
   free(x: number, z: number) {
@@ -149,18 +177,61 @@ export class RoomPlay {
     let mx = (fx * fwd + rx * strafe) * SPEED * dt, mz = (fz * fwd + rz * strafe) * SPEED * dt;
     const L = Math.hypot(mx, mz), cap = SPEED * dt;
     if (L > cap) { mx *= cap / L; mz *= cap / L; }
-    if (L > 1e-5) {
+    // (busy at the desk, in bed or in the shower: walking gets up first, the caller ends the activity)
+    if (L > 1e-5 && !this.doing) {
       if (this.free(this.x + mx, this.z + mz)) { this.x += mx; this.z += mz; }
       else if (this.free(this.x + mx, this.z)) this.x += mx;
       else if (this.free(this.x, this.z + mz)) this.z += mz;
+      this.walkT += L * 5.2;
     }
     for (const it of this.built.interactables) it.update(dt);
-    this.focus = this.pick();
+    this.focus = this.doing ? null : this.pick();
+    this.action = this.doing || this.focus ? null : this.pickAction();
     for (const f of this.idle) {
       f.t += dt;
-      f.root.children[0].scale.set(1, 1 + Math.sin(f.t * 1.6) * 0.012, 1);
-      if (f.arm) f.arm.rotation.x = -2.6 + Math.sin(f.t * 0.7) * 0.08;
+      if (f.kind === 'sleep' || f.kind === 'read') f.root.children[0].scale.set(1, 1 + Math.sin(f.t * 1.6) * 0.012, 1);
+      if (f.arm && f.kind === 'read') f.arm.rotation.x = -2.6 + Math.sin(f.t * 0.7) * 0.08;
+      if (f.arm && (f.kind === 'cook' || f.kind === 'study')) f.arm.rotation.x = (f.kind === 'cook' ? 0.95 : 1.15) + Math.sin(f.t * (f.kind === 'cook' ? 5 : 9)) * 0.08;
     }
+    this.placeSelf(Math.min(1, L / Math.max(1e-5, SPEED * dt)));
+  }
+  private walkT = 0;
+  /** the player's own figure: drawn in the character view (and while sitting, lying or showering, in either view) */
+  private placeSelf(moving: number) {
+    const show = this.view === 'character';
+    if (!this.self) {
+      this.self = buildWalker();
+      if (this.look) this.self.setLook({ ...this.look, accessories: this.look.accessories.filter((a) => a !== 'helmet') });
+      this.figures.add(this.self.root);
+    }
+    const w = this.self, d = this.doing;
+    w.root.visible = show;
+    w.root.rotation.set(0, this.yaw + Math.PI, 0, 'XYZ');
+    if (d?.kind === 'study' && d.spot) {
+      const c = this.seat(d.spot);
+      w.posture('type');
+      w.root.position.set(c.x, -0.4, c.z);
+      w.root.rotation.y = c.yaw;
+    } else if (d?.kind === 'sleep' && d.bed !== undefined) {
+      const pl = this.built.places[d.bed];
+      w.posture('none'); w.pose(0, 0);
+      const hx = pl.along === 'x' ? pl.head : 0, hz = pl.along === 'z' ? pl.head : 0;
+      w.root.position.set(pl.x - hx * 0.92, pl.h + 0.13, pl.z - hz * 0.92);
+      w.root.rotation.set(Math.PI / 2, Math.atan2(hx, hz), 0, 'YXZ');
+    } else {
+      w.posture('none');
+      w.pose(this.walkT, moving);
+      w.root.position.set(this.x, 0, this.z);
+    }
+  }
+  /** the seat of a desk's chair: where one sits and the way one faces (toward the desk) */
+  private seat(spot: RoomSpot) {
+    const chair = spot.kind === 'chair' ? spot : this.built.spots.find((q) => q.kind === 'chair' && Math.hypot(q.x + q.w / 2 - (spot.x + spot.w / 2), q.z + q.d / 2 - (spot.z + spot.d / 2)) < 1.4) ?? spot;
+    const desk = spot.kind === 'desk' ? spot : this.built.spots.find((q) => q.kind === 'desk' && Math.hypot(q.x + q.w / 2 - (chair.x + chair.w / 2), q.z + q.d / 2 - (chair.z + chair.d / 2)) < 1.4);
+    const cx = chair.x + chair.w / 2, cz = chair.z + chair.d / 2;
+    const tx = desk ? desk.x + desk.w / 2 - cx : 0, tz = desk ? desk.z + desk.d / 2 - cz : 1;
+    // (the walker faces -z: rotation toward the desk)
+    return { x: cx, z: cz, yaw: Math.atan2(-tx, -tz) };
   }
   /** the nearest working part within reach (1.5 m) and roughly ahead, approached from the room side */
   private pick(): Interactable | null {
@@ -182,9 +253,57 @@ export class RoomPlay {
     }
     return best;
   }
+  /** the activity within reach: a bed (the player's own when the room knows it, else any free one), a desk, the shower
+   *  or basin; with a shared washroom, the room's door */
+  private pickAction(): RoomAction | null {
+    const near = (q: { x: number; z: number; w: number; d: number }, r: number) => {
+      const cx = Math.max(q.x, Math.min(q.x + q.w, this.x)), cz = Math.max(q.z, Math.min(q.z + q.d, this.z));
+      return Math.hypot(cx - this.x, cz - this.z) < r;
+    };
+    const taken = new Set(this.occ.filter((o) => o.kind !== 'you').map((o) => o.bed));
+    const mine = this.occ.find((o) => o.kind === 'you')?.bed;
+    let best: RoomAction | null = null, bd = Infinity;
+    const consider = (a: RoomAction, x: number, z: number) => { const d = Math.hypot(x - this.x, z - this.z); if (d < bd) { bd = d; best = a; } };
+    this.built.places.forEach((pl, i) => {
+      if (pl.upper || (taken.has(i) && i !== mine)) return;
+      if (Math.hypot(pl.x - this.x, pl.z - this.z) < 1.45) consider({ kind: 'sleep', label: 'Sleep', spot: null, bed: i }, pl.x, pl.z);
+    });
+    for (const q of this.built.spots) {
+      if ((q.kind === 'chair' || q.kind === 'desk') && near(q, 0.9) && !this.npcAt.has(this.seatKey(q))) consider({ kind: 'study', label: 'Sit and study', spot: q }, q.x + q.w / 2, q.z + q.d / 2);
+      if ((q.kind === 'shower' || q.kind === 'basin') && near(q, 0.9)) consider({ kind: 'bath', label: 'Take a bath', spot: q }, q.x + q.w / 2, q.z + q.d / 2);
+      if (q.kind === 'door' && !this.built.privateBath && near(q, 0.9)) consider({ kind: 'bath', label: 'Take a bath (the shared washroom)', spot: q }, q.x + q.w / 2, q.z + q.d / 2);
+    }
+    return best;
+  }
+  /** desks an NPC sits at (by the seat's key) */
+  private npcAt = new Set<string>();
+  private seatKey(q: RoomSpot) { const s = this.seat(q); return `${s.x.toFixed(1)},${s.z.toFixed(1)}`; }
+  /** starts an activity (the caller shows its screen); null ends it, back on the feet where it began */
+  begin(a: RoomAction | null) {
+    if (a?.kind === 'sleep' || a?.kind === 'study') { this.prevView = this.view; this.view = 'character'; }
+    else if (!a && this.prevView) { this.view = this.prevView; this.prevView = null; }
+    this.doing = a;
+    this.placeSelf(0);
+  }
+  private prevView: 'eye' | 'character' | null = null;
   interact() { const f = this.focus; if (!f) return null; f.toggle(); return f.label(); }
-  /** the room camera: first person, at the character's eye */
+  /** the room camera: first person at the character's eye, or the character view from behind and above them */
   apply(cam: THREE.PerspectiveCamera) {
+    const d = this.doing;
+    if (this.view === 'character') {
+      // behind the character (or beside the desk or bed), kept inside the walls
+      let hx = this.x, hz = this.z, hy = 1.5, yaw = this.yaw;
+      if (d?.kind === 'study' && d.spot) { const s = this.seat(d.spot); hx = s.x; hz = s.z; hy = 1.1; yaw = s.yaw + Math.PI; }
+      if (d?.kind === 'sleep' && d.bed !== undefined) { const pl = this.built.places[d.bed]; hx = pl.x; hz = pl.z; hy = pl.h + 0.3; }
+      const bx = -Math.sin(yaw), bz = -Math.cos(yaw);
+      let back = d?.kind === 'sleep' ? 0 : 1.9;
+      for (let t = 0.2; t <= back; t += 0.1) if (this.built.walk.segs.some((sg) => segDist(hx + bx * t, hz + bz * t, sg) < 0.25)) { back = Math.max(0, t - 0.15); break; }
+      const ey = d?.kind === 'sleep' ? 2.35 : 2.05;
+      cam.position.set(ROOM_ORIGIN.x + hx + bx * back, ROOM_ORIGIN.y + ey, ROOM_ORIGIN.z + hz + bz * back);
+      const ly = d?.kind === 'sleep' ? hy : hy + Math.sin(this.pitch) * 1.2;
+      cam.lookAt(ROOM_ORIGIN.x + hx + Math.sin(yaw) * (d ? 0.3 : 1.2), ROOM_ORIGIN.y + ly, ROOM_ORIGIN.z + hz + Math.cos(yaw) * (d ? 0.3 : 1.2));
+      return;
+    }
     cam.position.set(ROOM_ORIGIN.x + this.x, ROOM_ORIGIN.y + EYE, ROOM_ORIGIN.z + this.z);
     cam.lookAt(cam.position.x + Math.sin(this.yaw) * Math.cos(this.pitch), cam.position.y + Math.sin(this.pitch), cam.position.z + Math.cos(this.yaw) * Math.cos(this.pitch));
   }
@@ -209,29 +328,85 @@ export class RoomPlay {
     out.updateMatrixWorld(true);
     return true;
   }
-  private addFigure(o: Occupant) {
+  /** the occupant under a screen point (a real roommate who is in the room), or null */
+  occupantAt(ray: THREE.Raycaster): Occupant | null {
+    const hits = ray.intersectObjects(this.figures.children, true);
+    for (const h of hits) {
+      let o: THREE.Object3D | null = h.object;
+      while (o && o.userData.occupant === undefined) o = o.parent;
+      if (o) return o.userData.occupant as Occupant;
+    }
+    return null;
+  }
+  /** what an NPC is doing: from the room, the bed and the hour, so it changes through the day and is the same for
+   *  everyone looking; what the room has decides what is possible (a desk, a cooker, a shower) */
+  private npcActivity(o: Occupant): RoomActivity {
+    const has = (k: RoomSpot['kind']) => this.built.spots.some((q) => q.kind === k);
+    const opts: RoomActivity[] = ['sleep', 'read', 'stand'];
+    if (has('desk') || has('chair')) opts.push('study', 'study');
+    if (has('hob') || has('counter')) opts.push('cook');
+    opts.push('bath');
+    const hour = Math.floor(Date.now() / 3.6e6);
+    return opts[hashStr(`${this.roomKey}#${o.bed}#${hour}`) % opts.length];
+  }
+  private addFigure(o: Occupant, desks: RoomSpot[], used: Set<RoomSpot>) {
     const pl = this.built.places[o.bed];
     if (!pl) return;
     const w = buildWalker();
     w.setLook({ ...(o.look ?? npcLook(this.roomKey, o.bed)), accessories: [] });
     w.pose(0, 0);
-    // lying on the mattress, face up, the head at the bed's head end; one arm raised (a phone or a book)
     const holder = new THREE.Group();
-    w.root.rotation.x = Math.PI / 2;
     holder.add(w.root);
+    holder.userData.occupant = o.kind === 'player' && o.online ? o : undefined;
+    // a real roommate who is in the room right now stands by their bed (and can be messaged); one who is not, sleeps
+    let kind: RoomActivity = o.kind === 'player' ? (o.online ? 'stand' : 'sleep') : this.npcActivity(o);
+    const spotOf = (...k: RoomSpot['kind'][]) => this.built.spots.find((q) => k.includes(q.kind) && !used.has(q));
+    let spot: RoomSpot | undefined;
+    if (kind === 'study') { spot = desks.find((q) => !used.has(q) && (q.kind === 'chair' || !desks.some((c) => c.kind === 'chair'))); if (!spot) kind = 'read'; }
+    if (kind === 'cook') { spot = spotOf('hob', 'counter'); if (!spot) kind = 'stand'; }
+    if (kind === 'bath') { spot = spotOf('shower', 'basin'); if (!spot) { this.activities.set(o.bed, 'bath'); return; } }
+    if (spot) used.add(spot);
+    this.activities.set(o.bed, kind);
     const hx = pl.along === 'x' ? pl.head : 0, hz = pl.along === 'z' ? pl.head : 0;
-    holder.rotation.y = Math.atan2(hx, hz);
-    holder.position.set(pl.x - hx * 0.92, pl.h + 0.13, pl.z - hz * 0.92);
+    if (kind === 'sleep' || kind === 'read') {
+      // lying on the mattress, face up, the head at the bed's head end (reading: one arm raised with a book)
+      w.root.rotation.x = Math.PI / 2;
+      holder.rotation.y = Math.atan2(hx, hz);
+      holder.position.set(pl.x - hx * 0.92, pl.h + 0.13, pl.z - hz * 0.92);
+    } else if (kind === 'study' && spot) {
+      const s = this.seat(spot);
+      w.posture('type');
+      holder.position.set(s.x, -0.4, s.z); holder.rotation.y = s.yaw;
+      this.npcAt.add(this.seatKey(spot));
+    } else if ((kind === 'cook' || kind === 'bath') && spot) {
+      w.posture(kind === 'cook' ? 'counter' : 'none');
+      const cx = spot.x + spot.w / 2, cz = spot.z + spot.d / 2;
+      // in front of it (a step back toward the room's middle), facing it
+      const mx = this.built.walk.rects[0] ? (this.built.walk.rects[0][0] + this.built.walk.rects[0][2]) / 2 : cx, mz = this.built.walk.rects[0] ? (this.built.walk.rects[0][1] + this.built.walk.rects[0][3]) / 2 : cz;
+      const dx = mx - cx, dz = mz - cz, dl = Math.hypot(dx, dz) || 1, off = kind === 'bath' ? 0 : 0.55;
+      holder.position.set(cx + (dx / dl) * off, 0, cz + (dz / dl) * off);
+      holder.rotation.y = Math.atan2(dx, dz);
+    } else {
+      // standing beside the bed, facing into the room
+      const sx = pl.along === 'x' ? 0 : 0.75, sz = pl.along === 'z' ? 0 : 0.75;
+      let px = pl.x + sx, pz = pl.z + sz;
+      if (!this.free(px, pz)) { px = pl.x - sx; pz = pl.z - sz; }
+      holder.position.set(px, 0, pz);
+      holder.rotation.y = Math.atan2(px - pl.x, pz - pl.z) + Math.PI;
+    }
     this.figures.add(holder);
     // the walker's shoulder groups follow the hips (two each): the right arm is the last
     const arm = w.root.children.filter((c) => c instanceof THREE.Group).at(-1) ?? null;
-    this.idle.push({ root: w.root, t: o.bed * 1.7, arm });
+    this.idle.push({ root: w.root, t: o.bed * 1.7, arm, kind });
     if (o.kind === 'player') {
       // a real roommate's name over them
       const c = document.createElement('canvas'); c.width = 256; c.height = 48;
-      const g = c.getContext('2d')!; g.fillStyle = 'rgba(10,16,32,.75)'; g.fillRect(0, 0, 256, 48); g.fillStyle = '#fff'; g.font = 'bold 24px sans-serif'; g.textAlign = 'center'; g.fillText(`${o.name}${o.online === false ? ' (offline)' : ''}`.slice(0, 22), 128, 32);
+      const g = c.getContext('2d')!; g.fillStyle = 'rgba(10,16,32,.75)'; g.fillRect(0, 0, 256, 48); g.fillStyle = '#fff'; g.font = 'bold 24px sans-serif'; g.textAlign = 'center'; g.fillText(`${o.name}${o.online ? '' : ' (away)'}`.slice(0, 22), 128, 32);
       const tag = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false }));
-      tag.scale.set(0.9, 0.17, 1); tag.position.set(pl.x, pl.h + 0.75, pl.z);
+      tag.scale.set(0.9, 0.17, 1);
+      const p = holder.position;
+      tag.position.set(p.x, kind === 'stand' ? 2.1 : pl.h + 0.75, p.z);
+      tag.userData.occupant = holder.userData.occupant;
       this.figures.add(tag);
     }
   }

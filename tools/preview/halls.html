@@ -4,6 +4,20 @@
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { buildCampus } from '/src/game/world.ts';
+import * as OKJ from '/src/game/okjplan.ts';
+import { blockedWhy } from '/src/game/Game.ts';
+import { walkTopAt as W_top, walkBlocked as W_blk, warmWalk as W_warm } from '/src/game/meshcollide.ts';
+import { RESIDENCES as W_RES } from '/src/game/residence.ts';
+import { buildingNear as W_bn, buildingAt as W_ba } from '/src/game/campusmap.ts';
+import { SOLIDS as T_SOLIDS } from '/src/game/solids.ts';
+import { GATEWAYS as G_GW } from '/src/game/gateways.ts'; window.__gwlist = G_GW;
+import { LODGE_PLACEMENTS as G_LP } from '/src/game/lodges.ts'; window.__lplist = G_LP;
+{ const add = T_SOLIDS.add.bind(T_SOLIDS); window.__solidLog = []; T_SOLIDS.add = (x, z, r) => { add(x, z, r); if (window.__solidLog.length < 400000) window.__solidLog.push([x, z, r, new Error().stack.split('\n').slice(2, 5).map((l) => l.trim().replace(/https?:[^ )]*\//, '')).join(' | ')]); }; }
+import { groundFrom } from '/src/game/relief.ts';
+import { deckAt } from '/src/game/cutplan.ts';
+import { ROADS as R_ROADS, NODE_XZ as R_NODES } from '/src/game/campusmap.ts';
+import { solidAt } from '/src/game/solids.ts';
+import { meshBlocked } from '/src/game/meshcollide.ts';
 import { diasporaFrames } from '/src/game/halls.ts';
 import { hostels } from '/src/game/hostels.ts';
 import { banking } from '/src/game/banking.ts';
@@ -723,5 +737,5 @@ window.__view = (name) => {
   scene.updateMatrixWorld(true); r.render(scene, cam); r.render(scene, cam);
   return true;
 };
-window.__scene = scene; window.__r = r; window.__cam = cam; window.__done = true;
+window.__THREE = THREE; window.__okj = OKJ; window.__wg = { W_top, W_blk, W_warm, RES: W_RES, bn: W_bn, ba: W_ba }; window.__ride = { blockedWhy, groundFrom, deckAt, ROADS: R_ROADS, NODE_XZ: R_NODES }; window.__col = { solidAt, meshBlocked }; window.__gh = groundHeight; window.__scene = scene; window.__r = r; window.__cam = cam; window.__done = true;
 </script></body></html>

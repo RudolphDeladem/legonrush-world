@@ -300,3 +300,5 @@ if (typeof location !== 'undefined' && /[?&]paddebug\b/.test(location.search)) {
     el.textContent = ps.length ? ps.map((p) => `${p.id === f?.id ? '▶ ' : '  '}${p.index}: ${p.id}\n   mapping: ${p.mapping || '(none)'} · family: ${padFamily(p.id)}${isRemapped(p.id) ? ' · remapped' : ''}\n   axes: ${p.axes.map((a) => a.toFixed(2)).join(' ')}\n   buttons: ${p.buttons.map((b, i) => (b.pressed || b.value > 0.05 ? `${i}:${b.value.toFixed(2)}` : '')).filter(Boolean).join(' ') || '-'}`).join('\n') + `\n   mode: ${pad.mode}${f ? `\n   left ${f.lx.toFixed(2)},${f.ly.toFixed(2)} right ${f.rx.toFixed(2)},${f.ry.toFixed(2)} L2 ${f.l2.toFixed(2)} R2 ${f.r2.toFixed(2)}` : ''}` : 'no controller detected (press a button on it)';
   });
 }
+// (development builds: the reader for the in-app tests)
+if (import.meta.env.DEV && typeof window !== 'undefined') (window as unknown as { __pad: PadInput }).__pad = pad;

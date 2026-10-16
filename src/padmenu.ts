@@ -4,6 +4,7 @@
 // left and right change its value. While the rider is riding with no menu open it stays out of the way, so the
 // D-pad never steers, teleports or changes destinations.
 import { pad, type PadControl } from './gamepad';
+import { padPointer } from './padpointer';
 
 const FOCUSABLE = 'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 const visible = (el: HTMLElement) => {
@@ -60,7 +61,8 @@ export function padMenus(container: () => HTMLElement | null, back: () => void) 
     const dir = dpad ?? stick;
     if (dir !== repeatDir) { repeatDir = dir; repeatT = 0.4; if (dir) move(root, dir as 'up'); }
     else if (dir) { repeatT -= dt; if (repeatT <= 0) { repeatT = 0.14; move(root, dir as 'up'); } }
-    if (f.actPressed('confirm')) {
+    // (the on-screen pointer, when showing, has the face button: padpointer.ts)
+    if (f.actPressed('confirm') && !padPointer.active) {
       const cur = document.activeElement instanceof HTMLElement && root.contains(document.activeElement) && visible(document.activeElement) ? document.activeElement : null;
       const target = cur ?? [...root.querySelectorAll<HTMLElement>('.btn-primary')].find(visible) ?? null;
       if (target && !(target instanceof HTMLInputElement && target.type === 'range')) {

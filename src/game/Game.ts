@@ -14,14 +14,14 @@ import { installLogDepthOffset, tagLogDepthOffsets } from './logdepth';
 import { buildCampusAsync, buildRouteLayer, buildSky, disposeLayer, lampGlow, LANES, ROAD_HALF } from './world';
 import { compactGeometry, freeAfterUpload } from './memory';
 import { AREAS, buildingAt, buildingNear, mapBounds, roadAt } from './campusmap';
-import { inPassage, solidAt } from './solids';
+import { DECK_SOLIDS, inPassage, solidAt } from './solids';
 import { roadClearance, setNightLights } from './life';
 import { onEarth } from './science';
-import { meshBlocked, warmCollision, warmOne } from './meshcollide';
+import { meshBlocked, walkBlocked, walkTopAt, warmCollision, warmOne, warmWalk } from './meshcollide';
 import { createWeatherFx, type WeatherFx } from './weatherfx';
 import { buildWalker, type WalkerFigure } from './walker';
 import { buildRoom, type BuiltRoom } from './roomkit';
-import { RoomPlay, roomPose, type Occupant } from './roomplay';
+import { RoomPlay, roomPose, type Occupant, type RoomAction } from './roomplay';
 import type { Accommodation } from './residence';
 import { gates } from './gates';
 import { lobbyScene } from './lodges';
@@ -295,6 +295,18 @@ export function blockedWhy(x: number, z: number, onFoot = true) {
   if (roadClearance(x, z, 6, -1, true) > 0 && buildingNear(x, z, 0.35) && !inPassage(x, z)) return 'building';
   return freeBlocked(x, z, onFoot) ? 'water' : null;
 }
+/** what stops a person on foot whose feet are at height `floor` at (x, z): the gates, posts and trunks, anything drawn
+ *  between their knees and head above that floor (walls, railings, risers taller than a step; meshcollide.ts walk grid),
+ *  and off the roads a building's outline, except where a modelled porch, step or landing is underfoot */
+function footBlocked(x: number, z: number, floor: number) {
+  const d = deckAt(x, z);
+  if (d && floor > d.h - 2.5) return DECK_SOLIDS.at(x, z, 0.25);
+  if (gates.blocked(x, z) || solidAt(x, z, 0.25) || walkBlocked(x, z, floor)) return true;
+  if (roadClearance(x, z, 6, -1, true) <= 0) return false;
+  const top = walkTopAt(x, z, floor);
+  if (buildingNear(x, z, 0.35) && !inPassage(x, z) && !(top !== null && top > groundHeight(x, z) + 0.08)) return true;
+  return inWater(x, z);
+}
 function freeBlocked(x: number, z: number, onFoot = false) {
   // (stairways stop the bike, never a person on foot)
   if ((!onFoot && inStairs(x, z)) || gates.blocked(x, z)) return true;
@@ -303,6 +315,9 @@ function freeBlocked(x: number, z: number, onFoot = false) {
   if (solidAt(x, z, 0.3) || meshBlocked(x, z)) return true;
   if (roadClearance(x, z, 6, -1, true) <= 0) return false;
   if (buildingNear(x, z, 0.35) && !inPassage(x, z)) return true;
+  return inWater(x, z);
+}
+function inWater(x: number, z: number) {
   if (!wilds) {
     wilds = AREAS.filter((a) => a.kind === 'water').map((a) => {
       let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
@@ -1256,7 +1271,14 @@ export class Game {
   freeInput = { steer: 0, brake: false, throttle: 0, brakeForce: 1 };
   /** seconds the brake is held at a standstill before the bike rolls backwards */
   reverseDelay = 0.45;
-  private free: { x: number; z: number; y: number; yaw: number; v: number; steer: number; bumpT: number; cruise: boolean; stopping: boolean; held: number } | null = null;
+  private free: { x: number; z: number; y: number; yaw: number; v: number; steer: number; bumpT: number; cruise: boolean; stopping: boolean; held: number; hop?: number; hopV?: number } | null = null;
+  /** a hop on the free-ridden bike (the controller's jump button, the J key): the bike leaves the ground briefly */
+  freeHop() {
+    const f = this.free;
+    if (!f || this.foot || this.paused || (f.hop ?? 0) > 0.01) return;
+    f.hopV = 3.6; f.hop = 0.001;
+    sfx.jump();
+  }
 
   /** a free ride: bike physics on open ground, stopped by whatever a bike can't go through */
   private updateFree(dt: number) {
@@ -1299,7 +1321,8 @@ export class Game {
     // (a bank steeper than about 1 in 1.5 just ahead counts as a wall)
     // (up on a bridge deck over the Legon Road cutting, what stands on the road below it, a pier, does not stop the bike)
     const up = (x: number, z: number) => { const d = deckAt(x, z); return !!d && g0 > d.h - 2.5; };
-    const blocked = (x: number, z: number) => !up(x, z) && freeBlocked(x, z);
+    // (and on the deck its own railings and bollards do stop it: DECK_SOLIDS, which never stop the road below)
+    const blocked = (x: number, z: number) => (up(x, z) ? DECK_SOLIDS.at(x, z, 0.3) : freeBlocked(x, z));
     const ok = (x: number, z: number) => !blocked(x + fx * 0.7, z + fz * 0.7) && !blocked(x, z)
       && Math.abs(G(x + fx * 0.6, z + fz * 0.6) - G(x, z)) < 0.4
       && x > bounds!.minX && x < bounds!.maxX && z > bounds!.minZ && z < bounds!.maxZ;
@@ -1318,7 +1341,9 @@ export class Game {
     // the rider on the bike, leaning into the turn
     const r = this.rider;
     f.y = G(f.x, f.z);
-    r.root.position.set(f.x, f.y, f.z);
+    // a hop: up and back down onto the ground under the bike
+    if (f.hop !== undefined && f.hop > 0) { f.hopV = (f.hopV ?? 0) - 11 * dt; f.hop = Math.max(0, f.hop + f.hopV * dt); }
+    r.root.position.set(f.x, f.y + (f.hop ?? 0), f.z);
     r.root.rotation.y = f.yaw;
     this.slope += (slopePitch(f.x, f.z, f.yaw, f.y) - this.slope) * Math.min(1, dt * 8);
     r.root.rotation.order = 'YXZ'; r.root.rotation.x = this.slope;
@@ -1407,11 +1432,18 @@ export class Game {
     w.yaw -= inp.turn * 2.4 * dt;
     const target = inp.fwd > 0 ? 1.7 * inp.fwd : inp.fwd < 0 ? 0.9 * inp.fwd : 0;
     w.v += (target - w.v) * Math.min(1, dt * 6);
-    // the ground, or a porch or step the feet are on (walksurf.ts)
-    const floor = (x: number, z: number, y: number) => Math.max(groundFrom(x, z, y), walkSurfaceAt(x, z, y) ?? -Infinity);
+    // the ground, or a porch, step, tread or landing the feet are on: the ones registered by hand (walksurf.ts) and every
+    // one the models draw (meshcollide.ts walk grid), so a character climbs any steps and stairs, not only some
+    warmWalk(w.x, w.z);
+    const floor = (x: number, z: number, y: number) => Math.max(groundFrom(x, z, y), walkSurfaceAt(x, z, y) ?? -Infinity, walkTopAt(x, z, y) ?? -Infinity);
     const hx = -Math.sin(w.yaw), hz = -Math.cos(w.yaw), step = w.v * dt, g0 = floor(w.x, w.z, w.y);
     const sgn = w.v < 0 ? -1 : 1;
-    const ok = (x: number, z: number) => !freeBlocked(x + hx * sgn * 0.3, z + hz * sgn * 0.3, true) && !freeBlocked(x, z, true) && Math.abs(floor(x, z, g0) - g0) < 0.46;
+    const ok = (x: number, z: number) => {
+      const f = floor(x, z, g0);
+      if (Math.abs(f - g0) >= 0.46) return false;
+      const ax = x + hx * sgn * 0.3, az = z + hz * sgn * 0.3;
+      return !footBlocked(ax, az, Math.max(f, floor(ax, az, f))) && !footBlocked(x, z, f);
+    };
     if (Math.abs(step) > 1e-4) {
       const nx = w.x + hx * step, nz = w.z + hz * step;
       if (ok(nx, nz)) { w.x = nx; w.z = nz; } else if (ok(nx, w.z)) w.x = nx; else if (ok(w.x, nz)) w.z = nz; else w.v = 0;
@@ -1515,7 +1547,7 @@ export class Game {
     const w = this.foot, ret = { x: w.x, z: w.z, y: w.y, yaw: w.yaw };
     // first person: the character's own figure is not drawn in the room
     this.walker?.root.removeFromParent();
-    const play = new RoomPlay(built, roomPose(acc, built), occupants, roomKey);
+    const play = new RoomPlay(built, roomPose(acc, built), occupants, roomKey, this.walkerLook);
     this.room = { built, play, ret, buildingId: acc.buildingId };
     gates.occupy(acc.buildingId);
     this.walkInput.fwd = this.walkInput.turn = this.walkInput.strafe = 0;
@@ -1545,6 +1577,26 @@ export class Game {
   private showCampus() { for (const o of this.hidden) o.visible = true; this.hidden = []; }
   /** works the room part in reach (curtains, louvres, the balcony door, a cupboard, the fan); its new action, or null */
   roomInteract() { return this.room?.play.interact() ?? null; }
+  /** the room's two views: through the character's eyes, or the character seen from behind (the fifth view) */
+  toggleRoomView() { const p = this.room?.play; if (!p || p.doing) return null; p.view = p.view === 'eye' ? 'character' : 'eye'; return p.view; }
+  get roomView() { return this.room?.play.view ?? null; }
+  /** the activity within reach (sleep at a bed, study at a desk, a bath), and the one under way */
+  get roomAction() { return this.room?.play.action ?? null; }
+  get roomDoing() { return this.room?.play.doing ?? null; }
+  /** starts the activity (sitting down at the desk, lying down, the shower) or, with null, gets up again */
+  roomBegin(a: RoomAction | null) { this.room?.play.begin(a); }
+  /** the room's people again (a real roommate came into the room or left it) */
+  setRoomOccupants(o: Occupant[]) { this.room?.play.setOccupants(o); }
+  get roomActivities() { return this.room ? new Map(this.room.play.activities) : null; }
+  /** the real roommate under a screen point (clientX, clientY), if one who is in the room is there */
+  roomOccupantAt(cx: number, cy: number): Occupant | null {
+    const r = this.room; if (!r) return null;
+    const rect = this.renderer.domElement.getBoundingClientRect();
+    const ndc = new THREE.Vector2(((cx - rect.left) / rect.width) * 2 - 1, -((cy - rect.top) / rect.height) * 2 + 1);
+    const ray = new THREE.Raycaster();
+    ray.setFromCamera(ndc, this.camera);
+    return r.play.occupantAt(ray);
+  }
   /** turns the room view by a drag (radians) */
   turnRoom(dx: number, dy: number) {
     const p = this.room?.play; if (!p) return;

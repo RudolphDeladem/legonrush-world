@@ -10,6 +10,7 @@ import { registerSW } from 'virtual:pwa-register';
 import { Game, type Action, type HudState, type Vehicle } from './game/Game';
 import { pad, padActionLabel, padLabel, padSettings, savePadSettings, PAD_ACTIONS, PAD_DEFAULTS, remapControl, resetRemap, steerCurve, type PadAction, type PadFamily } from './gamepad';
 import { padMenus } from './padmenu';
+import { padPointer } from './padpointer';
 import { guideFor, HALL_LIFE } from './data/guide';
 import { INTENT_EXAMPLES, matchIntents, placeQuery } from './data/intents';
 import './explore.css';
@@ -82,16 +83,22 @@ const game = new Game(canvas);
 if (import.meta.env.DEV) Object.assign(window, { __game: game });
 // a controller in the menus: the open overlay, or the guided tour's card, or the screen when no ride is on; nothing while
 // the rider rides (the ride's own controller handler has it then)
-padMenus(() => {
+const padContainer = () => {
   const ov = app.querySelector<HTMLElement>('#pauseOverlay:not(.photo-ui), .overlay');
   if (ov) return ov;
+  // on foot: the room's menus and screens (the laptop, the phone, the bed's and the desk's choices), the hall's
+  // choices, the nearby list and the entrance popup take the D-pad for their highlight and the face button to choose
+  const wu = app.querySelector<HTMLElement>('.room-screen:not([hidden]), .walk-ui #wHall:not([hidden]), .walk-ui #wList:not([hidden]), .walk-ui #wPop:not([hidden])');
+  if (wu) return wu;
   if (game.isRiding) {
     if (game.paused || game.freeRiding) return null;
     const gc = app.querySelector<HTMLElement>('#guideCard');
     return gc && !gc.hidden ? gc : null;
   }
   return app;
-}, () => { if (backAction) history.back(); });
+};
+padMenus(padContainer, () => { if (backAction) history.back(); });
+padPointer.menuActive = () => !!padContainer();
 
 let profile: Profile | null = loadProfile();
 const settings = loadSettings();
@@ -1428,6 +1435,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
         ${slider('reverseDelay', 'Reverse delay (s)', 0.2, 1.2, 0.05)}
         <label class="pad-set"><span>Invert look left/right</span><input type="checkbox" data-k="invertX" ${padSettings.invertX ? 'checked' : ''}></label>
         <label class="pad-set"><span>Invert look up/down</span><input type="checkbox" data-k="invertY" ${padSettings.invertY ? 'checked' : ''}></label>
+        ${padPointer.canTouchpad && fam === 'playstation' ? `<button class="btn btn-ghost btn-sm" data-r="touch">${padPointer.touchpadOn ? 'Touchpad mouse: on' : 'Use the touchpad as a mouse'}</button><p class="muted small">The D-pad moves the pointer on any controller; ${esc(padLabel(fam, 'south'))} or a touchpad press clicks.</p>` : `<p class="muted small">The D-pad moves the on-screen pointer; ${esc(padLabel(fam, 'south'))} clicks.</p>`}
         <div class="pad-map">${ACTS.map(([a, label]) => `<button class="btn btn-ghost btn-sm" data-a="${a}">${label}: <b>${waiting === a ? 'press a button…' : esc(padActionLabel(fam, a))}</b></button>`).join('')}</div>
         <div class="row"><button class="btn btn-ghost btn-sm" data-r="reset">Reset to defaults</button><button class="btn btn-primary" data-r="done">Done</button></div>`;
       panel.querySelectorAll<HTMLInputElement>('input[type=range]').forEach((i) => i.addEventListener('input', () => {
@@ -1450,6 +1458,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
           if (f.anyPressed !== null) { remapControl(f.id, PAD_ACTIONS[waiting], f.anyPressed); waiting = null; offCapture?.(); offCapture = null; setTimeout(() => (pad.capturing = false), 0); draw(); }
         });
       }));
+      panel.querySelector('[data-r="touch"]')?.addEventListener('click', () => { void padPointer.enableTouchpad(true).then(() => draw()); });
       panel.querySelector('[data-r="reset"]')!.addEventListener('click', () => { savePadSettings({ ...PAD_DEFAULTS }); if (g) resetRemap(g.id); draw(); });
       panel.querySelector('[data-r="done"]')!.addEventListener('click', () => { offCapture?.(); pad.capturing = false; ov.remove(); game.paused = false; togglePause(); });
     };
@@ -1553,6 +1562,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
         return r;
       },
       youName: profile?.name ?? 'You',
+      characterId: profile ? characterIdOf(profile) : 'rider',
     });
   }
   // Explore's free ride: the arrived card hands the bike over; held buttons or keys steer, pedal and brake
@@ -1596,6 +1606,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
       else if (e.code === 'ArrowRight' || e.code === 'KeyD') held.right = on;
       else if (e.code === 'ArrowUp' || e.code === 'KeyW' || e.code === 'Space') { if (on) game.freePedal(); }
       else if (e.code === 'ArrowDown' || e.code === 'KeyS') game.freeBrake(on);
+      else if (e.code === 'KeyJ') { if (on) game.freeHop(); }
       else return;
       e.preventDefault();
       steer();
@@ -1607,8 +1618,9 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
   const minimapEl = app.querySelector<HTMLElement>('#minimap');
   const guideLines = (fam: PadFamily): [string, string][] => {
     const L = (a: PadAction) => padActionLabel(fam, a);
-    if (game.freeRiding) return [['Left stick', 'Steer'], [L('pedal'), 'Pedal'], [L('brake'), 'Brake, hold to reverse'], ['Right stick', 'Look around'], [L('lookBack'), 'Look behind'], [L('camera'), 'Camera view'], [padLabel(fam, 'r3'), 'Recenter camera'], [`Hold ${L('recover')}`, 'Back on the road'], [L('bell'), 'Bell'], [L('map'), 'Map'], [L('pause'), 'Pause']];
-    if (isExplore(route)) return [['Right stick', 'Look around'], [L('lookBack'), 'Look behind'], [L('camera'), 'Camera view'], [padLabel(fam, 'r3'), 'Recenter camera'], [L('confirm'), 'Continue / choose'], ['D-pad', 'Move between buttons'], [L('bell'), 'Bell'], [L('map'), 'Map'], [L('pause'), 'Pause']];
+    if (game.walking || game.inRoom) return [['Left stick', 'Walk (pull back to step back)'], ['Right stick', game.inRoom ? 'Look around' : 'Look around'], [L('confirm'), game.inRoom ? 'Use / choose' : 'Enter / choose'], [L('camera'), game.inRoom ? 'Eye view / character view' : 'Camera view'], ['D-pad', 'Move the pointer or the highlight'], ...(fam === 'playstation' ? [['Touchpad', 'Pointer (press to click)'] as [string, string]] : []), [L('pause'), 'Pause']];
+    if (game.freeRiding) return [['Left stick', 'Steer'], [L('confirm'), 'Hop'], [L('pedal'), 'Pedal'], [L('brake'), 'Brake, hold to reverse'], ['Right stick', 'Look around'], [L('lookBack'), 'Look behind'], [L('camera'), 'Camera view'], [padLabel(fam, 'r3'), 'Recenter camera'], [`Hold ${L('recover')}`, 'Back on the road'], [L('bell'), 'Bell'], [L('map'), 'Map'], [L('pause'), 'Pause']];
+    if (isExplore(route)) return [['Left stick', 'Change lane'], [L('confirm'), 'Jump (or continue at a stop)'], ['Right stick', 'Look around'], [L('lookBack'), 'Look behind'], [L('camera'), 'Camera view'], [padLabel(fam, 'r3'), 'Recenter camera'], ['D-pad', 'Move between buttons, or the pointer'], [L('bell'), 'Bell'], [L('map'), 'Map'], [L('pause'), 'Pause']];
     return [['Left stick', 'Change lane'], [L('confirm'), 'Jump'], [L('pedal'), 'Pedal'], ...(brakes ? [[L('brake'), 'Brake'] as [string, string]] : []), [L('boost'), 'Boost'], ['Right stick', 'Look around'], [L('lookBack'), 'Look behind'], [L('camera'), 'Camera view'], [L('bell'), 'Bell'], [L('pause'), 'Pause']];
   };
   let padSteering = false, padBraking = false, padRaceBrake = false, lastLx = 0, bellAt = 0, recoverT = 0;
@@ -1644,7 +1656,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     game.look.x = (padSettings.invertX ? -1 : 1) * f.rx * padSettings.look;
     game.look.y = (padSettings.invertY ? -1 : 1) * f.ry * padSettings.look;
     game.lookBehind = f.act('lookBack');
-    if (f.actPressed('camera')) { const v = game.cycleCamera(); flash('CAMERA', ['Chase view', 'Far view', 'Close view', 'Fly-over view'][v], 900); }
+    if (f.actPressed('camera') && !game.inRoom) { const v = game.cycleCamera(); flash('CAMERA', ['Chase view', 'Far view', 'Close view', 'Fly-over view'][v], 900); }
     if (f.actPressed('recenter')) game.recenterCamera();
     if (f.actPressed('bell') && performance.now() / 1000 - bellAt > 0.35) { bellAt = performance.now() / 1000; sfx.bell(); }
     if (f.actPressed('map') && minimapEl) minimapEl.classList.toggle('big');
@@ -1658,6 +1670,8 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
         padSteering = true;
       }
       game.freeInput.throttle = f.r2;
+      // the bottom face button hops the bike (when the on-screen pointer is not using it)
+      if (f.actPressed('confirm') && !padPointer.active) game.freeHop();
       // the brake: pressed past a quarter of its travel (a little hysteresis against noise), as hard as it is pressed
       if (!padBraking && f.l2 > 0.25) { game.freeBrake(true); padBraking = true; }
       else if (padBraking && f.l2 < 0.12) { game.freeBrake(false); padBraking = false; }
@@ -1667,12 +1681,16 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
         recoverT += dt;
         if (recoverT > 0.6) { recoverT = -1e9; flash('BIKE', game.recoverBike() ? 'Back on the road' : 'No road near here', 1400); }
       } else recoverT = 0;
-    } else if (!isExplore(route)) {
-      // races and rides on the road: a flick of the left stick changes lane, the buttons jump, pedal, boost and brake
+    } else if (!game.walking && !game.inRoom && !game.inLobby) {
+      // races and rides on the road, the guided ride included (as the keys do): a flick of the left stick changes lane,
+      // the bottom face button jumps (unless a stop's card or the on-screen pointer has it); in races and Vibe rides the
+      // buttons also pedal, boost and brake
       if (f.lx < -0.6 && lastLx >= -0.6) game.action('left');
       if (f.lx > 0.6 && lastLx <= 0.6) game.action('right');
       lastLx = f.lx;
-      if (f.actPressed('confirm')) game.action('jump');
+      const card = app.querySelector<HTMLElement>('#guideCard');
+      if (f.actPressed('confirm') && !(card && !card.hidden) && !padPointer.active) game.action('jump');
+      if (isExplore(route)) return;
       if (f.actPressed('pedal')) game.action('pedal');
       if (f.actPressed('boost')) game.action('boost');
       if (!padRaceBrake && f.l2 > 0.25) { game.setBrake(true); padRaceBrake = true; }
