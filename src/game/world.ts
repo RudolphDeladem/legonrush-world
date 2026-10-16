@@ -39,7 +39,7 @@ import { ugLocal } from './ugmcplan';
 import { okjOwns, okjRuns, onOkRoad } from './okjplan';
 import { okjMeshes, okjSurfaces } from './okjunction';
 import { ownsEdges } from './ipsplan';
-import { collisionRoots } from './meshcollide';
+import { collisionRoots, walkRoots } from './meshcollide';
 import { addRouteTrees, buildCampusLife, buildRoadEdges, cullBeyondFog, roadClearance, ROAD_WIDTH } from './life';
 
 export const LANES = [-2.4, 0, 2.4];
@@ -532,6 +532,8 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
   yield 'step';
   // what the free-ridden bike bumps into besides footprints and trunks (meshcollide.ts)
   collisionRoots(halls, ...sites, life, gateways);
+  // (a person on foot meets the generic buildings' drawn walls rather than their outlines: meshcollide.ts)
+  walkRoots(buildings);
   cullBeyondFog(group, [...(buildings.children as THREE.Mesh[]), ...(halls.userData.cullMeshes as THREE.Mesh[]), ...sites.flatMap((s) => s.userData.cullMeshes as THREE.Mesh[]), ...(life.userData.cullMeshes as THREE.Mesh[]), ...edges.meshes, ...(scrub.userData.cullMeshes as THREE.Mesh[])]);
   return group;
 }

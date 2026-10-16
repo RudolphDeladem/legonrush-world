@@ -303,8 +303,9 @@ function footBlocked(x: number, z: number, floor: number) {
   if (d && floor > d.h - 2.5) return DECK_SOLIDS.at(x, z, 0.25);
   if (gates.blocked(x, z) || solidAt(x, z, 0.25) || walkBlocked(x, z, floor)) return true;
   if (roadClearance(x, z, 6, -1, true) <= 0) return false;
-  const top = walkTopAt(x, z, floor);
-  if (buildingNear(x, z, 0.35) && !inPassage(x, z) && !(top !== null && top > groundHeight(x, z) + 0.08)) return true;
+  // (the map's building outlines do not stop a walker: some reach well past the drawn walls, over the ground before a
+  // porch, and the walk grid already holds every drawn wall, the generic buildings' included. The owner, 2026-10-16:
+  // the Bani blocks' entrance steps could not be reached)
   return inWater(x, z);
 }
 function freeBlocked(x: number, z: number, onFoot = false) {

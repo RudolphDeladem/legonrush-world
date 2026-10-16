@@ -18,12 +18,18 @@ const tkey = (i: number, j: number) => (i + 2048) * 4096 + (j + 2048);
 
 /** the groups whose meshes collide (built once, when the campus is built) */
 export function collisionRoots(...r: THREE.Object3D[]) { roots.push(...r); srcs = null; tiles.clear(); }
+/** groups that stop only a person on foot (the walk grid), not the bike: the generic buildings drawn on the map's
+ *  outlines, whose walls are the outline (the bike keeps to the outline itself, which reaches over some road edges) */
+const walkOnly: THREE.Object3D[] = [];
+let wsrcs: Src[] | null = null;
+export function walkRoots(...r: THREE.Object3D[]) { walkOnly.push(...r); wsrcs = null; }
+const walkSources = () => (wsrcs ??= [...sources(), ...collect(walkOnly)]);
 
-function sources() {
-  if (srcs) return srcs;
-  srcs = [];
+function sources() { return (srcs ??= collect(roots)); }
+function collect(list: THREE.Object3D[]) {
+  const out: Src[] = [];
   const box = new THREE.Box3();
-  for (const root of roots) {
+  for (const root of list) {
     root.updateWorldMatrix(true, true);
     root.traverse((o) => {
       const m = o as THREE.Mesh;
@@ -34,10 +40,10 @@ function sources() {
       if (!g?.attributes?.position) return;
       if (!g.boundingBox) g.computeBoundingBox();
       box.copy(g.boundingBox!).applyMatrix4(m.matrixWorld);
-      srcs!.push({ mesh: m, x0: box.min.x, x1: box.max.x, z0: box.min.z, z1: box.max.z });
+      out.push({ mesh: m, x0: box.min.x, x1: box.max.x, z0: box.min.z, z1: box.max.z });
     });
   }
-  return srcs;
+  return out;
 }
 
 function buildTile(ti: number, tj: number) {
@@ -111,7 +117,7 @@ export function collisionGeometries() {
   return new Set(sources().map((s) => s.mesh.geometry));
 }
 /** forget the grid (after the campus changes) */
-export function resetCollision() { tiles.clear(); wtiles.clear(); srcs = null; }
+export function resetCollision() { tiles.clear(); wtiles.clear(); srcs = null; wsrcs = null; }
 
 // ---------- on foot: steps, porches and landings to stand on, what stands in the way at body height above them ----------
 // (the owner, 2026-10-16: a character on foot climbs every modelled step and stair, not only the ones registered by
@@ -138,7 +144,7 @@ function buildWalkTile(ti: number, tj: number): WTile {
     if (y > tops[o + lo]) tops[o + lo] = y;
   };
   const addBin = (k: number, y: number) => { const bi = Math.floor((y - ground(k) - W_LO) / W_BIN); if (bi >= 0 && bi < 64) mask[k * 2 + (bi >> 5)] |= 1 << (bi & 31); };
-  for (const s of sources()) {
+  for (const s of walkSources()) {
     if (s.x1 < tx0 || s.x0 > tx1 || s.z1 < tz0 || s.z0 > tz1) continue;
     const gm = s.mesh.geometry, pos = gm.attributes.position as THREE.BufferAttribute, idx = gm.index, M = s.mesh.matrixWorld;
     const col = gm.attributes.color as THREE.BufferAttribute | undefined;
