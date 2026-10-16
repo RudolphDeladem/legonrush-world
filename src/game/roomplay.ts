@@ -267,7 +267,7 @@ export class RoomPlay {
     const consider = (a: RoomAction, x: number, z: number, penalty = 0) => { const d = Math.hypot(x - this.x, z - this.z) + penalty; if (d < bd) { bd = d; best = a; } };
     this.built.places.forEach((pl, i) => {
       if (pl.upper || (taken.has(i) && i !== mine)) return;
-      if (Math.hypot(pl.x - this.x, pl.z - this.z) < 1.45) consider({ kind: 'sleep', label: 'Sleep', spot: null, bed: i }, pl.x, pl.z);
+      if (Math.hypot(pl.x - this.x, pl.z - this.z) < 1.9) consider({ kind: 'sleep', label: 'Sleep', spot: null, bed: i }, pl.x, pl.z);
     });
     for (const q of this.built.spots) {
       if ((q.kind === 'chair' || q.kind === 'desk') && near(q, 0.9) && !this.npcAt.has(this.seatKey(q))) consider({ kind: 'study', label: 'Sit and study', spot: q }, q.x + q.w / 2, q.z + q.d / 2);
