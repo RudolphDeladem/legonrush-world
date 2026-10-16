@@ -379,15 +379,22 @@ export function buildGateways(roots: THREE.Object3D[]): THREE.Group {
     const a = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, -1, -2, -3, -4, -5, -6].map((d) => a00 + d).find(clear);
     if (a === undefined) {
       // ----- a driveway gate: piers at the road's edges, two leaves across it that open for the bike too -----
-      const edge = (s: 1 | -1) => { for (let b = 0.5; b < 9; b += 0.25) if (roadClearance(...at(a00, s * b), 6, -1, true) > 0.3) return b + 0.3; return 9; };
-      const bl = edge(-1), br = edge(1);
-      if (bl + br > 14) { rec.note = 'the entrance is on a road too wide for a gate: none placed'; return; }
-      const mid = (br - bl) / 2, [cx, cz] = at(a00, mid), g = gh(cx, cz), W = bl + br, hw = W / 2;
-      const P = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number, col: string) => parts.push([box(x0, x1, y0, y1, z0, z1).applyMatrix4(mat(a00, mid)).translate(0, g, 0), col]);
+      // (the first place along the way in, within 25 m of the entrance point, where the driveway is a gate's width)
+      let ag = a00, bl = 9, br = 9;
+      for (const d of [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, -2, -4, -6]) {
+        const edge = (s: 1 | -1) => { for (let b = 0.5; b < 9; b += 0.25) if (roadClearance(...at(a00 + d, s * b), 6, -1, true) > 0.3) return b + 0.3; return 9; };
+        const l = edge(-1), r2 = edge(1);
+        // (the first place along the way that is a driveway's width: not a footpath, not the open road)
+        if (l + r2 >= 3.5 && l + r2 <= 12) { ag = a00 + d; bl = l; br = r2; break; }
+      }
+      if (bl + br > 12) { rec.note = `the driveway is ${(bl + br).toFixed(0)} m wide at its narrowest: no gate placed`; return; }
+      const a00g = ag;
+      const mid = (br - bl) / 2, [cx, cz] = at(a00g, mid), g = gh(cx, cz), W = bl + br, hw = W / 2;
+      const P = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number, col: string) => parts.push([box(x0, x1, y0, y1, z0, z1).applyMatrix4(mat(a00g, mid)).translate(0, g, 0), col]);
       for (const s of [-1, 1]) {
         P(s * hw - 0.3 + s * 0.3, s * hw + 0.3 + s * 0.3, -0.3, 2.6, -0.3, 0.3, '#efe9dc');
         P(s * hw - 0.38 + s * 0.3, s * hw + 0.38 + s * 0.3, 2.6, 2.72, -0.38, 0.38, '#d8cfbd');
-        const [px, pz] = at(a00, mid + s * (hw + 0.3)); SOLIDS.add(px, pz, 0.35);
+        const [px, pz] = at(a00g, mid + s * (hw + 0.3)); SOLIDS.add(px, pz, 0.35);
       }
       Object.assign(rec, { kind: 'driveway', width: +W.toFixed(1), lodge: null, note: 'a driveway gate across the entrance road: it opens for the bike as well as for walkers' });
       hang(r, e, make!, [cx, cz], ux, uz, nx, nz, W, 2.0, g, true);

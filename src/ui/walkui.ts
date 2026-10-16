@@ -107,6 +107,7 @@ export function startWalking(ctx: WalkContext) {
       else if (e.code === 'PageDown') game.roomLook.y = on ? 1 : 0;
       else if (on && !e.repeat && (e.code === 'KeyE' || e.code === 'Enter')) act();
       else if (on && !e.repeat && e.code === 'KeyV') toggleRoomView();
+      else if (on && !e.repeat && e.code === 'KeyF') doActivity();
       else return;
       e.preventDefault(); apply(); return;
     }
@@ -271,6 +272,11 @@ export function startWalking(ctx: WalkContext) {
     if (screenOpen || busy) return;
     const label = game.roomInteract();
     if (label) { $('rAct').textContent = label; return; }
+    doActivity();
+  };
+  /** the activity in reach (sleep, study, bath): its own button beside the use button */
+  const doActivity = () => {
+    if (screenOpen || busy) return;
     const a = game.roomAction;
     if (!a) return;
     held.f = held.b = held.l = held.r = held.sl = held.sr = false; apply();
@@ -334,8 +340,9 @@ export function startWalking(ctx: WalkContext) {
     R.hidden = false;
     R.innerHTML = `<div class="wr-top"><b>Room ${esc(p.roomId)}</b><small>${esc(accommodationLabel({ ...acc, roomId: p.roomId }).replace(/ · Room \S+$/, ''))}</small>
         <details class="wr-who"><summary>${p.capacity === 1 ? 'Single room' : `${p.capacity} residents`}${p.source === 'local' ? ' · NPC roommates' : ''}</summary><ul id="rWho"></ul>${p.note ? `<p class="muted small">${esc(p.note)}</p>` : ''}</details>
-        <small class="muted">${c.evidence === 'adapted' ? 'Adapted design' : 'Reference-led design'} · W/S walk · A/D step · ←/→ turn · drag to look · E: use · V: view · click a roommate to message them</small></div>
+        <small class="muted">${c.evidence === 'adapted' ? 'Adapted design' : 'Reference-led design'} · W/S walk · A/D step · ←/→ turn · drag to look · E: use · F: sleep / study / bath · V: view · click a roommate to message them</small></div>
       <button class="fp-btn wr-act" id="rAct" hidden></button>
+      <button class="fp-btn wr-do" id="rDo" hidden></button>
       <button class="fp-btn wr-view" id="rView">Character view</button>
       <div class="walk-pad wr-pad">
         <div class="fp-steer"><button class="fp-btn" id="rL" aria-label="Turn left">◀</button><button class="fp-btn" id="rR" aria-label="Turn right">▶</button></div>
@@ -344,6 +351,7 @@ export function startWalking(ctx: WalkContext) {
       <div class="wr-foot"><button class="fp-btn" id="rLeave">Leave room</button></div>`;
     hold2(R, 'rF', 'f'); hold2(R, 'rB', 'b'); hold2(R, 'rL', 'l'); hold2(R, 'rR', 'r');
     R.querySelector('#rAct')!.addEventListener('click', act);
+    R.querySelector('#rDo')!.addEventListener('click', doActivity);
     R.querySelector('#rView')!.addEventListener('click', toggleRoomView);
     R.querySelector('#rLeave')!.addEventListener('click', leaveRoom);
     drawWho();
@@ -383,6 +391,7 @@ export function startWalking(ctx: WalkContext) {
       game.roomLook.x = f.rx; game.roomLook.y = f.ry;
       const screen = document.querySelector('.room-screen:not([hidden])');
       if (!screen && !padPointer.active && f.actPressed('confirm')) act();
+      if (!screen && f.pressed('west')) doActivity();
       if (!screen && f.actPressed('camera')) toggleRoomView();
     }
   });
@@ -390,8 +399,11 @@ export function startWalking(ctx: WalkContext) {
   const tick = () => {
     raf = requestAnimationFrame(tick);
     if (mode === 'room') {
-      const f = game.roomInfo?.focus ?? game.roomAction, b = root.querySelector<HTMLElement>('#rAct');
-      if (b) { b.hidden = !f || !!screenOpen; if (f && b.textContent !== f.label) b.textContent = f.label; }
+      // the use button (open or close what is in reach) and, beside it, the activity (sleep, study, bath)
+      const f = game.roomInfo?.focus, a = game.roomAction, b = root.querySelector<HTMLElement>('#rAct'), d = root.querySelector<HTMLElement>('#rDo');
+      const use = f ?? a;
+      if (b) { b.hidden = !use || !!screenOpen; if (use && b.textContent !== use.label) b.textContent = use.label; }
+      if (d) { d.hidden = !f || !a || !!screenOpen; if (f && a && d.textContent !== a.label) d.textContent = a.label; }
     }
     if (mode !== 'walk' || !game.walking) { $('wPop').hidden = true; return; }
     const p = game.footXZ!;

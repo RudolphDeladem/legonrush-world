@@ -202,3 +202,20 @@ section, and the larger briefs have their own folder under `docs/` (evidence aud
    - **Surroundings:** the stadium-side banks, footways, frontage and fences follow the new kerbs.
    - **Glow fix:** lamp glows no longer collide anywhere.
    - **Verification:** counts verified from the built paint (`scripts/okj-counts.ts`); 0 colliders on the road (59,896 samples).
+189. Walking, rooms and gates, third round (owner's instructions of 2026-10-16; `docs/rooms-walking/README.md`).
+   - **Gateways:** the halls built round courts have real passages from the street to the court, cut through their
+     own models and lined; two textured gate leaves per hall (timber boards, timber panels, steel grille or steel
+     sheet, mostly timber) open as the walker comes near (`gateways.ts`). Jubilee's courtyard registered as open
+     ground; Diamond Jubilee's and Jubilee's gateways 4 m beside the front in line with a court.
+   - **Lodges:** inside the gate, in the passage's side wall, on the right (left at Limann and Elizabeth Sey); the
+     computed lodges elsewhere never before the gate.
+   - **Gates elsewhere:** free-standing gates at Old Pent and the ISH hostels; driveway gates at Bani and TF that open
+     for the bike too; Evandy's entrances open (its slot gate stands open).
+   - **Stairs:** a walk grid from the drawn models (level faces to stand on, risers up to 0.46 m, knee-to-head
+     obstacles) so every modelled step and porch can be climbed.
+   - **Rooms:** testing access to every hall's rooms for every account; the character view in rooms; sleep, sit and
+     study (a full-screen laptop with files on the university's history and Shut down), bath; real roommates
+     messaged on a phone; NPCs doing different things by the hour.
+   - **Controller:** Cross jumps on the bike, stick back walks backward, lanes and jump during the destination ride,
+     the D-pad pointer and the PlayStation touchpad as a mouse, popups navigable.
+   - **Blockers:** the deck railing solids no longer stop traffic in the underpass under the bridge.

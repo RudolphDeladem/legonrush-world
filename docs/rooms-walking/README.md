@@ -88,19 +88,41 @@ and stairs the halls are their exteriors. Side windows that do not face out open
 
 ## Entrances, gates, lodges and stairs
 
-- **Gates (audit of the residence models):** modelled leaves exist at Evandy (the slot gate), New Pent (three grey
-  steel gates in the brick walls of Blocks A, B and C), Vikings and both Valco phases (two-leaf dark steel grille gates
-  in their entrance blocks, standing on the step: the owner's photos of 2026-10-16); all open for a walker and are on
-  the gate system. Old Pent's
-  red-and-white gates are drawn swung back (a genuinely open gateway) and stay so; every other residence entrance is an
-  open doorway or gateway with no leaf.
-- **Lodges:** see the list below. Mensah Sarbah's Administration and Porters' Lodge is already modelled from the owner's
-  entrance photos, so no second lodge is built there; Evandy keeps its gatehouse (L06); the Diaspora halls and Diamond
-  Jubilee show the indoor reception (L01) on entering. The other positions are computed (inside the entrance where
-  there is room, to one side, clear of buildings, roads and solids), not taken from photographs.
-- **Stairs:** walkers can use stairways (bikes still cannot). Commonwealth's hill stairway (9 m, eight flights through
-  the gateway between the gate houses, then along the north side of the building in its top flights) and its court
-  flights, and the Diaspora halls' porch and steps.
+The owner's corrections of 2026-10-16: gates are never flat planes, they have shape and texture (most of them timber);
+the hall's gate takes you through the entrance into the inner courtyards; the porter's lodge is inside, after the gate,
+on the right going in (on the left at Evandy's main block, Hilla Limann and Elizabeth Sey); Evandy's main block, Annex
+A and Annex B are open entrances with no gate; the gate opens as soon as the character on foot comes near.
+
+- **Gateways through to the courts (`gateways.ts`).** At each hall built round courts (Commonwealth, Mensah Sarbah,
+  Volta, Akuafo, Legon, Jubilee, the four Diaspora halls, Diamond Jubilee) the entrance is a real passage: the hall's
+  own model is cut open along the entrance line from the street face to the court (every triangle in the passage's
+  volume is clipped away exactly, nothing else), and the passage is lined: side walls with a dado, a soffit, cement
+  paving, a framed opening with piers and a lintel on the street, a plain frame on the court side. The passage is open
+  ground for the walker (`solids.ts` oriented passages), the court beyond it too. Where a porch stands in front of the
+  outline (the Diaspora halls) the passage starts on the porch, inside its columns, and keeps its floor: the gate
+  stands where the glass doors were. Commonwealth's passage is its recess's full 5 m (the grilled doors were 5 m
+  across). Jubilee's long courtyard is drawn inside the map's outline (no hole), so it is registered as open ground
+  from the model's own plan (`hostels.ts`). Diamond Jubilee's front doors lead into the building between its two
+  courts: its gateway is 4 m to the right of the front, in line with a court; Jubilee's likewise 4 m to the right.
+- **Gate leaves.** Two leaves hang in each gateway, hinged at its sides, meeting in the middle, swinging inward. Each
+  hall has its own make, chosen once from four: vertical timber boards in a dark frame with a Z brace and strap hinges,
+  framed timber panels with a spindle top, the dark steel grille, a painted steel sheet with a spear-headed bar top.
+  Most are timber; the timber has a grain texture with knots and board joints in one of four stains. Every leaf opens
+  when the character on foot is within 12 m and closes once they are 26 m away and the swing is clear (`gates.ts`).
+- **Other halls and hostels.** Old Pent's four courts, ISH 1 and ISH 2 have a free-standing gate at the entrance: two
+  piers with caps, a short wall either side, the leaves. Bani's and TF's entrances are on their driveways: a driveway
+  gate stands across the driveway at the first place along the way in that is a gate's width, and it opens for the bike
+  as well as for walkers (from 30 m, so it is open before the bike reaches it). New Pent, Vikings and both Valco phases
+  keep the gates their sites already model. Evandy has no gate: its brown slot gate now stands open for good.
+- **Lodges.** At the court halls the porter's lodge is a room in the passage's side wall, just inside the gate, with a
+  counter window, glazing bars, a sill, key cubbies on its back wall, its door further along and the PORTER'S LODGE
+  sign over the window: on the right going in, on the left at Limann and Elizabeth Sey. Mensah Sarbah keeps its modelled
+  Administration and Porters' Lodge; Evandy its gatehouse; Valco and Vikings their entrance blocks. At the other
+  residences the computed lodge is now always inside the gate (never before it), on the right where it fits.
+- **Stairs.** The walker climbs any modelled step, porch or stair (`meshcollide.ts` walk grid: every level face of the
+  drawn models is a surface to stand on; a riser up to 0.46 m is a step; anything between knee and head height above
+  the feet stops them). Commonwealth's hill stairway and court flights, the Diaspora porches and the hostels' entrance
+  steps all use it.
 
 ### Porter's lodges at each entrance
 
@@ -175,13 +197,44 @@ step the game's own walking and room code directly where a smooth walk would tak
 Automated checks run for this change: typecheck, `npm run test:rooms`, `bash scripts/rooms-sql-test.sh`, `npm run geo`,
 `npm run test:routes`, `npm run build`, the camera check (0 inside buildings) and route lengths (unchanged).
 
+## Room activities, the character view and the controller (2026-10-16, second instructions)
+
+- **Testing access:** every account can enter a room of each type at every hall and hostel (the hall's panel: "Testing:
+  every hall's rooms are open to you", a room type and "Enter a room here"). `TEST_ALL_ROOMS` in `walkui.ts` turns it
+  off before launch.
+- **Character view:** in a room (and only there), V, the View button or the controller's top face button switches
+  between the eye view and a view from behind the character; the four bike views are unchanged on the bike.
+- **Activities:** at a free lower bed, Sleep (the room dims, the clock runs through the night, Wake up); at a desk or
+  its chair, Sit and study (the character sits; the whole screen becomes the laptop: the monitor's frame, a desktop of
+  files about the University of Ghana's history that open in windows, a taskbar and clock, Shut down returns to the
+  room); at a shower or basin, or at the door where the bath is shared, Take a bath. The activity has its own button
+  beside the use button (open, close), key F, the controller's left face button; E or Cross does whichever is shown.
+- **Roommates:** real players in the room appear standing (online) or asleep (away) and can be clicked or chosen in the
+  residents list to open a phone's messaging app (messages go over the room's live channel and are not saved). NPCs
+  cannot be messaged, and they are not always asleep: by the room, bed and hour they sleep, read, study, stand, cook or
+  are at the bath.
+- **Controller:** Cross jumps on the bike (free ride and guided Explore ride), the left stick pulled down walks backward,
+  the stick changes lanes and Cross jumps during the guided destination ride. The D-pad moves an on-screen pointer and
+  Cross clicks under it; on a PlayStation pad the touchpad's press clicks and, once allowed (Controller panel, Chrome and
+  Edge), the touchpad moves the pointer like a laptop's. Popups (the hall's "What would you like to do?") are moved
+  through with the D-pad and chosen with Cross.
+- **Invisible blockers:** the bridge footways' railing posts over the Legon Road cutting stopped the bike in the
+  underpass below (they now stop only someone on the deck); the lamp glows that collided everywhere were fixed in the
+  Okponglo batch. A full-width scan of every campus road found no other blocker on a road (the remaining stops are real
+  ends: buildings, steps, car park ends).
+
 ## Remaining items
 
 - **Real-player matching is not live** until `supabase/sql/50-rooms.sql` is run in the Supabase project; it was tested
   on a local PostgreSQL, not between two devices on the live project.
 - **Valco Trust Phase 2:** its entrance block is drawn the same as Phase 1's (the owner's photo shows one of the two);
   confirm if Phase 2's differs.
-- **Lodge positions** (other than Sarbah, Evandy and L01) are computed, not photo-registered.
+- **Lodge positions** (other than Sarbah, Evandy, Valco and Vikings) are computed or placed in the gateway's side wall,
+  not photo-registered; the gate makes are chosen per hall, not from photographs.
+- **Diamond Jubilee and Jubilee gateways** stand 4 m beside the mapped entrance point, in line with a court, because
+  the front doors lead into the building rather than straight into a court.
+- **Evandy Annex B's courtyard** has no entrance of its own on the map (one entrance for the hostel), so no passage is
+  cut there yet.
 - **Room placement in the building** (face, position along it, floor) is inferred; the window view follows from it.
 - **The Vikings double's wet area and balcony** offsets and sizes are the pack's proposed fit (V2_WET 2.4 × 2.3 m,
   V2_BAL 1.25 × 4.2 m, parapet 1.05 m), not measurements; its study-side louvres open onto an inferred light well.

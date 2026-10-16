@@ -186,7 +186,8 @@ export class RoomPlay {
     }
     for (const it of this.built.interactables) it.update(dt);
     this.focus = this.doing ? null : this.pick();
-    this.action = this.doing || this.focus ? null : this.pickAction();
+    // (an activity is offered beside whatever is in reach to open or close: its own button, key F, the square / X button)
+    this.action = this.doing ? null : this.pickAction();
     for (const f of this.idle) {
       f.t += dt;
       if (f.kind === 'sleep' || f.kind === 'read') f.root.children[0].scale.set(1, 1 + Math.sin(f.t * 1.6) * 0.012, 1);

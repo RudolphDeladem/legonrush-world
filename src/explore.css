@@ -155,6 +155,7 @@
 .walk-ui .walk-room .wr-who summary { cursor: pointer; font-size: 13px; }
 .walk-ui .walk-room .wr-who ul { margin: 4px 0 0; padding-left: 18px; font-size: 13px; }
 /* the room's one action for the part within reach, centred above the walking buttons */
+.walk-ui .walk-room .wr-do { position: absolute; left: 50%; bottom: calc(156px + var(--safe-b, 0px)); transform: translateX(-50%); background: #fff3c4; min-width: 180px; }
 .walk-ui .walk-room .wr-act { position: absolute; left: 50%; bottom: calc(104px + var(--safe-b, 0px)); transform: translateX(-50%); background: #f5c518; min-width: 180px; }
 .walk-ui .walk-room .wr-pad .fp-feet { right: 14px; bottom: calc(84px + var(--safe-b, 0px)); }
 .walk-ui .walk-room .wr-pad .fp-steer { bottom: calc(24px + var(--safe-b, 0px)); }
