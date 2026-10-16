@@ -24,6 +24,7 @@ import { music, setAmbience, setMusicVolume, setSound, sfx, startAmbience, stopA
 import { marketProximity } from './game/life';
 import { accommodationForm, accommodationLabel } from './ui/accommodation';
 import { startWalking } from './ui/walkui';
+import * as rooms from './features/rooms';
 import type { Accommodation } from './game/residence';
 import { icons } from './ui/icons';
 import { buzz, countUp, hookHaptics, randomFact, setFeedback, tapSounds } from './ui/feedback';
@@ -742,7 +743,7 @@ function createRider(draft: Profile, editing = false) {
     app.querySelectorAll('#gender button').forEach((b) => b.classList.toggle('on', b === el));
     applyLook(draft);
   });
-  on('#acEdit', 'click', () => accommodationSheet(draft.residence, draft, (a) => { draft.residence = a; $('acSum').textContent = accommodationLabel(a); }));
+  on('#acEdit', 'click', () => accommodationSheet(draft.residence, draft, (a) => { if (!a) void rooms.leavePlace(); draft.residence = a; $('acSum').textContent = accommodationLabel(a); }));
   $('hall').addEventListener('change', () => {
     draft.hall = $<HTMLSelectElement>('hall').value;
     $('hallDot').style.background = hallById(draft.hall).color;
@@ -966,6 +967,8 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
   // the first ride lends rim brakes, so the brake tip has something to teach
   const brakes = tutorial ? Math.max(1, profile.gear.brakes) : profile.gear.brakes;
   const RING = 2 * Math.PI * 52;
+  // getting down and walking: Explore and Vibe Ride only, never a race, mission, event, challenge or treasure hunt
+  const walkAllowed = isExplore(route) && (!opts.live || opts.live.kind === 'vibe') && !opts.mission && !opts.eventPlay && !opts.event && !opts.challengeRide && !opts.challenge && !opts.rivals && !opts.treasure && !tutorial;
   render(`
     <div class="hud${settings.leftHanded ? ' lefty' : ''}">
       <div class="touch-layer" id="touch"></div>
@@ -990,7 +993,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
       ${isExplore(route) ? `<div class="free-pad" id="freePad" hidden>
         <p class="fp-hint">${isTouch ? 'Hold the arrows to steer · tap Pedal to ride · tap Brake to stop, hold it to reverse' : 'Steer ← → (A / D) · ↑ (W) pedal · ↓ (S) brake, hold to reverse'}</p>
         <button class="fp-btn fp-end" id="fpEnd">Finish ride</button>
-        <button class="fp-btn fp-end" id="fpWalk" style="top:calc(162px + var(--safe-t, 0px))">Get down and walk</button>
+        ${walkAllowed ? '<button class="fp-btn fp-end" id="fpWalk" style="top:calc(162px + var(--safe-t, 0px))">Get down and walk</button>' : ''}
         <div class="fp-steer"><button class="fp-btn" id="fpLeft" aria-label="Steer left">◀</button><button class="fp-btn" id="fpRight" aria-label="Steer right">▶</button></div>
         <div class="fp-feet"><button class="fp-btn fp-brake" id="fpBrake">Brake</button><button class="fp-btn fp-go" id="fpGo">Pedal</button></div>
       </div>` : ''}
@@ -1026,6 +1029,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
   const placeEl = $('place');
   // races: a friend's challenge, Quick Match bots, or else your own best run rides with you
   const lr = opts.live;
+  game.walkAllowed = walkAllowed;
   const ghost = route.kind === 'race' && !opts.challenge && !opts.rivals && !lr ? loadGhost(route.id) : null;
   const rivals: Rival[] = lr
     ? lr.riders.map((r) => ({ run: { step: 0.1, d: [], x: [] }, name: r.name, color: r.jersey || '#ffd21f', ghostly: false, live: true }))
@@ -1365,7 +1369,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
         <h2 class="title">Paused</h2>
         <button class="btn btn-primary" data-p="continue">Continue</button>
         ${lr || opts.challengeRide ? '' : '<button class="btn btn-ghost" data-p="restart">Restart</button>'}
-        ${isExplore(route) && !game.walking && !game.inRoom ? '<button class="btn btn-ghost" data-p="walk">Get down and walk</button>' : ''}
+        ${walkAllowed && !game.walking && !game.inRoom ? '<button class="btn btn-ghost" data-p="walk">Get down and walk</button>' : ''}
         <button class="btn btn-ghost" data-p="map">${icons.map} View map</button>
         ${lr ? '' : `<button class="btn btn-ghost" data-p="photo">${icons.camera} Photo mode</button>`}
         <button class="btn btn-ghost" data-p="sound">Sound: ${settings.sound ? 'On' : 'Off'}</button>
@@ -1519,6 +1523,8 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
   function getDownAndWalk() {
     resume();
     if (game.walking || game.inRoom) return;
+    // only in Explore and Vibe Ride (the game refuses it too, whatever control asks)
+    if (!walkAllowed) { toast('You can get down and walk in Explore and Vibe Ride, not during a race.', [], 4000); return; }
     if (!game.freeRiding) startFreeRide();
     const r = game.getDown();
     if (!r.ok) { toast(esc(r.reason ?? 'You cannot get down here.'), [], 5000); return; }
@@ -1527,9 +1533,16 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     walkUi = startWalking({
       app, game,
       accommodation: () => profile?.residence,
-      chooseAccommodation: (done) => accommodationSheet(profile!.residence, profile!, (a) => { profile!.residence = a; saveProfile(profile!); done(); }),
+      chooseAccommodation: (done) => accommodationSheet(profile!.residence, profile!, (a) => { if (!a) void rooms.leavePlace(); profile!.residence = a; saveProfile(profile!); done(); }),
       onRemount: () => { walkUi = null; if (fp) fp.hidden = false; },
       toast: (t) => toast(esc(t), [], 6000),
+      // the shared room allocation when signed in: the server's room and bed are saved with the profile
+      claim: async (a) => {
+        const r = await rooms.claimPlace(a);
+        if (profile && (r.acc.roomId !== profile.residence?.roomId || r.acc.bed !== profile.residence?.bed)) { profile.residence = r.acc; saveProfile(profile); }
+        return r;
+      },
+      youName: profile?.name ?? 'You',
     });
   }
   // Explore's free ride: the arrived card hands the bike over; held buttons or keys steer, pedal and brake
@@ -1564,7 +1577,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     brakeEl.addEventListener('pointerdown', (e) => { e.stopPropagation(); e.preventDefault(); game.freeBrake(true); });
     for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) brakeEl.addEventListener(ev, () => game.freeBrake(false));
     pad.querySelector('#fpEnd')!.addEventListener('click', () => { pad.hidden = true; game.endFreeRide(); });
-    pad.querySelector('#fpWalk')!.addEventListener('click', () => getDownAndWalk());
+    pad.querySelector('#fpWalk')?.addEventListener('click', () => getDownAndWalk());
     for (const ev of ['pointerdown', 'touchstart'] as const) pad.addEventListener(ev, (e) => e.stopPropagation());
     freeKeys = (e) => {
       if (e.target instanceof HTMLInputElement || !game.freeRiding || game.walking || game.inRoom || game.inLobby) return;

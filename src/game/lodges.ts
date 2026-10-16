@@ -65,7 +65,7 @@ const TEMPLATES: Record<Exclude<LodgeFamily, 'L01'>, Template> = {
 let signMat: THREE.MeshStandardMaterial | null = null;
 const lodgeSign = () => (signMat ??= new THREE.MeshStandardMaterial({ roughness: 0.6, map: canvas(256, 48, (g) => { g.fillStyle = '#16365f'; g.fillRect(0, 0, 256, 48); g.fillStyle = '#ffffff'; g.font = 'bold 26px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText("PORTER'S LODGE", 128, 25); }) }));
 
-export interface LodgePlacement { residence: string; entrance: string; family: LodgeFamily | null; status: 'built' | 'indoor reception (L01)' | 'existing gatehouse reused' | 'no family assigned' | 'no clear place'; at?: [number, number]; side?: 'left' | 'right'; inside?: boolean }
+export interface LodgePlacement { residence: string; entrance: string; family: LodgeFamily | null; status: 'built' | 'indoor reception (L01)' | 'existing gatehouse reused' | 'served by another lodge' | 'no clear place'; servedBy?: string; at?: [number, number]; side?: 'left' | 'right'; inside?: boolean }
 export const LODGE_PLACEMENTS: LodgePlacement[] = [];
 
 /**
@@ -101,7 +101,8 @@ export function buildLodges(): THREE.Group {
   for (const r of RESIDENCES as Residence[]) for (const e of r.entrances) {
     const rec: LodgePlacement = { residence: r.id, entrance: e.id, family: r.lodge, status: 'built' };
     LODGE_PLACEMENTS.push(rec);
-    if (!r.lodge) { rec.status = 'no family assigned'; continue; }
+    // (the Volta annex: Volta Hall's lodge at the main hall's main entrance serves it; nothing is built at the annex)
+    if (!r.lodge) { rec.status = 'served by another lodge'; rec.servedBy = r.lodgeAt; continue; }
     if (r.lodge === 'L01') { rec.status = 'indoor reception (L01)'; continue; }
     if (r.lodge === 'L06') { rec.status = 'existing gatehouse reused'; continue; }
     // (a tight frontage: the lodge may stand right at the kerb)

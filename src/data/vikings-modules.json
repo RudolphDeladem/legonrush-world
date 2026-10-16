@@ -1,0 +1,56 @@
+{
+ "revision": "V2-2026-10-16",
+ "scope": "Filmed Vikings double only; proposed fit modules, not surveyed dimensions or new signup categories",
+ "modules": [
+  {
+   "id": "V2_WET",
+   "width": 2.4,
+   "length": 2.3,
+   "unit": "metres - proposed",
+   "observed": "Pedestal basin/mirror; shower curtain and fittings; separate toilet compartment",
+   "topology": "Basin/shower area with toilet behind its own door. Exact offsets and attachment to bedroom unresolved.",
+   "objects": [
+    {
+     "type": "toilet",
+     "x": 0.2,
+     "y": 1.55,
+     "w": 0.5,
+     "d": 0.55
+    },
+    {
+     "type": "basin",
+     "x": 1.02,
+     "y": 1.72,
+     "w": 0.55,
+     "d": 0.45
+    },
+    {
+     "type": "shower",
+     "x": 1.68,
+     "y": 1.1,
+     "w": 0.65,
+     "d": 1.1
+    }
+   ],
+   "note": "Small white raised ledge near shower is visible; function unconfirmed, do not label it as kitchen."
+  },
+  {
+   "id": "V2_BAL",
+   "width": 1.25,
+   "length": 4.2,
+   "unit": "metres - proposed",
+   "observed": "Narrow tiled balcony; solid parapet; wall window; dark metal drying rack with yellow lines",
+   "parapet_height": 1.05,
+   "objects": [
+    {
+     "type": "drying_rack",
+     "x": 0.48,
+     "y": 0.55,
+     "w": 0.45,
+     "d": 2.6
+    }
+   ],
+   "note": "Length, width, parapet height and doorway offset are game assumptions. Do not infer stairs or a second bedroom from balcony view."
+  }
+ ]
+}

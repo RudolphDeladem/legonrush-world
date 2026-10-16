@@ -1,7 +1,7 @@
 // Checks for the walking and accommodation feature's data (the owner's Volume A sections 16-24, Volume B pages 25,
 // 75): every category's sleeping places, the two-single and two-bunk rules, brown wood in the traditional groups,
 // paint per building, the lodge families, stable allocation and validation of stale selections.
-import { CATEGORIES, LAYOUTS, PAINT, RESIDENCES, allocate, categoriesFor, residenceById, sleepingPlaces, validAccommodation } from '../src/game/residence';
+import { CATEGORIES, LAYOUTS, PAINT, RESIDENCES, allocate, categoriesFor, categoryById, residenceById, sleepingPlaces, validAccommodation } from '../src/game/residence';
 const fail: string[] = [];
 const ok = (c: unknown, msg: string) => { if (!c) fail.push(msg); };
 for (const c of CATEGORIES) {
@@ -17,22 +17,25 @@ for (const c of CATEGORIES) {
 }
 const paint = (id: string) => residenceById(id)!.paint;
 for (const id of ['jean-nelson', 'limann', 'sey', 'kwapong', 'diamond-jubilee', 'commonwealth', 'new-pent', 'old-pent', 'vikings', 'akuafo', 'akuafo-annexes', 'sarbah', 'sarbah-annexes', 'legon', 'legon-annexes', 'volta', 'volta-annex', 'ish-1', 'ish-2', 'jubilee', 'valco-1', 'valco-2']) ok(paint(id) === 'white', `${id}: white rooms`);
-ok(paint('bani') === 'blue', 'Bani blue'); ok(paint('evandy') === 'cream', 'Evandy cream'); ok(paint('tf') === 'pending', 'TF pending');
-ok(PAINT.pending !== PAINT.white, 'TF must not inherit white');
+ok(paint('bani') === 'blue', 'Bani blue'); ok(paint('evandy') === 'cream', 'Evandy cream'); ok(paint('tf') === 'white', 'TF white (owner 2026-10-16)');
+ok(PAINT.white !== PAINT.cream && PAINT.white !== PAINT.blue, 'three distinct paints');
 const fam = (id: string) => residenceById(id)!.lodge;
 ok(['jean-nelson', 'limann', 'sey', 'diamond-jubilee', 'kwapong'].every((i) => fam(i) === 'L01'), 'L01 Diaspora group');
 ok(fam('diamond-jubilee') !== fam('jubilee') && fam('jubilee') === 'L10', 'Diamond Jubilee and Jubilee kept apart');
 ok(fam('new-pent') === 'L04' && fam('old-pent') === 'L05', 'New / Old Pent apart');
 ok(fam('akuafo') === 'L03' && fam('akuafo-annexes') === 'L13' && fam('sarbah') === 'L02' && fam('sarbah-annexes') === 'L13', 'mains and annexes apart');
 ok(fam('ish-1') === 'L09' && fam('ish-2') === 'L09', 'ISH 1 and 2 L09');
-ok(fam('volta-annex') === null, 'Volta annex lodge pending');
+ok(fam('volta-annex') === null && residenceById('volta-annex')!.lodgeAt === 'volta' && fam('volta') === 'L02', 'Volta annex: no lodge of its own, served by Volta Hall');
 ok(RESIDENCES.every((r) => r.entrances.length > 0), 'every residence has an entrance');
 // allocation: stable, validated, stale choices refused
 const a1 = allocate('kofi', 'valco-1', 'valco-1'), a2 = allocate('kofi', 'valco-1', 'valco-1');
 ok(a1 && a2 && a1.roomId === a2.roomId && a1.kitchenGroupId, 'Valco: stable room and a kitchen group');
 ok(!allocate('kofi', 'evandy', 'ev-4', 'annex-a'), 'Evandy Annex A has no four-person category');
 ok(!allocate('kofi', 'old-pent', 'np-2'), 'a New Pent category is refused at Old Pent');
-ok(!allocate('kofi', 'jubilee', 'jub-flat-2-1', 'main'), '2-1 stays unresolved');
+{ const a = allocate('kofi', 'jubilee', 'jub-2-in-1', 'main'); const c = categoryById('jub-2-in-1')!; ok(!!a && c.capacity === 2 && LAYOUTS[c.layout].objects.filter((o) => o.type === 'bed').length === 2 && !LAYOUTS[c.layout].objects.some((o) => o.type === 'bunk'), 'Jubilee 2-in-1: selectable standard double, two singles'); }
+ok(!CATEGORIES.some((c) => c.unresolved), 'no unresolved category left');
+{ const l = LAYOUTS.R08; ok(l.objects.filter((o) => o.type === 'bed').length === 2 && l.objects.filter((o) => o.type === 'desk').length === 2 && !l.objects.some((o) => o.type === 'bunk') && /V2/.test(l.source), 'Vikings double: V2 R08, two singles and two desks'); }
+ok(['vk-2', 'vk-2-ac'].every((id) => categoryById(id)!.balcony && categoryById(id)!.module === 'V2') && !categoryById('vk-4')!.balcony && !categoryById('vk-1')!.balcony, 'Vikings services and balcony on the doubles only');
 ok(!validAccommodation({ buildingId: 'bani', categoryId: 'bani-4', blockId: 'f', roomId: 'x', v: 1 }), 'block-checked');
 ok(categoriesFor(residenceById('new-pent')!, 'a').every((c) => c.capacity !== 3), 'New Pent has no three-person category');
 ok(categoriesFor(residenceById('vikings')!).every((c) => c.capacity !== 3), 'Vikings has no three-person category');

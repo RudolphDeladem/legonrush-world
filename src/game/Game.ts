@@ -21,6 +21,7 @@ import { meshBlocked, warmCollision, warmOne } from './meshcollide';
 import { createWeatherFx, type WeatherFx } from './weatherfx';
 import { buildWalker, type WalkerFigure } from './walker';
 import { buildRoom, type BuiltRoom } from './roomkit';
+import { RoomPlay, roomPose, type Occupant } from './roomplay';
 import type { Accommodation } from './residence';
 import { gates } from './gates';
 import { lobbyScene } from './lodges';
@@ -1330,7 +1331,9 @@ export class Game {
   private walker: WalkerFigure | null = null;
   private walkerLook: RiderLook | null = null;
   /** held walking controls: forward (-1 back .. 1 forward) and turn (-1 left .. 1 right) */
-  walkInput = { fwd: 0, turn: 0 };
+  walkInput = { fwd: 0, turn: 0, strafe: 0 };
+  /** set by the ride: getting down and walking is allowed only in Explore and Vibe Ride (never in a race) */
+  walkAllowed = false;
   get walking() { return !!this.foot && !this.room; }
   get footXZ(): [number, number] | null { return this.foot ? [this.foot.x, this.foot.z] : null; }
   /** the way the walker faces (radians, the bike's convention: facing (-sin, -cos)) */
@@ -1344,6 +1347,8 @@ export class Game {
    */
   getDown(): { ok: boolean; reason?: string } {
     if (this.phase !== 'riding' || this.foot) return { ok: false, reason: 'Not riding.' };
+    // the rule lives here, not only in the menus: no key, button or controller path can get down during a race
+    if (!this.walkAllowed) return { ok: false, reason: 'You can get down and walk in Explore and Vibe Ride, not during a race.' };
     if (!this.free) this.freeRide();
     const f = this.free;
     if (!f) return { ok: false, reason: 'The bike cannot stop here.' };
@@ -1356,7 +1361,7 @@ export class Game {
       const x = f.x + ox, z = f.z + oz, g = groundFrom(x, z, g0);
       if (freeBlocked(x, z) || Math.abs(g - g0) > 0.35) continue;
       this.foot = { x, z, y: g, yaw: f.yaw, v: 0, phase: 0 };
-      this.walkInput = { fwd: 0, turn: 0 };
+      this.walkInput = { fwd: 0, turn: 0, strafe: 0 };
       this.rider.showRider(false);
       const w = this.walkerFigure();
       w.root.position.set(x, g, z); w.root.rotation.set(0, f.yaw, 0);
@@ -1458,34 +1463,48 @@ export class Game {
     this.scene.add(this.beacon);
   }
 
-  // ---------- the allocated room (Volume A sections 5, 6 and 16) ----------
-  private room: { built: BuiltRoom; view: number; yaw: number; pitch: number; ret: { x: number; z: number; y: number; yaw: number }; buildingId: string } | null = null;
-  /** look input in the room, -1..1 (keys or a stick), and drag deltas (radians) */
+  // ---------- the allocated room (Volume A sections 5, 6 and 16; the owner's instructions of 2026-10-16) ----------
+  private room: { built: BuiltRoom; play: RoomPlay; ret: { x: number; z: number; y: number; yaw: number }; buildingId: string } | null = null;
+  /** look input in the room, -1..1 (keys or a stick); walking uses walkInput (fwd, strafe, turn) */
   roomLook = { x: 0, y: 0 };
   get inRoom() { return !!this.room; }
-  get roomInfo() { return this.room ? { views: this.room.built.views.map((v) => v.label), view: this.room.view, singles: this.room.built.singles, bunks: this.room.built.bunks, layout: this.room.built.layout, buildingId: this.room.buildingId } : null; }
+  get roomInfo() {
+    const r = this.room;
+    if (!r) return null;
+    const p = r.play;
+    return {
+      singles: r.built.singles, bunks: r.built.bunks, layout: r.built.layout, buildingId: r.buildingId, paint: r.built.paint, wood: r.built.wood,
+      balcony: r.built.hasBalcony, windows: r.built.windowStyle, at: [p.x, p.z] as [number, number], yaw: p.yaw, pitch: p.pitch,
+      focus: p.focus ? { id: p.focus.id, kind: p.focus.kind, label: p.focus.label() } : null,
+      parts: r.built.interactables.map((i) => ({ id: i.id, kind: i.kind, open: i.open, at: [i.at.x, i.at.z] })),
+      places: r.built.places.length, occupants: p.occupants.map((o) => ({ bed: o.bed, kind: o.kind, name: o.name })),
+      pose: p.pose ? { building: p.pose.building, floor: p.pose.floor, face: p.pose.face } : null,
+      onBalcony: r.built.hasBalcony && r.built.walk.rects.length > 0 && this.onBalcony(),
+    };
+  }
+  private onBalcony() {
+    const r = this.room!, p = r.play, b = r.built.walk.rects.at(-1)!;
+    // (the balcony is the unit's last floor rectangle when it has one)
+    return r.built.hasBalcony && p.x > b[0] && p.x < b[2] && p.z > b[1] && p.z < b[3];
+  }
   /**
-   * Into the player's own room: built away from the campus, the only interior that exists, with the selected
-   * character standing in it; the campus is left exactly as it was. Returns a reason when it cannot be shown.
+   * Into the player's own room: built away from the campus, the only interior that exists, with its occupants (the
+   * player's real roommates and NPCs on the other beds); the player walks in it in first person. The campus is left
+   * exactly as it was and seen from the room's place in its building. Returns a reason when it cannot be shown.
    */
-  enterRoom(acc: Accommodation): { ok: boolean; reason?: string } {
+  enterRoom(acc: Accommodation, occupants: Occupant[] = [], roomKey = `${acc.buildingId}|${acc.blockId ?? ''}|${acc.roomId}`): { ok: boolean; reason?: string } {
     if (this.room) return { ok: false, reason: 'Already in the room.' };
     if (!this.foot) return { ok: false, reason: 'Walk to the entrance first.' };
     const built = buildRoom(acc);
     if (!built) return { ok: false, reason: 'This room type has no interior yet.' };
-    // the campus (terrain, grass round the camera, every building) is hidden while the room is shown: only the room
-    this.hideCampus(built.group);
     this.scene.add(built.group);
     const w = this.foot, ret = { x: w.x, z: w.z, y: w.y, yaw: w.yaw };
-    // the character stands just inside the door, facing into the room
-    const fig = this.walkerFigure();
-    fig.root.position.copy(built.spawn); fig.root.rotation.set(0, Math.PI, 0); fig.pose(0, 0);
-    // the first view: from the far side of the room back toward the door and the character
-    const v0 = built.views[0], [x0, x1, , z1] = v0.bounds;
-    built.views.unshift({ label: v0.label, pos: new THREE.Vector3((x0 + x1) / 2, built.spawn.y + 1.6, z1 - 0.75), yaw: Math.PI, bounds: v0.bounds });
-    this.room = { built, view: 0, yaw: Math.PI, pitch: -0.08, ret, buildingId: acc.buildingId };
+    // first person: the character's own figure is not drawn in the room
+    this.walker?.root.removeFromParent();
+    const play = new RoomPlay(built, roomPose(acc, built), occupants, roomKey);
+    this.room = { built, play, ret, buildingId: acc.buildingId };
     gates.occupy(acc.buildingId);
-    this.recenterCamera(true);
+    this.walkInput.fwd = this.walkInput.turn = this.walkInput.strafe = 0;
     this.speed = 0;
     return { ok: true };
   }
@@ -1499,39 +1518,64 @@ export class Game {
     gates.occupy(null);
     const f = this.foot!, fig = this.walkerFigure();
     Object.assign(f, r.ret, { v: 0 });
+    this.scene.add(fig.root);
     fig.root.position.set(f.x, f.y, f.z); fig.root.rotation.set(0, f.yaw, 0);
+    this.walkInput.fwd = this.walkInput.turn = this.walkInput.strafe = 0;
     this.snapCam = true;
   }
   private hidden: THREE.Object3D[] = [];
   private hideCampus(keep: THREE.Object3D) {
     this.showCampus();
-    for (const o of this.scene.children) if (o !== keep && o !== this.walker?.root && o !== this.sky && !(o instanceof THREE.Light) && o.visible) { o.visible = false; this.hidden.push(o); }
+    for (const o of this.scene.children) if (o !== keep && o !== this.sky && !(o instanceof THREE.Light) && o.visible) { o.visible = false; this.hidden.push(o); }
   }
   private showCampus() { for (const o of this.hidden) o.visible = true; this.hidden = []; }
-  /** the next look-around anchor of the unit (inner room, en-suite, service strip) */
-  nextRoomView() {
-    const r = this.room;
-    if (!r) return '';
-    r.view = (r.view + 1) % r.built.views.length;
-    r.yaw = r.built.views[r.view].yaw; r.pitch = -0.08;
-    return r.built.views[r.view].label;
-  }
+  /** works the room part in reach (curtains, louvres, the balcony door, a cupboard, the fan); its new action, or null */
+  roomInteract() { return this.room?.play.interact() ?? null; }
   /** turns the room view by a drag (radians) */
   turnRoom(dx: number, dy: number) {
-    const r = this.room; if (!r) return;
-    r.yaw -= dx; r.pitch = Math.max(-0.75, Math.min(0.6, r.pitch - dy));
+    const p = this.room?.play; if (!p) return;
+    p.yaw -= dx; p.pitch = Math.max(-1.1, Math.min(0.9, p.pitch - dy));
   }
   private roomCamera(dt: number) {
-    const r = this.room!, cam = this.camera, v = r.built.views[r.view];
-    r.yaw -= this.roomLook.x * dt * 1.8;
-    r.pitch = Math.max(-0.75, Math.min(0.6, r.pitch - this.roomLook.y * dt * 1.2));
-    // the camera stays inside the room it looks from (its bounds less a margin): never through a wall
-    const p = v.pos, [x0, x1, z0, z1] = v.bounds;
-    cam.position.set(Math.max(x0 + 0.25, Math.min(x1 - 0.25, p.x)), p.y, Math.max(z0 + 0.25, Math.min(z1 - 0.25, p.z)));
-    cam.lookAt(cam.position.x + Math.sin(r.yaw) * Math.cos(r.pitch), cam.position.y + Math.sin(r.pitch), cam.position.z + Math.cos(r.yaw) * Math.cos(r.pitch));
-    const fov = innerWidth < innerHeight ? 78 : 66;
+    const r = this.room!, cam = this.camera, inp = this.walkInput;
+    if (!this.paused) r.play.update(dt, inp.fwd, inp.strafe, inp.turn, this.roomLook.x, this.roomLook.y);
+    r.play.apply(cam);
+    const fov = innerWidth < innerHeight ? 78 : 68;
     cam.fov += (fov - cam.fov) * Math.min(1, dt * 4);
     cam.updateProjectionMatrix();
+  }
+  private worldCam = new THREE.PerspectiveCamera();
+  /**
+   * The room frame: the campus first, from the room's own place in its building (the same eye, carried into the world),
+   * then the room over it with the depth cleared. Only the openings (windows, the open balcony) show the campus; the
+   * room's walls and ceiling are complete and opaque.
+   */
+  private renderRoom(dt: number) {
+    const r = this.room!, cam = this.camera, wc = this.worldCam, R = this.renderer;
+    r.built.group.visible = false;
+    this.showCampus();
+    if (r.play.worldCamera(cam, wc)) {
+      this.sky.position.copy(wc.position);
+      this.sun.position.set(wc.position.x + this.sunOffset.x, this.sunOffset.y, wc.position.z + this.sunOffset.z);
+      this.sun.target.position.set(wc.position.x, 0, wc.position.z);
+      this.tufts.update(wc.position.x, wc.position.z);
+      R.render(this.scene, wc);
+    } else {
+      // (no building found for the room: the sky alone)
+      this.hideCampus(this.sky);
+      this.sky.position.copy(cam.position);
+      R.render(this.scene, cam);
+      this.showCampus();
+    }
+    r.built.group.visible = true;
+    this.hideCampus(r.built.group);
+    const bg = this.scene.background, fog = this.scene.fog, sky = this.sky.visible, auto = R.autoClear;
+    this.scene.background = null; this.scene.fog = null; this.sky.visible = false;
+    R.autoClear = false;
+    R.clearDepth();
+    R.render(this.scene, cam);
+    R.autoClear = auto; this.scene.background = bg; this.scene.fog = fog; this.sky.visible = sky;
+    void dt;
   }
 
   /** Guided ride: move on from the place it stopped at. */
@@ -2430,6 +2474,8 @@ export class Game {
       cam.updateProjectionMatrix();
     } else if (this.room) {
       this.roomCamera(dt);
+      this.renderRoom(dt);
+      return;
     } else if (this.lobby) {
       cam.position.copy(this.lobby.cam); cam.lookAt(this.lobby.look);
       cam.fov = innerWidth < innerHeight ? 74 : 62; cam.updateProjectionMatrix();

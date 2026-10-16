@@ -1,6 +1,7 @@
 // The walking interface (the owner's Volume A): walking controls, "Ride bicycle", the nearby-buildings list for the
 // local area, the small top-corner entrance popup (only on foot and only at an entrance), the hall's actions (Enter my
-// room, Walk around the open common area, Leave), the blur into the allocated room and its look-around controls.
+// room, Walk around the open common area, Leave), the blur into the allocated room, and in the room (2026-10-16):
+// walking and looking, one action at a time for the part within reach, the room's residents, Leave room.
 // Three things stay separate, as the brief asks: discovering a building (the list), targeting it (a marker), and
 // entering at its entrance (the popup).
 import type { Game } from '../game/Game';
@@ -8,6 +9,7 @@ import { ACCESS, PLACES, type PlaceKind } from '../game/campusmap';
 import { RESIDENCES, categoryById, residenceOfPlace, validAccommodation, type Accommodation, type Residence } from '../game/residence';
 import { accommodationLabel } from './accommodation';
 import { esc } from '../features/host';
+import { occupantsOf, type RoomPlace } from '../features/rooms';
 
 /** a place one can walk up to: a residence's entrance, or another building's mapped entrance */
 interface Spot { key: string; name: string; at: [number, number]; residence?: Residence; entranceIndex?: number; kind: PlaceKind | 'residence' }
@@ -38,6 +40,10 @@ export interface WalkContext {
   /** back on the bike: the caller restores its riding controls */
   onRemount: () => void;
   toast: (text: string) => void;
+  /** the player's place in their room (the shared allocation when signed in); saves an updated accommodation */
+  claim: (acc: Accommodation) => Promise<{ acc: Accommodation; place: RoomPlace }>;
+  /** the player's display name, for the residents list */
+  youName: string;
 }
 
 export function startWalking(ctx: WalkContext) {
@@ -57,8 +63,8 @@ export function startWalking(ctx: WalkContext) {
     <div class="walk-room" id="wRoom" hidden></div>`;
   app.appendChild(root);
   const $ = <T extends HTMLElement>(id: string) => root.querySelector<T>('#' + id)!;
-  const held = { f: false, b: false, l: false, r: false };
-  const apply = () => { game.walkInput.fwd = (held.f ? 1 : 0) - (held.b ? 1 : 0); game.walkInput.turn = (held.r ? 1 : 0) - (held.l ? 1 : 0); };
+  const held = { f: false, b: false, l: false, r: false, sl: false, sr: false };
+  const apply = () => { game.walkInput.fwd = (held.f ? 1 : 0) - (held.b ? 1 : 0); game.walkInput.turn = (held.r ? 1 : 0) - (held.l ? 1 : 0); game.walkInput.strafe = (held.sr ? 1 : 0) - (held.sl ? 1 : 0); };
   const hold = (id: string, k: keyof typeof held) => {
     const b = $(id), set = (v: boolean) => (e: Event) => { e.preventDefault(); e.stopPropagation(); held[k] = v; b.classList.toggle('on', v); apply(); };
     b.addEventListener('pointerdown', set(true));
@@ -76,12 +82,18 @@ export function startWalking(ctx: WalkContext) {
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
     const on = e.type === 'keydown';
     if (mode === 'room') {
-      if (e.code === 'ArrowLeft' || e.code === 'KeyA') game.roomLook.x = on ? -1 : 0;
-      else if (e.code === 'ArrowRight' || e.code === 'KeyD') game.roomLook.x = on ? 1 : 0;
-      else if (e.code === 'ArrowUp' || e.code === 'KeyW') game.roomLook.y = on ? -1 : 0;
-      else if (e.code === 'ArrowDown' || e.code === 'KeyS') game.roomLook.y = on ? 1 : 0;
+      // W / S or ↑ / ↓ walk, A / D step sideways, ← / → turn, PageUp / PageDown look up and down, E or Enter: the action
+      if (e.code === 'ArrowUp' || e.code === 'KeyW') held.f = on;
+      else if (e.code === 'ArrowDown' || e.code === 'KeyS') held.b = on;
+      else if (e.code === 'KeyA') held.sl = on;
+      else if (e.code === 'KeyD') held.sr = on;
+      else if (e.code === 'ArrowLeft' || e.code === 'KeyQ') held.l = on;
+      else if (e.code === 'ArrowRight') held.r = on;
+      else if (e.code === 'PageUp') game.roomLook.y = on ? -1 : 0;
+      else if (e.code === 'PageDown') game.roomLook.y = on ? 1 : 0;
+      else if (on && !e.repeat && (e.code === 'KeyE' || e.code === 'Enter')) act();
       else return;
-      e.preventDefault(); return;
+      e.preventDefault(); apply(); return;
     }
     if (mode !== 'walk') return;
     if (e.code === 'ArrowUp' || e.code === 'KeyW') held.f = on;
@@ -149,7 +161,7 @@ export function startWalking(ctx: WalkContext) {
     }
     hallSpot = s;
     mode = 'hall';
-    held.f = held.b = held.l = held.r = false; apply();
+    held.f = held.b = held.l = held.r = held.sl = held.sr = false; apply();
     if (s.residence.lodge === 'L01') game.showLobby(true);
     hallPanel();
   };
@@ -163,7 +175,7 @@ export function startWalking(ctx: WalkContext) {
     const mine = acc && validAccommodation(acc) && acc.buildingId === r.id;
     const blockOf = r.blocks && r.entrances.length === r.blocks.length && s.entranceIndex !== undefined ? r.blocks[s.entranceIndex] : null;
     const wrongBlock = mine && blockOf && acc!.blockId !== blockOf.id ? r.blocks!.find((b) => b.id === acc!.blockId) : null;
-    const lodge = r.lodge ? (r.lodge === 'L01' ? "the porter's reception (L01)" : r.lodge === 'L06' ? 'the gatehouse at the entrance' : `the porter's lodge by the entrance (${r.lodge})`) : 'no porter\'s lodge assigned yet';
+    const lodge = r.lodge ? (r.lodge === 'L01' ? "the porter's reception (L01)" : r.lodge === 'L06' ? 'the gatehouse at the entrance' : `the porter's lodge by the entrance (${r.lodge})`) : r.lodgeAt ? `the annex: its porter's lodge is at ${RESIDENCES.find((x) => x.id === r.lodgeAt)?.name ?? 'the main hall'}'s main entrance` : 'the entrance';
     H.hidden = false;
     H.innerHTML = `<div class="panel">
       <p class="kicker">${esc(r.name)}</p>
@@ -178,7 +190,7 @@ export function startWalking(ctx: WalkContext) {
     H.querySelector('#hSet')?.addEventListener('click', () => ctx.chooseAccommodation(() => hallPanel()));
     H.querySelector('#hCommon')!.addEventListener('click', () => {
       backToWalk();
-      ctx.toast(`Walk round ${r.name}'s open areas. Their exact boundary and stairs are still to be confirmed, so only the open ground is walkable.`);
+      ctx.toast(`Walk round ${r.name}'s open areas and up its entrance steps. Its corridors and upper floors are not modelled: your room opens directly from the entrance.`);
     });
     H.querySelector('#hLeave')!.addEventListener('click', () => { backToWalk(); if (hallSpot) dismissed = hallSpot.key; });
   };
@@ -190,27 +202,54 @@ export function startWalking(ctx: WalkContext) {
 
   // ----- the room: blur out, swap, blur in -----
   const blur = (on: boolean) => { if (canvas instanceof HTMLElement) { canvas.style.transition = 'filter .35s ease'; canvas.style.filter = on ? 'blur(14px) brightness(1.1)' : ''; } };
-  const enterRoom = (acc: Accommodation) => {
+  let place: RoomPlace | null = null;
+  const enterRoom = (acc0: Accommodation) => {
     if (busy) return;
     busy = true;
     $('wHall').hidden = true;
     blur(true);
-    setTimeout(() => {
+    // the place (and the roommates) first: the shared allocation when signed in
+    Promise.all([ctx.claim(acc0), new Promise((r) => setTimeout(r, 380))]).then(([res]) => {
+      const { acc } = res as { acc: Accommodation; place: RoomPlace };
+      place = (res as { place: RoomPlace }).place;
       game.showLobby(false);
-      const r = game.enterRoom(acc);
+      const key = `${acc.buildingId}|${acc.blockId ?? ''}|${place.roomId}`;
+      const r = game.enterRoom({ ...acc, roomId: place.roomId }, occupantsOf(place, key, ctx.youName), key);
       if (!r.ok) { blur(false); busy = false; ctx.toast(r.reason ?? 'The room could not be shown.'); hallPanel(); return; }
       mode = 'room';
+      held.f = held.b = held.l = held.r = held.sl = held.sr = false; apply();
       roomHud(acc);
       requestAnimationFrame(() => requestAnimationFrame(() => { blur(false); busy = false; }));
-    }, 380);
+    });
+  };
+  const act = () => {
+    const label = game.roomInteract();
+    if (label) $('rAct').textContent = label;
   };
   const roomHud = (acc: Accommodation) => {
-    const R = $('wRoom'), info = game.roomInfo!, c = categoryById(acc.categoryId)!;
+    const R = $('wRoom'), c = categoryById(acc.categoryId)!, p = place!;
+    const who = Array.from({ length: p.capacity }, (_, bed) => {
+      const r = p.residents.find((x) => x.bed === bed);
+      return `<li>Bed ${bed + 1}: ${r ? (r.you ? '<b>You</b>' : `${esc(r.name)} <small class="muted">(player)</small>`) : `<span class="muted">NPC roommate</span>`}</li>`;
+    }).join('');
     R.hidden = false;
-    R.innerHTML = `<div class="wr-top"><b>Room ${esc(acc.roomId)}</b><small>${esc(accommodationLabel(acc))}</small><small class="muted">${c.evidence === 'adapted' ? 'Adapted design' : 'Reference-led design'} · drag or use the arrow keys to look round</small></div>
-      <div class="wr-foot">${info.views.length > 1 ? `<button class="fp-btn" id="rNext">Next view</button>` : ''}<button class="fp-btn" id="rLeave">Leave room</button></div>`;
-    R.querySelector('#rNext')?.addEventListener('click', (e) => { (e.target as HTMLElement).textContent = `View: ${game.nextRoomView()}`; });
+    R.innerHTML = `<div class="wr-top"><b>Room ${esc(p.roomId)}</b><small>${esc(accommodationLabel({ ...acc, roomId: p.roomId }))}</small>
+        <details class="wr-who"><summary>${p.capacity === 1 ? 'Single room' : `${p.capacity} residents`}${p.source === 'local' ? ' · NPC roommates' : ''}</summary><ul>${who}</ul>${p.note ? `<p class="muted small">${esc(p.note)}</p>` : ''}</details>
+        <small class="muted">${c.evidence === 'adapted' ? 'Adapted design' : 'Reference-led design'} · W/S walk · A/D step · ←/→ turn · drag to look · E: use</small></div>
+      <button class="fp-btn wr-act" id="rAct" hidden></button>
+      <div class="walk-pad wr-pad">
+        <div class="fp-steer"><button class="fp-btn" id="rL" aria-label="Turn left">◀</button><button class="fp-btn" id="rR" aria-label="Turn right">▶</button></div>
+        <div class="fp-feet"><button class="fp-btn" id="rB">Back</button><button class="fp-btn fp-go" id="rF">Walk</button></div>
+      </div>
+      <div class="wr-foot"><button class="fp-btn" id="rLeave">Leave room</button></div>`;
+    hold2(R, 'rF', 'f'); hold2(R, 'rB', 'b'); hold2(R, 'rL', 'l'); hold2(R, 'rR', 'r');
+    R.querySelector('#rAct')!.addEventListener('click', act);
     R.querySelector('#rLeave')!.addEventListener('click', leaveRoom);
+  };
+  const hold2 = (host: HTMLElement, id: string, k: keyof typeof held) => {
+    const b = host.querySelector<HTMLElement>('#' + id)!, set = (v: boolean) => (e: Event) => { e.preventDefault(); e.stopPropagation(); held[k] = v; b.classList.toggle('on', v); apply(); };
+    b.addEventListener('pointerdown', set(true));
+    for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) b.addEventListener(ev, set(false));
   };
   const leaveRoom = () => {
     if (busy) return;
@@ -219,6 +258,7 @@ export function startWalking(ctx: WalkContext) {
     setTimeout(() => {
       game.leaveRoom();
       game.roomLook.x = game.roomLook.y = 0;
+      held.f = held.b = held.l = held.r = held.sl = held.sr = false; apply();
       $('wRoom').hidden = true;
       mode = 'hall';
       hallPanel();
@@ -227,7 +267,7 @@ export function startWalking(ctx: WalkContext) {
   };
 
   // ----- each frame: the popup, the gamepad -----
-  let raf = 0;
+  let raf = 0, padA = false;
   const tick = () => {
     raf = requestAnimationFrame(tick);
     const pads = navigator.getGamepads?.() ?? [], gp = [...pads].find((g) => g);
@@ -235,7 +275,19 @@ export function startWalking(ctx: WalkContext) {
       const ax = Math.abs(gp.axes[0]) > 0.2 ? gp.axes[0] : 0, ay = Math.abs(gp.axes[1]) > 0.2 ? -gp.axes[1] : 0;
       if (ax || ay || (!held.f && !held.b && !held.l && !held.r)) { game.walkInput.fwd = ay; game.walkInput.turn = ax; }
     }
-    if (gp && mode === 'room') { game.roomLook.x = Math.abs(gp.axes[2] ?? 0) > 0.2 ? gp.axes[2] : Math.abs(gp.axes[0]) > 0.2 ? gp.axes[0] : 0; game.roomLook.y = Math.abs(gp.axes[3] ?? 0) > 0.2 ? gp.axes[3] : 0; }
+    if (gp && mode === 'room') {
+      // left stick walks and steps, right stick looks, A (the bottom face button) uses the part in reach
+      const dz = (v: number | undefined) => (v !== undefined && Math.abs(v) > 0.2 ? v : 0);
+      if (!held.f && !held.b && !held.sl && !held.sr) { game.walkInput.fwd = -dz(gp.axes[1]); game.walkInput.strafe = dz(gp.axes[0]); }
+      game.roomLook.x = dz(gp.axes[2]); game.roomLook.y = dz(gp.axes[3]);
+      const a = !!gp.buttons[0]?.pressed;
+      if (a && !padA) act();
+      padA = a;
+    }
+    if (mode === 'room') {
+      const f = game.roomInfo?.focus, b = root.querySelector<HTMLElement>('#rAct');
+      if (b) { b.hidden = !f; if (f && b.textContent !== f.label) b.textContent = f.label; }
+    }
     if (mode !== 'walk' || !game.walking) { $('wPop').hidden = true; return; }
     const p = game.footXZ!;
     // the nearest entrance within reach; hysteresis so the popup does not flicker at the edge
@@ -256,7 +308,7 @@ export function startWalking(ctx: WalkContext) {
     cancelAnimationFrame(raf);
     removeEventListener('keydown', keys); removeEventListener('keyup', keys);
     removeEventListener('pointerdown', down); removeEventListener('pointermove', move); removeEventListener('pointerup', up);
-    game.walkInput.fwd = game.walkInput.turn = 0;
+    game.walkInput.fwd = game.walkInput.turn = game.walkInput.strafe = 0;
     game.setBeacon(null);
     blur(false);
     root.remove();
