@@ -5,7 +5,10 @@
 // with pilasters between pairs of wide dark windows and small square vents, a maroon base, and a stair bay with
 // tall narrow windows over the entrance porch, a little east of the middle of Phase 1's front.
 import { PL, createSite, render, type Kit, type Spec, type Style } from './blocks';
+import * as THREE from 'three';
 import { box } from './modelkit';
+import { gates, grilleLeaf } from './gates';
+import { groundHeight } from './relief';
 
 const ST = 3.1, F = 5;
 /** two window units per bay: a pilaster, then a wide dark window and a small square vent, twice */
@@ -51,6 +54,7 @@ function phase(name: string, nw: [number, number], ne: [number, number], se: [nu
   const depth = Math.hypot(sw[0] - nw[0], sw[1] - nw[1]);
   // the model's z0 face is the front: for a south front the frame turns round
   const axis: [number, number] = frontNorth ? [lx / len, lz / len] : [-lx / len, -lz / len];
+  const [ux, uz] = axis;
   const x0 = -len / 2, x1 = len / 2, z0 = -depth / 2, z1 = depth / 2;
   return {
     name,
@@ -63,13 +67,35 @@ function phase(name: string, nw: [number, number], ne: [number, number], se: [nu
     keep: [[door - 4, door + 4, z0 - 5, z0]],
     extras: (k: Kit) => {
       const fz = z0 - 0.7;
-      // the entrance porch: a flat canopy on two posts with the hostel's name, glazed doors under it
-      k.plain.push([box(door - 2.6, door + 2.6, 3.0, 3.35, fz - 2.6, fz), '#f4f3ee']);
-      k.plain.push([box(door - 2.6, door + 2.6, 3.35, 3.9, fz - 2.65, fz - 2.55), '#f4f3ee']);
-      for (const s of [-1, 1]) k.plain.push([box(door + s * 2.3 - 0.12, door + s * 2.3 + 0.12, 0, 3.0, fz - 2.45, fz - 2.21), '#e8e6df']);
-      k.plain.push([box(door - 1.3, door + 1.3, PL, PL + 2.5, fz - 0.05, fz), '#3a4652']);
-      k.plain.push([box(door - 2.8, door + 2.8, 0, 0.15, fz - 3, fz), '#cfc9bd']);
-      k.signs.push({ text: name.replace(' Hostel', ''), x: door, y: 3.62, z: fz - 2.66, ry: Math.PI, w: 4.8, colors: ['#f4f3ee', '#8e2f2a'] });
+      // the entrance block (the owner's photo of 2026-10-16, blue mark): a low white porch building before the stair bay,
+      // the hostel's name on its fascia and dishes on its flat roof; its entrance with a dark steel grille gate in two
+      // leaves, and on the right as one goes in (the left of the front from outside: the frame's -x) the porter's lodge
+      // with its window (red mark). Proportions read from the photo, not measured.
+      const pz = fz - 3, H = 3.2, gx0 = door + 0.2, gx1 = door + 2.6;
+      k.plain.push([box(door - 2.8, door + 2.8, 0, 0.15, pz - 0.6, fz), '#cfc9bd']);
+      k.plain.push([box(door - 2.8, door - 2.6, 0.15, H, pz, fz), '#f4f3ee'], [box(door + 2.6, door + 2.8, 0.15, H, pz, fz), '#f4f3ee']);
+      k.plain.push([box(door - 2.9, door + 2.9, H, H + 0.25, pz - 0.15, fz), '#f4f3ee'], [box(door - 2.9, door + 2.9, H + 0.25, H + 0.75, pz - 0.15, pz - 0.05), '#f4f3ee']);
+      // the lodge front: wall, a dark window over a sill
+      k.plain.push([box(door - 2.6, gx0 - 0.25, 0.15, H, pz, pz + 0.2), '#f4f3ee']);
+      k.glass.push(box(door - 2.3, gx0 - 0.55, 1.0, 2.45, pz - 0.01, pz));
+      k.plain.push([box(door - 2.38, gx0 - 0.47, 0.92, 1.0, pz - 0.12, pz), '#d9d5cc'], [box(door - 2.38, gx0 - 0.47, 2.45, 2.52, pz - 0.04, pz), '#3a4652']);
+      // the entrance: jambs and lintel, the shaded hall behind the gate
+      k.plain.push([box(gx0 - 0.25, gx0, 0.15, H, pz - 0.05, pz + 0.2), '#f4f3ee'], [box(gx0, gx1, 2.75, H, pz - 0.05, pz + 0.2), '#f4f3ee']);
+      k.plain.push([box(gx0, gx1, 0.15, 2.75, fz - 0.02, fz), '#2a2d31'], [box(gx0, gx1, 0.15, 0.17, pz, fz), '#8e8a82']);
+      k.signs.push({ text: name.replace(' Hostel', ''), x: door, y: H + 0.5, z: pz - 0.16, ry: Math.PI, w: 4.8, colors: ['#f4f3ee', '#8e2f2a'] });
+      for (const dx of [-1.6, 0.9]) {
+        k.plain.push([box(door + dx - 0.04, door + dx + 0.04, H + 0.75, H + 1.25, fz - 1.2, fz - 1.12), '#9a9a96']);
+        k.plain.push([new THREE.CylinderGeometry(0.42, 0.3, 0.1, 18).rotateX(-1.15).translate(door + dx, H + 1.3, fz - 1.3), '#e7e6e1']);
+      }
+      // (the gate's leaves on the gate system, in the world frame of this model; they swing out to either side)
+      const w = (x: number, z: number): [number, number] => [cx + x * ux - z * uz, cz + x * uz + z * ux];
+      const L = (gx1 - gx0) / 2, hy = groundHeight(...w(door + 1.4, pz)) + 0.15;
+      for (const [hx, s] of [[gx0, 1], [gx1, -1]] as [number, number][]) {
+        const leaf = grilleLeaf(L, 2.55); leaf.position.y = hy;
+        // a leaf along +x (s = 1) or -x (s = -1) of the frame, opening outward (toward the frame's -z)
+        const d: [number, number] = [ux * s, uz * s];
+        gates.register({ id: `${name}:gate${s > 0 ? 'L' : 'R'}`, buildingId: frontNorth ? 'valco-1' : 'valco-2', hinge: w(hx, pz - 0.1), dir: d, length: L, open: s > 0 ? 1.45 : -1.45, leaf });
+      }
       // the maroon base round the walls
       for (const [a, b, c, d] of [[x0 - 0.06, x1 + 0.06, z0 - 0.06, z0], [x0 - 0.06, x1 + 0.06, z1, z1 + 0.06], [x0 - 0.06, x0, z0, z1], [x1, x1 + 0.06, z0, z1]]) k.plain.push([box(a, b, 0, 0.75, c, d), '#8e2f2a']);
     },

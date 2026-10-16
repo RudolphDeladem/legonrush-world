@@ -113,9 +113,11 @@ export const RESIDENCES: Residence[] = [
   R('ish-1', 'International Students Hostel 1', 'ish', 'L09', 'white', ['International Students Hostel 1, ISH 1']),
   R('ish-2', 'International Students Hostel 2', 'ish', 'L09', 'white', ['International Students Hostel 2, ISH 2']),
   R('jubilee', 'Jubilee Hall', 'jubilee', 'L10', 'white', ['Jubilee Hall'], { blocks: [{ id: 'main', name: 'Main hall' }, { id: 'w', name: 'W-block (converted)' }] }),
-  R('valco-1', 'Valco Trust Hostel Phase 1', 'valco', 'L11', 'white', ['Valco Trust Hostel Phase 1']),
-  R('valco-2', 'Valco Trust Hostel Phase 2', 'valco', 'L11', 'white', ['Valco Trust Hostel Phase 2']),
-  R('vikings', 'Vikings Hall', 'vikings', 'L12', 'white', ['Mensah Sarbah Vikings Hostel']),
+  // (the owner's photos of 2026-10-16: Valco's lodge is in its entrance block, on the right going in; the same block
+  // stands at both phases' entrances. Vikings' lodge is the right part of the single-storey VIKINGS HOSTEL block)
+  R('valco-1', 'Valco Trust Hostel Phase 1', 'valco', 'L11', 'white', ['Valco Trust Hostel Phase 1'], { existingLodge: "in the entrance block, on the right going in (valco.ts, the owner's photo)" }),
+  R('valco-2', 'Valco Trust Hostel Phase 2', 'valco', 'L11', 'white', ['Valco Trust Hostel Phase 2'], { existingLodge: "in the entrance block, on the right going in (valco.ts, the same block as Phase 1)" }),
+  R('vikings', 'Vikings Hall', 'vikings', 'L12', 'white', ['Mensah Sarbah Vikings Hostel'], { existingLodge: "the right part of the VIKINGS HOSTEL entrance block (vikingslaw.ts, the owner's photo)" }),
   // L13: the named annexes. The Volta annex has no lodge of its own (owner 2026-10-16): Volta Hall's lodge, at the main
   // hall's main entrance, serves it
   R('akuafo-annexes', 'Akuafo Hall annexes', 'annex', 'L13', 'white', ['Akuafo Hall Annex A', 'Akuafo Hall Annex B', 'Akuafo Hall Annex C', 'Akuafo Hall Annex D'], { blocks: [{ id: 'a', name: 'Annex A' }, { id: 'b', name: 'Annex B' }, { id: 'c', name: 'Annex C' }, { id: 'd', name: 'Annex D' }] }),

@@ -19,6 +19,8 @@ import { Bag } from './enkit';
 import { pave, pavers } from './upsa';
 import { car } from './banking';
 import { broadleaf } from './nsiaroad';
+import { gates, grilleLeaf } from './gates';
+import { groundHeight } from './relief';
 
 // ---------- Vikings Hostel ----------
 const TERRACOTTA = '#b5573a';
@@ -52,9 +54,10 @@ const VIK_END: Style = {
   },
 };
 
+const VIKINGS_ORIGIN: [number, number] = [160, 817];
 const vikings: Spec = {
   name: 'Mensah Sarbah Vikings Hostel',
-  axis: [1, 0], origin: [160, 817], storey: 3.0, style: VIK_BAL, roofColor: '#b0453c', fascia: '#4a3a35', pitch: 0.3,
+  axis: [1, 0], origin: VIKINGS_ORIGIN, storey: 3.0, style: VIK_BAL, roofColor: '#b0453c', fascia: '#4a3a35', pitch: 0.3,
   blocks: [
     { x0: -21.9, x1: -4, z0: -26, z1: 26.1, floors: 5, faces: { z0: VIK_END, z1: VIK_END } },
     { x0: -4, x1: 28.7, z0: -1.1, z1: 15.5, floors: 5, faces: { x1: VIK_END } },
@@ -112,8 +115,22 @@ const vikings: Spec = {
     for (const [x, c] of [[15.4, '#9b1f24'], [18.2, '#e9e9ea'], [23.8, '#2b3b5a']] as [number, string][]) car(k, x, 18.2, 'z', c);
     k.plain.push([box(6.8, 9.6, 0, 0.18, 24.4, 26.6), '#e9e7e0'], [box(7.0, 9.4, 0.18, 0.22, 24.6, 26.4), '#4a6b2f']);
     for (let i = 0; i < 7; i++) k.plain.push([new THREE.BoxGeometry(0.06, 0.9, 0.5).rotateZ((i - 3) * 0.35).rotateY(i).translate(8.2, 0.65, 25.5), '#9e1f3c']);
-    k.glass.push(box(-0.7, 1.7, PL, 2.9, 23.5, 23.55));
-    k.plain.push([box(-0.8, 1.8, 2.9, 3.05, 23.5, 23.6), '#3a3d42'], [box(-1.2, 2.2, 0, 0.2, 23.5, 25), PAVE]);
+    // the main entrance (the owner's photo of 2026-10-16, blue mark): a doorway at the block's left with a dark steel
+    // grille gate in two leaves standing on the step, the shaded entrance hall behind it; the rest of the block, on the
+    // right as one goes in, is the porter's lodge (orange mark), its window on the front
+    k.plain.push([box(-1.2, 2.2, 0, 0.2, 23.5, 25), PAVE]);
+    k.plain.push([box(-0.7, 1.7, 0.2, 2.75, 23.51, 23.53), '#2a2d31'], [box(-0.7, 1.7, 0.2, 0.22, 23.5, 23.9), '#8e8a82']);
+    for (const [a, b] of [[-0.95, -0.7], [1.7, 1.95]]) k.plain.push([box(a, b, 0, 2.95, 23.5, 23.92), WHITE]);
+    k.plain.push([box(-0.95, 1.95, 2.75, 2.95, 23.5, 23.92), WHITE]);
+    k.glass.push(box(3.0, 5.6, 1.0, 2.4, 23.5, 23.55));
+    k.plain.push([box(2.92, 5.68, 0.94, 1.0, 23.5, 23.68), '#d9d5cc'], [box(2.92, 5.68, 2.4, 2.46, 23.5, 23.58), '#3a3d42']);
+    for (const x of [2.95, 4.3, 5.65]) k.plain.push([box(x - 0.03, x + 0.03, 1.0, 2.4, 23.5, 23.58), '#3a3d42']);
+    // (the gate's leaves on the gate system, in the world: the frame is unrotated at the origin below)
+    const [ox, oz] = VIKINGS_ORIGIN, y = groundHeight(ox + 0.5, oz + 23.9) + 0.2;
+    for (const [hx, dir, open] of [[-0.7, 1, -1.45], [1.7, -1, 1.45]] as [number, number, number][]) {
+      const leaf = grilleLeaf(1.2, 2.5); leaf.position.y = y;
+      gates.register({ id: `vikings:main-gate${dir > 0 ? 'L' : 'R'}`, buildingId: 'vikings', hinge: [ox + hx, oz + 23.78], dir: [dir, 0], length: 1.2, open, leaf });
+    }
     // the second door, at the foot of the long wing's south end (owner's photo, the small mark on the left)
     k.glass.push(box(-9.4, -7.6, PL, 2.8, 26.1, 26.15));
     k.plain.push([box(-9.5, -7.5, 2.8, 2.95, 26.1, 26.2), '#3a3d42'], [box(-10, -7, 0, 0.2, 26.1, 27.3), PAVE]);

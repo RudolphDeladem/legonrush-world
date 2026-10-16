@@ -72,3 +72,20 @@ class Gates {
   }
 }
 export const gates = new Gates();
+
+let steel: THREE.MeshStandardMaterial | null = null;
+/**
+ * A steel grille gate leaf (the Vikings and Valco entrances, the owner's photos of 2026-10-16): a dark square-tube
+ * frame, close vertical bars crossed by two rails into a grid, a solid kick panel at the foot. Built with its hinge at
+ * the local origin and the leaf along +x, standing on y = 0 (its foot just clear of the step).
+ */
+export function grilleLeaf(L: number, H: number): THREE.Group {
+  const m = (steel ??= new THREE.MeshStandardMaterial({ color: '#1f2226', roughness: 0.45, metalness: 0.6 }));
+  const g = new THREE.Group(), add = (w: number, h: number, d: number, x: number, y: number) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d).translate(x, y, 0), m); o.castShadow = true; g.add(o); };
+  const t = 0.05, y0 = 0.02;
+  add(t, H, t, t / 2, y0 + H / 2); add(t, H, t, L - t / 2, y0 + H / 2);
+  for (const y of [y0 + t / 2, y0 + H - t / 2, y0 + 0.38, y0 + H * 0.55, y0 + H * 0.8]) add(L, t, t, L / 2, y);
+  add(L - 2 * t, 0.34, 0.015, L / 2, y0 + 0.2);
+  for (let x = 0.12; x < L - 0.08; x += 0.11) add(0.018, H - 0.42, 0.018, x, y0 + 0.38 + (H - 0.42) / 2);
+  return g;
+}

@@ -38,8 +38,8 @@ proposed geometry; what is inferred is labelled so here and in the code.
 | The real campus out of the windows and from the balcony: the room is placed on a face of its building at its floor, and the campus is drawn from the same eye before the room | `roomplay.ts` `roomPose`, `Game.renderRoom` | implemented, verified in the running game |
 | Occupants: real roommates on their beds with their names, NPC roommates lying on the other beds (a small idle motion), never more than the capacity | `roomplay.ts`, `features/rooms.ts` | implemented |
 | Room catalogue, paint, beds, stable allocation | `residence.ts` | implemented (`npm run test:rooms`) |
-| Porter's lodges per family | `lodges.ts` | 28 computed, Sarbah and Evandy use their modelled lodges, L01 indoor reception; 2 pending (below) |
-| Modelled gates open for a walker, stay open nearby and while in that building's room, close when clear, never through another person | `gates.ts`; Evandy's slot gate, New Pent's three steel gates | implemented, tested |
+| Porter's lodges per family | `lodges.ts` | 26 computed; Sarbah, Evandy, Vikings and Valco use their modelled lodges (Vikings and Valco from the owner's photos); L01 indoor reception |
+| Modelled gates open for a walker, stay open nearby and while in that building's room, close when clear, never through another person | `gates.ts`; Evandy, New Pent (3), Vikings, Valco Phases 1 and 2 | implemented, tested |
 | Stairs on foot: Commonwealth's hill stairway and court flights (in the ground model), the Diaspora halls' porch steps; the walker and camera ease up and down | `Game.updateWalk`, `walksurf.ts` | implemented, tested |
 
 ## The room in its building (the view out)
@@ -88,8 +88,10 @@ and stairs the halls are their exteriors. Side windows that do not face out open
 
 ## Entrances, gates, lodges and stairs
 
-- **Gates (audit of the residence models):** modelled leaves exist at Evandy (the slot gate) and New Pent (three grey
-  steel gates in the brick walls of Blocks A, B and C); both open for a walker and are on the gate system. Old Pent's
+- **Gates (audit of the residence models):** modelled leaves exist at Evandy (the slot gate), New Pent (three grey
+  steel gates in the brick walls of Blocks A, B and C), Vikings and both Valco phases (two-leaf dark steel grille gates
+  in their entrance blocks, standing on the step: the owner's photos of 2026-10-16); all open for a walker and are on
+  the gate system. Old Pent's
   red-and-white gates are drawn swung back (a genuinely open gateway) and stay so; every other residence entrance is an
   open doorway or gateway with no leaf.
 - **Lodges:** see the list below. Mensah Sarbah's Administration and Porters' Lodge is already modelled from the owner's
@@ -127,9 +129,9 @@ and stairs the halls are their exteriors. Side windows that do not face out open
 | ISH 1 | main | L09 | built | right of the route, outside the entrance (computed) |
 | ISH 2 | main | L09 | built | left of the route, inside the entrance (computed) |
 | Jubilee Hall | main | L10 | built | left of the route, inside the entrance (computed) |
-| Valco Trust Phase 1 | main | L11 | no clear place |  |
-| Valco Trust Phase 2 | main | L11 | built | right of the route, outside the entrance (computed) |
-| Vikings Hall | main | L12 | no clear place |  |
+| Valco Trust Phase 1 | main | L11 | existing lodge reused | in the entrance block, on the right going in (owner's photo, 2026-10-16) |
+| Valco Trust Phase 2 | main | L11 | existing lodge reused | the same entrance block as Phase 1 (inferred from the owner's Phase photo) |
+| Vikings Hall | main | L12 | existing lodge reused | the right part of the VIKINGS HOSTEL entrance block (owner's photo, 2026-10-16) |
 | Akuafo annexes | main | L13 | built | left of the route, outside the entrance (computed) |
 | Akuafo annexes | akuafo hall annex b | L13 | built | left of the route, inside the entrance (computed) |
 | Akuafo annexes | akuafo hall annex c | L13 | built | right of the route, inside the entrance (computed) |
@@ -177,8 +179,8 @@ Automated checks run for this change: typecheck, `npm run test:rooms`, `bash scr
 
 - **Real-player matching is not live** until `supabase/sql/50-rooms.sql` is run in the Supabase project; it was tested
   on a local PostgreSQL, not between two devices on the live project.
-- **Valco Trust Hostel Phase 1 and Vikings Hall lodges:** the building fronts are 1–2.5 m from the road, so no lodge
-  fits outside; their lodges are probably inside the ground floor. Pictures from the owner would place them.
+- **Valco Trust Phase 2:** its entrance block is drawn the same as Phase 1's (the owner's photo shows one of the two);
+  confirm if Phase 2's differs.
 - **Lodge positions** (other than Sarbah, Evandy and L01) are computed, not photo-registered.
 - **Room placement in the building** (face, position along it, floor) is inferred; the window view follows from it.
 - **The Vikings double's wet area and balcony** offsets and sizes are the pack's proposed fit (V2_WET 2.4 × 2.3 m,
