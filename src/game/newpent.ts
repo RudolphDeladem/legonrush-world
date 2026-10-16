@@ -17,6 +17,7 @@
 // Boba tea kiosk with its seats on the corner by Block C only (the owner: none by Blocks A and B). The walls along Pent
 // Road are left out until the owner shows how the blocks are fenced.
 import * as THREE from 'three';
+import { gates } from './gates';
 import { BUILDINGS } from './campusmap';
 import { box, merge, speckle, tri2, type Part } from './modelkit';
 import { PL, createSite, render, type Block, type Spec, type Style } from './blocks';
@@ -249,9 +250,15 @@ const grounds: Spec = {
       c.push([B(x - 0.25, x + 0.25, gy(x, zb) - 0.1, gy(x, zb) + h + 0.2, zb - 0.25, zb + 0.25), '#ece6d2']);
       const y = gy(x, (gate[0] + gate[1]) / 2);
       c.push([B(x - 0.3, x + 0.3, y, y + h + 0.4, gate[0] - 0.3, gate[0] + 0.3), '#ece6d2'], [B(x - 0.3, x + 0.3, y, y + h + 0.4, gate[1] - 0.3, gate[1] + 0.3), '#ece6d2']);
-      k.plain.push([B(x - 0.05, x + 0.05, y + 0.05, y + h + 0.1, gate[1] + 0.3, gate[0] - 0.3), '#a9adb1']);
-      for (let zz = gate[1] + 0.5; zz < gate[0] - 0.3; zz += 0.5) k.plain.push([B(x - 0.07, x + 0.07, y + 0.05, y + h + 0.1, zz, zz + 0.04), '#8a8e92']);
-      for (let zz = gate[1]; zz < gate[0]; zz += 0.9) SOLIDS.add(x, zz, 0.2);
+      // the grey steel gate: a hinged leaf that opens for someone walking up to it (gates.ts) and closes after them;
+      // its collision follows the leaf (the bike's and the walker's both check gates.blocked)
+      const L = gate[0] - gate[1] - 0.6, leaf = new THREE.Group();
+      const plate = new THREE.MeshStandardMaterial({ color: '#a9adb1', roughness: 0.55, metalness: 0.4 }), bar = new THREE.MeshStandardMaterial({ color: '#8a8e92', roughness: 0.5, metalness: 0.45 });
+      leaf.add(new THREE.Mesh(new THREE.BoxGeometry(L, h + 0.05, 0.1).translate(L / 2, (h + 0.15) / 2, 0), plate));
+      for (let t = 0.2; t < L - 0.05; t += 0.5) leaf.add(new THREE.Mesh(new THREE.BoxGeometry(0.04, h + 0.05, 0.14).translate(t, (h + 0.15) / 2, 0), bar));
+      leaf.traverse((o) => { if (o instanceof THREE.Mesh) o.castShadow = true; });
+      leaf.position.y = y;
+      gates.register({ id: `new-pent:gate@${x.toFixed(1)}`, buildingId: 'new-pent', hinge: [x, gate[1] + 0.3], dir: [0, 1], length: L, open: -1.35, leaf });
     };
     // (Block A's and Block B's walls joined to the wings at both ends, behind Block A's generator: the owner's Pent PDF,
     // pages 19-20)

@@ -286,8 +286,18 @@ const inPts = (pts: Float32Array, x: number, z: number) => {
  * building outline it runs through (an archway, a gate canopy, a passage) doesn't close it, nor does a building's
  * outline across an open passage through its ground floor (solids.ts: PASSAGES).
  */
-function freeBlocked(x: number, z: number) {
-  if (inStairs(x, z) || gates.blocked(x, z)) return true;
+/** what stops someone at (x, z), for the checks (null: nothing) */
+export function blockedWhy(x: number, z: number, onFoot = true) {
+  if (!onFoot && inStairs(x, z)) return 'stairs (bike)';
+  if (gates.blocked(x, z)) return 'gate';
+  if (solidAt(x, z, 0.3)) return 'solid';
+  if (meshBlocked(x, z)) return 'mesh';
+  if (roadClearance(x, z, 6, -1, true) > 0 && buildingNear(x, z, 0.35) && !inPassage(x, z)) return 'building';
+  return freeBlocked(x, z, onFoot) ? 'water' : null;
+}
+function freeBlocked(x: number, z: number, onFoot = false) {
+  // (stairways stop the bike, never a person on foot)
+  if ((!onFoot && inStairs(x, z)) || gates.blocked(x, z)) return true;
   // trunks, posts and what the models draw at bike height (walls, fences, parked cars, planters) stop it everywhere,
   // on the roads too; the map's building outlines only off the roads (some reach a little over a road's edge)
   if (solidAt(x, z, 0.3) || meshBlocked(x, z)) return true;
@@ -1327,7 +1337,9 @@ export class Game {
 
   // ---------- on foot (the owner's Volume A: get down and walk, enter your own room) ----------
   /** the character on foot: the bike stays where it was left (parked, the rider hidden), one walker moves */
-  private foot: { x: number; z: number; y: number; yaw: number; v: number; phase: number } | null = null;
+  private foot: { x: number; z: number; y: number; yaw: number; v: number; phase: number; ys?: number } | null = null;
+  /** other people on the campus in a shared ride (a Vibe Ride partner), for the gates: none closes on them */
+  othersOnFoot: { x: number; z: number }[] = [];
   private walker: WalkerFigure | null = null;
   private walkerLook: RiderLook | null = null;
   /** held walking controls: forward (-1 back .. 1 forward) and turn (-1 left .. 1 right) */
@@ -1399,24 +1411,26 @@ export class Game {
     const floor = (x: number, z: number, y: number) => Math.max(groundFrom(x, z, y), walkSurfaceAt(x, z, y) ?? -Infinity);
     const hx = -Math.sin(w.yaw), hz = -Math.cos(w.yaw), step = w.v * dt, g0 = floor(w.x, w.z, w.y);
     const sgn = w.v < 0 ? -1 : 1;
-    const ok = (x: number, z: number) => !freeBlocked(x + hx * sgn * 0.3, z + hz * sgn * 0.3) && !freeBlocked(x, z) && Math.abs(floor(x, z, g0) - g0) < 0.46;
+    const ok = (x: number, z: number) => !freeBlocked(x + hx * sgn * 0.3, z + hz * sgn * 0.3, true) && !freeBlocked(x, z, true) && Math.abs(floor(x, z, g0) - g0) < 0.46;
     if (Math.abs(step) > 1e-4) {
       const nx = w.x + hx * step, nz = w.z + hz * step;
       if (ok(nx, nz)) { w.x = nx; w.z = nz; } else if (ok(nx, w.z)) w.x = nx; else if (ok(w.x, nz)) w.z = nz; else w.v = 0;
     }
     w.y = floor(w.x, w.z, g0);
+    // up and down steps smoothly: the figure and the camera ease to the tread height instead of jumping a step at a time
+    w.ys = w.ys === undefined || Math.abs(w.ys - w.y) > 1.2 ? w.y : w.ys + (w.y - w.ys) * Math.min(1, dt * 10);
     w.phase += Math.abs(w.v) * dt * 5.2;
     const fig = this.walker!;
-    fig.root.position.set(w.x, w.y, w.z);
+    fig.root.position.set(w.x, w.ys, w.z);
     fig.root.rotation.y = w.yaw;
     fig.pose(w.phase, Math.min(1, Math.abs(w.v) / 1.2));
     this.speed = Math.abs(w.v);
-    gates.update(dt, { x: w.x, z: w.z }, { x: this.rider.root.position.x, z: this.rider.root.position.z });
+    gates.update(dt, { x: w.x, z: w.z }, { x: this.rider.root.position.x, z: this.rider.root.position.z }, this.othersOnFoot);
     this.emitHud(null);
   }
   private footCamera(dt: number) {
     const cam = this.camera, w = this.foot!, fx = -Math.sin(w.yaw), fz = -Math.cos(w.yaw);
-    const gy = w.y, bx = w.x - fx * 4.2, bz = w.z - fz * 4.2;
+    const gy = w.ys ?? w.y, bx = w.x - fx * 4.2, bz = w.z - fz * 4.2;
     this.camTarget.set(bx, Math.max(groundFrom(bx, bz, gy), gy) + 2.3, bz);
     this.updateLook(dt);
     this.lookAt.set(w.x + fx * 6, gy + 1.3, w.z + fz * 6);
@@ -1720,7 +1734,7 @@ export class Game {
     }
 
     // on foot (the walking feature): the bike stays parked; in the allocated room nothing outside moves
-    if (this.phase === 'riding' && this.room) { gates.update(dt, null); return; }
+    if (this.phase === 'riding' && this.room) { gates.update(dt, null, undefined, this.othersOnFoot); return; }
     if (this.phase === 'riding' && this.foot) return this.updateWalk(dt);
     if (this.phase === 'riding' && this.free) return this.updateFree(dt);
     if (this.phase === 'riding') {

@@ -1087,7 +1087,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
   let lastTurn = '';
 
   // riding with people: stream your position, and place theirs as it arrives
-  let stream = 0;
+  let stream = 0, footStop: (() => void) | null = null;
   if (lr) {
     let sent = 0;
     stream = window.setInterval(() => {
@@ -1096,6 +1096,16 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
       lr.ch.send('pos', { k: myId(), i: sent, d: rec.d.slice(sent), x: rec.x.slice(sent) });
       sent = rec.d.length;
     }, 300);
+    // on foot in a shared ride: where each person walks, so no gate closes through anyone (gates.ts)
+    const feet = new Map<string, { x: number; z: number; at: number }>();
+    const footBeat = window.setInterval(() => {
+      const p = game.footXZ;
+      if (p && game.walking) lr.ch.send('foot', { k: myId(), x: p[0], z: p[1] });
+      for (const [k, v] of feet) if (Date.now() - v.at > 4000) feet.delete(k);
+      game.othersOnFoot = [...feet.values()];
+    }, 400);
+    lr.ch.on('foot', (m: { k: string; x: number; z: number }) => { if (m && m.k !== myId() && Number.isFinite(m.x) && Number.isFinite(m.z)) feet.set(m.k, { x: m.x, z: m.z, at: Date.now() }); });
+    footStop = () => { clearInterval(footBeat); game.othersOnFoot = []; };
     const sink = (m: PosMsg) => {
       const run = rivals[lr.riders.findIndex((r) => r.id === m.k)]?.run;
       if (!run || !Array.isArray(m.d)) return;
@@ -1710,6 +1720,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     if ('speechSynthesis' in window) speechSynthesis.cancel();
     game.paused = false;
     clearInterval(stream);
+    footStop?.();
     clearTimeout(tipTimer);
     if (vibe) { vibe.onPos = null; vibe.redraw = null; }
     opts.eventPlay?.stop();

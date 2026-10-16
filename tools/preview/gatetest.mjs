@@ -1,5 +1,6 @@
-// node .preview/gatetest.mjs outdir — the Evandy slot gate: shut while far, opens for the walker, stays open nearby and
-// while in that building's room, closes when they have left; also the lodge placement statuses
+// node .preview/gatetest.mjs outdir — every modelled entrance gate (gates.ts) in the running game: shut while the walker
+// is far, open when they come near, still open nearby and while they are in that building's room, closed again after
+// they leave; and in a shared ride, kept open (never swung through) while another person on foot stands near it
 import { chromium } from 'playwright';
 const [, , out] = process.argv;
 const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
@@ -8,30 +9,34 @@ page.on('pageerror', (e) => console.log('PAGEERROR', e.stack));
 await page.goto(`${process.env.HOST ?? 'http://localhost:4199/'}.preview/walk.html?b=evandy&e=0&back=10`, { timeout: 1500000 });
 await page.waitForFunction(() => window.__done, null, { timeout: 1500000 });
 const log = (k, v) => console.log(k, JSON.stringify(v));
-const counts = await page.evaluate(() => { const c = {}; for (const l of window.LODGES) c[l.status] = (c[l.status] ?? 0) + 1; return { c, none: window.LODGES.filter((l) => l.status === 'no clear place').map((l) => l.residence) }; });
-log('lodges', counts);
 await page.waitForTimeout(1500);
-log('getDown', await page.evaluate(() => game.getDown()));
-const g = await page.evaluate(() => { const x = gates['list'][0]; return { hinge: x.hinge, dir: x.dir, length: x.length }; });
-log('gate', g);
-const put = (d, side) => page.evaluate(([d, side, g]) => { const f = game['foot'], nx = -g.dir[1], nz = g.dir[0]; const mx = g.hinge[0] + g.dir[0] * g.length / 2, mz = g.hinge[1] + g.dir[1] * g.length / 2; f.x = mx + nx * d * side; f.z = mz + nz * d * side; f.yaw = Math.atan2(nx * side, nz * side); game['snapCam'] = true; }, [d, side, g]);
-const openNow = () => page.evaluate(() => gates.all[0].open);
-const blockedMid = () => page.evaluate((g) => gates.blocked(g.hinge[0] + g.dir[0] * g.length / 2, g.hinge[1] + g.dir[1] * g.length / 2), g);
-const until = async (want, ms) => { const t0 = Date.now(); while (Date.now() - t0 < ms) { const o = await openNow(); if (want ? o >= 0.999 : o <= 0.001) return o; await page.waitForTimeout(500); } return openNow(); };
-await put(30, 1); await page.waitForTimeout(2500);
-log('far', { open: await openNow(), blockedMid: await blockedMid() });
-await page.screenshot({ path: `${out}/gate_1-closed.png`, timeout: 600000 });
-await put(6, 1);
-log('near', { open: await until(true, 120000), blockedMid: await blockedMid() });
-await page.screenshot({ path: `${out}/gate_2-open.png`, timeout: 600000 });
-await put(15, 1); await page.waitForTimeout(4000);
-log('stillNearby15m', { open: await openNow() });
-const acc = await page.evaluate(() => allocate('test-rider', 'evandy', 'ev-2', 'main'));
-log('enterRoom', await page.evaluate((a) => game.enterRoom(a), acc));
-await page.waitForTimeout(4000);
-log('inRoom', { open: await openNow() });
-await page.evaluate(() => game.leaveRoom());
-await put(40, 1);
-log('left40m', { open: await until(false, 120000), blockedMid: await blockedMid() });
-await page.screenshot({ path: `${out}/gate_3-closed-again.png`, timeout: 600000 });
+log('getDown', await page.evaluate(() => { game.walkAllowed = true; return game.getDown(); }));
+const list = await page.evaluate(() => gates['list'].map((g) => ({ id: g.id, b: g.buildingId, hinge: g.hinge, dir: g.dir, length: g.length })));
+log('gates', list.map((g) => g.id));
+// gate state stepped directly (software GL draws a few frames a second): update(dt, walker, bike, others) as the game does
+const run = (g, foot, others, secs) => page.evaluate(([id, foot, others, secs]) => { for (let i = 0; i < secs * 20; i++) gates.update(0.05, foot, undefined, others); return gates.all.find((x) => x.id === id).open; }, [g.id, foot, others, secs]);
+const mid = (g, d) => { const nx = -g.dir[1], nz = g.dir[0]; return { x: g.hinge[0] + g.dir[0] * g.length / 2 + nx * d, z: g.hinge[1] + g.dir[1] * g.length / 2 + nz * d }; };
+const blocked = (g) => page.evaluate((g) => gates.blocked(g.hinge[0] + g.dir[0] * g.length / 2, g.hinge[1] + g.dir[1] * g.length / 2), g);
+for (const g of list) {
+  const r = {};
+  r.far = await run(g, mid(g, 40), [], 3); r.farBlocked = await blocked(g);
+  r.near = await run(g, mid(g, 4), [], 3); r.nearBlocked = await blocked(g);
+  r.at15 = await run(g, mid(g, 15), [], 3);
+  r.left = await run(g, mid(g, 45), [], 4); r.leftBlocked = await blocked(g);
+  // shared ride: the walker opens it and leaves while another person stands in the gateway
+  await run(g, mid(g, 4), [], 3);
+  r.otherInGateway = await run(g, mid(g, 45), [mid(g, 0.5)], 4);
+  r.otherGone = await run(g, mid(g, 45), [], 4);
+  log('gate', { id: g.id, ...r });
+  // a picture of the open gate from the walker's side
+  if (!process.env.NOSHOT) {
+    await run(g, mid(g, 4), [], 3);
+    await page.evaluate((p) => { const f = game['foot']; f.x = p.x; f.z = p.z; f.yaw = Math.atan2(-(p.hx - p.x), -(p.hz - p.z)); game['snapCam'] = true; }, { ...mid(g, 7), hx: mid(g, 0).x, hz: mid(g, 0).z });
+    await page.waitForTimeout(2500);
+    await page.screenshot({ path: `${out}/gate_${g.id.replace(/[^a-z0-9]+/gi, '_')}_open.png`, timeout: 600000 });
+    await run(g, mid(g, 45), [], 4);
+    await page.waitForTimeout(2500);
+    await page.screenshot({ path: `${out}/gate_${g.id.replace(/[^a-z0-9]+/gi, '_')}_closed.png`, timeout: 600000 });
+  }
+}
 await browser.close();

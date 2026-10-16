@@ -1,7 +1,8 @@
 // Entrance gates that open for a walking character (the owner's Volume A section 11): a gate leaf registered by the
 // site that models it swings open when the character on foot comes near its entrance, stays open while they remain in
 // the vicinity (and while they are in that building's room or common area, which may be modelled elsewhere), and
-// closes smoothly once they have genuinely left and the swing is clear. Riding past never opens it. Its collision
+// closes smoothly once they have genuinely left and the swing is clear. Riding past never opens it. In a shared ride
+// (a Vibe Ride partner) another person near the gate keeps it open and it never swings through them. Its collision
 // follows the leaf: closed it blocks the opening, open it lies along its open position.
 import * as THREE from 'three';
 
@@ -40,15 +41,17 @@ class Gates {
   get all() { return this.list.map((g) => ({ id: g.id, buildingId: g.buildingId, open: g.t })); }
   occupy(buildingId: string | null) { this.occupied = buildingId; }
   /** the walking character's position, or null while they are in a room elsewhere (the gates keep their state) */
-  update(dt: number, at: { x: number; z: number } | null, bike?: { x: number; z: number }) {
+  update(dt: number, at: { x: number; z: number } | null, bike?: { x: number; z: number }, others: { x: number; z: number }[] = []) {
     if (at) this.last = at;
     for (const g of this.list) {
       const p = at ?? this.last, d = p ? Math.hypot(p.x - g.hinge[0], p.z - g.hinge[1]) : Infinity;
-      if (this.occupied === g.buildingId || d < g.near!) g.want = true;
+      // another person in the shared ride near the gate keeps it open too
+      const otherNear = others.some((o) => Math.hypot(o.x - g.hinge[0], o.z - g.hinge[1]) < g.near!);
+      if (this.occupied === g.buildingId || d < g.near! || (g.t > 0 && otherNear)) g.want = true;
       else if (d > g.exit!) {
-        // close only when the swing is clear of the character and the bike
+        // close only when the swing is clear of the character, the bike and everyone else
         const clear = (q: { x: number; z: number } | null | undefined) => !q || Math.hypot(q.x - g.hinge[0], q.z - g.hinge[1]) > g.length + 0.6;
-        if (clear(p) && clear(bike)) g.want = false;
+        if (clear(p) && clear(bike) && others.every(clear)) g.want = false;
       }
       const target = g.want ? 1 : 0;
       g.t += Math.sign(target - g.t) * Math.min(Math.abs(target - g.t), dt * 0.8);
