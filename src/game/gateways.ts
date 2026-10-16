@@ -21,6 +21,7 @@ import { RESIDENCES, type Entrance, type Residence } from './residence';
 import { gates, grilleLeaf } from './gates';
 import { OPASSAGES, SOLIDS } from './solids';
 import { roadClearance } from './life';
+import { walkSurfaceAt } from './walksurf';
 
 export type GateMake = 'boards' | 'panels' | 'grille' | 'sheet';
 export interface GatewayRecord { residence: string; entrance: string; kind: 'passage' | 'standalone' | 'driveway' | 'open passage' | 'none'; depth?: number; width?: number; make?: GateMake | null; lodge?: 'left' | 'right' | null; note?: string }
@@ -298,10 +299,18 @@ export function buildGateways(roots: THREE.Object3D[]): THREE.Group {
     if (court && (depth === null || depth < 1)) { rec.note = 'no court found along the entrance line'; depth = null; }
     if (court && depth !== null) {
       // ----- a passage through to the court -----
-      const a0 = facadeAt(e, ux, uz) - 0.6, a1 = depth + 0.4, W = PASSAGE_WIDTH[r.id] ?? 3.6, hw = W / 2, H = 3.1;
+      // (a porch in front of the outline, the doors at its back: the Diaspora halls. The passage starts on the porch,
+      // inside its columns, and keeps the porch's floor: the cut starts above it)
+      const fa = facadeAt(e, ux, uz);
+      let porchOut: number | null = null, porchTop = -Infinity;
+      for (let a = fa - 5; a <= fa + 0.5; a += 0.1) {
+        const [x, z] = at(a, 0), g = gh(x, z), t = walkSurfaceAt(x, z, g + 5, 10);
+        if (t !== null && t > g + 0.3) { if (porchOut === null) porchOut = a; porchTop = Math.max(porchTop, t); }
+      }
+      const a0 = porchOut !== null ? porchOut + 0.9 : fa - 0.6, a1 = depth + 0.4, W = PASSAGE_WIDTH[r.id] ?? 3.6, hw = W / 2, H = 3.1;
       let gmin = Infinity, gmax = -Infinity;
       for (let a = a0; a <= a1; a += 0.5) for (const b of [-hw, 0, hw]) { const [x, z] = at(a, b), g = gh(x, z); gmin = Math.min(gmin, g); gmax = Math.max(gmax, g); }
-      cuts.push({ ox: e.at[0], oz: e.at[1], ux, uz, a0, a1, hw, y0: gmin + 0.04, y1: gmax + H });
+      cuts.push({ ox: e.at[0], oz: e.at[1], ux, uz, a0, a1, hw, y0: Math.max(gmin + 0.04, porchTop + 0.02), y1: gmax + H });
       Object.assign(rec, { kind: gated ? 'passage' : 'open passage', depth: +(a1 - a0).toFixed(1), width: W, lodge: lodgeHere(r) ? (lodgeSide > 0 ? 'right' : 'left') : null });
       OPASSAGES.push({ x: e.at[0], z: e.at[1], ux, uz, a0: a0 - 1.5, a1: a1 + 1, hw: hw - 0.3 });
       // the lining, piece by piece along the passage (it follows the ground)
@@ -358,7 +367,7 @@ export function buildGateways(roots: THREE.Object3D[]): THREE.Group {
         if (dA + 1 < a1) parts.push([box(s > 0 ? hw - 0.04 : -hw - 0.0, s > 0 ? hw : -hw + 0.04, 0, 2.1, dA, dA + 0.95).applyMatrix4(mat(0, 0)).translate(0, gh(...at(dA, 0)), 0), '#5a3a26']);
         lodgeSigns.push(new THREE.PlaneGeometry(1.5, 0.28).rotateY(s > 0 ? -Math.PI / 2 : Math.PI / 2).translate(s * (hw - 0.03), 2.3, lodgeA + 0.8).applyMatrix4(mat(0, 0)).translate(0, gl, 0));
       }
-      if (gated) hang(r, e, make!, at(a0 + 0.1, 0), ux, uz, nx, nz, W - 0.1, Math.min(2.7, H - 0.15), gf);
+      if (gated) hang(r, e, make!, at(a0 + 0.1, 0), ux, uz, nx, nz, W - 0.1, Math.min(2.7, H - 0.15), Math.max(gf, porchTop));
       return;
     }
     if (!gated || court) { rec.note = rec.note ?? 'open entrance'; return; }
