@@ -8,6 +8,7 @@ import type { Track } from './track';
 import { buildLandmarks } from './landmarks';
 import { groundFrom, groundHeight, inStairs, layerHeight } from './relief';
 import { deckAt } from './cutplan';
+import { walkSurfaceAt } from './walksurf';
 import { Tufts } from './tufts';
 import { installLogDepthOffset, tagLogDepthOffsets } from './logdepth';
 import { buildCampusAsync, buildRouteLayer, buildSky, disposeLayer, lampGlow, LANES, ROAD_HALF } from './world';
@@ -1119,14 +1120,17 @@ export class Game {
   recenterCamera(view = false) { if (view) this.camView = 0; this.lookYaw = 0; this.lookPitch = 0; this.look.x = this.look.y = 0; this.lookBehind = false; }
   /** keeps the camera out of buildings: from the rider's head toward where the camera wants to be, the first point
    *  inside a building's outline (below its roof) brings the camera in to just short of it, and a little higher */
-  private clearCamera(target: THREE.Vector3) {
+  private clearCamera(target: THREE.Vector3, ignoreOwn = false) {
     const r = this.rider.root.position, hx = r.x, hy = r.y + 1.5, hz = r.z;
     const dx = target.x - hx, dy = target.y - hy, dz = target.z - hz, L = Math.hypot(dx, dy, dz);
     if (L < 0.8) return;
+    // on foot at a doorway the character stands against the facade: that building is not between them and the camera
+    const own = ignoreOwn ? buildingNear(hx, hz, 0.6) : null;
     const steps = Math.ceil(L / 0.3);
     for (let i = 1; i <= steps; i++) {
       const t = i / steps, x = hx + dx * t, y = hy + dy * t, z = hz + dz * t, g = groundHeight(x, z);
-      const b = buildingNear(x, z, 0.6);
+      let b = buildingNear(x, z, 0.6);
+      if (own && b === own && !buildingNear(x, z, 0)) b = undefined;
       if ((b && y < g + (b.height ?? 10) + 2.5 && !inPassage(x, z)) || y < g + 0.4) {
         const k = Math.max(0.9 / L, (i - 1) / steps - 0.05);
         target.set(hx + dx * k, hy + dy * k + (1 - k) * 1.0, hz + dz * k);
@@ -1386,14 +1390,16 @@ export class Game {
     w.yaw -= inp.turn * 2.4 * dt;
     const target = inp.fwd > 0 ? 1.7 * inp.fwd : inp.fwd < 0 ? 0.9 * inp.fwd : 0;
     w.v += (target - w.v) * Math.min(1, dt * 6);
-    const hx = -Math.sin(w.yaw), hz = -Math.cos(w.yaw), step = w.v * dt, g0 = groundFrom(w.x, w.z, w.y);
+    // the ground, or a porch or step the feet are on (walksurf.ts)
+    const floor = (x: number, z: number, y: number) => Math.max(groundFrom(x, z, y), walkSurfaceAt(x, z, y) ?? -Infinity);
+    const hx = -Math.sin(w.yaw), hz = -Math.cos(w.yaw), step = w.v * dt, g0 = floor(w.x, w.z, w.y);
     const sgn = w.v < 0 ? -1 : 1;
-    const ok = (x: number, z: number) => !freeBlocked(x + hx * sgn * 0.3, z + hz * sgn * 0.3) && !freeBlocked(x, z) && Math.abs(groundFrom(x, z, g0) - g0) < 0.45;
+    const ok = (x: number, z: number) => !freeBlocked(x + hx * sgn * 0.3, z + hz * sgn * 0.3) && !freeBlocked(x, z) && Math.abs(floor(x, z, g0) - g0) < 0.46;
     if (Math.abs(step) > 1e-4) {
       const nx = w.x + hx * step, nz = w.z + hz * step;
       if (ok(nx, nz)) { w.x = nx; w.z = nz; } else if (ok(nx, w.z)) w.x = nx; else if (ok(w.x, nz)) w.z = nz; else w.v = 0;
     }
-    w.y = groundFrom(w.x, w.z, g0);
+    w.y = floor(w.x, w.z, g0);
     w.phase += Math.abs(w.v) * dt * 5.2;
     const fig = this.walker!;
     fig.root.position.set(w.x, w.y, w.z);
@@ -1414,8 +1420,9 @@ export class Game {
     // (the building check measures from the rider's head: the walker's here)
     const saved = this.rider.root.position.clone();
     this.rider.root.position.copy(head);
-    this.clearCamera(this.camTarget);
+    this.clearCamera(this.camTarget, true);
     this.rider.root.position.copy(saved);
+    if (this.snapCam) { cam.position.copy(this.camTarget); this.snapCam = false; }
     cam.position.lerp(this.camTarget, Math.min(1, dt * 5));
     cam.lookAt(this.lookAt);
     const fov = innerWidth < innerHeight ? 70 : 58;
@@ -1426,7 +1433,7 @@ export class Game {
   /** ends walking and any room or reception view (a ride's end, a restart): back to the rider on the bike */
   private clearFoot() {
     this.setBeacon(null);
-    if (this.room) { this.room.built.dispose(); this.room = null; }
+    if (this.room) { this.room.built.dispose(); this.room = null; this.showCampus(); }
     this.showLobby(false);
     gates.occupy(null);
     if (this.foot) { this.walker?.root.removeFromParent(); this.foot = null; this.rider.showRider(true); }
@@ -1462,9 +1469,12 @@ export class Game {
    * character standing in it; the campus is left exactly as it was. Returns a reason when it cannot be shown.
    */
   enterRoom(acc: Accommodation): { ok: boolean; reason?: string } {
-    if (!this.foot || this.room) return { ok: false, reason: 'Walk to the entrance first.' };
+    if (this.room) return { ok: false, reason: 'Already in the room.' };
+    if (!this.foot) return { ok: false, reason: 'Walk to the entrance first.' };
     const built = buildRoom(acc);
     if (!built) return { ok: false, reason: 'This room type has no interior yet.' };
+    // the campus (terrain, grass round the camera, every building) is hidden while the room is shown: only the room
+    this.hideCampus(built.group);
     this.scene.add(built.group);
     const w = this.foot, ret = { x: w.x, z: w.z, y: w.y, yaw: w.yaw };
     // the character stands just inside the door, facing into the room
@@ -1485,12 +1495,19 @@ export class Game {
     if (!r) return;
     r.built.dispose();
     this.room = null;
+    this.showCampus();
     gates.occupy(null);
     const f = this.foot!, fig = this.walkerFigure();
     Object.assign(f, r.ret, { v: 0 });
     fig.root.position.set(f.x, f.y, f.z); fig.root.rotation.set(0, f.yaw, 0);
     this.snapCam = true;
   }
+  private hidden: THREE.Object3D[] = [];
+  private hideCampus(keep: THREE.Object3D) {
+    this.showCampus();
+    for (const o of this.scene.children) if (o !== keep && o !== this.walker?.root && o !== this.sky && !(o instanceof THREE.Light) && o.visible) { o.visible = false; this.hidden.push(o); }
+  }
+  private showCampus() { for (const o of this.hidden) o.visible = true; this.hidden = []; }
   /** the next look-around anchor of the unit (inner room, en-suite, service strip) */
   nextRoomView() {
     const r = this.room;

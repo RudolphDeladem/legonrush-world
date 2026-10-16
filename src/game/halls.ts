@@ -14,6 +14,7 @@
 // The footprint (OSM, confirmed by Google Open Buildings) places and sizes each hall; the
 // generic footprint builder skips these four. Courtyard and porches are kept clear of props.
 import * as THREE from 'three';
+import { addWalkSurface } from './walksurf';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { BRONZE, DARK, Facade, PAVE, PLINTH, Roof, SOFFIT, TANK, TRIM, WHITE, box, canvas, flat, flipWinding, merge, rnd, signTexture, speckle, type Part } from './modelkit';
 import { AREAS, BUILDINGS, NODE_XZ, ROADS, type Building } from './campusmap';
@@ -653,6 +654,14 @@ export function buildDiasporaHalls() {
     hall.name = f.name;
     hall.position.set(f.cx, 0, f.cz);
     hall.rotation.y = f.yaw;
+    // the porch and its two steps at both entrances, walkable (walksurf.ts; the boxes drawn in hallGeometry's porch)
+    for (const sd of [1, -1]) {
+      const zf = f.hz + PP, at = (a: number, b: number) => (sd > 0 ? [a, b] : [-b, -a]);
+      for (const [hw, a, b, top] of [[4.6, zf - 0.6, zf + 2.2, PL], [4.0, zf + 2.2, zf + 2.6, 0.3], [4.0, zf + 2.6, zf + 3.0, 0.15]]) {
+        const [z0, z1] = at(a, b);
+        addWalkSurface({ cx: f.cx, cz: f.cz, yaw: f.yaw, x0: -hw, x1: hw, z0, z1, top });
+      }
+    }
     const add = (g: THREE.BufferGeometry, m: THREE.Material, cast = true) => {
       const mesh = new THREE.Mesh(g, m);
       mesh.castShadow = cast;

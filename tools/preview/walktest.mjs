@@ -19,8 +19,13 @@ await shot('2-on-foot');
 await page.evaluate(() => { game.walkInput.fwd = 1; });
 await wait(4500);
 await page.evaluate(() => { game.walkInput.fwd = 0; });
-log('afterWalk', await page.evaluate(() => { const p = game.footXZ, e = window.__entrance.at; return { foot: p, dist: Math.hypot(p[0] - e[0], p[1] - e[1]), gates: gates.all }; }));
+log('walked', await page.evaluate(() => game.footXZ));
+// software GL draws a few frames a second (each step capped at 1/20 s), so the rest of the approach is placed directly
+await page.evaluate(() => { const e = window.__entrance, b = (e.facing * Math.PI) / 180; const f = game['foot']; f.x = e.at[0] - Math.sin(b) * 3; f.z = e.at[1] + Math.cos(b) * 3; });
+await wait(3000);
+log('afterWalk', await page.evaluate(() => { const p = game.footXZ, e = window.__entrance.at; const c = game.camera.position, w = game['walker']?.root; return { foot: p, dist: Math.hypot(p[0] - e[0], p[1] - e[1]), gates: gates.all, cam: [c.x, c.y, c.z], walker: w && [w.position.x, w.position.y, w.position.z, w.visible, !!w.parent], entrance: e }; }));
 await shot('3-at-entrance');
+log('camAfter', await page.evaluate(() => { const c = game.camera.position, d = new game.camera.position.constructor(); game.camera.getWorldDirection(d); return { cam: [c.x, c.y, c.z], dir: [d.x, d.y, d.z], fov: game.camera.fov, gy: game['foot'].y }; }));
 log('rideFar', await page.evaluate(() => game.rideBike()));
 const acc = await page.evaluate(([b, c, k]) => allocate('test-rider', b, c, k || undefined), [b, cat, block]);
 log('acc', acc);
@@ -34,8 +39,8 @@ await page.evaluate(() => game.leaveRoom());
 log('afterLeave', await page.evaluate(() => ({ inRoom: game.inRoom, walking: game.walking, foot: game.footXZ })));
 await shot('7-left-room');
 // walk back to the bike and ride
-await page.evaluate(() => { game.walkInput.fwd = -1; });
-await wait(4000);
+await page.evaluate(() => { const g = game.bikeXZ; const f = game['foot']; f.x = g[0] + 1.2; f.z = g[1]; });
+await wait(1500);
 await page.evaluate(() => { game.walkInput.fwd = 0; });
 log('rideBack', await page.evaluate(() => game.rideBike()));
 log('final', await page.evaluate(() => ({ walking: game.walking, free: game.freeRiding })));

@@ -392,7 +392,7 @@ export function buildRoom(acc: Accommodation): BuiltRoom | null {
   for (const q of plan.rooms) {
     if (q === main || q.w * q.d < 1.2) continue;
     const name = q.label.replace(/ - PROVISIONAL STUDY| - 1 PLACE/, '').toLowerCase();
-    views.push({ label: name.charAt(0).toUpperCase() + name.slice(1), pos: W(q.x + q.w / 2, q.y + q.d / 2, 1.55), yaw: 0, bounds: [q.x, q.x + q.w, q.y, q.y + q.d] });
+    views.push({ label: (name.charAt(0).toUpperCase() + name.slice(1)).replace(/\bwc\b/i, 'WC').replace(/\bac\b/i, 'AC'), pos: W(q.x + q.w / 2, q.y + q.d / 2, 1.55), yaw: 0, bounds: [q.x, q.x + q.w, q.y, q.y + q.d] });
   }
   for (const v of views) v.bounds = [v.bounds[0] + ROOM_ORIGIN.x, v.bounds[1] + ROOM_ORIGIN.x, v.bounds[2] + ROOM_ORIGIN.z, v.bounds[3] + ROOM_ORIGIN.z];
   const singles = plan.objects.filter((o) => o.type === 'bed').length, bunks = plan.objects.filter((o) => o.type === 'bunk').length;

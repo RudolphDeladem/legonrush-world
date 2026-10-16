@@ -2,12 +2,17 @@
 <body><canvas id="c" style="width:100%;height:100%;display:block"></canvas>
 <script type="module">
 // drives the real Game: an Explore ride, the free bike moved to a residence entrance, get down, walk, room, back
+import * as THREE from 'three';
 import { Game } from '/src/game/Game.ts';
+window.THREE = THREE;
 import { exploreRoute } from '/src/game/routes.ts';
 import { placeByName } from '/src/game/campusmap.ts';
 import { BIKES } from '/src/data/campus.ts';
 import { residenceById, allocate } from '/src/game/residence.ts';
 import { gates } from '/src/game/gates.ts';
+import { walkSurfaceAt, walkSurfaces } from '/src/game/walksurf.ts';
+window.walkSurfaces = walkSurfaces;
+window.walkSurfaceAt = walkSurfaceAt;
 import { LODGE_PLACEMENTS } from '/src/game/lodges.ts';
 const game = new Game(document.getElementById('c'));
 window.game = game; window.gates = gates; window.LODGES = LODGE_PLACEMENTS;
