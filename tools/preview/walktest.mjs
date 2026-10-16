@@ -16,7 +16,6 @@ log('getDown', await page.evaluate(() => game.getDown()));
 log('walking', await page.evaluate(() => ({ walking: game.walking, foot: game.footXZ, bike: game.bikeXZ })));
 await shot('2-on-foot');
 // walk toward the entrance for a few seconds
-log('rideAway', await page.evaluate(() => game.rideBike()));
 await page.evaluate(() => { game.walkInput.fwd = 1; });
 await wait(4500);
 await page.evaluate(() => { game.walkInput.fwd = 0; });
