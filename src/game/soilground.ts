@@ -15,7 +15,8 @@
 import * as THREE from 'three';
 import { grassMacroTexture, grassTexture } from './textures';
 import { drapeAt } from './kuffourgarden';
-import { roadClearance } from './life';
+import { NODE_XZ, ROADS } from './campusmap';
+import { N4_WIDE, halfOf } from './lbplan';
 import { vnoise } from './enkit';
 
 const TILE = 200;
@@ -53,12 +54,15 @@ function patch(mat: THREE.MeshStandardMaterial, soil: boolean) {
         ${soil ? `{
           // the soil boundary: the coverage broken up at two world scales, so it wanders (no grid, no straight cut)
           float b1 = texture2D(grassMacro, vGrassW / 13.0 + 0.11).r, b2 = texture2D(grassMacro, vGrassW / 3.7 + 0.53).g;
-          float e = vSoil + (b1 - 0.5) * 0.5 + (b2 - 0.5) * 0.28;
-          // the grass's darker blades hold on a little longer over the soil's margin
-          float lum = dot(diffuseColor.rgb, vec3(0.3, 0.59, 0.11));
-          float k = smoothstep(0.44, 0.6, e + (0.16 - lum) * 0.9);
           // the soil's own grain: grit and clods at a few decimetres, a broader mottle
           float g1 = texture2D(grassMacro, vGrassW / 0.9 + 0.7).r, g2 = texture2D(grassMacro, vGrassW / 6.0 + 0.3).g;
+          float c1 = texture2D(grassMacro, vGrassW / 1.6 + 0.29).r;
+          // partly bare ground is a mix: clumps of grass in the soil and bare spots in the grass, finer the barer it is;
+          // only ground that is fully bare is plain soil
+          float e = vSoil + (b1 - 0.5) * 0.42 + (b2 - 0.5) * 0.34 + (c1 - 0.5) * 0.36 * (1.0 - vSoil * vSoil);
+          // the grass's darker blades hold on a little longer over the soil's margin
+          float lum = dot(diffuseColor.rgb, vec3(0.3, 0.59, 0.11));
+          float k = smoothstep(0.4, 0.66, e + (0.16 - lum) * 0.9);
           vec3 soilC = vColor.rgb * (0.86 + g1 * 0.18 + (g2 - 0.5) * 0.12);
           diffuseColor.rgb = mix(diffuseColor.rgb, soilC, k);
         }` : ''}`,
@@ -79,14 +83,42 @@ let soilMat: THREE.MeshStandardMaterial | null = null;
 export const soilGround = () =>
   (soilMat ??= patch(new THREE.MeshStandardMaterial({ map: campusGrass().map, vertexColors: true, roughness: 1, color: '#e4e0cc', polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }), true));
 
+// every mapped road, lane and footway at its drawn half width, and the N4's widening, on a 20 m grid (built on first use)
+const SG = 20;
+let grid: Map<number, [number, number, number, number, number][]> | null = null;
+const key = (i: number, j: number) => (i + 4096) * 8192 + (j + 4096);
+function segGrid() {
+  if (grid) return grid;
+  const g = new Map<number, [number, number, number, number, number][]>();
+  const put = (s: [number, number, number, number, number]) => {
+    const [ax, az, bx, bz, h] = s;
+    for (let i = Math.floor((Math.min(ax, bx) - h) / SG); i <= Math.floor((Math.max(ax, bx) + h) / SG); i++)
+      for (let j = Math.floor((Math.min(az, bz) - h) / SG); j <= Math.floor((Math.max(az, bz) + h) / SG); j++) {
+        const k = key(i, j); let l = g.get(k); if (!l) g.set(k, (l = [])); l.push(s);
+      }
+  };
+  for (const r of ROADS) for (let i = 0; i < r.nodes.length - 1; i++)
+    put([NODE_XZ[r.nodes[i] * 2], NODE_XZ[r.nodes[i] * 2 + 1], NODE_XZ[r.nodes[i + 1] * 2], NODE_XZ[r.nodes[i + 1] * 2 + 1], halfOf(r)]);
+  for (const w of N4_WIDE) put(w);
+  return (grid = g);
+}
+/** distance from (x, z) to the nearest road, lane or footway edge (negative on one) */
+export function hardClearance(x: number, z: number) {
+  let best = Infinity;
+  for (const [ax, az, bx, bz, h] of segGrid().get(key(Math.floor(x / SG), Math.floor(z / SG))) ?? []) {
+    const dx = bx - ax, dz = bz - az, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz || 1)));
+    best = Math.min(best, Math.hypot(ax + dx * t - x, az + dz * t - z) - h);
+  }
+  return best;
+}
 /** P: on (or within `pad` of) a mapped road, lane or footway, the N4's widened carriageways included */
-export const onHardscape = (x: number, z: number, pad = 0.05) => roadClearance(x, z, 6, -1, true) < pad;
+export const onHardscape = (x: number, z: number, pad = 0.05) => hardClearance(x, z) < pad;
 
 type RGB = [number, number, number];
 /** the default soil: the muted dusty red-brown of the corridor's bare ground, with a little local variation */
 export const dustySoil = (x: number, z: number): RGB => {
   const m = vnoise(x * 0.7, z * 0.7), n = vnoise(x * 0.12 + 5, z * 0.12);
-  return [0.56 + m * 0.05 - n * 0.03, 0.41 + m * 0.04, 0.3 + m * 0.02 + n * 0.02];
+  return [0.52 + m * 0.05 - n * 0.03, 0.41 + m * 0.04, 0.32 + m * 0.02 + n * 0.02];
 };
 /** a smooth step for the coverage fields */
 export const ramp = (a: number, b: number, v: number) => { const t = Math.min(1, Math.max(0, (v - a) / (b - a))); return t * t * (3 - 2 * t); };

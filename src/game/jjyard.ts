@@ -162,6 +162,8 @@ export function buildJjGrounds() {
   // (the owner's revised soil order: the yard, the opening, the track and the field are the ground itself: exposed soil
   // by coverage, the lawn's own grass between; nothing past a mapped road; soilground.ts)
   type RGB = [number, number, number];
+  /** distance inside a polygon's outline (m) */
+  const polyIn = (P: P2[], x: number, z: number) => { let d = 1e9; for (let i = 0, j = P.length - 1; i < P.length; j = i++) d = Math.min(d, segD(x, z, P[j], P[i])); return d; };
   const own = (x: number, z: number): [number, RGB] | null => {
     const n = vnoise2(x / 7, z / 7), m = vnoise2(x / 2.2 + 3, z / 2.2) * 0.04;
     const tr = jjTrackDist(x, z);
@@ -169,7 +171,11 @@ export function buildJjGrounds() {
     // the yard: pale compacted soil, darker where worked
     if (inYard(x, z)) { const w = ramp(0.6, 0.76, n); return [1, [0.77 - 0.18 * w + m, 0.67 - 0.16 * w + m, 0.5 - 0.12 * w]]; }
     // the dusty opening: tan, a little red
-    if (inPoly(OPENING, x, z)) return [0.95, [0.72 + m, 0.56 + m, 0.41]];
+    // (worn bare by use, its margin wandering into the grass, grass pockets where it is used less)
+    if (inPoly(OPENING, x, z)) {
+      const edge = ramp(0.5, 5.5, polyIn(OPENING, x, z) + (vnoise2(x / 4, z / 4) - 0.5) * 5);
+      return [edge * (0.35 + 0.65 * ramp(0.3, 0.62, vnoise2(x / 3.5 + 9, z / 3.5))), [0.62 + m, 0.5 + m, 0.39]];
+    }
     // the field west of the yard: dry grass and bare patches, no pitch
     if (inPoly(FIELD, x, z)) return [0.25 + 0.55 * ramp(0.42, 0.6, n), [0.6 + m, 0.5 + m, 0.36]];
     return null;

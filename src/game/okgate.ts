@@ -271,7 +271,7 @@ export function buildOkGateGrounds() {
     if (!inPlot(x, z)) return null;
     const w = ramp(0.48, 0.72, vnoise2(x / 8, z / 8));
     return (0.82 - 0.55 * w) * Math.min(1, edgeIn(x, z) / 3);
-  }, (x, z) => { const w = ramp(0.48, 0.72, vnoise2(x / 8, z / 8)), m = vnoise2(x / 2.5 + 7, z / 2.5); return [0.62 - 0.1 * w + m * 0.04, 0.42 + 0.04 * w + m * 0.03, 0.29 + m * 0.02]; });
+  }, (x, z) => { const w = ramp(0.48, 0.72, vnoise2(x / 8, z / 8)), m = vnoise2(x / 2.5 + 7, z / 2.5); return [0.55 - 0.06 * w + m * 0.04, 0.42 + 0.03 * w + m * 0.03, 0.32 + m * 0.02]; });
   soil.userData.noRelief = true;
   group.add(soil);
   const crowns: Crown[] = TREES.map(([x, z, r], i) => { const s = hash2(x, z); return { x, z, r, h: r * 1.15 + 1, base: 2.2 + s * 1.5, trunk: 0.25 + r * 0.03, color: ['#3f6b2b', '#4e7a32', '#456f2e', '#5b8438'][i % 4], seed: s, solid: true }; });

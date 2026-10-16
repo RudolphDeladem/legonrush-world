@@ -354,8 +354,8 @@ const hood: Spec = {
     // between; soilground.ts)
     k.meshes.push(soilMesh(O, 990, HOOD.x1, HOOD.z0, HOOD.z1, 1.6, (x, z) => {
       if (!inHood(x, z) || clearance(x, z) < 0.3) return null;
-      return ramp(0.34, 0.56, vnoise(x * 0.06, z * 0.06) * 0.65 + vnoise(x * 0.21, z * 0.21) * 0.35);
-    }, (x, z) => (clearance(x, z, false, 2) < 9 ? [0.6, 0.52, 0.43] : dustySoil(x, z))));
+      return ramp(0.36, 0.62, vnoise(x * 0.06, z * 0.06) * 0.55 + vnoise(x * 0.21, z * 0.21) * 0.3 + vnoise(x * 0.7, z * 0.7) * 0.15);
+    }, (x, z) => (clearance(x, z, false, 2) < 9 ? [0.57, 0.5, 0.42] : dustySoil(x, z))));
     // ---- mature trees and palms in the gaps; tall narrow trees by the 15-16 frontage (Pair 16) ----
     // (and the frontages and compounds the Okponglo brief models and plants itself)
     const taken = (x: number, z: number, r: number) => !!buildingNear(x, z, r) || MASSES.some((m) => x > m.r[0] - r && x < m.r[1] + r && z > m.r[2] - r && z < m.r[3] + r) || inOkKeep(x, z, r);
@@ -533,7 +533,8 @@ const corridor: Spec = {
       k.meshes.push(soilMesh(CO, 935, 1060, VERGE_W.z0, VERGE_W.z1, 1.2, (x, z) => {
         const d = kerb(z) - x;
         if (Number.isNaN(d) || d < VERGE_W.path[1] + 0.1 || clearance(x, z) < 0.3 || clearance(x, z, true) < 0.1) return null;
-        return ramp(0.5, 0.68, vnoise(x * 0.15, z * 0.15));
+        // mostly grass: bare in scattered worn patches, smaller ones too
+        return ramp(0.58, 0.76, vnoise(x * 0.15, z * 0.15) * 0.7 + vnoise(x * 0.5, z * 0.5) * 0.3);
       }));
       for (let i = 0; i < 900; i++) {
         const z = VERGE_W.z0 + hash(i, 3.3) * (VERGE_W.z1 - VERGE_W.z0), x = kerb(z) - VERGE_W.path[1] - 0.8 - hash(4.4, i) * 30;

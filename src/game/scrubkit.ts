@@ -70,7 +70,6 @@ function detailTexture() {
 }
 
 export function coverOverlay(o: Overlay): THREE.Mesh[] {
-  ((globalThis as any).__DRAPES ??= []).push({ kind: 'overlay', box: o.box, at: (new Error().stack ?? '').split('\n')[2] }); // TEMPINV
   const [x0, x1, z0, z1] = o.box, W = Math.ceil((x1 - x0) / o.mpp), H = Math.ceil((z1 - z0) / o.mpp);
   const cv = document.createElement('canvas');
   cv.width = W; cv.height = H;
