@@ -47,7 +47,7 @@ class PadPointer {
       // the touchpad's press (standard mapping, button 17) clicks; it shows the pointer first if hidden
       const p = pad.active;
       const touch = !!p?.buttons[TOUCH_BUTTON]?.pressed;
-      if (touch && !this.touchWas) { if (!this.active) this.show(); else this.press(); }
+      if (touch && !this.touchWas) { this.show(); this.press(); }
       if (!touch && this.touchWas && this.downEl) this.lift();
       this.touchWas = touch;
       // the bottom face button: pressed and held like a mouse button while the pointer shows (a menu's highlight then
@@ -114,7 +114,7 @@ class PadPointer {
   /** asks the player to allow the controller over WebHID (from a click), then reads its touchpad */
   async enableTouchpad(ask = true): Promise<boolean> {
     if (!this.canTouchpad || this.hid) return !!this.hid;
-    type HidDev = { vendorId: number; opened: boolean; open: () => Promise<void>; close: () => Promise<void>; addEventListener: (t: string, f: (e: { reportId: number; data: DataView }) => void) => void };
+    type HidDev = { vendorId: number; productName?: string; opened: boolean; open: () => Promise<void>; close: () => Promise<void>; addEventListener: (t: string, f: (e: { reportId: number; data: DataView }) => void) => void };
     const hid = (navigator as unknown as { hid: { getDevices: () => Promise<HidDev[]>; requestDevice: (o: object) => Promise<HidDev[]> } }).hid;
     try {
       let dev = (await hid.getDevices()).find((d) => d.vendorId === 0x054c);
@@ -122,6 +122,9 @@ class PadPointer {
       if (!dev) return false;
       if (!dev.opened) await dev.open();
       dev.addEventListener('inputreport', (e) => this.report(e.reportId, e.data));
+      // (over Bluetooth a DualSense / DualShock 4 sends its short report, without the touchpad, until a feature report is
+      // read: reading the calibration report (0x05) switches it to the full report that carries the fingers)
+      try { await (dev as unknown as { receiveFeatureReport: (id: number) => Promise<DataView> }).receiveFeatureReport(0x05); } catch { /* USB: not needed */ }
       this.hid = dev;
       return true;
     } catch { return false; }
@@ -149,4 +152,23 @@ class PadPointer {
 /** the one on-screen pointer for the whole game */
 export const padPointer = new PadPointer();
 // (a controller allowed before: its touchpad works again without asking)
-if (typeof window !== 'undefined') pad.onMode((m, fam) => { if (m === 'pad' && fam === 'playstation') void padPointer.enableTouchpad(false); });
+// (a PlayStation controller: its touchpad works at once if it was allowed before; if not, a bar offers to allow it. The
+// browser lets a page reach the controller only from a real click, tap or key, not from the controller's own buttons)
+let asked = false;
+if (typeof window !== 'undefined') pad.onMode((m, fam) => {
+  if (m !== 'pad' || fam !== 'playstation' || asked) return;
+  void padPointer.enableTouchpad(false).then((on) => {
+    if (on || asked || !padPointer.canTouchpad) return;
+    asked = true;
+    let dismissed = false;
+    try { dismissed = localStorage.getItem('lr.touchpadAsk') === 'no'; } catch { /* storage blocked */ }
+    if (dismissed) return;
+    const bar = document.createElement('div');
+    bar.className = 'touchpad-bar';
+    bar.innerHTML = '<span>Use your controller\'s touchpad as a mouse? Choose Allow (with the mouse, a tap or Enter), then pick the controller in the browser\'s list.</span><button class="btn btn-primary btn-sm" data-t="yes">Allow</button><button class="btn btn-ghost btn-sm" data-t="no">Not now</button>';
+    document.body.appendChild(bar);
+    bar.querySelector('[data-t="yes"]')!.addEventListener('click', () => { void padPointer.enableTouchpad(true).then((ok) => { bar.remove(); if (ok) padPointer.show(); }); });
+    bar.querySelector('[data-t="no"]')!.addEventListener('click', () => { bar.remove(); try { localStorage.setItem('lr.touchpadAsk', 'no'); } catch { /* ignore */ } });
+    (bar.querySelector('[data-t="yes"]') as HTMLButtonElement).focus();
+  });
+});

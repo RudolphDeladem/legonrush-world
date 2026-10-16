@@ -113,7 +113,7 @@ const padContainer = () => {
   if (ov) return ov;
   // on foot: the room's menus and screens (the laptop, the phone, the bed's and the desk's choices), the hall's
   // choices, the nearby list and the entrance popup take the D-pad for their highlight and the face button to choose
-  const wu = app.querySelector<HTMLElement>('.room-screen:not([hidden]), .walk-ui #wHall:not([hidden]), .walk-ui #wList:not([hidden]), .walk-ui #wPop:not([hidden])');
+  const wu = document.querySelector<HTMLElement>('.room-screen:not([hidden])') ?? app.querySelector<HTMLElement>('.walk-ui #wHall:not([hidden]), .walk-ui #wList:not([hidden]), .walk-ui #wPop:not([hidden])');
   if (wu) return wu;
   if (game.isRiding) {
     if (game.paused || game.freeRiding) return null;

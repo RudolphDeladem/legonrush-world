@@ -51,7 +51,7 @@ for (const [, px, pz, sx, sz] of C) {
   const starts = await page.evaluate(([px, pz, sx, sz]) => {
     const W = window.__walkgrid;
     const cand = sx > sz ? [[px, pz + sz / 2 + 2.5], [px, pz - sz / 2 - 2.5], [px + sx / 2 + 2.5, pz], [px - sx / 2 - 2.5, pz]] : [[px + sx / 2 + 2.5, pz], [px - sx / 2 - 2.5, pz], [px, pz + sz / 2 + 2.5], [px, pz - sz / 2 - 2.5]];
-    return cand.filter(([x, z]) => W.walkTopAt(x, z, 0.1) === null && !W.walkBlocked(x, z, 0)).map(([x, z]) => [x, z, Math.atan2(-(px - x), -(pz - z))]);
+    return cand.filter(([x, z]) => { const t = W.walkTopAt(x, z, 0.1); return (t === null || t < 0.12) && !window.__footWhy(x, z, 0).blocked; }).map(([x, z]) => [x, z, Math.atan2(-(px - x), -(pz - z))]);
   }, [px, pz, sx, sz]);
   let done = false;
   for (const start of starts) {

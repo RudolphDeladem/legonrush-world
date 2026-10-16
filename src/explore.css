@@ -216,3 +216,7 @@
 .rs-phone .ph-in input { flex: 1; border: 0; border-radius: 18px; padding: 8px 12px; font-size: 14px; }
 /* the room's activity button and view button */
 .walk-room .wr-view { position: absolute; right: 12px; top: 64px; }
+
+/* the PlayStation touchpad offer (padpointer.ts) */
+.touchpad-bar { position: fixed; left: 50%; top: calc(12px + var(--safe-t, 0px)); transform: translateX(-50%); z-index: 2147482000; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center; max-width: min(640px, calc(100vw - 32px)); padding: 10px 14px; border-radius: 14px; background: rgba(10, 16, 32, 0.92); color: #fff; font-size: 0.9rem; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35); }
+.touchpad-bar span { flex: 1 1 260px; }
