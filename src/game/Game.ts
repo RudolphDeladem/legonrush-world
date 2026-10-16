@@ -310,6 +310,11 @@ function footBlocked(x: number, z: number, floor: number) {
   if (b && GENERIC_BUILDINGS.has(b) && !inPassage(x, z)) return true;
   return inWater(x, z);
 }
+/** (development) what stops a walker at (x, z) with their feet at `floor` */
+if (import.meta.env.DEV && typeof window !== 'undefined') (window as unknown as { __footWhy: unknown }).__footWhy = (x: number, z: number, floor: number) => {
+  const b = buildingNear(x, z, 0.35);
+  return { deck: !!deckAt(x, z), gate: gates.blocked(x, z), solid: solidAt(x, z, 0.25), walk: walkBlocked(x, z, floor), road: roadClearance(x, z, 6, -1, true), outline: b ? (GENERIC_BUILDINGS.has(b) ? 'generic' : 'modelled') : null, passage: inPassage(x, z), water: inWater(x, z), blocked: footBlocked(x, z, floor) };
+};
 function freeBlocked(x: number, z: number, onFoot = false) {
   // (stairways stop the bike, never a person on foot)
   if ((!onFoot && inStairs(x, z)) || gates.blocked(x, z)) return true;
