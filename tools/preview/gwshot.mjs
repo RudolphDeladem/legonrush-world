@@ -12,7 +12,7 @@ const ents = await page.evaluate(() => window.__wg.RES.flatMap((r) => r.entrance
 for (const id of ids) {
   const e = ents.find((x) => x.r === id); if (!e) continue;
   const f = (e.f * Math.PI) / 180, ux = Math.sin(f), uz = -Math.cos(f), nx = Math.cos(f), nz = Math.sin(f);
-  const P = (a, b, y) => [e.at[0] + ux * a + nx * b, e.gh + y, e.at[1] + uz * a + nz * b].map((v) => v.toFixed(2));
+  const P = (a, b, y) => [e.at[0] + ux * a + nx * b, y, e.at[1] + uz * a + nz * b].map((v) => v.toFixed(2));
   const views = { street: [P(-14, -4, 4), P(2, 0, 2)], inside: [P(-1.5, -0.6, 1.7), P(8, 0.4, 1.4)], court: [P(22, 2, 6), P(0, 0, 1.5)] };
   for (const [k, [eye, at]] of Object.entries(views)) {
     await page.evaluate((c) => window.__view(c), `cam=${eye.join(',')},${at.join(',')},60`);

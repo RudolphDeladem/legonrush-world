@@ -65,6 +65,7 @@ log('action', await page.evaluate(() => __game.roomAction?.label ?? null));
 await page.keyboard.press('KeyE'); await wait(2500);
 await shot('5-sleep');
 await page.click('#rsWake').catch(() => {}); await wait(800);
+if (await page.$('#rsDone')) { await page.waitForSelector('#rsDone:not([disabled])', { timeout: 120000 }).catch(() => {}); await page.click('#rsDone').catch(() => {}); await wait(800); }
 // to a desk: study
 await page.evaluate(() => { const p = __game['room'].play, d = p.built.spots.find((q) => q.kind === 'chair') ?? p.built.spots.find((q) => q.kind === 'desk'); if (!d) return; for (let r = 0.4; r < 1.2; r += 0.1) for (let a = 0; a < 6.3; a += 0.3) { const x = d.x + d.w / 2 + Math.cos(a) * r, z = d.z + d.d / 2 + Math.sin(a) * r; if (p.free(x, z)) { p.x = x; p.z = z; return; } } });
 await wait(800);

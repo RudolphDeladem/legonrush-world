@@ -16,7 +16,7 @@ import * as THREE from 'three';
 import { box, canvas, merge, type Part } from './modelkit';
 import { concrete } from './concrete';
 import { groundHeight as gh } from './relief';
-import { buildingNear } from './campusmap';
+import { BUILDINGS, buildingNear } from './campusmap';
 import { RESIDENCES, type Entrance, type Residence } from './residence';
 import { gates, grilleLeaf } from './gates';
 import { OPASSAGES, SOLIDS } from './solids';
@@ -217,17 +217,33 @@ function carveMesh(m: THREE.Mesh, cuts: { c: Cut; x0: number; x1: number; z0: nu
 }
 
 // ---------- the passages and gates ----------
+/** courts the map's outlines leave in (no hole drawn): Jubilee Hall's long courtyard between its wings (hostels.ts,
+ *  its model frame: x along (36.3, 103.2) from the footprint's centre, the court x -26.4..63.2, z -34.1..9.7) */
+const EXTRA_COURTS: { x: number; z: number; ux: number; uz: number; a0: number; a1: number; hw: number }[] = (() => {
+  const b = BUILDINGS.find((o) => o.name === 'Jubilee Hall');
+  if (!b) return [];
+  let cx = 0, cz = 0;
+  const n = b.pts.length / 2;
+  for (let i = 0; i < b.pts.length; i += 2) { cx += b.pts[i]; cz += b.pts[i + 1]; }
+  cx /= n; cz /= n;
+  const l = Math.hypot(36.3, 103.2), ux = 36.3 / l, uz = 103.2 / l, zc = (-34.1 + 9.7) / 2;
+  // (local z -> (-uz, ux)); the court's centre line along local x at z = zc
+  return [{ x: cx - zc * uz, z: cz + zc * ux, ux, uz, a0: -26.4, a1: 63.2, hw: (9.7 + 34.1) / 2 }];
+})();
+OPASSAGES.push(...EXTRA_COURTS);
+const inExtraCourt = (x: number, z: number) => EXTRA_COURTS.some((p) => { const dx = x - p.x, dz = z - p.z, a = dx * p.ux + dz * p.uz, b = -dx * p.uz + dz * p.ux; return a > p.a0 && a < p.a1 && Math.abs(b) < p.hw; });
+const solidAt = (x: number, z: number) => !!buildingNear(x, z, 0.1) && !inExtraCourt(x, z);
 /** how far in from the entrance point the court's open ground begins (null: none within reach) */
 function courtDepth(e: Entrance, ux: number, uz: number) {
   let inB = false;
   for (let t = -1; t <= 30; t += 0.25) {
     const x = e.at[0] + ux * t, z = e.at[1] + uz * t;
-    const b = !!buildingNear(x, z, 0.1);
+    const b = solidAt(x, z);
     if (b) inB = true;
     else if (inB) {
       // open ground for a couple of metres: the court
       let open = true;
-      for (let s = 0.25; s <= 2; s += 0.25) if (buildingNear(x + ux * s, z + uz * s, 0.1)) { open = false; break; }
+      for (let s = 0.25; s <= 2; s += 0.25) if (solidAt(x + ux * s, z + uz * s)) { open = false; break; }
       if (open) return t;
     }
   }
@@ -267,6 +283,14 @@ export function buildGateways(roots: THREE.Object3D[]): THREE.Group {
       m4.premultiply(new THREE.Matrix4().makeRotationY(yaw));
       return m4.setPosition(x, 0, z);
     };
+    // (a court the entrance line misses: the nearest line beside it that reaches one, the gateway moved across to it;
+    // Diamond Jubilee's front is between its two courts)
+    if (court && !(courtDepth(e, ux, uz)! >= 1)) {
+      for (const b of [2, -2, 4, -4, 6, -6, 8, -8, 10, -10, 12, -12, 14, -14]) {
+        const e2: Entrance = { ...e, at: [e.at[0] + nx * b, e.at[1] + nz * b] }, d = courtDepth(e2, ux, uz);
+        if (d !== null && d >= 1 && d < 26) { e = e2; rec.note = `the gateway is ${Math.abs(b)} m to the ${b > 0 ? 'right' : 'left'} of the mapped entrance point, in line with the court`; break; }
+      }
+    }
     let depth = court ? courtDepth(e, ux, uz) : null;
     if (court && (depth === null || depth < 1)) { rec.note = 'no court found along the entrance line'; depth = null; }
     if (court && depth !== null) {
@@ -336,9 +360,14 @@ export function buildGateways(roots: THREE.Object3D[]): THREE.Group {
     }
     if (!gated || court) { rec.note = rec.note ?? 'open entrance'; return; }
     // ----- a free-standing gate at the entrance: two piers with caps, a short wall either side, the leaves -----
-    const W = 3.2, hw = W / 2, a = Math.min(0, facadeAt(e, ux, uz) - 1.2), [cx, cz] = at(a, 0), g = gh(cx, cz);
-    // (never across a road or path the bike rides: the leaves would close it)
-    if ([-hw - 1.9, 0, hw + 1.9].some((b) => roadClearance(...at(a, b), 6, -1, true) < 0.4)) { rec.note = 'the entrance is on a road: no gate placed'; return; }
+    const W = 3.2, hw = W / 2, a00 = Math.min(0, facadeAt(e, ux, uz) - 1.2);
+    // (never across a road or path the bike rides: the leaves would close it. An entrance point on the road: the gate
+    // stands at the first place along the way in, else out, clear of it)
+    const clear = (a: number) => [-hw - 1.9, 0, hw + 1.9].every((b) => roadClearance(...at(a, b), 6, -1, true) >= 0.4) && ![-hw - 1, 0, hw + 1].some((b) => buildingNear(...at(a, b), 0.2));
+    const a = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, -1, -2, -3, -4, -5, -6].map((d) => a00 + d).find(clear);
+    if (a === undefined) { rec.note = 'the entrance is on a road with no clear place near it: no gate placed'; return; }
+    if (a !== a00) rec.note = `the gate stands ${Math.abs(a - a00).toFixed(0)} m ${a > a00 ? 'in' : 'out'} from the entrance point, clear of the road`;
+    const [cx, cz] = at(a, 0), g = gh(cx, cz);
     const P = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number, col: string) => parts.push([box(x0, x1, y0, y1, z0, z1).applyMatrix4(mat(a, 0)).translate(0, g, 0), col]);
     for (const s of [-1, 1]) {
       P(s * hw - 0.25, s * hw + 0.25, -0.3, 2.5, -0.25, 0.25, '#efe9dc');
