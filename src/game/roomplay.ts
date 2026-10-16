@@ -270,7 +270,7 @@ export class RoomPlay {
       if (Math.hypot(pl.x - this.x, pl.z - this.z) < 1.9) consider({ kind: 'sleep', label: 'Sleep', spot: null, bed: i }, pl.x, pl.z);
     });
     for (const q of this.built.spots) {
-      if ((q.kind === 'chair' || q.kind === 'desk') && near(q, 0.9) && !this.npcAt.has(this.seatKey(q))) consider({ kind: 'study', label: 'Sit and study', spot: q }, q.x + q.w / 2, q.z + q.d / 2);
+      if ((q.kind === 'chair' || q.kind === 'desk') && near(q, 1.1) && !this.npcAt.has(this.seatKey(q))) consider({ kind: 'study', label: 'Sit and study', spot: q }, q.x + q.w / 2, q.z + q.d / 2);
       if ((q.kind === 'shower' || q.kind === 'basin') && near(q, 0.9)) consider({ kind: 'bath', label: 'Take a bath', spot: q }, q.x + q.w / 2, q.z + q.d / 2);
       if (q.kind === 'door' && !this.built.privateBath && near(q, 0.9)) consider({ kind: 'bath', label: 'Take a bath (the shared washroom)', spot: q }, q.x + q.w / 2, q.z + q.d / 2, 1.2);
     }

@@ -60,7 +60,7 @@ const info = await page.evaluate(() => { const p = __game['room'].play; return {
 log('room', info);
 // to a bed: sleep
 await page.evaluate(() => { const p = __game['room'].play, pl = p.built.places.find((q) => !q.upper && !p.occupants.some((o) => o.kind !== 'you' && o.bed === q.bed)) ?? p.built.places[0]; for (let r = 0.6; r < 1.5; r += 0.1) for (let a = 0; a < 6.3; a += 0.3) { const x = pl.x + Math.cos(a) * r, z = pl.z + Math.sin(a) * r; if (p.free(x, z)) { p.x = x; p.z = z; return; } } });
-await wait(800);
+await page.waitForFunction(() => !!__game.roomAction, null, { timeout: 60000 }).catch(() => {});
 log('action', await page.evaluate(() => __game.roomAction?.label ?? null));
 await page.keyboard.press('KeyF'); await wait(2500);
 await shot('5-sleep');
@@ -68,9 +68,10 @@ await page.click('#rsWake').catch(() => {}); await wait(800);
 if (await page.$('#rsDone')) { await page.waitForSelector('#rsDone:not([disabled])', { timeout: 120000 }).catch(() => {}); await page.click('#rsDone').catch(() => {}); await wait(800); }
 // to a desk: study
 await page.evaluate(() => { const p = __game['room'].play, d = p.built.spots.find((q) => q.kind === 'chair') ?? p.built.spots.find((q) => q.kind === 'desk'); if (!d) return; for (let r = 0.4; r < 1.2; r += 0.1) for (let a = 0; a < 6.3; a += 0.3) { const x = d.x + d.w / 2 + Math.cos(a) * r, z = d.z + d.d / 2 + Math.sin(a) * r; if (p.free(x, z)) { p.x = x; p.z = z; return; } } });
-await wait(800);
+await page.waitForFunction(() => __game.roomAction?.kind === 'study', null, { timeout: 60000 }).catch(() => {});
 log('action2', await page.evaluate(() => __game.roomAction?.label ?? null));
 await page.keyboard.press('KeyF'); await wait(600);
+await page.waitForSelector('.lp-icon', { timeout: 120000 }).catch(() => {});
 await shot('6-sitting');
 await wait(1500);
 await page.click('.lp-icon >> nth=0').catch((e) => console.log('noicon', e.message.slice(0, 80)));
