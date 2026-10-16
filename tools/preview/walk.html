@@ -24,6 +24,6 @@ game.freeRide();
 const b = (e.facing * Math.PI) / 180, ux = Math.sin(b), uz = -Math.cos(b), back = +(q.get('back') ?? 9);
 const f = game.free; f.x = e.at[0] - ux * back; f.z = e.at[1] - uz * back; f.yaw = Math.atan2(-ux, -uz); f.v = 0;
 window.__entrance = e; window.__res = res;
-window.allocate = allocate;
+window.allocate = allocate; window.RES = residenceById;
 window.__done = true;
 </script></body></html>
