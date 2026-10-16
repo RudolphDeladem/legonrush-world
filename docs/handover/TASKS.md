@@ -209,8 +209,8 @@ section, and the larger briefs have their own folder under `docs/` (evidence aud
      ground; Diamond Jubilee's and Jubilee's gateways 4 m beside the front in line with a court.
    - **Lodges:** inside the gate, in the passage's side wall, on the right (left at Limann and Elizabeth Sey); the
      computed lodges elsewhere never before the gate.
-   - **Gates elsewhere:** free-standing gates at Old Pent and the ISH hostels; driveway gates at Bani and TF that open
-     for the bike too; Evandy's entrances open (its slot gate stands open).
+   - **Gates elsewhere:** free-standing gates at Old Pent, the annexes and the ISH hostels; a driveway gate at Bani that opens
+     for the bike too (TF: none yet, its forecourt is too wide); Evandy's entrances open (its slot gate stands open).
    - **Stairs:** a walk grid from the drawn models (level faces to stand on, risers up to 0.46 m, knee-to-head
      obstacles) so every modelled step and porch can be climbed.
    - **Rooms:** testing access to every hall's rooms for every account; the character view in rooms; sleep, sit and

@@ -109,8 +109,8 @@ A and Annex B are open entrances with no gate; the gate opens as soon as the cha
   framed timber panels with a spindle top, the dark steel grille, a painted steel sheet with a spear-headed bar top.
   Most are timber; the timber has a grain texture with knots and board joints in one of four stains. Every leaf opens
   when the character on foot is within 12 m and closes once they are 26 m away and the swing is clear (`gates.ts`).
-- **Other halls and hostels.** Old Pent's four courts, ISH 1 and ISH 2 have a free-standing gate at the entrance: two
-  piers with caps, a short wall either side, the leaves. Bani's and TF's entrances are on their driveways: a driveway
+- **Other halls and hostels.** Old Pent's four courts, the halls' annexes, ISH 1 and ISH 2 have a free-standing gate at the entrance: two
+  piers with caps, a short wall either side, the leaves. Bani's entrance is on its driveway: a driveway
   gate stands across the driveway at the first place along the way in that is a gate's width, and it opens for the bike
   as well as for walkers (from 30 m, so it is open before the bike reaches it). New Pent, Vikings and both Valco phases
   keep the gates their sites already model. Evandy has no gate: its brown slot gate now stands open for good.
@@ -124,48 +124,53 @@ A and Annex B are open entrances with no gate; the gate opens as soon as the cha
   the feet stops them). Commonwealth's hill stairway and court flights, the Diaspora porches and the hostels' entrance
   steps all use it.
 
-### Porter's lodges at each entrance
+### Gates and porter's lodges at each entrance (as built; `tools/preview/lodgetable.mjs`)
 
-| Residence | Entrance | Family | Status | Where |
-|---|---|---|---|---|
-| Jean Nelson Aka Hall | main | L01 | indoor reception (L01) |  |
-| Hilla Limann Hall | main | L01 | indoor reception (L01) |  |
-| Elizabeth Frances Sey Hall | main | L01 | indoor reception (L01) |  |
-| Alexander Kwapong Hall | main | L01 | indoor reception (L01) |  |
-| Diamond Jubilee Hall | front | L01 | indoor reception (L01) |  |
-| Commonwealth Hall | main | L02 | built | right of the route, outside the entrance (computed) |
-| Mensah Sarbah Hall | main | L02 | existing lodge reused |  |
-| Volta Hall | main | L02 | built | right of the route, outside the entrance (computed) |
-| Akuafo Hall | main | L03 | built | left of the route, outside the entrance (computed) |
-| Legon Hall | main | L03 | built | right of the route, outside the entrance (computed) |
-| New Pent | main | L04 | built | left of the route, inside the entrance (computed) |
-| New Pent | new pent block b | L04 | built | left of the route, inside the entrance (computed) |
-| New Pent | new pent block c | L04 | built | right of the route, inside the entrance (computed) |
-| Old Pent | main | L05 | built | right of the route, inside the entrance (computed) |
-| Old Pent | nairobi court | L05 | built | right of the route, outside the entrance (computed) |
-| Old Pent | kampala court | L05 | built | right of the route, outside the entrance (computed) |
-| Old Pent | addis ababa court | L05 | built | right of the route, inside the entrance (computed) |
-| Evandy Hostel | main | L06 | existing gatehouse reused |  |
-| Bani Hostel | main | L07 | built | left of the route, inside the entrance (computed) |
-| TF (James Topp Nelson Yankah) | main | L08 | built | left of the route, inside the entrance (computed) |
-| ISH 1 | main | L09 | built | right of the route, outside the entrance (computed) |
-| ISH 2 | main | L09 | built | left of the route, inside the entrance (computed) |
-| Jubilee Hall | main | L10 | built | left of the route, inside the entrance (computed) |
-| Valco Trust Phase 1 | main | L11 | existing lodge reused | in the entrance block, on the right going in (owner's photo, 2026-10-16) |
-| Valco Trust Phase 2 | main | L11 | existing lodge reused | the same entrance block as Phase 1 (inferred from the owner's Phase photo) |
-| Vikings Hall | main | L12 | existing lodge reused | the right part of the VIKINGS HOSTEL entrance block (owner's photo, 2026-10-16) |
-| Akuafo annexes | main | L13 | built | left of the route, outside the entrance (computed) |
-| Akuafo annexes | akuafo hall annex b | L13 | built | left of the route, inside the entrance (computed) |
-| Akuafo annexes | akuafo hall annex c | L13 | built | right of the route, inside the entrance (computed) |
-| Akuafo annexes | akuafo hall annex d | L13 | built | right of the route, outside the entrance (computed) |
-| Mensah Sarbah annexes | main | L13 | built | right of the route, outside the entrance (computed) |
-| Mensah Sarbah annexes | mensah sarbah annex b | L13 | built | right of the route, inside the entrance (computed) |
-| Mensah Sarbah annexes | mensah sarbah annex c | L13 | built | left of the route, outside the entrance (computed) |
-| Mensah Sarbah annexes | mensah sarbah annex d | L13 | built | left of the route, outside the entrance (computed) |
-| Legon Hall annexes | main | L13 | built | left of the route, inside the entrance (computed) |
-| Legon Hall annexes | legon hall annex b | L13 | built | left of the route, inside the entrance (computed) |
-| Legon Hall annexes | legon hall annex c graduate hostel  | L13 | built | left of the route, inside the entrance (computed) |
-| Volta Hall Annex | main | - | served by Volta Hall's lodge (owner) |  |
+The Diaspora halls and Diamond Jubilee also show their indoor reception (L01) on entering; their gateway's side wall
+has the lodge window too (on the left at Limann and Elizabeth Sey). Two Old Pent courts have no lodge since lodges may
+no longer stand before the gate and no place inside fits; TF's entrance opens onto an 18 m forecourt, too wide for a
+gate, so it has none yet.
+
+| Residence | Entrance | Gate | Lodge |
+|---|---|---|---|
+| Jean Nelson Aka Hall | main | passage to the court (21.6 m), panels gate | indoor reception (L01) |
+| Hilla Limann Hall | main | passage to the court (20.3 m), boards gate | indoor reception (L01) |
+| Elizabeth Frances Sey Hall | main | passage to the court (21 m), sheet gate | indoor reception (L01) |
+| Alexander Kwapong Hall | main | passage to the court (23.1 m), panels gate | indoor reception (L01) |
+| Diamond Jubilee Hall | front | passage to the court (9.7 m), boards gate (the gateway is 4 m to the right of the mapped entrance point, in line with the court) | indoor reception (L01) |
+| Commonwealth Hall | main | passage to the court (11.6 m), panels gate | in the gateway's right wall, inside the gate |
+| Mensah Sarbah Hall | main | passage to the court (14.5 m), panels gate | existing gatehouse reused |
+| Volta Hall | main | passage to the court (11.2 m), boards gate | in the gateway's right wall, inside the gate |
+| Akuafo Hall | main | passage to the court (17.5 m), boards gate | in the gateway's right wall, inside the gate |
+| Legon Hall | main | passage to the court (17.4 m), panels gate | in the gateway's right wall, inside the gate |
+| New Pent | main | the site's own gate | L04, left of the route, inside the gate |
+| New Pent | new pent block b | the site's own gate | L04, left of the route, inside the gate |
+| New Pent | new pent block c | the site's own gate | L04, right of the route, inside the gate |
+| Old Pent | main | free-standing gate (boards) | L05, right of the route, inside the gate |
+| Old Pent | nairobi court | free-standing gate (boards) | no clear place |
+| Old Pent | kampala court | free-standing gate (boards) | no clear place |
+| Old Pent | addis ababa court | free-standing gate (boards) | L05, right of the route, inside the gate |
+| Evandy Hostel | main | open entrance | existing gatehouse reused |
+| Bani Hostel | main | driveway gate (boards), opens for the bike too (a driveway gate across the entrance road: it opens for the bike as well as for walkers) | L07, right of the route, inside the gate |
+| James Topp Nelson Yankah Hall (TF) | main | the driveway is 18 m wide at its narrowest: no gate placed | L08, left of the route, inside the gate |
+| International Students Hostel 1 | main | free-standing gate (sheet) | L09, right of the route, inside the gate |
+| International Students Hostel 2 | main | free-standing gate (panels) (the gate stands 20 m in from the entrance point, clear of the road) | L09, left of the route, inside the gate |
+| Jubilee Hall | main | passage to the court (13 m), sheet gate (the gateway is 4 m to the right of the mapped entrance point, in line with the court) | in the gateway's right wall, inside the gate |
+| Valco Trust Hostel Phase 1 | main | the site's own gate | existing gatehouse reused |
+| Valco Trust Hostel Phase 2 | main | the site's own gate | existing gatehouse reused |
+| Vikings Hall | main | the site's own gate | existing gatehouse reused |
+| Akuafo Hall annexes | main | free-standing gate (sheet) | L13, right of the route, inside the gate |
+| Akuafo Hall annexes | akuafo hall annex b | free-standing gate (sheet) (the gate stands 7 m in from the entrance point, clear of the road) | L13, right of the route, inside the gate |
+| Akuafo Hall annexes | akuafo hall annex c | free-standing gate (sheet) (the gate stands 9 m in from the entrance point, clear of the road) | L13, right of the route, inside the gate |
+| Akuafo Hall annexes | akuafo hall annex d | free-standing gate (sheet) | L13, left of the route, inside the gate |
+| Mensah Sarbah annexes | main | free-standing gate (panels) (the gate stands 6 m out from the entrance point, clear of the road) | L13, right of the route, inside the gate |
+| Mensah Sarbah annexes | mensah sarbah annex b | free-standing gate (panels) | L13, right of the route, inside the gate |
+| Mensah Sarbah annexes | mensah sarbah annex c | free-standing gate (panels) | L13, left of the route, inside the gate |
+| Mensah Sarbah annexes | mensah sarbah annex d | free-standing gate (panels) | L13, left of the route, inside the gate |
+| Legon Hall annexes | main | free-standing gate (panels) | L13, right of the route, inside the gate |
+| Legon Hall annexes | legon hall annex b | free-standing gate (panels) (the gate stands 8 m in from the entrance point, clear of the road) | L13, right of the route, inside the gate |
+| Legon Hall annexes | legon hall annex c graduate hostel  | free-standing gate (panels) (the gate stands 12 m in from the entrance point, clear of the road) | L13, right of the route, inside the gate |
+| Volta Hall Annex | main | free-standing gate (boards) | served by Volta Hall's lodge |
 
 ## Acceptance (2026-10-16 instructions, section 9)
 

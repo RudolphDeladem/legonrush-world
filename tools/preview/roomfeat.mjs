@@ -29,8 +29,8 @@ const lane0 = await page.evaluate(() => __game.lane);
 await page.evaluate(() => { __fakePad.axes[0] = 0.9; }); await frames(3); await page.evaluate(() => { __fakePad.axes[0] = 0; }); await frames(3);
 await tap(0);
 log('explorePad', await page.evaluate((l0) => ({ lane0: l0, lane: __game.lane, y: __game.y, mode: __pad.mode }), lane0));
-await page.click('#pause'); await wait(800);
-await page.click('#pauseOverlay [data-p="walk"]'); await wait(5000);
+await page.click('#pause', { force: true, timeout: 600000 }); await wait(800);
+await page.click('#pauseOverlay [data-p="walk"]', { force: true, timeout: 600000 }); await wait(5000);
 // walking backwards with the left stick pulled down
 const p0 = await page.evaluate(() => ({ xz: __game.footXZ, yaw: __game.footYaw }));
 await page.evaluate(() => { __fakePad.axes[1] = 1; }); await frames(12); await page.evaluate(() => { __fakePad.axes[1] = 0; }); await frames(2);

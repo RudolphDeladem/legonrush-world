@@ -23,8 +23,8 @@ await page.waitForFunction(() => window.__game.phase === 'riding' || window.__ga
 await page.evaluate(() => { window.__oldRoute = window.__game.currentRoute; return window.__rideTest('explore'); });
 await page.waitForFunction(() => window.__game.currentRoute !== window.__oldRoute && !document.querySelector('.loading') && document.querySelector('#pause') && window.__game.phase === 'riding', null, { timeout: 1500000, polling: 1000 });
 await wait(6000);
-await page.click('#pause'); await wait(800);
-await page.click('#pauseOverlay [data-p="walk"]'); await wait(5000);
+await page.click('#pause', { force: true, timeout: 600000 }); await wait(800);
+await page.click('#pauseOverlay [data-p="walk"]', { force: true, timeout: 600000 }); await wait(5000);
 // the Bani entrance porches: modelled tops 0.25-0.35 m above the ground, clustered; each tried from 3.2 m out
 const C = await page.evaluate(async () => {
   const W = window.__walkgrid;
