@@ -3729,6 +3729,19 @@ function vibeGo() {
   play(false, route, { live: { ch: s.ch, kind: 'vibe', riders: partner ? [{ id: partner.id, name: partner.name, jersey: partner.jersey }] : [] } });
 }
 
+// development builds only (never in the published game): start an Explore ride, a Vibe Ride on the fake live channel
+// (?fakelive) or a race directly, for the walking feature's runtime checks (tools/preview/apptest.mjs)
+if (import.meta.env.DEV) Object.assign(window, {
+  __rideTest: async (kind: 'explore' | 'vibe' | 'race', from = 'The Balme Library', to = 'Mensah Sarbah Vikings Hostel') => {
+    if (kind === 'race') return play(false, raceRoute(RACES[0])!, {});
+    const route = exploreRoute(placeByName(from)!, placeByName(to)!, 'cycle')!;
+    if (kind === 'explore') return play(false, route, {});
+    const ch = await live.join('vibe:test', 'tester-' + Math.random().toString(36).slice(2, 8), { name: profile?.name ?? 'Tester' });
+    if (!ch) throw new Error('no live channel');
+    return play(false, route, { live: { ch, kind: 'vibe', riders: [{ id: 'partner', name: 'Test partner', jersey: '#e84393' }] } });
+  },
+});
+
 /** someone opened a Vibe Ride invite link */
 function inviteIntro(code: string, name: string) {
   game.showcase();

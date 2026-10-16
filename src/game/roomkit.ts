@@ -24,6 +24,8 @@ export interface Interactable {
   kind: 'curtains' | 'louvres' | 'door' | 'cupboard' | 'fan';
   /** the point the character reaches for, and the way into the room from it (unit x, z) */
   at: THREE.Vector3; normal: [number, number];
+  /** a window's width (x0, z0, x1, z1): reach is measured to its nearest point, as one leans over a bed to it */
+  span?: [number, number, number, number];
   open: boolean;
   label(): string;
   toggle(): void;
@@ -517,7 +519,7 @@ function windowOpening(p: Part[], dyn: Dyn, x0: number, y0: number, x1: number, 
     let t0 = 0;
     for (const b of blades) b.rotation.x = CLOSED;
     const it: Interactable = {
-      id, kind: 'louvres', open: false, at: new THREE.Vector3(cx + inX * 0.1, 1.45, cy + inY * 0.1), normal: [inX, inY],
+      id, kind: 'louvres', open: false, at: new THREE.Vector3(cx + inX * 0.1, 1.45, cy + inY * 0.1), normal: [inX, inY], span: [x0, y0, x1, y1],
       label: () => (it.open ? 'Close louvres' : 'Open louvres'),
       toggle: () => { it.open = !it.open; },
       update: (dt) => { t0 = ease(t0, it.open, dt, 1.5); const r = CLOSED + (OPEN - CLOSED) * smooth(t0); for (const b of blades) b.rotation.x = r; },
@@ -540,7 +542,7 @@ function windowOpening(p: Part[], dyn: Dyn, x0: number, y0: number, x1: number, 
     });
     let t0 = 0;
     const it: Interactable = {
-      id, kind: 'curtains', open: false, at: new THREE.Vector3(cx + inX * 0.15, 1.45, cy + inY * 0.15), normal: [inX, inY],
+      id, kind: 'curtains', open: false, at: new THREE.Vector3(cx + inX * 0.15, 1.45, cy + inY * 0.15), normal: [inX, inY], span: [x0, y0, x1, y1],
       label: () => (it.open ? 'Close curtains' : 'Open curtains'),
       toggle: () => { it.open = !it.open; },
       update: (dt) => { t0 = ease(t0, it.open, dt, 1.3); const e = smooth(t0); for (const { m } of panels) m.scale.x = 1 - e * 0.78; },

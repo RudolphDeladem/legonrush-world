@@ -1,0 +1,35 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;height:100%;overflow:hidden;background:#000}</style></head>
+<body><canvas id="c" style="width:100%;height:100%;display:block"></canvas>
+<script type="module">
+// The production room builder and room play (walking, collision, working parts, occupants) in a light scene: a plain
+// sky behind the windows instead of the campus. ?b=building&c=category[&block=..]&cap=occupants-real
+import * as THREE from 'three';
+import { buildRoom } from '/src/game/roomkit.ts';
+import { RoomPlay } from '/src/game/roomplay.ts';
+import { allocate } from '/src/game/residence.ts';
+import { occupantsOf } from '/src/features/rooms.ts';
+const q = new URLSearchParams(location.search);
+const r = new THREE.WebGLRenderer({ canvas: document.getElementById('c'), antialias: true });
+r.setSize(innerWidth, innerHeight, false); r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05; r.outputColorSpace = THREE.SRGBColorSpace;
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#9cc6ea');
+scene.add(new THREE.HemisphereLight('#dfefff', '#8a7a60', 0.9));
+const sun = new THREE.DirectionalLight('#fff3dd', 1.2); sun.position.set(30, 50, 20); scene.add(sun);
+const acc = allocate('preview-rider', q.get('b'), q.get('c'), q.get('block') || undefined);
+const built = buildRoom(acc);
+scene.add(built.group);
+const real = +(q.get('real') ?? 1);
+const place = { roomId: acc.roomId, bed: 0, capacity: { 1: 1 }[0] ?? 0, residents: [], source: 'local' };
+const cap = built.places.length;
+place.capacity = Math.min(cap, +(q.get('cap') ?? cap));
+for (let i = 0; i < real; i++) place.residents.push({ bed: i, name: i ? `Player ${i + 1}` : 'You', you: i === 0 });
+const key = `${acc.buildingId}|${acc.blockId ?? ''}|${acc.roomId}`;
+const play = new RoomPlay(built, null, occupantsOf(place, key, 'You'), key);
+const cam = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, 0.05, 500);
+window.play = play; window.built = built; window.acc = acc;
+window.step = (n, fwd = 0, strafe = 0, turn = 0) => { for (let i = 0; i < n; i++) play.update(1 / 30, fwd, strafe, turn, 0, 0); };
+window.draw = () => { play.update(0, 0, 0, 0, 0, 0); play.apply(cam); cam.updateProjectionMatrix(); r.render(scene, cam); return { x: play.x, z: play.z, yaw: play.yaw, focus: play.focus && play.focus.label() }; };
+window.settle = (s = 3) => { for (let i = 0; i < s * 30; i++) play.update(1 / 30, 0, 0, 0, 0, 0); };
+window.info = { parts: built.interactables.map((i) => [i.id, i.kind, +i.at.x.toFixed(2), +i.at.z.toFixed(2)]), places: built.places.length, balcony: built.hasBalcony, style: built.windowStyle, facade: built.facade, rects: built.walk.rects, spawn: [play.x, play.z] };
+window.draw();
+window.__done = true;
+</script></body></html>

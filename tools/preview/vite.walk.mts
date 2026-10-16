@@ -4,5 +4,5 @@ import { resolve } from 'node:path';
 export default defineConfig({
   base: '/',
   build: { outDir: resolve(process.cwd(), '.preview/dist'), emptyOutDir: true, chunkSizeWarningLimit: 9000, minify: false,
-    rollupOptions: { input: { walk: resolve(process.cwd(), ".preview/walk.html") } } },
+    rollupOptions: { input: { walk: resolve(process.cwd(), ".preview/walk.html"), roomplay: resolve(process.cwd(), ".preview/roomplay.html") } } },
 });

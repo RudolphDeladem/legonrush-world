@@ -163,11 +163,15 @@ export class RoomPlay {
     for (const it of this.built.interactables) {
       const dx = it.at.x - this.x, dz = it.at.z - this.z, d = Math.hypot(dx, dz);
       if (it.kind === 'fan') { if (d < 1.0 && this.pitch > 0.2 && d < bs) { best = it; bs = d; } continue; }
-      if (d > 1.5) continue;
+      // (a window: the nearest point of its width; one leans over a bed to reach it)
+      const reach = it.span ? segDist(this.x, this.z, it.span) : d;
+      if (reach > 1.5) continue;
       if ((it.normal[0] || it.normal[1]) && it.normal[0] * -dx + it.normal[1] * -dz < 0) continue;
-      const cos = d < 0.05 ? 1 : (fx * dx + fz * dz) / d;
+      // looking at it: toward its middle, or toward any part of a window's width
+      let cos = d < 0.05 ? 1 : (fx * dx + fz * dz) / d;
+      if (it.span) for (const t of [0.15, 0.5, 0.85]) { const qx = it.span[0] + (it.span[2] - it.span[0]) * t - this.x, qz = it.span[1] + (it.span[3] - it.span[1]) * t - this.z, qd = Math.hypot(qx, qz) || 1; cos = Math.max(cos, (fx * qx + fz * qz) / qd); }
       if (cos < 0.7) continue;
-      const score = d + (1 - cos) * 3;
+      const score = reach + (1 - cos) * 3;
       if (score < bs) { bs = score; best = it; }
     }
     return best;
