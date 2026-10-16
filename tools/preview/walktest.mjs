@@ -4,8 +4,8 @@ const [, , out, b = 'jean-nelson', ei = '0', cat = 'dia-4', block = ''] = proces
 const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 const page = await browser.newPage({ viewport: { width: 1100, height: 680 } });
 const errs = [];
-page.on('pageerror', (e) => errs.push(e.message));
-await page.goto(`http://localhost:5299/.preview/walk.html?b=${b}&e=${ei}`, { timeout: 900000 });
+page.on('pageerror', (e) => { errs.push(e.message); console.log('PAGEERROR', e.message); });
+await page.goto(`${process.env.HOST ?? "http://localhost:5299/"}.preview/walk.html?b=${b}&e=${ei}`, { timeout: 900000 });
 await page.waitForFunction(() => window.__done, null, { timeout: 900000 });
 const wait = (ms) => page.waitForTimeout(ms);
 const shot = async (n) => { await wait(900); await page.screenshot({ path: `${out}/${b}_${n}.png` }); };
