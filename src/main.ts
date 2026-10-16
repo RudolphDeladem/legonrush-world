@@ -22,6 +22,9 @@ import { campusOverview, miniMap, type Pin } from './ui/mapview';
 import { PROFILE_REWARD, profileComplete, profileTodo, MISSIONS, SHOP, SKIN_TONES, WEEK_GOAL_KM, WEEK_REWARD, claimMission, todayMissions, onProfileSave, type Accessory, type Look, type Outfit, type RiderType, type StudentStatus, applyRide, claimDaily, clearGhosts, currentWeek, dailyReward, clearProfile, levelFor, loadGhost, loadProfile, loadSettings, newProfile, normalizeProfile, saveGhost, saveProfile, saveSettings, xpForLevel, type Profile, type RideResult, type RideRewards } from './state';
 import { music, setAmbience, setMusicVolume, setSound, sfx, startAmbience, stopAmbience, unlockAudio } from './audio';
 import { marketProximity } from './game/life';
+import { accommodationForm, accommodationLabel } from './ui/accommodation';
+import { startWalking } from './ui/walkui';
+import type { Accommodation } from './game/residence';
 import { icons } from './ui/icons';
 import { buzz, countUp, hookHaptics, randomFact, setFeedback, tapSounds } from './ui/feedback';
 import { ALL_DEPARTMENTS, DEPARTMENTS, OTHER_DEPARTMENT, collegeOf } from './data/departments';
@@ -319,8 +322,8 @@ function welcome() {
 }
 
 /** sign-up asks only what a rider needs; the rest waits in "Complete your profile" */
-type ObStep = 'account' | 'about' | 'hall' | 'look' | 'terms' | 'birthday' | 'uni' | 'social' | 'type';
-const SIGNUP_STEPS: ObStep[] = ['account', 'about', 'hall', 'look', 'terms'];
+type ObStep = 'account' | 'about' | 'hall' | 'room' | 'look' | 'terms' | 'birthday' | 'uni' | 'social' | 'type';
+const SIGNUP_STEPS: ObStep[] = ['account', 'about', 'hall', 'room', 'look', 'terms'];
 const PROFILE_STEPS: ObStep[] = ['birthday', 'uni', 'social', 'type'];
 interface Signup { draft: Profile; email: string; pass: string; step: number; flow: 'signup' | 'complete' }
 
@@ -334,6 +337,7 @@ const OB_META: Record<ObStep, { img: string; side: string; line: string }> = {
   account: { img: 'ob-account', side: 'Ride <em>Explore</em> Connect', line: 'Your account keeps your rides, times and coins on any phone.' },
   about: { img: 'ob-about', side: 'Ride <em>Explore</em> Connect', line: 'Other riders see your name when you race or vibe ride.' },
   hall: { img: 'hall-tile', side: 'Ride for your <em>hall</em>', line: 'Every kilometre you ride counts for your hall in Hall Week.' },
+  room: { img: 'hall-tile', side: 'Your <em>room</em> on campus', line: 'Get down from your bike at your hall and walk into your own room.' },
   look: { img: 'ob-ride', side: 'Make it <em>yours</em>', line: '' },
   terms: { img: 'ob-welcome', side: 'See you on <em>campus</em>', line: 'Ride safe, ride fair, and have fun.' },
   birthday: { img: 'ob-about', side: 'Tell us about <em>you</em>', line: 'Your birthday is never shown to other riders.' },
@@ -381,6 +385,7 @@ function onboard(s: Signup = newSignup(), enter: Enter = 'fade'): void {
     hall: () => ['Choose your <em>hall</em>', 'Represent your hall and earn points together.', `
       <div class="hall-tiles" id="halls">${HALLS.filter((h) => h.id !== 'none').map((h) => `<button class="hall-t ${d.hall === h.id ? 'on' : ''}" data-v="${h.id}" style="--hc:${h.color}">${esc(h.name)}</button>`).join('')}</div>
       <button class="opt row ${d.hall === 'none' ? 'on' : ''}" data-v="none" id="nonRes">I don't live in a hall (non-resident)</button>`],
+    room: () => ['Where do you <em>stay</em>?', 'Choose your hall or hostel, then your room type. You can change it later in your profile.', '<div id="acForm"></div>'],
     look: () => ['', '', ''],
     terms: () => ['Almost <em>there!</em>', 'Please review and accept to continue.', `
       <div class="terms">
@@ -422,7 +427,7 @@ function onboard(s: Signup = newSignup(), enter: Enter = 'fade'): void {
         <p class="small auth-note" id="note" role="status" hidden></p>
         <div class="ob-foot">
           <button class="btn btn-link desk-back" id="back2">‹ Back</button>
-          ${s.flow === 'complete' || id === 'social' ? '<button class="btn btn-link" id="skip">Skip for now</button>' : ''}
+          ${s.flow === 'complete' || id === 'social' || id === 'room' ? '<button class="btn btn-link" id="skip">Skip for now</button>' : ''}
           <button class="btn btn-primary" id="next">${last ? done : 'Continue'}</button>
         </div>
       </div>
@@ -464,6 +469,7 @@ function onboard(s: Signup = newSignup(), enter: Enter = 'fade'): void {
       return true;
     },
     hall: () => (d.hall ? true : say('Choose your hall, or tap "I don\'t live in a hall".')),
+    room: () => (acForm && !acForm.empty() && !acForm.complete() ? say('Choose the block and room type, or pick "I don\'t stay in a hall or hostel".') : true),
     look: () => true,
     terms: () => {
       if ([...app.querySelectorAll<HTMLInputElement>('.must')].some((c) => !c.checked)) return say('Tick the three boxes to agree before you start.');
@@ -532,6 +538,8 @@ function onboard(s: Signup = newSignup(), enter: Enter = 'fade'): void {
       applyLook(d);
     });
   }
+  let acForm: ReturnType<typeof accommodationForm> | null = null;
+  if (id === 'room') acForm = accommodationForm($('acForm'), d.residence, characterIdOf(d), (a) => { d.residence = a; $('note').hidden = true; });
   if (id === 'type') pick('#types', (x) => { A.riderType = x as RiderType; $('note').hidden = true; });
   on('[data-doc]', 'click', (e, el) => { e.preventDefault(); docSheet(el.dataset.doc as DocId); });
 
@@ -662,6 +670,33 @@ function docSheet(id: DocId) {
   ov.querySelector('[data-close]')!.addEventListener('click', close);
 }
 
+/** the character a room is resolved for: the same identity always gives the same room (residence.ts allocate) */
+const characterIdOf = (p: Profile) => (p.username || p.name || 'rider').toLowerCase();
+
+/** the accommodation chooser as a sheet over the current screen (the profile's "Accommodation" row, the hall entrance) */
+function accommodationSheet(current: Accommodation | null | undefined, who: Profile, onSave: (a: Accommodation | null) => void) {
+  const ov = document.createElement('div');
+  ov.className = 'overlay fade-in';
+  ov.innerHTML = `<div class="panel" style="max-height:86vh;overflow:auto;text-align:left">
+    <h2 class="title">Accommodation</h2>
+    <p class="muted small">Your hall or hostel first, then its block, then the room types it has. Your character's room stays the same each visit.</p>
+    <div id="acSheet"></div>
+    <p class="small auth-note" id="acNote" role="status" hidden></p>
+    <button class="btn btn-primary" id="acSave">Save</button>
+    <button class="btn btn-link" id="acCancel">Cancel</button></div>`;
+  app.appendChild(ov);
+  let chosen: Accommodation | null = current ?? null;
+  const form = accommodationForm(ov.querySelector<HTMLElement>('#acSheet')!, current, characterIdOf(who), (a) => { chosen = a; ov.querySelector<HTMLElement>('#acNote')!.hidden = true; });
+  ov.querySelector('#acCancel')!.addEventListener('click', () => ov.remove());
+  ov.querySelector('#acSave')!.addEventListener('click', () => {
+    if (!form.empty() && !form.complete()) { const n = ov.querySelector<HTMLElement>('#acNote')!; n.hidden = false; n.textContent = 'Choose the block and room type, or "I don\'t stay in a hall or hostel".'; return; }
+    // (an unchanged selection keeps its room; a new one resolves its own stable room)
+    const same = current && chosen && current.buildingId === chosen.buildingId && current.categoryId === chosen.categoryId && current.blockId === chosen.blockId;
+    ov.remove();
+    onSave(form.empty() ? null : same ? current! : chosen);
+  });
+}
+
 // ---------- onboarding ----------
 
 function createRider(draft: Profile, editing = false) {
@@ -684,6 +719,10 @@ function createRider(draft: Profile, editing = false) {
           </select></div>
           <p class="muted small">Every kilometre you ride counts for your hall.</p>
         </div>
+        <div class="field"><label>Accommodation</label>
+          <div class="row" style="gap:8px;align-items:center"><span class="grow small" id="acSum">${esc(accommodationLabel(draft.residence))}</span><button type="button" class="btn btn-ghost" id="acEdit" style="width:auto">Change</button></div>
+          <p class="muted small">Where your character lives: walk into your own room at your hall.</p>
+        </div>
         <div class="field"><label for="dept">Department</label>
           <input id="dept" list="depts" autocomplete="off" value="${esc(draft.department)}" placeholder="Start typing, like Computer Science">
           <datalist id="depts">${DEPARTMENTS.flatMap((g) => g.departments.map((d) => `<option value="${esc(d)}" label="${esc(g.college)}"></option>`)).join('')}<option value="${OTHER_DEPARTMENT}"></option></datalist>
@@ -703,6 +742,7 @@ function createRider(draft: Profile, editing = false) {
     app.querySelectorAll('#gender button').forEach((b) => b.classList.toggle('on', b === el));
     applyLook(draft);
   });
+  on('#acEdit', 'click', () => accommodationSheet(draft.residence, draft, (a) => { draft.residence = a; $('acSum').textContent = accommodationLabel(a); }));
   $('hall').addEventListener('change', () => {
     draft.hall = $<HTMLSelectElement>('hall').value;
     $('hallDot').style.background = hallById(draft.hall).color;
@@ -829,6 +869,8 @@ let brakeDown: ((e: KeyboardEvent) => void) | null = null;
 let brakeUp: ((e: KeyboardEvent) => void) | null = null;
 /** Explore's free ride: held keys steer, pedal and brake */
 let freeKeys: ((e: KeyboardEvent) => void) | null = null;
+/** the walking feature's interface while the character is on foot (ui/walkui.ts) */
+let walkUi: ReturnType<typeof startWalking> | null = null;
 
 interface PlayOpts {
   /** bots for Quick Match */
@@ -948,6 +990,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
       ${isExplore(route) ? `<div class="free-pad" id="freePad" hidden>
         <p class="fp-hint">${isTouch ? 'Hold the arrows to steer · tap Pedal to ride · tap Brake to stop, hold it to reverse' : 'Steer ← → (A / D) · ↑ (W) pedal · ↓ (S) brake, hold to reverse'}</p>
         <button class="fp-btn fp-end" id="fpEnd">Finish ride</button>
+        <button class="fp-btn fp-end" id="fpWalk" style="top:calc(162px + var(--safe-t, 0px))">Get down and walk</button>
         <div class="fp-steer"><button class="fp-btn" id="fpLeft" aria-label="Steer left">◀</button><button class="fp-btn" id="fpRight" aria-label="Steer right">▶</button></div>
         <div class="fp-feet"><button class="fp-btn fp-brake" id="fpBrake">Brake</button><button class="fp-btn fp-go" id="fpGo">Pedal</button></div>
       </div>` : ''}
@@ -1322,6 +1365,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
         <h2 class="title">Paused</h2>
         <button class="btn btn-primary" data-p="continue">Continue</button>
         ${lr || opts.challengeRide ? '' : '<button class="btn btn-ghost" data-p="restart">Restart</button>'}
+        ${isExplore(route) && !game.walking && !game.inRoom ? '<button class="btn btn-ghost" data-p="walk">Get down and walk</button>' : ''}
         <button class="btn btn-ghost" data-p="map">${icons.map} View map</button>
         ${lr ? '' : `<button class="btn btn-ghost" data-p="photo">${icons.camera} Photo mode</button>`}
         <button class="btn btn-ghost" data-p="sound">Sound: ${settings.sound ? 'On' : 'Off'}</button>
@@ -1343,6 +1387,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
       if (p === 'exit') { cleanup(); leave(); }
       if (p === 'photo') photoMode();
       if (p === 'map') viewMap(ov);
+      if (p === 'walk') getDownAndWalk();
       if (p === 'pad') padPanel(ov);
       if (p === 'speed') { setRideSpeed(settings.rideSpeed === 'faster' ? 'normal' : 'faster'); b.textContent = `Bike speed: ${settings.rideSpeed === 'faster' ? 'Faster' : 'Normal'}`; }
     }));
@@ -1470,6 +1515,23 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
   const leaveSolo = () => (opts.eventPlay ? opts.eventPlay.leave() : opts.mission ? fx.missionsScreen() : route.id === 'explore' ? explorePicker(route.from.name, route.to.name) : route.id === 'freshers-tour' ? explorePicker() : home(opts.event ? 'events' : opts.rivals || opts.challenge ? 'race' : route.kind === 'race' ? 'ride' : 'home'));
   $('pause').addEventListener('click', togglePause);
   app.querySelector('#endTour')?.addEventListener('click', () => { cleanup(); explorePicker(route.from.name, route.to.name); });
+  // the walking feature (Volume A): the bike stops and stays parked, the character walks; "Ride bicycle" beside it
+  function getDownAndWalk() {
+    resume();
+    if (game.walking || game.inRoom) return;
+    if (!game.freeRiding) startFreeRide();
+    const r = game.getDown();
+    if (!r.ok) { toast(esc(r.reason ?? 'You cannot get down here.'), [], 5000); return; }
+    const fp = app.querySelector<HTMLElement>('#freePad');
+    if (fp) fp.hidden = true;
+    walkUi = startWalking({
+      app, game,
+      accommodation: () => profile?.residence,
+      chooseAccommodation: (done) => accommodationSheet(profile!.residence, profile!, (a) => { profile!.residence = a; saveProfile(profile!); done(); }),
+      onRemount: () => { walkUi = null; if (fp) fp.hidden = false; },
+      toast: (t) => toast(esc(t), [], 6000),
+    });
+  }
   // Explore's free ride: the arrived card hands the bike over; held buttons or keys steer, pedal and brake
   function startFreeRide() {
     const pad = app.querySelector<HTMLElement>('#freePad');
@@ -1502,9 +1564,10 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     brakeEl.addEventListener('pointerdown', (e) => { e.stopPropagation(); e.preventDefault(); game.freeBrake(true); });
     for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) brakeEl.addEventListener(ev, () => game.freeBrake(false));
     pad.querySelector('#fpEnd')!.addEventListener('click', () => { pad.hidden = true; game.endFreeRide(); });
+    pad.querySelector('#fpWalk')!.addEventListener('click', () => getDownAndWalk());
     for (const ev of ['pointerdown', 'touchstart'] as const) pad.addEventListener(ev, (e) => e.stopPropagation());
     freeKeys = (e) => {
-      if (e.target instanceof HTMLInputElement || !game.freeRiding) return;
+      if (e.target instanceof HTMLInputElement || !game.freeRiding || game.walking || game.inRoom || game.inLobby) return;
       const on = e.type === 'keydown';
       if (e.code === 'ArrowLeft' || e.code === 'KeyA') held.left = on;
       else if (e.code === 'ArrowRight' || e.code === 'KeyD') held.right = on;
@@ -1562,7 +1625,7 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     if (f.actPressed('recenter')) game.recenterCamera();
     if (f.actPressed('bell') && performance.now() / 1000 - bellAt > 0.35) { bellAt = performance.now() / 1000; sfx.bell(); }
     if (f.actPressed('map') && minimapEl) minimapEl.classList.toggle('big');
-    if (game.freeRiding) {
+    if (game.freeRiding && !game.walking && !game.inRoom && !game.inLobby) {
       // steering: only while the controller is the device in use, so the keys keep working alongside it
       if (pad.mode === 'pad') {
         // eased toward the stick (the smoothing setting): a time constant of up to about a fifth of a second
@@ -1616,6 +1679,8 @@ function ride(tutorial: boolean, route: Route, opts: PlayOpts) {
     brakeDown = brakeUp = null;
     if (freeKeys) { removeEventListener('keydown', freeKeys); removeEventListener('keyup', freeKeys); }
     freeKeys = null;
+    walkUi?.stop();
+    walkUi = null;
     game.setBrake(false);
     releasePad();
     padOff();

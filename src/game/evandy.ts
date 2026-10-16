@@ -15,7 +15,10 @@
 // - the environs: the unfinished open frame and its red-earth yard to the north, the sandy field and scrub to the east.
 import * as THREE from 'three';
 import { createSite, render, slab, window_, type Kit, type Spec, type Style } from './blocks';
-import { box, canvas, speckle, tri2, type Part } from './modelkit';
+import { box, canvas, merge, speckle, tri2, type Part } from './modelkit';
+import { concrete } from './concrete';
+import { groundHeight as gh } from './relief';
+import { gates } from './gates';
 import { PASSAGES, SOLIDS } from './solids';
 import { wallSolids } from './enkit';
 import { BUILDINGS, ROADS, NODE_XZ } from './campusmap';
@@ -727,9 +730,16 @@ const site: Spec = {
       // the gate: posts at the block's corner and at the wall, a lintel over, the brown bar leaves between
       const za = bz + 0.05, zb = zf - 0.15;
       parts.push([box(g0 - 0.15, g0 + 0.15, 0, 2.6, zb - 0.1, zf + 0.15), '#ece6d8'], [box(g0 - 0.15, g0 + 0.15, 2.2, 2.6, za, zb), '#ece6d8'], [box(g0 - 0.2, g0 + 0.2, 2.6, 2.7, za - 0.05, zf + 0.2), '#dcd3c0']);
-      for (let z = za + 0.08; z < zb - 0.05; z += 0.12) parts.push([box(g0 - 0.02, g0 + 0.02, 0.05, 2.15, z - 0.018, z + 0.018), '#5a4a3a']);
-      for (const y of [0.1, 1.0, 2.1]) parts.push([box(g0 - 0.03, g0 + 0.03, y - 0.03, y + 0.03, za, zb), '#5a4a3a']);
-      wallSolids(g0, za, g0, zf, 0.3); }
+      // (the walking feature, Volume A section 11: the bar leaf is a hinged gate that opens for a walker and closes once
+      // they have left; it is built on its own, hinged at the block's corner, and its collision follows it: gates.ts)
+      { const L = zb - za, leafParts: Part[] = [];
+        for (let t = 0.08; t < L - 0.05; t += 0.12) leafParts.push([box(t - 0.018, t + 0.018, 0.05, 2.15, -0.02, 0.02), '#5a4a3a']);
+        for (const y of [0.1, 1.0, 2.1]) leafParts.push([box(0, L, y - 0.03, y + 0.03, -0.03, 0.03), '#5a4a3a']);
+        const leaf = new THREE.Mesh(merge(leafParts), concrete(0.2)); leaf.castShadow = true; leaf.userData.noCollide = true;
+        leaf.position.y = gh(g0, (za + zb) / 2);
+        gates.register({ id: 'evandy:slot-gate', buildingId: 'evandy', hinge: [g0, za], dir: [0, 1], length: L, open: -1.35, leaf });
+        wallSolids(g0, zb, g0, zf, 0.3); }
+      }
     wallRun([SITE.x0, SITE.zFence], [SITE.x0, SITE.z0]); wallRun([SITE.x0, SITE.z0], [SITE.x1, SITE.z0]); wallRun([SITE.x1, SITE.z0], [SITE.x1, -1216]);
     // east of the gate: the curved pale entrance wall to the commercial block (R18)
     { const pts: P2[] = Array.from({ length: 7 }, (_, i) => { const t = (i / 6) * Math.PI / 2; return [SITE.gate[1] + 0.5 + Math.sin(t) * 1.0, SITE.zFence - (1 - Math.cos(t)) * 2.6] as P2; });

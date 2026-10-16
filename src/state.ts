@@ -1,3 +1,4 @@
+import { validAccommodation, type Accommodation } from './game/residence';
 import type { BikeStyle } from './game/models';
 import { newSocial, normalizeSocial, type SocialSettings } from './features/community/model';
 
@@ -24,6 +25,9 @@ export interface Profile {
   ownedBikes: string[];
   /** this week's riding for your hall */
   week: { id: string; km: number; claimed: boolean };
+  /** where your character lives for the walking feature (residence.ts): the saved hall or hostel, block and room
+   *  category, and the stable room they resolve to; absent until chosen (older profiles keep everything else) */
+  residence?: Accommodation | null;
   gender: Gender;
   department: string;
   /** Snapchat username, without the @ */
@@ -297,6 +301,8 @@ export function normalizeProfile(saved: Partial<Profile>): Profile {
   p.events = { ...newEventsProgress(), ...p.events };
   p.mapDex = { seen: p.mapDex?.seen ?? [], claimed: p.mapDex?.claimed ?? [] };
   p.social = normalizeSocial(p.social);
+  // a saved accommodation is checked again against the current catalogue; one it no longer offers is cleared, not used
+  if (p.residence && !validAccommodation(p.residence)) p.residence = null;
   return p;
 }
 

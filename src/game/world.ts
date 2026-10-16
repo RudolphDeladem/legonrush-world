@@ -7,6 +7,8 @@ import { UPSA_FINISH, UPSA_LAND } from './upsawestplan';
 import type { Track } from './track';
 import { asphaltTexture, billboardTexture, concreteTexture, labelTexture, pitchTexture } from './textures';
 import { terrainGrass } from './soilground';
+import { buildLodges } from './lodges';
+import { gates } from './gates';
 import { buildBuildings, type BuildingStyle } from './facades';
 import { buildDiasporaHalls, isDiasporaHall } from './halls';
 import { BLOCK_SITES } from './sites';
@@ -502,6 +504,8 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
   // the new UGBS graduate building's site (ugbsnew.ts)
   group.add(buildUgbsNewGrounds());
   group.add(buildDjGrounds());
+  // the porter's lodges at the hall and hostel entrances, and the entrance gates a walker opens (lodges.ts, gates.ts)
+  group.add(buildLodges(), gates.group);
   yield 'step';
 
   // trees, kerbs, lamps, stops, signs, cars, kiosks and people (see life.ts)

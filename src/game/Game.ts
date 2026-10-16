@@ -18,6 +18,11 @@ import { roadClearance, setNightLights } from './life';
 import { onEarth } from './science';
 import { meshBlocked, warmCollision, warmOne } from './meshcollide';
 import { createWeatherFx, type WeatherFx } from './weatherfx';
+import { buildWalker, type WalkerFigure } from './walker';
+import { buildRoom, type BuiltRoom } from './roomkit';
+import type { Accommodation } from './residence';
+import { gates } from './gates';
+import { lobbyScene } from './lodges';
 
 /** 'pedal' is one tap of the pedal; see Game.pedal() for press/release */
 export type Action = 'left' | 'right' | 'jump' | 'boost' | 'pedal';
@@ -280,7 +285,7 @@ const inPts = (pts: Float32Array, x: number, z: number) => {
  * outline across an open passage through its ground floor (solids.ts: PASSAGES).
  */
 function freeBlocked(x: number, z: number) {
-  if (inStairs(x, z)) return true;
+  if (inStairs(x, z) || gates.blocked(x, z)) return true;
   // trunks, posts and what the models draw at bike height (walls, fences, parked cars, planters) stop it everywhere,
   // on the roads too; the map's building outlines only off the roads (some reach a little over a road's edge)
   if (solidAt(x, z, 0.3) || meshBlocked(x, z)) return true;
@@ -693,6 +698,8 @@ export class Game {
   }
 
   setLook(look: RiderLook, bikeColor: string) {
+    this.walkerLook = look;
+    this.walker?.setLook(look);
     this.rider.setLook(look);
     this.rider.setBikeColor(bikeColor);
   }
@@ -1173,7 +1180,7 @@ export class Game {
    */
   recoverBike() {
     const f = this.free;
-    if (!f || this.phase !== 'riding') return false;
+    if (!f || this.phase !== 'riding' || this.foot) return false;
     const r = roadAt(f.x, f.z);
     if (!r) return false;
     // facing along the road the way the bike was already heading
@@ -1223,6 +1230,7 @@ export class Game {
   }
   /** the end of a free ride: the ride is over, as when a route is finished */
   endFreeRide() {
+    this.clearFoot();
     if (!this.free) return;
     this.free = null;
     this.phase = 'finished';
@@ -1312,6 +1320,203 @@ export class Game {
   }
   private drone: { x: number; z: number; a: number } | null = null;
 
+  // ---------- on foot (the owner's Volume A: get down and walk, enter your own room) ----------
+  /** the character on foot: the bike stays where it was left (parked, the rider hidden), one walker moves */
+  private foot: { x: number; z: number; y: number; yaw: number; v: number; phase: number } | null = null;
+  private walker: WalkerFigure | null = null;
+  private walkerLook: RiderLook | null = null;
+  /** held walking controls: forward (-1 back .. 1 forward) and turn (-1 left .. 1 right) */
+  walkInput = { fwd: 0, turn: 0 };
+  get walking() { return !!this.foot && !this.room; }
+  get footXZ(): [number, number] | null { return this.foot ? [this.foot.x, this.foot.z] : null; }
+  /** the way the walker faces (radians, the bike's convention: facing (-sin, -cos)) */
+  get footYaw() { return this.foot?.yaw ?? 0; }
+  /** where the parked bike is */
+  get bikeXZ(): [number, number] { const p = this.rider.root.position; return [p.x, p.z]; }
+  /**
+   * Get down and walk: the bike stops and stays where it is (its identity and place kept), the selected character
+   * steps off beside it onto open ground, and the walking controls take over. A guided ride stops where it is first.
+   * Returns a reason when there is nowhere safe to stand (the rider stays on the bike).
+   */
+  getDown(): { ok: boolean; reason?: string } {
+    if (this.phase !== 'riding' || this.foot) return { ok: false, reason: 'Not riding.' };
+    if (!this.free) this.freeRide();
+    const f = this.free;
+    if (!f) return { ok: false, reason: 'The bike cannot stop here.' };
+    f.v = 0; f.cruise = false; f.stopping = false; f.steer = 0;
+    this.freeInput = { steer: 0, brake: false, throttle: 0, brakeForce: 1 };
+    const hx = -Math.sin(f.yaw), hz = -Math.cos(f.yaw), g0 = groundFrom(f.x, f.z, f.y);
+    // beside the bike (either side), then behind it: open, level ground, not stairs, water, a wall or a road's traffic
+    const tries: [number, number][] = [[-hz * 0.9, hx * 0.9], [hz * 0.9, -hx * 0.9], [-hz * 1.4, hx * 1.4], [hz * 1.4, -hx * 1.4], [-hx * 1.2, -hz * 1.2]];
+    for (const [ox, oz] of tries) {
+      const x = f.x + ox, z = f.z + oz, g = groundFrom(x, z, g0);
+      if (freeBlocked(x, z) || Math.abs(g - g0) > 0.35) continue;
+      this.foot = { x, z, y: g, yaw: f.yaw, v: 0, phase: 0 };
+      this.walkInput = { fwd: 0, turn: 0 };
+      this.rider.showRider(false);
+      const w = this.walkerFigure();
+      w.root.position.set(x, g, z); w.root.rotation.set(0, f.yaw, 0);
+      this.scene.add(w.root);
+      this.speed = 0;
+      return { ok: true };
+    }
+    return { ok: false, reason: 'There is no clear ground beside the bike here: ride on a little and try again.' };
+  }
+  /** back on the bike: only beside it (no second bike, no copied character) */
+  rideBike(): { ok: boolean; reason?: string } {
+    if (!this.foot || this.room) return { ok: false };
+    const [bx, bz] = this.bikeXZ;
+    if (Math.hypot(this.foot.x - bx, this.foot.z - bz) > 3) return { ok: false, reason: 'Walk back to your bike to ride it.' };
+    this.walker?.root.removeFromParent();
+    this.foot = null;
+    this.rider.showRider(true);
+    if (this.free) { this.free.v = 0; this.free.cruise = false; }
+    return { ok: true };
+  }
+  /** the selected character's look for the walker (set with the rider's) */
+  private walkerFigure() {
+    if (!this.walker) this.walker = buildWalker();
+    if (this.walkerLook) this.walker.setLook(this.walkerLook);
+    return this.walker;
+  }
+  private updateWalk(dt: number) {
+    const w = this.foot!, inp = this.walkInput;
+    this.time += dt;
+    warmOne(w.x, w.z);
+    w.yaw -= inp.turn * 2.4 * dt;
+    const target = inp.fwd > 0 ? 1.7 * inp.fwd : inp.fwd < 0 ? 0.9 * inp.fwd : 0;
+    w.v += (target - w.v) * Math.min(1, dt * 6);
+    const hx = -Math.sin(w.yaw), hz = -Math.cos(w.yaw), step = w.v * dt, g0 = groundFrom(w.x, w.z, w.y);
+    const sgn = w.v < 0 ? -1 : 1;
+    const ok = (x: number, z: number) => !freeBlocked(x + hx * sgn * 0.3, z + hz * sgn * 0.3) && !freeBlocked(x, z) && Math.abs(groundFrom(x, z, g0) - g0) < 0.45;
+    if (Math.abs(step) > 1e-4) {
+      const nx = w.x + hx * step, nz = w.z + hz * step;
+      if (ok(nx, nz)) { w.x = nx; w.z = nz; } else if (ok(nx, w.z)) w.x = nx; else if (ok(w.x, nz)) w.z = nz; else w.v = 0;
+    }
+    w.y = groundFrom(w.x, w.z, g0);
+    w.phase += Math.abs(w.v) * dt * 5.2;
+    const fig = this.walker!;
+    fig.root.position.set(w.x, w.y, w.z);
+    fig.root.rotation.y = w.yaw;
+    fig.pose(w.phase, Math.min(1, Math.abs(w.v) / 1.2));
+    this.speed = Math.abs(w.v);
+    gates.update(dt, { x: w.x, z: w.z }, { x: this.rider.root.position.x, z: this.rider.root.position.z });
+    this.emitHud(null);
+  }
+  private footCamera(dt: number) {
+    const cam = this.camera, w = this.foot!, fx = -Math.sin(w.yaw), fz = -Math.cos(w.yaw);
+    const gy = w.y, bx = w.x - fx * 4.2, bz = w.z - fz * 4.2;
+    this.camTarget.set(bx, Math.max(groundFrom(bx, bz, gy), gy) + 2.3, bz);
+    this.updateLook(dt);
+    this.lookAt.set(w.x + fx * 6, gy + 1.3, w.z + fz * 6);
+    const head = this.walker!.root.position;
+    this.applyLook(this.camTarget, this.lookAt, head);
+    // (the building check measures from the rider's head: the walker's here)
+    const saved = this.rider.root.position.clone();
+    this.rider.root.position.copy(head);
+    this.clearCamera(this.camTarget);
+    this.rider.root.position.copy(saved);
+    cam.position.lerp(this.camTarget, Math.min(1, dt * 5));
+    cam.lookAt(this.lookAt);
+    const fov = innerWidth < innerHeight ? 70 : 58;
+    cam.fov += (fov - cam.fov) * Math.min(1, dt * 4);
+    cam.updateProjectionMatrix();
+  }
+
+  /** ends walking and any room or reception view (a ride's end, a restart): back to the rider on the bike */
+  private clearFoot() {
+    this.setBeacon(null);
+    if (this.room) { this.room.built.dispose(); this.room = null; }
+    this.showLobby(false);
+    gates.occupy(null);
+    if (this.foot) { this.walker?.root.removeFromParent(); this.foot = null; this.rider.showRider(true); }
+  }
+  /** the L01 reception (the Diaspora-group halls' indoor porter's counter), shown on entering such a hall */
+  private lobby: ReturnType<typeof lobbyScene> | null = null;
+  showLobby(on: boolean) {
+    if (on && !this.lobby && this.foot) { this.lobby = lobbyScene(); this.scene.add(this.lobby.group); }
+    if (!on && this.lobby) { this.lobby.group.traverse((o) => { if (o instanceof THREE.Mesh) o.geometry.dispose(); }); this.lobby.group.removeFromParent(); this.lobby = null; this.snapCam = true; }
+  }
+  get inLobby() { return !!this.lobby; }
+
+  /** the nearby-list target: a soft column over the chosen entrance (a marker, never a teleport) */
+  private beacon: THREE.Mesh | null = null;
+  setBeacon(at: [number, number] | null) {
+    if (!at) { this.beacon?.removeFromParent(); return; }
+    if (!this.beacon) {
+      this.beacon = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 14, 16, 1, true).translate(0, 7, 0), new THREE.MeshBasicMaterial({ color: '#ffd21f', transparent: true, opacity: 0.35, depthWrite: false, side: THREE.DoubleSide }));
+      this.beacon.userData.noCollide = true;
+    }
+    this.beacon.position.set(at[0], groundHeight(at[0], at[1]), at[1]);
+    this.scene.add(this.beacon);
+  }
+
+  // ---------- the allocated room (Volume A sections 5, 6 and 16) ----------
+  private room: { built: BuiltRoom; view: number; yaw: number; pitch: number; ret: { x: number; z: number; y: number; yaw: number }; buildingId: string } | null = null;
+  /** look input in the room, -1..1 (keys or a stick), and drag deltas (radians) */
+  roomLook = { x: 0, y: 0 };
+  get inRoom() { return !!this.room; }
+  get roomInfo() { return this.room ? { views: this.room.built.views.map((v) => v.label), view: this.room.view, singles: this.room.built.singles, bunks: this.room.built.bunks, layout: this.room.built.layout, buildingId: this.room.buildingId } : null; }
+  /**
+   * Into the player's own room: built away from the campus, the only interior that exists, with the selected
+   * character standing in it; the campus is left exactly as it was. Returns a reason when it cannot be shown.
+   */
+  enterRoom(acc: Accommodation): { ok: boolean; reason?: string } {
+    if (!this.foot || this.room) return { ok: false, reason: 'Walk to the entrance first.' };
+    const built = buildRoom(acc);
+    if (!built) return { ok: false, reason: 'This room type has no interior yet.' };
+    this.scene.add(built.group);
+    const w = this.foot, ret = { x: w.x, z: w.z, y: w.y, yaw: w.yaw };
+    // the character stands just inside the door, facing into the room
+    const fig = this.walkerFigure();
+    fig.root.position.copy(built.spawn); fig.root.rotation.set(0, Math.PI, 0); fig.pose(0, 0);
+    // the first view: from the far side of the room back toward the door and the character
+    const v0 = built.views[0], [x0, x1, , z1] = v0.bounds;
+    built.views.unshift({ label: v0.label, pos: new THREE.Vector3((x0 + x1) / 2, built.spawn.y + 1.6, z1 - 0.75), yaw: Math.PI, bounds: v0.bounds });
+    this.room = { built, view: 0, yaw: Math.PI, pitch: -0.08, ret, buildingId: acc.buildingId };
+    gates.occupy(acc.buildingId);
+    this.recenterCamera(true);
+    this.speed = 0;
+    return { ok: true };
+  }
+  /** back to the entrance on foot, where the room was entered from; the bike still where it was parked */
+  leaveRoom() {
+    const r = this.room;
+    if (!r) return;
+    r.built.dispose();
+    this.room = null;
+    gates.occupy(null);
+    const f = this.foot!, fig = this.walkerFigure();
+    Object.assign(f, r.ret, { v: 0 });
+    fig.root.position.set(f.x, f.y, f.z); fig.root.rotation.set(0, f.yaw, 0);
+    this.snapCam = true;
+  }
+  /** the next look-around anchor of the unit (inner room, en-suite, service strip) */
+  nextRoomView() {
+    const r = this.room;
+    if (!r) return '';
+    r.view = (r.view + 1) % r.built.views.length;
+    r.yaw = r.built.views[r.view].yaw; r.pitch = -0.08;
+    return r.built.views[r.view].label;
+  }
+  /** turns the room view by a drag (radians) */
+  turnRoom(dx: number, dy: number) {
+    const r = this.room; if (!r) return;
+    r.yaw -= dx; r.pitch = Math.max(-0.75, Math.min(0.6, r.pitch - dy));
+  }
+  private roomCamera(dt: number) {
+    const r = this.room!, cam = this.camera, v = r.built.views[r.view];
+    r.yaw -= this.roomLook.x * dt * 1.8;
+    r.pitch = Math.max(-0.75, Math.min(0.6, r.pitch - this.roomLook.y * dt * 1.2));
+    // the camera stays inside the room it looks from (its bounds less a margin): never through a wall
+    const p = v.pos, [x0, x1, z0, z1] = v.bounds;
+    cam.position.set(Math.max(x0 + 0.25, Math.min(x1 - 0.25, p.x)), p.y, Math.max(z0 + 0.25, Math.min(z1 - 0.25, p.z)));
+    cam.lookAt(cam.position.x + Math.sin(r.yaw) * Math.cos(r.pitch), cam.position.y + Math.sin(r.pitch), cam.position.z + Math.cos(r.yaw) * Math.cos(r.pitch));
+    const fov = innerWidth < innerHeight ? 78 : 66;
+    cam.fov += (fov - cam.fov) * Math.min(1, dt * 4);
+    cam.updateProjectionMatrix();
+  }
+
   /** Guided ride: move on from the place it stopped at. */
   continueTour() {
     if (!this.guideWait) return;
@@ -1326,6 +1531,7 @@ export class Game {
   }
 
   private reset() {
+    this.clearFoot();
     for (const w of this.walkers) { w.d = -1e9; w.mesh.visible = false; }
     for (const o of this.obstacles) this.dynamic.remove(o.mesh);
     for (const c of this.coinList) this.dynamic.remove(c.mesh);
@@ -1452,6 +1658,9 @@ export class Game {
       return;
     }
 
+    // on foot (the walking feature): the bike stays parked; in the allocated room nothing outside moves
+    if (this.phase === 'riding' && this.room) { gates.update(dt, null); return; }
+    if (this.phase === 'riding' && this.foot) return this.updateWalk(dt);
     if (this.phase === 'riding' && this.free) return this.updateFree(dt);
     if (this.phase === 'riding') {
       this.time += dt;
@@ -2202,6 +2411,13 @@ export class Game {
       const fov = innerWidth < innerHeight ? 66 : 52;
       cam.fov += (fov - cam.fov) * Math.min(1, dt * 3);
       cam.updateProjectionMatrix();
+    } else if (this.room) {
+      this.roomCamera(dt);
+    } else if (this.lobby) {
+      cam.position.copy(this.lobby.cam); cam.lookAt(this.lobby.look);
+      cam.fov = innerWidth < innerHeight ? 74 : 62; cam.updateProjectionMatrix();
+    } else if (this.foot) {
+      this.footCamera(dt);
     } else if (this.free && this.camView === FLY_OVER) {
       this.flyOver(dt, -Math.sin(this.free.yaw), -Math.cos(this.free.yaw));
     } else if (this.free) {

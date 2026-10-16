@@ -1,0 +1,31 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;height:100%;overflow:hidden;background:#222}</style></head>
+<body><canvas id="c" style="width:100%;height:100%;display:block"></canvas>
+<script type="module">
+// room previews: ?b=building&c=category[&block=..]&v=view index|top&yaw=radians
+import * as THREE from 'three';
+import { buildRoom, ROOM_ORIGIN } from '/src/game/roomkit.ts';
+import { allocate } from '/src/game/residence.ts';
+const q = new URLSearchParams(location.search);
+const r = new THREE.WebGLRenderer({ canvas: document.getElementById('c'), antialias: true });
+r.setSize(innerWidth, innerHeight, false); r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#222');
+const acc = allocate('preview-rider', q.get('b'), q.get('c'), q.get('block') ?? undefined);
+const room = acc && buildRoom(acc);
+const cam = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.05, 200);
+if (room) {
+  scene.add(room.group);
+  const v = q.get('v') ?? '0';
+  if (v === 'top') {
+    // a check view only: the ceiling hidden from above (never a gameplay camera)
+    room.group.traverse((o) => { if (o.isMesh && o.geometry.boundingBox == null) o.geometry.computeBoundingBox(); });
+    const bb = new THREE.Box3().setFromObject(room.group); const c = bb.getCenter(new THREE.Vector3());
+    cam.position.set(c.x + 0.01, 14, c.z + 0.01); cam.up.set(0, 0, -1); cam.lookAt(c.x, 0, c.z); cam.fov = 45; cam.near = 11.2;
+  } else {
+    const view = room.views[+v] ?? room.views[0], yaw = +(q.get('yaw') ?? view.yaw);
+    cam.position.copy(view.pos); cam.lookAt(view.pos.x + Math.sin(yaw), view.pos.y - 0.25, view.pos.z + Math.cos(yaw));
+  }
+  cam.updateProjectionMatrix();
+  window.__info = { singles: room.singles, bunks: room.bunks, wood: room.wood, paint: room.paint, layout: room.layout, views: room.views.map((x) => x.label), roomId: acc.roomId };
+} else window.__info = { error: 'no room', acc };
+r.render(scene, cam); window.__done = true;
+</script></body></html>

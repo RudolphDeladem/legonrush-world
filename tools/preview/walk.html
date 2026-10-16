@@ -1,0 +1,29 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;height:100%;overflow:hidden;background:#000}</style></head>
+<body><canvas id="c" style="width:100%;height:100%;display:block"></canvas>
+<script type="module">
+// drives the real Game: an Explore ride, the free bike moved to a residence entrance, get down, walk, room, back
+import { Game } from '/src/game/Game.ts';
+import { exploreRoute } from '/src/game/routes.ts';
+import { placeByName } from '/src/game/campusmap.ts';
+import { BIKES } from '/src/data/campus.ts';
+import { residenceById, allocate } from '/src/game/residence.ts';
+import { gates } from '/src/game/gates.ts';
+import { LODGE_PLACEMENTS } from '/src/game/lodges.ts';
+const game = new Game(document.getElementById('c'));
+window.game = game; window.gates = gates; window.LODGES = LODGE_PLACEMENTS;
+await game.ready;
+const q = new URLSearchParams(location.search);
+const res = residenceById(q.get('b') ?? 'jean-nelson');
+const e = res.entrances[+(q.get('e') ?? 0)];
+game.setRoute(exploreRoute(placeByName('Balme Library'), placeByName('Jean Nelson Aka Hall')));
+game.setLook({ gender: 'female', body: 'regular', skin: '#6b4226', outfit: 'hall-tee', jersey: '#16a3a3', helmet: '#f5c518', accessories: ['backpack'] }, '#f2c230');
+game.start(BIKES[0], true);
+await new Promise((r) => setTimeout(r, 400));
+game.freeRide();
+// put the stopped bike a few metres out from the entrance, facing it
+const b = (e.facing * Math.PI) / 180, ux = Math.sin(b), uz = -Math.cos(b), back = +(q.get('back') ?? 9);
+const f = game.free; f.x = e.at[0] - ux * back; f.z = e.at[1] - uz * back; f.yaw = Math.atan2(-ux, -uz); f.v = 0;
+window.__entrance = e; window.__res = res;
+window.allocate = allocate;
+window.__done = true;
+</script></body></html>
