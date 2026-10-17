@@ -1,5 +1,56 @@
 # LEGONRUSH — start here (new Claude account)
 
+## Latest update: 2026-10-17 (read this first)
+
+The run of 2026-10-15 → 10-17 (session branch `claude/legonrush-buildings-rebuild-jq9rwh`) ran out of credits after
+batch 199. `main` is up to date with that branch. CI and Pages were green for every push, the last code commit being
+`50310fc` (the Evandy basketball court). Nothing is half-finished. Batches 165–199 are one entry each in
+`docs/handover/TASKS.md`. The chat of this run is not in the repository: the owner asked not to upload full chat
+histories to the public repo. The decisions are in the per-brief docs below.
+
+What this run did, newest first, with the folder holding each one's ledger and sheets:
+- 199: Evandy basketball court markings (FIBA layout) (`docs/evandy-audit/images/court.jpg`).
+- 198: the old single-storey residence east of Bani's south end, replacing three generic blocks; rusted roofs, gates
+  (`src/game/oldhouse.ts`, `docs/old-residence/`).
+- 197: the Evandy Hostel 45-page reconstruction audit, EV-001 to EV-024 (`docs/evandy-audit/ledger.md`). It covers the
+  Main tank deck, the east range facing Bani, the glass and metal gates, Annex A and B tanks, the I05/I06 buildings and
+  the market-style building. The audit's protected RED end (Main's west end) must stay untouched.
+- 196: the abandoned concrete shell behind New Pent Block B (`src/game/shell.ts`).
+- 195: the UGBS graduate building from the owner's video (`docs/ugbs-new/ledger.md`).
+- 191–194: the New Pent blocks. A and B are identical and C is their mirror image, all built from Block A
+  (`docs/pent-blocks/CORRECTION_BRIEF.md`).
+- 190: campus labels and generic-building storeys (`docs/campus-labels/README.md`).
+- 185–189: walking, rooms, gates and lodges (`docs/rooms-walking/`).
+- 165–184: the 65-slide correction, the Diaspora halls, the Balme Library audit, soil and grass, the Legon Hall and
+  Mensah Sarbah entrances, and the Okponglo junction (each has its folder under `docs/`).
+
+Open items the owner has not yet answered:
+- **Evandy:**
+  - Annex A's door position (provisional, at the bend of the south bar).
+  - Evandy's map entrance point for routes and the walk popup is still the old inferred point, not the new front door
+    (data/geography/registry/access.json; needs `npm run geo`).
+  - A second basketball hoop at the south end (offered).
+  - The close-up views listed in `docs/evandy-audit/ledger.md`.
+- **Old residence:** whether a room stands under the big tree at its north-east corner (the crop hides it). The gate
+  positions were chosen, not shown.
+- **Elsewhere:** the electricity pylon in front of New Pent Block C's entrance, Amerley Lane missing from the map, the
+  TF hostel gate, Evandy Annex B's courtyard, and facade variety per New Pent wing.
+
+How this run worked, which a new session should keep doing:
+- **Before/after renders:** shoot the "before" set from the old build (`.preview/hdist`, port 5299). Build the "after"
+  into a second outDir and serve it on port 5300, with a copy of `shoot.mjs` pointed at 5300
+  (`npx vite build --config .preview/vite.halls.mts --outDir .preview/hdist2`;
+  `npx vite preview ... --port 5300 --outDir .preview/hdist2`). Two builds can then be rendered side by side
+  without stashing. Shots take 2–5 minutes each on software GL: run them in the background.
+- **Registering an owner's aerial on the game:** fit an affine from 15–20 matched roof corners (see
+  `src/game/evandyplan.ts`).
+- **Generated hedges and props:** to keep them out of an area without changing the random sequence elsewhere, consume
+  the same `rand()` calls and skip, as `life.ts` does for New Pent and Evandy.
+- **The owner's style:** reply briefly and only about the current request; do not list earlier work. Push to the
+  branch and to `main`, confirm CI and Pages, and send the before/after images.
+
+---
+
 Updated 2026-10-15, when account 1's third run (2026-10-13 15:41 → 10-15, batches 124–164) ran out of credits. The
 history so far:
 - account 1 (10-06 → 10-09): batches 1–63;
@@ -36,7 +87,7 @@ it (UPSA, IPS Road, Okponglo, La Bawaleshie). Live: https://rudolphdeladem.githu
 
 Before doing anything:
 1. Read CLAUDE.md, then docs/migration/NEW_ACCOUNT_START_HERE.md and docs/migration/PROJECT_MASTER_HANDOVER.md,
-   then docs/handover/HANDOVER.md and docs/handover/TASKS.md (164 completed batches), then the latest sections of
+   then docs/handover/HANDOVER.md and docs/handover/TASKS.md (199 completed batches), then this file's "Latest update" section and the latest sections of
    docs/LEGON_BUILDINGS.md (from "Rendering: flicker and frame cost" to the end: the UPSA junction, the 30-pair
    brief, IPS Road, the Agriculture side, Commonwealth and the Great Hall, UPSA, La Bawaleshie, Limbo, the Fire
    Station, IPS Road opposite UPSA, UPSA landmarks, Bani/PRESEC, Okponglo, the in-ride map and fly-over camera).
