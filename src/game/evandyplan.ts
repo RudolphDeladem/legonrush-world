@@ -60,8 +60,8 @@ export const SHELTER = [596.5, 602, -1206.4, -1204.6] as R4;
 export const SIGN: P2 = [603, -1201];
 /** the oval planting islands in the frontage (R03, R11, R14, P01): centre, half lengths */
 export const ISLANDS: { c: P2; a: number; b: number }[] = [{ c: [579, -1214], a: 4, b: 1.8 }, { c: [556, -1212], a: 3.6, b: 1.6 }, { c: [612, -1213.5], a: 3, b: 1.4 }];
-/** the west yard: grey gravel, the green basketball slab (the mapped pitch, V2 1.56 s, 21.16 s) with its hoop */
-export const YARD = { box: [506, 551, -1284, -1222] as R4, slab: [[514.5, -1273.1], [513, -1245.4], [530.7, -1244.4], [532.2, -1272.1]] as P2[], hoop: [522.3, -1270.5] as P2 };
+/** the west yard: grey gravel, the green basketball slab (the mapped pitch, V2 1.56 s, 21.16 s), a hoop at each end */
+export const YARD = { box: [506, 551, -1284, -1222] as R4, slab: [[514.5, -1273.1], [513, -1245.4], [530.7, -1244.4], [532.2, -1272.1]] as P2[] };
 /** the big tree in the court below the upper pair (V1, M2) and the trees in the narrow inner courts */
 export const TREES: { at: P2; r: number }[] = [{ at: [608, -1279], r: 6.5 }, { at: [596.5, -1250], r: 3.2 }, { at: [575, -1245], r: 2.4 }, { at: [622, -1241], r: 2.4 }];
 /** 9 the unfinished open frame north of the compound and its red-earth yard (M2, V1 18.00 s; status uncertain) */

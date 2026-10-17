@@ -1063,9 +1063,16 @@ const site: Spec = {
     // (the owner's eight-pair brief, pair 4: the yard is open hardstand; only the strip along the west wall keeps its earth)
     for (const [c, a, b] of [[[509, -1238], 2.4, 7]] as [P2, number, number][]) flatPlane(k, oval(c, a, b, 18), 0.07, soilMat(), 2);
     k.meshes.push(courtMesh(YARD.slab, 0.08));
-    { const [hx, hz] = YARD.hoop;
-      parts.push([new THREE.CylinderGeometry(0.08, 0.1, 3.05, 8).translate(hx, 1.52, hz - 0.8), '#5b6066'], [box(hx - 0.06, hx + 0.06, 2.9, 3.0, hz - 0.8, hz + 0.1), '#5b6066'], [box(hx - 0.9, hx + 0.9, 2.9, 3.95, hz + 0.1, hz + 0.16), '#f2f2f0'], [new THREE.TorusGeometry(0.23, 0.02, 4, 12).rotateX(Math.PI / 2).translate(hx, 3.05, hz + 0.45), '#d8592c']);
-      SOLIDS.add(hx, hz - 0.8, 0.25); }
+    // the two hoops (the owner, 2026-10-17: a second at the south end), each over its painted basket (courtMesh: the
+    // rim 1.575 m in from the baseline): the grey post just past the baseline, its arm, the white board, the rim
+    { const f = fit(YARD.slab), vc = (f.z0 + f.z1) / 2;
+      for (const s of [-1, 1]) {
+        const u = s < 0 ? f.x0 + 2.075 : f.x1 - 2.075, [rx, rz] = wpt(f, u, vc), dx = s * f.axis[0], dz = s * f.axis[1], ry = Math.atan2(dx, dz);
+        const at = (g: THREE.BufferGeometry) => g.rotateY(ry).translate(rx, 0, rz);
+        parts.push([at(new THREE.CylinderGeometry(0.08, 0.1, 3.05, 8).translate(0, 1.52, 1.8)), '#5b6066'], [at(box(-0.06, 0.06, 2.9, 3.0, 0.39, 1.8)), '#5b6066'],
+          [at(box(-0.9, 0.9, 2.9, 3.95, 0.33, 0.39)), '#f2f2f0'], [at(new THREE.TorusGeometry(0.23, 0.02, 4, 12).rotateX(Math.PI / 2).translate(0, 3.05, 0)), '#d8592c']);
+        SOLIDS.add(rx + dx * 1.8, rz + dz * 1.8, 0.25);
+      } }
     // the inner court (pair 7): open weathered hardstand, the circular pattern worn through to smoother grey repairs in
     // patches; no planted island
     for (const [c, a, b] of [[[600, -1276], 9, 4], [[622, -1272], 7, 3.5], [[585, -1279], 5, 2.6], [[575, -1215], 8, 2.5], [[628, -1210], 6, 2.2]] as [P2, number, number][]) flatPlane(k, oval(c, a, b, 22), 0.065, hardMat(), 3);

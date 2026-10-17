@@ -46,7 +46,7 @@ only shared function touched is `balconies()`, which gains an optional skip that
 | EV-011 | Annex B facade | Unchanged, open | B's outer and courtyard faces need their own close-ups. Nothing from C12 is used for B. |
 | EV-012 | Main front entrance | Done | I11: the dark awning panes are withdrawn. The three glazing bands now have warm gold frames (five lights by two) over a cream sill. The ground entry is a recessed glass gate in gold frames, with the open leaf, the pier with its sign and the closed leaf. The entry leads into a through way (provisional) to the rear court. The yellow columns and the EVANDY pediment are kept. |
 | EV-013 | Main rear metal gate | Done (pattern unverified) | At the rear end of the way through: a metal bar gate in the fence's bronze-brown (I11), its two leaves standing open (Evandy's entrances are open). The leaf count and bar pattern are unverified: there is no rear photograph. |
-| EV-014 | Annex A glass gate | Done (placement provisional) | The shared I09/I10 gate with ANNEX A over it, on the court face where the south bar's two arms meet. Nothing in the evidence marks A's door; please confirm or mark it. |
+| EV-014 | Annex A glass gate | Done (placement confirmed) | The shared I09/I10 gate with ANNEX A over it, on the court face where the south bar's two arms meet. The owner's marked picture of batch 200 (the blue arrow down the middle of the south bar) puts the door there: confirmed, unchanged (`images/annex-a-door.jpg`). |
 | EV-015 | Annex B glass gate | Done | The same gate in B's existing doorway (the middle of its south face, under its tanks, per the owner's earlier notes), with ANNEX B over the canopy. |
 | EV-016 | BLUE (I05) | Done | Cream body north of the Tropiks block. Its east face, south to north: a carved timber double door on dark steps, a broad grilled window, a smaller grilled window; a low corrugated roof falling to the front over a pale fascia. |
 | EV-017 | VIOLET (I06) | Done | Its body is on the same line and touches BLUE. Only the veranda comes forward: terracotta diamond lattice along the front and its end, slim pale posts, a low dark-brown fascia, dark glazing and doors behind, base planting. The blue service unit stands at the south end. |
@@ -73,10 +73,24 @@ only shared function touched is `balconies()`, which gains an optional skip that
 
 ## Smallest useful follow-up views
 
-- Annex A: one front oblique and one close typical bay (its balcony and window profiles); where its door is.
+- Annex A: one front oblique and one close typical bay (its balcony and window profiles).
 - Annex B: its outer and courtyard faces close up.
 - Main facing Bani: a closer BLUE-side view (window, rail and recess profiles; the bay count).
 - Main's rear entrance: straight on, for the gate's leaves and bars.
 - Each tank-bearing section: a close oblique with the adjoining roof edge (levels and counts).
 - BLUE and VIOLET: one oblique across the joint between the two bodies, and their unseen ends.
 - The market-style building: a front or side view or a sketch of its intended size.
+
+## Batch 200 (the owner's two marked pictures)
+
+- **Court:** a second hoop at the south end. Both hoops now stand over the painted baskets (rim 1.575 m in from the
+  baseline, the post just past it); the old one moved about a metre to its basket. A generated tree stood on the court
+  over the north basket and is gone (`life.ts`: no trees on the court).
+- **Workers' huts:** the three circled buildings round the unfinished frame behind Annex B (map outlines by the road and
+  east of the frame) are the huts where the frame's workers rest and keep their things. Wine-red corrugated aluminium
+  sheet walls and a low gable roof on each mapped outline, light timber corner posts, a sheet door on the side facing
+  the frame, a small opening with a sheet flap on the other side (door side and opening chosen, not shown;
+  `src/game/workersheds.ts`).
+- **Annex A's door:** confirmed where it already stood (EV-014).
+- **Checks:** route lengths and the stuck scan of the area unchanged from before; no road blocked; no NaN geometry.
+  Sheet: `images/batch200-before-after.jpg`.

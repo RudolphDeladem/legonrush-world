@@ -752,8 +752,9 @@ export function buildCampusLife() {
     sp = localSpecies(x, z) ?? sp;
     const leaf = pick(rand, LEAF[sp]).map(C);
     const m = yawM(x, 0, z, rand() * 6.28, sc), shade = 0.9 + rand() * 0.18;
-    // (none against the New Pent blocks' walls: the owner's Pent Block brief)
-    if (nearNewPentWing(x, z, 6)) return;
+    // (none against the New Pent blocks' walls: the owner's Pent Block brief; none on Evandy's basketball court, where
+    // one stood over the north basket)
+    if (nearNewPentWing(x, z, 6) || onEvandyCourt(x, z)) return;
     cells.p(x, z).add(T[sp], m, leaf, shade);
     SOLIDS.add(x, z, 0.35 * sc);
   };
