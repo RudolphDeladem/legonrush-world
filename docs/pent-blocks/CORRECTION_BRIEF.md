@@ -123,3 +123,23 @@ Views: front, angled, elevated court, Block B front, Block C close and far, and 
 
 - The individual window and balcony arrangement of each wing (items 3 and 12-14: stepped wings and the small window column on the right wing). The shared wing design is kept; the photos do not show every wing.
 - The vegetation on Block B, which has no photo, follows Block A's because the owner says the two are the same.
+
+## The open ground behind Block B toward Evandy (owner, 2026-10-17)
+
+The owner's aerials (pictures 3 and 4) show open scrub between the back of New Pent Block B and Evandy Hostel. The only
+structure there is an abandoned four-storey concrete shell. The aerial registers on the site markers (Evandy, Bani,
+Pent Blocks B and C) at 0.945 m per pixel, which puts the shell on the map's outline osm:relation/19263473. That
+outline matches picture 4 bar for bar.
+
+- **Removed** (`corrections.json` exclude): the second ring building east of the shell (osm:relation/19263472) and the small hut south-east of it (osm:way/720896592). Neither exists on the ground.
+- **Modelled** (`src/game/shell.ts`): the shell, as a bare reinforced-concrete frame.
+  - Four storeys at 3.2 m.
+  - Slabs on the mapped outline with its courtyard.
+  - A grid of 0.4 m columns about 4.5 m apart, with no walls.
+  - Old grey concrete with dark patches on the top slab (the aerial's blotches) and streaks down the slab edges.
+  - Rusty starter bars standing on the top slab.
+  - Scrub and young trees in the overgrown courtyard.
+  - The ground-floor columns are solid to the bike and the walker.
+- **Kept:** the red-roofed house at the zone's north-east corner by the road (#104/#638). It is a real roofed house in picture 4, sitting on the edge of the blue line.
+
+![shell before and after](images/shell-before-after.png)

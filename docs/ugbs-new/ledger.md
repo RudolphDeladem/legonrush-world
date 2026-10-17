@@ -64,3 +64,27 @@ That puts the new building's rounded end at (975, −656). The frame is removed;
   earlier brief crossing the mapped slip lane at the south-east corner; reported, not changed here.
 - NaN scan: 7358 meshes, none bad.
 - build ok; smoke ok.
+
+## Corrected from the owner's clear photo and video (2026-10-17)
+
+The owner sent a clear rendering of the building and a 9-second video of it as built. The video is the authority where
+they differ: the drum is glazed, without the rendering's terracotta fins. The plan registered on the satellite in
+batch 161 is kept.
+
+- **Drum:**
+  - **Glazing:** a glass curtain wall on the four upper floors, with a grid of thin dark mullions and a transom in each floor. The chunky cream slab bands are now thin grey slab lines.
+  - **Ground storey:** terracotta panels with tall, narrow, teal-glazed slots in pale frames.
+  - **Ledge:** a thin pale ledge stands out round the curve over the ground storey.
+  - **Roof:** a broad saucer-like canopy with a deep pale fascia and dark ribs under it.
+- **Screen wall:** in front of the drum to the north-west, a low curved screen of perforated brick (piers and courses with openings), with tan end caps and a concrete walk before it.
+- **Entrance front north of the drum (it was hidden behind the drum before):**
+  - **Slab:** a tall slab faced in large pale stone panels, with UNIVERSITY OF GHANA BUSINESS SCHOOL near its top.
+  - **Beside it to the north:** a recessed terracotta band and a thin pale blade.
+  - **On top:** a terracotta block behind.
+  - **Toward the drum:** the open stair landings with their slab edges and rails.
+- **Site:** mown lawn round the building, as in the video; the bare working ground stays only in the yard to the east. The site lights are slim black poles with a small head.
+
+![video before and after](images/video-before-after.png)
+![real vs game](images/real-vs-game.png)
+
+Still provisional: the rear and east faces, and the exact slot count on the drum's ground storey (the video shows one side).

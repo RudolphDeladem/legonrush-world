@@ -2,6 +2,14 @@
   "about": "Source features that the evidence shows are wrong. 'exclude': they stay in the master dataset (flagged, confidence low) but are kept out of the game map; a feature is only excluded when independent evidence contradicts it. 'heights': storey counts and heights that reference photos contradict (the footprint is not touched). 'reclass': ground areas whose mapped use the reference photos and the owner contradict (the outline is kept). 'reshape': an outline that sits off the building Google Open Buildings and the owner's imagery show is replaced by a measured ring (game metres); the OSM id and tags stay. 'addAreas': ground areas the owner's imagery shows and the sources lack (woods round the School of Law and International House), measured on the registered imagery. 'addWays': ways the owner's photos show and the sources lack (Commonwealth's stairway from the gate houses to the forecourt, Volta's forecourt); their ends are inserted into the way they meet so the network stays connected, except an end marked 'open' (at the foot of a flight of steps up to a door).",
   "exclude": [
     {
+      "id": "osm:relation/19263472",
+      "reason": "Owner's aerials of 2026-10-17 (pictures 3 and 4): open scrub between the back of New Pent Block B and Evandy Hostel. The only structure there is the abandoned concrete shell (osm:relation/19263473, modelled in shell.ts); this ring outline east of it matches nothing on the ground."
+    },
+    {
+      "id": "osm:way/720896592",
+      "reason": "Owner's aerials of 2026-10-17: inside the open ground between the back of New Pent Block B and Evandy, where the owner says the shell is the only structure; removed at the owner's instruction."
+    },
+    {
       "id": "osm:way/765261444",
       "reason": "OSM building=yes + amenity=place_of_worship named 'lizalex' (8,486 m\u00b2) filling the strip between Elizabeth Sey Hall and Alexander Kwapong Hall. Google Open Buildings detects only small structures inside it and the Sentinel-2 composite shows open ground; no other source knows a church there. Treated as an erroneous edit."
     },
