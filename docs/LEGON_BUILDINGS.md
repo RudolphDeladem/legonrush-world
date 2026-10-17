@@ -3827,3 +3827,22 @@ The comparison is `docs/engineering-ses/sheet-layout.jpg`.
 - **Car park:** bays in three rows with a planted island of trees, and cars where the satellite shows them.
 - **Side road:** the side road into the car park's north-west corner.
 - **Trees:** placed where the satellite shows them.
+
+## Evandy Hostel: the detailed reconstruction audit (the owner, Revision 2)
+
+The completion ledger for EV-001 to EV-024 is `docs/evandy-audit/ledger.md`. The comparisons are in
+`docs/evandy-audit/images/`.
+
+- **Identity:** C12 is MAIN BLOCK's side facing Bani (I13 BLUE), its east side. The RED-arrow end opposite, the west
+  end, is already corrected and stays untouched.
+- **Main:** the four wings are joined. The central strip between their inner ends is a deck a storey under the eaves
+  carrying the tanks (I03), with the stair tower behind the glazed entrance bay. The new east range joins the east
+  ends. The front glazing has gold frames, the entry a glass gate, and the rear a bronze-brown metal gate standing
+  open.
+- **Annex A:** its two bent bars are joined by a lower connection with eight tanks. It has the shared glass gate; its
+  position is the owner's to confirm.
+- **Annex B:** the courtyard ring is kept. The north range is split by a lower tank strip, and tanks run along the
+  court seams. The roof is pink, apart from Main and A. It has the shared glass gate.
+- **The west yard:** the I05 and I06 bodies stand aligned north of the Tropiks block, with only the veranda coming
+  forward. The building by the basketball slab is now a one-storey market-style building: an open aisle through the
+  middle, enclosed louvred sides and no blue awning.

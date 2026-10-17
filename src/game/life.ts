@@ -32,6 +32,7 @@ import { ownsJj } from './jjplan';
 import { ownsDj } from './djplan';
 import { inTcLocal } from './tennisplan';
 import { nearNewPentWing } from './newpent';
+import { inMarketMouth } from './evandyplan';
 
 /** real road widths by class: main, through, residential, service lane, footpath */
 export const ROAD_WIDTH = [9, 7.4, 6.2, 4.6, 2.6];
@@ -1286,6 +1287,8 @@ function hedges(cells: Cells, hedge: Model, pts: Float32Array, cx: number, cz: n
         const c = green[(rand() * 3) | 0];
         // (no hedges round the New Pent blocks: the owner's Pent Block brief)
         if (nearNewPentWing(x, z, 3)) { rand(); made++; t += piece + 1.2 + rand() * 2; continue; }
+        // (nor across the mouths of the open aisle through Evandy's market-style building: the Evandy audit, C16)
+        if (inMarketMouth(x, z)) { rand(); made++; t += piece + 1.2 + rand() * 2; continue; }
         cells.p(x, z).add(hedge, new THREE.Matrix4().compose(new THREE.Vector3(x, 0, z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(uz, ux) * -1), new THREE.Vector3(piece, 0.9 + rand() * 0.2, 1)), [c, c.clone().multiplyScalar(1.15)]);
         made++;
       }

@@ -25,7 +25,7 @@ import { BUILDINGS, ROADS, NODE_XZ } from './campusmap';
 import { coverOverlay, crownTiles, hash2, vnoise2, type Crown } from './scrubkit';
 import { mergeMeshes, mergedSite, prism, strip, type P2, type R4 } from './medkit';
 import {
-  ENTRY, FIELD, FRAME, GATEHOUSE, ISLANDS, PARKS, RED_YARD, RING, SCRUB, SHELTER, SHOPS, SIGN, SITE, TREES, WINGS, YARD, fit, type Wing,
+  A_DECK, A_TANKS, B_SEAM, MKT, B_TANKS, EAST_RANGE, ENTRY, FIELD, FRAME, GATEHOUSE, ISLANDS, MAIN_DECK, MAIN_TANKS, PARKS, RED_YARD, RING, SCRUB, SHELTER, SHOPS, SIGN, SITE, TREES, WINGS, YARD, fit, type Wing,
 } from './evandyplan';
 
 const ST = 3.2, CREAM = '#efe6d2', CREAM_D = '#e3d6bb', OCHRE = '#d6ad55', RAIL = '#2b2622', GOLD = '#c9a85a';
@@ -175,9 +175,10 @@ function groundWindow(p: Part[], k: Kit, a: number, b: number, z: number, out: n
  *  that wall and the two side walls run from the ground to the eaves, standing out as deep as the balconies, so that
  *  on the ground floor they frame two windows; each balcony a slab with a solid lower wall and a dark patterned railing
  *  above it; on the top floor an arch over each balcony. The bay is the facade texture's: the recess spans 0.29-0.95. */
-function balconies(k: Kit, x0: number, x1: number, z: number, out: 1 | -1, floors: number, gables: boolean, ochre: boolean) {
+function balconies(k: Kit, x0: number, x1: number, z: number, out: 1 | -1, floors: number, gables: boolean, ochre: boolean, skip?: (u: number) => boolean) {
   const len = x1 - x0, n = Math.max(1, Math.round(len / 7.8)), b = len / n, parts: Part[] = [], d = 1.1, tf = 0.4 + floors * ST;
   for (let i = 0; i < n; i++) {
+    if (skip?.(x0 + i * b + b / 2)) continue;
     const a0 = x0 + i * b + b * 0.29, a1 = x0 + i * b + b * 0.95, am = (a0 + a1) / 2, zf = z + out * d, zm = Math.min(z, zf), zM = Math.max(z, zf);
     // the side walls and the central dividing wall, ground to eaves
     for (const [ax, w] of [[a0, 0.14], [a1, 0.14]] as [number, number][]) parts.push([box(ax - w, ax + w, 0, tf, zm, zM), CREAM_D]);
@@ -399,7 +400,11 @@ function wingSpec(w: Wing): Spec {
     keep: [],
     extras: (k) => {
       if (svc) frontWestEnd(k, f);
-      if (w.south === 'balcony') balconies(k, svc ? f.x0 + SVC : f.x0, f.x1, f.z1, 1, w.floors, !!w.gables, ochre);
+      // (the audit, C05: no balconies where Annex A's central connection stands against the north bar's face; EV-014: nor
+      // in the bay of the south bar's court face that takes Annex A's entrance)
+      const underDeck = w.id.startsWith('upper-n') ? (u: number) => { const [x] = wpt(f, u, f.z1); return x > A_DECK.x0 - 1 && x < A_DECK.x1 + 1; }
+        : w.id === 'upper-s-e' ? (u: number) => wpt(f, u, f.z1)[0] < A_GATE_X : undefined;
+      if (w.south === 'balcony') balconies(k, svc ? f.x0 + SVC : f.x0, f.x1, f.z1, 1, w.floors, !!w.gables, ochre, underDeck);
       // the recessed slot in the window column of the second bay from the wing's outer end (front-e: east; others: west)
       if (w.slot) { const n = Math.max(1, Math.round((f.x1 - f.x0) / 7.8)), b = (f.x1 - f.x0) / n, u = w.slot === 'x1' ? f.x1 - b + b * 0.13 : f.x0 + b + b * 0.13; slot(k, u, f.z1, 1, w.floors, ochre); }
       if (w.north === 'balcony') balconies(k, f.x0, f.x1, f.z0, -1, w.floors, !!w.gables, ochre);
@@ -436,32 +441,139 @@ function wingSpec(w: Wing): Spec {
   };
 }
 
-// ---------- the main entrance bay ----------
+// ---------- the shared pieces of the audit's corrections ----------
+/** a polygon clipped to the half-plane a x + b z <= c (Sutherland-Hodgman) */
+function clipHalf(poly: P2[], a: number, b: number, c: number): P2[] {
+  const out: P2[] = [], f = (p: P2) => a * p[0] + b * p[1] - c;
+  for (let i = 0; i < poly.length; i++) {
+    const p = poly[i], q = poly[(i + 1) % poly.length], fp = f(p), fq = f(q);
+    if (fp <= 0) out.push(p);
+    if ((fp < 0 && fq > 0) || (fp > 0 && fq < 0)) { const t = fp / (fp - fq); out.push([p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t]); }
+  }
+  return out;
+}
+/** a polygon pulled in toward its centroid by d (no coplanar faces with the wings it meets) */
+const shrink = (poly: P2[], d: number): P2[] => {
+  const cx = poly.reduce((s, p) => s + p[0], 0) / poly.length, cz = poly.reduce((s, p) => s + p[1], 0) / poly.length;
+  return poly.map(([x, z]) => { const l = Math.hypot(x - cx, z - cz); return [x - ((x - cx) / l) * d, z - ((z - cz) / l) * d]; });
+};
+/** the deck height of the tank-bearing sections (the owner: a few metres lower than the buildings): their roof slab at
+ *  the third-floor ceiling, a storey under the wings' eaves and some 7 m under their ridges (relative, not measured) */
+const DECK = 0.4 + 3 * ST + 0.3;
+/** a black polytank (I03's dark circles; R04, V2): the drum, its ribs, the lid, a short concrete plinth under it */
+function tank(p: Part[], x: number, z: number, r: number, y: number) {
+  const h = r > 0.7 ? 1.85 : 1.25;
+  p.push([new THREE.CylinderGeometry(r + 0.08, r + 0.08, 0.22, 14).translate(x, y + 0.11, z), '#bdb7ab']);
+  p.push([new THREE.CylinderGeometry(r, r * 0.97, h, 18).translate(x, y + 0.22 + h / 2, z), '#1c1d20']);
+  for (const t of [0.3, 0.62]) p.push([new THREE.CylinderGeometry(r + 0.02, r + 0.02, 0.06, 18).translate(x, y + 0.22 + h * t, z), '#26272a']);
+  p.push([new THREE.SphereGeometry(r, 18, 6, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, 0.25, 1).translate(x, y + 0.22 + h, z), '#1c1d20']);
+  p.push([new THREE.CylinderGeometry(r * 0.32, r * 0.32, 0.12, 12).translate(x, y + 0.22 + h + r * 0.25, z), '#2a2b2e']);
+}
+/** places parts built in a local frame (x across, y up, z out of the face) at (x, z) facing the outward normal yaw */
+const placed = (parts: Part[], glass: THREE.BufferGeometry[], x: number, z: number, yaw: number, y = 0) => {
+  const M = new THREE.Matrix4().makeRotationY(yaw).setPosition(x, y, z);
+  for (const [g] of parts) g.applyMatrix4(M);
+  for (const g of glass) g.applyMatrix4(M);
+};
+const GOLDF = '#c9a14b';
+/** the shared annex glass gate (I09 and I10, the same gate from its two sides; the owner: Annex A and Annex B share
+ *  it): warm gold frames with depth round dark glazing, a mid rail across each leaf; the left bay the doorway with its
+ *  leaf swung open and its handle, a cream pier with the no-smoking sign, the right bay a closed glazed leaf with its
+ *  pull handle; the threshold step. Local frame: the face at z 0, outward +z, centred on x 0, W wide. The unseen
+ *  bottom fittings and the leaf count beyond these two bays are not invented. */
+function glassGate(W: number, H: number, inward = true) {
+  const p: Part[] = [], gl: THREE.BufferGeometry[] = [], fw = 0.09, fd = 0.12, x0 = -W / 2, x1 = W / 2, pier = 0.42;
+  const xm = x0 + (W - pier) * 0.55, xp = xm + pier;
+  const frame = (a: number, b: number, z: number) => {
+    p.push([box(a, a + fw, 0.12, H, z, z + fd), GOLDF], [box(b - fw, b, 0.12, H, z, z + fd), GOLDF], [box(a, b, H - fw, H, z, z + fd), GOLDF], [box(a, b, 0.12, 0.12 + fw, z, z + fd), GOLDF]);
+    p.push([box(a, b, H * 0.46 - 0.04, H * 0.46 + 0.04, z, z + fd), GOLDF]);
+  };
+  // the right bay: the closed leaf
+  frame(xp, x1, 0); gl.push(box(xp + fw, x1 - fw, 0.12 + fw, H - fw, 0.05, 0.07));
+  p.push([box(xp + 0.18, xp + 0.22, H * 0.3, H * 0.62, fd, fd + 0.06), '#b9b4a8'], [box(xp + 0.18, xp + 0.22, H * 0.3, H * 0.33, 0.04, fd + 0.06), '#b9b4a8'], [box(xp + 0.18, xp + 0.22, H * 0.59, H * 0.62, 0.04, fd + 0.06), '#b9b4a8']);
+  // the pier and its sign (the red circle on white, the small red label under it)
+  p.push([box(xm, xp, 0, H + 0.4, -0.15, 0.1), '#e8d7a6'], [box(xm + 0.08, xp - 0.08, 1.35, 1.75, 0.1, 0.115), '#f4f2ee'], [new THREE.TorusGeometry(0.1, 0.018, 4, 16).translate((xm + xp) / 2, 1.58, 0.12), '#c8302a'], [box(xm + 0.1, xp - 0.1, 1.38, 1.44, 0.1, 0.12), '#d9542e']);
+  // the doorway: its fixed frame, the leaf swung open inward against its jamb, the interior's shade behind
+  p.push([box(x0, x0 + fw, 0.12, H, 0, fd), GOLDF], [box(xm - fw, xm, 0.12, H, 0, fd), GOLDF], [box(x0, xm, H - fw, H, 0, fd), GOLDF]);
+  { const L = xm - x0 - 2 * fw, leaf: Part[] = [], lg: THREE.BufferGeometry[] = [];
+    leaf.push([box(0, fw, 0.14, H - fw, 0, 0.06), GOLDF], [box(L - fw, L, 0.14, H - fw, 0, 0.06), GOLDF], [box(0, L, H - 2 * fw, H - fw, 0, 0.06), GOLDF], [box(0, L, 0.14, 0.14 + fw, 0, 0.06), GOLDF], [box(0, L, H * 0.46 - 0.04, H * 0.46 + 0.04, 0, 0.06), GOLDF]);
+    leaf.push([box(L - 0.25, L - 0.21, H * 0.3, H * 0.62, -0.06, 0), '#b9b4a8']);
+    lg.push(box(fw, L - fw, 0.14 + fw, H - 2 * fw, 0.02, 0.04));
+    const M = new THREE.Matrix4().makeRotationY(inward ? 1.35 : -1.35).setPosition(x0 + fw, 0, inward ? 0 : fd);
+    for (const [g] of leaf) g.applyMatrix4(M); for (const g of lg) g.applyMatrix4(M);
+    p.push(...leaf); gl.push(...lg); }
+  // the threshold step and the head over the opening
+  p.push([box(x0 - 0.25, x1 + 0.25, 0, 0.13, 0, 0.55), '#cfc8b8'], [box(x0 - 0.12, x1 + 0.12, H, H + 0.35, -0.1, 0.12), '#efe6d2']);
+  // a gate set on a wall (the annexes): the lobby's shade behind the doorway
+  if (!inward) p.push([box(x0 + fw, xm - fw, 0.12, H - fw, -0.02, 0.01), '#2b2723']);
+  return { p, gl };
+}
+
+// ---------- the main block's centre: the tank deck and the entrance (the audit's C02, C03, C08, C09, EV-013) ----------
+/** the deck in the entrance's frame (origin ENTRY.c, world axes), carried 0.25 m into the wings it joins so no slit shows
+ *  between them (the wings stand on their outlines' fitted boxes) */
+const MD = shrink(MAIN_DECK.map(([x, z]) => [x - ENTRY.c[0], z - ENTRY.c[1]] as P2), -0.25);
+/** the through way on the ground floor, front door to the rear court: its half width; the stair tower's back line */
+const CW = 1.6, TOWER = 3.2;
 const entrance: Spec = {
-  name: 'Evandy main block entrance', axis: [1, 0], origin: ENTRY.c, storey: ST, style: PLAIN, roofColor: '#c4633a', fascia: '#efe7d6', pitch: 0.42,
-  blocks: [{ x0: -ENTRY.w / 2, x1: ENTRY.w / 2, z0: -ENTRY.d / 2, z1: ENTRY.d / 2 - 1.5, floors: 4, faces: { z1: END } }],
-  keep: [[-5, 5, ENTRY.d / 2 - 1.5, ENTRY.d / 2 + 3]],
+  name: 'Evandy main block entrance and tank deck', axis: [1, 0], origin: ENTRY.c, storey: ST, style: PLAIN, roofColor: '#c4633a', fascia: '#efe7d6', pitch: 0.42,
+  blocks: [],
+  keep: [[-5, 5, ENTRY.d / 2 - 1.5, ENTRY.d / 2 + 3], [-7.5, 7.5, -25, 7]],
   extras: (k) => {
-    const z = ENTRY.d / 2, t = top(4), parts: Part[] = [];
-    // the paired columns, full height, each side of the glazing (R08: pale; R18, V3: ochre)
+    const z = ENTRY.d / 2, t = top(4), parts: Part[] = [], W = (x: number, zz: number): [number, number] => [x + ENTRY.c[0], zz + ENTRY.c[1]];
+    // the central strip (I03): the deck, a storey under the wings' eaves, from the wings' inner ends; at its front the
+    // stair tower behind the glazed bay, to the eaves; on the ground floor the way through, front door to rear gate
+    const deck = clipHalf(MD, 0, 1, TOWER), tower = clipHalf(clipHalf(MD, 0, -1, -TOWER), 0, 1, z - 0.9);
+    for (const [poly, y1] of [[deck, DECK], [tower, t - 0.4]] as [P2[], number][]) {
+      if (poly.length < 3) continue;
+      parts.push([prism(poly, 3.6, y1), CREAM]);
+      parts.push([prism(clipHalf(poly, 1, 0, -CW), 0, 3.6), CREAM], [prism(clipHalf(poly, -1, 0, -CW), 0, 3.6), CREAM]);
+    }
+    parts.push([prism(tower, t - 0.4, t - 0.15), '#d8d3c8'], [prism(deck, DECK - 0.02, DECK + 0.08), '#cdc8bc']);
+    // the deck's parapet along its open edges (the waists to the inner courts, the rear), its tanks
+    const edge = (a: P2, b: P2) => parts.push([strip([a, b], DECK, DECK + 0.85, 0.11), '#ece5d4'], [strip([a, b], DECK + 0.85, DECK + 0.92, 0.15), '#dcd3c0']);
+    for (let i = 0; i < deck.length; i++) { const a = deck[i], b = deck[(i + 1) % deck.length]; if (Math.abs(a[1] - TOWER) > 0.01 || Math.abs(b[1] - TOWER) > 0.01) edge(a, b); }
+    for (const [x, zz, r] of MAIN_TANKS) tank(parts, x - ENTRY.c[0], zz - ENTRY.c[1], r, DECK + 0.08);
+    // the faces into the inner courts and the rear: a louvred window a floor; the rear's first floor a band of them
+    for (const [a, b] of [[MD[1], MD[2]], [MD[5], MD[6]]] as [P2, P2][]) onFace(k, b, a, (fk, L) => { const q: Part[] = []; for (let fl = 0; fl < 3; fl++) louvreWin(q, L / 2, 0.4 + fl * ST + 1.0, 1.0, 1.3); fk.plain.push(...q); });
+    onFace(k, MD[4], MD[3], (fk, L) => { const q: Part[] = []; for (let fl = 1; fl < 3; fl++) for (const u of [L * 0.22, L * 0.78]) louvreWin(q, u, 0.4 + fl * ST + 1.0, 1.0, 1.3); fk.plain.push(...q); });
+    // the way through: its screed, a light over it
+    { const zr = MD[3][1] + ((MD[4][1] - MD[3][1]) * (CW - MD[3][0])) / (MD[4][0] - MD[3][0]) - 0.6;
+      parts.push([box(-CW, CW, 0, 0.05, zr, z - 2.5), '#cdc6b6'], [box(-CW, CW, 3.5, 3.6, zr, z - 2.5), '#e9e3d6']);
+      for (let zz = z - 5; zz > zr + 1; zz -= 6) parts.push([box(-0.3, 0.3, 3.44, 3.5, zz - 0.06, zz + 0.06), '#f4f2ea']);
+      // the rear entrance (the owner, EV-013): a metal gate in the rear opening, painted the fence's bronze-brown (I11),
+      // its two leaves standing open against the reveals (Evandy's entrances are open: the owner, 2026-10-16); the bar
+      // pattern and leaf count are unverified (no photograph of the rear)
+      const zb = zr + 0.6, BR = '#7c6c50';
+      parts.push([box(-CW - 0.15, -CW, 0, 2.9, zb - 0.1, zb + 0.15), BR], [box(CW, CW + 0.15, 0, 2.9, zb - 0.1, zb + 0.15), BR], [box(-CW - 0.15, CW + 0.15, 2.75, 2.9, zb - 0.1, zb + 0.15), BR]);
+      for (const s of [-1, 1]) {
+        const x = s * (CW - 0.1), L = CW - 0.1;
+        for (let u = 0.08; u < L - 0.02; u += 0.12) parts.push([box(x - 0.016, x + 0.016, 0.05, 2.6, zb + u - 0.016, zb + u + 0.016), BR]);
+        for (const y of [0.12, 1.3, 2.55]) parts.push([box(x - 0.025, x + 0.025, y - 0.03, y + 0.03, zb, zb + L), BR]);
+      }
+      // the rear reveals and the head over the opening, the walls' solids
+      wallSolids(...W(-CW - 0.05, zr + 0.6), ...W(-CW - 0.05, z - 2.5), 0.12); wallSolids(...W(CW + 0.05, zr + 0.6), ...W(CW + 0.05, z - 2.5), 0.12); }
+    for (const [a, b] of [[MD[1], MD[2]], [MD[5], MD[6]]] as [P2, P2][]) wallSolids(...W(...a), ...W(...b), 0.3);
+    // the paired columns, full height, each side of the glazing (R08, I11: slender, yellow)
     for (const x of [-3.5, -2.85, 2.85, 3.5]) parts.push([new THREE.CylinderGeometry(0.26, 0.28, t, 14).translate(x, t / 2, z - 0.35), OCHRE]);
-    // the front wall of the bay above the recessed ground entry: spandrels and the glazing bands, gold mullions
+    // the front wall of the bay above the entry: spandrels and the glazing bands (I11: warm yellow-gold frames in a grid
+    // of five lights by two over each band, the glass reflecting; the old dark awning panes withdrawn)
     parts.push([box(-3.2, 3.2, 3.6, t, z - 0.9, z - 0.7), CREAM]);
     for (let f = 1; f < 4; f++) {
       const y = 0.4 + f * ST + 0.4, h = ST - 1.0;
-      // (the owner's eight-pair brief, R06: the central bay's dark glazing bands with their tilting panes, between the
-      // yellow framing; not louvres like the rooms)
       k.glass.push(box(-2.3, 2.3, y, y + h, z - 0.72, z - 0.66));
-      for (let x = -2.3; x <= 2.31; x += 0.575) parts.push([box(x - 0.035, x + 0.035, y, y + h, z - 0.66, z - 0.58), '#38332d']);
-      for (const yy of [y, y + h * 0.45, y + h]) parts.push([box(-2.35, 2.35, yy - 0.04, yy + 0.04, z - 0.66, z - 0.58), '#38332d']);
-      // the tilting panes along the band's middle row, open outward
-      for (let x = -2.0; x <= 2.01; x += 1.15) { const pane = new THREE.BoxGeometry(0.5, h * 0.3, 0.03).translate(0, -h * 0.15, 0).rotateX(-0.5).translate(x, y + h * 0.75, z - 0.56); k.glass.push(pane); }
+      for (let x = -2.3; x <= 2.31; x += 0.92) parts.push([box(x - 0.045, x + 0.045, y, y + h, z - 0.66, z - 0.56), GOLDF]);
+      for (const yy of [y, y + h * 0.5, y + h]) parts.push([box(-2.36, 2.36, yy - 0.05, yy + 0.05, z - 0.66, z - 0.56), GOLDF]);
+      parts.push([box(-2.45, 2.45, y - 0.18, y - 0.06, z - 0.66, z - 0.5), '#f4efe4']);
     }
-    // the recessed ground entry: dark doors, the MAIN BLOCK sign, the shallow steps and the planters
-    parts.push([box(-2.4, 2.4, 0, 0.4, z - 2.5, z), '#d9cdb5'], [box(-2.4, 2.4, 0, 0.2, z, z + 0.6), '#d9cdb5'], [box(-2.4, 2.4, 0, 0.1, z + 0.6, z + 1.2), '#d9cdb5']);
-    parts.push([box(-1.6, 1.6, 0.4, 3.0, z - 2.5, z - 2.4), '#2e2a26'], [box(-0.03, 0.03, 0.4, 3.0, z - 2.42, z - 2.36), '#8a7d6a']);
-    k.signs.push({ text: 'MAIN BLOCK', x: 0, y: 3.35, z: z - 0.68, ry: 0, w: 2.2, colors: ['#f4f1ea', '#203a78'] });
-    for (const x of [-2.1, 2.1]) parts.push([new THREE.CylinderGeometry(0.35, 0.3, 0.5, 12).translate(x, 0.65, z - 0.5), '#b0583a']);
+    // the ground entry (I11 blue rectangle; C09): the glass gate across the way's mouth, recessed under the lintel, the
+    // MAIN BLOCK sign on the lintel, the low steps, the planters
+    parts.push([box(-3.2, 3.2, 3.0, 3.6, z - 0.95, z - 0.7), CREAM], [box(-3.2, -CW, 0, 3.0, z - 0.95, z - 0.7), CREAM], [box(CW, 3.2, 0, 3.0, z - 0.95, z - 0.7), CREAM]);
+    { const g = glassGate(2 * CW, 2.95); placed(g.p, g.gl, 0, z - 2.5, 0); parts.push(...g.p); k.glass.push(...g.gl); }
+    parts.push([box(-CW, CW, 0, 0.06, z - 2.5, z - 0.7), '#d9cdb5'], [box(-2.4, 2.4, 0, 0.1, z - 0.7, z + 0.6), '#d9cdb5']);
+    k.signs.push({ text: 'MAIN BLOCK', x: 0, y: 3.32, z: z - 0.68, ry: 0, w: 2.2, colors: ['#f4f1ea', '#203a78'] });
+    for (const x of [-2.4, 2.4]) parts.push([new THREE.CylinderGeometry(0.35, 0.3, 0.5, 12).translate(x, 0.25, z - 0.2), '#b0583a']);
+    wallSolids(...W(-3.2, z - 0.8), ...W(-CW - 0.1, z - 0.8), 0.2); wallSolids(...W(CW + 0.1, z - 0.8), ...W(3.2, z - 0.8), 0.2);
     // the pediment over the column pairs (R08, R03, R18): a pale pentagon (short upright sides, a peak), on it a white
     // semicircular band carrying EVANDY letter by letter along its curve, UG and HALL at the band's two feet, the
     // shaded half-round recess inside the band; drawn as one picture on the pediment's face, the solid behind it
@@ -491,10 +603,221 @@ const entrance: Spec = {
     // the column capitals under the pediment
     for (const x of [-3.5, -2.85, 2.85, 3.5]) parts.push([box(x - 0.36, x + 0.36, t - 0.25, t, z - 0.71, z + 0.01), '#f5efe2']);
     k.plain.push(...parts);
-    // the bay's outer walls: solid to the bike (it stands between the two mapped wing outlines)
-    const [cx, cz] = ENTRY.c, hw = ENTRY.w / 2, hd = ENTRY.d / 2;
-    wallSolids(cx - hw, cz + hd - 0.3, cx + hw, cz + hd - 0.3, 0.45);
-    wallSolids(cx - hw, cz - hd, cx + hw, cz - hd, 0.45);
+    mergeMeshes(k);
+  },
+};
+
+// ---------- the main block's east range: the side facing Bani (the audit's C12, I13 BLUE) ----------
+// The owner (I13): this is MAIN BLOCK's side toward Bani, the blue arrows; the red-arrow end opposite (the west end and
+// its junctions above) is already corrected and is not touched here. I03 shows a pale flat-roofed range along the east
+// ends of the wings, joining them past the east link, its outer face gently faceted; I13 its elevation: long
+// horizontal opening bands, pale wall between, structural piers spanning them, four tiers. Bay counts, rails and door
+// positions behind the bands are not resolved by the aerial and are provisional (one pier about every 4.2 m).
+const ER0: P2 = [642, -1246];
+const eastRange: Spec = {
+  name: 'Evandy main block east range', axis: [1, 0], origin: ER0, storey: ST, style: PLAIN, roofColor: '#c4633a', fascia: '#efe7d6', pitch: 0.42,
+  blocks: [],
+  keep: [[-5, 5, -26, 25]],
+  extras: (k) => {
+    const L = EAST_RANGE.map(([x, z]) => [x - ER0[0], z - ER0[1]] as P2), p: Part[] = [], tw = 0.4 + 4 * ST, fy = (fl: number) => 0.4 + fl * ST;
+    p.push([prism(L, 0, tw), CREAM], [prism(L, tw, tw + 0.2), '#d3cec2']);
+    const outer = L.slice(0, 6);
+    for (const run of [outer, [L[12], L[0]], [L[5], L[6]]]) p.push([strip(run, tw, tw + 0.9, 0.12), '#efe8d8'], [strip(run, tw + 0.9, tw + 0.98, 0.16), '#dcd3c0']);
+    // the outer face, facet by facet (outside on the right going north)
+    for (let i = outer.length - 1; i > 0; i--) onFace(k, outer[i], outer[i - 1], (fk, len) => {
+      const q: Part[] = [], n = Math.max(1, Math.round(len / 4.2)), b = len / n, pier = 0.55;
+      const holes: [number, number, number, number, boolean, string?][] = [];
+      for (let j = 0; j < n; j++) {
+        const u0 = j * b + pier / 2, u1 = (j + 1) * b - pier / 2;
+        // the upper tiers: a long opening over a solid parapet, the gallery's back wall in shade behind
+        for (let fl = 1; fl < 4; fl++) holes.push([u0, u1, fy(fl) + 1.0, fy(fl) + 2.65, false, '#8d8475']);
+        // the ground: a grilled window in each bay
+        holes.push([u0 + 0.5, u1 - 0.5, 1.0, 2.5, false, '#3b3833']);
+      }
+      skinZ(q, 0, -1, 0, len, tw, 0.6, holes);
+      for (let j = 0; j < n; j++) {
+        const u0 = j * b + pier / 2, u1 = (j + 1) * b - pier / 2, um = (u0 + u1) / 2;
+        // behind each band the rooms' doors and louvred windows (R07: tan-framed louvres), the soffit's light
+        for (let fl = 1; fl < 4; fl++) { const y = fy(fl); q.push([box(-0.04, 0, y + 0.1, y + 2.3, um - 0.95, um - 0.15), '#5b4632']); louvreWin(q, um + 0.75, y + 1.1, 0.9, 1.2); }
+        for (let u = u0 + 0.62; u < u1 - 0.5; u += 0.13) q.push([box(-0.34, -0.31, 1.0, 2.5, u - 0.012, u + 0.012), '#6b625a']);
+      }
+      // the floor lines standing out a little past the skin
+      for (let fl = 1; fl < 5; fl++) q.push([box(-0.68, -0.6, fy(fl) - 0.12, fy(fl) + 0.08, 0, len), '#f3eee3']);
+      fk.plain.push(...q);
+    });
+    // the court faces between the wings and the ends: a louvred window a floor
+    for (const [a, b] of [[L[8], L[7]], [L[10], L[9]], [L[12], L[11]], [L[0], L[12]], [L[6], L[5]]] as [P2, P2][]) onFace(k, a, b, (fk, len) => { const q: Part[] = []; for (let fl = 0; fl < 4; fl++) louvreWin(q, len / 2, fy(fl) + 1.0, 0.9, 1.3); fk.plain.push(...q); });
+    for (let i = 0; i < EAST_RANGE.length; i++) { const a = EAST_RANGE[i], b = EAST_RANGE[(i + 1) % EAST_RANGE.length]; wallSolids(a[0], a[1], b[0], b[1], 0.3); }
+    k.plain.push(...p);
+    mergeMeshes(k);
+  },
+};
+
+// ---------- Annex A's central tank-bearing connection (the audit's C04, C05) ----------
+/** a piecewise line through points sorted by x, at x */
+const along = (pts: P2[], x: number) => { for (let i = 1; i < pts.length; i++) if (x <= pts[i][0] || i === pts.length - 1) { const [ax, az] = pts[i - 1], [bx, bz] = pts[i]; return az + ((bz - az) * (x - ax)) / (bx - ax); } return pts[0][1]; };
+/** the facing edges of A's two bent bars (their mapped outlines): the south bar's north edge, the north bar's south edge */
+// (from the wings' fitted boxes, which their models stand on, carried 0.25 m into the bars so no slit shows)
+const wfit = (id: string) => fit(WINGS.find((w) => w.id === id)!.quad);
+const edgeOf = (ids: string[], side: 'z0' | 'z1', into: number): P2[] => ids.flatMap((id) => { const f = wfit(id), v = f[side] + (side === 'z0' ? into : -into); return [wpt(f, f.x0, v), wpt(f, f.x1, v)]; }).sort((a, b) => a[0] - b[0]);
+const A_S = edgeOf(['upper-s-w', 'upper-s-e'], 'z0', 0.25), A_N = edgeOf(['upper-n-w', 'upper-n-e'], 'z1', 0.25);
+const AD0: P2 = [613.5, -1304.5];
+/** the south bar's court face where its two arms meet (the entrance, provisional: below) */
+const ASE = wfit('upper-s-e'), A_V = wpt(ASE, ASE.x0, ASE.z1), A_E = wpt(ASE, ASE.x1, ASE.z1);
+/** the entrance along that face from its fitted corner (east of where the west arm's box stands in front of it), and
+ *  the line west of which the face's balcony bay gives way to it */
+const A_GATE_T = 5.0;
+const A_GATE_X = 620.5;
+const aDeck: Spec = {
+  name: 'Evandy Annex A tank connection', axis: [1, 0], origin: AD0, storey: ST, style: PLAIN, roofColor: '#c4633a', fascia: '#efe7d6', pitch: 0.42,
+  blocks: [],
+  keep: [[-11, 11, -7, 6], [2, 6, 13, 19]],
+  extras: (k) => {
+    const { x0, x1 } = A_DECK, l = ([x, z]: P2): P2 => [x - AD0[0], z - AD0[1]], p: Part[] = [], fy = (fl: number) => 0.4 + fl * ST;
+    // the connection between the bars (I03): their facing edges from x0 to x1, a storey under their eaves
+    const inner = (pts: P2[]) => pts.filter(([x]) => x > x0 + 0.3 && x < x1 - 0.3);
+    const poly = ([[x0, along(A_S, x0)], ...inner(A_S), [x1, along(A_S, x1)], [x1, along(A_N, x1)], ...inner(A_N).reverse(), [x0, along(A_N, x0)]] as P2[]).map(l);
+    const nS = 2 + inner(A_S).length;
+    p.push([prism(poly, 0, DECK), CREAM], [prism(poly, DECK - 0.02, DECK + 0.08), '#cdc8bc']);
+    for (const [a, b] of [[poly[0], poly[poly.length - 1]], [poly[nS - 1], poly[nS]]] as [P2, P2][]) p.push([strip([a, b], DECK, DECK + 0.85, 0.11), '#ece5d4'], [strip([a, b], DECK + 0.85, DECK + 0.92, 0.15), '#dcd3c0']);
+    // the eight tanks, two rows of four across the gap (I03)
+    for (const [x, row] of A_TANKS) { const zc = (along(A_S, x) + along(A_N, x)) / 2; tank(p, x - AD0[0], zc + (row ? 1.0 : -1.0) - AD0[1], 0.85, DECK + 0.08); }
+    // its two open ends (to the west and east parts of the gap): a louvred window a floor
+    for (const [a, b] of [[poly[poly.length - 1], poly[0]], [poly[nS - 1], poly[nS]]] as [P2, P2][]) onFace(k, a, b, (fk, len) => { const q: Part[] = []; for (let fl = 0; fl < 3; fl++) louvreWin(q, len / 2, fy(fl) + 1.0, 0.9, 1.3); fk.plain.push(...q); });
+    wallSolids(x0, along(A_S, x0), x0, along(A_N, x0), 0.3); wallSolids(x1, along(A_S, x1), x1, along(A_N, x1), 0.3);
+    // Annex A's entrance (EV-014): the shared glass gate (I09, I10) with its ANNEX A sign over it. No photograph or mark
+    // places it; it stands where the plan suggests, on the court face where the south bar's two arms meet, beside the
+    // central connection (provisional: the owner to confirm or mark the door)
+    onFace(k, l(A_V), l(A_E), (fk) => { const g = glassGate(2.4, 2.45, false); placed(g.p, g.gl, 0, A_GATE_T, -Math.PI / 2); fk.plain.push(...g.p); fk.glass.push(...g.gl); });
+    { const L = Math.hypot(A_E[0] - A_V[0], A_E[1] - A_V[1]), dx = (A_E[0] - A_V[0]) / L, dz = (A_E[1] - A_V[1]) / L, nx = -dz, nz = dx;
+      k.signs.push({ text: 'ANNEX A', x: A_V[0] + dx * A_GATE_T + nx * 0.17 - AD0[0], y: 3.2, z: A_V[1] + dz * A_GATE_T + nz * 0.17 - AD0[1], ry: Math.atan2(nx, nz), w: 1.9, colors: ['#f4efe4', '#5b3f8f'] }); }
+    k.plain.push(...p);
+    mergeMeshes(k);
+  },
+};
+
+// ---------- the ancillary buildings by the west yard (the audit's C14-C17; the owner's locator I04) ----------
+// I04 (the game, the owner's marks): BLUE, the plain building of I05, and VIOLET, the veranda building of I06, stand
+// side by side north of the Tropiks block, their enclosed bodies aligned and touching, only I06's veranda coming
+// forward; the RED arrows mark the building by the basketball slab (map outline #17) to be replaced by a low
+// market-style building (I07 as a template, I08 the real covered aisle): one storey, a walk-through centre, enclosed
+// sides with louvred windows, no blue awning. Dimensions are from the photographs' proportions (not measured).
+const AN0: P2 = [520, -1252];
+/** the two bodies (world): their common front line, the joint between them; the veranda's depth */
+const ANC = { x0: 517.4, xf: 523.6, zS: -1221.6, zJ: -1229.1, zN: -1238.2, ver: 2.3 };
+let LATTICE: THREE.MeshStandardMaterial | null = null;
+/** the terracotta lattice of I06: diagonal strips crossing in open diamonds (cut out, the shade shows through) */
+const latticeMat = () => (LATTICE ??= new THREE.MeshStandardMaterial({ roughness: 0.9, alphaTest: 0.5, side: THREE.DoubleSide, map: (() => { const t = canvas(128, 128, (g) => {
+  g.clearRect(0, 0, 128, 128); g.strokeStyle = '#c47a4c'; g.lineWidth = 15; g.lineCap = 'square';
+  for (let i = -2; i <= 2; i++) { g.beginPath(); g.moveTo(i * 64, 0); g.lineTo(i * 64 + 128, 128); g.stroke(); g.beginPath(); g.moveTo(i * 64 + 128, 0); g.lineTo(i * 64, 128); g.stroke(); }
+  g.strokeStyle = 'rgba(120,60,30,0.35)'; g.lineWidth = 3;
+  for (let i = -2; i <= 2; i++) { g.beginPath(); g.moveTo(i * 64 + 6, 0); g.lineTo(i * 64 + 134, 128); g.stroke(); }
+}); t.wrapS = t.wrapT = THREE.RepeatWrapping; return t; })() }));
+/** a louvred window on a face along z at x = at (out: its outward sign): the frame, its blades angled, a sill */
+function louvreZ(p: Part[], at: number, out: number, zc: number, w: number, y0: number, h: number) {
+  const X = (a: number, b: number) => [Math.min(at + out * a, at + out * b), Math.max(at + out * a, at + out * b)] as const;
+  p.push([box(...X(0, 0.02), y0, y0 + h, zc - w / 2, zc + w / 2), '#2f3134'], [box(...X(0, 0.08), y0 - 0.08, y0, zc - w / 2 - 0.1, zc + w / 2 + 0.1), '#e2dccd']);
+  for (const [a, b, c, d] of [[y0, y0 + h, zc - w / 2 - 0.06, zc - w / 2], [y0, y0 + h, zc + w / 2, zc + w / 2 + 0.06], [y0 + h, y0 + h + 0.06, zc - w / 2 - 0.06, zc + w / 2 + 0.06]]) p.push([box(...X(0, 0.07), a, b, c, d), '#d8d2c4']);
+  for (let y = y0 + 0.07; y < y0 + h - 0.03; y += 0.1) p.push([new THREE.BoxGeometry(0.02, 0.07, w).rotateZ(out * 0.5).translate(at + out * 0.04, y, zc), '#8e9398']);
+}
+/** the same along x at z = at */
+function louvreX(p: Part[], at: number, out: number, xc: number, w: number, y0: number, h: number) {
+  const Z = (a: number, b: number) => [Math.min(at + out * a, at + out * b), Math.max(at + out * a, at + out * b)] as const;
+  p.push([box(xc - w / 2, xc + w / 2, y0, y0 + h, ...Z(0, 0.02)), '#2f3134'], [box(xc - w / 2 - 0.1, xc + w / 2 + 0.1, y0 - 0.08, y0, ...Z(0, 0.08)), '#e2dccd']);
+  for (const [a, b, c, d] of [[xc - w / 2 - 0.06, xc - w / 2, y0, y0 + h], [xc + w / 2, xc + w / 2 + 0.06, y0, y0 + h], [xc - w / 2 - 0.06, xc + w / 2 + 0.06, y0 + h, y0 + h + 0.06]]) p.push([box(a, b, c, d, ...Z(0, 0.07)), '#d8d2c4']);
+  for (let y = y0 + 0.07; y < y0 + h - 0.03; y += 0.1) p.push([new THREE.BoxGeometry(w, 0.07, 0.02).rotateX(-out * 0.5).translate(xc, y, at + out * 0.04), '#8e9398']);
+}
+const ancillary: Spec = {
+  name: 'Evandy ancillary buildings by the west yard', axis: [1, 0], origin: AN0, storey: 3.2, style: PLAIN, roofColor: '#9a4a2e', fascia: '#efe7d6', pitch: 0.3,
+  replaces: [[520.3, -1279]],
+  blocks: [],
+  keep: [[ANC.x0 - AN0[0] - 1, ANC.xf + ANC.ver - AN0[0] + 1.5, ANC.zN - AN0[1] - 1, ANC.zS - AN0[1] + 1], [MKT.x0 - AN0[0] - 1, MKT.x1 - AN0[0] + 1, MKT.z0 - AN0[1] - 1, MKT.z1 - AN0[1] + 1]],
+  extras: (k) => {
+    const p: Part[] = [], X = (x: number) => x - AN0[0], Z = (z: number) => z - AN0[1];
+    const { x0, xf, zS, zJ, zN, ver } = ANC, h = 3.2;
+    // the two enclosed bodies, one wall line (cream render, a grey plinth)
+    for (const [za, zb] of [[zJ, zS], [zN, zJ]]) p.push([box(X(x0), X(xf), 0, h, Z(za), Z(zb)), '#efe4cc'], [box(X(x0) - 0.03, X(xf) + 0.03, 0, 0.3, Z(za) - 0.03, Z(zb) + 0.03), '#a9a39a']);
+    p.push([box(X(xf) - 0.02, X(xf) + 0.04, 0.3, h, Z(zJ) - 0.04, Z(zJ) + 0.04), '#d9cdb3']);
+    // BLUE (I05), its front read left to right (south to north): the carved timber double door on dark steps, a broad
+    // grilled window, a smaller grilled window; the low corrugated roof falling to the front over a pale fascia
+    { const f = X(xf), door = (zc: number) => {
+        p.push([box(f, f + 0.06, 0.32, 2.45, Z(zc) - 0.78, Z(zc) + 0.78), '#e9dfc8'], [box(f + 0.02, f + 0.07, 0.36, 2.35, Z(zc) - 0.68, Z(zc) + 0.68), '#a8742e']);
+        for (const s of [-1, 1]) for (const [y0, y1] of [[0.55, 1.35], [1.5, 2.2]]) p.push([box(f + 0.07, f + 0.09, y0, y1, Z(zc) + s * 0.36 - 0.24, Z(zc) + s * 0.36 + 0.24), '#8e5f24']);
+        p.push([box(f + 0.07, f + 0.1, 0.36, 2.35, Z(zc) - 0.015, Z(zc) + 0.015), '#6b4419'], [box(f + 0.09, f + 0.12, 1.15, 1.35, Z(zc) - 0.1, Z(zc) - 0.07), '#c9b37a'], [box(f + 0.09, f + 0.12, 1.15, 1.35, Z(zc) + 0.07, Z(zc) + 0.1), '#c9b37a']);
+        p.push([box(f, f + 0.55, 0, 0.3, Z(zc) - 0.9, Z(zc) + 0.9), '#45474a'], [box(f + 0.55, f + 0.95, 0, 0.15, Z(zc) - 0.9, Z(zc) + 0.9), '#45474a']); };
+      const grilled = (zc: number, w: number, y0: number, hh: number) => {
+        p.push([box(f, f + 0.05, y0, y0 + hh, Z(zc) - w / 2, Z(zc) + w / 2), '#2d2e30'], [box(f, f + 0.08, y0 - 0.08, y0, Z(zc) - w / 2 - 0.08, Z(zc) + w / 2 + 0.08), '#e6dccb']);
+        for (let z = Z(zc) - w / 2 + 0.08; z < Z(zc) + w / 2; z += 0.11) p.push([box(f + 0.05, f + 0.08, y0, y0 + hh, z - 0.014, z + 0.014), '#4d4f52']);
+        for (const y of [y0 + 0.03, y0 + hh - 0.03]) p.push([box(f + 0.05, f + 0.08, y - 0.03, y + 0.03, Z(zc) - w / 2, Z(zc) + w / 2), '#4d4f52']); };
+      door(zS - 1.4); grilled(zS - 3.9, 2.0, 1.15, 1.15); grilled(zS - 6.0, 0.9, 1.25, 1.0);
+      // the roof: corrugated sheet falling to the front, the pale fascia, its underside
+      const rise = 0.45, ov = 0.5, X0 = X(x0) - 0.3, X1 = f + ov, Za = Z(zJ) + 0.02, Zb = Z(zS) + 0.3, ang = Math.atan2(rise, X1 - X0);
+      p.push([new THREE.BoxGeometry(Math.hypot(X1 - X0, rise), 0.06, Zb - Za).rotateZ(-ang).translate((X0 + X1) / 2, h + rise / 2 + 0.08, (Za + Zb) / 2), '#b7b4ad']);
+      for (let z = Za + 0.1; z < Zb; z += 0.18) p.push([new THREE.BoxGeometry(Math.hypot(X1 - X0, rise), 0.035, 0.05).rotateZ(-ang).translate((X0 + X1) / 2, h + rise / 2 + 0.12, z), '#a6a39c']);
+      p.push([box(X1 - 0.06, X1, h - 0.1, h + 0.2, Za, Zb), '#f1ede4'], [box(f, X1, h - 0.02, h, Za, Zb), '#d7d2c6']);
+      for (const zz of [zS, zJ]) wallSolids(x0, zz, xf, zz, 0.25);
+      wallSolids(xf, zS, xf, zJ, 0.25); }
+    // VIOLET (I06): the body on the same line, the veranda in front: terracotta lattice along its front and returned at
+    // its end, slender pale posts, the low dark-brown fascia and the roof carried out over it, the dark glazing and
+    // doors in the body's front behind it, a planting line at its foot; the blue service unit at its south end
+    { const f = X(xf), fv = f + ver, za = Z(zN), zb = Z(zJ), H = 2.95;
+      for (const zc of [zb - 1.5, zb - 3.6, zb - 6.6]) { p.push([box(f, f + 0.05, 0.9, 2.3, zc - 0.75, zc + 0.75), '#2a2c2f'], [box(f, f + 0.08, 0.84, 0.9, zc - 0.8, zc + 0.8), '#e6dccb']); k.glass.push(box(f + 0.03, f + 0.06, 0.95, 2.25, zc - 0.7, zc + 0.7)); p.push([box(f + 0.05, f + 0.08, 0.9, 2.3, zc - 0.02, zc + 0.02), '#3a3b3d']); }
+      p.push([box(f, f + 0.05, 0.3, 2.35, zb - 5.3, zb - 4.4), '#3b2a20']);
+      for (const zc of [zb - 2.55, zb - 5.65, zb - 7.8]) p.push([box(f + 0.02, f + 0.12, 2.45, 2.62, zc - 0.08, zc + 0.08), '#2b2b2b']);
+      // the veranda floor and its kerb, the posts, the lattice screen (front and return), the roof
+      p.push([box(f, fv, 0, 0.18, za, zb), '#c9c2b4']);
+      const posts = [zb - 0.15, zb - 2.6, zb - 5.0, zb - 7.4, za + 0.15];
+      for (const z of posts) { p.push([box(fv - 0.18, fv - 0.06, 0.18, H, z - 0.06, z + 0.06), '#e9e6df']); SOLIDS.add(AN0[0] + fv - 0.12, AN0[1] + z, 0.15); }
+      const screen = (a: [number, number, number], b: [number, number, number], len: number, ry: number) => {
+        const g = new THREE.PlaneGeometry(len, 1.05); const uv = g.attributes.uv as THREE.BufferAttribute; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * len / 0.32, uv.getY(i) * 1.05 / 0.32);
+        g.rotateY(ry).translate(...a); void b; const m = new THREE.Mesh(g, latticeMat()); m.castShadow = true; k.meshes.push(m); };
+      const s0 = zb - 1.3, s1 = za + 0.1;
+      screen([fv - 0.12, 0.18 + 0.525, (s0 + s1) / 2], [0, 0, 0], s0 - s1, Math.PI / 2);
+      screen([(f + fv) / 2, 0.18 + 0.525, za + 0.08], [0, 0, 0], ver - 0.2, 0);
+      p.push([box(fv - 0.17, fv - 0.07, 1.23, 1.3, s1, s0), '#b86e42'], [box(fv - 0.17, fv - 0.07, 0.18, 0.24, s1, s0), '#b86e42'], [box(f, fv - 0.07, 1.23, 1.3, za + 0.03, za + 0.13), '#b86e42']);
+      for (let z = s1; z < s0; z += 0.6) SOLIDS.add(AN0[0] + fv - 0.12, AN0[1] + z, 0.2);
+      // the roof: low, carried out over the veranda; the deep dark-brown fascia; the pale soffit
+      const rt = H + 0.35, X0 = X(x0) - 0.3, X1 = fv + 0.25, ang = Math.atan2(0.4, X1 - X0);
+      p.push([new THREE.BoxGeometry(Math.hypot(X1 - X0, 0.4), 0.07, zb - za + 0.5).rotateZ(-ang).translate((X0 + X1) / 2, rt + 0.2, (za + zb) / 2), '#7a3a26']);
+      p.push([box(X1 - 0.08, X1, H - 0.05, rt + 0.05, za - 0.25, zb + 0.25), '#5a2c1e'], [box(X1 - 0.6, X1, H + 0.15, H + 0.38, za - 0.25, za + 0.05), '#5a2c1e'], [box(f, X1 - 0.08, H - 0.04, H, za, zb), '#ede8de']);
+      p.push([box(X(x0) - 0.05, f, h, H + 0.3, za, zb), '#efe4cc']);
+      // the base planting before the screen
+      for (let z = s1 + 0.5; z < s0; z += 1.4) p.push([new THREE.IcosahedronGeometry(0.32 + ((z * 7) % 1) * 0.1, 0).scale(1, 0.8, 1).translate(fv + 0.3, 0.28, z), z % 2 > 1 ? '#4f7a33' : '#5d8a3a']);
+      // the blue service unit (I06's far left; equipment, not the omitted awning)
+      p.push([new THREE.CylinderGeometry(0.42, 0.42, 1.05, 16).translate(f + 0.55, 0.62, zb - 0.6), '#2f62b0'], [box(f + 0.15, f + 0.95, 0, 0.1, zb - 1.0, zb - 0.2), '#9b978f']);
+      wallSolids(x0, zN, xf, zN, 0.25); wallSolids(x0, zN, x0, zS, 0.25);
+    }
+    // the market-style building (C15, C16): two enclosed halves under one low roof, the open aisle through the middle
+    // (I07's blue rectangle; I08's covered walk), louvred windows in the outer walls, the units' doors on the aisle; no
+    // upper storey, no blue awning
+    { const { x0: mx0, x1: mx1, z0: mz0, z1: mz1, aisle } = MKT, zc = (mz0 + mz1) / 2, eave = 3.0, ridge = 4.3, ov = 0.6;
+      for (const [za, zb, out] of [[mz0, zc - aisle, -1], [zc + aisle, mz1, 1]] as [number, number, number][]) {
+        p.push([box(X(mx0), X(mx1), 0, eave, Z(za), Z(zb)), '#efe9dc'], [box(X(mx0) - 0.03, X(mx1) + 0.03, 0, 0.35, Z(za) - 0.03, Z(zb) + 0.03), '#9c9890']);
+        // the outer long wall: louvred windows; the ends: one each
+        const zo = out < 0 ? Z(za) : Z(zb);
+        for (const xm of [X(mx0) + 1.9, X(mx0) + 5.55, X(mx1) - 1.9]) louvreX(p, zo, out, xm, 1.3, 1.1, 1.2);
+        for (const [xe, o] of [[X(mx0), -1], [X(mx1), 1]] as [number, number][]) louvreZ(p, xe, o, (Z(za) + Z(zb)) / 2, 1.2, 1.1, 1.2);
+        // the units' doors on the aisle, three a side (I08: repeated units off the walk)
+        const zi = out < 0 ? Z(zb) : Z(za), oi = -out;
+        for (const xm of [X(mx0) + 1.85, X(mx0) + 5.55, X(mx1) - 1.85]) {
+          p.push([box(xm - 0.55, xm + 0.55, 0.05, 2.3, Math.min(zi, zi + oi * 0.04), Math.max(zi, zi + oi * 0.04)), '#4a3a2c'], [box(xm - 0.65, xm + 0.65, 2.3, 2.4, Math.min(zi, zi + oi * 0.06), Math.max(zi, zi + oi * 0.06)), '#e2dccd']);
+        }
+        wallSolids(mx0, za, mx1, za, 0.25); wallSolids(mx0, zb, mx1, zb, 0.25); wallSolids(mx0, za, mx0, zb, 0.25); wallSolids(mx1, za, mx1, zb, 0.25);
+      }
+      // the aisle: its screed floor, the roof over it all (ridge along the aisle), its timber underside and rafters
+      p.push([box(X(mx0) - 0.4, X(mx1) + 0.4, 0, 0.06, Z(zc - aisle), Z(zc + aisle)), '#cfc9bc']);
+      { const R = (mz1 - mz0) / 2, D = ridge - eave, run = R + ov, drop = (D * run) / R, len = Math.hypot(run, drop), ang = Math.atan2(D, R);
+        for (const s of [-1, 1]) {
+          const zm = Z(zc) + (s * run) / 2, ym = ridge - drop / 2 + 0.06;
+          p.push([new THREE.BoxGeometry(mx1 - mx0 + 2 * ov, 0.08, len).rotateX(s * ang).translate(X((mx0 + mx1) / 2), ym, zm), '#9a4a2e']);
+          for (let x = mx0 + 0.4; x < mx1; x += 1.2) p.push([new THREE.BoxGeometry(0.08, 0.12, len).rotateX(s * ang).translate(X(x), ym - 0.1, zm), '#4a3526']);
+        } }
+      for (const x of [mx0, mx1]) p.push([tri2([X(x), eave, Z(mz0)], [X(x), eave, Z(mz1)], [X(x), ridge, Z(zc)]), '#efe9dc'], [tri2([X(x), eave, Z(mz1)], [X(x), eave, Z(mz0)], [X(x), ridge, Z(zc)]), '#efe9dc']);
+      // (the gable ends stand over the aisle's mouths: openings there under a beam)
+      for (const x of [mx0, mx1]) p.push([box(X(x) - 0.12, X(x) + 0.12, eave - 0.3, eave, Z(zc - aisle), Z(zc + aisle)), '#4a3526']);
+      PASSAGES.push([mx0 - 1, mx1 + 1, zc - aisle + 0.15, zc + aisle - 0.15]);
+    }
+    k.plain.push(...p);
     mergeMeshes(k);
   },
 };
@@ -533,7 +856,9 @@ function ringSouth(k: Kit, x0: number, x1: number, zf: number) {
         // (the owner's notes on pair 4: the block's entrance is here, at the ground of the middle section, and its
         // black polytanks stand on the roof above it)
         const m = (a + b) / 2;
-        p.push([box(m - 0.85, m + 0.85, 0.3, 2.55, zf + T, zf + T + 0.02), '#2e2a26'], [box(m - 0.05, m + 0.05, 0.3, 2.55, zf + T + 0.02, zf + T + 0.05), '#6b625a']);
+        // (the audit, EV-015: the shared annex glass gate of I09 and I10 in its doorway, the ANNEX B sign over the canopy)
+        { const g = glassGate(2.5, 2.3, false); placed(g.p, g.gl, m, zf + T + 0.02, 0, 0.3); p.push(...g.p); k.glass.push(...g.gl); }
+        k.signs.push({ text: 'ANNEX B', x: m, y: 3.3, z: zf + T + 0.04, ry: 0, w: 1.9, colors: ['#f4efe4', '#5b3f8f'] });
         p.push([box(m - 1.4, m + 1.4, 2.75, 2.9, zf + T, zf + T + 1.2), '#efede6'], [box(m - 1.3, m + 1.3, 0, 0.3, zf + T, zf + T + 1.0), '#d9d4c8'], [box(m - 1.3, m + 1.3, 0, 0.15, zf + T + 1.0, zf + T + 1.4), '#d9d4c8']);
         for (const x of [a + 0.3, a + 1.05]) grille(x, x + 0.55, 1.6, 2.5, zf + T);
         const yt = top(RING.floors) + 1.2, zt = zf - 3.0;
@@ -561,7 +886,10 @@ const ring: Spec = {
   blocks: (() => {
     const cx = (ro0 + ro1) / 2, cz = (rz0 + rz1) / 2, L = (x: number) => x - cx, M = (z: number) => z - cz;
     return [
-      { x0: L(ro0), x1: L(ro1), z0: M(rz0), z1: M(rcz0), floors: RING.floors },
+      // (the audit, C06, C07: the north range in two halves either side of the narrow lower strip that carries tanks, I03)
+      { x0: L(ro0), x1: L(B_SEAM.x0), z0: M(rz0), z1: M(rcz0), floors: RING.floors },
+      { x0: L(B_SEAM.x1), x1: L(ro1), z0: M(rz0), z1: M(rcz0), floors: RING.floors },
+      { x0: L(B_SEAM.x0), x1: L(B_SEAM.x1), z0: M(rz0), z1: M(rcz0), floors: RING.floors - 1, roof: 'flat' as const },
       { x0: L(ro0), x1: L(ro1), z0: M(rcz1), z1: M(rz1), floors: RING.floors, faces: { z1: RING_BLANK } },
       { x0: L(ro0), x1: L(rc0), z0: M(rcz0), z1: M(rcz1), floors: RING.floors, roof: 'crossZ' as const },
       { x0: L(rc1), x1: L(ro1), z0: M(rcz0), z1: M(rcz1), floors: RING.floors, roof: 'crossZ' as const },
@@ -572,6 +900,15 @@ const ring: Spec = {
     const cx = (ro0 + ro1) / 2, cz = (rz0 + rz1) / 2;
     flatPlaneLocal(k, [[rc0 - cx, rcz0 - cz], [rc1 - cx, rcz0 - cz], [rc1 - cx, rcz1 - cz], [rc0 - cx, rcz1 - cz]], 0.05, gravelMat(), cx, cz);
     ringSouth(k, ro0 - cx, ro1 - cx, rz1 - cz);
+    // the tanks along B's seams (I03): on the north strip's flat roof; along the line where the south range meets the
+    // west and east ranges, on a slab in the roofs' valley there (its level is not resolved by the top view)
+    const p: Part[] = [], strip3 = k.wallTop(RING.floors - 1) + 0.2, eave = k.wallTop(RING.floors);
+    for (const [x, z] of B_TANKS) {
+      const onStrip = x > B_SEAM.x0 - 0.5 && x < B_SEAM.x1 + 0.5;
+      if (!onStrip) p.push([box(x - cx - 1.2, x - cx + 1.2, eave - 0.1, eave + 0.12, z - cz - 1.15, z - cz + 1.15), '#cfc9bc']);
+      tank(p, x - cx, z - cz, 0.85, onStrip ? strip3 : eave + 0.12);
+    }
+    k.plain.push(...p);
     mergeMeshes(k);
   },
 };
@@ -1016,7 +1353,7 @@ const junctions: Spec = {
 };
 
 /** Evandy Hostel and its environs */
-export const evandySite = mergedSite(createSite('evandy', [...WINGS.map(wingSpec), junctions, entrance, ring, shops, admin, site]));
+export const evandySite = mergedSite(createSite('evandy', [...WINGS.map(wingSpec), junctions, entrance, eastRange, aDeck, ancillary, ring, shops, admin, site]));
 
 // ---------- planting and the ground round the compound ----------
 const SHRUB = ['#4d7032', '#5c7f36', '#3f6428', '#6a8f3f'];
