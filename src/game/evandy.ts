@@ -134,8 +134,51 @@ const gravelMat = () => (GRAVEL ??= new THREE.MeshStandardMaterial({ roughness: 
 }) }));
 let SOIL: THREE.MeshStandardMaterial | null = null;
 const soilMat = () => (SOIL ??= new THREE.MeshStandardMaterial({ roughness: 1, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4, map: canvas(64, 64, (g) => { g.fillStyle = '#8e5238'; g.fillRect(0, 0, 64, 64); speckle(g, 0, 0, 64, 64, 600, ['#844a32', '#9c5d3e', '#a98470']); }) }));
-let SLAB: THREE.MeshStandardMaterial | null = null;
-const slabMat = () => (SLAB ??= new THREE.MeshStandardMaterial({ color: '#3f9a8c', roughness: 0.85, polygonOffset: true, polygonOffsetFactor: -5, polygonOffsetUnits: -5 }));
+/** the basketball court's paint on the green slab (the owner: the court has its markings; the FIBA layout): the
+ *  boundary 0.5 m in from the slab's edge, the centre line and circle (r 1.8 m), at each end the restricted area
+ *  (4.9 m wide, 5.8 m to the free-throw line) in a darker shade, the free-throw circle (dashed inside the lane),
+ *  the lane's hash marks, the no-charge semicircle (r 1.25 m) and the three-point line (6.75 m from the basket,
+ *  straight 0.9 m in from the sidelines); white lines 8 cm wide, a little worn. Its plane is the slab's own frame. */
+function courtMesh(pts: P2[], y: number) {
+  const f = fit(pts), L = f.x1 - f.x0, Wd = f.z1 - f.z0, s = 40, cw = Math.round(L * s), ch = Math.round(Wd * s);
+  const tex = canvas(cw, ch, (g) => {
+    g.fillStyle = '#3f9a8c'; g.fillRect(0, 0, cw, ch);
+    speckle(g, 0, 0, cw, ch, 9000, ['#3a9184', '#45a194', '#398c80']);
+    const m = 0.5, Lc = L - 2 * m, Wc = Math.min(15, Wd - 2 * m), x0 = (L - Lc) / 2, y0 = (Wd - Wc) / 2, cy = Wd / 2, X = (v: number) => v * s;
+    // the restricted areas painted darker
+    g.fillStyle = '#2c7a6e';
+    for (const e of [0, 1]) { const bx = e ? x0 + Lc - 5.8 : x0; g.fillRect(X(bx), X(cy - 2.45), X(5.8), X(4.9)); }
+    g.strokeStyle = 'rgba(246,246,240,0.92)'; g.lineWidth = 0.08 * s; g.lineCap = 'butt';
+    const arc = (cx: number, cyy: number, r: number, a0: number, a1: number, dash = false) => { g.setLineDash(dash ? [0.35 * s, 0.3 * s] : []); g.beginPath(); g.arc(X(cx), X(cyy), X(r), a0, a1); g.stroke(); g.setLineDash([]); };
+    const line = (ax: number, ay: number, bx: number, by: number) => { g.beginPath(); g.moveTo(X(ax), X(ay)); g.lineTo(X(bx), X(by)); g.stroke(); };
+    g.strokeRect(X(x0), X(y0), X(Lc), X(Wc));
+    line(L / 2, y0, L / 2, y0 + Wc); arc(L / 2, cy, 1.8, 0, Math.PI * 2);
+    for (const e of [0, 1]) {
+      const d = e ? -1 : 1, base = e ? x0 + Lc : x0, ft = base + d * 5.8, hoop = base + d * 1.575;
+      // the lane and the free-throw line, its circle: solid away from the basket, dashed inside the lane
+      line(base, cy - 2.45, ft, cy - 2.45); line(base, cy + 2.45, ft, cy + 2.45); line(ft, cy - 2.45, ft, cy + 2.45);
+      if (e) { arc(ft, cy, 1.8, Math.PI / 2, Math.PI * 1.5); arc(ft, cy, 1.8, -Math.PI / 2, Math.PI / 2, true); }
+      else { arc(ft, cy, 1.8, -Math.PI / 2, Math.PI / 2); arc(ft, cy, 1.8, Math.PI / 2, Math.PI * 1.5, true); }
+      // the hash marks along the lane
+      for (const t of [1.75, 2.6, 3.45, 4.3]) for (const sy of [-1, 1]) line(base + d * t, cy + sy * 2.45, base + d * t, cy + sy * 2.6);
+      // the no-charge semicircle and the three-point line
+      const a = Math.asin(Math.min(1, (Wc / 2 - 0.9) / 6.75)), xa = hoop + d * 6.75 * Math.cos(a);
+      if (e) { arc(hoop, cy, 1.25, Math.PI / 2, Math.PI * 1.5); arc(hoop, cy, 6.75, Math.PI - a, Math.PI + a); }
+      else { arc(hoop, cy, 1.25, -Math.PI / 2, Math.PI / 2); arc(hoop, cy, 6.75, -a, a); }
+      line(base, y0 + 0.9, xa, y0 + 0.9); line(base, y0 + Wc - 0.9, xa, y0 + Wc - 0.9);
+    }
+    // wear: a few scuffed patches over the paint
+    for (let i = 0; i < 40; i++) { const x = ((i * 7919) % 997) / 997 * cw, yy = ((i * 104729) % 991) / 991 * ch; g.fillStyle = 'rgba(70,95,85,0.12)'; g.beginPath(); g.ellipse(x, yy, 30, 18, i, 0, Math.PI * 2); g.fill(); }
+  });
+  tex.anisotropy = 4;
+  const g = new THREE.PlaneGeometry(L, Wd).rotateX(-Math.PI / 2);
+  const M = new THREE.Matrix4().makeBasis(new THREE.Vector3(f.axis[0], 0, f.axis[1]), new THREE.Vector3(0, 1, 0), new THREE.Vector3(-f.axis[1], 0, f.axis[0]));
+  M.setPosition(f.c[0] + ((f.x0 + f.x1) / 2) * f.axis[0] - ((f.z0 + f.z1) / 2) * f.axis[1], y, f.c[1] + ((f.x0 + f.x1) / 2) * f.axis[1] + ((f.z0 + f.z1) / 2) * f.axis[0]);
+  g.applyMatrix4(M);
+  const mesh = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ map: tex, roughness: 0.85, polygonOffset: true, polygonOffsetFactor: -5, polygonOffsetUnits: -5 }));
+  mesh.receiveShadow = true; mesh.userData.noCollide = true;
+  return mesh;
+}
 
 /** a flat world-coordinate plane over a polygon (the site frames below are world-aligned: origin 0, axis [1, 0]) */
 function flatPlane(k: Kit, pts: P2[], y: number, mat: THREE.Material, tile: number) {
@@ -1019,7 +1062,7 @@ const site: Spec = {
     flatPlane(k, [[gx0, gz0], [gx1, gz0], [gx1, gz1], [gx0, gz1]], 0.06, gravelMat(), 3);
     // (the owner's eight-pair brief, pair 4: the yard is open hardstand; only the strip along the west wall keeps its earth)
     for (const [c, a, b] of [[[509, -1238], 2.4, 7]] as [P2, number, number][]) flatPlane(k, oval(c, a, b, 18), 0.07, soilMat(), 2);
-    flatPlane(k, YARD.slab, 0.08, slabMat(), 4);
+    k.meshes.push(courtMesh(YARD.slab, 0.08));
     { const [hx, hz] = YARD.hoop;
       parts.push([new THREE.CylinderGeometry(0.08, 0.1, 3.05, 8).translate(hx, 1.52, hz - 0.8), '#5b6066'], [box(hx - 0.06, hx + 0.06, 2.9, 3.0, hz - 0.8, hz + 0.1), '#5b6066'], [box(hx - 0.9, hx + 0.9, 2.9, 3.95, hz + 0.1, hz + 0.16), '#f2f2f0'], [new THREE.TorusGeometry(0.23, 0.02, 4, 12).rotateX(Math.PI / 2).translate(hx, 3.05, hz + 0.45), '#d8592c']);
       SOLIDS.add(hx, hz - 0.8, 0.25); }

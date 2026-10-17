@@ -134,3 +134,5 @@ export const B_TANKS: P2[] = [[560.9, -1322.2], [560.9, -1319.8], [560.4, -1312.
 export const MKT = { x0: 514.8, x1: 525.9, z0: -1284.5, z1: -1273.4, aisle: 1.5 };
 /** the ground before the aisle's two mouths, kept clear of the generated hedges */
 export const inMarketMouth = (x: number, z: number) => Math.abs(z - (MKT.z0 + MKT.z1) / 2) < MKT.aisle + 1 && x > MKT.x0 - 3.5 && x < MKT.x1 + 3.5;
+/** on the basketball court (its slab and a metre round it): no generated hedges there */
+export const onEvandyCourt = (x: number, z: number) => { const xs = YARD.slab.map((p) => p[0]), zs = YARD.slab.map((p) => p[1]); return x > Math.min(...xs) - 1 && x < Math.max(...xs) + 1 && z > Math.min(...zs) - 1 && z < Math.max(...zs) + 1; };
