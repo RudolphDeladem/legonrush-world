@@ -288,7 +288,10 @@ function wing(i: number): Spec {
 //    above them; a low tiled roof over the whole width, hipped at the ends, the middle raised as a gable whose white
 //    pediment carries BLOCK A / B / C over the arch; behind, the dark lobby closed by black steel grille gates; a
 //    concrete landing at the foot of the paved approach.
-function entrance(name: string, letter: string, at: [number, number], mirror: 1 | -1 = 1): Spec {
+/** tall: Block A's porch as the owner's front-elevation photo of it shows (the Block A visual corrections, view 2): two
+ *  storeys - its side roofs meet the tower at the second floor's slab - the arch taller and wider, rising into the
+ *  pediment in a moulded frame, the beams across at the photo's two levels, an open shaded band over the gates */
+function entrance(name: string, letter: string, at: [number, number], mirror: 1 | -1 = 1, tall = false): Spec {
   return {
     name,
     axis: [1, 0], origin: at, storey: NST, style: NP_LONG, roofColor: ROOF_NP, fascia: FASCIA_NP, pitch: 0.5,
@@ -345,21 +348,27 @@ function entrance(name: string, letter: string, at: [number, number], mirror: 1 
         for (const sx of [-1, 1]) c.push([box(sx > 0 ? 2.3 : -5.4, sx > 0 ? 5.4 : -2.3, e, e + 0.5, -1.5, sx * m > 0 ? 2.0 : 0.6), WHITE_NP]); }
       // ----- the porch (the Block C correction: broad and deep, a wide front gable with a large sign, substantial cream
       // columns with grey lower parts, a few heavy beams, separate gated bays behind) -----
-      const pz = 6.8, E = 4.6, GREY_LOW = 1.5;
+      const pz = 6.8, E = tall ? 6.5 : 4.6, GREY_LOW = 1.5;
+      /** the arch: its half width (the piers' inner faces), the piers' outer faces, the springing height */
+      const ri = tall ? 1.15 : 0.95, ro = tall ? 1.95 : 1.7, as = tall ? E - 1.55 : 3.4;
       const pillar = (x0: number, x1: number, z0: number, z1: number, h: number) => {
         c.push([box(x0, x1, GREY_LOW, h, z0, z1), WHITE_NP]);
         k.plain.push([box(x0, x1, 0, GREY_LOW, z0, z1), '#7b7d80']);
         SOLIDS.add(...k.world((x0 + x1) / 2, (z0 + z1) / 2), Math.max(x1 - x0, z1 - z0) / 2 + 0.1);
       };
       // the thick piers either side of the arch, the raised arch head between them
-      for (const sx of [-1, 1]) pillar(sx > 0 ? 0.95 : -1.7, sx > 0 ? 1.7 : -0.95, pz - 0.6, pz, E);
-      { const sh = new THREE.Shape(); sh.moveTo(-1.7, 3.4); sh.lineTo(-1.7, E); sh.lineTo(1.7, E); sh.lineTo(1.7, 3.4); sh.lineTo(0.95, 3.4); sh.absarc(0, 3.4, 0.95, 0, Math.PI, false); sh.lineTo(-1.7, 3.4);
+      for (const sx of [-1, 1]) pillar(sx > 0 ? ri : -ro, sx > 0 ? ro : -ri, pz - 0.6, pz, E);
+      { const sh = new THREE.Shape(); sh.moveTo(-ro, as); sh.lineTo(-ro, E); sh.lineTo(ro, E); sh.lineTo(ro, as); sh.lineTo(ri, as); sh.absarc(0, as, ri, 0, Math.PI, false); sh.lineTo(-ro, as);
         c.push([new THREE.ExtrudeGeometry(sh, { depth: 0.6, bevelEnabled: false, curveSegments: 16 }).translate(0, 0, pz - 0.6), WHITE_NP]); }
+      // (tall: the arch's moulded frame standing proud of the piers, its head rising into the pediment)
+      if (tall) { const sh = new THREE.Shape(); sh.moveTo(-ri - 0.22, as); sh.absarc(0, as, ri + 0.22, Math.PI, 0, true); sh.lineTo(ri, as); sh.absarc(0, as, ri, 0, Math.PI, false); sh.lineTo(-ri - 0.22, as);
+        c.push([new THREE.ExtrudeGeometry(sh, { depth: 0.1, bevelEnabled: false, curveSegments: 16 }).translate(0, 0, pz), WHITE_NP]);
+        for (const sx of [-1, 1]) c.push([box(sx > 0 ? ri : -ri - 0.22, sx > 0 ? ri + 0.22 : -ri, 0, as, pz, pz + 0.1), WHITE_NP]); }
       // the square columns, two each side, and their pairs at the back against the building
       for (const x of [-5.05, -2.85, 2.85, 5.05]) { pillar(x - 0.26, x + 0.26, pz - 0.52, pz, E - 0.55); pillar(x - 0.22, x + 0.22, 2.5, 2.94, E - 0.55); }
       // two heavy beams across the front, down the sides and back from every column to the building
-      for (const [y0, y1] of [[2.45, 2.8], [3.3, 3.62]]) {
-        for (const sx of [-1, 1]) c.push([box(sx > 0 ? 1.7 : -5.31, sx > 0 ? 5.31 : -1.7, y0, y1, pz - 0.42, pz - 0.08), WHITE_NP]);
+      for (const [y0, y1] of tall ? [[3.3, 3.65], [4.85, 5.2]] : [[2.45, 2.8], [3.3, 3.62]]) {
+        for (const sx of [-1, 1]) c.push([box(sx > 0 ? ro : -5.31, sx > 0 ? 5.31 : -ro, y0, y1, pz - 0.42, pz - 0.08), WHITE_NP]);
         for (const x of [-5.05, -2.85, 2.85, 5.05]) c.push([box(x - 0.17, x + 0.17, y0, y1, 2.94, pz - 0.42), WHITE_NP]);
       }
       // the band over them and the pale ceiling of the porch
@@ -384,8 +393,9 @@ function entrance(name: string, letter: string, at: [number, number], mirror: 1 
           k.plain.push([new THREE.BoxGeometry(L, 0.3, 0.09).rotateZ(-sx * ang).translate(sx * hw / 2, (E2 + T) / 2, z1 + 0.02), FASCIA_NP]);
           k.plain.push([new THREE.BoxGeometry(L, 0.03, z1 - pz).rotateZ(-sx * ang).translate(sx * hw / 2, (E2 + T) / 2 - 0.2, (z1 + pz) / 2), '#e8e0cf']);
         }
-        k.plain.push([box(-1.45, 1.45, 5.05, 5.85, pz + 0.02, pz + 0.06), '#f7f7f4'], [box(-1.5, 1.5, 5.0, 5.05, pz + 0.02, pz + 0.07), '#c9c4b8'], [box(-1.5, 1.5, 5.85, 5.9, pz + 0.02, pz + 0.07), '#c9c4b8']);
-        k.signs.push({ text: `BLOCK ${letter}`, x: 0, y: 5.45, z: pz + 0.07, ry: 0, w: 2.7, colors: ['#f7f7f4', '#1f2f5a'] }); }
+        const sy = tall ? E + 1.35 : 5.45;
+        k.plain.push([box(-1.45, 1.45, sy - 0.4, sy + 0.4, pz + 0.02, pz + 0.06), '#f7f7f4'], [box(-1.5, 1.5, sy - 0.45, sy - 0.4, pz + 0.02, pz + 0.07), '#c9c4b8'], [box(-1.5, 1.5, sy + 0.4, sy + 0.45, pz + 0.02, pz + 0.07), '#c9c4b8']);
+        k.signs.push({ text: `BLOCK ${letter}`, x: 0, y: sy, z: pz + 0.07, ry: 0, w: 2.7, colors: ['#f7f7f4', '#1f2f5a'] }); }
       // behind the columns the recessed circulation: a cream wall at the back with separate bays - the doorway behind the
       // arch and a gated bay either side - each closed by its own black steel grille gate, the shaded lobby beyond
       { const bays: [number, number, number][] = [[-0.85, 0.85, 2.75], [-4.75, -3.15, 2.45], [-2.55, -1.95, 2.45], [1.95, 2.55, 2.45], [3.15, 4.75, 2.45]];
@@ -404,7 +414,12 @@ function entrance(name: string, letter: string, at: [number, number], mirror: 1 
             k.plain.push([g, '#1d1e1f']);
           }
         }
-        k.plain.push([box(-5.3, 5.3, 0, 0.6, 2.62, 2.66), '#8d8f91']); }
+        k.plain.push([box(-5.3, 5.3, 0, 0.6, 2.62, 2.66), '#8d8f91']);
+        // (tall: over the gates the first floor's open gallery behind its parapet, in shade, either side of the arch)
+        if (tall) for (const [x0, x1] of [[-5.3, -ro], [ro, 5.3]]) {
+          k.plain.push([box(x0, x1, 3.95, E - 0.75, 2.625, 2.64), '#57534c'], [box(x0, x1, 3.75, 4.85, 2.64, 2.86), '#efece4']);
+          k.plain.push([box(x0, x1, E - 0.8, E - 0.75, 2.64, 2.7), '#d9d3c6']);
+        } }
       // the concrete landing, a step at its front
       k.plain.push([box(-6.1, 6.1, 0, 0.14, 2.5, pz + 1.5), '#d3cdc2'], [box(-6.1, 6.1, 0, 0.07, pz + 1.5, pz + 1.85), '#c6c0b4']);
       const mesh = new THREE.Mesh(merge(c), concrete(0.25)); mesh.castShadow = true; k.meshes.push(mesh);
@@ -680,7 +695,7 @@ const grounds: Spec = {
         approach(cx, zl, -665.8, NP_C.axis - 571.9, NP_C.axis - 557.0, -1);
         matureTree(cx - 7.4, zl + 0.4, 6.5, 2.8, 2); matureTree(cx + 7.6, zl + 0.9, 6.5, 2.8, 3);
         lamp(cx + 2.2, zl + 9.0); }
-      blockACourt(k, { X, Z, gy, c, hexStrip, hexQuad, edging, lamp, matureTree });
+      blockACourt(k, { X, Z, gy, c, hexStrip, hexQuad, edging, lamp });
       // the service strip and the AC condensers on the east front structure's west wall
       k.plain.push([B(572.5, 572.8, gy(572.6, -608) + 0.01, gy(572.6, -608) + 0.05, -621.8, -602.2), '#b5b0a5']);
       for (const z of [-606.2, -604.9, -603.6]) {
@@ -724,8 +739,9 @@ const grounds: Spec = {
         for (let i = 0; i <= n; i++) SOLIDS.add(ax + ((bx - ax) * i) / n, az + ((bz - az) * i) / n, 0.2);
       };
       // (the owner's top view of Block A: the low-walled yard is the inside corner between the west front structure's
-      // narrow part and its broad south end, before the narrow part's large windows; open to the court on the east)
-      tw(545.3, -612.9, 551.8, -612.9); tw(551.8, -612.9, 551.8, -609.2); tw(551.8, -606.6, 551.8, -602.0);
+      // narrow part and its broad south end, before the narrow part's large windows)
+      // (the opening at the north end of its east side, where the branch path from the junction comes in)
+      tw(545.3, -612.9, 551.8, -612.9); tw(551.8, -610.2, 551.8, -602.0);
       k.plain.push([B(545.3, 551.8, 0.01, 0.06, -612.9, -602.0), '#9a5644']);
       { const y = gy(549.6, -604.0);
         k.plain.push([B(549.0, 550.2, y, y + 1.0, -604.4, -603.6), '#e8621f'], [B(549.0, 550.2, y + 1.0, y + 1.75, -604.4, -603.6), '#dfe6ea'], [B(548.95, 550.25, y + 1.75, y + 1.85, -604.45, -603.55), '#e8621f']);
@@ -786,7 +802,6 @@ interface CourtKit {
   X: (x: number) => number; Z: (z: number) => number; gy: (x: number, z: number) => number; c: Part[];
   hexStrip: (x0: number, x1: number, z0: number, z1: number) => void; hexQuad: (q: [number, number][]) => void;
   edging: (x: number, za: number, zb: number) => void; lamp: (x: number, z: number) => void;
-  matureTree: (x: number, z: number, h: number, r: number, seed: number) => void;
 }
 const slabMats: Record<string, THREE.MeshStandardMaterial> = {};
 /** a paved area (world corners, in ring order) laid on the ground in a 2 m grid so it follows the relief */
@@ -817,35 +832,57 @@ function groundPave(k: Kit, ck: CourtKit, ring: [number, number][], color: strin
   (paveGeos[color] ??= { mat, geos: [] }).geos.push(geo);
 }
 const paveGeos: Record<string, { mat: THREE.Material; geos: THREE.BufferGeometry[] }> = {};
+/** a leafy court tree (the Block A visual corrections: natural silhouettes, not a few faceted balls): a trunk forking
+ *  into three limbs, an irregular spreading crown of many small rounded leaf clumps in several greens, flatter on top */
+function leafyTree(k: Kit, ck: CourtKit, x: number, z: number, h: number, r: number, seed: number) {
+  const { X, Z, gy } = ck, y = gy(x, z), rnd = (i: number) => { const v = Math.sin((seed * 31 + i) * 12.9898) * 43758.5453; return v - Math.floor(v); };
+  const fork = h * 0.42, tx = X(x), tz = Z(z);
+  k.plain.push([new THREE.CylinderGeometry(0.13, 0.22, fork, 7).translate(tx, y + fork / 2, tz), '#5a4535']);
+  for (let i = 0; i < 3; i++) {
+    // (each limb leaning out from the fork toward its side of the crown)
+    const a = seed + i * 2.1, L = h * 0.3, lx = Math.cos(a) * r * 0.35, lz = Math.sin(a) * r * 0.35;
+    k.plain.push([new THREE.CylinderGeometry(0.06, 0.11, Math.hypot(lx, L * 0.8, lz), 5).rotateZ(-Math.atan2(lx, L * 0.8)).rotateX(Math.atan2(lz, L * 0.8)).translate(tx + lx / 2, y + fork + L * 0.4, tz + lz / 2), '#5a4535']);
+  }
+  const greens = ['#3b6a2b', '#46783a', '#335e26', '#527f3a', '#2f5824'];
+  for (let i = 0; i < 26; i++) {
+    const a = rnd(i) * Math.PI * 2, d = r * Math.sqrt(rnd(i + 40)), up = h * 0.62 + (1 - (d / r) ** 2) * h * 0.22 + (rnd(i + 80) - 0.5) * h * 0.1;
+    const s = r * (0.26 + rnd(i + 120) * 0.18);
+    k.plain.push([new THREE.IcosahedronGeometry(s, 1).scale(1.15, 0.72, 1.15).translate(tx + Math.cos(a) * d, y + up, tz + Math.sin(a) * d), greens[i % greens.length]]);
+  }
+  SOLIDS.add(x, z, 0.25);
+}
 function blockACourt(k: Kit, ck: CourtKit) {
-  const { X, Z, gy, c, hexStrip, hexQuad, edging, lamp, matureTree } = ck;
+  const { X, Z, gy, c, hexStrip, hexQuad, edging, lamp } = ck;
   const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
   const CONC = '#b3afa6', ASPH = '#6b6b6e';
   /** the mapped service road along the front (#555) as drawn, 6.2 m wide: its south edge at x */
   const RD: [number, number][] = [[628, -585], [594.2, -582.8], [567.4, -581], [525.8, -578.3]];
   const roadZ = (x: number) => { for (let i = 1; i < RD.length; i++) { const [ax, az] = RD[i - 1], [bx, bz] = RD[i]; if (x <= ax && x >= bx) return az + ((bz - az) * (x - ax)) / (bx - ax); } return x > RD[0][0] ? RD[0][1] : RD[RD.length - 1][1]; };
-  // ----- the court before the porch (the top view's walkways; the marked court photo for the lawn edges) -----
-  // the paved forecourt across the front of the porch, running east past it into the corner beside the east front
-  // structure; the straight path from it to the drive; the plaza where it meets the drive
-  hexQuad([[557.0, -614.0], [573.4, -614.0], [573.4, -619.35], [557.0, -619.35]]);
-  hexQuad([[568.6, -619.35], [580.0, -619.35], [580.0, -627.4], [568.6, -627.4]]);
-  hexStrip(561.2, 563.8, -614.0, -589.6);
+  // ----- the court before the porch (the top view's walkways; the owner's front-elevation photo and the side-passage
+  // photo, the Block A visual corrections, views 2-6) -----
+  // across the porch's front a narrow grey concrete walk between lawns, from the corner beside the east front structure
+  // west to the wall of the west wing (the side-passage photo, view 6: taken from that corner looking west, the porch's
+  // columns on the right); the straight paver path from it to the drive; about 9 m before the porch the junction (view
+  // 2): a branch angling back west to the low-walled yard's opening and one out east (the top view's diagonal) to the
+  // car park's west edge; small lawn islands between them and the walk; the paved plaza where the path meets the drive
+  groundPave(k, ck, [[554.2, -619.3], [580.0, -619.3], [580.0, -616.6], [554.2, -616.6]], '#a9a7a0');
+  hexStrip(561.2, 563.8, -616.6, -589.6);
   hexQuad([[557.0, roadZ(557) - 3.2], [568.4, roadZ(568.4) - 3.2], [568.4, -589.6], [557.0, -589.6]]);
-  // the right branch: leaving the path on the diagonal to the east front structure's corner, then along the car park's
-  // west edge down to the drive
-  hexQuad([[563.8, -606.4], [572.4, -600.6], [572.4, -598.4], [563.8, -604.2]]);
-  hexStrip(572.4, 574.2, -600.6, roadZ(573) - 3.3);
-  for (const x of [561.13, 563.87]) { edging(x, -614.0, x > 562 ? -606.4 : -589.6); if (x > 562) edging(x, -604.2, -589.6); }
-  edging(572.33, -598.4, -589.0);
-  // mature leafy trees on the lawns where the top view has its crowns (the photo from the car park: the big tree right of
-  // the path); the clipped conical shrub at the forecourt's edge; lamp posts left of the path; the bin by the lamp at the
-  // drive and the KEEP OFF THE GRASS sign on the right lawn (the photo from the car park)
-  matureTree(557.3, -610.0, 6.5, 2.6, 1); matureTree(568.8, -609.4, 7.0, 2.9, 2); matureTree(556.2, -602.6, 6.0, 2.4, 3);
-  matureTree(568.2, -595.2, 6.5, 2.7, 4); matureTree(555.6, -595.2, 6.2, 2.5, 5);
-  { const x = 559.4, z = -612.2, y = gy(x, z);
+  hexQuad([[561.2, -609.6], [551.9, -612.6], [551.9, -610.4], [561.2, -607.4]]);
+  hexQuad([[563.8, -609.6], [572.4, -601.0], [572.4, -598.8], [563.8, -607.4]]);
+  hexStrip(572.4, 574.2, -601.0, roadZ(573) - 3.3);
+  for (const x of [561.13, 563.87]) { edging(x, -616.6, -609.6); edging(x, -607.4, -589.6); }
+  edging(572.33, -598.8, -589.0);
+  // leafy trees where the top view has crowns, kept off the facades and the walk; the clipped conical shrub on the small
+  // island left of the path by the porch (views 2, 4, 6); lamp posts by the junction left of the path (view 2), by the
+  // east front structure along the walk (views 2 and 6) and at the drive with the bin beside it (the car-park photo);
+  // the KEEP OFF THE GRASS sign on the right lawn
+  leafyTree(k, ck, 556.4, -603.2, 7.0, 3.0, 1); leafyTree(k, ck, 555.6, -595.0, 6.4, 2.8, 2); leafyTree(k, ck, 568.4, -594.8, 6.8, 2.9, 3);
+  leafyTree(k, ck, 570.2, -611.2, 6.2, 2.5, 4); leafyTree(k, ck, 576.6, -612.8, 5.6, 2.3, 5);
+  { const x = 559.2, z = -614.0, y = gy(x, z);
     for (let i = 0; i < 6; i++) k.plain.push([new THREE.IcosahedronGeometry(0.62 - i * 0.09, 1).scale(1, 0.8, 1).translate(X(x), y + 0.4 + i * 0.36, Z(z)), ['#2f5a24', '#36642a'][i % 2]]);
     SOLIDS.add(x, z, 0.6); }
-  lamp(559.9, -602.0); lamp(560.3, -590.4);
+  lamp(559.8, -606.4); lamp(573.0, -615.4); lamp(560.3, -590.4);
   { const x = 560.85, z = -590.5, y = gy(x, z);
     c.push([B(x - 0.3, x + 0.3, y + 0.05, y + 1.0, z - 0.35, z + 0.35), '#2a2c2e'], [B(x - 0.33, x + 0.33, y + 1.0, y + 1.08, z - 0.38, z + 0.38), '#2a2c2e']);
     SOLIDS.add(x, z, 0.4); }
@@ -877,7 +914,7 @@ function blockACourt(k: Kit, ck: CourtKit) {
     for (let x = 554.6; x + 2.6 <= 588.8; x += 2.7) { const y = bayLine(x, x + 0.1, -574.9, S); if ((ci++ * 5 + 1) % 4 !== 0) car(k, X(x + 1.35), Z(-572.0), CAR[ci % CAR.length], y + 0.03, 0); }
     // the kerb and the lawn strip along its south side, a row of broad trees in it toward the road
     for (let x = 503.5; x < 622; x += 3) { const x1 = Math.min(622, x + 3), y = gy(x, S); c.push([B(x, x1, y - 0.05, y + 0.14, S, S + 0.18), '#cfcabf']); }
-    for (let x = 508, i = 0; x < 620; x += 7.4, i++) matureTree(x + (i % 2) * 1.3, -561.8 + (i % 3) * 1.4, 7.5, 3.2, 10 + i);
+    for (let x = 508, i = 0; x < 620; x += 7.4, i++) leafyTree(k, ck, x + (i % 2) * 1.3, -561.8 + (i % 3) * 1.4, 7.5, 3.3, 10 + i);
   }
   for (const [col, { mat, geos }] of Object.entries(paveGeos)) { const m = new THREE.Mesh(mergeGeometries(geos), mat); m.receiveShadow = true; k.meshes.push(m); delete paveGeos[col]; }
 }
@@ -909,7 +946,7 @@ export const newPentSite = createSite('new-pent', [
   ...WINGS.map((_, i) => wing(i)),
   // (each porch in the middle of its court between the wings either side: the Block A / C corrections, the owner's New
   // Pent corrections for Block B; Block A's had stood against the wing on its east)
-  entrance('New Pent Block A', 'A', [562.5, -628]),
+  entrance('New Pent Block A', 'A', [562.5, -628], 1, true),
   entrance('New Pent Block B', 'B', [562.5 + NP_B.dx, -628 + NP_B.dz]),
   // (Block B is Block A's copy, Block C its mirror image: the owner; both placed by the fit of the map's outlines above)
   entrance('New Pent Block C', 'C', [NP_C.axis - 562.5, -628 + NP_C.dz], -1),

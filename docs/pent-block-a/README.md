@@ -105,3 +105,78 @@ Checks:
   map. Roads were not moved. The tree belt fills the gap.
 - **Wider references useful next:** a view of a linking block's face from the inner courts; and a photo of the long
   south wing's north face, which shows the dormers.
+
+## Strict visual corrections (owner's report "Block A Visual Differences and Strict Corrections", 2026-10-17)
+
+The report brought three new real views of Block A. View 2 is the classic front elevation. View 4 is the west wing's
+brick end wall with the low-walled yard. View 6 is the side passage. Views 1 and 6 also include game screenshots.
+
+### What the photographs settle, and the changes
+
+**Porch (views 2 and 3):**
+- **Height:** the porch is two storeys. Its side roofs meet the tower at the second floor's slab. In the game its eaves
+  stood at 4.6 m; now 6.5 m.
+- **Arch:** wider (2.3 m) and taller. Its head rises into the pediment inside a moulded frame.
+- **Beams:** they now cross at the photo's two levels.
+- **Over the gates:** the first floor's open gallery, in shade, behind a parapet.
+- **The sign** moves up into the taller pediment.
+- **Block A only:** an option of `entrance()`; Blocks B and C keep theirs.
+
+**The walk across the porch front (view 6):**
+- **Where the photo was taken:** from the corner beside the east front structure, looking west. The porch's columns
+  are on the right, and the brick end wall of the west wing is at the far end.
+- **What it is:** a narrow grey concrete walk between lawns. It is not the wide red forecourt of the previous batch.
+- **Now:** a 2.7 m grey walk from that corner to the west wing's wall.
+
+**The junction (view 2):**
+- **Position:** about 9 m before the porch.
+- **Left branch:** angles back west into the low-walled yard. The yard's opening is now at the north end of its east
+  side, where the branch arrives (views 3 and 4: the low brick walls with their caps, the orange cabinet).
+- **Right branch:** goes out east on the diagonal of the top view to the car park's edge.
+- **Lawn islands:** small ones lie between the branches and the walk. The conical shrub stands on the left island by
+  the porch.
+
+**Lamps (views 2 and 6):** by the junction left of the path, by the east front structure along the walk, and at the
+drive with the bin.
+
+**Trees:** the court trees and the tree belt now have trunks forking into limbs and spreading crowns of many small
+rounded clumps in several greens. They replace the few large faceted balls. They are kept off the facades and the
+walk.
+
+**Named comparison cameras:** `src/game/paviews.ts`, used by `tools/preview/halls.html?view=pa...`. They are:
+`paFront`, `paFront34`, `paEndWall`, `paJunction`, `paSidePassage`, `paCourtHigh`, `paRoofs`, `paTop`, `paCycle`.
+Each is matched by eye to its photograph.
+
+### Checked and found already matching
+
+- **The tower:** the gabled middle with the round-headed recess (a real 0.7 m recess) over open landings, the open
+  landings behind parapets on the left, and the louvred windows on the right.
+- **The brick end walls:** full-height brick planes with white corner strips.
+- **The low brick walls of the yard:** physical walls with caps.
+
+### Verification
+
+Sheets: `corrections-1.jpg` to `-3.jpg` show each reference photo beside the game before (decbd8b) and after, from
+the named camera. `corrections-4.jpg` shows the other cameras before and after.
+
+- **Route lengths:** identical.
+- **Route and room tests:** pass.
+- **Road blocking and NaN geometry:** none.
+- **Stuck scan, x 300-800, z -900..-400:** identical to the previous batch.
+- **Build:** passes.
+- **Performance:** draw calls are unchanged (768 against 767 over the court). Triangles are up 3% from the leafier
+  trees: 2.52 M against 2.44 M over the court.
+
+### Not done, and why (needs evidence or the owner)
+
+- **Per-wing facade variety (views 1 and 3):**
+  - The left wing's balconies are grouped with their brick inserts around the windows. The right wing has a different
+    pattern and a recessed open strip.
+  - These are visible only on the wings facing the court in view 2, and only partly.
+  - All wings still share one balcony-and-window design. Changing it per wing needs one straight-on photo of each
+    wing face.
+- **View 5's camera position (ESTIMATE):** the left-foreground columns are read as the east front structure's own
+  colonnade.
+- **Ground-floor detail:** the jambs and frames of the open bays on the front structures' sides are not modelled
+  beyond the existing louvred openings.
+
