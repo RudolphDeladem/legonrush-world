@@ -219,3 +219,9 @@ section, and the larger briefs have their own folder under `docs/` (evidence aud
    - **Controller:** Cross jumps on the bike, stick back walks backward, lanes and jump during the destination ride,
      the D-pad pointer and the PlayStation touchpad as a mouse, popups navigable.
    - **Blockers:** the deck railing solids no longer stop traffic in the underpass under the bridge.
+190. Campus labels and generic buildings (owner's two-part UG Campus Map reference PDF and its section images, 2026-10-17; inside the blue boundary only; `docs/campus-labels/README.md`).
+   - **Audit:** all 67 reference road names checked against the game's roads; 65 match where the label sits. Amerley Lane is newer than the map snapshot, so it is still open. Every game place was checked against the label at the same spot: none names the wrong building.
+   - **Renames:** eleven department places now use the site's own titles (for example Dep't of History → Department of History, Computer Science Dept → Department of Computer Science). Missions, site models, entrances and corrections were changed with them.
+   - **Search names:** the site marker titles the game knows under another name became search names (`a` on places), so "Department of Chemistry" finds Frank Torto Chemistry Building.
+   - **New destinations:** 38 places the reference shows and the game lacked. They include the Legon Pool Side, the basketball and volleyball courts, Gonja Park, Narnia FC Park, the car parks and the bus stops (`sources/ug-campus-map-reference.json`, a new pass in `build-master.mjs`).
+   - **Generic buildings in the boundary:** each gets a door on the wall facing the nearest road. Storeys now follow the outline's size (60–200 m² one storey, to 1800 m² two, above that three) instead of a random height; the map's and photos' heights still come first.

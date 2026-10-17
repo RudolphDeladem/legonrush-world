@@ -313,14 +313,33 @@ export type BuildingStyle = (b: Building) => { wall?: string; roof?: string; lou
   plinth?: string; plinthH?: number;
   /** a door on the longest wall (two on a long one): a plain wall patch over the ground-floor window there, a light
    *  frame, a dark timber leaf and a step (the owner: the small buildings round Noguchi and WAGMC had only windows) */
-  doors?: boolean } | undefined;
+  doors?: boolean;
+  /** the point the building faces (the nearest road): the doors go on the wall that looks at it instead of the longest */
+  front?: [number, number] } | undefined;
 
 const inRingV = (r: V[], x: number, z: number) => { let o = false; for (let i = 0, j = r.length - 1; i < r.length; j = i++) if ((r[i][1] > z) !== (r[j][1] > z) && x < ((r[j][0] - r[i][0]) * (z - r[i][1])) / (r[j][1] - r[i][1]) + r[i][0]) o = !o; return o; };
 const DOOR_LEAF = new THREE.Color('#5a3b28');
 /** the doors of a building (BuildingStyle.doors) on its longest wall, in the wall batch, plain texture (the trim band) */
-function doorsOn(wb: Batch, ring: V[], bayW: number, ph: number, wallC: THREE.Color, trimC: THREE.Color, plinthC: THREE.Color) {
-  // (the longest wall and the one opposite it when it is nearly as long: a door front and back)
+function doorsOn(wb: Batch, ring: V[], bayW: number, ph: number, wallC: THREE.Color, trimC: THREE.Color, plinthC: THREE.Color, front?: [number, number]) {
   const len = ring.map((p, i) => Math.hypot(ring[(i + 1) % ring.length][0] - p[0], ring[(i + 1) % ring.length][1] - p[1]));
+  if (front) {
+    // the door on the wall that looks at the road: the wall whose outward side faces the front point most, among the
+    // walls long enough for a door (generic buildings on campus: the owner, their doors were missing)
+    let best = -1, score = -Infinity;
+    const longest = Math.max(...len);
+    ring.forEach(([ax, az], i) => {
+      const [bx, bz] = ring[(i + 1) % ring.length], L = len[i];
+      if (L < 2.6 || L < longest * 0.3) return;
+      let nx = -(bz - az) / L, nz = (bx - ax) / L;
+      const mx = (ax + bx) / 2, mz = (az + bz) / 2;
+      if (inRingV(ring, mx + nx * 0.3, mz + nz * 0.3)) { nx = -nx; nz = -nz; }
+      const tx = front[0] - mx, tz = front[1] - mz, d = Math.hypot(tx, tz) || 1;
+      const s = (nx * tx + nz * tz) / d + Math.min(L, 20) / 40;
+      if (s > score) { score = s; best = i; }
+    });
+    if (best >= 0) { doorWall(wb, ring, best, len[best], bayW, ph, wallC, trimC, plinthC); return; }
+  }
+  // (the longest wall and the one opposite it when it is nearly as long: a door front and back)
   const order = len.map((l, i) => [l, i]).sort((a, b) => b[0] - a[0]);
   for (const [l, i] of order.slice(0, 2)) if (l > 3 && l >= order[0][0] * 0.7) doorWall(wb, ring, i, l, bayW, ph, wallC, trimC, plinthC);
 }
@@ -386,7 +405,7 @@ export function buildBuildings(buildings: Building[], styleOf?: BuildingStyle) {
 
     const eave = h - OVERHANG * PITCH;
     for (const ring of [outer, ...holes]) ringWalls(wb, ring, h, bay, storeys, wallC, plinthC, ph);
-    if (st?.doors) doorsOn(wb, outer, bay, ph, wallC, trimC, plinthC);
+    if (st?.doors) doorsOn(wb, outer, bay, ph, wallC, trimC, plinthC, st.front);
 
     const box = orientedBox(outer);
     const bw = box.u1 - box.u0, bdp = box.w1 - box.w0;

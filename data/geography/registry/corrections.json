@@ -2272,14 +2272,14 @@
     },
     {
       "id": "osm:way/335456889",
-      "place": "Mathematics Dept",
+      "place": "Department of Mathematics",
       "levels": 3,
       "height": 12,
       "reason": "Owner photos of the north front: three floors (ground and two floors of galleries) under a deep roof slab, about 12 m; the Statistics block steps down to two floors east of the entrance."
     },
     {
       "id": "osm:way/430197436",
-      "place": "Statistics",
+      "place": "Department of Statistics",
       "levels": 3,
       "height": 12,
       "reason": "Owner photos of the north front: three floors (ground and two floors of galleries) under a deep roof slab, about 12 m; the Statistics block steps down to two floors east of the entrance."
@@ -2307,7 +2307,7 @@
     },
     {
       "id": "osm:way/665125612",
-      "place": "Computer Science Dept",
+      "place": "Department of Computer Science",
       "levels": 3,
       "height": 12,
       "reason": "Owner: ISSER and Computer Science are three floors (photos of their fronts); the range is joined and of one height, under flat roofs."
@@ -3322,7 +3322,7 @@
     },
     {
       "id": "osm:way/335456887",
-      "place": "School of Social Science",
+      "place": "School of Social Sciences",
       "levels": 1,
       "height": 4.6,
       "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: one floor (view 5). Modelled in src/game/socsci.ts."
@@ -3343,7 +3343,7 @@
     },
     {
       "id": "osm:way/335456884",
-      "place": "Information Studies Department",
+      "place": "Department of Information Studies",
       "levels": 1,
       "height": 4.6,
       "reason": "Owner's marked aerial of the N Block compound (ten numbered views, registered to the N Block at 0.287 m/px) and street photos of each view: one floor (view 10). Modelled in src/game/socsci.ts."
@@ -3845,7 +3845,7 @@
     },
     {
       "id": "osm:way/335456889",
-      "place": "Mathematics Dept",
+      "place": "Department of Mathematics",
       "source": "the owner-supplied aerial of the Mathematics and Statistics departments (registered to Google Open Buildings: the west bar 276.5..310.4 and the east block 342.1..389.5 land on their roofs at 0.232 m/px)",
       "ring": [
         [
@@ -3877,7 +3877,7 @@
     },
     {
       "id": "osm:way/430197436",
-      "place": "Statistics",
+      "place": "Department of Statistics",
       "source": "the owner-supplied aerial of the Mathematics and Statistics departments (registered to Google Open Buildings: the west bar 276.5..310.4 and the east block 342.1..389.5 land on their roofs at 0.232 m/px)",
       "ring": [
         [
@@ -4069,7 +4069,7 @@
     },
     {
       "id": "osm:way/665125612",
-      "place": "Computer Science Dept",
+      "place": "Department of Computer Science",
       "source": "google-open-buildings footprints (ISSER 0.67, RIPS 0.91, the Computer Science wing 0.82/0.85 and east block 0.91) and the owner-supplied photos of ISSER and Computer Science",
       "ring": [
         [

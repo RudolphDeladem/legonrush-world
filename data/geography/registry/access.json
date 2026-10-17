@@ -1892,7 +1892,7 @@
    ]
   },
   {
-   "place": "Statistics",
+   "place": "Department of Statistics",
    "footprint": "osm:way/430197436",
    "entrance": {
     "at": [
@@ -1911,7 +1911,7 @@
    ]
   },
   {
-   "place": "Mathematics Dept",
+   "place": "Department of Mathematics",
    "footprint": "osm:way/335456889",
    "entrance": {
     "at": [
@@ -1974,7 +1974,7 @@
    ]
   },
   {
-   "place": "Computer Science Dept",
+   "place": "Department of Computer Science",
    "footprint": "osm:way/665125611",
    "entrance": {
     "at": [

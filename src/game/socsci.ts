@@ -241,7 +241,7 @@ const range: Spec = (() => {
   const O: [number, number] = [78.1, -339.5];
   const { X, Z, B } = frame(O);
   return {
-    name: 'Political Science Department', axis: [1, 0], origin: O, storey: 3.5, style: RANGE_E, roofColor: ROOF_RB, fascia: BARGE, pitch: 0.3, plinth: GREY,
+    name: 'Department of Political Science', axis: [1, 0], origin: O, storey: 3.5, style: RANGE_E, roofColor: ROOF_RB, fascia: BARGE, pitch: 0.3, plinth: GREY,
     replaces: [O],
     blocks: [{ x0: X(PR[0]), x1: X(PR[1]), z0: Z(PR[2]), z1: Z(PR[3]), floors: 1, roof: 'none', faces: { x0: RANGE_W, x1: RANGE_E, z0: END_GREY, z1: END_GREY } }],
     keep: [[X(PR[1]), X(PR[1] + 3.2), Z(-377), Z(-345)], [X(73), X(85), Z(-311), Z(-306.5)]],
@@ -343,7 +343,7 @@ const psy: Spec = (() => {
   const { X, Z, B } = frame(O);
   const wz = PSY[3] - VER;
   return {
-    name: 'Psychology Department', axis: [1, 0], origin: O, storey: 3.4, style: PSY_WALL, roofColor: '#8e3a30', fascia: BARGE, pitch: 0.3, plinth: DADO_R,
+    name: 'Department of Psychology', axis: [1, 0], origin: O, storey: 3.4, style: PSY_WALL, roofColor: '#8e3a30', fascia: BARGE, pitch: 0.3, plinth: DADO_R,
     replaces: [O],
     // the court side (the owner's photo of the court): its verandah on white square posts, the walls behind grey
     blocks: [{ x0: X(PSY[0]), x1: X(PSY[1]), z0: Z(PSY[2]), z1: Z(wz), floors: 1, roof: 'none', faces: { z1: PSY_S } }],
@@ -400,10 +400,10 @@ const psy: Spec = (() => {
 // ---------- the court (view 7), the buildings west and north-west (views 5 and 10), the trees ----------
 interface Plain { name: string; r: R4; style: Style; roof: string; pitch: number; along: 'x' | 'z'; st?: number; replaces?: [number, number][] }
 const PLAIN: Plain[] = [
-  { name: 'School of Social Science', r: [-40.3, -5.3, -367.8, -357.7], style: SSS_WALL, roof: '#c43b2e', pitch: 0.3, along: 'x' },
+  { name: 'School of Social Sciences', r: [-40.3, -5.3, -367.8, -357.7], style: SSS_WALL, roof: '#c43b2e', pitch: 0.3, along: 'x' },
   { name: 'Social Work Department', r: [-60.3, -52.0, -387.7, -311.9], style: SW_WALL, roof: ROOF_DK, pitch: 0.28, along: 'z' },
   { name: 'Information Studies Labs', r: [-57.1, -10.5, -401.0, -391.5], style: IS_WALL, roof: '#3e3b38', pitch: 0.3, along: 'x' },
-  { name: 'Information Studies Department', r: [-17.6, 29.0, -388.2, -377.4], style: IS_WALL, roof: '#46403b', pitch: 0.3, along: 'x' },
+  { name: 'Department of Information Studies', r: [-17.6, 29.0, -388.2, -377.4], style: IS_WALL, roof: '#46403b', pitch: 0.3, along: 'x' },
   { name: 'building north of the N Block', r: [-3.2, 16.1, -349.7, -339.0], style: IS_WALL, roof: '#4a443f', pitch: 0.3, along: 'x', replaces: [[6.4, -344.3]] },
 ];
 const plainSpec = (p: Plain): Spec => {
@@ -433,7 +433,7 @@ const plainSpec = (p: Plain): Spec => {
         k.plain.push([B(vx + 0.56, vx + 0.6, e - 1.2, e - 0.7, -323.5, -320.5), '#f4f4f0']);
         k.signs.push({ text: 'LIBRARY', x: X(vx + 0.61), y: e - 0.95, z: Z(-322), ry: Math.PI / 2, w: 2.4, colors: ['#f4f4f0', '#1d3f7a'] });
       }
-      if (p.name === 'School of Social Science') {
+      if (p.name === 'School of Social Sciences') {
         // the porch at its west end (view 5): a small gabled canopy on two posts, its board UG SSS SCHOOL OF SOCIAL
         // SCIENCES; hedges and a lawn before it
         const x0 = p.r[0], zm = (p.r[2] + p.r[3]) / 2;

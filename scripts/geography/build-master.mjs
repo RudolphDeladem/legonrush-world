@@ -24,6 +24,8 @@ const SRC = {
   s2: json(`${G}/sources/sentinel2-composite.json`),
   ugPois: json(`${G}/sources/ug-campus-map-pois.json`),
   ugBoundary: json(`${G}/sources/ug-campus-map-boundary.json`),
+  // every label of the owner's UG Campus Map reference PDF inside its blue boundary: the site's markers and its street map's OSM labels
+  ugReference: json(`${G}/sources/ug-campus-map-reference.json`).rows,
   // the UPSA extension: OSM features east of the study extent, for the UPSA Hostel to UPSA route (scripts/geography/
   // fetch_upsa_extension.py; docs/upsa-hostel-to-school/evidence-audit.md)
   upsa: json(`${G}/sources/upsa-extension.geojson`),
@@ -668,6 +670,37 @@ for (const poi of ugPois) {
   places.push({ n: poi.name, k: kindOf(poi.name, {}), x: poi.x, z: poi.z, id: `ug-campus-map:${normName(poi.name).replace(/ /g, '-')}`, src: ['ug-campus-map'] });
   ugAdded++;
 }
+// every place the owner's UG Campus Map reference shows inside the blue boundary (the site's markers, its street map's labels)
+// is a destination: the ones the game has under another name keep it and get the reference's name as a search alias;
+// sports grounds, courts, car parks and bus stops come in here too (they are not place candidates above)
+const REF_SKIP = /^(place=|highway=(traffic_signals|services)|amenity=university|landuse=residential)/;
+const refName = (s) => s.replace(/ - (Research|Educational|Training|College)\b.*$/i, '').replace(/\(ISSER$/, '(ISSER)').replace(/\s+/g, ' ').trim();
+let refAdded = 0;
+for (const r of SRC.ugReference) {
+  if (r.type === 'road' || REF_SKIP.test(r.tags ?? '')) continue;
+  const name = refName(r.name);
+  const [x, z] = toLocal(r.lat, r.lng);
+  if (!inContext([x, z]) || SKIP.test(name) || excluded({ name, id: r.marker ? 'ugmap' : 'ugref' })) continue;
+  const key = norm(name);
+  // a street-map label is the same place only under the same name; a marker (the site's own title) can differ in wording
+  const tok = (s) => new Set(norm(s).split(' ').filter((t) => t.length > 2 || /^[a-z0-9]$/.test(t)));
+  const w = tok(name);
+  const like = places.map((p) => {
+    const d = Math.hypot(p.x - x, p.z - z), pk = norm(p.n), pw = tok(p.n);
+    if ((pk === key && d < 300) || (d < 150 && key.length >= 6 && pk.length >= 6 && (pk.includes(key) || key.includes(pk)))) return { p, d, share: 2 };
+    // a block letter or number has to agree (Pent Hostel Block C is not Block B)
+    if (!r.marker || d >= 150 || [...w].some((t) => t.length === 1 && !pw.has(t))) return null;
+    return { p, d, share: [...w].filter((v) => pw.has(v)).length / Math.max(1, Math.min(w.size, pw.size)) };
+  }).filter((c) => c && c.share >= 0.5).sort((a, b) => b.share - a.share || a.d - b.d)[0];
+  if (like) {
+    if (r.marker && like.p.n !== name) like.p.aka = [...new Set([...(like.p.aka ?? []), name])];
+    continue;
+  }
+  const [k, v] = (r.tags ?? '').split('=');
+  const kind = /parking/.test(v ?? '') ? 'other' : kindOf(name, k ? { [k]: v } : {});
+  places.push({ n: name, k: kind, x, z, id: `ug-reference:${r.marker ? `marker-${r.marker}` : `${normName(name).replace(/ /g, '-')}-${Math.round(x)}`}`, src: [r.marker ? 'ug-campus-map' : 'osm'] });
+  refAdded++;
+}
 // same name in several spots (banks, canteens): add the nearest well-known place
 const ANCHOR = new Set(['landmark', 'hall', 'academic', 'sport', 'health']);
 const byName = new Map();
@@ -843,14 +876,14 @@ if (process.env.DEBUG_PLACES) for (const p of places) if (new RegExp(process.env
 const missing = REG.naming.required.filter((n) => !places.some((p) => p.n === n));
 if (missing.length) throw new Error(`places the game needs are missing: ${missing.join(', ')}`);
 report.places = {
-  total: places.length, fromOsm: places.filter((p) => p.src[0] === 'osm').length, fromUgCampusMap: ugAdded, addedFromRegistry: added, movedToRegistryPosition: moved,
+  total: places.length, fromUgReference: refAdded, fromOsm: places.filter((p) => p.src[0] === 'osm').length, fromUgCampusMap: ugAdded, addedFromRegistry: added, movedToRegistryPosition: moved,
   byConfidence: places.reduce((m, p) => ((m[p.conf] = (m[p.conf] ?? 0) + 1), m), {}),
   requiredNamesChecked: REG.naming.required.length,
   moved: places.filter((p) => p.movedFrom).map((p) => ({ name: p.n, from: p.movedFrom, to: [Math.round(p.x), Math.round(p.z)], distanceM: Math.round(Math.hypot(p.x - p.movedFrom[0], p.z - p.movedFrom[1])) })),
 };
 report.conflicts = conflicts.sort((a, b) => b.distanceM - a.distanceM);
 places.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : a.n < b.n ? -1 : 1));
-for (const p of places) features.push({ id: `place:${p.id}${places.filter((q) => q.id === p.id).length > 1 ? `:${normName(p.n).replace(/ /g, '-')}` : ''}`, layer: 'place', class: p.k, name: p.n, lines: p.l, landmark: p.landmark, conf: p.conf, src: p.src, corroboratedBy: p.fams, point: [p.x, p.z] });
+for (const p of places) features.push({ id: `place:${p.id}${places.filter((q) => q.id === p.id).length > 1 ? `:${normName(p.n).replace(/ /g, '-')}` : ''}`, layer: 'place', class: p.k, name: p.n, aka: p.aka, lines: p.l, landmark: p.landmark, conf: p.conf, src: p.src, corroboratedBy: p.fams, point: [p.x, p.z] });
 
 // ---------- zones ----------
 for (const z of REG.zones.zones) {

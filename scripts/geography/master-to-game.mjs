@@ -132,7 +132,7 @@ for (const f of by('area').sort((a, b) => GAME_AREAS.indexOf(a.properties.class)
 const places = by('place').map((f) => {
   const p = f.properties;
   const [x, z] = pt(f.geometry.coordinates);
-  return { n: p.name, k: p.class, x: dm(x), z: dm(z), ...(p.lines && { l: p.lines }), ...(Q[p.conf] && { q: Q[p.conf] }) };
+  return { n: p.name, k: p.class, x: dm(x), z: dm(z), ...(p.lines && { l: p.lines }), ...(p.aka && { a: p.aka }), ...(Q[p.conf] && { q: Q[p.conf] }) };
 });
 
 // ---------- inspector layers ----------

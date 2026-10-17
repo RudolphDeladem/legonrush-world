@@ -2,7 +2,7 @@ import { destinationBanner, finishBanner } from './banners';
 import * as THREE from 'three';
 import { weathering } from './shading';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { AREAS, BUILDINGS, NODE_XZ, ROADS, buildingAt, mapBounds, type Building, type Place, type PlaceKind } from './campusmap';
+import { AREAS, BUILDINGS, CAMPUS_BOUNDARY, NODE_XZ, ROADS, buildingAt, nearestNode, nodeEdges, nodeXZ, mapBounds, type Building, type Place, type PlaceKind } from './campusmap';
 import { UPSA_FINISH, UPSA_LAND } from './upsawestplan';
 import type { Track } from './track';
 import { asphaltTexture, billboardTexture, concreteTexture, labelTexture, pitchTexture } from './textures';
@@ -481,7 +481,7 @@ function* campusSteps(): Generator<string | void, THREE.Group> {
   // (buildings modelled from photos are built by halls.ts and the block-model sites instead)
   GENERIC_BUILDINGS.clear();
   for (const b of BUILDINGS) if (!isDiasporaHall(b) && !BLOCK_SITES.some((s) => s.replaces(b))) GENERIC_BUILDINGS.add(b);
-  const buildings = buildBuildings([...GENERIC_BUILDINGS], (b) => nogDoors(b, greatHallPrecinct(b) ?? gateLow(b) ?? lowZones(b) ?? medStyle(b) ?? upsaStyle(b) ?? newPentStyle(b) ?? behindPentStyle(b) ?? whitePaint(b)));
+  const buildings = buildBuildings([...GENERIC_BUILDINGS], (b) => campusFinish(b, nogDoors(b, greatHallPrecinct(b) ?? gateLow(b) ?? lowZones(b) ?? medStyle(b) ?? upsaStyle(b) ?? newPentStyle(b) ?? behindPentStyle(b) ?? whitePaint(b))));
   group.add(buildings);
   yield 'step';
   const halls = buildDiasporaHalls();
@@ -575,6 +575,34 @@ function medStyle(b: Building) {
   const [u, v] = ugLocal(cx, cz);
   if (u > -300 && u < 130 && v > -140 && v < 215) return { wall: '#f2f2f0', roof: '#c9ccce', flat: true };
   return undefined;
+}
+
+/** every other building inside the campus boundary (the owner: generic buildings had no doors): a door on the wall that
+ *  faces the nearest road or path, and, where neither the map nor a photo gives its height, a storey count by its size
+ *  instead of a random one: small outlines (staff bungalows, stores, kiosks) one storey, middling ones two, the large
+ *  blocks two or three (estimates; the owner's photos override them through corrections.json heights) */
+function campusFinish(b: Building, st: ReturnType<BuildingStyle>): ReturnType<BuildingStyle> {
+  const cx = (b.minX + b.maxX) / 2, cz = (b.minZ + b.maxZ) / 2;
+  if (!inPoly(CAMPUS_BOUNDARY, cx, cz)) return st;
+  let a = 0;
+  for (let i = 0, j = b.pts.length - 2; i < b.pts.length; j = i, i += 2) a += b.pts[j] * b.pts[i + 1] - b.pts[i] * b.pts[j + 1];
+  a = Math.abs(a) / 2;
+  const storeys = st?.storeys ?? (b.height !== undefined || a < 60 ? undefined : a < 200 ? 1 : a < 1800 ? 2 : 3);
+  return { ...st, ...(storeys && { storeys }), doors: true, front: st?.front ?? frontOf(cx, cz) };
+}
+/** the nearest point on the road network to (x, z) */
+function frontOf(x: number, z: number): [number, number] | undefined {
+  const n = nearestNode(x, z, 'walk');
+  if (n < 0) return undefined;
+  const [ax, az] = nodeXZ(n);
+  let best: [number, number] = [ax, az], bd = Math.hypot(x - ax, z - az);
+  for (const e of nodeEdges(n)) {
+    const [bx, bz] = nodeXZ(e.to), dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+    const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+    const px = ax + dx * t, pz = az + dz * t, d = Math.hypot(x - px, z - pz);
+    if (d < bd) { bd = d; best = [px, pz]; }
+  }
+  return best;
 }
 
 /** the owner's notes on the Noguchi renders: behind the laboratories (their red zone, NOG_BACK) every building one storey

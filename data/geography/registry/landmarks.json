@@ -1253,7 +1253,7 @@
      "text": "N Block is close to the Political Science, Social Work, Psychology and Information Studies departments.",
      "test": {
       "type": "near-place",
-      "place": "^Psychology Department$",
+      "place": "^Department of Psychology$",
       "within": 150
      }
     }

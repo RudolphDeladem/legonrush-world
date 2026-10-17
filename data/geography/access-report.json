@@ -1,5 +1,5 @@
 {
- "destinations": 437,
+ "destinations": 475,
  "byMethod": {
   "curated": 98,
   "osm-entrance": 0,
@@ -7,13 +7,13 @@
   "path-access": 2,
   "drive-access": 18,
   "area-entry": 8,
-  "frontage": 203,
-  "point": 107
+  "frontage": 213,
+  "point": 135
  },
  "byConfidence": {
   "high": 89,
-  "low": 207,
-  "medium": 141
+  "low": 217,
+  "medium": 169
  },
  "campusGates": 5,
  "problems": [],
@@ -362,10 +362,10 @@
  ],
  "byStatus": {
   "verified": 88,
-  "inferred": 198,
+  "inferred": 208,
   "partial": 10,
   "unverified": 9,
-  "mapped": 132
+  "mapped": 160
  },
  "curated": [
   {
@@ -381,13 +381,6 @@
    "arrivalOn": "Jubilee Link",
    "arrivalDistance": 16.8,
    "facing": 331
-  },
-  {
-   "place": "University of Ghana Sports Stadium",
-   "type": "public entrance",
-   "arrivalOn": "service",
-   "arrivalDistance": 4.1,
-   "facing": 90
   },
   {
    "place": "Supermart (Night Market)",
@@ -817,7 +810,7 @@
    "facing": 2
   },
   {
-   "place": "Mathematics Dept",
+   "place": "Department of Mathematics",
    "type": "side entrance",
    "arrivalOn": "service",
    "arrivalDistance": 13.2,
@@ -880,7 +873,7 @@
    "facing": 270
   },
   {
-   "place": "Statistics",
+   "place": "Department of Statistics",
    "type": "main entrance",
    "arrivalOn": "service",
    "arrivalDistance": 7.7,
@@ -985,7 +978,7 @@
    "facing": 342
   },
   {
-   "place": "Computer Science Dept",
+   "place": "Department of Computer Science",
    "type": "main entrance",
    "arrivalOn": "service",
    "arrivalDistance": 0.4,
@@ -1053,11 +1046,18 @@
    "arrivalOn": "service",
    "arrivalDistance": 0,
    "facing": 245
+  },
+  {
+   "place": "University of Ghana Sports Stadium",
+   "type": "public entrance",
+   "arrivalOn": "service",
+   "arrivalDistance": 4.1,
+   "facing": 90
   }
  ],
  "furthestArrivals": [
   {
-   "place": "Information Studies Department",
+   "place": "Department of Information Studies",
    "method": "frontage",
    "arrivalDistance": 188.6
   },
@@ -1097,6 +1097,16 @@
    "arrivalDistance": 64
   },
   {
+   "place": "Narnia FC Park",
+   "method": "point",
+   "arrivalDistance": 63.7
+  },
+  {
+   "place": "Ghana Standards Authority Head Office",
+   "method": "point",
+   "arrivalDistance": 63.5
+  },
+  {
    "place": "Academic Registry Public Relation Department",
    "method": "frontage",
    "arrivalDistance": 55.4
@@ -1120,16 +1130,6 @@
    "place": "Food vendors",
    "method": "point",
    "arrivalDistance": 47.7
-  },
-  {
-   "place": "Erata Hotel",
-   "method": "frontage",
-   "arrivalDistance": 47.2
-  },
-  {
-   "place": "Commonwealth Hall Library",
-   "method": "frontage",
-   "arrivalDistance": 46.5
   }
  ],
  "networkPassagesThroughBuildings": [

@@ -338,7 +338,7 @@ try {
   // north front (marked blue), with car parks in front of the Mathematics galleries and the east block
   { const chain = [[290, -225], [307, -238], [316, -240], [325, -240], [333, -240], [345, -240], [340, -228], [346, -228], [352, -230], [370, -221]];
     for (const [x, z] of chain) { const b = buildingAt(x, z); if (!b) fail(`Mathematics and Statistics: no building at ${x},${z} (the blocks must be connected)`); else if (b.height < 10) fail(`Mathematics and Statistics: the block at ${x},${z} is not three floors`); }
-    const e = ann('Statistics'); if (!e || Math.hypot(e[0] - 325.2, e[1] - -247.4) > 2) fail('Statistics: the main entrance is not on the north front (owner)');
+    const e = ann('Department of Statistics'); if (!e || Math.hypot(e[0] - 325.2, e[1] - -247.4) > 2) fail('Statistics: the main entrance is not on the north front (owner)');
     const parking = cm.AREAS.filter((a) => a.kind === 'parking'), inA = (a, x, z) => { let c = false; for (let i = 0, j = a.pts.length - 2; i < a.pts.length; j = i, i += 2) { const zi = a.pts[i + 1], zj = a.pts[j + 1]; if ((zi > z) !== (zj > z) && x < ((a.pts[j] - a.pts[i]) * (z - zi)) / (zj - zi) + a.pts[i]) c = !c; } return c; };
     for (const [n, x, z] of [['the Mathematics galleries', 292, -236], ['the east block', 370, -237.5]]) if (!parking.some((a) => inA(a, x, z))) fail(`no car park in front of ${n}`);
     if ((await server.ssrLoadModule('/src/game/mathstat.ts')).mathStat.frames().length !== 1) fail('expected the Mathematics and Statistics model'); }
@@ -347,7 +347,7 @@ try {
   // Department of Plant Biology and the two small buildings behind the engineering school are one floor
   { for (const [x, z] of [[290, -290], [306, -297], [330, -296], [347, -296], [355, -310], [355, -290], [356, -279], [375, -287]]) { const b = buildingAt(x, z); if (!b) fail(`ISSER and Computer Science: no building at ${x},${z} (the blocks must be connected)`); else if (b.height < 10) fail(`ISSER and Computer Science: the block at ${x},${z} is not three floors`); }
     const e = ann('ISSER Building'); if (!e || Math.hypot(e[0] - 312.5, e[1] - -283.3) > 2) fail('ISSER Building: the entrance is not on the front facing the Mathematics department (owner)');
-    const c = ann('Computer Science Dept'); if (!c || Math.hypot(c[0] - 349.6, c[1] - -309.5) > 2) fail('Computer Science Dept: the entrance is not on the wing\'s west face (owner)');
+    const c = ann('Department of Computer Science'); if (!c || Math.hypot(c[0] - 349.6, c[1] - -309.5) > 2) fail('Computer Science Dept: the entrance is not on the wing\'s west face (owner)');
     // (the two small buildings behind Old Pent toward the engineering school are gone: the owner, after the third PDF)
     for (const [x, z] of [[524, -472], [535, -473], [541, -461]]) if (buildingAt(x, z)) fail(`the building behind Old Pent at ${x},${z} the owner removed is still there`);
     for (const [n, x, z] of [['the Department of Plant Biology', 406, -314]]) { const b = buildingAt(x, z); if (!b || b.height > 5) fail(`${n} is not one floor (owner)`); }

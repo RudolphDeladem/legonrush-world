@@ -464,15 +464,16 @@
   }
  },
  "places": {
-  "total": 437,
-  "fromOsm": 389,
+  "total": 475,
+  "fromUgReference": 39,
+  "fromOsm": 428,
   "fromUgCampusMap": 38,
-  "addedFromRegistry": 10,
+  "addedFromRegistry": 9,
   "movedToRegistryPosition": 8,
   "byConfidence": {
-   "high": 146,
-   "medium": 287,
-   "low": 4
+   "high": 159,
+   "medium": 313,
+   "low": 3
   },
   "requiredNamesChecked": 152,
   "moved": [
@@ -1997,7 +1998,7 @@
      "test": "near-place",
      "pass": true,
      "value": 53,
-     "detail": "53 m from Psychology Department (limit 150 m)"
+     "detail": "53 m from Department of Psychology (limit 150 m)"
     }
    ]
   },
@@ -2809,7 +2810,7 @@
    "kind": "academic",
    "ha": 56,
    "shareOutsideCampus": 0,
-   "places": 74,
+   "places": 77,
    "buildings": 147,
    "anchorsMissing": []
   },
@@ -2819,7 +2820,7 @@
    "kind": "academic",
    "ha": 48,
    "shareOutsideCampus": 0,
-   "places": 68,
+   "places": 72,
    "buildings": 178,
    "anchorsMissing": []
   },
@@ -2829,7 +2830,7 @@
    "kind": "residence",
    "ha": 51,
    "shareOutsideCampus": 0,
-   "places": 54,
+   "places": 55,
    "buildings": 163,
    "anchorsMissing": []
   },
@@ -2839,7 +2840,7 @@
    "kind": "commercial",
    "ha": 29,
    "shareOutsideCampus": 0,
-   "places": 21,
+   "places": 23,
    "buildings": 39,
    "anchorsMissing": []
   },
@@ -2849,7 +2850,7 @@
    "kind": "sport",
    "ha": 26,
    "shareOutsideCampus": 0.04,
-   "places": 9,
+   "places": 10,
    "buildings": 13,
    "anchorsMissing": []
   },
@@ -2859,7 +2860,7 @@
    "kind": "residence",
    "ha": 78,
    "shareOutsideCampus": 0,
-   "places": 18,
+   "places": 24,
    "buildings": 112,
    "anchorsMissing": []
   },
@@ -2919,26 +2920,12 @@
    "kind": "mixed",
    "ha": 127,
    "shareOutsideCampus": 0.07,
-   "places": 27,
+   "places": 29,
    "buildings": 252,
    "anchorsMissing": []
   }
  ],
  "conflicts": [
-  {
-   "place": "Shell",
-   "at": [
-    -154,
-    -1751
-   ],
-   "other": "Shell",
-   "source": "overture/Microsoft",
-   "otherAt": [
-    1069,
-    2139
-   ],
-   "distanceM": 4077
-  },
   {
    "place": "JQB Lecture Hall",
    "at": [
@@ -2966,20 +2953,6 @@
     1026
    ],
    "distanceM": 1081
-  },
-  {
-   "place": "UPSA Hostel",
-   "at": [
-    1741,
-    -782
-   ],
-   "other": "UPSA",
-   "source": "osm",
-   "otherAt": [
-    2304,
-    -1000
-   ],
-   "distanceM": 604
   },
   {
    "place": "International House",
