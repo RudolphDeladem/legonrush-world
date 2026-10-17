@@ -31,6 +31,7 @@ import { ownsOg } from './okgateplan';
 import { ownsJj } from './jjplan';
 import { ownsDj } from './djplan';
 import { inTcLocal } from './tennisplan';
+import { nearNewPentWing } from './newpent';
 
 /** real road widths by class: main, through, residential, service lane, footpath */
 export const ROAD_WIDTH = [9, 7.4, 6.2, 4.6, 2.6];
@@ -749,7 +750,10 @@ export function buildCampusLife() {
     else if ((sp === 'palm' || sp === 'flame') && inTcLocal(x, z)) sp = hash(x, z) < 0.6 ? 'mahogany' : 'neem';
     sp = localSpecies(x, z) ?? sp;
     const leaf = pick(rand, LEAF[sp]).map(C);
-    cells.p(x, z).add(T[sp], yawM(x, 0, z, rand() * 6.28, sc), leaf, 0.9 + rand() * 0.18);
+    const m = yawM(x, 0, z, rand() * 6.28, sc), shade = 0.9 + rand() * 0.18;
+    // (none against the New Pent blocks' walls: the owner's Pent Block brief)
+    if (nearNewPentWing(x, z, 6)) return;
+    cells.p(x, z).add(T[sp], m, leaf, shade);
     SOLIDS.add(x, z, 0.35 * sc);
   };
   const person = (b: Batch, x: number, z: number, yaw: number, sitting: boolean, shirt?: THREE.Color | null) => {
@@ -889,7 +893,9 @@ export function buildCampusLife() {
     });
     for (let i = 0; i < 2; i++) {
       const s = spotNear(p.x, p.z, 35, 2);
-      if (s) cells.p(s[0], s[1]).add(M.bed, yawM(s[0], 0, s[1], faceRoad(s[0], s[1])), pick(rand, FLOWERS));
+      if (!s) continue;
+      const m = yawM(s[0], 0, s[1], faceRoad(s[0], s[1])), fl = pick(rand, FLOWERS);
+      if (!nearNewPentWing(s[0], s[1], 25)) cells.p(s[0], s[1]).add(M.bed, m, fl);
     }
     const groups = shirt ? 4 : 2;
     for (let i = 0; i < groups; i++) {
@@ -1278,6 +1284,8 @@ function hedges(cells: Cells, hedge: Model, pts: Float32Array, cx: number, cz: n
       const x = ax + ux * (t + piece / 2) + nx * 1.7, z = az + uz * (t + piece / 2) + nz * 1.7;
       if (roadClearance(x, z, 8, -1, true) > 0.7 && !buildingAt(x, z, 0.3) && !inKeepOut(x, z)) {
         const c = green[(rand() * 3) | 0];
+        // (no hedges round the New Pent blocks: the owner's Pent Block brief)
+        if (nearNewPentWing(x, z, 3)) { rand(); made++; t += piece + 1.2 + rand() * 2; continue; }
         cells.p(x, z).add(hedge, new THREE.Matrix4().compose(new THREE.Vector3(x, 0, z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(uz, ux) * -1), new THREE.Vector3(piece, 0.9 + rand() * 0.2, 1)), [c, c.clone().multiplyScalar(1.15)]);
         made++;
       }

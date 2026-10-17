@@ -127,6 +127,8 @@ export interface Block {
   floorStyle?: Record<number, Style>;
   /** facade style per face (default: the building's) */
   faces?: Partial<Record<Face, Style>>;
+  /** a face given its own style keeps it on every storey, floorStyle notwithstanding (a brick front over a glazed ground floor elsewhere) */
+  faceFirst?: boolean;
   /** height of the block's base (on a site standing on sloping ground: the lowest ground under its corners) */
   y?: number;
   /** colour of the plinth round its foot (default: the building's) */
@@ -286,10 +288,11 @@ function buildSpec(f: Frame) {
   for (const b of spec.blocks) {
     const sty = (face: Face) => b.faces?.[face] ?? spec.style;
     const yb = b.y ?? (spec.onGround ? Math.min(ground(b.x0, b.z0), ground(b.x1, b.z0), ground(b.x0, b.z1), ground(b.x1, b.z1)) : 0);
-    run(b.x0, b.z0, b.x1, b.z0, b.floors, sty('z0'), b.floorStyle, yb, b.plinth);
-    run(b.x0, b.z1, b.x1, b.z1, b.floors, sty('z1'), b.floorStyle, yb, b.plinth);
-    run(b.x0, b.z0, b.x0, b.z1, b.floors, sty('x0'), b.floorStyle, yb, b.plinth);
-    run(b.x1, b.z0, b.x1, b.z1, b.floors, sty('x1'), b.floorStyle, yb, b.plinth);
+    const fst = (face: Face) => (b.faceFirst && b.faces?.[face] ? undefined : b.floorStyle);
+    run(b.x0, b.z0, b.x1, b.z0, b.floors, sty('z0'), fst('z0'), yb, b.plinth);
+    run(b.x0, b.z1, b.x1, b.z1, b.floors, sty('z1'), fst('z1'), yb, b.plinth);
+    run(b.x0, b.z0, b.x0, b.z1, b.floors, sty('x0'), fst('x0'), yb, b.plinth);
+    run(b.x1, b.z0, b.x1, b.z1, b.floors, sty('x1'), fst('x1'), yb, b.plinth);
     const eave = yb + wallTop(b.floors);
     roof.c = new THREE.Color(b.roofColor ?? spec.roofColor);
     const pitchB = b.pitch ?? spec.pitch;

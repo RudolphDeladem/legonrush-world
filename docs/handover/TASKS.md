@@ -225,3 +225,8 @@ section, and the larger briefs have their own folder under `docs/` (evidence aud
    - **Search names:** the site marker titles the game knows under another name became search names (`a` on places), so "Department of Chemistry" finds Frank Torto Chemistry Building.
    - **New destinations:** 38 places the reference shows and the game lacked. They include the Legon Pool Side, the basketball and volleyball courts, Gonja Park, Narnia FC Park, the car parks and the bus stops (`sources/ug-campus-map-reference.json`, a new pass in `build-master.mjs`).
    - **Generic buildings in the boundary:** each gets a door on the wall facing the nearest road. Storeys now follow the outline's size (60–200 m² one storey, to 1800 m² two, above that three) instead of a random height; the map's and photos' heights still come first.
+191. New Pent Blocks, detailed correction brief (owner's 36-slide brief and labelled aerial, 2026-10-17; `docs/pent-blocks/CORRECTION_BRIEF.md`).
+   - **Layout:** the aerial confirms the placement: B north and A south, both west of Pent Road; C east of it, mirroring A and B with its car park on the west.
+   - **Architecture:** steeper hipped roofs; white corner strips framing every brick face; the front structures' brick fronts reach down to the plinth (new `faceFirst` block option).
+   - **Ground:** red-brown hex paver aprons along every wing. The car parks run to the roads, with a car row between Blocks A and B. Grey interlocking drives lead to the Pent Road gates.
+   - **Removed:** the chain posts round Block A's approach lawns, and the generic hedges, flower beds and trees against the walls (the random sequence is unchanged elsewhere).

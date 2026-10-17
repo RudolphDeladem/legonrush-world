@@ -81,6 +81,10 @@ const WINGS = BUILDINGS.filter((b) => inZone((b.minX + b.maxX) / 2, (b.minZ + b.
   for (let i = 0; i < b.pts.length; i += 2) ring.push([b.pts[i], b.pts[i + 1]]);
   return { b, rects: rectsOf(ring) };
 });
+/** within d metres of a New Pent wing's walls: the generated hedges, beds and trees stay clear of the facades (the owner's
+ *  Pent Block correction brief: oversized trees hid the entrances and brick elevations; no hedges in the photos) */
+export const nearNewPentWing = (x: number, z: number, d: number) =>
+  inZone(x, z) && WINGS.some(({ rects }) => rects.some(([x0, x1, z0, z1]) => x > x0 - d && x < x1 + d && z > z0 - d && z < z1 + d));
 const touches = (a: Rect, b: Rect, side: 'x0' | 'x1' | 'z0' | 'z1') => {
   const e = 0.6;
   const overX = Math.min(a[1], b[1]) - Math.max(a[0], b[0]) > 1, overZ = Math.min(a[3], b[3]) - Math.max(a[2], b[2]) > 1;
@@ -105,12 +109,12 @@ function wing(i: number): Spec {
   const blocks: Block[] = rects.map((r) => {
     const faces: Block['faces'] = {};
     for (const f of ends(r)) faces[f] = NP_END;
-    return { x0: r[0] - O[0], x1: r[1] - O[0], z0: r[2] - O[1], z1: r[3] - O[1], floors: FL, faces, ...(front ? { floorStyle: { 0: NP_LARGE } } : {}) };
+    return { x0: r[0] - O[0], x1: r[1] - O[0], z0: r[2] - O[1], z1: r[3] - O[1], floors: FL, faces, ...(front ? { floorStyle: { 0: NP_LARGE }, faceFirst: true } : {}) };
   });
   const biggest = rects.reduce((m, r) => ((r[1] - r[0]) * (r[3] - r[2]) > (m[1] - m[0]) * (m[3] - m[2]) ? r : m), rects[0]);
   return {
     name: `New Pent wing ${i + 1}`,
-    axis: [1, 0], origin: O, storey: NST, style: NP_LONG, roofColor: ROOF_NP, fascia: FASCIA_NP, pitch: 0.42,
+    axis: [1, 0], origin: O, storey: NST, style: NP_LONG, roofColor: ROOF_NP, fascia: FASCIA_NP, pitch: 0.6,
     replaces: [[(biggest[0] + biggest[1]) / 2, (biggest[2] + biggest[3]) / 2]],
     blocks,
     keep: [],
@@ -143,6 +147,42 @@ function wing(i: number): Spec {
         }
       }
       if (c.length) { const m = new THREE.Mesh(merge(c), concrete(0.15)); m.castShadow = true; m.receiveShadow = true; k.meshes.push(m); }
+      // the white render framing every brick face at its corners, base to eaves (the owner's Pent Block brief, slides 8, 16, 23
+      // and 35: the brick panels stand between pale vertical strips)
+      const pil: Part[] = [];
+      for (const r of rects) for (const side of ends(r)) {
+        if (all.some((o) => o !== r && touches(r, o, side))) continue;
+        const s = side.endsWith('0') ? -1 : 1, alongX = side[0] === 'z';
+        const at = (alongX ? (s < 0 ? r[2] : r[3]) - O[1] : (s < 0 ? r[0] : r[1]) - O[0]);
+        const [a0, a1] = alongX ? [r[0] - O[0], r[1] - O[0]] : [r[2] - O[1], r[3] - O[1]];
+        for (const [p0, p1] of [[a0 - 0.02, a0 + 0.5], [a1 - 0.5, a1 + 0.02]]) {
+          const [d0, d1] = s > 0 ? [at - 0.02, at + 0.07] : [at - 0.07, at + 0.02];
+          pil.push([alongX ? box(p0, p1, PL, e, d0, d1) : box(d0, d1, PL, e, p0, p1), WHITE_NP]);
+        }
+      }
+      if (pil.length) { const m = new THREE.Mesh(merge(pil), concrete(0.15)); m.castShadow = true; m.receiveShadow = true; k.meshes.push(m); }
+      // red-brown interlocking pavers along the foot of every open wall, 1.5 m out (the brief's slides 8-16: a paved walk
+      // along the blocks between the walls and the lawns or the car parks)
+      { const pos: number[] = [], uv: number[] = [], idx: number[] = [];
+        for (const r of rects) for (const side of ['x0', 'x1', 'z0', 'z1'] as const) {
+          if (all.some((o) => o !== r && touches(r, o, side))) continue;
+          const s = side.endsWith('0') ? -1 : 1, alongX = side[0] === 'z', W = 1.5;
+          const at = (alongX ? (s < 0 ? r[2] : r[3]) - O[1] : (s < 0 ? r[0] : r[1]) - O[0]);
+          const [a0, a1] = alongX ? [r[0] - O[0] - W, r[1] - O[0] + W] : [r[2] - O[1], r[3] - O[1]];
+          const n = Math.max(1, Math.ceil((a1 - a0) / 2));
+          for (let i = 0; i <= n; i++) for (const d of [0, W]) {
+            const p = a0 + ((a1 - a0) * i) / n, q = at + s * (d + 0.02);
+            const [x, z] = alongX ? [p, q] : [q, p];
+            pos.push(x, 0.05, z); uv.push((x + O[0]) / 1.1, (z + O[1]) / 0.95);
+          }
+          const b0 = pos.length / 3 - (n + 1) * 2;
+          for (let i = 0; i < n; i++) { const v = b0 + i * 2; idx.push(v, v + 1, v + 3, v, v + 3, v + 2, v, v + 3, v + 1, v, v + 2, v + 3); }
+        }
+        const g = new THREE.BufferGeometry();
+        g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); g.setIndex(idx);
+        // (both windings, so the normals are set up rather than averaged to nothing)
+        g.setAttribute('normal', new THREE.Float32BufferAttribute(Array.from({ length: pos.length }, (_, i) => (i % 3 === 1 ? 1 : 0)), 3));
+        const m = new THREE.Mesh(g, redHex()); m.receiveShadow = true; k.meshes.push(m); }
       // the white strip up the middle of each open brick wall, the stair's tall barred windows in it under an arched head
       for (const r of rects) {
         for (const side of ends(r)) {
@@ -266,6 +306,15 @@ const grounds: Spec = {
     wall(598.5, -789.0, -810.6, [-792.6, -796.8]);
     wall(634.5, -709.4, -745.8, [-714, -720]);
     k.plain.push([B(625.5, 634.2, gy(630, -717), gy(630, -717) + 0.04, -720.2, -713.8), '#9a5644']);
+    // the paved drives from Pent Road in to the gates of Blocks A and B: grey interlocking blocks (the Pent Block brief,
+    // slides 21 and 24), laid in 2 m strips that follow the ground, the joints across them
+    for (const [xa, xb, za, zb] of [[604.95, 622.0, -657.2, -652.2], [598.75, 616.6, -797.2, -792.2]]) {
+      for (let x = xa; x < xb - 0.01; x += 2) {
+        const x1 = Math.min(xb, x + 2), y = gy((x + x1) / 2, (za + zb) / 2);
+        k.plain.push([B(x, x1, y + 0.01, y + 0.05, za, zb), '#8e8a83']);
+        for (let xx = x + 0.5; xx < x1; xx += 0.5) k.plain.push([B(xx - 0.015, xx + 0.015, y + 0.05, y + 0.053, za, zb), '#6f6c66']);
+      }
+    }
     // the transformer in its caged pen beside the gate
     { const x = 636.5, z = -710.5, y = gy(x, z);
       k.plain.push([B(x - 0.9, x + 0.9, y, y + 1.9, z - 0.6, z + 0.6), '#5c6a62'], [B(x - 0.25, x + 0.25, y + 1.2, y + 1.6, z - 0.62, z - 0.6), '#f2c400']);
@@ -365,26 +414,27 @@ const grounds: Spec = {
         }
       };
       // Block A, before the front structures
-      { const y = pad(573.5, 612, -600.5, -586.5); rowX(574, 612, -593.8, -599.4, y); }
+      { const y = pad(573.5, 612, -600.5, -585.9); rowX(574, 612, -593.8, -599.4, y); }
       // behind Block A, along its back wing and the road to Block B
-      { const y = pad(563, 614, -711.1, -697.6); rowX(565, 612, -703.4, -697.8, y); rowX(565, 612, -705.2, -710.8, y); }
+      { const y = pad(563, 614, -714.2, -697.6); rowX(565, 612, -703.4, -697.8, y); rowX(565, 612, -705.2, -710.8, y); }
       // Block B, before the front structures either side of the entrance
       { const y = pad(549.5, 567.5, -740, -731.5); rowX(550, 567.5, -733, -738.6, y); }
+      // (the hardstand reaches the road between Blocks A and B: no lawn between them, the brief's slides 20 and 22; a row
+      // of cars along the road's kerb, the aerial's row on Block B's south side)
+      { const y = pad(549.5, 612, -731.5, -720.3); rowX(568, 584.5, -726.8, -721.2, y); }
       { const y = pad(585.5, 612, -745, -731.5); rowX(586, 612, -733, -738.6, y); rowX(586, 612, -744.6, -739.2, y); }
       // Block C, along the drive on its west side
       { const y = pad(636.5, 643.8, -690, -684.2); rowZ(-689.5, -684.2, 643.6, 638.0, y); }
       { const y = pad(650.5, 655.0, -690, -672); rowZ(-689.5, -672, 650.6, 655.0, y); } }
     // ----- the pedestrian approach to Block A's entrance from the road (the owner's Balme and Pentagon brief, pair 7): no
-    // asphalt spur; red-brown interlocking paths between kerbed lawn islands, small trees and shrubs, a low chain on
-    // posts round the lawns, the service strip with three AC condensers along the brick wall on the east
+    // asphalt spur; red-brown interlocking paths between kerbed lawn islands, small trees and shrubs (the chain on posts
+    // round the lawns is gone: the Pent Block brief, slides 7 and 13), the service strip with three AC condensers along the brick wall on the east
     { const pv = (x0: number, x1: number, z0: number, z1: number) => k.plain.push([B(x0, x1, gy((x0 + x1) / 2, (z0 + z1) / 2) + 0.01, gy((x0 + x1) / 2, (z0 + z1) / 2) + 0.045, z0, z1), '#9a5444']);
       pv(565.6, 570.2, -612, -586.5); pv(557.5, 573.5, -590.0, -586.5);
       for (const [x0, x1] of [[557.6, 565.4], [570.4, 572.5]]) {
         const y = gy((x0 + x1) / 2, -600);
         c.push([B(x0, x1, y, y + 0.14, -611.8, -590.2), '#cfcabf']);
         k.plain.push([B(x0 + 0.12, x1 - 0.12, y + 0.14, y + 0.16, -611.7, -590.3), '#5c8a38']);
-        for (let z = -611.4; z <= -590.4; z += 2.1) for (const x of [x0 + 0.2, x1 - 0.2]) { k.plain.push([B(x - 0.03, x + 0.03, y + 0.14, y + 0.6, z - 0.03, z + 0.03), '#e8e6e0']); }
-        for (const x of [x0 + 0.2, x1 - 0.2]) k.plain.push([B(x - 0.012, x + 0.012, y + 0.5, y + 0.52, -611.4, -590.4), '#3a3a3a']);
       }
       for (const [x, z, h] of [[561.5, -596.5, 3.2], [561.0, -606.0, 2.6], [571.4, -603.5, 2.4]] as [number, number, number][]) {
         const y = gy(x, z) + 0.15;
