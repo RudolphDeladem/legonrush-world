@@ -52,3 +52,18 @@ Each pair is from the same camera.
   blue canopy in Block A and a white paved court in Block C. They are not modelled yet, because their extents cannot
   be measured from the stylised aerial.
 - AC units and satellite dishes beyond the terrace already modelled. The photos show them, but not where on each wing.
+
+## Entrances redesigned (owner's three entrance photos, 2026-10-17)
+
+Blocks A and B share one design. Block C is its mirror image (`entrance(..., -1)`).
+
+- **Porch:** two storeys high and about 11 m wide.
+  - **Arch:** a tall round arch between two thick white piers.
+  - **Columns and beams:** two slender square columns on each side, on dark grey feet, with two white beams across the front and down the sides and a white band above them.
+  - **Roof:** a low tiled roof over the whole width, hipped at the ends. The middle rises as a gable whose white pediment carries BLOCK A / B / C over the arch.
+  - **Lobby:** a dark lobby behind black steel grille gates, with a concrete landing at the foot of the paved approach.
+- **Stair tower:** as wide as the porch.
+  - **Centre:** a gabled middle with a tall round-headed recess in a moulded frame over the top two floors, a ledge across it, and open landings below it.
+  - **Sides:** open landings behind solid white parapets on every floor on one side (left on A and B, right on C), and a rendered wall with dark glass-louvre windows on the other.
+
+![entrances before and after](images/entrances-before-after.png)

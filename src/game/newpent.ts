@@ -210,52 +210,109 @@ function wing(i: number): Spec {
 }
 
 // ---------- the entrances (frame: map axes, origin at the owner's mark, front to +z) ----------
-function entrance(name: string, letter: string, at: [number, number]): Spec {
+// Rebuilt from the owner's three entrance photos (Block A's front, its paved approach, the classic front view): Blocks A
+// and B are the same, Block C the mirror image (mirror = -1 swaps the stair tower's open side and its louvred side).
+//  - The stair tower: a white gabled middle with a tall round-headed recess over the top two floors, a ledge across it;
+//    on one side open landings at every floor behind solid white parapets, on the other a rendered wall with dark
+//    louvred windows; its own tiled gable roof, the ridge running back from the front.
+//  - The porch before it, two storeys high: the tall arch between two thick white piers in the middle, two slender
+//    square columns on each side, all on dark grey feet; two white beams across the front and the sides, a white band
+//    above them; a low tiled roof over the whole width, hipped at the ends, the middle raised as a gable whose white
+//    pediment carries BLOCK A / B / C over the arch; behind, the dark lobby closed by black steel grille gates; a
+//    concrete landing at the foot of the paved approach.
+function entrance(name: string, letter: string, at: [number, number], mirror: 1 | -1 = 1): Spec {
   return {
     name,
     axis: [1, 0], origin: at, storey: NST, style: NP_LONG, roofColor: ROOF_NP, fascia: FASCIA_NP, pitch: 0.5,
     blocks: [],
-    keep: [[-4, 4, -1.5, 8]],
+    keep: [[-6, 6, -1.5, 8]],
     extras: (k) => {
-      const e = PL + NF * NST + 0.4, c: Part[] = [];
-      // the white landing tower (the owner's Balme and Pentagon brief, pair 7): open horizontal bays across its front at
-      // each landing, a solid white parapet before each, dark shade inside; one tall arched opening at the top under the
-      // gable
-      c.push([box(-3.6, 3.6, 0, e, -1.5, 2.0), WHITE_NP]);
-      for (const x of [-3.6, 3.15]) c.push([box(x, x + 0.45, 0, e, 2.0, 2.5), WHITE_NP]);
-      k.plain.push([box(-3.61, 3.61, 0, 0.9, -1.5, 2.51), GREY_BASE]);
+      const e = PL + NF * NST + 0.4, c: Part[] = [], m = mirror;
+      const X = (x0: number, x1: number) => (m > 0 ? [x0, x1] : [-x1, -x0]) as [number, number];
+      // ----- the stair tower: the gabled middle, the louvred side and the open side (the photos: as wide as the porch) -----
+      const [l0, l1] = X(2.3, 5.4), [o0, o1] = X(-5.4, -2.3);
+      c.push([box(-2.3, 2.3, 0, e, -1.5, 2.5), WHITE_NP], [box(l0, l1, 0, e, -1.5, 2.0), WHITE_NP], [box(o0, o1, 0, e, -1.5, 0.6), WHITE_NP]);
+      k.plain.push([box(-2.31, 2.31, 0, 0.9, -1.5, 2.51), GREY_BASE], [box(l0 - 0.01, l1 + 0.01, 0, 0.9, -1.5, 2.01), GREY_BASE]);
+      // the open side: its ground floor closed behind the porch, above it a landing at every floor - the slab, the solid
+      // white parapet, the shade of the landing inside, the end wall
+      c.push([box(o0, o1, 0, PL + NST, 0.6, 2.0), WHITE_NP]);
+      { const ex = m > 0 ? [-5.4, -5.1] : [5.1, 5.4];
+        c.push([box(ex[0], ex[1], 0, e, 0.6, 2.0), WHITE_NP], [box(o0, o1, e - 0.3, e, 0.6, 2.0), WHITE_NP]); }
+      k.plain.push([box(o0, o1, PL + NST, e - 0.3, 0.6, 0.62), '#3c3d3e']);
       for (let f = 1; f < NF; f++) {
         const y = PL + f * NST;
-        k.plain.push([box(-3.15, 3.15, y - 0.1, y + NST - 0.5, 1.98, 2.0), '#3e3f40']);
-        c.push([box(-3.15, 3.15, y - 0.2, y + 1.0, 2.3, 2.5), WHITE_NP], [box(-3.15, 3.15, y + NST - 0.5, y + NST - 0.1, 2.0, 2.5), WHITE_NP]);
+        c.push([box(o0, o1, y - 0.2, y, 0.6, 2.0), WHITE_NP], [box(o0, o1, y, y + 1.0, 1.8, 2.0), WHITE_NP]);
+        // the louvred side: a dark window of glass louvres on every floor
+        const [w0, w1] = X(3.0, 4.7);
+        k.plain.push([box(w0, w1, y + 0.6, y + 2.3, 2.005, 2.04), '#2b2e31']);
+        for (let yy = y + 0.7; yy < y + 2.25; yy += 0.14) k.plain.push([box(w0 + 0.05, w1 - 0.05, yy, yy + 0.05, 2.04, 2.06), '#4a5055']);
       }
-      k.plain.push([box(-0.75, 0.75, e - 3.0, e - 0.75, 2.5, 2.52), '#3a3c3e'], [new THREE.CircleGeometry(0.75, 14, 0, Math.PI).translate(0, e - 0.75, 2.53), '#3a3c3e']);
-      c.push([box(-1.0, 1.0, e - 3.1, e - 3.0, 2.5, 2.7), WHITE_NP]);
-      const top = e + 4.3 * 0.55;
-      k.roof.c = new THREE.Color(ROOF_NP);
-      k.roof.quad([-4.3, e, 3.1], [-4.3, e, -2.1], [0, top, -2.1], [0, top, 3.1]);
-      k.roof.quad([4.3, e, -2.1], [4.3, e, 3.1], [0, top, 3.1], [0, top, -2.1]);
-      k.plain.push([tri2([-3.6, e, 2.52], [3.6, e, 2.52], [0, top - 0.25, 2.52]), WHITE_NP]);
-      for (const sx of [-1, 1]) { const L = Math.hypot(4.3, top - e); k.plain.push([new THREE.BoxGeometry(L, 0.3, 0.08).rotateZ(-sx * Math.atan2(top - e, 4.3)).translate(sx * 2.15, (e + top) / 2, 3.12), FASCIA_NP]); }
-      // the porch: square columns on grey feet, the tall arch in the middle, the rendered gable with the block's name
-      const ph = 3.6, pz = 6.2;
-      // (slender pale supports with darker lower parts: pair 7)
-      for (const x of [-2.9, -1.3, 1.3, 2.9]) { c.push([box(x - 0.17, x + 0.17, 0, ph, pz - 0.4, pz - 0.06), WHITE_NP]); k.plain.push([box(x - 0.18, x + 0.18, 0, 1.1, pz - 0.41, pz - 0.05), '#6d6f72']); SOLIDS.add(...k.world(x, pz - 0.23), 0.2); }
-      c.push([box(-3.2, 3.2, ph, ph + 0.9, 2.5, pz), WHITE_NP]);
-      // the open arch over the way in: a white arched head between the middle supports, the porch open beneath
-      { const sh = new THREE.Shape(); sh.moveTo(-1.13, ph - 1.25); sh.lineTo(-1.13, ph); sh.lineTo(1.13, ph); sh.lineTo(1.13, ph - 1.25); sh.absarc(0, ph - 1.25, 1.13, 0, Math.PI, false);
-        c.push([new THREE.ExtrudeGeometry(sh, { depth: 0.3, bevelEnabled: false, curveSegments: 12 }).translate(0, 0, pz - 0.36), WHITE_NP]); }
-      const pt = ph + 0.9 + 3.5 * 0.5;
-      k.roof.quad([-3.5, ph + 0.9, pz + 0.3], [-3.5, ph + 0.9, 2.5], [0, pt, 2.5], [0, pt, pz + 0.3]);
-      k.roof.quad([3.5, ph + 0.9, 2.5], [3.5, ph + 0.9, pz + 0.3], [0, pt, pz + 0.3], [0, pt, 2.5]);
-      k.plain.push([tri2([-3.2, ph + 0.9, pz + 0.02], [3.2, ph + 0.9, pz + 0.02], [0, pt - 0.2, pz + 0.02]), WHITE_NP]);
-      k.plain.push([box(-1.2, 1.2, ph + 1.05, ph + 1.55, pz + 0.02, pz + 0.06), '#f7f7f4']);
-      k.signs.push({ text: `BLOCK ${letter}`, x: 0, y: ph + 1.3, z: pz + 0.07, ry: 0, w: 2.0, colors: ['#f7f7f4', '#1f2f5a'] });
-      // the doors and grilles inside, the paved approach
-      k.plain.push([box(-2.8, 2.8, 0.1, 2.6, 2.5, 2.54), '#2a2c2e']);
-      for (let x = -2.7; x < 2.8; x += 0.2) k.plain.push([box(x, x + 0.03, 0.1, 2.6, 2.54, 2.57), '#7d8084']);
-      k.plain.push([box(-3.4, 3.4, 0, 0.12, 2.5, pz + 1.5), '#9a5644']);
-      const m = new THREE.Mesh(merge(c), concrete(0.25)); m.castShadow = true; k.meshes.push(m);
+      // the middle below the recess: an open landing across it on the first and second floors
+      for (let f = 1; f < NF - 1; f++) {
+        const y = PL + f * NST;
+        k.plain.push([box(-2.0, 2.0, y + 1.0, y + NST - 0.5, 2.505, 2.53), '#3c3d3e']);
+        c.push([box(-2.3, 2.3, y - 0.2, y + 1.0, 2.5, 2.7), WHITE_NP]);
+      }
+      // the tall round-headed recess over the top two floors, a ledge across it, the shade at its head
+      { const y0 = PL + (NF - 2) * NST + 0.3, sp = e - 1.6, r = 1.05;
+        k.plain.push([box(-r, r, y0, sp, 2.505, 2.525), '#d8d2c6'], [new THREE.CircleGeometry(r, 16, 0, Math.PI).translate(0, sp, 2.526), '#d8d2c6']);
+        k.plain.push([box(-r + 0.02, r - 0.02, sp - 1.9, sp + 0.6, 2.525, 2.545), '#55575a'], [new THREE.CircleGeometry(r - 0.04, 16, 0, Math.PI).translate(0, sp + 0.6, 2.547), '#55575a']);
+        c.push([box(-r - 0.1, r + 0.1, sp - 2.1, sp - 1.9, 2.5, 2.75), WHITE_NP]);
+        // its moulded frame
+        const sh = new THREE.Shape(); sh.moveTo(-r - 0.25, y0); sh.lineTo(-r - 0.25, sp); sh.absarc(0, sp, r + 0.25, Math.PI, 0, true); sh.lineTo(r + 0.25, y0); sh.lineTo(r, y0); sh.lineTo(r, sp); sh.absarc(0, sp, r, 0, Math.PI, false); sh.lineTo(-r, y0); sh.lineTo(-r - 0.25, y0);
+        c.push([new THREE.ExtrudeGeometry(sh, { depth: 0.12, bevelEnabled: false, curveSegments: 14 }).translate(0, 0, 2.5), WHITE_NP]); }
+      // the tower's gable roof (ridge running back), its white pediment to the front; flat tops beside it
+      { const top = e + 2.9 * 0.6;
+        k.roof.c = new THREE.Color(ROOF_NP);
+        k.roof.quad([-2.9, e, 3.1], [-2.9, e, -2.1], [0, top, -2.1], [0, top, 3.1]);
+        k.roof.quad([2.9, e, -2.1], [2.9, e, 3.1], [0, top, 3.1], [0, top, -2.1]);
+        k.plain.push([tri2([-2.3, e, 2.52], [2.3, e, 2.52], [0, top - 0.3, 2.52]), WHITE_NP]);
+        for (const sx of [-1, 1]) { const L = Math.hypot(2.9, top - e); k.plain.push([new THREE.BoxGeometry(L, 0.28, 0.08).rotateZ(-sx * Math.atan2(top - e, 2.9)).translate(sx * 1.45, (e + top) / 2, 3.12), FASCIA_NP]); }
+        for (const sx of [-1, 1]) c.push([box(sx > 0 ? 2.3 : -5.4, sx > 0 ? 5.4 : -2.3, e, e + 0.5, -1.5, sx * m > 0 ? 2.0 : 0.6), WHITE_NP]); }
+      // ----- the porch -----
+      const pz = 6.0, E = 4.6;
+      const feet = (x0: number, x1: number, z0: number, z1: number) => k.plain.push([box(x0 - 0.01, x1 + 0.01, 0, 0.95, z0 - 0.01, z1 + 0.01), '#6d6f72']);
+      // the thick piers either side of the arch and the arch's raised head between them
+      for (const sx of [-1, 1]) {
+        const x0 = sx > 0 ? 1.05 : -1.75, x1 = sx > 0 ? 1.75 : -1.05;
+        c.push([box(x0, x1, 0, 5.25, pz - 0.5, pz), WHITE_NP]); feet(x0, x1, pz - 0.5, pz);
+        SOLIDS.add(...k.world((x0 + x1) / 2, pz - 0.25), 0.4);
+      }
+      { const sh = new THREE.Shape(); sh.moveTo(-1.75, 3.3); sh.lineTo(-1.75, 5.25); sh.lineTo(1.75, 5.25); sh.lineTo(1.75, 3.3); sh.lineTo(1.05, 3.3); sh.absarc(0, 3.3, 1.05, 0, Math.PI, false); sh.lineTo(-1.75, 3.3);
+        c.push([new THREE.ExtrudeGeometry(sh, { depth: 0.5, bevelEnabled: false, curveSegments: 14 }).translate(0, 0, pz - 0.5), WHITE_NP]); }
+      // the slender columns, two each side, and the side columns at the back corners
+      for (const x of [-4.9, -3.0, 3.0, 4.9]) {
+        c.push([box(x - 0.18, x + 0.18, 0, E - 0.5, pz - 0.42, pz - 0.06), WHITE_NP]); feet(x - 0.18, x + 0.18, pz - 0.42, pz - 0.06);
+        SOLIDS.add(...k.world(x, pz - 0.24), 0.22);
+      }
+      // two beams across the front and down the sides, the white band over them
+      for (const [y0, y1] of [[2.55, 2.78], [3.3, 3.52]]) {
+        for (const sx of [-1, 1]) c.push([box(sx > 0 ? 1.75 : -5.1, sx > 0 ? 5.1 : -1.75, y0, y1, pz - 0.38, pz - 0.1), WHITE_NP]);
+        for (const x of [-4.95, 4.95]) c.push([box(x - 0.12, x + 0.12, y0, y1, 2.5, pz - 0.1), WHITE_NP]);
+      }
+      c.push([box(-5.3, 5.3, E - 0.5, E, 2.5, pz), WHITE_NP]);
+      // the low roof over the whole porch, hipped at the ends, against the tower and the wings behind
+      { const W = 5.9, zb = 2.0, zf = pz + 0.5, d = zf - zb, Rh = E + d * 0.28;
+        k.roof.quad([W, E, zf], [-W, E, zf], [-W + d, Rh, zb], [W - d, Rh, zb]);
+        k.roof.quad([-W, E, zf], [-W, E, zb], [-W + d, Rh, zb], [-W + d, Rh, zb]);
+        k.roof.quad([W, E, zb], [W, E, zf], [W - d, Rh, zb], [W - d, Rh, zb]);
+        k.plain.push([box(-W, W, E - 0.28, E + 0.02, zf - 0.06, zf + 0.04), FASCIA_NP]);
+        k.plain.push([box(-W, W, E - 0.3, E - 0.26, zb, zf), '#d8cfbf']); }
+      // the raised gable over the arch, its white pediment with the block's name
+      { const x0 = -2.6, x1 = 2.6, z0 = 2.5, z1 = pz + 0.65, E2 = E + 0.15, T = E2 + 2.6 * 0.65;
+        k.roof.quad([x0, E2, z1], [x0, E2, z0], [0, T, z0], [0, T, z1]);
+        k.roof.quad([x1, E2, z0], [x1, E2, z1], [0, T, z1], [0, T, z0]);
+        c.push([box(-2.35, 2.35, E, E2 + 0.05, z0, pz), WHITE_NP]);
+        k.plain.push([tri2([-2.35, E2, pz + 0.01], [2.35, E2, pz + 0.01], [0, T - 0.25, pz + 0.01]), WHITE_NP]);
+        for (const sx of [-1, 1]) { const L = Math.hypot(2.6, T - E2); k.plain.push([new THREE.BoxGeometry(L, 0.26, 0.08).rotateZ(-sx * Math.atan2(T - E2, 2.6)).translate(sx * 1.3, (E2 + T) / 2, z1 + 0.02), FASCIA_NP]); }
+        k.plain.push([box(-0.95, 0.95, 5.42, 5.9, pz + 0.02, pz + 0.05), '#f7f7f4']);
+        k.signs.push({ text: `BLOCK ${letter}`, x: 0, y: 5.66, z: pz + 0.06, ry: 0, w: 1.7, colors: ['#f7f7f4', '#1f2f5a'] }); }
+      // the dark lobby behind, closed by black steel grille gates; the concrete landing
+      k.plain.push([box(-5.0, 5.0, 0.1, E - 0.5, 2.5, 2.54), '#2a2c2e']);
+      for (let x = -4.9; x < 4.95; x += 0.16) k.plain.push([box(x, x + 0.03, 0.1, 2.7, 3.0, 3.03), '#1b1c1d']);
+      for (const y of [0.25, 1.4, 2.6]) k.plain.push([box(-4.95, 4.95, y, y + 0.05, 3.0, 3.04), '#1b1c1d']);
+      k.plain.push([box(-5.6, 5.6, 0, 0.12, 2.5, pz + 1.2), '#cfc9be']);
+      const mesh = new THREE.Mesh(merge(c), concrete(0.25)); mesh.castShadow = true; k.meshes.push(mesh);
     },
   };
 }
@@ -573,6 +630,7 @@ export const newPentSite = createSite('new-pent', [
   entrance('New Pent Block A', 'A', [569.5, -628]),
   // (in the middle between its two front structures, as Block A's: the owner's New Pent corrections, picture 1)
   entrance('New Pent Block B', 'B', [555.8, -766]),
-  entrance('New Pent Block C', 'C', [686.8, -698]),
+  // (Block C is Blocks A's and B's mirror image: the owner)
+  entrance('New Pent Block C', 'C', [686.8, -698], -1),
   grounds,
 ]);
