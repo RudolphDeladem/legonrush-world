@@ -98,3 +98,28 @@ reason noted there); B and C stay within 5 m of the owner's marks.
 
 Files changed: `src/game/newpent.ts`, `data/geography/registry/access.json` and the regenerated geography outputs,
 `scripts/route-tests.mjs`, this document, `docs/handover/TASKS.md`.
+
+## Blocks A and B identical, Block C their mirror image (owner, 2026-10-17)
+
+The owner: Blocks A and B must be exactly the same, and Block C the same in mirror image. The map was checked first:
+
+- **Block B:** fitted to Block A's nine outlines, Block B's are Block A's moved by (-4.2, -139.0) m. The mean edge error is 0.7 m.
+- **Block C:** its outlines are Block A's mirrored about x = 624.15 and moved -74.8 m in z. The mean edge error is 3.5 m, and nearly all of it comes from one place, where the map merges a wing of C with its front structure into one outline. Every other wing is within 1-3 m.
+
+The site layout therefore confirms both the copy and the mirror. `newpent.ts` now builds all three blocks from Block A's outlines: B is the copy and C is the mirror (`NP_B`, `NP_C`). Block B's and Block C's own map outlines are replaced, not drawn. The entrances follow the same transforms, the stair tower's open side mirrored on C. The routing entrance points follow too: B [558.3, -763.0], C [685.8, -698.8], both within 5 m of the owner's earlier marks. Roads, routes and the rest of the site are unchanged.
+
+### Court and planting from the owner's annotated court photo (items 7-9)
+
+- **Paths:** one straight paver path to the porch between concrete kerbs. On the left, a branch leaves it about 4 m before the landing, angles back toward the building and runs along it to the wing, with a small lawn between it and the landing. On the right, a branch runs out to the right wing, drifting slightly toward the road. Lawn everywhere else; the kerbed lawn rectangles of the last version are gone.
+- **Blocks A and B:** young thin-stemmed trees with loose crowns, as in the photo: one beside each side of the porch, two further out on the left and a bushier one by the right wing. A small clipped conical shrub on the little lawn by the landing. Lamp posts left of the path and by the right wing. The generic round trees are gone.
+- **Block C:** the mirrored court, with a mature tree on either side of the porch (the Block C photo).
+
+Views: front, angled, elevated court, Block B front, Block C close and far, and the whole site from above. Each is before | after from the same camera, near-level so that verticals stay vertical; the leaning walls in earlier renders were camera tilt, not the geometry.
+
+![A/B/C 1](images/abc-1.png)
+![A/B/C 2](images/abc-2.png)
+
+### Not verified
+
+- The individual window and balcony arrangement of each wing (items 3 and 12-14: stepped wings and the small window column on the right wing). The shared wing design is kept; the photos do not show every wing.
+- The vegetation on Block B, which has no photo, follows Block A's because the owner says the two are the same.

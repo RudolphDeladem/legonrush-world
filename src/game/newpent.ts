@@ -75,12 +75,28 @@ const NP_END: Style = {
   draw: (g) => { bricks(g, 0, 0, 256, 512, 9); g.fillStyle = GREY_BASE; g.fillRect(0, 512 - 60, 256, 60); },
 };
 
-/** the wings: every four-storey footprint in the zone, its rectangles (world) */
-const WINGS = BUILDINGS.filter((b) => inZone((b.minX + b.maxX) / 2, (b.minZ + b.maxZ) / 2) && (b.height ?? 0) >= 12).map((b) => {
-  const ring: [number, number][] = [];
-  for (let i = 0; i < b.pts.length; i += 2) ring.push([b.pts[i], b.pts[i + 1]]);
-  return { b, rects: rectsOf(ring) };
-});
+/** the wings. The owner: Blocks A and B are exactly the same, Block C the same in mirror image. The map agrees: fitted to
+ *  Block A's outlines, Block B's are Block A's moved (-4.2, -139.0) m (mean edge error 0.7 m) and Block C's are Block
+ *  A's mirrored about x = 624.15 and moved -74.8 m in z (mean error 3.5 m, nearly all of it where the map merges one of
+ *  C's wings with its front structure into a single outline). So every wing of the three blocks is built from Block A's
+ *  footprints, copied to B and mirrored to C; B's and C's own outlines are replaced, not drawn. */
+const SRC = BUILDINGS.filter((b) => inZone((b.minX + b.maxX) / 2, (b.minZ + b.maxZ) / 2) && (b.height ?? 0) >= 12);
+const inA = (b: { minX: number; maxX: number; minZ: number; maxZ: number }) => (b.minZ + b.maxZ) / 2 > -705 && (b.minX + b.maxX) / 2 < 620;
+const ringOf = (b: (typeof SRC)[number]) => { const ring: [number, number][] = []; for (let i = 0; i < b.pts.length; i += 2) ring.push([b.pts[i], b.pts[i + 1]]); return ring; };
+const biggestOf = (rects: Rect[]) => rects.reduce((m, r) => ((r[1] - r[0]) * (r[3] - r[2]) > (m[1] - m[0]) * (m[3] - m[2]) ? r : m), rects[0]);
+/** Block A's front structures (its two low brick-fronted wings toward the car park) */
+const FRONTS_A: [number, number][] = [[582, -612], [543.2, -601.5]];
+export const NP_B = { dx: -4.2, dz: -139.0 }, NP_C = { axis: 1248.3, dz: -74.8 };
+const toB = (r: Rect): Rect => [r[0] + NP_B.dx, r[1] + NP_B.dx, r[2] + NP_B.dz, r[3] + NP_B.dz];
+const toC = (r: Rect): Rect => [NP_C.axis - r[1], NP_C.axis - r[0], r[2] + NP_C.dz, r[3] + NP_C.dz];
+const A_WINGS = SRC.filter(inA).map((b) => ({ rects: rectsOf(ringOf(b)), front: FRONTS_A.some(([x, z]) => x > b.minX && x < b.maxX && z > b.minZ && z < b.maxZ) }));
+/** a point inside each of Block B's and Block C's own outlines, so the copies replace them */
+const REPLACED_BC = SRC.filter((b) => !inA(b)).map((b) => { const r = biggestOf(rectsOf(ringOf(b))); return [(r[0] + r[1]) / 2, (r[2] + r[3]) / 2] as [number, number]; });
+const WINGS: { block: 'A' | 'B' | 'C'; rects: Rect[]; front: boolean; replaces: [number, number][] }[] = [
+  ...A_WINGS.map((w) => { const r = biggestOf(w.rects); return { block: 'A' as const, rects: w.rects, front: w.front, replaces: [[(r[0] + r[1]) / 2, (r[2] + r[3]) / 2]] as [number, number][] }; }),
+  ...A_WINGS.map((w, i) => ({ block: 'B' as const, rects: w.rects.map(toB), front: w.front, replaces: i === 0 ? REPLACED_BC : [] })),
+  ...A_WINGS.map((w) => ({ block: 'C' as const, rects: w.rects.map(toC), front: w.front, replaces: [] })),
+];
 /** within d metres of a New Pent wing's walls: the generated hedges, beds and trees stay clear of the facades (the owner's
  *  Pent Block correction brief: oversized trees hid the entrances and brick elevations; no hedges in the photos) */
 export const nearNewPentWing = (x: number, z: number, d: number) =>
@@ -93,33 +109,25 @@ const touches = (a: Rect, b: Rect, side: 'x0' | 'x1' | 'z0' | 'z1') => {
   if (side === 'z0') return overX && Math.abs(b[3] - a[2]) < e;
   return overX && Math.abs(b[2] - a[3]) < e;
 };
-/** the front structures of the blocks, before each entrance toward its car park (inside each footprint): the owner's
- *  photo of Block A's front - its whole front face is brick, a white strip with the arched stair window up the middle,
- *  its sides white with balconies; lower than the wings behind it. The same on every block (the owner) */
-/** ends of wings that are rendered, not brick: the wall left of Block C's entrance (its west arm's east end) is white with
- *  louvred windows in the owner's Block C photo, as the wall right of Block A's entrance is in the Block A photo */
-const WHITE_FACES: [number, number, 'x0' | 'x1' | 'z0' | 'z1'][] = [[675.6, -680.5, 'x1']];
-const FRONTS: [number, number][] = [[582, -612], [543.2, -601.5], [576.4, -751.8], [539.9, -740.9], [704.7, -676.5]];
 function wing(i: number): Spec {
-  const { b, rects } = WINGS[i];
+  const { rects, front, replaces, block } = WINGS[i];
   // (the front structures are two floors: the owner's Balme and Pentagon brief, pairs 3, 5 and 7 - a low wing under a broad
-  // hipped roof before the taller accommodation wings)
-  const front = FRONTS.some(([x, z]) => x > b.minX && x < b.maxX && z > b.minZ && z < b.maxZ), FL = front ? 2 : NF;
+  // hipped roof before the taller accommodation wings; their whole front faced in brick, a white strip with the arched
+  // stair window up the middle, their sides white with balconies: the owner's photo of Block A's front)
+  const FL = front ? 2 : NF;
   /** the faces of a rectangle faced in brick: its two ends, or a front structure's front (+z) */
-  const ends = (r: Rect): ('x0' | 'x1' | 'z0' | 'z1')[] => ((front ? ['z1'] : r[1] - r[0] >= r[3] - r[2] ? ['x0', 'x1'] : ['z0', 'z1']) as ('x0' | 'x1' | 'z0' | 'z1')[])
-    .filter((side) => !WHITE_FACES.some(([x, z, f]) => f === side && (side[0] === 'x' ? Math.abs((side === 'x0' ? r[0] : r[1]) - x) < 0.8 && z > r[2] && z < r[3] : Math.abs((side === 'z0' ? r[2] : r[3]) - z) < 0.8 && x > r[0] && x < r[1])));
-  const O: [number, number] = [(b.minX + b.maxX) / 2, (b.minZ + b.maxZ) / 2];
+  const ends = (r: Rect): ('x0' | 'x1' | 'z0' | 'z1')[] => (front ? ['z1'] : r[1] - r[0] >= r[3] - r[2] ? ['x0', 'x1'] : ['z0', 'z1']);
+  const O: [number, number] = [(Math.min(...rects.map((r) => r[0])) + Math.max(...rects.map((r) => r[1]))) / 2, (Math.min(...rects.map((r) => r[2])) + Math.max(...rects.map((r) => r[3]))) / 2];
   const all = WINGS.flatMap((w) => w.rects);
   const blocks: Block[] = rects.map((r) => {
     const faces: Block['faces'] = {};
     for (const f of ends(r)) faces[f] = NP_END;
     return { x0: r[0] - O[0], x1: r[1] - O[0], z0: r[2] - O[1], z1: r[3] - O[1], floors: FL, faces, ...(front ? { floorStyle: { 0: NP_LARGE }, faceFirst: true } : {}) };
   });
-  const biggest = rects.reduce((m, r) => ((r[1] - r[0]) * (r[3] - r[2]) > (m[1] - m[0]) * (m[3] - m[2]) ? r : m), rects[0]);
   return {
-    name: `New Pent wing ${i + 1}`,
+    name: `New Pent Block ${block} wing ${(i % A_WINGS.length) + 1}`,
     axis: [1, 0], origin: O, storey: NST, style: NP_LONG, roofColor: ROOF_NP, fascia: FASCIA_NP, pitch: 0.6,
-    replaces: [[(biggest[0] + biggest[1]) / 2, (biggest[2] + biggest[3]) / 2]],
+    replaces,
     blocks,
     keep: [],
     extras: (k) => {
@@ -527,36 +535,89 @@ const grounds: Spec = {
           const m = new THREE.Mesh(g, redHex()); m.position.set(X((x0 + x1) / 2), gy((x0 + x1) / 2, (za + zb) / 2) + 0.035, Z((za + zb) / 2)); m.receiveShadow = true; k.meshes.push(m);
         }
       };
-      const kerb = (x0: number, x1: number, z0: number, z1: number) => {
-        const y = gy((x0 + x1) / 2, (z0 + z1) / 2);
-        for (const [a0, a1, b0, b1] of [[x0, x1, z0, z0 + 0.15], [x0, x1, z1 - 0.15, z1], [x0, x0 + 0.15, z0, z1], [x1 - 0.15, x1, z0, z1]]) c.push([B(a0, a1, y - 0.05, y + 0.13, b0, b1), '#cfcabf']);
+      /** a paved quadrilateral of the same pavers, corners in world (x, z), following the ground at each corner */
+      const hexQuad = (q: [number, number][]) => {
+        const pos: number[] = [], uv: number[] = [];
+        for (const [x, z] of q) { pos.push(X(x), gy(x, z) + 0.035, Z(z)); uv.push(x / 1.1, z / 0.95); }
+        const g = new THREE.BufferGeometry();
+        g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+        g.setIndex([0, 1, 2, 0, 2, 3, 0, 2, 1, 0, 3, 2]);
+        g.setAttribute('normal', new THREE.Float32BufferAttribute([0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0], 3));
+        const m = new THREE.Mesh(g, redHex()); m.receiveShadow = true; k.meshes.push(m);
       };
-      const youngTree = (x: number, z: number, h: number) => {
-        const y = gy(x, z) + 0.05;
-        k.plain.push([new THREE.CylinderGeometry(0.06, 0.1, h * 0.6, 6).translate(X(x), y + h * 0.3, Z(z)), '#5b4636']);
-        for (let i = 0; i < 6; i++) k.plain.push([new THREE.IcosahedronGeometry(0.5 + (i % 3) * 0.15, 1).scale(1.1, 0.8, 1.1).translate(X(x) + Math.cos(i * 1.7) * 0.45, y + h * 0.65 + (i % 2) * 0.35, Z(z) + Math.sin(i * 1.7) * 0.45), ['#4d8a33', '#5d9a3c', '#3f7a2c'][i % 3]]);
-        SOLIDS.add(x, z, 0.15);
-      };
+      /** a low concrete edging along a path's side, from (x, za) to (x, zb) */
+      const edging = (x: number, za: number, zb: number) => { for (let z = za; z < zb - 0.01; z += 3) { const z1 = Math.min(zb, z + 3), y = gy(x, (z + z1) / 2); c.push([B(x - 0.07, x + 0.07, y - 0.05, y + 0.1, z, z1), '#cfcabf']); } };
       /** cx: the porch's middle; zl: the front of its landing; ze: where the path meets the car park or road; xl, xr: the
-       *  walls either side of the court */
-      const approach = (cx: number, zl: number, ze: number, xl: number, xr: number) => {
-        const zc = zl + 4.2, pw = 1.3, cw = 0.8;
+       *  walls either side of the court; m: 1 for Blocks A and B, -1 for Block C (mirror image). The owner's annotated
+       *  photo of the court (item 8): one straight path of pavers to the porch between concrete kerbs; on the left a branch
+       *  leaves it about 4 m before the landing, angles back toward the building and runs along it to the wing (a small
+       *  lawn left between it and the landing); on the right a branch runs out from the path to the right wing; lawn
+       *  everywhere else (item 9: no beds or islands) */
+      const approach = (cx: number, zl: number, ze: number, xl: number, xr: number, m: 1 | -1) => {
+        const pw = 1.3;
         hexStrip(cx - pw, cx + pw, zl, ze);
-        hexStrip(xl, cx - pw, zc - cw, zc + cw); hexStrip(cx + pw, xr, zc - cw, zc + cw);
-        // the lawns: between the landing and the branch, and between the branch and the far end
-        for (const [x0, x1] of [[xl, cx - pw], [cx + pw, xr]]) { kerb(x0 + 0.05, x1 - 0.05, zl + 0.05, zc - cw - 0.05); kerb(x0 + 0.05, x1 - 0.05, zc + cw + 0.05, ze - 0.05); }
-        youngTree(cx - pw - 2.6, zc + 4.5, 3.0); youngTree(cx + pw + 3.2, zc + 6.5, 2.6); youngTree(cx - pw - 3.5, zl + 1.8, 2.4);
-        // the clipped conical shrub by the landing, on the lawn beside the path
-        { const x = cx - pw - 1.2, z = zl + 1.5, y = gy(x, z);
-          k.plain.push([new THREE.ConeGeometry(0.75, 2.3, 10).translate(X(x), y + 1.15, Z(z)), '#2f5a24']); SOLIDS.add(x, z, 0.5); }
-        // the lamp post beside the path
-        { const x = cx - pw - 0.4, z = zc + 2.5, y = gy(x, z);
-          k.plain.push([new THREE.CylinderGeometry(0.05, 0.08, 5.5, 8).translate(X(x), y + 2.75, Z(z)), '#b9bdc0'], [new THREE.CylinderGeometry(0.3, 0.12, 0.18, 10).translate(X(x), y + 5.55, Z(z)), '#d9dcdc']);
-          SOLIDS.add(x, z, 0.12); }
+        // the left branch (m = -1: on the right): the angled part, then along the building to the wing
+        { const s0 = -m, xa = cx + s0 * pw, xb = cx + s0 * 5.2, wall = s0 > 0 ? xr : xl;
+          hexQuad(s0 > 0 ? [[xa - 0.2, zl + 3.2], [xa - 0.2, zl + 4.8], [xb + 0.2, zl + 1.8], [xb + 0.2, zl + 0.2]] : [[xa + 0.2, zl + 4.8], [xa + 0.2, zl + 3.2], [xb - 0.2, zl + 0.2], [xb - 0.2, zl + 1.8]]);
+          hexStrip(Math.min(xb, wall), Math.max(xb, wall), zl + 0.2, zl + 1.8);
+          edging(cx + s0 * (pw + 0.07), zl, zl + 3.0); edging(cx + s0 * (pw + 0.07), zl + 5.0, ze); }
+        // the right branch (m = -1: on the left): out from the path, drifting a little toward the road, to the wing
+        { const s1 = m, xa = cx + s1 * pw, wall = s1 > 0 ? xr : xl;
+          hexQuad(s1 > 0 ? [[xa - 0.2, zl + 3.6], [xa - 0.2, zl + 5.2], [wall, zl + 6.4], [wall, zl + 4.8]] : [[xa + 0.2, zl + 5.2], [xa + 0.2, zl + 3.6], [wall, zl + 4.8], [wall, zl + 6.4]]);
+          edging(cx + s1 * (pw + 0.07), zl, zl + 3.4); edging(cx + s1 * (pw + 0.07), zl + 5.4, ze); }
       };
-      approach(562.5, -628 + 8.65, -586.5, 557.0, 571.9);
-      approach(558.2, -766 + 8.65, -740.0, 548.4, 568.0);
-      approach(685.8, -701.5 + 8.65, -665.8, 676.2, 695.4);
+      /** a young tree as in the court photo: a thin stem, a light open crown of a few small leafy tufts */
+      const youngTree = (x: number, z: number, h: number, seed: number) => {
+        const y = gy(x, z);
+        k.plain.push([new THREE.CylinderGeometry(0.035, 0.06, h * 0.7, 5).translate(X(x), y + h * 0.35, Z(z)), '#5b4636']);
+        // (a few slender branches up from the stem, a loose crown of leafy tufts at their ends, sky between them)
+        for (let i = 0; i < 4; i++) {
+          const a = i * 1.57 + seed, len = h * 0.32, bx = Math.cos(a) * len * 0.5, bz = Math.sin(a) * len * 0.5;
+          k.plain.push([new THREE.CylinderGeometry(0.015, 0.025, len, 4).rotateZ(Math.cos(a) * -0.6).rotateX(Math.sin(a) * 0.6).translate(X(x) + bx * 0.5, y + h * 0.62 + len * 0.4, Z(z) + bz * 0.5), '#5b4636']);
+        }
+        for (let i = 0; i < 9; i++) {
+          const a = i * 2.4 + seed, d = 0.2 + (i % 3) * 0.32, up = h * (0.62 + ((i * 3) % 9) / 9 * 0.36);
+          k.plain.push([new THREE.IcosahedronGeometry(0.24 + (i % 2) * 0.08, 0).scale(1.2, 0.85, 1.2).translate(X(x) + Math.cos(a) * d, y + up, Z(z) + Math.sin(a) * d), ['#4f7f34', '#5d8f3b', '#3f6e2b'][i % 3]]);
+        }
+        SOLIDS.add(x, z, 0.1);
+      };
+      const lamp = (x: number, z: number) => {
+        const y = gy(x, z);
+        k.plain.push([new THREE.CylinderGeometry(0.05, 0.08, 6, 8).translate(X(x), y + 3, Z(z)), '#b9bdc0'], [new THREE.CylinderGeometry(0.32, 0.12, 0.18, 10).translate(X(x), y + 6.05, Z(z)), '#d9dcdc'], [new THREE.CylinderGeometry(0.11, 0.11, 0.5, 8).translate(X(x), y + 0.25, Z(z)), '#eceae4']);
+        SOLIDS.add(x, z, 0.12);
+      };
+      /** a mature leafy tree: a clear trunk, a broad crown of many small clumps (not one ball) */
+      const matureTree = (x: number, z: number, h: number, r: number, seed: number) => {
+        const y = gy(x, z);
+        k.plain.push([new THREE.CylinderGeometry(0.16, 0.26, h * 0.55, 7).translate(X(x), y + h * 0.275, Z(z)), '#5b4636']);
+        for (let i = 0; i < 16; i++) {
+          const a = i * 2.39 + seed, d = r * Math.sqrt(((i * 7 + seed * 3) % 16) / 16), up = h * 0.55 + ((i * 5) % 7) * (h * 0.06);
+          k.plain.push([new THREE.IcosahedronGeometry(r * 0.42, 0).scale(1, 0.75, 1).translate(X(x) + Math.cos(a) * d, y + up, Z(z) + Math.sin(a) * d), ['#3d6e2a', '#4a7d31', '#35612a', '#558a38'][i % 4]]);
+        }
+        SOLIDS.add(x, z, 0.3);
+      };
+      // Blocks A and B (the same; the owner's annotated court photo, items 7 and 8): young thin-stemmed trees beside the
+      // porch on each side, two further out on the left lawn, a bushier one by the right wing; the small clipped conical
+      // shrub on the lawn between the landing and the left branch; lamp posts left of the path and by the right wing
+      for (const [ox, oz] of [[0, 0], [NP_B.dx, NP_B.dz]]) {
+        const cx = 562.5 + ox, zl = -628 + oz + 8.65;
+        approach(cx, zl, ox ? -740.0 : -586.5, 557.0 + ox, 571.9 + ox, 1);
+        youngTree(cx - 4.9, zl - 1.2, 3.6, 1); youngTree(cx + 5.0, zl - 0.8, 3.4, 2); youngTree(cx - 4.6, zl + 8.0, 3.8, 3); youngTree(cx - 5.4, zl + 14.0, 4.2, 4);
+        { const x = cx + 8.3, z = zl + 3.0, y = gy(x, z);
+          k.plain.push([new THREE.CylinderGeometry(0.05, 0.08, 1.0, 5).translate(X(x), y + 0.5, Z(z)), '#5b4636']);
+          for (let i = 0; i < 9; i++) k.plain.push([new THREE.IcosahedronGeometry(0.45, 0).scale(1.2, 0.6, 1.2).translate(X(x) + Math.cos(i * 2.1) * 0.7, y + 1.0 + (i % 3) * 0.35, Z(z) + Math.sin(i * 2.1) * 0.7), ['#3f6e2b', '#4f7f34'][i % 2]]);
+          SOLIDS.add(x, z, 0.3); }
+        { const x = cx - 2.2, z = zl + 0.9, y = gy(x, z);
+          for (let i = 0; i < 5; i++) k.plain.push([new THREE.IcosahedronGeometry(0.42 - i * 0.07, 1).scale(1, 0.75, 1).translate(X(x), y + 0.3 + i * 0.27, Z(z)), ['#2f5a24', '#36642a'][i % 2]]);
+          SOLIDS.add(x, z, 0.35); }
+        lamp(cx - 2.2, zl + 9.0); lamp(cx + 10.0, zl - 0.5);
+      }
+      // Block C: the same court in mirror image; the owner's photo of its entrance shows a mature tree either side of the
+      // porch instead of the young ones
+      { const cx = NP_C.axis - 562.5, zl = -628 + NP_C.dz + 8.65;
+        approach(cx, zl, -665.8, NP_C.axis - 571.9, NP_C.axis - 557.0, -1);
+        matureTree(cx - 7.4, zl + 0.4, 6.5, 2.8, 2); matureTree(cx + 7.6, zl + 0.9, 6.5, 2.8, 3);
+        lamp(cx + 2.2, zl + 9.0); }
       // the paved strip along the road before Block A's approach
       k.plain.push([B(557.5, 573.5, gy(565, -588) + 0.01, gy(565, -588) + 0.045, -590.0, -586.5), '#9a5444']);
       // the service strip and the AC condensers on the east front structure's west wall
@@ -682,8 +743,8 @@ export const newPentSite = createSite('new-pent', [
   // (each porch in the middle of its court between the wings either side: the Block A / C corrections, the owner's New
   // Pent corrections for Block B; Block A's had stood against the wing on its east)
   entrance('New Pent Block A', 'A', [562.5, -628]),
-  entrance('New Pent Block B', 'B', [558.2, -766]),
-  // (Block C is Blocks A's and B's mirror image: the owner; its tower against the wing's face, z -701.5, as Block A's is)
-  entrance('New Pent Block C', 'C', [685.8, -701.5], -1),
+  entrance('New Pent Block B', 'B', [562.5 + NP_B.dx, -628 + NP_B.dz]),
+  // (Block B is Block A's copy, Block C its mirror image: the owner; both placed by the fit of the map's outlines above)
+  entrance('New Pent Block C', 'C', [NP_C.axis - 562.5, -628 + NP_C.dz], -1),
   grounds,
 ]);
