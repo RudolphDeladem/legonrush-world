@@ -19,8 +19,9 @@
 import * as THREE from 'three';
 import { gates } from './gates';
 import { BUILDINGS } from './campusmap';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { box, merge, speckle, tri2, type Part } from './modelkit';
-import { PL, createSite, render, type Block, type Spec, type Style } from './blocks';
+import { PL, createSite, render, type Block, type Kit, type Spec, type Style } from './blocks';
 import { concrete } from './concrete';
 import { rectsOf, type Rect } from './rectilinear';
 import { SOLIDS } from './solids';
@@ -75,6 +76,12 @@ const NP_END: Style = {
   draw: (g) => { bricks(g, 0, 0, 256, 512, 9); g.fillStyle = GREY_BASE; g.fillRect(0, 512 - 60, 256, 60); },
 };
 
+/** the plain rendered faces of Block A's linking blocks: a dark louvred window a bay over the grey base */
+const NP_PLAIN: Style = {
+  bay: 3.3, up: [[60, 60, 136, 130]], ground: [[60, 256 + 60, 136, 130]],
+  draw: (g) => { render(g, WHITE_NP); for (const y0 of [0, 256]) louvres(g, 70, y0 + 70, 116, 110); g.fillStyle = GREY_BASE; g.fillRect(0, 512 - 60, 256, 60); },
+};
+
 /** the wings. The owner: Blocks A and B are exactly the same, Block C the same in mirror image. The map agrees: fitted to
  *  Block A's outlines, Block B's are Block A's moved (-4.2, -139.0) m (mean edge error 0.7 m) and Block C's are Block
  *  A's mirrored about x = 624.15 and moved -74.8 m in z (mean error 3.5 m, nearly all of it where the map merges one of
@@ -92,11 +99,33 @@ const toC = (r: Rect): Rect => [NP_C.axis - r[1], NP_C.axis - r[0], r[2] + NP_C.
 const A_WINGS = SRC.filter(inA).map((b) => ({ rects: rectsOf(ringOf(b)), front: FRONTS_A.some(([x, z]) => x > b.minX && x < b.maxX && z > b.minZ && z < b.maxZ) }));
 /** a point inside each of Block B's and Block C's own outlines, so the copies replace them */
 const REPLACED_BC = SRC.filter((b) => !inA(b)).map((b) => { const r = biggestOf(rectsOf(ringOf(b))); return [(r[0] + r[1]) / 2, (r[2] + r[3]) / 2] as [number, number]; });
-const WINGS: { block: 'A' | 'B' | 'C'; rects: Rect[]; front: boolean; replaces: [number, number][] }[] = [
-  ...A_WINGS.map((w) => { const r = biggestOf(w.rects); return { block: 'A' as const, rects: w.rects, front: w.front, replaces: [[(r[0] + r[1]) / 2, (r[2] + r[3]) / 2]] as [number, number][] }; }),
+// ---------- Block A's reconstruction (the owner's Block A brief, 2026-10-17: docs/pent-block-a/) ----------
+// The owner's roof plan of Block A (north up; the wings read on the map outlines, about 4.3 px/m across) shows the
+// middle of the block as one continuous run of four-storey linking blocks under their own small hipped roofs: from
+// the north-west wing down past the middle-west wing to the long south wing, and from the north-east wing down to the
+// same south wing. The map has only two short pieces of it (#2932, #2933); these four fill the gaps the plan shows
+// roofed. Their faces are plain render with a louvred window a bay (no photograph shows them: estimate).
+const A_LINKS: Rect[] = [[554.1, 561.5, -687.4, -675.6], [554.1, 561.5, -666.6, -648.9], [561.5, 571.0, -673.5, -666.0], [562.2, 571.0, -650.6, -643.6]];
+/** the plan's small dormers (light squares on the north eaves of five wings): x along each wing's north eave, by a point
+ *  inside the wing */
+const A_DORMERS: { at: [number, number]; xs: number[] }[] = [
+  { at: [540, -690], xs: [533.1, 541.2, 549.3] }, { at: [585, -682], xs: [572.4, 580.5, 588.6] }, { at: [536, -656], xs: [523.8, 538.9, 549.3] },
+  { at: [600, -637], xs: [577.0, 586.3, 599.5] }, { at: [525, -624], xs: [533.5, 544.6] },
+];
+/** the generic building the map puts in Block A's inner court (#163, outline x 572-591, z -663..-650): the roof plan shows
+ *  that court open */
+const A_COURT_GONE: [number, number] = [581, -656];
+const WINGS: { block: 'A' | 'B' | 'C'; rects: Rect[]; front: boolean; replaces: [number, number][]; link?: boolean; dormers?: number[] }[] = [
+  ...A_WINGS.map((w, i) => { const r = biggestOf(w.rects); return { block: 'A' as const, rects: w.rects, front: w.front, replaces: [[(r[0] + r[1]) / 2, (r[2] + r[3]) / 2], ...(i === 0 ? [A_COURT_GONE] : [])] as [number, number][],
+    dormers: A_DORMERS.find(({ at: [x, z] }) => w.rects.some((q) => x > q[0] && x < q[1] && z > q[2] && z < q[3]))?.xs }; }),
   ...A_WINGS.map((w, i) => ({ block: 'B' as const, rects: w.rects.map(toB), front: w.front, replaces: i === 0 ? REPLACED_BC : [] })),
   ...A_WINGS.map((w) => ({ block: 'C' as const, rects: w.rects.map(toC), front: w.front, replaces: [] })),
+  ...A_LINKS.map((r) => ({ block: 'A' as const, rects: [r], front: false, replaces: [], link: true })),
 ];
+/** Block A's court, drive, car parks, yards and the tree belt to the road south of it, all drawn from the owner's top
+ *  view (blockACourt): no generated trees there (life.ts skips them after drawing their random numbers, so nothing
+ *  elsewhere moves) */
+export const inBlockAGrounds = (x: number, z: number) => (x > 500 && x < 628 && z > -602 && z < -547) || (x > 512 && x < 560 && z > -618 && z < -600) || (x > 553 && x < 625 && z > -628 && z < -586);
 /** within d metres of a New Pent wing's walls: the generated hedges, beds and trees stay clear of the facades (the owner's
  *  Pent Block correction brief: oversized trees hid the entrances and brick elevations; no hedges in the photos) */
 export const nearNewPentWing = (x: number, z: number, d: number) =>
@@ -110,22 +139,22 @@ const touches = (a: Rect, b: Rect, side: 'x0' | 'x1' | 'z0' | 'z1') => {
   return overX && Math.abs(b[2] - a[3]) < e;
 };
 function wing(i: number): Spec {
-  const { rects, front, replaces, block } = WINGS[i];
+  const { rects, front, replaces, block, link, dormers } = WINGS[i];
   // (the front structures are two floors: the owner's Balme and Pentagon brief, pairs 3, 5 and 7 - a low wing under a broad
   // hipped roof before the taller accommodation wings; their whole front faced in brick, a white strip with the arched
   // stair window up the middle, their sides white with balconies: the owner's photo of Block A's front)
   const FL = front ? 2 : NF;
   /** the faces of a rectangle faced in brick: its two ends, or a front structure's front (+z) */
-  const ends = (r: Rect): ('x0' | 'x1' | 'z0' | 'z1')[] => (front ? ['z1'] : r[1] - r[0] >= r[3] - r[2] ? ['x0', 'x1'] : ['z0', 'z1']);
+  const ends = (r: Rect): ('x0' | 'x1' | 'z0' | 'z1')[] => (link ? [] : front ? ['z1'] : r[1] - r[0] >= r[3] - r[2] ? ['x0', 'x1'] : ['z0', 'z1']);
   const O: [number, number] = [(Math.min(...rects.map((r) => r[0])) + Math.max(...rects.map((r) => r[1]))) / 2, (Math.min(...rects.map((r) => r[2])) + Math.max(...rects.map((r) => r[3]))) / 2];
   const all = WINGS.flatMap((w) => w.rects);
   const blocks: Block[] = rects.map((r) => {
-    const faces: Block['faces'] = {};
+    const faces: Block['faces'] = link ? { x0: NP_PLAIN, x1: NP_PLAIN, z0: NP_PLAIN, z1: NP_PLAIN } : {};
     for (const f of ends(r)) faces[f] = NP_END;
     return { x0: r[0] - O[0], x1: r[1] - O[0], z0: r[2] - O[1], z1: r[3] - O[1], floors: FL, faces, ...(front ? { floorStyle: { 0: NP_LARGE }, faceFirst: true } : {}) };
   });
   return {
-    name: `New Pent Block ${block} wing ${(i % A_WINGS.length) + 1}`,
+    name: link ? `New Pent Block A link ${i - 3 * A_WINGS.length + 1}` : `New Pent Block ${block} wing ${(i % A_WINGS.length) + 1}`,
     axis: [1, 0], origin: O, storey: NST, style: NP_LONG, roofColor: ROOF_NP, fascia: FASCIA_NP, pitch: 0.6,
     replaces,
     blocks,
@@ -136,7 +165,7 @@ function wing(i: number): Spec {
       // standing out, a white parapet with its panel of facing brick, white cheeks between them; not on a front
       // structure's ground floor, which has large windows
       for (const r of rects) for (const side of ['x0', 'x1', 'z0', 'z1'] as const) {
-        if (ends(r).includes(side) || all.some((o) => o !== r && touches(r, o, side))) continue;
+        if (link || ends(r).includes(side) || all.some((o) => o !== r && touches(r, o, side))) continue;
         const alongX = side[0] === 'z', s = side.endsWith('0') ? -1 : 1;
         const face = (alongX ? (s < 0 ? r[2] : r[3]) - O[1] : (s < 0 ? r[0] : r[1]) - O[0]);
         const [a0, a1] = alongX ? [r[0] - O[0], r[1] - O[0]] : [r[2] - O[1], r[3] - O[1]];
@@ -216,6 +245,33 @@ function wing(i: number): Spec {
             for (let a = -0.45; a <= 0.46; a += 0.15) k.plain.push([s > 0 ? B(a - 0.015, a + 0.015, y, y + 1.9, 0.06, 0.08) : B(a - 0.015, a + 0.015, y, y + 1.9, -0.08, -0.06), '#d9d9d4']);
           }
         }
+      }
+      // over a front structure's white stair strip a small hipped roof standing forward of the main eave, its ridge running
+      // back into the main roof (the owner's aerial photo of the blocks: the low front structures)
+      if (front && block === 'A') {
+        const zmax = Math.max(...rects.map((r) => r[3])), fr = rects.filter((r) => r[3] > zmax - 0.3);
+        const x = (Math.min(...fr.map((r) => r[0])) + Math.max(...fr.map((r) => r[1]))) / 2 - O[0], zw = zmax - O[1], hw = 2.0, zf = zw + 1.3, t = e + 1.6, za = zf - 1.3, zb = zw - ((t - e) / 0.6 - 0.8);
+        k.roof.c = new THREE.Color(ROOF_NP);
+        k.roof.quad([x - hw, e, zb], [x - hw, e, zf], [x, t, za], [x, t, zb]);
+        k.roof.quad([x + hw, e, zf], [x + hw, e, zb], [x, t, zb], [x, t, za]);
+        k.roof.quad([x - hw, e, zf], [x + hw, e, zf], [x, t, za], [x, t, za]);
+        k.plain.push([box(x - hw, x + hw, e - 0.26, e, zf - 0.04, zf + 0.04), FASCIA_NP], [box(x - hw - 0.04, x - hw + 0.04, e - 0.26, e, zw + 0.8, zf), FASCIA_NP], [box(x + hw - 0.04, x + hw + 0.04, e - 0.26, e, zw + 0.8, zf), FASCIA_NP]);
+      }
+      // the roof plan's dormers on the north eave (Block A): the wall carried up through the eave as a small white face
+      // with a dark louvred opening, its own little hipped tile roof running back into the main roof's slope
+      for (const xd of dormers ?? []) {
+        const r = rects.filter((q) => q[0] < xd - 1.6 && q[1] > xd + 1.6).sort((a, b) => a[2] - b[2])[0];
+        if (!r) continue;
+        const x = xd - O[0], z = r[2] - O[1], hw = 1.25, y0 = e - 0.25, y1 = e + 1.7, D = 2.6;
+        k.plain.push([box(x - hw, x + hw, y0, y1, z, z + D), WHITE_NP]);
+        k.plain.push([box(x - 0.6, x + 0.6, e + 0.35, e + 1.4, z - 0.02, z), '#2b2e31']);
+        for (let yy = e + 0.42; yy < e + 1.36; yy += 0.13) k.plain.push([box(x - 0.56, x + 0.56, yy, yy + 0.05, z - 0.04, z - 0.02), '#4a5055']);
+        k.plain.push([box(x - hw - 0.12, x + hw + 0.12, y1 - 0.22, y1, z - 0.32, z - 0.02), FASCIA_NP]);
+        const t = y1 + (hw + 0.3) * 0.6, za = z - 0.3, zb = z + D;
+        k.roof.c = new THREE.Color(ROOF_NP);
+        k.roof.quad([x - hw - 0.3, y1, za], [x - hw - 0.3, y1, zb], [x, t, zb], [x, t, za + hw + 0.3]);
+        k.roof.quad([x + hw + 0.3, y1, zb], [x + hw + 0.3, y1, za], [x, t, za + hw + 0.3], [x, t, zb]);
+        k.roof.quad([x + hw + 0.3, y1, za], [x - hw - 0.3, y1, za], [x, t, za + hw + 0.3], [x, t, za + hw + 0.3]);
       }
     },
   };
@@ -475,7 +531,9 @@ const grounds: Spec = {
         if ((ci * 5 + 1) % 4 !== 0) car(k, X(603.2), Z(z + 1.35), CAR[(ci + 3) % CAR.length], fy + 0.04, Math.PI / 2);
         ci++;
       }
-      for (const [x, z] of [[609, -633.5], [609, -605.5]]) {
+      // (the tree at the car park's south end gone: the owner's top view of Block A shows the car park running on to the
+      // drive there)
+      for (const [x, z] of [[609, -633.5]]) {
         const y = gy(x, z);
         k.plain.push([new THREE.CylinderGeometry(0.25, 0.4, 6, 7).translate(X(x), y + 3, Z(z)), '#5b4636']);
         for (const [dx, dy, dz, r] of [[0, 7.2, 0, 3.4], [2.2, 6.4, -1.3, 2.4], [-2.0, 6.6, 1.4, 2.6]]) k.plain.push([new THREE.IcosahedronGeometry(r, 1).scale(1, 0.65, 1).translate(X(x) + dx, y + dy, Z(z) + dz), '#3f6b2c']);
@@ -509,8 +567,9 @@ const grounds: Spec = {
           ci++;
         }
       };
-      // Block A, before the front structures
-      { const y = pad(573.5, 612, -600.5, -585.9); rowX(574, 612, -593.8, -599.4, y); }
+      // (Block A's front car park is drawn from the owner's top view in blockACourt; its 14 bays still count here so the
+      // cars of the other car parks stay where they were)
+      ci += 14;
       // behind Block A, along its back wing and the road to Block B
       { const y = pad(563, 614, -714.2, -697.6); rowX(565, 612, -703.4, -697.8, y); rowX(565, 612, -705.2, -710.8, y); }
       // Block B, before the front structures either side of the entrance
@@ -526,13 +585,15 @@ const grounds: Spec = {
     // porch's concrete landing a straight path of red-brown interlocking pavers to the car park or road, a branch path
     // across it a little before the porch, lawns in the four quarters behind low concrete kerbs, a few young trees and a
     // clipped conical shrub by the landing, a lamp post beside the path; Block A's approach meets the car park strip
-    { const hexStrip = (x0: number, x1: number, z0: number, z1: number) => {
+    { // (every paver piece goes into one mesh, drawn once)
+      const hexGeos: THREE.BufferGeometry[] = [];
+      const hexStrip = (x0: number, x1: number, z0: number, z1: number) => {
         // in pieces of at most 4 m along z so the paving follows the ground
         for (let z = z0; z < z1 - 0.01; z += 4) {
           const za = z, zb = Math.min(z1, z + 4), g = new THREE.PlaneGeometry(x1 - x0, zb - za).rotateX(-Math.PI / 2);
           const uv = g.attributes.uv as THREE.BufferAttribute;
           for (let i = 0; i < uv.count; i++) uv.setXY(i, (x0 + uv.getX(i) * (x1 - x0)) / 1.1, (za + uv.getY(i) * (zb - za)) / 0.95);
-          const m = new THREE.Mesh(g, redHex()); m.position.set(X((x0 + x1) / 2), gy((x0 + x1) / 2, (za + zb) / 2) + 0.035, Z((za + zb) / 2)); m.receiveShadow = true; k.meshes.push(m);
+          hexGeos.push(g.translate(X((x0 + x1) / 2), gy((x0 + x1) / 2, (za + zb) / 2) + 0.035, Z((za + zb) / 2)).toNonIndexed());
         }
       };
       /** a paved quadrilateral of the same pavers, corners in world (x, z), following the ground at each corner */
@@ -543,7 +604,7 @@ const grounds: Spec = {
         g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
         g.setIndex([0, 1, 2, 0, 2, 3, 0, 2, 1, 0, 3, 2]);
         g.setAttribute('normal', new THREE.Float32BufferAttribute([0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0], 3));
-        const m = new THREE.Mesh(g, redHex()); m.receiveShadow = true; k.meshes.push(m);
+        hexGeos.push(g.toNonIndexed());
       };
       /** a low concrete edging along a path's side, from (x, za) to (x, zb) */
       const edging = (x: number, za: number, zb: number) => { for (let z = za; z < zb - 0.01; z += 3) { const z1 = Math.min(zb, z + 3), y = gy(x, (z + z1) / 2); c.push([B(x - 0.07, x + 0.07, y - 0.05, y + 0.1, z, z1), '#cfcabf']); } };
@@ -599,9 +660,10 @@ const grounds: Spec = {
       // Blocks A and B (the same; the owner's annotated court photo, items 7 and 8): young thin-stemmed trees beside the
       // porch on each side, two further out on the left lawn, a bushier one by the right wing; the small clipped conical
       // shrub on the lawn between the landing and the left branch; lamp posts left of the path and by the right wing
-      for (const [ox, oz] of [[0, 0], [NP_B.dx, NP_B.dz]]) {
+      // (Block A's own court is drawn below from the owner's top view of it)
+      for (const [ox, oz] of [[NP_B.dx, NP_B.dz]]) {
         const cx = 562.5 + ox, zl = -628 + oz + 8.65;
-        approach(cx, zl, ox ? -740.0 : -586.5, 557.0 + ox, 571.9 + ox, 1);
+        approach(cx, zl, -740.0, 557.0 + ox, 571.9 + ox, 1);
         youngTree(cx - 4.9, zl - 1.2, 3.6, 1); youngTree(cx + 5.0, zl - 0.8, 3.4, 2); youngTree(cx - 4.6, zl + 8.0, 3.8, 3); youngTree(cx - 5.4, zl + 14.0, 4.2, 4);
         { const x = cx + 8.3, z = zl + 3.0, y = gy(x, z);
           k.plain.push([new THREE.CylinderGeometry(0.05, 0.08, 1.0, 5).translate(X(x), y + 0.5, Z(z)), '#5b4636']);
@@ -618,8 +680,7 @@ const grounds: Spec = {
         approach(cx, zl, -665.8, NP_C.axis - 571.9, NP_C.axis - 557.0, -1);
         matureTree(cx - 7.4, zl + 0.4, 6.5, 2.8, 2); matureTree(cx + 7.6, zl + 0.9, 6.5, 2.8, 3);
         lamp(cx + 2.2, zl + 9.0); }
-      // the paved strip along the road before Block A's approach
-      k.plain.push([B(557.5, 573.5, gy(565, -588) + 0.01, gy(565, -588) + 0.045, -590.0, -586.5), '#9a5444']);
+      blockACourt(k, { X, Z, gy, c, hexStrip, hexQuad, edging, lamp, matureTree });
       // the service strip and the AC condensers on the east front structure's west wall
       k.plain.push([B(572.5, 572.8, gy(572.6, -608) + 0.01, gy(572.6, -608) + 0.05, -621.8, -602.2), '#b5b0a5']);
       for (const z of [-606.2, -604.9, -603.6]) {
@@ -628,7 +689,8 @@ const grounds: Spec = {
         k.plain.push([new THREE.CircleGeometry(0.2, 12).rotateY(-Math.PI / 2).translate(X(572.04), y + 0.28, Z(z) - 0.08), '#3a3c3e']);
         k.plain.push([B(572.6, 572.65, y + 0.5, y + 2.4, z + 0.3, z + 0.34), '#d9d6cf']);
         SOLIDS.add(572.4, z, 0.4);
-      } }
+      }
+      { const m = new THREE.Mesh(mergeGeometries(hexGeos), redHex()); m.receiveShadow = true; k.meshes.push(m); } }
     // ----- before Block C's south front (the owner's Balme and Pentagon brief, pair 4): asphalt from the road to the
     // building, parking along the front, the two mature trees in kerbed beds in the middle, slim lamps
     { const y = gy(700, -660);
@@ -661,11 +723,13 @@ const grounds: Spec = {
         const n = Math.ceil(len / 0.8);
         for (let i = 0; i <= n; i++) SOLIDS.add(ax + ((bx - ax) * i) / n, az + ((bz - az) * i) / n, 0.2);
       };
-      tw(552.2, -608.2, 556.8, -608.2); tw(556.8, -608.2, 556.8, -604.0); tw(556.8, -601.8, 556.8, -596.6); tw(556.8, -596.6, 552.2, -596.6);
-      k.plain.push([B(552.2, 556.8, 0.01, 0.06, -608.2, -596.6), '#9a5644']);
-      { const y = gy(554.6, -599.5);
-        k.plain.push([B(554.0, 555.2, y, y + 1.0, -599.9, -599.1), '#e8621f'], [B(554.0, 555.2, y + 1.0, y + 1.75, -599.9, -599.1), '#dfe6ea'], [B(553.95, 555.25, y + 1.75, y + 1.85, -599.95, -599.05), '#e8621f']);
-        SOLIDS.add(554.6, -599.5, 0.7); }
+      // (the owner's top view of Block A: the low-walled yard is the inside corner between the west front structure's
+      // narrow part and its broad south end, before the narrow part's large windows; open to the court on the east)
+      tw(545.3, -612.9, 551.8, -612.9); tw(551.8, -612.9, 551.8, -609.2); tw(551.8, -606.6, 551.8, -602.0);
+      k.plain.push([B(545.3, 551.8, 0.01, 0.06, -612.9, -602.0), '#9a5644']);
+      { const y = gy(549.6, -604.0);
+        k.plain.push([B(549.0, 550.2, y, y + 1.0, -604.4, -603.6), '#e8621f'], [B(549.0, 550.2, y + 1.0, y + 1.75, -604.4, -603.6), '#dfe6ea'], [B(548.95, 550.25, y + 1.75, y + 1.85, -604.45, -603.55), '#e8621f']);
+        SOLIDS.add(549.6, -604.0, 0.7); }
       for (const [y, z] of [[PL + NST + 1.6, -605.5], [PL + NST + 1.6, -600.0], [PL + 2 * NST + 1.6, -603.0]]) k.plain.push([new THREE.CylinderGeometry(0.42, 0.42, 0.05, 16).rotateZ(Math.PI / 2).translate(X(553.4), gy(553, z) + y, Z(z)), '#e9e9e6']); }
     // the Boba tea kiosk by Block C (the owner's Pent PDF, page 16; placed by the owner's later correction: on Block C's
     // west side by Pent Road where the tree stood, its front facing west to the road): a yellow box on a dark base,
@@ -714,6 +778,109 @@ const grounds: Spec = {
     const m = new THREE.Mesh(merge(c), concrete(0.3)); m.castShadow = true; m.receiveShadow = true; k.meshes.push(m);
   },
 };
+
+// ---------- Block A's court, drive and car parks (the owner's Block A brief: their top view of the site south of the
+// block, its legend vehicle pavement / pedestrian walkway / lawn, registered on the map at 2.83 px/m by the two front
+// structures, Annie Jiagge Road and Pent Road; the marked court photo and the photo from the car park) ----------
+interface CourtKit {
+  X: (x: number) => number; Z: (z: number) => number; gy: (x: number, z: number) => number; c: Part[];
+  hexStrip: (x0: number, x1: number, z0: number, z1: number) => void; hexQuad: (q: [number, number][]) => void;
+  edging: (x: number, za: number, zb: number) => void; lamp: (x: number, z: number) => void;
+  matureTree: (x: number, z: number, h: number, r: number, seed: number) => void;
+}
+const slabMats: Record<string, THREE.MeshStandardMaterial> = {};
+/** a paved area (world corners, in ring order) laid on the ground in a 2 m grid so it follows the relief */
+function groundPave(k: Kit, ck: CourtKit, ring: [number, number][], color: string, lift = 0.07) {
+  const mat = (slabMats[color] ??= new THREE.MeshStandardMaterial({ color, roughness: 0.95, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 }));
+  const g = new THREE.ShapeGeometry(new THREE.Shape(ring.map(([x, z]) => new THREE.Vector2(x, z))));
+  // subdivide the shape's triangles until no edge is over 2 m, each vertex then set on the ground
+  let tris: number[][] = [];
+  const P = g.attributes.position as THREE.BufferAttribute, I = g.index!;
+  for (let t = 0; t < I.count; t += 3) tris.push([0, 1, 2].flatMap((o) => [P.getX(I.getX(t + o)), P.getY(I.getX(t + o))]));
+  for (let pass = 0; pass < 8; pass++) {
+    const out: number[][] = [];
+    for (const [ax, az, bx, bz, cx, cz] of tris) {
+      const l = [Math.hypot(bx - ax, bz - az), Math.hypot(cx - bx, cz - bz), Math.hypot(ax - cx, az - cz)], m = Math.max(...l);
+      if (m <= 2) { out.push([ax, az, bx, bz, cx, cz]); continue; }
+      if (l[0] === m) { const mx = (ax + bx) / 2, mz = (az + bz) / 2; out.push([ax, az, mx, mz, cx, cz], [mx, mz, bx, bz, cx, cz]); }
+      else if (l[1] === m) { const mx = (bx + cx) / 2, mz = (bz + cz) / 2; out.push([ax, az, bx, bz, mx, mz], [ax, az, mx, mz, cx, cz]); }
+      else { const mx = (cx + ax) / 2, mz = (cz + az) / 2; out.push([ax, az, bx, bz, mx, mz], [mx, mz, bx, bz, cx, cz]); }
+    }
+    tris = out;
+  }
+  const pos: number[] = [];
+  // (each triangle wound to face up)
+  for (const t of tris) for (const o of [0, 4, 2]) pos.push(ck.X(t[o]), ck.gy(t[o], t[o + 1]) + lift, ck.Z(t[o + 1]));
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute('normal', new THREE.Float32BufferAttribute(Array.from({ length: pos.length }, (_, i) => (i % 3 === 1 ? 1 : 0)), 3));
+  // (one mesh per surface: the areas of a colour are merged at the end of blockACourt)
+  (paveGeos[color] ??= { mat, geos: [] }).geos.push(geo);
+}
+const paveGeos: Record<string, { mat: THREE.Material; geos: THREE.BufferGeometry[] }> = {};
+function blockACourt(k: Kit, ck: CourtKit) {
+  const { X, Z, gy, c, hexStrip, hexQuad, edging, lamp, matureTree } = ck;
+  const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
+  const CONC = '#b3afa6', ASPH = '#6b6b6e';
+  /** the mapped service road along the front (#555) as drawn, 6.2 m wide: its south edge at x */
+  const RD: [number, number][] = [[628, -585], [594.2, -582.8], [567.4, -581], [525.8, -578.3]];
+  const roadZ = (x: number) => { for (let i = 1; i < RD.length; i++) { const [ax, az] = RD[i - 1], [bx, bz] = RD[i]; if (x <= ax && x >= bx) return az + ((bz - az) * (x - ax)) / (bx - ax); } return x > RD[0][0] ? RD[0][1] : RD[RD.length - 1][1]; };
+  // ----- the court before the porch (the top view's walkways; the marked court photo for the lawn edges) -----
+  // the paved forecourt across the front of the porch, running east past it into the corner beside the east front
+  // structure; the straight path from it to the drive; the plaza where it meets the drive
+  hexQuad([[557.0, -614.0], [573.4, -614.0], [573.4, -619.35], [557.0, -619.35]]);
+  hexQuad([[568.6, -619.35], [580.0, -619.35], [580.0, -627.4], [568.6, -627.4]]);
+  hexStrip(561.2, 563.8, -614.0, -589.6);
+  hexQuad([[557.0, roadZ(557) - 3.2], [568.4, roadZ(568.4) - 3.2], [568.4, -589.6], [557.0, -589.6]]);
+  // the right branch: leaving the path on the diagonal to the east front structure's corner, then along the car park's
+  // west edge down to the drive
+  hexQuad([[563.8, -606.4], [572.4, -600.6], [572.4, -598.4], [563.8, -604.2]]);
+  hexStrip(572.4, 574.2, -600.6, roadZ(573) - 3.3);
+  for (const x of [561.13, 563.87]) { edging(x, -614.0, x > 562 ? -606.4 : -589.6); if (x > 562) edging(x, -604.2, -589.6); }
+  edging(572.33, -598.4, -589.0);
+  // mature leafy trees on the lawns where the top view has its crowns (the photo from the car park: the big tree right of
+  // the path); the clipped conical shrub at the forecourt's edge; lamp posts left of the path; the bin by the lamp at the
+  // drive and the KEEP OFF THE GRASS sign on the right lawn (the photo from the car park)
+  matureTree(557.3, -610.0, 6.5, 2.6, 1); matureTree(568.8, -609.4, 7.0, 2.9, 2); matureTree(556.2, -602.6, 6.0, 2.4, 3);
+  matureTree(568.2, -595.2, 6.5, 2.7, 4); matureTree(555.6, -595.2, 6.2, 2.5, 5);
+  { const x = 559.4, z = -612.2, y = gy(x, z);
+    for (let i = 0; i < 6; i++) k.plain.push([new THREE.IcosahedronGeometry(0.62 - i * 0.09, 1).scale(1, 0.8, 1).translate(X(x), y + 0.4 + i * 0.36, Z(z)), ['#2f5a24', '#36642a'][i % 2]]);
+    SOLIDS.add(x, z, 0.6); }
+  lamp(559.9, -602.0); lamp(560.3, -590.4);
+  { const x = 560.85, z = -590.5, y = gy(x, z);
+    c.push([B(x - 0.3, x + 0.3, y + 0.05, y + 1.0, z - 0.35, z + 0.35), '#2a2c2e'], [B(x - 0.33, x + 0.33, y + 1.0, y + 1.08, z - 0.38, z + 0.38), '#2a2c2e']);
+    SOLIDS.add(x, z, 0.4); }
+  { const x = 567.0, z = -591.2, y = gy(x, z);
+    k.plain.push([B(x - 0.03, x + 0.03, y, y + 0.9, z - 0.03, z + 0.03), '#3a3a3a'], [B(x - 0.3, x + 0.3, y + 0.6, y + 0.95, z - 0.02, z + 0.02), '#f4f4f2']);
+    k.signs.push({ text: 'KEEP OFF THE GRASS', x: X(x), y: y + 0.78, z: Z(z) + 0.03, ry: 0, w: 0.56, colors: ['#f4f4f2', '#c8202a'] }); }
+  // ----- the yards by the west front structure: the grey paved yard on its west side; west of it a walkway down the
+  // lawn to the drive -----
+  groundPave(k, ck, [[514.0, -614.6], [533.9, -614.6], [533.9, -601.9], [514.0, -601.9]], CONC);
+  hexStrip(521.2, 523.2, -601.9, -581.6);
+  // ----- the car parks: the one before the east front structure, the long one beside it along Pent Road (joining the
+  // gravel car park below the road), concrete with painted bays -----
+  const CAR = ['#e9e9ea', '#1b1d22', '#9aa1a8', '#7a1e1e', '#2b3b5a', '#c9ccd0', '#3d4a3f', '#a33a2a'];
+  let ci = 0;
+  groundPave(k, ck, [[574.4, -601.9], [590.5, -601.9], [590.5, roadZ(590.5) - 3.3], [574.4, roadZ(574.4) - 3.3]], CONC);
+  groundPave(k, ck, [[592.2, -621.0], [600.0, -621.0], [600.0, -607.0], [612.2, -607.0], [612.2, roadZ(612.2) - 3.3], [592.2, roadZ(592.2) - 3.3]], CONC);
+  const bayLine = (x0: number, x1: number, z0: number, z1: number) => { const y = gy((x0 + x1) / 2, (z0 + z1) / 2); k.plain.push([B(x0, x1, y + 0.035, y + 0.045, z0, z1), '#ecebe4']); return y; };
+  // bays along the east edge of the front car park and the west edge of the long one, cars nosing in
+  for (let z = -601.0; z + 2.6 <= -588.6; z += 2.7) { const y = bayLine(585.2, 590.5, z, z + 0.1); if ((ci++ * 7 + 3) % 5 === 0) car(k, X(587.9), Z(z + 1.35), CAR[ci % CAR.length], y + 0.04, -Math.PI / 2); }
+  for (let z = -620.6; z + 2.6 <= -589.0; z += 2.7) { const y = bayLine(592.2, 597.4, z, z + 0.1); if ((ci++ * 7 + 3) % 5 !== 0) car(k, X(594.8), Z(z + 1.35), CAR[ci % CAR.length], y + 0.04, Math.PI / 2); }
+  // kerbs between the car parks and the lawn
+  for (const [x0, x1, z0, z1] of [[590.5, 592.2, -601.9, -588.0], [600.0, 600.3, -621.0, -607.0], [592.2, 600.0, -621.3, -621.0]]) c.push([B(x0, x1, gy(x0, z0) - 0.05, gy(x0, z0) + 0.12, z0, z1), '#cfcabf']);
+  // the walkway along Pent Road on the bank above the car park
+  hexStrip(621.0, 623.6, -621.0, -598.0);
+  // ----- the drive: south of the service road a hardstand with a row of bays along its south kerb, cars nosing in toward
+  // the road; west of the road's end the hardstand carries on to Annie Jiagge Road -----
+  { const S = -569.1, south: [number, number][] = [[622, roadZ(622) + 3.25], [594.2, -582.8 + 3.25], [567.4, -581 + 3.25], [525.8, -578.3 + 3.25]];
+    groundPave(k, ck, [...south, [525.8, -581.4], [503.5, -581.4], [503.5, S], [622, S]], ASPH, 0.06);
+    for (let x = 554.6; x + 2.6 <= 588.8; x += 2.7) { const y = bayLine(x, x + 0.1, -574.9, S); if ((ci++ * 5 + 1) % 4 !== 0) car(k, X(x + 1.35), Z(-572.0), CAR[ci % CAR.length], y + 0.03, 0); }
+    // the kerb and the lawn strip along its south side, a row of broad trees in it toward the road
+    for (let x = 503.5; x < 622; x += 3) { const x1 = Math.min(622, x + 3), y = gy(x, S); c.push([B(x, x1, y - 0.05, y + 0.14, S, S + 0.18), '#cfcabf']); }
+    for (let x = 508, i = 0; x < 620; x += 7.4, i++) matureTree(x + (i % 2) * 1.3, -561.8 + (i % 3) * 1.4, 7.5, 3.2, 10 + i);
+  }
+  for (const [col, { mat, geos }] of Object.entries(paveGeos)) { const m = new THREE.Mesh(mergeGeometries(geos), mat); m.receiveShadow = true; k.meshes.push(m); delete paveGeos[col]; }
+}
 
 let redHexMat: THREE.MeshStandardMaterial | null = null;
 /** red-brown hexagonal pavers (Block A's forecourt) */

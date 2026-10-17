@@ -143,3 +143,8 @@ outline matches picture 4 bar for bar.
 - **Kept:** the red-roofed house at the zone's north-east corner by the road (#104/#638). It is a real roofed house in picture 4, sitting on the edge of the blue line.
 
 ![shell before and after](images/shell-before-after.png)
+
+## Block A reconstruction (2026-10-17)
+
+Block A was reconstructed from the owner's strict Block A brief (roof plan, site top view, court photos): see
+`docs/pent-block-a/README.md`. Blocks B and C were left as they are.

@@ -29,6 +29,9 @@ Open items the owner has not yet answered:
   - Evandy's map entrance point for routes and the walk popup is still the old inferred point, not the new front door
     (data/geography/registry/access.json; needs `npm run geo`).
   - The close-up views listed in `docs/evandy-audit/ledger.md`.
+- **New Pent Block A (batch 201, `docs/pent-block-a/README.md`):** which side the dormers are on (the roof plan says
+  north, the aerial photo of Block B shows them on the south slopes); the linking blocks' faces; whether Blocks B and
+  C should get the same links, dormers and court.
 - **Old residence:** whether a room stands under the big tree at its north-east corner (the crop hides it). The gate
   positions were chosen, not shown.
 - **Elsewhere:** the electricity pylon in front of New Pent Block C's entrance, Amerley Lane missing from the map, the
@@ -85,7 +88,7 @@ it (UPSA, IPS Road, Okponglo, La Bawaleshie). Live: https://rudolphdeladem.githu
 
 Before doing anything:
 1. Read CLAUDE.md, then docs/migration/NEW_ACCOUNT_START_HERE.md and docs/migration/PROJECT_MASTER_HANDOVER.md,
-   then docs/handover/HANDOVER.md and docs/handover/TASKS.md (200 completed batches), then this file's "Latest update" section and the latest sections of
+   then docs/handover/HANDOVER.md and docs/handover/TASKS.md (201 completed batches), then this file's "Latest update" section and the latest sections of
    docs/LEGON_BUILDINGS.md (from "Rendering: flicker and frame cost" to the end: the UPSA junction, the 30-pair
    brief, IPS Road, the Agriculture side, Commonwealth and the Great Hall, UPSA, La Bawaleshie, Limbo, the Fire
    Station, IPS Road opposite UPSA, UPSA landmarks, Bani/PRESEC, Okponglo, the in-ride map and fly-over camera).
