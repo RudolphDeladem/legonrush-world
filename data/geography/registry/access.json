@@ -1026,8 +1026,8 @@
    "place": "New Pent Block A",
    "entrance": {
     "at": [
-     569.5,
-     -623.2
+     562.5,
+     -624.0
     ]
    },
    "type": "hall entrance",
@@ -1056,8 +1056,8 @@
    "place": "New Pent Block B",
    "entrance": {
     "at": [
-     555.8,
-     -766.0
+     558.2,
+     -762.0
     ]
    },
    "type": "hall entrance",
@@ -1086,8 +1086,8 @@
    "place": "New Pent Block C",
    "entrance": {
     "at": [
-     686.8,
-     -698.0
+     685.8,
+     -697.5
     ]
    },
    "type": "hall entrance",

@@ -130,7 +130,9 @@ try {
   const order = ['Addis Ababa Court', 'Dar es Salaam Court', 'Pent Admin Block', 'Kampala Court', 'Nairobi Court'].map((n) => placeByName(n));
   if (order.some((p) => !p)) fail('Pentagon: an Old Pent court or the admin block is missing');
   else for (let i = 1; i < order.length; i++) if (order[i].x <= order[i - 1].x) fail(`Pentagon: ${order[i].name} is not east of ${order[i - 1].name}`);
-  const pentMarks = { 'New Pent Block A': [569.5, -623.2], 'New Pent Block B': [555.8, -766], 'New Pent Block C': [686.8, -698], 'Kampala Court': [671.6, -538.8], 'Addis Ababa Court': [542.4, -529.5], 'Nairobi Court': [720.4, -544.4] };
+  // (Block A's moved 7 m west to the middle of its court, 2026-10-17: the owner's Block A photo shows the broad porch clear of
+  // the wing on its east, which a porch at the old mark, x 569.5, would run into; docs/pent-blocks/CORRECTION_BRIEF.md)
+  const pentMarks = { 'New Pent Block A': [562.5, -624.0], 'New Pent Block B': [555.8, -766], 'New Pent Block C': [686.8, -698], 'Kampala Court': [671.6, -538.8], 'Addis Ababa Court': [542.4, -529.5], 'Nairobi Court': [720.4, -544.4] };
   for (const [n, [mx, mz]] of Object.entries(pentMarks)) { const a = ACCESS.get(n); if (!a || Math.hypot(a.entrance[0] - mx, a.entrance[1] - mz) > 5) fail(`${n}: the entrance is not where the owner marks it`); }
   // owner's third reference PDF: every New Pent wing one model of the shared design, the three entrances, the walls
   // and the Boba kiosk; the Kufuor Centre as its unfinished frame (not the generic building), the hoarding, the

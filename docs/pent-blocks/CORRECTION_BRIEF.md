@@ -67,3 +67,34 @@ Blocks A and B share one design. Block C is its mirror image (`entrance(..., -1)
   - **Sides:** open landings behind solid white parapets on every floor on one side (left on A and B, right on C), and a rendered wall with dark glass-louvre windows on the other.
 
 ![entrances before and after](images/entrances-before-after.png)
+
+## Strict entrance correction, Blocks A and C (owner's annotated Block C comparison, the Block A photos and aerials, 2026-10-17)
+
+Each item was checked against the real photographs, rendered from cameras close to them. Each row below is before | after from the same camera.
+
+| # | Item | Change |
+|---|---|---|
+| 1 | Upper gable arch | A real recess, 0.7 m deep, cut into the tower's gabled middle. Its interior is pale, with the top corridor's slab and parapet crossing it and a moulded frame round it. The flat dark panel is gone. |
+| 2 | Portico | Wider (columns at ±5.05 m) and deeper (6.8 m from the building to the front). A broad front gable spans the columns. Tiled hipped side roofs, dark fascias and pale soffits. The full-width bars are removed. |
+| 3 | Ground-floor openings | A cream back wall with five separate bays. The doorway behind the arch and two bays either side each have their own black folding grille gate (frame, a few uprights, lattice diagonals). Shaded lobby beyond. |
+| 4 | Columns and base | Square cream columns (0.52 m) with grey lower parts (1.5 m), paired at the back against the building. Thick piers either side of the arch. Two heavy beams across the front, the sides, and back to the building. |
+| 5 | Roof geometry | The front gable spans 9.5 m with its pediment over the column line. The tower's taller gable stays behind it. The low hipped roof covers the whole porch. |
+| 6 | Sign | A 2.9 m board, 0.8 m high, with "BLOCK A/B/C" across it, centred on the front gable over the arch. |
+| 7 | Facade and orientation | Checked against the map and photos before any change. Block A: the brick to the left of the photo is the west wing's end (already brick), and the white balconied wall with AC units to the right is the front structure's west side (already white). Block C: the wall left of the entrance was brick in the game, but the photo shows white render with louvred windows. That wall (the west arm's east end) is now white with balconies (`WHITE_FACES`). The brick on the right of the Block C photo is the east wing's west end, which the game already has; it shows beyond the low front structure from the photo's closer viewpoint. No wing was moved or mirrored. |
+| 8 | Ground | The wide rectangle of pavers and the lawn before the entrances are replaced on all three blocks by: a concrete landing with a step; a 2.6 m red-brown paver path to the car park or road; a 1.6 m branch path across it 4 m from the landing; four lawns behind low concrete kerbs; young trees; a clipped conical shrub by the landing; and a lamp post by the path. |
+| - | Spacing | Each porch now sits in the middle of its court between the wings either side: A at x 562.5 (it had stood against the wing on its east), B at 558.2, C at 685.8 and set back 3.5 m against its wing face (z -701.5), as A's is. Only the porches moved, not the wings or their map positions. |
+
+![strict entrances 1](images/strict-entrances-1.png)
+![strict entrances 2](images/strict-entrances-2.png)
+
+### Not verified / open
+
+- The wing facades keep the one shared balcony-and-window design. The photos show some variation between wings (window groups, recessed openings), but not enough to model each wing.
+- An electricity pylon from the map stands just in front of Block C's entrance court. It is not in the Block C photo and was left as mapped.
+
+Entrance points for routing (`data/geography/registry/access.json`): A [562.5, -624.0], B [558.2, -762.0],
+C [685.8, -697.5], inside each porch. The route test's mark for Block A moved with it (`scripts/route-tests.mjs`,
+reason noted there); B and C stay within 5 m of the owner's marks.
+
+Files changed: `src/game/newpent.ts`, `data/geography/registry/access.json` and the regenerated geography outputs,
+`scripts/route-tests.mjs`, this document, `docs/handover/TASKS.md`.
