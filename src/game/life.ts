@@ -841,6 +841,9 @@ export function buildCampusLife() {
           const off = kerbAt + 1.7;
           const x = ax + ux * lt + nx * lampSide * off, z = az + uz * lt + nz * lampSide * off;
           if (roadClearance(x, z, 8, ri) < 0.5 || buildingAt(x, z, 0.5) || inKqPlain(x, z) || inCutBand(x, z, 1) || inLfKeep(x, z) || inEcKeep(x, z) || ownsOg(x, z) || ownsJj(x, z) || ownsDj(x, z)) continue;
+          // (none in Block A's car parks, islands and drive bays: the owner's ground and parking brief; no random number is
+          // drawn in this loop, so nothing else moves)
+          if (inBlockAGrounds(x, z) && z > -602 && z < -569) continue;
           // the arm reaches out over the road
           const yaw = Math.atan2(-nx * lampSide, -nz * lampSide) - Math.PI / 2;
           cells.p(x, z).add(M.lampPole, yawM(x, 0, z, yaw));

@@ -88,7 +88,7 @@ it (UPSA, IPS Road, Okponglo, La Bawaleshie). Live: https://rudolphdeladem.githu
 
 Before doing anything:
 1. Read CLAUDE.md, then docs/migration/NEW_ACCOUNT_START_HERE.md and docs/migration/PROJECT_MASTER_HANDOVER.md,
-   then docs/handover/HANDOVER.md and docs/handover/TASKS.md (202 completed batches), then this file's "Latest update" section and the latest sections of
+   then docs/handover/HANDOVER.md and docs/handover/TASKS.md (203 completed batches), then this file's "Latest update" section and the latest sections of
    docs/LEGON_BUILDINGS.md (from "Rendering: flicker and frame cost" to the end: the UPSA junction, the 30-pair
    brief, IPS Road, the Agriculture side, Commonwealth and the Great Hall, UPSA, La Bawaleshie, Limbo, the Fire
    Station, IPS Road opposite UPSA, UPSA landmarks, Bani/PRESEC, Okponglo, the in-ride map and fly-over camera).

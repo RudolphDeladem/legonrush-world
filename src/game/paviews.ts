@@ -10,5 +10,9 @@ export const PA_VIEWS: PaView[] = [
   { name: 'paCourtHigh', eye: [563, 26, -578], look: [563, 0, -608], fov: 60, note: 'view 1: the court from above the drive' },
   { name: 'paRoofs', eye: [565, 70, -740], look: [563, 0, -660], fov: 55, note: 'the roofs from the north, against the roof plan' },
   { name: 'paTop', eye: [563, 190, -622], look: [563, 0, -621.9], fov: 60, note: 'overhead (south at the top of the frame)' },
+  { name: 'paGround', eye: [563, 150, -596], look: [563, 0, -595.99], fov: 42, note: 'near-vertical over the court, car parks and drive (south at the top of the frame), against the ground plan' },
+  { name: 'paLots', eye: [586, 1.6, -576], look: [588, 2.5, -606], fov: 60, note: 'ground level on the drive at the car parks\' mouths and their islands' },
+  { name: 'paCarPark', eye: [603, 1.6, -591], look: [602, 6, -630], fov: 58, note: 'the owner\'s car-park photo: north up the long car park, the cars along the building side, the retaining wall and steps on the right' },
+  { name: 'paWestFace', eye: [531, 1.7, -594], look: [536, 7, -617], fov: 60, note: 'the west wing\'s south face across the lawn west of the front structure: its balcony pairs' },
   { name: 'paCycle', eye: [563, 1.2, -566], look: [563, 3, -600], fov: 60, note: 'cycling height on the drive' },
 ];

@@ -28,6 +28,8 @@ import { SOLIDS } from './solids';
 import { stairsOf } from './relief';
 import { car } from './cc';
 
+/** the car parks' asphalt (the owner, 2026-10-18: every car park round New Pent is asphalt) */
+const PENT_ASPHALT = '#5f6064';
 const NST = 3.2, NF = 4, WHITE_NP = '#f3f2ee', GREY_BASE = '#55585c', ROOF_NP = '#a9472f', FASCIA_NP = '#2f2a28';
 /** where the New Pent blocks stand (the yellow zone on the owner's aerial) */
 export const NEW_PENT = [[507, 635, -839, -585], [632, 756, -797, -641]];
@@ -82,6 +84,86 @@ const NP_PLAIN: Style = {
   draw: (g) => { render(g, WHITE_NP); for (const y0 of [0, 256]) louvres(g, 70, y0 + 70, 116, 110); g.fillStyle = GREY_BASE; g.fillRect(0, 512 - 60, 256, 60); },
 };
 
+// ---------- Block A's long faces (the owner's balcony and window briefs of 2026-10-18: the front-elevation photo, the
+// car-park photo of the long south wing, the annotated guide) ----------
+/** Block A's walls: warm off-white render over the grey base, no painted windows (the openings are geometry: aFacade) */
+const A_CREAM = '#efe8d8';
+const NP_A_WALL: Style = { bay: 3.3, up: [], ground: [], draw: (g) => { render(g, A_CREAM); g.fillStyle = GREY_BASE; g.fillRect(0, 512 - 60, 256, 60); } };
+type FaceBox = (p0: number, p1: number, y0: number, y1: number, d0: number, d1: number) => THREE.BufferGeometry;
+/** The photographs show the balconies in mirrored pairs, not one to every bay: each a shallow projecting slab with a low
+ *  cream parapet carrying a small brick panel pierced by two round holes, behind it a dark louvred window in a charcoal
+ *  frame with a panel of facing brick beside it (on the side away from its partner); between and beside the pairs plain
+ *  cream wall with a narrow vertical ventilation slot. On the ground floor the same places take grilled windows. A group
+ *  is about 7.2 m along the face (the car-park photo: four balconies in two pairs across the wing's south face). */
+function aFacade(k: Kit, c: Part[], Q: FaceBox, a0: number, len: number, FL: number, front: boolean, alongX: boolean, s: number, face: number) {
+  const U = 3.4, D = 0.95, n = Math.max(1, Math.round(len / 7.2)), gw = len / n;
+  const FRAME = '#2b2b2a', GLASS = '#30353a', SLAT = '#3f3b37';
+  const brick = (u0: number, u1: number, y0: number, y1: number, d: number) => {
+    k.plain.push([Q(u0, u1, y0, y1, d, d + 0.03), '#a4482f']);
+    for (let yy = y0 + 0.1; yy < y1 - 0.02; yy += 0.11) k.plain.push([Q(u0, u1, yy, yy + 0.014, d + 0.03, d + 0.034), '#c7b6a3']);
+  };
+  /** a window in the wall: dark glazing set back behind a charcoal frame standing proud, louvre blades or a grille, a sill */
+  const win = (u0: number, u1: number, y0: number, y1: number, kind: 'louvre' | 'grille', sill: boolean) => {
+    k.plain.push([Q(u0, u1, y0, y1, 0, 0.012), GLASS]);
+    for (const [p0, p1, q0, q1] of [[u0 - 0.07, u0, y0, y1], [u1, u1 + 0.07, y0, y1], [u0 - 0.07, u1 + 0.07, y1, y1 + 0.07], [u0 - 0.07, u1 + 0.07, y0 - 0.07, y0]]) k.plain.push([Q(p0, p1, q0, q1, 0, 0.08), FRAME]);
+    if (kind === 'louvre') for (let yy = y0 + 0.06; yy < y1 - 0.05; yy += 0.13) k.plain.push([Q(u0, u1, yy, yy + 0.045, 0.012, 0.05), SLAT]);
+    else for (let u = u0 + 0.1; u < u1 - 0.05; u += 0.13) k.plain.push([Q(u - 0.012, u + 0.012, y0, y1, 0.012, 0.06), '#1c1d1e']);
+    if (u1 - u0 > 1.0) k.plain.push([Q((u0 + u1) / 2 - 0.03, (u0 + u1) / 2 + 0.03, y0, y1, 0, 0.08), FRAME]);
+    if (sill) c.push([Q(u0 - 0.12, u1 + 0.12, y0 - 0.13, y0 - 0.06, 0, 0.14), A_CREAM]);
+  };
+  const slot = (u: number, y: number) => {
+    k.plain.push([Q(u - 0.07, u + 0.07, y + 0.95, y + 2.2, 0, 0.012), '#25272a']);
+    c.push([Q(u - 0.13, u + 0.13, y + 0.88, y + 0.95, 0, 0.06), A_CREAM]);
+  };
+  const hole = (u: number, y: number, d: number) => {
+    const g = new THREE.CylinderGeometry(0.1, 0.1, 0.04, 10);
+    if (alongX) g.rotateX(Math.PI / 2); else g.rotateZ(Math.PI / 2);
+    const out = face + s * d;
+    k.plain.push([alongX ? g.translate(u, y, out) : g.translate(out, y, u), '#262422']);
+  };
+  for (let f = front ? 1 : 0; f < FL; f++) {
+    const y = PL + f * NST;
+    for (let i = 0; i < n; i++) {
+      const g0 = a0 + i * gw, mir = i % 2 === 1;
+      if (gw < U + 1.0) { slot(g0 + gw / 2, y); continue; }
+      // the unit sits at the end of its group toward its partner, so the balconies pair up; the slot in the plain wall
+      const b0 = mir ? g0 + 0.2 : g0 + gw - 0.2 - U, b1 = b0 + U;
+      slot(mir ? (b1 + g0 + gw) / 2 : (g0 + b0) / 2, y);
+      // the window toward the partner, the brick panel on the outer side
+      const [w0, w1] = mir ? [b0 + 0.35, b0 + 1.9] : [b1 - 1.9, b1 - 0.35], [k0, k1] = mir ? [b1 - 1.3, b1 - 0.3] : [b0 + 0.3, b0 + 1.3];
+      if (f === 0) { win(w0, w1, y + 0.75, y + 2.3, 'grille', true); brick(k0, k1, y + 0.75, y + 2.3, 0); continue; }
+      win(w0, w1, y + 0.2, y + 2.35, 'louvre', false);
+      brick(k0, k1, y + 0.75, y + 2.35, 0);
+      // the balcony: slab, parapet front and cheeks, the pierced brick panel on the parapet
+      c.push([Q(b0, b1, y - 0.18, y + 0.02, 0, D), A_CREAM], [Q(b0, b1, y + 0.02, y + 1.0, D - 0.13, D), A_CREAM]);
+      c.push([Q(b0, b0 + 0.12, y + 0.02, y + 1.0, 0, D), A_CREAM], [Q(b1 - 0.12, b1, y + 0.02, y + 1.0, 0, D), A_CREAM]);
+      const m = (b0 + b1) / 2;
+      brick(m - 0.5, m + 0.5, y + 0.28, y + 0.86, D);
+      for (const du of [-0.22, 0.22]) hole(m + du, y + 0.57, D + 0.04);
+    }
+  }
+}
+
+/** a side of one of a Block A wing's rectangles: the stretches of it no other rectangle stands against, each given
+ *  its balconies and windows (aFacade) */
+function aSide(k: Kit, c: Part[], r: Rect, side: 'x0' | 'x1' | 'z0' | 'z1', all: Rect[], FL: number, front: boolean, O: [number, number]) {
+  const alongX = side[0] === 'z', s = side.endsWith('0') ? -1 : 1, at = alongX ? (s < 0 ? r[2] : r[3]) : (s < 0 ? r[0] : r[1]);
+  let open: [number, number][] = [alongX ? [r[0], r[1]] : [r[2], r[3]]];
+  for (const o of all) {
+    if (o === r) continue;
+    const face = alongX ? (s < 0 ? o[3] : o[2]) : (s < 0 ? o[1] : o[0]);
+    if (Math.abs(face - at) > 0.6) continue;
+    const [c0, c1] = alongX ? [o[0], o[1]] : [o[2], o[3]];
+    open = open.flatMap(([u0, u1]) => [[u0, Math.min(u1, c0)], [Math.max(u0, c1), u1]] as [number, number][]).filter(([u0, u1]) => u1 - u0 > 0.05);
+  }
+  const face = at - (alongX ? O[1] : O[0]), off = alongX ? O[0] : O[1];
+  const Q: FaceBox = (p0, p1, y0, y1, d0, d1) => {
+    const [lo, hi] = [face + s * Math.min(d0, d1), face + s * Math.max(d0, d1)];
+    return alongX ? box(p0, p1, y0, y1, Math.min(lo, hi), Math.max(lo, hi)) : box(Math.min(lo, hi), Math.max(lo, hi), y0, y1, p0, p1);
+  };
+  for (const [u0, u1] of open) if (u1 - u0 >= 2.5) aFacade(k, c, Q, u0 - off, u1 - u0, FL, front, alongX, s, face);
+}
+
 /** the wings. The owner: Blocks A and B are exactly the same, Block C the same in mirror image. The map agrees: fitted to
  *  Block A's outlines, Block B's are Block A's moved (-4.2, -139.0) m (mean edge error 0.7 m) and Block C's are Block
  *  A's mirrored about x = 624.15 and moved -74.8 m in z (mean error 3.5 m, nearly all of it where the map merges one of
@@ -125,7 +207,7 @@ const WINGS: { block: 'A' | 'B' | 'C'; rects: Rect[]; front: boolean; replaces: 
 /** Block A's court, drive, car parks, yards and the tree belt to the road south of it, all drawn from the owner's top
  *  view (blockACourt): no generated trees there (life.ts skips them after drawing their random numbers, so nothing
  *  elsewhere moves) */
-export const inBlockAGrounds = (x: number, z: number) => (x > 500 && x < 628 && z > -602 && z < -547) || (x > 512 && x < 560 && z > -618 && z < -600) || (x > 553 && x < 625 && z > -628 && z < -586);
+export const inBlockAGrounds = (x: number, z: number) => (x > 500 && x < 628 && z > -602 && z < -547) || (x > 512 && x < 560 && z > -618 && z < -600) || (x > 553 && x < 625 && z > -628 && z < -586) || (x > 615 && x < 626 && z > -640 && z < -586);
 /** within d metres of a New Pent wing's walls: the generated hedges, beds and trees stay clear of the facades (the owner's
  *  Pent Block correction brief: oversized trees hid the entrances and brick elevations; no hedges in the photos) */
 export const nearNewPentWing = (x: number, z: number, d: number) =>
@@ -155,7 +237,7 @@ function wing(i: number): Spec {
   });
   return {
     name: link ? `New Pent Block A link ${i - 3 * A_WINGS.length + 1}` : `New Pent Block ${block} wing ${(i % A_WINGS.length) + 1}`,
-    axis: [1, 0], origin: O, storey: NST, style: NP_LONG, roofColor: ROOF_NP, fascia: FASCIA_NP, pitch: 0.6,
+    axis: [1, 0], origin: O, storey: NST, style: block === 'A' && !link ? NP_A_WALL : NP_LONG, roofColor: ROOF_NP, fascia: FASCIA_NP, pitch: 0.6,
     replaces,
     blocks,
     keep: [],
@@ -165,6 +247,9 @@ function wing(i: number): Spec {
       // standing out, a white parapet with its panel of facing brick, white cheeks between them; not on a front
       // structure's ground floor, which has large windows
       for (const r of rects) for (const side of ['x0', 'x1', 'z0', 'z1'] as const) {
+        // (Block A: every open stretch of a side gets its balconies and windows, a side only partly covered by a
+        // neighbouring part of the outline included: aFacade)
+        if (block === 'A' && !link && !ends(r).includes(side)) { aSide(k, c, r, side, all, FL, front, O); continue; }
         if (link || ends(r).includes(side) || all.some((o) => o !== r && touches(r, o, side))) continue;
         const alongX = side[0] === 'z', s = side.endsWith('0') ? -1 : 1;
         const face = (alongX ? (s < 0 ? r[2] : r[3]) - O[1] : (s < 0 ? r[0] : r[1]) - O[0]);
@@ -537,12 +622,15 @@ const grounds: Spec = {
       }
       // the gravel floor and the cars along the wall and along the block
       const fy = gy(608, -620);
-      k.plain.push([B(600, 618.5, fy + 0.01, fy + 0.04, -632, -607), '#a59b8c']);
+      // (the owner, 2026-10-18: every car park round New Pent is asphalt)
+      k.plain.push([B(600, 618.5, fy + 0.01, fy + 0.04, -632, -607), PENT_ASPHALT]);
       const CAR = ['#e9e9ea', '#1b1d22', '#9aa1a8', '#7a1e1e', '#2b3b5a', '#c9ccd0'];
       let ci = 0;
       for (let z = -631.5; z + 2.6 <= -607.5; z += 2.7) {
         if (z + 2.6 > s0 - 1.2 && z < s1 + 1.2) continue;
-        if ((ci * 7 + 3) % 5 !== 0) car(k, X(615.0), Z(z + 1.35), CAR[ci % CAR.length], fy + 0.04, -Math.PI / 2);
+        // (the owner's car-park photo, 2026-10-18: the cars stand along the building side; by the retaining wall only one,
+        // near the steps)
+        if (ci === 4) car(k, X(615.0), Z(z + 1.35), CAR[ci % CAR.length], fy + 0.04, -Math.PI / 2);
         if ((ci * 5 + 1) % 4 !== 0) car(k, X(603.2), Z(z + 1.35), CAR[(ci + 3) % CAR.length], fy + 0.04, Math.PI / 2);
         ci++;
       }
@@ -561,7 +649,7 @@ const grounds: Spec = {
       let ci = 0;
       const pad = (x0: number, x1: number, z0: number, z1: number) => {
         const y = Math.min(gy(x0, z0), gy(x1, z1), gy(x0, z1), gy(x1, z0));
-        k.plain.push([B(x0, x1, y + 0.005, y + 0.04, z0, z1), '#b3afa6']);
+        k.plain.push([B(x0, x1, y + 0.005, y + 0.04, z0, z1), PENT_ASPHALT]);
         for (let x = x0 + 6; x < x1 - 1; x += 6) k.plain.push([B(x - 0.02, x + 0.02, y + 0.04, y + 0.043, z0, z1), '#8f8b83']);
         return y;
       };
@@ -804,9 +892,22 @@ interface CourtKit {
   edging: (x: number, za: number, zb: number) => void; lamp: (x: number, z: number) => void;
 }
 const slabMats: Record<string, THREE.MeshStandardMaterial> = {};
+let ASPHALT_TEX: THREE.Texture | null = null;
+/** coarse worn asphalt (the owner's car-park photo): dark grey-brown, fine aggregate speckle, a few broad lighter and
+ *  darker patches of wear, kept restrained */
+const asphaltTex = () => (ASPHALT_TEX ??= (() => {
+  const cv = document.createElement('canvas'); cv.width = cv.height = 256;
+  const g = cv.getContext('2d')!;
+  g.fillStyle = '#5f5a54'; g.fillRect(0, 0, 256, 256);
+  let sd = 7; const r = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
+  for (let i = 0; i < 14; i++) { g.fillStyle = i % 2 ? 'rgba(120,108,92,0.16)' : 'rgba(40,38,36,0.14)'; g.beginPath(); g.ellipse(r() * 256, r() * 256, 20 + r() * 50, 12 + r() * 30, r() * 3, 0, Math.PI * 2); g.fill(); }
+  for (let i = 0; i < 9000; i++) { g.fillStyle = ['#6d675f', '#4f4b47', '#7a7268', '#57524c', '#837a6e'][(r() * 5) | 0]; g.fillRect(r() * 256, r() * 256, 1 + (r() < 0.2 ? 1 : 0), 1); }
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4;
+  return t;
+})());
 /** a paved area (world corners, in ring order) laid on the ground in a 2 m grid so it follows the relief */
 function groundPave(k: Kit, ck: CourtKit, ring: [number, number][], color: string, lift = 0.07) {
-  const mat = (slabMats[color] ??= new THREE.MeshStandardMaterial({ color, roughness: 0.95, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 }));
+  const mat = (slabMats[color] ??= new THREE.MeshStandardMaterial({ color: color === PENT_ASPHALT ? '#ffffff' : color, map: color === PENT_ASPHALT ? asphaltTex() : null, roughness: 0.95, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 }));
   const g = new THREE.ShapeGeometry(new THREE.Shape(ring.map(([x, z]) => new THREE.Vector2(x, z))));
   // subdivide the shape's triangles until no edge is over 2 m, each vertex then set on the ground
   let tris: number[][] = [];
@@ -824,9 +925,10 @@ function groundPave(k: Kit, ck: CourtKit, ring: [number, number][], color: strin
     tris = out;
   }
   const pos: number[] = [];
-  // (each triangle wound to face up)
-  for (const t of tris) for (const o of [0, 4, 2]) pos.push(ck.X(t[o]), ck.gy(t[o], t[o + 1]) + lift, ck.Z(t[o + 1]));
-  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  // (each triangle wound to face up; the texture laid by the metre in world coordinates)
+  const uv: number[] = [];
+  for (const t of tris) for (const o of [0, 4, 2]) { pos.push(ck.X(t[o]), ck.gy(t[o], t[o + 1]) + lift, ck.Z(t[o + 1])); uv.push(t[o] / 6, t[o + 1] / 6); }
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
   geo.setAttribute('normal', new THREE.Float32BufferAttribute(Array.from({ length: pos.length }, (_, i) => (i % 3 === 1 ? 1 : 0)), 3));
   // (one mesh per surface: the areas of a colour are merged at the end of blockACourt)
   (paveGeos[color] ??= { mat, geos: [] }).geos.push(geo);
@@ -854,7 +956,7 @@ function leafyTree(k: Kit, ck: CourtKit, x: number, z: number, h: number, r: num
 function blockACourt(k: Kit, ck: CourtKit) {
   const { X, Z, gy, c, hexStrip, hexQuad, edging, lamp } = ck;
   const B = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => box(X(x0), X(x1), y0, y1, Z(z0), Z(z1));
-  const CONC = '#b3afa6', ASPH = '#6b6b6e';
+  const CONC = '#b3afa6', ASPH = PENT_ASPHALT;
   /** the mapped service road along the front (#555) as drawn, 6.2 m wide: its south edge at x */
   const RD: [number, number][] = [[628, -585], [594.2, -582.8], [567.4, -581], [525.8, -578.3]];
   const roadZ = (x: number) => { for (let i = 1; i < RD.length; i++) { const [ax, az] = RD[i - 1], [bx, bz] = RD[i]; if (x <= ax && x >= bx) return az + ((bz - az) * (x - ax)) / (bx - ax); } return x > RD[0][0] ? RD[0][1] : RD[RD.length - 1][1]; };
@@ -866,12 +968,12 @@ function blockACourt(k: Kit, ck: CourtKit) {
   // 2): a branch angling back west to the low-walled yard's opening and one out east (the top view's diagonal) to the
   // car park's west edge; small lawn islands between them and the walk; the paved plaza where the path meets the drive
   groundPave(k, ck, [[554.2, -619.3], [580.0, -619.3], [580.0, -616.6], [554.2, -616.6]], '#a9a7a0');
-  hexStrip(561.2, 563.8, -616.6, -589.6);
-  hexQuad([[557.0, roadZ(557) - 3.2], [568.4, roadZ(568.4) - 3.2], [568.4, -589.6], [557.0, -589.6]]);
+  // (the owner's ground and parking brief: the path runs on narrow to the drive between two short parking bays, no plaza)
+  hexStrip(561.2, 563.8, -616.6, roadZ(562.5) - 3.2);
   hexQuad([[561.2, -609.6], [551.9, -612.6], [551.9, -610.4], [561.2, -607.4]]);
   hexQuad([[563.8, -609.6], [572.4, -601.0], [572.4, -598.8], [563.8, -607.4]]);
   hexStrip(572.4, 574.2, -601.0, roadZ(573) - 3.3);
-  for (const x of [561.13, 563.87]) { edging(x, -616.6, -609.6); edging(x, -607.4, -589.6); }
+  for (const x of [561.13, 563.87]) { edging(x, -616.6, -609.6); edging(x, -607.4, roadZ(562.5) - 3.2); }
   edging(572.33, -598.8, -589.0);
   // leafy trees where the top view has crowns, kept off the facades and the walk; the clipped conical shrub on the small
   // island left of the path by the porch (views 2, 4, 6); lamp posts by the junction left of the path (view 2), by the
@@ -897,16 +999,52 @@ function blockACourt(k: Kit, ck: CourtKit) {
   // gravel car park below the road), concrete with painted bays -----
   const CAR = ['#e9e9ea', '#1b1d22', '#9aa1a8', '#7a1e1e', '#2b3b5a', '#c9ccd0', '#3d4a3f', '#a33a2a'];
   let ci = 0;
-  groundPave(k, ck, [[574.4, -601.9], [590.5, -601.9], [590.5, roadZ(590.5) - 3.3], [574.4, roadZ(574.4) - 3.3]], CONC);
-  groundPave(k, ck, [[592.2, -621.0], [600.0, -621.0], [600.0, -607.0], [612.2, -607.0], [612.2, roadZ(612.2) - 3.3], [592.2, roadZ(592.2) - 3.3]], CONC);
-  const bayLine = (x0: number, x1: number, z0: number, z1: number) => { const y = gy((x0 + x1) / 2, (z0 + z1) / 2); k.plain.push([B(x0, x1, y + 0.035, y + 0.045, z0, z1), '#ecebe4']); return y; };
+  // (the owner's ground and parking brief, its plan registered at 8.2 px/m on a 3x enlargement: the car park before the
+  // east front structure x 573.6-589.5 to the drive; the long one beside it x 590.7-610.8 from the main wing's south
+  // face, its cars along the building edge; a kerbed strip between them; the two short bays either side of the path)
+  groundPave(k, ck, [[573.6, -601.9], [589.5, -601.9], [589.5, roadZ(589.5) - 3.3], [573.6, roadZ(573.6) - 3.3]], ASPH, 0.06);
+  groundPave(k, ck, [[590.7, -622.8], [592.8, -622.8], [592.8, -625.4], [600.0, -625.4], [600.0, -607.0], [612.2, -607.0], [612.2, roadZ(612.2) - 3.3], [590.7, roadZ(590.7) - 3.3]], ASPH, 0.06);
+  for (const [x0, x1] of [[558.2, 561.2], [563.8, 569.4]]) groundPave(k, ck, [[x0, -588.8], [x1, -588.8], [x1, roadZ(x1) - 3.3], [x0, roadZ(x0) - 3.3]], ASPH, 0.06);
+  // (no painted bay lines: none in the owner's car-park photo; the bays are only where the cars stand)
+  const bayLine = (x0: number, x1: number, z0: number, z1: number) => gy((x0 + x1) / 2, (z0 + z1) / 2);
   // bays along the east edge of the front car park and the west edge of the long one, cars nosing in
-  for (let z = -601.0; z + 2.6 <= -588.6; z += 2.7) { const y = bayLine(585.2, 590.5, z, z + 0.1); if ((ci++ * 7 + 3) % 5 === 0) car(k, X(587.9), Z(z + 1.35), CAR[ci % CAR.length], y + 0.04, -Math.PI / 2); }
-  for (let z = -620.6; z + 2.6 <= -589.0; z += 2.7) { const y = bayLine(592.2, 597.4, z, z + 0.1); if ((ci++ * 7 + 3) % 5 !== 0) car(k, X(594.8), Z(z + 1.35), CAR[ci % CAR.length], y + 0.04, Math.PI / 2); }
-  // kerbs between the car parks and the lawn
-  for (const [x0, x1, z0, z1] of [[590.5, 592.2, -601.9, -588.0], [600.0, 600.3, -621.0, -607.0], [592.2, 600.0, -621.3, -621.0]]) c.push([B(x0, x1, gy(x0, z0) - 0.05, gy(x0, z0) + 0.12, z0, z1), '#cfcabf']);
-  // the walkway along Pent Road on the bank above the car park
-  hexStrip(621.0, 623.6, -621.0, -598.0);
+  for (let z = -601.0; z + 2.6 <= -589.4; z += 2.7) { const y = bayLine(584.2, 589.5, z, z + 0.1); if ((ci++ * 7 + 3) % 5 === 0) car(k, X(586.9), Z(z + 1.35), CAR[ci % CAR.length], y + 0.07, -Math.PI / 2); }
+  for (let z = -624.8; z + 2.6 <= -589.4; z += 2.7) { const y = bayLine(590.7, 595.9, z, z + 0.1); if ((ci++ * 7 + 3) % 5 !== 0) car(k, X(593.3), Z(z + 1.35), CAR[ci % CAR.length], y + 0.07, Math.PI / 2); }
+  { const y = gy(559.7, -586); car(k, X(559.7), Z(-586.0), CAR[2], y + 0.07, 0); car(k, X(568.0), Z(-586.0), CAR[1], y + 0.07, 0); }
+  // kerbs between the car parks and between them and the lawn
+  for (const [x0, x1, z0, z1] of [[589.5, 590.7, -601.9, -588.8], [600.0, 600.3, -625.4, -607.0], [592.8, 600.0, -625.7, -625.4], [573.3, 573.6, -601.9, -588.8], [558.0, 558.2, -588.8, -585.0], [569.4, 569.6, -588.8, -585.0]]) c.push([B(x0, x1, gy(x0, z0) - 0.05, gy(x0, z0) + 0.14, z0, z1), '#cfcabf']);
+  // the curved planted islands at the car parks' mouths, kerbed, a tree or shrubs in each (the plan draws them reaching
+  // about 3 m over the mapped service road: they are kept the same length but shallower, north of the road, the road
+  // not moved)
+  const island = (xa: number, xb: number, z0: number, z1: number, seed: number) => {
+    const R = (z1 - z0) / 2, zc = (z0 + z1) / 2, ring: [number, number][] = [];
+    for (let i = 0; i <= 8; i++) { const a = -Math.PI / 2 + (i / 8) * Math.PI; ring.push([xb - R + Math.cos(a) * R, zc + Math.sin(a) * R]); }
+    for (let i = 0; i <= 8; i++) { const a = Math.PI / 2 + (i / 8) * Math.PI; ring.push([xa + R + Math.cos(a) * R, zc + Math.sin(a) * R]); }
+    for (let i = 0; i < ring.length; i++) {
+      const [ax, az] = ring[i], [bx, bz] = ring[(i + 1) % ring.length], L = Math.hypot(bx - ax, bz - az), y = gy((ax + bx) / 2, (az + bz) / 2);
+      c.push([new THREE.BoxGeometry(L + 0.06, 0.24, 0.16).rotateY(-Math.atan2(bz - az, bx - ax)).translate(X((ax + bx) / 2), y + 0.07, Z((az + bz) / 2)), '#d3cec3']);
+    }
+    groundPave(k, ck, ring.map(([x, z]) => [xa + R + (x - xa - R) * 0.96, zc + (z - zc) * 0.93] as [number, number]), '#4f7a33', 0.15);
+    const n = Math.max(1, Math.round((xb - xa) / 5));
+    for (let i = 0; i < n; i++) leafyTree(k, ck, xa + R + ((xb - xa - 2 * R) * (i + 0.5)) / n, zc, n > 1 ? 4.2 : 5.0, n > 1 ? 1.6 : 2.0, seed + i);
+    for (let x = xa + 0.4; x < xb - 0.4; x += 0.8) SOLIDS.add(x, zc, R * 0.9);
+  };
+  island(573.8, 579.7, -588.6, roadZ(576) - 3.4, 30);
+  island(585.2, 598.6, -588.8, roadZ(592) - 3.4, 33);
+  // the grey apron before the west front structure's south end, open to the drive; west of it the drive's north edge
+  // runs on to Annie Jiagge Road, the lawn's corner rounded behind a kerb
+  groundPave(k, ck, [[534.6, -590.9], [546.8, -590.9], [546.8, roadZ(546.8) - 3.3], [534.6, roadZ(534.6) - 3.3]], ASPH, 0.06);
+  { const ring: [number, number][] = [[503.5, -584.6], [520.5, -584.6]];
+    for (let i = 1; i <= 6; i++) { const a = -Math.PI / 2 + (i / 6) * (Math.PI / 2); ring.push([520.5 + Math.cos(a) * 3, -581.6 + Math.sin(a) * 3]); }
+    ring.push([525.8, -581.4], [503.5, -581.4]);
+    groundPave(k, ck, ring, ASPH, 0.06);
+    for (let i = 0; i < ring.length - 3; i++) { const [ax, az] = ring[i], [bx, bz] = ring[i + 1], L = Math.hypot(bx - ax, bz - az); c.push([new THREE.BoxGeometry(L + 0.05, 0.24, 0.16).rotateY(-Math.atan2(bz - az, bx - ax)).translate(X((ax + bx) / 2), gy(ax, az) + 0.07, Z((az + bz) / 2) - 0.08), '#d3cec3']); } }
+  // kerbs along the drive's north edge where the lawns meet it
+  for (const [x0, x1] of [[523.5, 534.6], [546.8, 558.0], [569.6, 573.3]]) for (let x = x0; x < x1 - 0.01; x += 2) { const xe = Math.min(x1, x + 2), z = roadZ((x + xe) / 2) - 3.3; c.push([B(x, xe, gy(x, z) - 0.05, gy(x, z) + 0.14, z - 0.16, z), '#d3cec3']); }
+  // the trees on the lawn west of the apron (the plan's dense group)
+  leafyTree(k, ck, 527.6, -597.5, 7.2, 3.0, 40); leafyTree(k, ck, 529.4, -589.4, 6.8, 2.9, 41);
+  // the walkway along Pent Road on the bank above the car parks
+  hexStrip(621.0, 623.6, -637.0, -600.0);
   // ----- the drive: south of the service road a hardstand with a row of bays along its south kerb, cars nosing in toward
   // the road; west of the road's end the hardstand carries on to Annie Jiagge Road -----
   { const S = -569.1, south: [number, number][] = [[622, roadZ(622) + 3.25], [594.2, -582.8 + 3.25], [567.4, -581 + 3.25], [525.8, -578.3 + 3.25]];
